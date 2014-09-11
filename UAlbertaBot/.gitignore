@@ -1,0 +1,4 @@
+VisualStudio/Release
+VisualStudio/Debug
+bin/*
+source/*.o
