@@ -1,0 +1,20 @@
+SparCraft for linux uses a stripped-down version of BWAPI called bwdata, located in SparCraft/linux/bwdata
+Do not attempt to use this with any other version of BWAPI libraries under linux because it's not tested and not necessary
+
+You need the following packages installed:
+
+OpenGL Libraries
+- opengl (freeglut worked)
+
+SDL Libraries
+- libsdl
+- libsdl-gfx
+- libsdl-image
+
+To compile: (from SparCraft root)
+
+g++ -O3 source/*.cpp bwapidata/include/*.cpp source/glfont/*.cc -Ibwapidata/include -Isource/glfont -o SparCraft `sdl-config --cflags --libs` -lGL -lGLU -lSDL_image
+
+run with:
+
+./SparCraft sample_experiment/sample_exp_linux.txt

@@ -1,0 +1,9 @@
+Player 0 NOKDPS
+Player 1 KiterDPS
+State SeparatedState 10 128 128 400 360 840 360 Protoss_Dragoon 50
+State SeparatedState 10 128 128 400 360 840 360 Zerg_Zergling 50
+State SeparatedState 10 128 128 400 360 840 360 Protoss_Dragoon 25 Protoss_Zealot 25
+State SeparatedState 10 128 128 400 360 840 360 Protoss_Dragoon 25 Terran_Marine 25
+State SeparatedState 10 128 128 400 360 840 360 Terran_Marine 25 Zerg_Zergling 25
+ResultsFile c:\users\dave\desktop\results\sample_exp true
+Display true

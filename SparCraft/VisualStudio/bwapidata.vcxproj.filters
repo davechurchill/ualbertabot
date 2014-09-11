@@ -1,0 +1,243 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Util">
+      <UniqueIdentifier>{6d542422-cbf6-48e3-a42a-5b613dbfb27b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="BWAPI">
+      <UniqueIdentifier>{94969cc2-fa46-48b3-a799-699052395962}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="BWAPI\Client">
+      <UniqueIdentifier>{5bf7fa35-3dae-4e58-a8e6-676b0e724c48}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\bwapidata\include\AIModule.cpp" />
+    <ClCompile Include="..\bwapidata\include\Bitmap.cpp" />
+    <ClCompile Include="..\bwapidata\include\BulletType.cpp" />
+    <ClCompile Include="..\bwapidata\include\BWAPI.cpp" />
+    <ClCompile Include="..\bwapidata\include\Color.cpp" />
+    <ClCompile Include="..\bwapidata\include\Common.cpp" />
+    <ClCompile Include="..\bwapidata\include\DamageType.cpp" />
+    <ClCompile Include="..\bwapidata\include\Error.cpp" />
+    <ClCompile Include="..\bwapidata\include\Event.cpp" />
+    <ClCompile Include="..\bwapidata\include\ExplosionType.cpp" />
+    <ClCompile Include="..\bwapidata\include\GameType.cpp" />
+    <ClCompile Include="..\bwapidata\include\Order.cpp" />
+    <ClCompile Include="..\bwapidata\include\PlayerType.cpp" />
+    <ClCompile Include="..\bwapidata\include\Position.cpp" />
+    <ClCompile Include="..\bwapidata\include\Race.cpp" />
+    <ClCompile Include="..\bwapidata\include\TechType.cpp" />
+    <ClCompile Include="..\bwapidata\include\TilePosition.cpp" />
+    <ClCompile Include="..\bwapidata\include\UnitCommandType.cpp" />
+    <ClCompile Include="..\bwapidata\include\UnitSizeType.cpp" />
+    <ClCompile Include="..\bwapidata\include\UnitType.cpp" />
+    <ClCompile Include="..\bwapidata\include\UpgradeType.cpp" />
+    <ClCompile Include="..\bwapidata\include\WeaponType.cpp" />
+    <ClCompile Include="..\bwapidata\include\Util\Exceptions.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bwapidata\include\Util\FileLogger.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bwapidata\include\Util\Logger.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bwapidata\include\Util\sha1.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bwapidata\include\Util\Strings.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\bwapidata\include\BWAPI.h" />
+    <ClInclude Include="..\bwapidata\include\Common.h" />
+    <ClInclude Include="..\bwapidata\include\Util\Bitmask.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\Util\Exceptions.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\Util\FileLogger.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\Util\Foreach.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\Util\Gnu.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\Util\Logger.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\Util\LogLevel.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\Util\RectangleArray.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\Util\RegionQuadTree.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\Util\sha1.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\Util\Strings.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\Util\Types.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Client\BulletData.h">
+      <Filter>BWAPI\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Client\BulletImpl.h">
+      <Filter>BWAPI\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Client\Client.h">
+      <Filter>BWAPI\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Client\Command.h">
+      <Filter>BWAPI\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Client\CommandType.h">
+      <Filter>BWAPI\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Client\Event.h">
+      <Filter>BWAPI\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Client\ForceData.h">
+      <Filter>BWAPI\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Client\ForceImpl.h">
+      <Filter>BWAPI\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Client\GameData.h">
+      <Filter>BWAPI\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Client\GameImpl.h">
+      <Filter>BWAPI\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Client\PlayerData.h">
+      <Filter>BWAPI\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Client\PlayerImpl.h">
+      <Filter>BWAPI\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Client\Shape.h">
+      <Filter>BWAPI\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Client\ShapeType.h">
+      <Filter>BWAPI\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Client\UnitCommand.h">
+      <Filter>BWAPI\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Client\UnitData.h">
+      <Filter>BWAPI\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Client\UnitImpl.h">
+      <Filter>BWAPI\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\AIModule.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Bitmap.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Bullet.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\BulletType.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Client.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Color.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Constants.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\CoordinateType.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\DamageType.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Error.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Event.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\EventType.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\ExplosionType.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Flag.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Force.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Game.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\GameType.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Input.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Latency.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Order.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Player.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\PlayerType.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Position.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Race.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\TechType.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\TilePosition.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\Unit.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\UnitCommand.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\UnitCommandType.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\UnitSizeType.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\UnitType.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\UpgradeType.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bwapidata\include\BWAPI\WeaponType.h">
+      <Filter>BWAPI</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

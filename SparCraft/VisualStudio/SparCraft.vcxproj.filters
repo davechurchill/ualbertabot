@@ -1,0 +1,294 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\source\AlphaBetaSearch.cpp">
+      <Filter>search\AlphaBeta</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Common.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Display.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Game.cpp">
+      <Filter>simulation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\GameState.cpp">
+      <Filter>simulation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Hash.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\PortfolioGreedySearch.cpp">
+      <Filter>search\Greedy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Timer.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\TranspositionTable.cpp">
+      <Filter>search\AlphaBeta</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\UCTSearch.cpp">
+      <Filter>search\UCT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\UnitScriptData.cpp">
+      <Filter>search\Greedy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Player.cpp">
+      <Filter>simulation\players</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Player_AlphaBeta.cpp">
+      <Filter>simulation\players\search</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Player_AttackDPS.cpp">
+      <Filter>simulation\players\script</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Player_AttackWeakest.cpp">
+      <Filter>simulation\players\script</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Player_Kiter.cpp">
+      <Filter>simulation\players\script</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Player_KiterDPS.cpp">
+      <Filter>simulation\players\script</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Player_NOKDPS.cpp">
+      <Filter>simulation\players\script</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Player_AttackClosest.cpp">
+      <Filter>simulation\players\script</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Player_PortfolioGreedySearch.cpp">
+      <Filter>simulation\players\search</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Player_Random.cpp">
+      <Filter>simulation\players\script</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Player_UCT.cpp">
+      <Filter>simulation\players\search</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\AllPlayers.cpp">
+      <Filter>simulation\players</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MoveArray.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\glfont\glfont.cc">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Player_Cluster.cpp">
+      <Filter>simulation\players\script</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Player_Kiter_NOKDPS.cpp">
+      <Filter>simulation\players\script</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Unit.cpp">
+      <Filter>simulation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\UnitProperties.cpp">
+      <Filter>simulation\properties</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\WeaponProperties.cpp">
+      <Filter>simulation\properties</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\PlayerProperties.cpp">
+      <Filter>simulation\properties</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\SparCraft.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\EnumData.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\AnimationFrameData.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Logger.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\source\AlphaBetaSearch.h">
+      <Filter>search\AlphaBeta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\AlphaBetaSearchResults.hpp">
+      <Filter>search\AlphaBeta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\BaseTypes.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Common.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Array.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Display.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Game.h">
+      <Filter>simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\GameState.h">
+      <Filter>simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Hash.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\PortfolioGreedySearch.h">
+      <Filter>search\Greedy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Position.hpp">
+      <Filter>simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Timer.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\TranspositionTable.h">
+      <Filter>search\AlphaBeta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\UCTNode.h">
+      <Filter>search\UCT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\UCTSearch.h">
+      <Filter>search\UCT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\UnitScriptData.h">
+      <Filter>search\Greedy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\GraphViz.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Player.h">
+      <Filter>simulation\players</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Player_AlphaBeta.h">
+      <Filter>simulation\players\search</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Player_AttackClosest.h">
+      <Filter>simulation\players\script</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Player_AttackDPS.h">
+      <Filter>simulation\players\script</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Player_AttackWeakest.h">
+      <Filter>simulation\players\script</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Player_Kiter.h">
+      <Filter>simulation\players\script</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Player_KiterDPS.h">
+      <Filter>simulation\players\script</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Player_NOKDPS.h">
+      <Filter>simulation\players\script</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Player_PortfolioGreedySearch.h">
+      <Filter>simulation\players\search</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Player_Random.h">
+      <Filter>simulation\players\script</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Player_UCT.h">
+      <Filter>simulation\players\search</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\UCTMemoryPool.hpp">
+      <Filter>search\UCT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\UCTSearchResults.hpp">
+      <Filter>search\UCT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\UCTSearchParameters.hpp">
+      <Filter>search\UCT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\AlphaBetaSearchParameters.hpp">
+      <Filter>search\AlphaBeta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\AllPlayers.h">
+      <Filter>simulation\players</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\MoveArray.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\glfont\glfont.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Player_Cluster.h">
+      <Filter>simulation\players\script</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Player_Kiter_NOKDPS.h">
+      <Filter>simulation\players\script</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Unit.h">
+      <Filter>simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Map.hpp">
+      <Filter>simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\UnitProperties.h">
+      <Filter>simulation\properties</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\WeaponProperties.h">
+      <Filter>simulation\properties</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\PlayerProperties.h">
+      <Filter>simulation\properties</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\UnitAction.hpp">
+      <Filter>simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Random.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\SparCraft.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\EnumData.h">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\AnimationFrameData.h">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Logger.h">
+      <Filter>util</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="util">
+      <UniqueIdentifier>{6df7ca5f-a32b-4663-841c-e9c0167bef3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="search">
+      <UniqueIdentifier>{448e8c8d-4efd-44ab-9ca4-3da61d3aa047}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="simulation">
+      <UniqueIdentifier>{d817d60f-8a97-41a1-af70-0d73ee979248}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="search\AlphaBeta">
+      <UniqueIdentifier>{39cea388-a0ee-4dab-9c88-fc2c02a0d8c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="search\Greedy">
+      <UniqueIdentifier>{273d10ab-4a07-439d-9142-aaf654ae5feb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="search\UCT">
+      <UniqueIdentifier>{5d28a734-3947-4ec3-9f52-b1259520d851}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{9aa7fe21-9e2a-421d-b8e6-1b132a0a0c23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="simulation\players">
+      <UniqueIdentifier>{b11ab75e-596d-49f0-b7cd-18835583746c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="simulation\players\script">
+      <UniqueIdentifier>{4a52919d-1927-49f9-964b-4c447699227a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="simulation\players\search">
+      <UniqueIdentifier>{736c4997-5d98-40e6-a72f-f9075810344b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="simulation\properties">
+      <UniqueIdentifier>{2617c193-9e36-4c48-a76e-4ffcfee4093e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data">
+      <UniqueIdentifier>{c8b3aadc-390f-460b-af33-29a0570bb914}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

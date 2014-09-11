@@ -1,0 +1,200 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="MicroManager" Collapsed="true">
+    <Position X="2.5" Y="6.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>QAAFgAABACEAFAAAAAAEAAAAAAgSABAAAAEAEAAAAhA=</HashCode>
+      <FileName>Source\micromanagement\MicroManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DarkTemplarManager" Collapsed="true">
+    <Position X="4.5" Y="6.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>BAAAACCBACgAAAAAAAAAAAAAAgAAAAAAEAAAAAAAAAA=</HashCode>
+      <FileName>Source\micromanagement\DarkTemplarManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DragoonManager" Collapsed="true">
+    <Position X="6.5" Y="6.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAACABAAAAAAAAAAAAAAAAAgAAEAAAFAAAAAAAAIA=</HashCode>
+      <FileName>Source\micromanagement\DragoonManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ObserverManager" Collapsed="true">
+    <Position X="8.5" Y="6.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAhIAAAGAABAAAAAAAAAAAAAEAAAAAAABAAAAA=</HashCode>
+      <FileName>Source\micromanagement\ObserverManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ZealotManager" Collapsed="true">
+    <Position X="10.5" Y="6.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAACABAAAAAAAAQAAABAAAAgAAAAAAEAQAAAAAAAA=</HashCode>
+      <FileName>Source\micromanagement\ZealotManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GameCommander" Collapsed="true">
+    <Position X="0.75" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AUAEAAAAIGAESCEAAAAAAACkQAAgAAgQAEARAKAEBEQ=</HashCode>
+      <FileName>Source\GameCommander.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProductionManager" Collapsed="true">
+    <Position X="1.75" Y="1.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>ABQECBAAAAAAAAkgGABAEAiJQAFgAIUECIAACJYEAAI=</HashCode>
+      <FileName>Source\base\ProductionManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BuildingManager" Collapsed="true">
+    <Position X="2.5" Y="2" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AJQEAAAECEAAAAAQEgCAgJAAQABABAQwAYAAACQGKko=</HashCode>
+      <FileName>Source\base\BuildingManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BuildingPlacer" Collapsed="true">
+    <Position X="2.5" Y="3.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AgSAABQAEQAAAAAECAQAAAQAAANAAAQACJABAAAECAg=</HashCode>
+      <FileName>Source\base\BuildingPlacer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WorkerManager" Collapsed="true">
+    <Position X="1.75" Y="4.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>CAAVAAACACAEAAAAAiAAABEE4QBIEA0AAGABgAIEhgA=</HashCode>
+      <FileName>Source\base\WorkerManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WorkerData" Collapsed="true">
+    <Position X="3.75" Y="4.25" Width="1.75" />
+    <NestedTypes>
+      <Enum Name="WorkerData::WorkerJob" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Source\base\WorkerData.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AIQAEAoAUgKBEAAAAGAAEAoUYoBCACgYBAQAUgRAAAA=</HashCode>
+      <FileName>Source\base\WorkerData.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BuildOrderItem&lt;T&gt;" Collapsed="true">
+    <Position X="4.5" Y="2.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAQAQAQAAAAAAAAAAAAAAAAgAAAgAAAAAAA=</HashCode>
+      <FileName>Source\base\BuildOrderQueue.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BuildOrderQueue" Collapsed="true">
+    <Position X="2.5" Y="2.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>QAAAADAQAFAAAAQAiJBAAACIAAkAgAAAAgAAGBAAwAI=</HashCode>
+      <FileName>Source\base\BuildOrderQueue.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CombatCommander" Collapsed="true">
+    <Position X="1.75" Y="5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AQAGAABBAAAAElIAABhCEEAAAACECgAEIMIFAAAEAAQ=</HashCode>
+      <FileName>Source\CombatCommander.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Squad" Collapsed="true">
+    <Position X="2.5" Y="5.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AEAKgiABIAMQEAAgAAAAEQBAAJQSgRAAAAEAgAAEAAA=</HashCode>
+      <FileName>Source\Squad.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SquadData" Collapsed="true">
+    <Position X="4.5" Y="5.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAA2AAAAAAEEACQAAAAEAACACAAAAAAAAAAAgEAAA=</HashCode>
+      <FileName>Source\SquadData.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SquadOrder" Collapsed="true">
+    <Position X="6.5" Y="5.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACAAAAAAAIAAAIAAAAAABAAAAIAAAAAAAAAA=</HashCode>
+      <FileName>Source\SquadOrder.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StrategyManager" Collapsed="true">
+    <Position X="1.75" Y="8" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>iAAAAAMAAAAACAIgAAIAIAAAAABAAISAAACAAAAAAAA=</HashCode>
+      <FileName>Source\StrategyManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ScoutManager" Collapsed="true">
+    <Position X="2.5" Y="7.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>QUAEQQAECCAEQEAAAAAAAADAQEAAAIAAAEABAAAEJCQ=</HashCode>
+      <FileName>Source\ScoutManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="InformationManager" Collapsed="true">
+    <Position X="1.75" Y="8.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AWGMIQKACAgAACAAIgBCMBAAQAZAAQ4ABMIFAIhEDAQ=</HashCode>
+      <FileName>Source\InformationManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MapTools" Collapsed="true">
+    <Position X="1.75" Y="9.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>igAAEABEkAQAAABoAABAMAAAQADQEAQAAygAAQAEAQA=</HashCode>
+      <FileName>Source\MapTools.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MapGrid" Collapsed="true">
+    <Position X="3.75" Y="9.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>ABAQAEAAAAIAACAAQRBEQAAOAADAAAYAAAAAEAAkAAA=</HashCode>
+      <FileName>Source\MapGrid.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DistanceMap" Collapsed="true">
+    <Position X="5.75" Y="9.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAFAAgAgAAAAABAUACAAAmQAAAACAAABAAAAAA=</HashCode>
+      <FileName>Source\DistanceMap.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UnitData" Collapsed="true">
+    <Position X="3.75" Y="8.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAIAACAAAAAECAAKAwSAAAAAQTQCABRACAAIAAAAAA=</HashCode>
+      <FileName>Source\UnitData.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Building" Collapsed="true">
+    <Position X="6.5" Y="2" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAABAAAAAAAEAAAAAIIwCAAAAJAAACAAAAAAACAAA=</HashCode>
+      <FileName>Source\base\BuildingData.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ConstructionData" Collapsed="true">
+    <Position X="4.5" Y="2" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>EAACAAAEAAAAACAIUAMAABAQAAAgAAAAAIAAACAAAAA=</HashCode>
+      <FileName>Source\base\BuildingData.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="MetaType" Collapsed="true">
+    <Position X="6.5" Y="2.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>QAAAAABAAYAAAgBAAEAAAQAAIAABAAAiAAwEAAAAAQE=</HashCode>
+      <FileName>Source\base\MetaType.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -1,0 +1,153 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\source\ActionInProgress.h" />
+    <ClInclude Include="..\source\ActionSet.h" />
+    <ClInclude Include="..\source\ActionType.h" />
+    <ClInclude Include="..\source\ActionTypeData.h" />
+    <ClInclude Include="..\source\Array.hpp" />
+    <ClInclude Include="..\source\BaseTypes.h" />
+    <ClInclude Include="..\source\BOSSAssert.h" />
+    <ClInclude Include="..\source\CombatSearchBucket.h" />
+    <ClInclude Include="..\source\CombatSearchIntegral.h" />
+    <ClInclude Include="..\source\Constants.h" />
+    <ClInclude Include="..\source\CombatSearch.h" />
+    <ClInclude Include="..\source\BOSS.h" />
+    <ClInclude Include="..\source\BuildingData.h" />
+    <ClInclude Include="..\source\CombatSearchParameters.h" />
+    <ClInclude Include="..\source\CombatSearchResults.h" />
+    <ClInclude Include="..\source\Common.h" />
+    <ClInclude Include="..\source\DFBB_BuildOrderSearchGoal.h" />
+    <ClInclude Include="..\source\DFBB_BuildOrderSearchParameters.h" />
+    <ClInclude Include="..\source\DFBB_BuildOrderSearchResults.h" />
+    <ClInclude Include="..\source\DFBB_BuildOrderSearchSaveState.h" />
+    <ClInclude Include="..\source\DFBB_BuildOrderSmartSearch.h" />
+    <ClInclude Include="..\source\DFBB_BuildOrderStackSearch.h" />
+    <ClInclude Include="..\source\Eval.h" />
+    <ClInclude Include="..\source\GraphViz.hpp" />
+    <ClInclude Include="..\source\GameState.h" />
+    <ClInclude Include="..\source\Logger.h" />
+    <ClInclude Include="..\source\PrerequisiteSet.h" />
+    <ClInclude Include="..\source\Timer.hpp" />
+    <ClInclude Include="..\source\Tools.h" />
+    <ClInclude Include="..\source\UnitData.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\source\ActionInProgress.cpp" />
+    <ClCompile Include="..\source\ActionSet.cpp" />
+    <ClCompile Include="..\source\ActionType.cpp" />
+    <ClCompile Include="..\source\ActionTypeData.cpp" />
+    <ClCompile Include="..\source\BOSSAssert.cpp" />
+    <ClCompile Include="..\source\CombatSearch.cpp" />
+    <ClCompile Include="..\source\BOSS.cpp" />
+    <ClCompile Include="..\source\BuildingData.cpp" />
+    <ClCompile Include="..\source\CombatSearchBucket.cpp" />
+    <ClCompile Include="..\source\CombatSearchIntegral.cpp" />
+    <ClCompile Include="..\source\CombatSearchParameters.cpp" />
+    <ClCompile Include="..\source\CombatSearchResults.cpp" />
+    <ClCompile Include="..\source\Constants.cpp" />
+    <ClCompile Include="..\source\DFBB_BuildOrderSearchGoal.cpp" />
+    <ClCompile Include="..\source\DFBB_BuildOrderSearchParameters.cpp" />
+    <ClCompile Include="..\source\DFBB_BuildOrderSearchResults.cpp" />
+    <ClCompile Include="..\source\DFBB_BuildOrderSearchSaveState.cpp" />
+    <ClCompile Include="..\source\DFBB_BuildOrderSmartSearch.cpp" />
+    <ClCompile Include="..\source\DFBB_BuildOrderStackSearch.cpp" />
+    <ClCompile Include="..\source\Eval.cpp" />
+    <ClCompile Include="..\source\GameState.cpp" />
+    <ClCompile Include="..\source\Logger.cpp" />
+    <ClCompile Include="..\source\PrerequisiteSet.cpp" />
+    <ClCompile Include="..\source\Tools.cpp" />
+    <ClCompile Include="..\source\UnitData.cpp" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{9F8709E3-AC4F-45F2-8105-4A99D8E2A127}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>StarcraftBuildOrderSearch</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v90</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v90</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)\$(Configuration)\$(ProjectName)\</OutDir>
+    <TargetName>$(ProjectName)_d</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <IntDir>$(SolutionDir)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)\$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(BWAPI_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>../../bwapidata/lib/bwapidatad_$(PlatformToolset).lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(BWAPI_DIR)/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>../../bwapidata/lib/bwapidata_$(PlatformToolset).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateMapFile>true</GenerateMapFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

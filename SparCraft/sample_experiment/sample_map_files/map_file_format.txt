@@ -1,0 +1,32 @@
+Map files are in ASCII format.
+
+First two lines specify WIDTH, HEIGHT in WalkTile resolution (8x8 pixel)
+
+Next HEIGHT lines (each with WIDTH columns) specify walkable tiles
+
+0 = blocked, 1 = walkable
+
+SparCraft::Position p translates into map WalkTile position (p.x() / 8, p.y() / 8)
+
+Sample 20x10 map with all tiles walkable:
+
+20
+10
+11111111111111111111
+11111111111111111111
+11111111111111111111
+11111111111111111111
+11111111111111111111
+11111111111111111111
+11111111111111111111
+11111111111111111111
+11111111111111111111
+11111111111111111111
+
+If no map is specified in experiment , default map has size: 
+
+40x22 BuildTile == 160x88 WalkTile == 1280x704
+
+This size was chosen to best fit the Display's 1280*720 pixel size, and is also a decent sized arena
+
+If a GameState contains any initial unit whose Position is on a non-walkable tile, the experiment will not run
