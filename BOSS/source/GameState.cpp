@@ -95,11 +95,13 @@ GameState::GameState(BWAPI::Game * game, BWAPI::Player * self)
             {
                 // add the unit to the state
 			    _units.addCompletedAction(actionType);
+
+                _units.setCurrentSupply(_units.getCurrentSupply() + actionType.supplyRequired());
             }
 		}
 		else if (unit->isBeingConstructed() && !unit->getType().isAddon())
 		{
-			_units.addActionInProgress(ActionType(unit->getType()), game->getFrameCount() + unit->getRemainingBuildTime());
+			_units.addActionInProgress(ActionType(unit->getType()), game->getFrameCount() + unit->getRemainingBuildTime(), false);
 		}
 	}
 

@@ -7,6 +7,7 @@ DFBB_BuildOrderSmartSearch::DFBB_BuildOrderSmartSearch(const RaceID race)
     , _params(race)
     , _goal(race)
     , _stackSearch(race)
+    , _searchTimeLimit(30)
 {
 }
 
@@ -22,6 +23,7 @@ void DFBB_BuildOrderSmartSearch::doSearch()
     }
     else
     {
+        calculateSearchSettings();
         _params.goal = _goal;
         _params.initialState = _initialState;
         _params.useRepetitions 				= true;
@@ -34,7 +36,7 @@ void DFBB_BuildOrderSmartSearch::doSearch()
 
         _params.print();
 
-
+        //BWAPI::Broodwar->printf("Constructing new search object time limit is %lf", _params.searchTimeLimit);
         _stackSearch = DFBB_BuildOrderStackSearch(_params);
         _stackSearch.search();
     }
@@ -44,7 +46,7 @@ void DFBB_BuildOrderSmartSearch::doSearch()
     if (_results.solved && !_results.solutionFound)
     {
         std::cout << "No solution found better than naive, using naive build order" << std::endl;
-        _results.buildOrder = Tools::GetNaiveBuildOrder(_params.initialState, _params.goal);
+        _results.buildOrder = Tools::GetOptimizedNaiveBuildOrder(_params.initialState, _params.goal);
     }
 }
 
@@ -165,7 +167,6 @@ void DFBB_BuildOrderSmartSearch::setPrerequisiteGoalMax()
         _goal.setGoalMax(ActionTypes::Zerg_Spire, 1);
         _goal.setGoalMax(ActionTypes::Zerg_Hydralisk_Den, 1);
     }
-
 }
 
 // recursively checks the tech tree of Action and sets each to have goalMax of 1
@@ -273,7 +274,7 @@ void DFBB_BuildOrderSmartSearch::addGoal(const ActionType & a, const UnitCountTy
 
 void DFBB_BuildOrderSmartSearch::setGoal(const DFBB_BuildOrderSearchGoal & g)
 {
-    _goal = g;
+    _goal = g;    
 }
 
 void DFBB_BuildOrderSmartSearch::setState(const GameState & state)
@@ -289,10 +290,6 @@ void DFBB_BuildOrderSmartSearch::setTimeLimit(int n)
 
 void DFBB_BuildOrderSmartSearch::search()
 {
-    calculateSearchSettings();
-
-    //print();
-
     doSearch();
 }
 

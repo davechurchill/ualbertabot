@@ -72,7 +72,7 @@ void GameCommander::drawDebugInterface()
 	BOSSManager::Instance().drawSearchInformation(10, 240);
 	//BuildingManager::Instance().drawBuildingInformation(200,50);
 	ProductionManager::Instance().drawProductionInformation(10, 30);
-	InformationManager::Instance().drawUnitInformation(425,30);
+	//InformationManager::Instance().drawUnitInformation(425,30);
 
 	combatCommander.drawSquadInformation(200, 30);
 

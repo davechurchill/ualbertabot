@@ -20,6 +20,11 @@ std::vector<ActionType> Tools::GetNaiveBuildOrder(const GameState & state, const
         }
     }
 
+    if (wanted.size() == 0)
+    {
+        return std::vector<ActionType>();
+    }
+
     // Calculate which prerequisite units we need to build to achieve the units we want from the goal
     PrerequisiteSet requiredToBuild;
     CalculatePrerequisitesRequiredToBuild(state, wanted, requiredToBuild);
@@ -180,7 +185,7 @@ std::vector<ActionType> Tools::GetOptimizedNaiveBuildOrder(const GameState & sta
     FrameCountType minCompletionTime = Tools::GetBuildOrderCompletionTime(state, bestBuildOrder);
     UnitCountType bestNumWorkers = GetWorkerCount(bestBuildOrder);
 
-    for (UnitCountType numWorkers(4); numWorkers < 27; ++numWorkers)
+    for (UnitCountType numWorkers(8); numWorkers < 27; ++numWorkers)
     {
         std::vector<ActionType> buildOrder = Tools::GetNaiveBuildOrderNew(state, goal, numWorkers);
         FrameCountType completionTime = Tools::GetBuildOrderCompletionTime(state, buildOrder);
@@ -188,12 +193,34 @@ std::vector<ActionType> Tools::GetOptimizedNaiveBuildOrder(const GameState & sta
         
         if (completionTime <= minCompletionTime + ((workers-bestNumWorkers)*24))
         {
-            std::cout << numWorkers << " " << workers << " " << completionTime << std::endl;
-
             minCompletionTime = completionTime;
             bestBuildOrder = buildOrder;
         }
     }
+
+    
+    FrameCountType bestCompletionTime = Tools::GetBuildOrderCompletionTime(state, bestBuildOrder);
+    std::vector<ActionType> testBuildOrder;
+
+    std::cout << "Found a better build order that takes " << bestCompletionTime << " frames\n";
+    while (true)
+    {
+        InsertActionIntoBuildOrder(testBuildOrder, bestBuildOrder, state, ActionTypes::Protoss_Gateway);
+
+        FrameCountType completionTime = Tools::GetBuildOrderCompletionTime(state, testBuildOrder);
+
+        if (completionTime < bestCompletionTime)
+        {
+            std::cout << "Found a better build order that takes " << completionTime << " frames\n";
+            bestCompletionTime = completionTime;
+            bestBuildOrder = testBuildOrder;
+        }
+        else
+        {
+            break;
+        }
+    }
+
 
     return bestBuildOrder;
 }
@@ -213,6 +240,11 @@ std::vector<ActionType> Tools::GetNaiveBuildOrderNew(const GameState & state, co
         {
             wanted.addUnique(actionType);
         }
+    }
+
+    if (wanted.size() == 0)
+    {
+        return std::vector<ActionType>();
     }
 
     // Calculate which prerequisite units we need to build to achieve the units we want from the goal
@@ -354,7 +386,7 @@ std::vector<ActionType> Tools::GetNaiveBuildOrderNew(const GameState & state, co
 
         // insert a supply provider if we are behind
         int surplusSupply = maxSupply - currentSupply;
-        if (surplusSupply < nextAction.supplyRequired() + 1)
+        if (surplusSupply < nextAction.supplyRequired() + 2)
         {
             BOSS_ASSERT(currentState.isLegal(supplyProvider), "supplyProvider should be legal");
             finalBuildOrder.push_back(supplyProvider);
@@ -369,7 +401,7 @@ std::vector<ActionType> Tools::GetNaiveBuildOrderNew(const GameState & state, co
         FrameCountType whenWorkerReady      = currentState.whenCanPerform(worker);
         FrameCountType whennextActionReady  = currentState.whenCanPerform(nextAction);
 
-        if ((numWorkers < maxWorkers) && (whenWorkerReady <= whennextActionReady))
+        if ((numWorkers < maxWorkers) && (whenWorkerReady < whennextActionReady))
         {
             finalBuildOrder.push_back(worker);
             currentState.doAction(worker);
@@ -380,28 +412,6 @@ std::vector<ActionType> Tools::GetNaiveBuildOrderNew(const GameState & state, co
             finalBuildOrder.push_back(nextAction);
             currentState.doAction(nextAction);
             ++i;
-        }
-    }
-
-    FrameCountType bestCompletionTime = Tools::GetBuildOrderCompletionTime(state, finalBuildOrder);
-    //std::cout << "Initial build order takes " << bestCompletionTime << " frames\n\n";
-    //std::cout << "BO Size: " << finalBuildOrder.size() << std::endl;
-
-    while (true)
-    {
-        std::vector<ActionType> testBuildOrder = InsertActionIntoBuildOrder(finalBuildOrder, state, ActionTypes::Protoss_Gateway);
-
-        FrameCountType completionTime = Tools::GetBuildOrderCompletionTime(state, testBuildOrder);
-
-        if (completionTime < bestCompletionTime)
-        {
-            //std::cout << "Found a better build order that takes " << completionTime << " frames\n";
-            bestCompletionTime = completionTime;
-            finalBuildOrder = testBuildOrder;
-        }
-        else
-        {
-            break;
         }
     }
 
@@ -422,50 +432,66 @@ UnitCountType Tools::GetWorkerCount(const std::vector<ActionType> & buildOrder)
     return count;
 }
 
-std::vector<ActionType> Tools::InsertActionIntoBuildOrder(const std::vector<ActionType> & buildOrder, const GameState & initialState, const ActionType & action)
+void Tools::InsertActionIntoBuildOrder(std::vector<ActionType> & result, const std::vector<ActionType> & buildOrder, const GameState & initialState, const ActionType & action)
 {
-    std::vector<ActionType> bestBuildOrder = buildOrder;
+    int bestInsertIndex = -1;
     std::vector<ActionType> runningBuildOrder;
     GameState runningState(initialState);
     FrameCountType minCompletionTime = Tools::GetBuildOrderCompletionTime(initialState, buildOrder);
+
+    std::vector<ActionType> testBuildOrder = buildOrder;
 
     for (size_t insertIndex(0); insertIndex < buildOrder.size(); ++insertIndex)
     {
         // if we can test the action here, do it
         if (runningState.isLegal(action))
         {
-            std::vector<ActionType> testBuildOrder(runningBuildOrder);
-            testBuildOrder.push_back(action);
-            for (size_t rIndex(insertIndex); rIndex < buildOrder.size(); ++rIndex)
+            // figure out the build time of build order with action inserted here
+            GameState tempState(runningState);
+            tempState.doAction(action);
+            for (size_t a(insertIndex); a < buildOrder.size(); ++a)
             {
-                testBuildOrder.push_back(buildOrder[rIndex]);
+                tempState.doAction(buildOrder[a]);
             }
 
-            FrameCountType completionTime = Tools::GetBuildOrderCompletionTime(initialState, testBuildOrder);
+            FrameCountType completionTime = tempState.getLastActionFinishTime();
 
             if (completionTime < minCompletionTime)
             {
                 minCompletionTime = completionTime;
-                bestBuildOrder = testBuildOrder;
-                
+                bestInsertIndex = insertIndex;
             }
         }
 
-        runningBuildOrder.push_back(buildOrder[insertIndex]);
-
         BOSS_ASSERT(runningState.isLegal(buildOrder[insertIndex]), "We have made the next action illegal somehow");
-
+        runningBuildOrder.push_back(buildOrder[insertIndex]);
         runningState.doAction(buildOrder[insertIndex]);
     }
 
-    return bestBuildOrder;
+    result.clear();
+    for (size_t a(0); a<buildOrder.size(); ++a)
+    {
+        if (bestInsertIndex == a)
+        {
+            result.push_back(action);
+        }
+
+        result.push_back(buildOrder[a]);
+    }
 }
 
-FrameCountType Tools::GetBuildOrderCompletionTime(const GameState & state, const std::vector<ActionType> & buildOrder)
+FrameCountType Tools::GetBuildOrderCompletionTime(const GameState & state, const std::vector<ActionType> & buildOrder, size_t buildOrderStartIndex)
 {
+    if (buildOrder.size() == 0)
+    {
+        return 0;
+    }
+
     GameState currentState(state);
 
-    for (size_t a(0); a < buildOrder.size(); ++a)
+    BOSS_ASSERT(buildOrderStartIndex < buildOrder.size(), "We can't start at an index that's past the end");
+
+    for (size_t a(buildOrderStartIndex); a < buildOrder.size(); ++a)
     {
         BOSS_ASSERT(currentState.isLegal(buildOrder[a]), "build order item not legal");
         currentState.doAction(buildOrder[a]);

@@ -71,7 +71,7 @@ public:
     void                    releaseBuildingWorker();
     void                    addCompletedBuilding(const ActionType & action, const FrameCountType timeUntilFree, const ActionType & constructing, const ActionType & addon);
     void                    addCompletedAction(const ActionType & action);
-    void                    addActionInProgress(const ActionType & action, const FrameCountType & completionFrame);
+    void                    addActionInProgress(const ActionType & action, const FrameCountType & completionFrame, bool queueAction = true);
     void                    setBuildingFrame(const FrameCountType & frame);
     void                    setMineralWorkers(const UnitCountType & mineralWorkers);
     void                    setGasWorkers(const UnitCountType & gasWorkers);

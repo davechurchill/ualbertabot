@@ -96,7 +96,7 @@ void UnitData::addCompletedAction(const ActionType & action)
     }
 }
 
-void UnitData::addActionInProgress(const ActionType & action, const FrameCountType & completionFrame)
+void UnitData::addActionInProgress(const ActionType & action, const FrameCountType & completionFrame, bool queueAction)
 {
     FrameCountType finishTime = action.isBuilding() ? completionFrame + Constants::BUILDING_PLACEMENT : completionFrame;
 
@@ -105,7 +105,7 @@ void UnitData::addActionInProgress(const ActionType & action, const FrameCountTy
     
     _currentSupply += action.supplyRequired();
 
-    if (action.whatBuildsIsBuilding() && (getRace() != Races::Zerg))
+    if (queueAction && action.whatBuildsIsBuilding() && (getRace() != Races::Zerg))
 	{
 		// add it to a free building, which MUST be free since it's called from doAction
 		// which must be already fastForwarded to the correct time

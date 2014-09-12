@@ -29,6 +29,8 @@ void DFBB_BuildOrderStackSearch::search()
             _results.upperBound = _params.initialUpperBound ? _params.initialUpperBound : Tools::GetUpperBound(_params.initialState, _params.goal);
             _stack[0].state = _params.initialState;
             _firstSearch = false;
+            //BWAPI::Broodwar->printf("Upper bound is %d", _results.upperBound);
+            std::cout << "Upper bound is: " << _results.upperBound << std::endl;
         }
 
         try 
@@ -42,13 +44,15 @@ void DFBB_BuildOrderStackSearch::search()
         {
             if (e == DFBB_TIMEOUT_EXCEPTION)
             {
+                //BWAPI::Broodwar->printf("I timed out!");
                 _results.timedOut = true;
             }
         }
+        
+        double ms = _searchTimer.getElapsedTimeInMilliSec();
+        _results.solved = !_results.timedOut;
+        _results.timeElapsed = ms;
     }
-
-    _results.solved = !_results.timedOut;
-    _results.timeElapsed = _searchTimer.getElapsedTimeInMilliSec();
 }
 
 const DFBB_BuildOrderSearchResults & DFBB_BuildOrderStackSearch::getResults() const

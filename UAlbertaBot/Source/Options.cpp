@@ -99,8 +99,8 @@ namespace Options
 			else if (mode == BotModes::BUILD_ORDER_DEMO)
             {
                 Modules::USING_GAMECOMMANDER		= true;	
-				Modules::USING_SCOUTMANAGER			= false;	
-				Modules::USING_COMBATCOMMANDER		= false;
+				Modules::USING_SCOUTMANAGER			= true;	
+				Modules::USING_COMBATCOMMANDER		= true;
 		        Modules::USING_MACRO_SEARCH			= true;	
 		        Modules::USING_STRATEGY_IO			= false;
                 Modules::USING_UNIT_COMMAND_MGR		= true; 

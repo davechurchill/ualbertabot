@@ -440,8 +440,6 @@ const MetaPairVector StrategyManager::getProtossDragoonsBuildOrderGoal() const
 	int numCannon =				BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Photon_Cannon);
 
 	int dragoonsWanted = numDragoons > 0 ? numDragoons + 6 : 2;
-	int gatewayWanted = 3;
-	int probesWanted = numProbes + 6;
 
 	if (InformationManager::Instance().enemyHasCloakedUnits())
 	{
@@ -469,31 +467,14 @@ const MetaPairVector StrategyManager::getProtossDragoonsBuildOrderGoal() const
 		}
 	}
 
-	if (numNexusAll >= 2 || numDragoons > 6 || BWAPI::Broodwar->getFrameCount() > 9000)
-	{
-		gatewayWanted = 6;
-		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Robotics_Facility, 1));
-	}
-
-	if (numNexusCompleted >= 3)
-	{
-		gatewayWanted = 8;
-		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Observer, 2));
-	}
-
-	if (numNexusAll > 1)
-	{
-		probesWanted = numProbes + 6;
-	}
-
 	if (expandProtossZealotRush())
 	{
 		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Nexus, numNexusAll + 1));
 	}
 
 	goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Dragoon,	dragoonsWanted));
-	goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Gateway,	gatewayWanted));
-	goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Probe,	std::min(90, probesWanted)));
+	//goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Gateway,	gatewayWanted));
+	//goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Probe,	std::min(90, probesWanted)));
 
 	return goal;
 }
@@ -513,8 +494,6 @@ const MetaPairVector StrategyManager::getProtossDarkTemplarBuildOrderGoal() cons
 
 	int darkTemplarWanted = 0;
 	int dragoonsWanted = numDragoons + 6;
-	int gatewayWanted = 3;
-	int probesWanted = numProbes + 6;
 
 	if (InformationManager::Instance().enemyHasCloakedUnits())
 	{
@@ -533,7 +512,6 @@ const MetaPairVector StrategyManager::getProtossDarkTemplarBuildOrderGoal() cons
 
 	if (numNexusAll >= 2 || BWAPI::Broodwar->getFrameCount() > 9000)
 	{
-		gatewayWanted = 6;
 		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Robotics_Facility, 1));
 	}
 
@@ -544,14 +522,8 @@ const MetaPairVector StrategyManager::getProtossDarkTemplarBuildOrderGoal() cons
 
 	if (numNexusCompleted >= 3)
 	{
-		gatewayWanted = 8;
 		dragoonsWanted = numDragoons + 6;
 		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Observer, 1));
-	}
-
-	if (numNexusAll > 1)
-	{
-		probesWanted = numProbes + 6;
 	}
 
 	if (expandProtossZealotRush())
@@ -560,9 +532,7 @@ const MetaPairVector StrategyManager::getProtossDarkTemplarBuildOrderGoal() cons
 	}
 
 	goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Dragoon,	dragoonsWanted));
-	goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Gateway,	gatewayWanted));
 	goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Dark_Templar, darkTemplarWanted));
-	goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Probe,	std::min(90, probesWanted)));
 	
 	return goal;
 }
@@ -582,8 +552,6 @@ const MetaPairVector StrategyManager::getProtossZealotRushBuildOrderGoal() const
 
 	int zealotsWanted = numZealots + 8;
 	int dragoonsWanted = numDragoons;
-	int gatewayWanted = 3;
-	int probesWanted = numProbes + 4;
 
 	if (InformationManager::Instance().enemyHasCloakedUnits())
 	{
@@ -601,7 +569,6 @@ const MetaPairVector StrategyManager::getProtossZealotRushBuildOrderGoal() const
 
 	if (numNexusAll >= 2 || BWAPI::Broodwar->getFrameCount() > 9000)
 	{
-		gatewayWanted = 6;
 		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Assimilator, 1));
 		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Cybernetics_Core, 1));
 	}
@@ -614,14 +581,8 @@ const MetaPairVector StrategyManager::getProtossZealotRushBuildOrderGoal() const
 
 	if (numNexusCompleted >= 3)
 	{
-		gatewayWanted = 8;
 		dragoonsWanted = numDragoons + 6;
 		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Observer, 1));
-	}
-
-	if (numNexusAll > 1)
-	{
-		probesWanted = numProbes + 6;
 	}
 
 	if (expandProtossZealotRush())
@@ -631,8 +592,6 @@ const MetaPairVector StrategyManager::getProtossZealotRushBuildOrderGoal() const
 
 	goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Dragoon,	dragoonsWanted));
 	goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Zealot,	zealotsWanted));
-	goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Gateway,	gatewayWanted));
-	goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Probe,	std::min(90, probesWanted)));
 
 	return goal;
 }

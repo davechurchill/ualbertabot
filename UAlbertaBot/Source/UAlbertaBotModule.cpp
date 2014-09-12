@@ -25,14 +25,15 @@ UAlbertaBotModule::~UAlbertaBotModule() {}
 
 void UAlbertaBotModule::onStart()
 {
-	BWAPI::Broodwar->setLocalSpeed(10);
-	BWAPI::Broodwar->setFrameSkip(0);
+	BWAPI::Broodwar->setLocalSpeed(5);
+	//BWAPI::Broodwar->setFrameSkip(0);
 
     SparCraft::init();
+    BOSS::init();
 
 	BWAPI::Broodwar->enableFlag(BWAPI::Flag::UserInput);
 
-    Options::BotModes::SetBotMode(Options::BotModes::BUILD_ORDER_DEMO);
+    Options::BotModes::SetBotMode(Options::BotModes::AIIDE_TOURNAMENT);
 	Options::Modules::checkOptions();
 	
     if (Options::Modules::USING_GAMECOMMANDER)
@@ -109,13 +110,6 @@ void UAlbertaBotModule::onUnitMorph(BWAPI::Unit * unit)
 
 void UAlbertaBotModule::onSendText(std::string text) 
 { 
-	BWAPI::Broodwar->sendText(text.c_str());
-    if (text.compare("fastest") == 0)
-    {
-        BWAPI::Broodwar->setLocalSpeed(0);
-        return;
-    }
-
 	if (Options::Modules::USING_REPLAY_VISUALIZER && (text.compare("sim") == 0))
 	{
 		BWAPI::Unit * selected = NULL;

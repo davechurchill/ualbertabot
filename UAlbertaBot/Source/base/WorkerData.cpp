@@ -138,6 +138,10 @@ void WorkerData::setWorkerJob(BWAPI::Unit * unit, enum WorkerJob job, BWAPI::Uni
 	{
 
 	}
+    else if (job == Build)
+    {
+        BWAPI::Broodwar->printf("Setting worker job to build");
+    }
 }
 
 void WorkerData::setWorkerJob(BWAPI::Unit * unit, enum WorkerJob job, BWAPI::UnitType jobUnitType)
@@ -561,8 +565,8 @@ void WorkerData::drawDepotDebugInfo()
 
             if (workersOnMineralPatch.find(mineral) != workersOnMineralPatch.end())
             {
-                 if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawBoxMap(x-2, y-1, x+75, y+14, BWAPI::Colors::Black, true);
-                 if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextMap(x, y, "\x04 Workers: %d", workersOnMineralPatch[mineral]);
+                 //if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawBoxMap(x-2, y-1, x+75, y+14, BWAPI::Colors::Black, true);
+                 //if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextMap(x, y, "\x04 Workers: %d", workersOnMineralPatch[mineral]);
             }
         }
 	}

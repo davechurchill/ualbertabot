@@ -88,12 +88,19 @@ void testNaiveBuildOrder()
     GameState initialStateNew(initialState);
     DFBB_BuildOrderSearchGoal goal(initialState.getRace());
 
-    goal.setGoal(ActionTypes::Protoss_Zealot, 8);
-    goal.setGoal(ActionTypes::Protoss_Shuttle, 2);
+    goal.setGoal(ActionTypes::Protoss_Zealot, 3);
+    //goal.setGoal(ActionTypes::Protoss_Dark_Templar, 2);
     //goal.setGoal(ActionTypes::Protoss_Reaver, 1);
 
+    Timer t;
+    t.start();
     std::vector<ActionType> buildOrder = Tools::GetNaiveBuildOrder(initialStateNew, goal);
+    double ms = t.getElapsedTimeInMilliSec();
+
+    Timer tnew;
+    tnew.start();
     std::vector<ActionType> buildOrderNew = Tools::GetOptimizedNaiveBuildOrder(initialStateNew, goal);
+    double msnew = tnew.getElapsedTimeInMilliSec();
 
     for (size_t i(0); i<buildOrder.size(); ++i)
     {
@@ -101,7 +108,7 @@ void testNaiveBuildOrder()
         initialState.doAction(buildOrder[i]);
     }
 
-    std::cout << "Build order took " << initialState.getLastActionFinishTime() << " frames to complete\n\n" << std::endl;
+    std::cout << "Build order took " << initialState.getLastActionFinishTime() << " frames to complete in " << ms << " ms\n\n" << std::endl;
 
     for (size_t i(0); i<buildOrderNew.size(); ++i)
     {
@@ -109,7 +116,7 @@ void testNaiveBuildOrder()
         initialStateNew.doAction(buildOrderNew[i]);
     }
 
-    std::cout << "New build order took " << initialStateNew.getLastActionFinishTime() << " frames to complete with " << initialStateNew.getUnitData().getNumTotal(ActionTypes::GetWorker(initialStateNew.getRace())) << " total workers" << std::endl;
+    std::cout << "New build order took " << initialStateNew.getLastActionFinishTime() << " frames to complete with " << initialStateNew.getUnitData().getNumTotal(ActionTypes::GetWorker(initialStateNew.getRace())) << " total workers in " << msnew << " ms" << std::endl;
 }
 
 int main()
@@ -118,20 +125,12 @@ int main()
 
     GameState initialState(Races::Protoss);
     initialState.setStartingState();
-    /*initialState.doAction(ActionTypes::GetWorker(initialState.getRace()));
-    initialState.doAction(ActionTypes::GetWorker(initialState.getRace()));
-    initialState.doAction(ActionTypes::GetWorker(initialState.getRace()));
-    initialState.doAction(ActionTypes::GetWorker(initialState.getRace()));
-    initialState.doAction(ActionTypes::GetSupplyProvider(initialState.getRace()));
-    initialState.doAction(ActionTypes::GetWorker(initialState.getRace()));*/
 
-    testNaiveBuildOrder();
+    //testNaiveBuildOrder();
 
-    /*DFBB_BuildOrderSmartSearch smartSearch(initialState.getRace());
+    DFBB_BuildOrderSmartSearch smartSearch(initialState.getRace());
     smartSearch.setState(initialState);
-    smartSearch.addGoal(ActionTypes::Protoss_Shuttle, 1);
-    smartSearch.addGoal(ActionTypes::Protoss_Dark_Templar, 2);
-    smartSearch.addGoal(ActionTypes::Protoss_Reaver, 1);
+    smartSearch.addGoal(ActionTypes::Protoss_Zealot, 6);
     smartSearch.getParameters().goal.printGoal();
     smartSearch.setTimeLimit(50000);
     
@@ -147,8 +146,6 @@ int main()
     smartSearch.getResults().printResults(true);
     std::cout << std::endl << "Search Took: " << ms << "ms" << std::endl;
 
-
-*/
     //Tools::TestBuildOrderUpperBound();
 
     //testCombatSearch();

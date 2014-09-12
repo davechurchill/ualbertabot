@@ -13,9 +13,9 @@ ProductionManager::ProductionManager()
 {
 	populateTypeCharMap();
 
-	if (!Options::Modules::USING_BUILD_ORDER_DEMO)
+	//if (!Options::Modules::USING_BUILD_ORDER_DEMO)
 	{
-        setBuildOrder(StrategyManager::Instance().getOpeningBookBuildOrder());
+        //setBuildOrder(StrategyManager::Instance().getOpeningBookBuildOrder());
 	}
 }
 
@@ -39,6 +39,9 @@ void ProductionManager::performBuildOrderSearch(const std::vector<MetaPair> & go
         return;
     }
 
+    //std::vector<MetaType> buildOrder = BOSSManager::GetOptimizedNaiveBuildOrder(goal);
+    //setBuildOrder(buildOrder);
+
 	std::vector<MetaType> buildOrder = BOSSManager::Instance().getBuildOrder();
 
     if (!buildOrder.empty())
@@ -52,6 +55,7 @@ void ProductionManager::performBuildOrderSearch(const std::vector<MetaPair> & go
     {
         if (!BOSSManager::Instance().isSearchInProgress())
         {
+            BWAPI::Broodwar->printf("Starting a new search!");
             BOSSManager::Instance().startNewSearch(goal);
         }
     }
@@ -76,7 +80,8 @@ void ProductionManager::update()
 	if ((queue.size() == 0) && (BWAPI::Broodwar->getFrameCount() > 10) && !Options::Modules::USING_BUILD_ORDER_DEMO)
 	{
 		BWAPI::Broodwar->drawTextScreen(150, 10, "Nothing left to build, new search!");
-		const std::vector<MetaPair> newGoal = StrategyManager::Instance().getBuildOrderGoal();
+		std::vector<MetaPair> newGoal;// = StrategyManager::Instance().getBuildOrderGoal();
+        newGoal.push_back(MetaPair(MetaType(BWAPI::UnitTypes::Protoss_Dark_Templar), 2));
 		performBuildOrderSearch(newGoal);
 	}
 

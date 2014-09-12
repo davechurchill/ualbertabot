@@ -86,7 +86,7 @@ void BuildingManager::assignWorkersToUnassignedBuildings()
 		}
 
         // grab a worker unit from WorkerManager which is closest to this final position
-		BWAPI::Unit * workerToAssign = WorkerManager::Instance().getBuilder(b);;
+		BWAPI::Unit * workerToAssign = WorkerManager::Instance().getBuilder(b);
         
 		// if the worker exists
 		if (workerToAssign) 
@@ -289,7 +289,8 @@ void BuildingManager::checkForStartedConstruction()
                 {
 					b.builderUnit = NULL;
 				// if we are protoss, give the worker back to worker manager
-				} else if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Protoss) 
+				} 
+                else if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Protoss) 
                 {
 					WorkerManager::Instance().finishedWithWorker(b.builderUnit);
 					b.builderUnit = NULL;
@@ -315,12 +316,12 @@ void BuildingManager::checkForStartedConstruction()
 void BuildingManager::checkForDeadTerranBuilders() {}
 
 // STEP 6: CHECK FOR COMPLETED BUILDINGS
-void BuildingManager::checkForCompletedBuildings() {
-
+void BuildingManager::checkForCompletedBuildings() 
+{
 	// for each of our buildings under construction
 	buildingData.begin(ConstructionData::UnderConstruction);
-	while (buildingData.hasNextBuilding(ConstructionData::UnderConstruction)) {
-
+	while (buildingData.hasNextBuilding(ConstructionData::UnderConstruction)) 
+    {
 		Building & b = buildingData.getNextBuilding(ConstructionData::UnderConstruction);
 
 		// if the unit has completed
@@ -412,8 +413,8 @@ int BuildingManager::getReservedGas() {
 	return reservedGas;
 }
 
-void BuildingManager::drawBuildingInformation(int x, int y) {
-
+void BuildingManager::drawBuildingInformation(int x, int y) 
+{
 	BOOST_FOREACH (BWAPI::Unit * unit, BWAPI::Broodwar->self()->getUnits())
 	{
 		if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextMap(unit->getPosition().x(), unit->getPosition().y()+5, "\x07%d", unit->getID()); 
@@ -426,8 +427,8 @@ void BuildingManager::drawBuildingInformation(int x, int y) {
 	int yspace = 0;
 
 	buildingData.begin(ConstructionData::Unassigned);
-	while (buildingData.hasNextBuilding(ConstructionData::Unassigned)) {
-
+	while (buildingData.hasNextBuilding(ConstructionData::Unassigned)) 
+    {
 		Building & b = buildingData.getNextBuilding(ConstructionData::Unassigned);
 
 		if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(x, y+40+((yspace)*10), "\x03 %s", b.type.getName().c_str());
@@ -435,8 +436,8 @@ void BuildingManager::drawBuildingInformation(int x, int y) {
 	}
 
 	buildingData.begin(ConstructionData::Assigned);
-	while (buildingData.hasNextBuilding(ConstructionData::Assigned)) {
-
+	while (buildingData.hasNextBuilding(ConstructionData::Assigned)) 
+    {
 		Building & b = buildingData.getNextBuilding(ConstructionData::Assigned);
 
 		if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(x, y+40+((yspace)*10), "\x03 %s %d", b.type.getName().c_str(), b.builderUnit->getID());
@@ -452,8 +453,8 @@ void BuildingManager::drawBuildingInformation(int x, int y) {
 	}
 
 	buildingData.begin(ConstructionData::UnderConstruction);
-	while (buildingData.hasNextBuilding(ConstructionData::UnderConstruction)) {
-
+	while (buildingData.hasNextBuilding(ConstructionData::UnderConstruction)) 
+    {
 		Building & b = buildingData.getNextBuilding(ConstructionData::UnderConstruction);
 
 		if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(x, y+40+((yspace)*10), "\x03 %s %d", b.type.getName().c_str(), b.buildingUnit->getID());

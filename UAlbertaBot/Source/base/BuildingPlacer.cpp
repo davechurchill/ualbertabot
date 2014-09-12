@@ -268,7 +268,7 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
 				{
                     if (Options::Debug::DRAW_UALBERTABOT_DEBUG)
                     {
-                        BWAPI::Broodwar->printf("Building Placer Took %lf ms", t.getElapsedTimeInMilliSec());
+                        //BWAPI::Broodwar->printf("Building Placer Took %lf ms", t.getElapsedTimeInMilliSec());
                     }
 
 					// return that position
@@ -282,7 +282,7 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
 				{
                     if (Options::Debug::DRAW_UALBERTABOT_DEBUG)
                     {
-                        BWAPI::Broodwar->printf("Building Placer Took %lf ms", t.getElapsedTimeInMilliSec());
+                        //BWAPI::Broodwar->printf("Building Placer Took %lf ms", t.getElapsedTimeInMilliSec());
                     }
 
 			        return BWAPI::TilePosition(x, y);

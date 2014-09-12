@@ -28,11 +28,8 @@ class BOSSManager
 	
     // functions
 	BOSS::DFBB_BuildOrderSearchResults		search(const std::vector<MetaPair> & goalUnits);
-	std::vector<MetaType>					getMetaVector(const std::vector<BOSS::ActionType> & buildOrder);
-	BOSS::ActionType						getActionType(const MetaType & t);
-	MetaType					            getMetaType(const BOSS::ActionType & a);
 
-	BOSS::DFBB_BuildOrderSearchGoal			getGoal(const std::vector<MetaPair> & goalUnits);
+
 
 	void						            loadOpeningBook();
 
@@ -55,6 +52,14 @@ public:
     
 	void						drawSearchInformation(int x, int y);
 
+    
+	static BOSS::DFBB_BuildOrderSearchGoal      GetGoal(const std::vector<MetaPair> & goalUnits);	
+    static std::vector<MetaType>				GetMetaVector(const std::vector<BOSS::ActionType> & buildOrder);
+	static BOSS::ActionType						GetActionType(const MetaType & t);
+	static MetaType					            GetMetaType(const BOSS::ActionType & a);
+
+    static std::vector<MetaType>                GetNaiveBuildOrder(const std::vector<MetaPair> & goalUnits);
+    static std::vector<MetaType>                GetOptimizedNaiveBuildOrder(const std::vector<MetaPair> & goalUnits);
 };
 
 }
