@@ -76,6 +76,12 @@
     <ClCompile Include="..\source\Constants.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\GUI.cpp">
+      <Filter>gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\GUITools.cpp">
+      <Filter>gui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\Timer.hpp">
@@ -168,6 +174,15 @@
     <ClInclude Include="..\source\DFBB_BuildOrderStackSearch.h">
       <Filter>search\BuildOrderSearch</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\GUI.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\GUITools.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Position.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="util">
@@ -190,6 +205,9 @@
     </Filter>
     <Filter Include="search\BuildOrderSearch">
       <UniqueIdentifier>{be1fbb05-de74-477b-9915-4a5ef14b38db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gui">
+      <UniqueIdentifier>{8d7c1c48-7c75-4650-85e2-131d3535fd9f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

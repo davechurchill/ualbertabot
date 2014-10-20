@@ -20,6 +20,8 @@
 // define extra GameState variables for statistics
 //#define EXTRA_GameState_STATISTICS
 
+#define BOSS_ENABLE_GUI
+
 // debug output
 static bool GSN_DEBUG 		= false;
 static bool PROTOSS_DEBUG 	= false;

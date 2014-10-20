@@ -1,0 +1,78 @@
+
+!Assert:   false
+File:      ..\source\ActionTypeData.cpp
+Message:   Could not find UnitType: 139 Zerg Evolution Chamber
+Line:      323
+Time:      2014-10-20_05:00:33
+
+!Assert:   false
+File:      ..\source\ActionTypeData.cpp
+Message:   Could not find UnitType: 123 Terran Armory
+Line:      325
+Time:      2014-10-20_05:13:41
+
+!Assert:   false
+File:      ..\source\ActionTypeData.cpp
+Message:   Could not find UnitType: 1 Terran Ghost
+Line:      326
+Time:      2014-10-20_05:18:17
+
+!Assert:   false
+File:      ..\source\ActionTypeData.cpp
+Message:   Could not find UnitType: 117 Terran Covert Ops
+Line:      327
+Time:      2014-10-20_05:19:13
+
+!Assert:   false
+File:      ..\source\ActionTypeData.cpp
+Message:   Could not find UnitType: 10 Hero Gui Montag
+Line:      328
+Time:      2014-10-20_05:19:49
+
+!Assert:   false
+File:      ..\source\ActionTypeData.cpp
+Message:   Could not find TechType: 32 Lurker Aspect
+Line:      348
+Time:      2014-10-20_06:05:37
+
+!Assert:   raceID < Races::NUM_RACES
+File:      ..\source\ActionTypeData.cpp
+Message:   Race ID invalid: 4
+Line:      364
+Time:      2014-10-20_15:54:15
+
+!Assert:   raceID < Races::NUM_RACES
+File:      ..\source\ActionTypeData.cpp
+Message:   Race ID invalid: 4
+Line:      366
+Time:      2014-10-20_15:55:30
+
+!Assert:   type.getRace() != BWAPI::Races::None
+File:      ..\source\ActionTypeData.cpp
+Message:   None race somehow
+Line:      218
+Time:      2014-10-20_15:57:19
+
+!Assert:   type.getRace() != BWAPI::Races::None
+File:      ..\source\ActionTypeData.cpp
+Message:   None race somehow: Powerup Uraj Crystal
+Line:      218
+Time:      2014-10-20_15:57:59
+
+!Assert:   raceID < Races::NUM_RACES
+File:      ..\source\ActionTypeData.cpp
+Message:   Race ID invalid: 4 None
+Line:      366
+Time:      2014-10-20_15:58:41
+
+!Assert:   false
+File:      ..\source\ActionTypeData.cpp
+Message:   Could not find TechType: 32 Lurker Aspect
+Line:      395
+Time:      2014-10-20_16:05:00
+
+!Assert:   raceID < Races::NUM_RACES
+File:      ..\source\ActionTypeData.cpp
+Message:   Race ID invalid: 4 None
+Line:      397
+Time:      2014-10-20_16:09:29

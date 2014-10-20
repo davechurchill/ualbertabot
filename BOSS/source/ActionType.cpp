@@ -114,6 +114,7 @@ namespace ActionTypes
     std::vector<ActionType>  refineryActionTypes;
     std::vector<ActionType>  supplyProviderActionTypes;
     std::vector<ActionType>  resourceDepotActionTypes;
+    size_t numActionTypes[Races::NUM_RACES] = {0, 0, 0};
 
     void init()
     {
@@ -124,24 +125,37 @@ namespace ActionTypes
             {
                 ActionType type(r, a);
                 allActionTypes[r].add(type);
+
+                // add the name with spaces
                 nameMap[type.getName()] = type;
+
+                // add the name with underscores
+                std::string name = type.getName();
+                for (size_t i(0); i<name.size(); ++i)
+	            {
+		            if (name[i] == ' ')
+		            {
+			            name[i] = '_';
+		            }
+	            }
+                nameMap[name] = type;
             }
         }
 
-        workerActionTypes.push_back(ActionTypes::Protoss_Probe);
-        refineryActionTypes.push_back(ActionTypes::Protoss_Assimilator);
-        supplyProviderActionTypes.push_back(ActionTypes::Protoss_Pylon);
-        resourceDepotActionTypes.push_back(ActionTypes::Protoss_Nexus);
+        workerActionTypes.push_back(ActionTypes::GetActionType("Protoss_Probe"));
+        refineryActionTypes.push_back(ActionTypes::GetActionType("Protoss_Assimilator"));
+        supplyProviderActionTypes.push_back(ActionTypes::GetActionType("Protoss_Pylon"));
+        resourceDepotActionTypes.push_back(ActionTypes::GetActionType("Protoss_Nexus"));
 
-        workerActionTypes.push_back(ActionTypes::Terran_SCV);
-        refineryActionTypes.push_back(ActionTypes::Terran_Refinery);
-        supplyProviderActionTypes.push_back(ActionTypes::Terran_Supply_Depot);
-        resourceDepotActionTypes.push_back(ActionTypes::Terran_Command_Center);
+        workerActionTypes.push_back(ActionTypes::GetActionType("Terran_SCV"));
+        refineryActionTypes.push_back(ActionTypes::GetActionType("Terran_Refinery"));
+        supplyProviderActionTypes.push_back(ActionTypes::GetActionType("Terran_Supply_Depot"));
+        resourceDepotActionTypes.push_back(ActionTypes::GetActionType("Terran_Command_Center"));
 
-        workerActionTypes.push_back(ActionTypes::Zerg_Drone);
-        refineryActionTypes.push_back(ActionTypes::Zerg_Extractor);
-        supplyProviderActionTypes.push_back(ActionTypes::Zerg_Overlord);
-        resourceDepotActionTypes.push_back(ActionTypes::Zerg_Hatchery);
+        workerActionTypes.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        refineryActionTypes.push_back(ActionTypes::GetActionType("Zerg_Extractor"));
+        supplyProviderActionTypes.push_back(ActionTypes::GetActionType("Zerg_Overlord"));
+        resourceDepotActionTypes.push_back(ActionTypes::GetActionType("Zerg_Hatchery"));
     }
 
     const ActionType & GetWorker(const RaceID raceID)
@@ -179,6 +193,18 @@ namespace ActionTypes
         BOSS_ASSERT(race < Races::NUM_RACES && id < ActionTypes::GetAllActionTypes(race).size(), "Race / Action does not exist");
 
         return allActionTypes[race][id];
+    }
+
+    const ActionType & GetActionType(const std::string & name)
+    {
+        BOSS_ASSERT(TypeExists(name), "ActionType name not found: %s", name.c_str());
+
+        return nameMap[name];
+    }
+
+    const bool TypeExists(const std::string & name) 
+    {
+        return nameMap.find(name) != nameMap.end();
     }
 
     const ActionSet & GetAllActionTypes(const RaceID race)
@@ -253,72 +279,97 @@ namespace ActionTypes
 
     ActionType None(Races::None, 0);
 
-    ActionType Protoss_Probe(Races::Protoss, 0);						
-	ActionType Protoss_Pylon(Races::Protoss, 1);		
-	ActionType Protoss_Assimilator(Races::Protoss, 2);						
-	ActionType Protoss_Gateway(Races::Protoss, 3);				
-	ActionType Protoss_Nexus(Races::Protoss, 4);					
-	ActionType Protoss_Zealot(Races::Protoss, 5);				
-	ActionType Protoss_Cybernetics_Core(Races::Protoss, 6);			
-	ActionType Protoss_Dragoon(Races::Protoss, 7);					
-	ActionType Protoss_Singularity_Charge(Races::Protoss, 8);			
-	ActionType Protoss_Forge(Races::Protoss, 9);					
-	ActionType Protoss_Photon_Cannon(Races::Protoss, 10);			
-	ActionType Protoss_High_Templar(Races::Protoss, 11);				
-	ActionType Protoss_Citadel_of_Adun(Races::Protoss, 12);			
-	ActionType Protoss_Templar_Archives(Races::Protoss, 13);			
-	ActionType Protoss_Robotics_Facility(Races::Protoss, 14);		
-	ActionType Protoss_Robotics_Support_Bay(Races::Protoss, 15);		
-	ActionType Protoss_Observatory(Races::Protoss, 16);
-	ActionType Protoss_Stargate(Races::Protoss, 17);
-	ActionType Protoss_Scout(Races::Protoss, 18);
-	ActionType Protoss_Arbiter_Tribunal(Races::Protoss, 19);
-	ActionType Protoss_Arbiter(Races::Protoss, 20);
-	ActionType Protoss_Shield_Battery(Races::Protoss, 21);
-	ActionType Protoss_Dark_Templar(Races::Protoss, 22);
-	ActionType Protoss_Shuttle(Races::Protoss, 23);
-	ActionType Protoss_Reaver(Races::Protoss, 24);
-	ActionType Protoss_Observer(Races::Protoss, 25);
-	ActionType Protoss_Corsair(Races::Protoss, 26);
-	ActionType Protoss_Fleet_Beacon(Races::Protoss, 27);
-	ActionType Protoss_Carrier(Races::Protoss, 28);
-	ActionType Protoss_Leg_Enhancements(Races::Protoss, 29);
-    //ActionType Protoss_Archon(Races::Protoss, 30);
+ //   ActionType Protoss_Probe                (Races::Protoss, numActionTypes[Races::Protoss]++);						
+	//ActionType Protoss_Pylon                (Races::Protoss, numActionTypes[Races::Protoss]++);		
+	//ActionType Protoss_Assimilator          (Races::Protoss, numActionTypes[Races::Protoss]++);						
+	//ActionType Protoss_Gateway              (Races::Protoss, numActionTypes[Races::Protoss]++);				
+	//ActionType Protoss_Nexus                (Races::Protoss, numActionTypes[Races::Protoss]++);					
+	//ActionType Protoss_Zealot               (Races::Protoss, numActionTypes[Races::Protoss]++);				
+	//ActionType Protoss_Cybernetics_Core     (Races::Protoss, numActionTypes[Races::Protoss]++);			
+	//ActionType Protoss_Dragoon              (Races::Protoss, numActionTypes[Races::Protoss]++);					
+	//ActionType Protoss_Singularity_Charge   (Races::Protoss, numActionTypes[Races::Protoss]++);			
+	//ActionType Protoss_Forge                (Races::Protoss, numActionTypes[Races::Protoss]++);					
+	//ActionType Protoss_Photon_Cannon        (Races::Protoss, numActionTypes[Races::Protoss]++);			
+	//ActionType Protoss_High_Templar         (Races::Protoss, numActionTypes[Races::Protoss]++);				
+	//ActionType Protoss_Citadel_of_Adun      (Races::Protoss, numActionTypes[Races::Protoss]++);			
+	//ActionType Protoss_Templar_Archives     (Races::Protoss, numActionTypes[Races::Protoss]++);			
+	//ActionType Protoss_Robotics_Facility    (Races::Protoss, numActionTypes[Races::Protoss]++);		
+	//ActionType Protoss_Robotics_Support_Bay (Races::Protoss, numActionTypes[Races::Protoss]++);		
+	//ActionType Protoss_Observatory          (Races::Protoss, numActionTypes[Races::Protoss]++);
+	//ActionType Protoss_Stargate             (Races::Protoss, numActionTypes[Races::Protoss]++);
+	//ActionType Protoss_Scout                (Races::Protoss, numActionTypes[Races::Protoss]++);
+	//ActionType Protoss_Arbiter_Tribunal     (Races::Protoss, numActionTypes[Races::Protoss]++);
+	//ActionType Protoss_Arbiter              (Races::Protoss, numActionTypes[Races::Protoss]++);
+	//ActionType Protoss_Shield_Battery       (Races::Protoss, numActionTypes[Races::Protoss]++);
+	//ActionType Protoss_Dark_Templar         (Races::Protoss, numActionTypes[Races::Protoss]++);
+	//ActionType Protoss_Shuttle              (Races::Protoss, numActionTypes[Races::Protoss]++);
+	//ActionType Protoss_Reaver               (Races::Protoss, numActionTypes[Races::Protoss]++);
+	//ActionType Protoss_Observer             (Races::Protoss, numActionTypes[Races::Protoss]++);
+	//ActionType Protoss_Corsair              (Races::Protoss, numActionTypes[Races::Protoss]++);
+	//ActionType Protoss_Fleet_Beacon         (Races::Protoss, numActionTypes[Races::Protoss]++);
+	//ActionType Protoss_Carrier              (Races::Protoss, numActionTypes[Races::Protoss]++);
+	//ActionType Protoss_Leg_Enhancements     (Races::Protoss, numActionTypes[Races::Protoss]++);
+ //   //ActionType Protoss_Archon(Races::Protoss, 31);
 
-    ActionType Terran_SCV(Races::Terran, 0);
-	ActionType Terran_Supply_Depot(Races::Terran, 1);
-	ActionType Terran_Command_Center(Races::Terran, 2);
-	ActionType Terran_Barracks(Races::Terran, 3);
-	ActionType Terran_Refinery(Races::Terran, 4);
-	ActionType Terran_Marine(Races::Terran, 5);
-	ActionType Terran_Academy(Races::Terran, 6);
-	ActionType Terran_Stim_Packs(Races::Terran, 7);
-	ActionType Terran_Medic(Races::Terran, 8);
-	ActionType Terran_Factory(Races::Terran, 9);
-	ActionType Terran_Starport(Races::Terran, 10);
-	ActionType Terran_Wraith(Races::Terran, 11);
-    ActionType Terran_Siege_Tank(Races::Terran, 12);
-    ActionType Terran_Machine_Shop(Races::Terran, 13);
-    ActionType Terran_Tank_Siege_Mode(Races::Terran, 14);
-    ActionType Terran_Cloaking_Field(Races::Terran, 15);
-    ActionType Terran_Control_Tower(Races::Terran, 16);
-    ActionType Terran_Battlecruiser(Races::Terran, 17);
-    ActionType Terran_Physics_Lab(Races::Terran, 18);
-    ActionType Terran_Science_Facility(Races::Terran, 19);
-    ActionType Terran_Science_Vessel(Races::Terran, 20);
-    ActionType Terran_Vulture(Races::Terran, 21);
-
-    ActionType Zerg_Drone(Races::Zerg, 0);
-	ActionType Zerg_Overlord(Races::Zerg, 1);
-	ActionType Zerg_Hatchery(Races::Zerg, 2);
-	ActionType Zerg_Spawning_Pool(Races::Zerg, 3);
-	ActionType Zerg_Zergling(Races::Zerg, 4);
-	ActionType Zerg_Extractor(Races::Zerg, 5);
-	ActionType Zerg_Lair(Races::Zerg, 6);
-	ActionType Zerg_Hydralisk_Den(Races::Zerg, 7);
-	ActionType Zerg_Spire(Races::Zerg, 8);
-	ActionType Zerg_Hydralisk(Races::Zerg, 9);
-	ActionType Zerg_Mutalisk(Races::Zerg, 10);
-    ActionType Zerg_Larva(Races::Zerg, 11);
+ //   ActionType Terran_SCV(Races::Terran, 0);
+	//ActionType Terran_Supply_Depot(Races::Terran, 1);
+	//ActionType Terran_Command_Center(Races::Terran, 2);
+	//ActionType Terran_Barracks(Races::Terran, 3);
+	//ActionType Terran_Refinery(Races::Terran, 4);
+	//ActionType Terran_Marine(Races::Terran, 5);
+	//ActionType Terran_Academy(Races::Terran, 6);
+	//ActionType Terran_Stim_Packs(Races::Terran, 7);
+	//ActionType Terran_Medic(Races::Terran, 8);
+	//ActionType Terran_Factory(Races::Terran, 9);
+	//ActionType Terran_Starport(Races::Terran, 10);
+	//ActionType Terran_Wraith(Races::Terran, 11);
+ //   ActionType Terran_Siege_Tank(Races::Terran, 12);
+ //   ActionType Terran_Machine_Shop(Races::Terran, 13);
+ //   ActionType Terran_Tank_Siege_Mode(Races::Terran, 14);
+ //   ActionType Terran_Cloaking_Field(Races::Terran, 15);
+ //   ActionType Terran_Control_Tower(Races::Terran, 16);
+ //   ActionType Terran_Battlecruiser(Races::Terran, 17);
+ //   ActionType Terran_Physics_Lab(Races::Terran, 18);
+ //   ActionType Terran_Science_Facility(Races::Terran, 19);
+ //   ActionType Terran_Science_Vessel(Races::Terran, 20);
+ //   ActionType Terran_Vulture(Races::Terran, 21);
+ //   ActionType Terran_Goliath(Races::Terran, 22);
+ //   ActionType Terran_Firebat(Races::Terran, 23);
+ //   ActionType Terran_Armory(Races::Terran, 24);
+ //   ActionType Terran_Ghost(Races::Terran, 25);
+ //   ActionType Terran_Covert_Ops(Races::Terran, 26);
+ //   ActionType Terran_Comsat_Station(Races::Terran, 27);
+ //   ActionType Terran_Bunker(Races::Terran, 28);
+ //   ActionType Terran_Valkyrie(Races::Terran, 29);
+ //   
+ //   ActionType Zerg_Drone(Races::Zerg, 0);
+	//ActionType Zerg_Overlord(Races::Zerg, 1);
+	//ActionType Zerg_Hatchery(Races::Zerg, 2);
+	//ActionType Zerg_Spawning_Pool(Races::Zerg, 3);
+	//ActionType Zerg_Zergling(Races::Zerg, 4);
+	//ActionType Zerg_Extractor(Races::Zerg, 5);
+	//ActionType Zerg_Lair(Races::Zerg, 6);
+	//ActionType Zerg_Hydralisk_Den(Races::Zerg, 7);
+	//ActionType Zerg_Spire(Races::Zerg, 8);
+	//ActionType Zerg_Hydralisk(Races::Zerg, 9);
+	//ActionType Zerg_Mutalisk(Races::Zerg, 10);
+ //   ActionType Zerg_Larva(Races::Zerg, 11);
+ //   ActionType Zerg_Hive(Races::Zerg, 12);
+ //   ActionType Zerg_Greater_Spire(Races::Zerg, 13);
+ //   ActionType Zerg_Guardian(Races::Zerg, 14);
+ //   ActionType Zerg_Defiler(Races::Zerg, 15);
+ //   ActionType Zerg_Defiler_Mound(Races::Zerg, 16);
+ //   ActionType Zerg_Devourer(Races::Zerg, 17);
+ //   ActionType Zerg_Scourge(Races::Zerg, 18);
+ //   ActionType Zerg_Queen(Races::Zerg, 19);
+ //   ActionType Zerg_Queens_Nest(Races::Zerg, 20);
+ //   ActionType Zerg_Ultralisk(Races::Zerg, 21);
+ //   ActionType Zerg_Ultralisk_Cavern(Races::Zerg, 22);
+ //   ActionType Zerg_Creep_Colony(Races::Zerg, 23);
+ //   ActionType Zerg_Sunken_Colony(Races::Zerg, 24);
+ //   ActionType Zerg_Spore_Colony(Races::Zerg, 25);
+ //   ActionType Zerg_Evolution_Chamber(Races::Zerg, 26);
+ //   ActionType Zerg_Lurker(Races::Zerg, 27);
+ //   ActionType Zerg_Lurker_Aspect(Races::Zerg, 28);
 }
 }

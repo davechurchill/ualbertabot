@@ -62,10 +62,16 @@ std::vector<ActionType> Tools::GetNaiveBuildOrder(const GameState & state, const
         int factoryAddons = 0;
         int starportAddons = 0;
         int sciAddons = 0;
-        int numCommandCenters = state.getUnitData().getNumTotal(ActionTypes::Terran_Command_Center);
-        int numFactories = state.getUnitData().getNumTotal(ActionTypes::Terran_Factory);
-        int numStarports = state.getUnitData().getNumTotal(ActionTypes::Terran_Starport);
-        int numSci = state.getUnitData().getNumTotal(ActionTypes::Terran_Science_Facility);
+
+        static const ActionType commandCenter = ActionTypes::GetActionType("Terran_Command_Center");
+        static const ActionType factory = ActionTypes::GetActionType("Terran_Command_Center");
+        static const ActionType starport = ActionTypes::GetActionType("Terran_Command_Center");
+        static const ActionType scienceFacility = ActionTypes::GetActionType("Terran_Command_Center");
+
+        int numCommandCenters = state.getUnitData().getNumTotal(commandCenter);
+        int numFactories = state.getUnitData().getNumTotal(factory);
+        int numStarports = state.getUnitData().getNumTotal(starport);
+        int numSci = state.getUnitData().getNumTotal(scienceFacility);
         
         for (size_t a(0); a < buildOrder.size(); ++a)
         {
@@ -73,19 +79,19 @@ std::vector<ActionType> Tools::GetNaiveBuildOrder(const GameState & state, const
 
             if (actionType.isAddon())
             {
-                if (actionType.whatBuildsActionType() == ActionTypes::Terran_Command_Center)
+                if (actionType.whatBuildsActionType() == commandCenter)
                 {
                     ++commandCenterAddons;
                 }
-                else if (actionType.whatBuildsActionType() == ActionTypes::Terran_Factory)
+                else if (actionType.whatBuildsActionType() == factory)
                 {
                     ++factoryAddons;
                 }
-                else if (actionType.whatBuildsActionType() == ActionTypes::Terran_Starport)
+                else if (actionType.whatBuildsActionType() == starport)
                 {
                     ++starportAddons;
                 }
-                else if (actionType.whatBuildsActionType() == ActionTypes::Terran_Science_Facility)
+                else if (actionType.whatBuildsActionType() == scienceFacility)
                 {
                     ++sciAddons;
                 }
@@ -95,19 +101,19 @@ std::vector<ActionType> Tools::GetNaiveBuildOrder(const GameState & state, const
                 }
             }
 
-            if (actionType == ActionTypes::Terran_Command_Center)
+            if (actionType == commandCenter)
             {
                 ++numCommandCenters;
             }
-            else if (actionType == ActionTypes::Terran_Factory)
+            else if (actionType == factory)
             {
                 ++numFactories;
             }
-            else if (actionType == ActionTypes::Terran_Starport)
+            else if (actionType == starport)
             {
                 ++numStarports;
             }
-            else if (actionType == ActionTypes::Terran_Science_Facility)
+            else if (actionType == scienceFacility)
             {
                 ++numSci;
             }
@@ -116,23 +122,22 @@ std::vector<ActionType> Tools::GetNaiveBuildOrder(const GameState & state, const
         // add the necessary buildings to make the addons
         for (int n(0); n < commandCenterAddons - numCommandCenters; ++n)
         {
-            buildOrder.push_back(ActionTypes::Terran_Command_Center);
+            buildOrder.push_back(commandCenter);
         }
 
         for (int n(0); n < factoryAddons - numFactories; ++n)
         {
-            buildOrder.push_back(ActionTypes::Terran_Factory);
+            buildOrder.push_back(factory);
         }
 
         for (int n(0); n < starportAddons - numStarports; ++n)
         {
-            buildOrder.push_back(ActionTypes::Terran_Starport);
+            buildOrder.push_back(starport);
         }
         for (int n(0); n < sciAddons - numSci; ++n)
         {
-            buildOrder.push_back(ActionTypes::Terran_Science_Facility);
+            buildOrder.push_back(scienceFacility);
         }
-
     }
 
     // Bubble sort the build order so that prerequites always come before what requires them
@@ -205,7 +210,8 @@ std::vector<ActionType> Tools::GetOptimizedNaiveBuildOrder(const GameState & sta
     std::cout << "Found a better build order that takes " << bestCompletionTime << " frames\n";
     while (true)
     {
-        InsertActionIntoBuildOrder(testBuildOrder, bestBuildOrder, state, ActionTypes::Protoss_Gateway);
+        const static ActionType gateway = ActionTypes::GetActionType("Protoss_Gateway");
+        InsertActionIntoBuildOrder(testBuildOrder, bestBuildOrder, state, gateway);
 
         FrameCountType completionTime = Tools::GetBuildOrderCompletionTime(state, testBuildOrder);
 
@@ -277,10 +283,16 @@ std::vector<ActionType> Tools::GetNaiveBuildOrderNew(const GameState & state, co
         int factoryAddons = 0;
         int starportAddons = 0;
         int sciAddons = 0;
-        int numCommandCenters = state.getUnitData().getNumTotal(ActionTypes::Terran_Command_Center);
-        int numFactories = state.getUnitData().getNumTotal(ActionTypes::Terran_Factory);
-        int numStarports = state.getUnitData().getNumTotal(ActionTypes::Terran_Starport);
-        int numSci = state.getUnitData().getNumTotal(ActionTypes::Terran_Science_Facility);
+
+        static const ActionType commandCenter = ActionTypes::GetActionType("Terran_Command_Center");
+        static const ActionType factory = ActionTypes::GetActionType("Terran_Command_Center");
+        static const ActionType starport = ActionTypes::GetActionType("Terran_Command_Center");
+        static const ActionType scienceFacility = ActionTypes::GetActionType("Terran_Command_Center");
+
+        int numCommandCenters = state.getUnitData().getNumTotal(commandCenter);
+        int numFactories = state.getUnitData().getNumTotal(factory);
+        int numStarports = state.getUnitData().getNumTotal(starport);
+        int numSci = state.getUnitData().getNumTotal(scienceFacility);
         
         for (size_t a(0); a < buildOrder.size(); ++a)
         {
@@ -288,19 +300,19 @@ std::vector<ActionType> Tools::GetNaiveBuildOrderNew(const GameState & state, co
 
             if (actionType.isAddon())
             {
-                if (actionType.whatBuildsActionType() == ActionTypes::Terran_Command_Center)
+                if (actionType.whatBuildsActionType() == commandCenter)
                 {
                     ++commandCenterAddons;
                 }
-                else if (actionType.whatBuildsActionType() == ActionTypes::Terran_Factory)
+                else if (actionType.whatBuildsActionType() == factory)
                 {
                     ++factoryAddons;
                 }
-                else if (actionType.whatBuildsActionType() == ActionTypes::Terran_Starport)
+                else if (actionType.whatBuildsActionType() == starport)
                 {
                     ++starportAddons;
                 }
-                else if (actionType.whatBuildsActionType() == ActionTypes::Terran_Science_Facility)
+                else if (actionType.whatBuildsActionType() == scienceFacility)
                 {
                     ++sciAddons;
                 }
@@ -310,19 +322,19 @@ std::vector<ActionType> Tools::GetNaiveBuildOrderNew(const GameState & state, co
                 }
             }
 
-            if (actionType == ActionTypes::Terran_Command_Center)
+            if (actionType == commandCenter)
             {
                 ++numCommandCenters;
             }
-            else if (actionType == ActionTypes::Terran_Factory)
+            else if (actionType == factory)
             {
                 ++numFactories;
             }
-            else if (actionType == ActionTypes::Terran_Starport)
+            else if (actionType == starport)
             {
                 ++numStarports;
             }
-            else if (actionType == ActionTypes::Terran_Science_Facility)
+            else if (actionType == scienceFacility)
             {
                 ++numSci;
             }
@@ -331,21 +343,21 @@ std::vector<ActionType> Tools::GetNaiveBuildOrderNew(const GameState & state, co
         // add the necessary buildings to make the addons
         for (int n(0); n < commandCenterAddons - numCommandCenters; ++n)
         {
-            buildOrder.push_back(ActionTypes::Terran_Command_Center);
+            buildOrder.push_back(commandCenter);
         }
 
         for (int n(0); n < factoryAddons - numFactories; ++n)
         {
-            buildOrder.push_back(ActionTypes::Terran_Factory);
+            buildOrder.push_back(factory);
         }
 
         for (int n(0); n < starportAddons - numStarports; ++n)
         {
-            buildOrder.push_back(ActionTypes::Terran_Starport);
+            buildOrder.push_back(starport);
         }
         for (int n(0); n < sciAddons - numSci; ++n)
         {
-            buildOrder.push_back(ActionTypes::Terran_Science_Facility);
+            buildOrder.push_back(scienceFacility);
         }
 
     }

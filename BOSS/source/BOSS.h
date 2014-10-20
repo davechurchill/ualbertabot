@@ -8,6 +8,7 @@
 #include "ActionType.h"
 #include "Tools.h"
 #include "DFBB_BuildOrderSmartSearch.h"
+#include "GUI.h"
 
 namespace BOSS
 {

@@ -214,13 +214,15 @@ void UnitData::raceSpecificFinishAction(const ActionType & action)
 	}
 	else if (getRace() == Races::Zerg)
 	{
+        const static ActionType hatchery = ActionTypes::GetActionType("Zerg_Hatchery");
+
 		// if it's a Lair, remove the hatchery
 		if (action.isBuilding() && (action.getUnitType() == BWAPI::UnitTypes::Zerg_Lair))
 		{
-			_numUnits[ActionTypes::Zerg_Hatchery.ID()]--;
+			_numUnits[hatchery.ID()]--;
 
 			// take away the supply that was provided by the hatchery
-			_maxSupply -= ActionTypes::Zerg_Hatchery.supplyProvided();
+			_maxSupply -= hatchery.supplyProvided();
 		}
 
 		// if it's a Greater Spire, remove the spire

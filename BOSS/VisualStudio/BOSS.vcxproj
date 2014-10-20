@@ -36,7 +36,10 @@
     <ClInclude Include="..\source\Eval.h" />
     <ClInclude Include="..\source\GraphViz.hpp" />
     <ClInclude Include="..\source\GameState.h" />
+    <ClInclude Include="..\source\GUI.h" />
+    <ClInclude Include="..\source\GUITools.h" />
     <ClInclude Include="..\source\Logger.h" />
+    <ClInclude Include="..\source\Position.hpp" />
     <ClInclude Include="..\source\PrerequisiteSet.h" />
     <ClInclude Include="..\source\Timer.hpp" />
     <ClInclude Include="..\source\Tools.h" />
@@ -64,6 +67,8 @@
     <ClCompile Include="..\source\DFBB_BuildOrderStackSearch.cpp" />
     <ClCompile Include="..\source\Eval.cpp" />
     <ClCompile Include="..\source\GameState.cpp" />
+    <ClCompile Include="..\source\GUI.cpp" />
+    <ClCompile Include="..\source\GUITools.cpp" />
     <ClCompile Include="..\source\Logger.cpp" />
     <ClCompile Include="..\source\PrerequisiteSet.cpp" />
     <ClCompile Include="..\source\Tools.cpp" />
@@ -134,7 +139,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(BWAPI_DIR)/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BWAPI_DIR)/include/;../source/glext;../source/sdl;../source/GL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>

@@ -9,11 +9,11 @@ GameState getInitialState(const RaceID race)
 
     if (false)//race == Races::Protoss)
     {
-        initialState.doAction(ActionTypes::Protoss_Probe);
-        initialState.doAction(ActionTypes::Protoss_Probe);
-        initialState.doAction(ActionTypes::Protoss_Probe);
-        initialState.doAction(ActionTypes::Protoss_Probe);
-        initialState.doAction(ActionTypes::Protoss_Pylon);
+        initialState.doAction(ActionTypes::GetActionType("Protoss_Probe"));
+        initialState.doAction(ActionTypes::GetActionType("Protoss_Probe"));
+        initialState.doAction(ActionTypes::GetActionType("Protoss_Probe"));
+        initialState.doAction(ActionTypes::GetActionType("Protoss_Probe"));
+        initialState.doAction(ActionTypes::GetActionType("Protoss_Pylon"));
     }
 
     return initialState;
@@ -25,14 +25,14 @@ ActionSet getRelevantActions(const RaceID race)
 
     if (race == Races::Protoss)
     {
-        actions.add(ActionTypes::Protoss_Probe);
-        actions.add(ActionTypes::Protoss_Pylon);
-        actions.add(ActionTypes::Protoss_Nexus);
-        actions.add(ActionTypes::Protoss_Assimilator);
-        actions.add(ActionTypes::Protoss_Zealot);
-        actions.add(ActionTypes::Protoss_Gateway);
-        actions.add(ActionTypes::Protoss_Dragoon);
-        actions.add(ActionTypes::Protoss_Cybernetics_Core);
+        actions.add(ActionTypes::GetActionType("Protoss_Probe"));
+        actions.add(ActionTypes::GetActionType("Protoss_Pylon"));
+        actions.add(ActionTypes::GetActionType("Protoss_Nexus"));
+        actions.add(ActionTypes::GetActionType("Protoss_Assimilator"));
+        actions.add(ActionTypes::GetActionType("Protoss_Zealot"));
+        actions.add(ActionTypes::GetActionType("Protoss_Gateway"));
+        actions.add(ActionTypes::GetActionType("Protoss_Dragoon"));
+        actions.add(ActionTypes::GetActionType("Protoss_Cybernetics_Core"));
     }
 
     return actions;
@@ -44,12 +44,12 @@ CombatSearchParameters getParams(const RaceID race)
 
     if (race == Races::Protoss)
     {
-        params.setMaxActions(ActionTypes::Protoss_Probe, 12);
-        params.setMaxActions(ActionTypes::Protoss_Nexus, 1);
-        params.setMaxActions(ActionTypes::Protoss_Assimilator, 1);
-        params.setMaxActions(ActionTypes::Protoss_Cybernetics_Core, 1);
-        params.setMaxActions(ActionTypes::Protoss_Pylon, 4);
-        params.setMaxActions(ActionTypes::Protoss_Gateway, 3);
+        params.setMaxActions(ActionTypes::GetActionType("Protoss_Probe"), 12);
+        params.setMaxActions(ActionTypes::GetActionType("Protoss_Nexus"), 1);
+        params.setMaxActions(ActionTypes::GetActionType("Protoss_Assimilator"), 1);
+        params.setMaxActions(ActionTypes::GetActionType("Protoss_Cybernetics_Core"), 1);
+        params.setMaxActions(ActionTypes::GetActionType("Protoss_Pylon"), 4);
+        params.setMaxActions(ActionTypes::GetActionType("Protoss_Gateway"), 3);
 
         params.setRelevantActions(getRelevantActions(Races::Protoss));
     }
@@ -88,9 +88,7 @@ void testNaiveBuildOrder()
     GameState initialStateNew(initialState);
     DFBB_BuildOrderSearchGoal goal(initialState.getRace());
 
-    goal.setGoal(ActionTypes::Protoss_Zealot, 3);
-    //goal.setGoal(ActionTypes::Protoss_Dark_Templar, 2);
-    //goal.setGoal(ActionTypes::Protoss_Reaver, 1);
+    goal.setGoal(ActionTypes::GetActionType("Protoss_Zealot"), 3);
 
     Timer t;
     t.start();
@@ -119,9 +117,15 @@ void testNaiveBuildOrder()
     std::cout << "New build order took " << initialStateNew.getLastActionFinishTime() << " frames to complete with " << initialStateNew.getUnitData().getNumTotal(ActionTypes::GetWorker(initialStateNew.getRace())) << " total workers in " << msnew << " ms" << std::endl;
 }
 
-int main()
+int main(int argc, char *argv[])
 {
+    #ifdef BOSS_ENABLE_GUI
+        glutInit(&argc, argv);
+    #endif
+
     BOSS::init();
+    BOSS::GUI::Instance().OnStart();
+    BOSS::GUI::Instance().OnFrame();
 
     GameState initialState(Races::Protoss);
     initialState.setStartingState();
@@ -130,7 +134,7 @@ int main()
 
     DFBB_BuildOrderSmartSearch smartSearch(initialState.getRace());
     smartSearch.setState(initialState);
-    smartSearch.addGoal(ActionTypes::Protoss_Zealot, 6);
+    smartSearch.addGoal(ActionTypes::GetActionType("Protoss_Zealot"), 6);
     smartSearch.getParameters().goal.printGoal();
     smartSearch.setTimeLimit(50000);
     

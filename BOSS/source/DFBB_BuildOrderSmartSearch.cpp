@@ -161,11 +161,11 @@ void DFBB_BuildOrderSmartSearch::setPrerequisiteGoalMax()
     }
     else if (getRace() == Races::Zerg)
     {
-        _goal.setGoalMax(ActionTypes::Zerg_Spawning_Pool, 1);
-        _goal.setGoalMax(ActionTypes::Zerg_Extractor, 1);
-        _goal.setGoalMax(ActionTypes::Zerg_Lair, 1);
-        _goal.setGoalMax(ActionTypes::Zerg_Spire, 1);
-        _goal.setGoalMax(ActionTypes::Zerg_Hydralisk_Den, 1);
+        _goal.setGoalMax(ActionTypes::GetActionType("Zerg_Spawning_Pool"), 1);
+        _goal.setGoalMax(ActionTypes::GetActionType("Zerg_Extractor"), 1);
+        _goal.setGoalMax(ActionTypes::GetActionType("Zerg_Lair"), 1);
+        _goal.setGoalMax(ActionTypes::GetActionType("Zerg_Spire"), 1);
+        _goal.setGoalMax(ActionTypes::GetActionType("Zerg_Hydralisk_Den"), 1);
     }
 }
 

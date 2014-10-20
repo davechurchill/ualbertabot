@@ -149,7 +149,6 @@ void GameState::setStartingState()
 
     if (getRace() == Races::Zerg)
     {
-        _units.addCompletedAction(ActionTypes::Zerg_Overlord);
         _units.setLarva(3);
     }
 
