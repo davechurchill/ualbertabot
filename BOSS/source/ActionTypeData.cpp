@@ -260,14 +260,17 @@ void ActionTypeData::AddActions()
 
         if (type.getRace() == BWAPI::Races::Protoss)
         {
+            //std::cout << type.getName() << std::endl;
             allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(type, allActionTypeDataVec[Races::Protoss].size()));
         }
         else if (type.getRace() == BWAPI::Races::Terran)
         {
+            //std::cout << type.getName() << std::endl;
             allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(type, allActionTypeDataVec[Races::Terran].size()));
         }
         else if (type.getRace() == BWAPI::Races::Zerg)
         {
+            std::cout << type.getName() << std::endl;
             allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(type, allActionTypeDataVec[Races::Zerg].size()));
         }
     }
@@ -286,112 +289,20 @@ void ActionTypeData::AddActions()
 
         if (type.getRace() == BWAPI::Races::Protoss)
         {
+            //std::cout << type.getName() << std::endl;
             allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(type, allActionTypeDataVec[Races::Protoss].size()));
         }
         else if (type.getRace() == BWAPI::Races::Terran)
         {
+            //std::cout << type.getName() << std::endl;
             allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(type, allActionTypeDataVec[Races::Terran].size()));
         }
         else if (type.getRace() == BWAPI::Races::Zerg)
         {
+            std::cout << type.getName() << std::endl;
             allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(type, allActionTypeDataVec[Races::Zerg].size()));
         }
     }
-
- //   allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UnitTypes::Protoss_Probe, allActionTypeDataVec[Races::Protoss].size()));			
-	//allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UnitTypes::Protoss_Pylon, allActionTypeDataVec[Races::Protoss].size()));		
-	//allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UnitTypes::Protoss_Assimilator, allActionTypeDataVec[Races::Protoss].size()));				
-	//allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UnitTypes::Protoss_Gateway, allActionTypeDataVec[Races::Protoss].size()));						
-	//allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UnitTypes::Protoss_Nexus, allActionTypeDataVec[Races::Protoss].size()));					
-	//allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UnitTypes::Protoss_Zealot, allActionTypeDataVec[Races::Protoss].size()));				
-	//allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UnitTypes::Protoss_Cybernetics_Core, allActionTypeDataVec[Races::Protoss].size()));			
-	//allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UnitTypes::Protoss_Dragoon, allActionTypeDataVec[Races::Protoss].size()));					
-	//allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UpgradeTypes::Singularity_Charge, allActionTypeDataVec[Races::Protoss].size()));			
-	//allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UnitTypes::Protoss_Forge, allActionTypeDataVec[Races::Protoss].size()));					
-	//allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UnitTypes::Protoss_Photon_Cannon, allActionTypeDataVec[Races::Protoss].size()));			
-	//allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UnitTypes::Protoss_High_Templar, allActionTypeDataVec[Races::Protoss].size()));				
-	//allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UnitTypes::Protoss_Citadel_of_Adun, allActionTypeDataVec[Races::Protoss].size()));			
-	//allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UnitTypes::Protoss_Templar_Archives, allActionTypeDataVec[Races::Protoss].size()));			
-	//allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UnitTypes::Protoss_Robotics_Facility, allActionTypeDataVec[Races::Protoss].size()));		
-	//allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UnitTypes::Protoss_Robotics_Support_Bay, allActionTypeDataVec[Races::Protoss].size()));		
-	//allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UnitTypes::Protoss_Observatory, allActionTypeDataVec[Races::Protoss].size()));
-	//allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UnitTypes::Protoss_Stargate, allActionTypeDataVec[Races::Protoss].size()));
-	//allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UnitTypes::Protoss_Scout, allActionTypeDataVec[Races::Protoss].size()));
-	//allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UnitTypes::Protoss_Arbiter_Tribunal, allActionTypeDataVec[Races::Protoss].size()));
-	//allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UnitTypes::Protoss_Arbiter, allActionTypeDataVec[Races::Protoss].size()));
-	//allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UnitTypes::Protoss_Shield_Battery, allActionTypeDataVec[Races::Protoss].size()));
-	//allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UnitTypes::Protoss_Dark_Templar, allActionTypeDataVec[Races::Protoss].size()));
-	//allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UnitTypes::Protoss_Shuttle, allActionTypeDataVec[Races::Protoss].size()));
-	//allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UnitTypes::Protoss_Reaver, allActionTypeDataVec[Races::Protoss].size()));
-	//allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UnitTypes::Protoss_Observer, allActionTypeDataVec[Races::Protoss].size()));
-	//allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UnitTypes::Protoss_Corsair, allActionTypeDataVec[Races::Protoss].size()));
-	//allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UnitTypes::Protoss_Fleet_Beacon, allActionTypeDataVec[Races::Protoss].size()));
-	//allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UnitTypes::Protoss_Carrier, allActionTypeDataVec[Races::Protoss].size()));
-	//allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UpgradeTypes::Leg_Enhancements, allActionTypeDataVec[Races::Protoss].size()));
- //   //allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(BWAPI::UnitTypes::Protoss_Archon, allActionTypeDataVec[Races::Protoss].size()));
-
- //   allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(BWAPI::UnitTypes::Terran_SCV, allActionTypeDataVec[Races::Terran].size()));
-	//allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(BWAPI::UnitTypes::Terran_Supply_Depot, allActionTypeDataVec[Races::Terran].size()));
-	//allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(BWAPI::UnitTypes::Terran_Command_Center, allActionTypeDataVec[Races::Terran].size()));
-	//allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(BWAPI::UnitTypes::Terran_Barracks, allActionTypeDataVec[Races::Terran].size()));
-	//allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(BWAPI::UnitTypes::Terran_Refinery, allActionTypeDataVec[Races::Terran].size()));
-	//allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(BWAPI::UnitTypes::Terran_Marine, allActionTypeDataVec[Races::Terran].size()));
-	//allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(BWAPI::UnitTypes::Terran_Academy, allActionTypeDataVec[Races::Terran].size()));
-	//allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(BWAPI::TechTypes::Stim_Packs, allActionTypeDataVec[Races::Terran].size()));
-	//allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(BWAPI::UnitTypes::Terran_Medic, allActionTypeDataVec[Races::Terran].size()));
-	//allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(BWAPI::UnitTypes::Terran_Factory, allActionTypeDataVec[Races::Terran].size()));
-	//allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(BWAPI::UnitTypes::Terran_Starport, allActionTypeDataVec[Races::Terran].size()));
-	//allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(BWAPI::UnitTypes::Terran_Wraith, allActionTypeDataVec[Races::Terran].size()));
- //   allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode, allActionTypeDataVec[Races::Terran].size()));
- //   allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(BWAPI::UnitTypes::Terran_Machine_Shop, allActionTypeDataVec[Races::Terran].size()));
- //   allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(BWAPI::TechTypes::Tank_Siege_Mode, allActionTypeDataVec[Races::Terran].size()));
- //   allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(BWAPI::TechTypes::Cloaking_Field, allActionTypeDataVec[Races::Terran].size()));
- //   allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(BWAPI::UnitTypes::Terran_Control_Tower, allActionTypeDataVec[Races::Terran].size()));
- //   allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(BWAPI::UnitTypes::Terran_Battlecruiser, allActionTypeDataVec[Races::Terran].size()));
- //   allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(BWAPI::UnitTypes::Terran_Physics_Lab, allActionTypeDataVec[Races::Terran].size()));
- //   allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(BWAPI::UnitTypes::Terran_Science_Facility, allActionTypeDataVec[Races::Terran].size()));
- //   allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(BWAPI::UnitTypes::Terran_Science_Vessel, allActionTypeDataVec[Races::Terran].size()));
- //   allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(BWAPI::UnitTypes::Terran_Vulture, allActionTypeDataVec[Races::Terran].size()));
- //   allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(BWAPI::UnitTypes::Terran_Goliath, allActionTypeDataVec[Races::Terran].size()));
- //   allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(BWAPI::UnitTypes::Terran_Firebat, allActionTypeDataVec[Races::Terran].size()));
- //   allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(BWAPI::UnitTypes::Terran_Armory, allActionTypeDataVec[Races::Terran].size()));
- //   allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(BWAPI::UnitTypes::Terran_Ghost, allActionTypeDataVec[Races::Terran].size()));
- //   allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(BWAPI::UnitTypes::Terran_Covert_Ops, allActionTypeDataVec[Races::Terran].size()));
- //   allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(BWAPI::UnitTypes::Terran_Comsat_Station, allActionTypeDataVec[Races::Terran].size()));
- //   allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(BWAPI::UnitTypes::Terran_Bunker, allActionTypeDataVec[Races::Terran].size()));
- //   allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(BWAPI::UnitTypes::Terran_Valkyrie, allActionTypeDataVec[Races::Terran].size()));
-
- //   allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(BWAPI::UnitTypes::Zerg_Drone, allActionTypeDataVec[Races::Zerg].size()));
-	//allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(BWAPI::UnitTypes::Zerg_Overlord, allActionTypeDataVec[Races::Zerg].size()));
-	//allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(BWAPI::UnitTypes::Zerg_Hatchery, allActionTypeDataVec[Races::Zerg].size()));
-	//allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(BWAPI::UnitTypes::Zerg_Spawning_Pool, allActionTypeDataVec[Races::Zerg].size()));
-	//allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(BWAPI::UnitTypes::Zerg_Zergling, allActionTypeDataVec[Races::Zerg].size()));
-	//allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(BWAPI::UnitTypes::Zerg_Extractor, allActionTypeDataVec[Races::Zerg].size()));
-	//allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(BWAPI::UnitTypes::Zerg_Lair, allActionTypeDataVec[Races::Zerg].size()));
-	//allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(BWAPI::UnitTypes::Zerg_Hydralisk_Den, allActionTypeDataVec[Races::Zerg].size()));
-	//allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(BWAPI::UnitTypes::Zerg_Spire, allActionTypeDataVec[Races::Zerg].size()));
-	//allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(BWAPI::UnitTypes::Zerg_Hydralisk, allActionTypeDataVec[Races::Zerg].size()));
-	//allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(BWAPI::UnitTypes::Zerg_Mutalisk, allActionTypeDataVec[Races::Zerg].size()));
- //   allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(BWAPI::UnitTypes::Zerg_Larva, allActionTypeDataVec[Races::Zerg].size()));
- //   allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(BWAPI::UnitTypes::Zerg_Hive, allActionTypeDataVec[Races::Zerg].size()));
- //   allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(BWAPI::UnitTypes::Zerg_Greater_Spire, allActionTypeDataVec[Races::Zerg].size()));
- //   allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(BWAPI::UnitTypes::Zerg_Guardian, allActionTypeDataVec[Races::Zerg].size()));
- //   allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(BWAPI::UnitTypes::Zerg_Defiler, allActionTypeDataVec[Races::Zerg].size()));
- //   allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(BWAPI::UnitTypes::Zerg_Defiler_Mound, allActionTypeDataVec[Races::Zerg].size()));
- //   allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(BWAPI::UnitTypes::Zerg_Devourer, allActionTypeDataVec[Races::Zerg].size()));
- //   allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(BWAPI::UnitTypes::Zerg_Scourge, allActionTypeDataVec[Races::Zerg].size()));
- //   allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(BWAPI::UnitTypes::Zerg_Queen, allActionTypeDataVec[Races::Zerg].size()));
- //   allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(BWAPI::UnitTypes::Zerg_Queens_Nest, allActionTypeDataVec[Races::Zerg].size()));
- //   allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(BWAPI::UnitTypes::Zerg_Ultralisk, allActionTypeDataVec[Races::Zerg].size()));
- //   allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(BWAPI::UnitTypes::Zerg_Ultralisk_Cavern, allActionTypeDataVec[Races::Zerg].size()));
- //   allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(BWAPI::UnitTypes::Zerg_Creep_Colony, allActionTypeDataVec[Races::Zerg].size()));
- //   allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(BWAPI::UnitTypes::Zerg_Sunken_Colony, allActionTypeDataVec[Races::Zerg].size()));
- //   allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(BWAPI::UnitTypes::Zerg_Spore_Colony, allActionTypeDataVec[Races::Zerg].size()));
- //   allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(BWAPI::UnitTypes::Zerg_Evolution_Chamber, allActionTypeDataVec[Races::Zerg].size()));
- //   allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(BWAPI::UnitTypes::Zerg_Lurker, allActionTypeDataVec[Races::Zerg].size()));
- //   allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(BWAPI::TechTypes::Lurker_Aspect, allActionTypeDataVec[Races::Zerg].size()));
-
-
 }
 
 const RaceID ActionTypeData::GetRaceID(BWAPI::Race r)

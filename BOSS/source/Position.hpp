@@ -9,44 +9,44 @@ namespace BOSS
 {
 class Position
 {
- // x,y location will be used for Units in a 'grid'
- PositionType  _x, 
-      _y;
+
+    PositionType    _x; 
+    PositionType    _y;
 
 public:
  
- Position()
-  : _x(0)
-  , _y(0)
- {
- }
+    Position()
+        : _x(0)
+        , _y(0)
+    {
+    }
 
- Position(const PositionType & x, const PositionType & y)
-  : _x(x)
-  , _y(y)
- {
- }
+    Position(const PositionType & x, const PositionType & y)
+        : _x(x)
+        , _y(y)
+    {
+    }
 
 
- const bool operator < (const Position & rhs) const
- {
+    const bool operator < (const Position & rhs) const
+    {
         return (x() < rhs.x()) || ((x() == rhs.x()) && y() < rhs.y());
- }
+    }
 
     const bool operator == (const Position & rhs) const
     {
         return x() == rhs.x() && y() == rhs.y();
     }
 
- const Position operator + (const Position & rhs) const
- {
-  return Position(x() + rhs.x(), y() + rhs.y());
- }
+    const Position operator + (const Position & rhs) const
+    {
+        return Position(x() + rhs.x(), y() + rhs.y());
+    }
 
- const Position operator - (const Position & rhs) const
- {
-  return Position(x() - rhs.x(), y() - rhs.y());
- }
+    const Position operator - (const Position & rhs) const
+    {
+        return Position(x() - rhs.x(), y() - rhs.y());
+    }
 
     const Position operator / (const PositionType & d) const
     {
@@ -58,10 +58,10 @@ public:
         return Position(_x * d, _y * d);
     }
 
- const Position scale(const float & f) const
- {
-  return Position((PositionType)(f * x()), (PositionType)(f * y()));
- }
+    const Position scale(const float & f) const
+    {
+        return Position((PositionType)(f * x()), (PositionType)(f * y()));
+    }
 
     void scalePosition(const float & f)
     {
@@ -81,43 +81,43 @@ public:
         _y -= rhs.y();
     }
  
- void moveTo(const Position & pos)
- {
-  _x = pos.x();
-  _y = pos.y();
- }
+    void moveTo(const Position & pos)
+    {
+        _x = pos.x();
+        _y = pos.y();
+    }
 
- void add(const PositionType & x, const PositionType & y)
- {
-  _x += x;
-  _y += y;
- }
+    void add(const PositionType & x, const PositionType & y)
+    {
+        _x += x;
+        _y += y;
+    }
 
- void moveTo(const PositionType & x, const PositionType & y)
- {
-  _x = x;
-  _y = y;
- }
+    void moveTo(const PositionType & x, const PositionType & y)
+    {
+        _x = x;
+        _y = y;
+    }
 
- const PositionType x() const
- {
-  return _x;
- }
+    const PositionType x() const
+    {
+        return _x;
+    }
 
- const PositionType y() const
- {
-  return _y;
- }
+    const PositionType y() const
+    {
+        return _y;
+    }
 
- const Position flipX() const
- {
-  return Position(-_x,_y);
- }
+    const Position flipX() const
+    {
+        return Position(-_x,_y);
+    }
 
- const Position flipY() const
- {
-  return Position(_y,_x);
- }
+    const Position flipY() const
+    {
+        return Position(_y,_x);
+    }
 
     const float Q_rsqrt( float number ) const
     {
@@ -136,13 +136,13 @@ public:
         return y;
     }
 
- const Position flip() const
- {
-  return Position(-_x, -_y);
- }
+    const Position flip() const
+    {
+        return Position(-_x, -_y);
+    }
 
     inline const PositionType getDistance(const Position & p) const 
- {
+    {
         PositionType dX = x() - p.x();
         PositionType dY = y() - p.y();
 
@@ -158,17 +158,17 @@ public:
         {
             return (PositionType)sqrt((float)(dX*dX - dY*dY));
         }
- }
+     }
 
- inline const PositionType getDistanceSq(const Position & p) const 
- {
+    inline const PositionType getDistanceSq(const Position & p) const 
+    {
         return (x()-p.x())*(x()-p.x()) + (y()-p.y())*(y()-p.y());
- }
+    }
 
- void print() const
- {
-  printf("Position = (%d, %d)\n", _x, _y);
- }
+    void print() const
+    {
+        printf("Position = (%d, %d)\n", _x, _y);
+    }
 
     const std::string getString() const
     {

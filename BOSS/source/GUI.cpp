@@ -218,23 +218,37 @@ void GUI::Render()
 void GUI::DrawGameState()
 {
     GLfloat color[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-
+    
+    float width = 64;
     Position p;
+    Position techp(p.x(), p.y() + 100);
 
-    for (size_t r(0); r < Races::NUM_RACES; ++r)
+    for (size_t r(0); r < 3; ++r)
     {
         for (size_t i(0); i < ActionTypes::GetAllActionTypes(r).size(); ++i)
         {   
+            
             const ActionType & type = ActionTypes::GetAllActionTypes(r)[i];
+            int textureNumber = getTextureNumber(type);
+            float ratio = (float)width / textureSizes[textureNumber].x();
+            Position size = Position(textureSizes[textureNumber].x() * ratio, textureSizes[textureNumber].y() * ratio);
 
-            Position br(p + textureSizes[getTextureNumber(type)]);
+            Position br((type.isUnit() ? p : techp) + size);
 
-            GUITools::DrawTexturedRect(p, br, getTextureNumber(type), color);
+            GUITools::DrawTexturedRect(type.isUnit() ? p : techp, br, textureNumber, color);
 
-            p = p + Position(textureSizes[getTextureNumber(type)].x(), 0);
+            if (type.isUnit())
+            {
+                p = p + Position(size.x(), 0);
+            }
+            else
+            {
+                techp = techp + Position(size.x(), 0);
+            }
         }
         
-        p = Position(0, (r+1) * 150);
+        p = Position(0, (r+1) * 200);
+        techp = Position(p.x(), p.y() + 100);
     }
 
 }
@@ -355,11 +369,11 @@ const std::string GUI::getTextureFileName(const ActionType & type) const
 
     if (type.isTech())
     {
-        filename = "../starcraft_images/command_icons/" + type.getTechType().getRace().getName() + "_" + type.getName() + ".png";
+        filename = "../starcraft_images/command_icons/" + type.getName() + ".png";
     }
     else if (type.isUpgrade())
     {
-        filename = "../starcraft_images/command_icons/" + type.getUpgradeType().getRace().getName() + "_" + type.getName() + ".png";
+        filename = "../starcraft_images/command_icons/" + type.getName() + ".png";
     }
 
 	for (size_t i(0); i<filename.size(); ++i)
