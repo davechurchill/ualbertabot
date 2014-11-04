@@ -33,13 +33,25 @@ ActionTypeData::ActionTypeData(BWAPI::UnitType t, const ActionID id)
 	, canAttackBool             (t.canAttack())
 	, whatBuildsUnitType        (t.whatBuilds().first)
     , addon                     (t.isAddon())
-    , reqAddon(false)
-    , reqAddonID(0)
+    , morphed                   (false)
+    , reqAddon                  (false)
+    , reqAddonID                (0)
 {
 	if (t == BWAPI::UnitTypes::Zerg_Zergling || t == BWAPI::UnitTypes::Zerg_Scourge)
 	{
 		numberProduced = 2;
 	}
+
+    if (t == BWAPI::UnitTypes::Zerg_Lair ||
+        t == BWAPI::UnitTypes::Zerg_Hive ||
+        t == BWAPI::UnitTypes::Zerg_Greater_Spire ||
+        t == BWAPI::UnitTypes::Zerg_Lurker ||
+        t == BWAPI::UnitTypes::Zerg_Guardian ||
+        t == BWAPI::UnitTypes::Zerg_Sunken_Colony ||
+        t == BWAPI::UnitTypes::Zerg_Spore_Colony)
+    {
+        morphed = true;
+    }
 }
 
 // UpgradeType action
@@ -67,6 +79,7 @@ ActionTypeData::ActionTypeData(BWAPI::UpgradeType t, const ActionID id)
     , addon(false)
     , reqAddon(false)
     , reqAddonID(0)
+    , morphed(false)
 {
 }
 
@@ -95,6 +108,7 @@ ActionTypeData::ActionTypeData(BWAPI::TechType t, const ActionID id)
     , addon(false)
     , reqAddon(false)
     , reqAddonID(0)
+    , morphed(false)
 {}
 
 RaceID              ActionTypeData::getRaceID()             const   { return raceID; }
@@ -129,6 +143,7 @@ bool				ActionTypeData::isUnit()				const	{ return type == UnitType; }
 bool				ActionTypeData::isTech()				const	{ return type == TechType; }
 bool				ActionTypeData::isUpgrade()			    const	{ return type == UpgradeType; }
 bool				ActionTypeData::isAddon()			    const	{ return addon; }
+bool                ActionTypeData::isMorphed()             const   { return morphed; }
 bool                ActionTypeData::requiresAddon()         const   { return reqAddon; }
 ActionID            ActionTypeData::requiredAddonID()       const   { return reqAddonID; }
 	

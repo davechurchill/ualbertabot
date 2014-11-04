@@ -97,6 +97,7 @@ public:
     const std::string           toString()                      const;
     const std::string           getActionsPerformedString()     const;
     const BuildingData &        getBuildingData()               const;
+    const HatcheryData &        getHatcheryData()               const;
     void                        setStartingState();
 };
 }

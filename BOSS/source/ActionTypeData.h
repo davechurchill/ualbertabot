@@ -53,6 +53,7 @@ private:
     bool                whatBuildsIsLarvaBool;
     bool                addon;
     bool                reqAddon;
+    bool                morphed;
 
     ActionID            reqAddonID;
 
@@ -127,6 +128,7 @@ public:
     bool				isTech()				const;
     bool				isUpgrade()				const;
     bool                isAddon()               const;
+    bool                isMorphed()             const;
     bool                requiresAddon()         const;
     ActionID            requiredAddonID()       const;
 

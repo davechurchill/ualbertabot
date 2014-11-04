@@ -148,3 +148,88 @@ Message:   Minerals less than price: 99 < 100, ffTime=150
 
 Line:      273
 Time:      2014-11-03_11:45:37
+
+!Assert:   TypeExists(name)
+File:      d:\ualbertabot\boss\source\actiontype.cpp
+Message:   ActionType name not found: Protoss_Drone
+Line:      200
+Time:      2014-11-03_22:01:27
+
+!Assert:   isLegal(action)
+File:      d:\ualbertabot\boss\source\gamestate.cpp
+Message:   Trying to perform an illegal action: Zerg Drone 
+0 0 0 Zerg Drone
+
+Line:      248
+Time:      2014-11-03_22:01:51
+
+!Assert:   isLegal(action)
+File:      d:\ualbertabot\boss\source\gamestate.cpp
+Message:   Trying to perform an illegal action: Zerg Drone 
+0 0 0 Zerg Drone
+
+Line:      248
+Time:      2014-11-03_22:02:14
+
+!Assert:   isLegal(action)
+File:      d:\ualbertabot\boss\source\gamestate.cpp
+Message:   Trying to perform an illegal action: Zerg Drone 
+0 0 0 Zerg Drone
+
+Line:      249
+Time:      2014-11-03_22:04:05
+
+!Assert:   isLegal(action)
+File:      d:\ualbertabot\boss\source\gamestate.cpp
+Message:   Trying to perform an illegal action: Zerg Drone 
+0 0 0 Zerg Drone
+
+Line:      249
+Time:      2014-11-03_22:04:12
+
+!Assert:   getHatcheryData().numLarva() > 0
+File:      d:\ualbertabot\boss\source\gamestate.cpp
+Message:   We should have a larva to use
+Line:      300
+Time:      2014-11-04_01:09:31
+
+!Assert:   TypeExists(name)
+File:      d:\ualbertabot\boss\source\actiontype.cpp
+Message:   ActionType name not found: Zerg_Burrow
+Line:      201
+Time:      2014-11-04_01:39:15
+
+!Assert:   TypeExists(name)
+File:      d:\ualbertabot\boss\source\actiontype.cpp
+Message:   ActionType name not found: Zerg_Burrowing
+Line:      201
+Time:      2014-11-04_01:39:29
+
+!Assert:   isLegal(action)
+File:      d:\ualbertabot\boss\source\gamestate.cpp
+Message:   Trying to perform an illegal action: Zerg Lair 
+0 50 0 Zerg Drone
+278 50 0 Zerg Drone
+505 50 0 Zerg Drone
+702 50 0 Zerg Drone
+1031 100 0 Zerg Overlord
+1169 50 0 Zerg Extractor
+1308 50 0 Zerg Drone
+1447 50 0 Zerg Drone
+2366 328 100 Burrowing
+0 0 0 Zerg Lair
+
+Line:      255
+Time:      2014-11-04_01:41:40
+
+!Assert:   buildingIsConstructed || (!action.requiresAddon() && buildingInProgress)
+File:      d:\ualbertabot\boss\source\gamestate.cpp
+Message:   We will never be able to build action: Burrowing
+Line:      499
+Time:      2014-11-04_01:45:09
+
+!Assert:   buildingIsConstructed || (!action.requiresAddon() && buildingInProgress)
+File:      d:\ualbertabot\boss\source\gamestate.cpp
+Message:   We will never be able to build action: Burrowing
+Line:      499
+Time:      2014-11-04_01:51:05

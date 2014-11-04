@@ -82,6 +82,9 @@
     <ClCompile Include="..\source\GUITools.cpp">
       <Filter>gui</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\HatcheryData.cpp">
+      <Filter>state</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\Timer.hpp">
@@ -182,6 +185,9 @@
     </ClInclude>
     <ClInclude Include="..\source\Position.hpp">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\HatcheryData.h">
+      <Filter>state</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

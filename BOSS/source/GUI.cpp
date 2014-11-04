@@ -4,8 +4,8 @@
 
 using namespace BOSS;
 
-#define GUI_INITIAL_WIDTH  1600
-#define GUI_INITIAL_HEIGHT 900
+#define GUI_INITIAL_WIDTH  1280
+#define GUI_INITIAL_HEIGHT 720
 
 #define BOSS_MAX_TEXTURES 200
 #define BOSS_TEXTURE_INTERVAL 64
@@ -215,48 +215,81 @@ void GUI::Render()
 
 void GUI::DrawGameState()
 {
+    GLfloat green[4] = {0.0f, 1.0f, 0.0f, 1.0f};
     GLfloat white[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+    GLfloat greyx[4] = {0.7f, 0.7f, 0.7f, 1.0f};
     const RaceID race = _currentState.getRace();
     const std::vector<ActionType> & allActions = ActionTypes::GetAllActionTypes(race);
+    static const ActionType & Larva = ActionTypes::GetActionType("Zerg_Larva");
+    static const ActionType & Hatchery = ActionTypes::GetActionType("Zerg_Hatchery");
+
+    
+    Position bopos(0,20);
+    for (size_t i(0); i < _buildOrder.size(); ++i)
+    {
+        std::stringstream ss;
+        ss << ((i == _boIndex) ? " > " : "   ") << _buildOrder[i].getName();
+        GUITools::DrawStringLargeWithShadow(bopos + Position(0, 15*i), ss.str(), i < _boIndex ? green : greyx);
+    }
+
 
     std::stringstream ssres;
     ssres << "Frame:    " << _currentState.getCurrentFrame() << " " << _currentState.getCurrentFrame()/24 <<"\n";
     ssres << "Minerals: " << (int)_currentState.getMinerals() << "\n";
-    ssres << "Gas:      " << (int)_currentState.getGas();
-    GUITools::DrawStringLargeWithShadow(Position(5, 15), ssres.str(), white);
+    ssres << "MWorkers: " << (int)_currentState.getNumMineralWorkers() << "\n";
+    ssres << "Gas:      " << (int)_currentState.getGas() << "\n";
+    ssres << "GWorkers: " << (int)_currentState.getNumGasWorkers() << "\n";
+    ssres << "C Supply: " << (int)_currentState.getUnitData().getCurrentSupply() << "\n";
+    ssres << "M Supply: " << (int)_currentState.getUnitData().getMaxSupply() << "\n";
+    GUITools::DrawStringLargeWithShadow(Position(225, 45), ssres.str(), white);
+
 
     const size_t width = 64;
-    Position completed(200,0);
+    const size_t cwidth = 96;
+    Position completed(400,0);
+    
+    if (_currentState.getRace() == Races::Zerg)
+    {
+        const UnitCountType & numLarva = _currentState.getHatcheryData().numLarva();
+
+        DrawActionType(Larva, completed, cwidth);
+        std::stringstream num; num << numLarva << "\n" << (Constants::ZERG_LARVA_TIMER-(_currentState.getCurrentFrame() % Constants::ZERG_LARVA_TIMER));
+        GUITools::DrawStringLargeWithShadow(completed + Position(10, 20), num.str(), white);
+        completed.add(cwidth, 0);
+    }
+
     for (size_t a(0); a < allActions.size(); ++a)
     {
         const size_t numCompleted = _currentState.getUnitData().getNumCompleted(allActions[a]);
 
         if (numCompleted > 0)
         {
-            DrawActionType(allActions[a], completed, width);
+            DrawActionType(allActions[a], completed, cwidth);
             std::stringstream num; num << numCompleted;
             GUITools::DrawStringLargeWithShadow(completed + Position(10, 20), num.str(), white);
-            completed.add(width, 0);
+            completed.add(cwidth, 0);
         }
     }
 
-    Position legal(200,100);
+    Position legal(400,125);
     ActionSet legalActions;
     _currentState.getAllLegalActions(legalActions);
+    GUITools::DrawStringLargeWithShadow(legal + Position(0,-5), "Legal Actions", white);
     for (size_t a(0); a < legalActions.size(); ++a)
     {
         const ActionType & action = legalActions[a];
-        DrawActionType(legalActions[a], legal, width);
-        legal.add(width, 0);
+        DrawActionType(legalActions[a], legal, width/2);
+        legal.add(width/2, 0);
     }
 
     GLfloat grey2[4] = {0.4f, 0.4f, 0.4f, 1.0f};
     GLfloat grey[4] = {0.1f, 0.1f, 0.1f, 1.0f};
     GLfloat blue[4] = {0.0f, 0.0f, 1.0f, 1.0f};
 
-    Position progress(0, 200);
+    Position progress(225, 200);
     Position progressBar(200,32);
     Position progressBuffer(100, 16);
+    GUITools::DrawStringLargeWithShadow(progress, "Actions in Progress", white);
     for (size_t a(0); a < _currentState.getUnitData().getNumActionsInProgress(); ++a)
     {
         size_t index = _currentState.getUnitData().getNumActionsInProgress() - a - 1;
@@ -278,8 +311,9 @@ void GUI::DrawGameState()
         progress.add(0, width);
     }
 
-    Position buildings(350, 200);
+    Position buildings(650, 200);
     const BuildingData & buildingData = _currentState.getBuildingData();
+    GUITools::DrawStringLargeWithShadow(buildings, "Completed Buildings", white);
     for (size_t i(0); i < buildingData.size(); ++i)
     {
         const BuildingStatus & buildingStatus = buildingData.getBuilding(i);
@@ -303,7 +337,23 @@ void GUI::DrawGameState()
             GUITools::DrawStringLargeWithShadow(buildings + progressBuffer + Position(10, 20), time.str(), white);
         }
         
-            buildings.add(0, width);
+        buildings.add(0, width);
+    }
+
+    Position hatcheries(1000, 200);
+    const HatcheryData & hatcheryData = _currentState.getHatcheryData();
+    GUITools::DrawStringLargeWithShadow(hatcheries, "Hatchery Data", white);
+    for (size_t i(0); i < hatcheryData.size(); ++i)
+    {
+        DrawActionType(Hatchery, hatcheries, width);
+        std::stringstream num; num << hatcheryData.getHatchery(i).numLarva();
+        for (size_t l(0); l < hatcheryData.getHatchery(i).numLarva(); ++l)
+        {
+            DrawActionType(Larva, hatcheries + Position(width * (l+1), 0), width);
+        }
+
+        //GUITools::DrawStringLargeWithShadow(hatcheries + Position(10, 20), num.str(), white);
+        hatcheries.add(0, width);
     }
 }
 
@@ -316,6 +366,14 @@ void GUI::DrawActionType(const ActionType & type, const Position & topLeft, cons
     Position size = Position(textureSizes[textureNumber].x() * ratio, textureSizes[textureNumber].y() * ratio);
     Position bottomRight(topLeft + size);
     GUITools::DrawTexturedRect(topLeft, bottomRight, textureNumber, white);
+}
+
+void GUI::SetBuildOrder(const std::vector<ActionType> & buildOrder, const size_t boIndex)
+{
+    Position bopos(0,0);
+
+    _buildOrder = buildOrder;
+    _boIndex = boIndex;
 }
 
 void GUI::DrawAllUnits()

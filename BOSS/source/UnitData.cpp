@@ -5,8 +5,6 @@ using namespace BOSS;
 UnitData::UnitData(const RaceID race)
     : _race(race)
     , _numUnits(Constants::MAX_ACTIONS, 0)
-    , _hatcheries(0)
-    , _numLarva(0)
     , _currentSupply(0)
     , _maxSupply(0)
     , _mineralWorkers(0)
@@ -59,12 +57,11 @@ void UnitData::addCompletedBuilding(const ActionType & action, const FrameCountT
     // special case for hatcheries
     if (action.isBuilding() && (action.getUnitType() == BWAPI::UnitTypes::Zerg_Hatchery))
     {
-        _hatcheries.push_back(Hatchery(3, 0));
-        _numLarva += 3;
+        _hatcheryData.addHatchery(1);
     }
 }
 
-void UnitData::addCompletedAction(const ActionType & action)
+void UnitData::addCompletedAction(const ActionType & action, bool wasBuilt)
 {
     _numUnits[action.ID()] += action.numProduced();
 
@@ -85,27 +82,33 @@ void UnitData::addCompletedAction(const ActionType & action)
     // if it's a building that can produce units, add it to the building data
 	if (action.isBuilding() && !action.isSupplyProvider())
 	{
-		_buildings.addBuilding(action, ActionTypes::None);
+        if (action.isMorphed() && wasBuilt)
+        {
+		    _buildings.morphBuilding(action.whatBuildsActionType(), action);   
+        }
+        else
+        {
+            _buildings.addBuilding(action, ActionTypes::None);
+        }
 	}
 
     // special case for hatcheries
     if (action.isBuilding() && (action.getUnitType() == BWAPI::UnitTypes::Zerg_Hatchery))
     {
-        _hatcheries.push_back(Hatchery(3, 0));
-        _numLarva += 3;
+        _hatcheryData.addHatchery(wasBuilt ? 1 : 3);
     }
 }
 
 void UnitData::addActionInProgress(const ActionType & action, const FrameCountType & completionFrame, bool queueAction)
 {
-    FrameCountType finishTime = action.isBuilding() ? completionFrame + Constants::BUILDING_PLACEMENT : completionFrame;
+    FrameCountType finishTime = (action.isBuilding() && !action.isMorphed()) ? completionFrame + Constants::BUILDING_PLACEMENT : completionFrame;
 
 	// add it to the actions in progress
 	_progress.addAction(action, finishTime);
     
-    _currentSupply += action.supplyRequired();
+    _currentSupply += action.supplyRequired() * action.numProduced();
 
-    if (queueAction && action.whatBuildsIsBuilding() && (getRace() != Races::Zerg))
+    if (queueAction && action.whatBuildsIsBuilding())
 	{
 		// add it to a free building, which MUST be free since it's called from doAction
 		// which must be already fastForwarded to the correct time
@@ -126,11 +129,6 @@ const SupplyCountType UnitData::getCurrentSupply() const
 const SupplyCountType UnitData::getMaxSupply() const
 {
     return _maxSupply;
-}
-
-void UnitData::setLarva(const UnitCountType & larva)
-{
-    _numLarva = larva;
 }
 
 void UnitData::setBuildingWorker()
@@ -172,6 +170,22 @@ void UnitData::setBuildingWorkers(const UnitCountType & buildingWorkers)
     _buildingWorkers = buildingWorkers;
 }
 
+void UnitData::morphUnit(const ActionType & from, const ActionType & to, const FrameCountType & completionFrame)
+{
+    BOSS_ASSERT(getNumCompleted(from) > 0, "Must have the unit type to morph it");
+    _numUnits[from.ID()]--;
+    _currentSupply -= from.supplyRequired();
+    _maxSupply -= from.supplyProvided();
+
+    if (from.isWorker())
+    {
+        BOSS_ASSERT(_mineralWorkers > 0, "Need mineral worker");
+        _mineralWorkers--;
+    }
+
+    addActionInProgress(to, completionFrame);
+}
+
 const UnitCountType UnitData::getNumMineralWorkers() const
 {
     return _mineralWorkers;
@@ -198,12 +212,6 @@ void UnitData::finishNextActionInProgress()
 	// pop it from the progress vector
 	_progress.popNextAction();
 			
-	// do race specific action finishings
-	raceSpecificFinishAction(action);
-}
-
-void UnitData::raceSpecificFinishAction(const ActionType & action)
-{
 	if (getRace() == Races::Terran)
 	{
 		// if it's a building, release the worker back
@@ -215,21 +223,6 @@ void UnitData::raceSpecificFinishAction(const ActionType & action)
 	else if (getRace() == Races::Zerg)
 	{
         const static ActionType hatchery = ActionTypes::GetActionType("Zerg_Hatchery");
-
-		// if it's a Lair, remove the hatchery
-		if (action.isBuilding() && (action.getUnitType() == BWAPI::UnitTypes::Zerg_Lair))
-		{
-			_numUnits[hatchery.ID()]--;
-
-			// take away the supply that was provided by the hatchery
-			_maxSupply -= hatchery.supplyProvided();
-		}
-
-		// if it's a Greater Spire, remove the spire
-		//if (action.isBuilding() && (action.getUnitType() == BWAPI::UnitTypes::Zerg_Greater_Spire))
-		//{
-		///	numUnits[ACTIONS.getAction(BWAPI::UnitTypes::Zerg_Spire)]--;
-		//}
 
 	}
 }
@@ -336,12 +329,17 @@ const PrerequisiteSet UnitData::getPrerequistesInProgress(const ActionType & act
     return inProgress;
 }
 
-const UnitCountType UnitData::getNumLarva() const
-{
-    return _numLarva;
-}
-
 const BuildingData & UnitData::getBuildingData() const
 {
     return _buildings;
+}
+
+HatcheryData & UnitData::getHatcheryData()
+{
+    return _hatcheryData;
+}
+
+const HatcheryData & UnitData::getHatcheryData() const
+{
+    return _hatcheryData;
 }

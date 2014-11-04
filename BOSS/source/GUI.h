@@ -40,6 +40,8 @@ class GUI
     std::vector<Position>       textureSizes;
 
     GameState                   _currentState;
+    std::vector<ActionType>     _buildOrder;
+    size_t                      _boIndex;
 
 #ifdef WIN32
     void setVSync(int interval);
@@ -71,6 +73,7 @@ public:
     bool saveScreenshotBMP(const std::string & filename);
 
     void SetState(const GameState & state);
+    void SetBuildOrder(const std::vector<ActionType> & buildOrder, const size_t boIndex);
 };
 }
 

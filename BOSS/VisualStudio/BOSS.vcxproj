@@ -38,6 +38,7 @@
     <ClInclude Include="..\source\GameState.h" />
     <ClInclude Include="..\source\GUI.h" />
     <ClInclude Include="..\source\GUITools.h" />
+    <ClInclude Include="..\source\HatcheryData.h" />
     <ClInclude Include="..\source\Logger.h" />
     <ClInclude Include="..\source\Position.hpp" />
     <ClInclude Include="..\source\PrerequisiteSet.h" />
@@ -69,6 +70,7 @@
     <ClCompile Include="..\source\GameState.cpp" />
     <ClCompile Include="..\source\GUI.cpp" />
     <ClCompile Include="..\source\GUITools.cpp" />
+    <ClCompile Include="..\source\HatcheryData.cpp" />
     <ClCompile Include="..\source\Logger.cpp" />
     <ClCompile Include="..\source\PrerequisiteSet.cpp" />
     <ClCompile Include="..\source\Tools.cpp" />

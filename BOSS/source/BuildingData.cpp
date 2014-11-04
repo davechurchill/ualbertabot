@@ -108,6 +108,19 @@ const size_t & BuildingData::size() const
     return _buildings.size();
 }
 
+void BuildingData::morphBuilding(const ActionType & from, const ActionType & to)
+{
+    for (size_t i(0); i<_buildings.size(); ++i)
+	{
+        if (_buildings[i]._type == from)
+        {
+            
+            _buildings[i]._type = to;
+            return;
+        }
+    }
+}
+
 void BuildingData::addBuilding(const ActionType & action, const ActionType & addon)
 {
 	BOSS_ASSERT(action.isBuilding(), "Trying to add a non-building to the building data");

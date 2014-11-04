@@ -119,30 +119,133 @@ void testNaiveBuildOrder()
 
 void testBuildOrderVisualization()
 {
-    GameState state(Races::Protoss);
+    const RaceID race = Races::Zerg;
+
+    GameState state(race);
     state.setStartingState();
 
     std::vector<ActionType> buildOrder;
-    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Probe"));
-    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Probe"));
-    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Probe"));
-    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Probe"));
-    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Pylon"));
-    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Probe"));
-    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Assimilator"));
-    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Probe"));
-    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Gateway"));
-    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Probe"));
-    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Probe"));
-    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Zealot"));
-    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Cybernetics_Core"));
-    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Pylon"));
-    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Pylon"));
-    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Pylon"));
+
+    if (race == Races::Protoss)
+    {
+        buildOrder.push_back(ActionTypes::GetActionType("Protoss_Probe"));
+        buildOrder.push_back(ActionTypes::GetActionType("Protoss_Probe"));
+        buildOrder.push_back(ActionTypes::GetActionType("Protoss_Probe"));
+        buildOrder.push_back(ActionTypes::GetActionType("Protoss_Probe"));
+        buildOrder.push_back(ActionTypes::GetActionType("Protoss_Pylon"));
+        buildOrder.push_back(ActionTypes::GetActionType("Protoss_Probe"));
+        buildOrder.push_back(ActionTypes::GetActionType("Protoss_Assimilator"));
+        buildOrder.push_back(ActionTypes::GetActionType("Protoss_Probe"));
+        buildOrder.push_back(ActionTypes::GetActionType("Protoss_Gateway"));
+        buildOrder.push_back(ActionTypes::GetActionType("Protoss_Probe"));
+        buildOrder.push_back(ActionTypes::GetActionType("Protoss_Probe"));
+        buildOrder.push_back(ActionTypes::GetActionType("Protoss_Zealot"));
+        buildOrder.push_back(ActionTypes::GetActionType("Protoss_Cybernetics_Core"));
+        buildOrder.push_back(ActionTypes::GetActionType("Protoss_Pylon"));
+        buildOrder.push_back(ActionTypes::GetActionType("Protoss_Pylon"));
+        buildOrder.push_back(ActionTypes::GetActionType("Protoss_Pylon"));
+    }
+    else if (race == Races::Zerg)
+    {
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Overlord"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Hatchery"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Spawning_Pool"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Hatchery"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Extractor"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Overlord"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Lair"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Extractor"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Zergling"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Zergling"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Zergling"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Overlord"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Overlord"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Overlord"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Spire"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+
+        /*buildOrder.push_back(ActionTypes::GetActionType("Zerg_Hatchery"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Overlord"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Overlord"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Extractor"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Spawning_Pool"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Lair"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Spire"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Overlord"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Overlord"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Overlord"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));*/
+    }
     
     BOSS::GUI::Instance().OnStart();
     BOSS::GUI::Instance().SetState(state);
-
+    
     size_t nextActionIndex = 0;
     while (true)
     {
@@ -162,10 +265,11 @@ void testBuildOrderVisualization()
 
         state.fastForward(state.getCurrentFrame() + 1);
         BOSS::GUI::Instance().SetState(state);
+        BOSS::GUI::Instance().SetBuildOrder(buildOrder, nextActionIndex);
         
         Timer t;
         t.start();
-        while (t.getElapsedTimeInMilliSec() < 20) {}
+        while (t.getElapsedTimeInMilliSec() < 5) {}
     }
 }
 
@@ -176,7 +280,7 @@ int main(int argc, char *argv[])
     #endif
 
     BOSS::init();
-
+    int a;
     GameState initialState(Races::Protoss);
     initialState.setStartingState();
 

@@ -11,26 +11,7 @@
 
 namespace BOSS
 {
-
-class Hatchery
-{ 
-public:
-	UnitCountType numLarva; 
-	FrameCountType lastThirdUsed;
-	
-	Hatchery(UnitCountType n, FrameCountType t) 
-		: numLarva(n)
-        , lastThirdUsed(t) 
-    {
-    }
-
-	Hatchery() 
-		: numLarva(0)
-        , lastThirdUsed(0) 
-    {
-    }
-};
-
+    
 class BuildingStatus
 {
 
@@ -65,6 +46,7 @@ public:
 
 	BuildingData();
 
+    void morphBuilding(const ActionType & from, const ActionType & to);
 	void addBuilding(const ActionType & action, const ActionType & addon);
 	void addBuilding(const ActionType & action, const FrameCountType timeUntilFree, const ActionType & constructing, const ActionType & addon);
 

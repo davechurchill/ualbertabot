@@ -105,7 +105,7 @@ GameState::GameState(BWAPI::Game * game, BWAPI::Player * self)
 		}
 	}
 
-	_units.setLarva(larvaCount);
+    // TODO: set correct number of larva from state
 
     for (std::set<BWAPI::UpgradeType>::const_iterator it = BWAPI::UpgradeTypes::allUpgradeTypes().begin(); it != BWAPI::UpgradeTypes::allUpgradeTypes().end(); it++)
 	{
@@ -141,15 +141,15 @@ void GameState::setStartingState()
     _minerals = 50;
     _gas = 0;
 
-    _units.addCompletedAction(ActionTypes::GetResourceDepot(getRace()));
-    _units.addCompletedAction(ActionTypes::GetWorker(getRace()));
-    _units.addCompletedAction(ActionTypes::GetWorker(getRace()));
-    _units.addCompletedAction(ActionTypes::GetWorker(getRace()));
-    _units.addCompletedAction(ActionTypes::GetWorker(getRace()));
+    _units.addCompletedAction(ActionTypes::GetResourceDepot(getRace()), false);
+    _units.addCompletedAction(ActionTypes::GetWorker(getRace()), false);
+    _units.addCompletedAction(ActionTypes::GetWorker(getRace()), false);
+    _units.addCompletedAction(ActionTypes::GetWorker(getRace()), false);
+    _units.addCompletedAction(ActionTypes::GetWorker(getRace()), false);
 
     if (getRace() == Races::Zerg)
     {
-        _units.setLarva(3);
+        _units.addCompletedAction(ActionTypes::GetSupplyProvider(Races::Zerg), false);
     }
 
     _units.setCurrentSupply(8);
@@ -180,6 +180,13 @@ bool GameState::isLegal(const ActionType & action) const
     const size_t numRefineries  = _units.getNumTotal(ActionTypes::GetRefinery(getRace()));
     const size_t numDepots      = _units.getNumTotal(ActionTypes::GetResourceDepot(getRace()));
     const size_t refineriesInProgress = _units.getNumInProgress(ActionTypes::GetRefinery(getRace()));
+
+    // we can never build a larva
+    static const ActionType & Zerg_Larva = ActionTypes::GetActionType("Zerg_Larva");
+    if (action == Zerg_Larva)
+    {
+        return false;
+    }
 
     // check if the tech requirements are met
     if (!_units.hasPrerequisites(action.getPrerequisites()))
@@ -235,6 +242,11 @@ bool GameState::isLegal(const ActionType & action) const
         return false;
     }
 
+    if (action.isTech() && getUnitData().getNumTotal(action) > 0)
+    {
+        return false;
+    }
+
     return true;
 }
 
@@ -265,9 +277,6 @@ void GameState::doAction(const ActionType & action)
     FrameCountType elapsed(_currentFrame - _lastActionFrame);
     _lastActionFrame = _currentFrame;
 
-    // queue the action
-    _units.addActionInProgress(action, _currentFrame + action.buildTime());
-
     BOSS_ASSERT(_minerals   >= action.mineralPrice(),   "Minerals less than price: %lf < %d, ffTime=%d %s", _minerals, action.mineralPrice(), (int)elapsed, getActionsPerformedString().c_str());
     BOSS_ASSERT(_gas        >= action.gasPrice(),       "Gas less than price: %lf < %d, ffTime=%d %s", _gas, (int)action.gasPrice(), (int)elapsed, getActionsPerformedString().c_str());
 
@@ -275,68 +284,53 @@ void GameState::doAction(const ActionType & action)
     _minerals   -= action.mineralPrice();
     _gas        -= action.gasPrice();
 
-    // do race specific things here, like subtract a larva
-    if (getRace() == Races::Terran)
+    // do race specific things here
+    if (getRace() == Races::Protoss)
+    {
+        _units.addActionInProgress(action, _currentFrame + action.buildTime());    
+    }
+    else if (getRace() == Races::Terran)
     {
         if (action.isBuilding())
         {
             _units.setBuildingWorker();
         }
+
+        _units.addActionInProgress(action, _currentFrame + action.buildTime());
     }
-    //else if (ACTIONS.getRace() == BWAPI::Races::Zerg)
-    //{
-    //	if (GSN_DEBUG) printf("\tSpecific Do Action %d\n", ffTime);
-
-    //	// zerg must subtract a larva if the action was unit creation
-    //	if (ACTIONS[a].isUnit() && !ACTIONS[a].isBuilding()) 
-    //	{		
-    //		if (GSN_DEBUG) printf("\t\tZerg Unit - Remove Larva\n");
-    //		// subtract the larva
-    //		numLarva--;
-    //		
-    //		// for each of our hatcheries
-    //		for (int i(0); i<numHatcheries; ++i) 
-    //		{			
-    //			// if this hatchery has a larva available
-    //			if (hatcheries[i].numLarva > 0) 
-    //			{
-    //				// if there were 3 larva previously, update lastUsed
-    //				if (hatcheries[i].numLarva == 3) hatcheries[i].lastThirdUsed = currentFrame;
-
-    //				// subtract it from this hatchery
-    //				hatcheries[i].numLarva--;
-    //				
-    //				// break out of the hatchery loop
-    //				break;
-    //			}
-    //		}
-    //	}
-    //	else if (ACTIONS[a].isBuilding())
-    //	{
-    //		if (GSN_DEBUG) printf("\t\tZerg Building - Remove Drone\n");
-
-    //		// special case of morphed buildings
-    //		if (ACTIONS[a].getUnitType() == BWAPI::UnitTypes::Zerg_Lair || ACTIONS[a].getUnitType() == BWAPI::UnitTypes::Zerg_Greater_Spire)
-    //		{
-    //			// the previous building starts morphing into this one
-    //		}
-    //		else
-    //		{
-    //			// otherwise, a drone is subtracted to start construction
-    //			addNumUnits(ACTIONS.getWorker(), -1);
-    //			addMineralWorkers(-1);
-    //			currentSupply -= ACTIONS[ACTIONS.getWorker()].supplyRequired();
-    //		}
-    //	}
-
-    //	if (GSN_DEBUG) printf("\tSpecific Do Action End\n");
-    //}
+    else if (getRace() == Races::Zerg)
+    {
+     	//  zerg must subtract a larva if the action was unit creation
+    	if (action.isUnit() && !action.isBuilding()) 
+        {
+            if (action.isMorphed())
+            {
+                _units.morphUnit(action.whatBuildsActionType(), action, _currentFrame + action.buildTime());   
+            }
+            else
+            {
+                BOSS_ASSERT(getHatcheryData().numLarva() > 0, "We should have a larva to use");
+                _units.getHatcheryData().useLarva();
+                _units.addActionInProgress(action, _currentFrame + action.buildTime());
+            }
+     	}
+     	else if (action.isBuilding())
+     	{
+            _units.morphUnit(action.whatBuildsActionType(), action, _currentFrame + action.buildTime());
+     	}
+        else
+        {
+            // if it's not a unit or a building it's a tech so we queue it normally
+            _units.addActionInProgress(action, _currentFrame + action.buildTime());
+        }
+     }
 }
 
 // fast forwards the current state to time toFrame
 void GameState::fastForward(const FrameCountType toFrame)
 {
     // fast forward the building timers to the current frame
+    FrameCountType previousFrame = _currentFrame;
     _units.setBuildingFrame(toFrame - _currentFrame);
 
     // update resources & finish each action
@@ -375,49 +369,10 @@ void GameState::fastForward(const FrameCountType toFrame)
     // we are now in the FUTURE... "the future, conan?"
     _currentFrame           = toFrame;
 
-    //if (ACTIONS.getRace() == BWAPI::Races::Zerg)
-    //{
-    //	if (GSN_DEBUG) printf("\t\tSpecific Fast Forward\n");
-
-    //	// for each hatchery we have
-    //	for (int i(0); i<numHatcheries; ++i) 
-    //	{	
-    //		// only do this if there's less than 3 larva present
-    //		if (hatcheries[i].numLarva < 3) 
-    //		{
-    //			// how much time will have past since the last larva used
-    //			FrameCountType diff = toFrame - hatcheries[i].lastThirdUsed;
-
-    //			// figure out how many larva should have spawned
-    //			UnitCountType numLarvaSpawn = (UnitCountType)(diff / Constants::ZERG_LARVA_TIMER);
-
-    //			// cut that number down to make sure no more than 3 total exist
-    //			if (numLarvaSpawn > (3 - hatcheries[i].numLarva)) numLarvaSpawn = 3 - hatcheries[i].numLarva;
-
-    //			// add that to the number of larva
-    //			hatcheries[i].numLarva += numLarvaSpawn;
-    //			numLarva += numLarvaSpawn;
-
-    //			// if it's less than 3, update the timer ticker
-    //			if (hatcheries[i].numLarva < 3) 
-    //			{
-    //				hatcheries[i].lastThirdUsed += (numLarvaSpawn * Constants::ZERG_LARVA_TIMER);
-    //			}
-    //			
-    //			// if it's exactly 3, set it to toFrame (this might not even matter)
-    //			if (hatcheries[i].numLarva == 3) 
-    //			{
-    //				hatcheries[i].lastThirdUsed = toFrame;
-    //			}
-
-    //			//printf("Num Larva Spawn: %d %d\n", numLarvaSpawn, hatcheries[i].numLarva);
-    //		} 
-    //		else 
-    //		{
-    //			hatcheries[i].lastThirdUsed = toFrame;
-    //		}	
-    //	}
-    //}
+    if (getRace() == Races::Zerg)
+    {
+        _units.getHatcheryData().fastForward(previousFrame, toFrame);
+    }
 }
 
 // returns the time at which all resources to perform an action will be available
@@ -468,37 +423,13 @@ const FrameCountType GameState::raceSpecificWhenReady(const ActionType & a) cons
             return _units.getNextBuildingFinishTime();
         }
     }
-
-    //if (ACTIONS.getRace() == BWAPI::Races::Zerg)
-    //{
-    //	if (GSN_DEBUG) printf("\tSpecific When Ready\n");
-    //	FrameCountType l = currentFrame;		
-    //	
-    //	// if the current action is a unit
-    //	if (ACTIONS[a].isUnit()) 
-    //	{
-    //		// if we don't have any larva ready, figure out when it will pop
-    //           if (units.getNumLarva() == 0)
-    //		{
-    //			if (GSN_DEBUG) printf("\t\tZerg Larva Not Ready\n");
-
-    //			// min value placeholder
-    //			int min = 88888888;
-
-    //			// figure out the hatchery with the least recent used larva
-    //			for (int i(0); i<numHatcheries; ++i) 
-    //			{
-    //				// set the minimum accordingly
-    //				min = hatcheries[i].lastThirdUsed < min ? hatcheries[i].lastThirdUsed : min;
-    //			}
-
-    //			l = min + Constants::ZERG_LARVA_TIMER + 5;
-    //		}
-    //	}
-
-    //	if (GSN_DEBUG) printf("\tSpecific When Ready End (return %d)\n", l);
-    //	return l;
-    //}
+    else if (getRace() == Races::Zerg)
+    {
+        if (getHatcheryData().numLarva() == 0)
+        {
+            return getHatcheryData().nextLarvaFrameAfter(_currentFrame);
+        }
+    }
 
     return 0;
 }
@@ -857,6 +788,11 @@ const UnitData & GameState::getUnitData() const
 const BuildingData & GameState::getBuildingData() const
 {
     return _units.getBuildingData();
+}
+
+const HatcheryData & GameState::getHatcheryData() const
+{
+    return _units.getHatcheryData();
 }
 
 const std::string GameState::toString() const

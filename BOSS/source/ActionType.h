@@ -63,6 +63,7 @@ public:
 	bool                        canAttack()             const;
     bool                        isAddon()               const;
     bool                        requiresAddon()         const;
+    bool                        isMorphed()             const;
     ActionType                  requiredAddonType()     const;
 
     const bool operator == (const ActionType & rhs)     const;

@@ -97,6 +97,7 @@ bool                        ActionType::whatBuildsIsBuilding()  const { return A
 bool                        ActionType::whatBuildsIsLarva()     const { return ActionTypeData::GetActionTypeData(_race, _id).whatBuildsIsLarva(); }
 bool                        ActionType::canProduce()            const { return ActionTypeData::GetActionTypeData(_race, _id).canProduce(); }
 bool                        ActionType::requiresAddon()         const { return ActionTypeData::GetActionTypeData(_race, _id).requiresAddon(); }
+bool                        ActionType::isMorphed()             const { return ActionTypeData::GetActionTypeData(_race, _id).isMorphed(); }
 
 ActionType                  ActionType::requiredAddonType()     const { return ActionTypes::GetActionType(_race, ActionTypeData::GetActionTypeData(_race, _id).requiredAddonID()); }
 

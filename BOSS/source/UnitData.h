@@ -5,6 +5,7 @@
 #include "BuildingData.h"
 #include "ActionType.h"
 #include "ActionInProgress.h"
+#include "HatcheryData.h"
 
 namespace BOSS
 {
@@ -21,13 +22,10 @@ class UnitData
     SupplyCountType                     _currentSupply; 			// our current allocated supply
     
     Vec<UnitCountType, Constants::MAX_ACTIONS>     _numUnits;                  // how many of each unit are completed
-    Vec<Hatchery, Constants::MAX_HATCHERIES>       _hatcheries;
-    UnitCountType                       _numLarva;
+    HatcheryData                        _hatcheryData;
 
     ActionsInProgress	                _progress;					
     BuildingData		                _buildings;
-
-    void                                raceSpecificFinishAction(const ActionType & a);
 
 public:
 
@@ -71,17 +69,19 @@ public:
     void                    setBuildingWorker();
     void                    releaseBuildingWorker();
     void                    addCompletedBuilding(const ActionType & action, const FrameCountType timeUntilFree, const ActionType & constructing, const ActionType & addon);
-    void                    addCompletedAction(const ActionType & action);
+    void                    addCompletedAction(const ActionType & action, bool wasBuilt = true);
     void                    addActionInProgress(const ActionType & action, const FrameCountType & completionFrame, bool queueAction = true);
     void                    setBuildingFrame(const FrameCountType & frame);
     void                    setMineralWorkers(const UnitCountType & mineralWorkers);
     void                    setGasWorkers(const UnitCountType & gasWorkers);
     void                    setBuildingWorkers(const UnitCountType & buildingWorkers);
-    void                    setLarva(const UnitCountType & larva);
+    void                    morphUnit(const ActionType & from, const ActionType & to, const FrameCountType & completionFrame);
 
     void                    finishNextActionInProgress();
 
     const BuildingData &    getBuildingData() const;
+    const HatcheryData &    getHatcheryData() const;
+          HatcheryData &    getHatcheryData();
 };
 
 }
