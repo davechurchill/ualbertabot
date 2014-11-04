@@ -14,7 +14,7 @@ namespace BOSS
     {
         for (RaceID r(0); r < Races::NUM_RACES; ++r)
         {
-            const ActionSet & allActions = ActionTypes::GetAllActionTypes(r);
+            const std::vector<ActionType> & allActions = ActionTypes::GetAllActionTypes(r);
             for (size_t i(0); i<allActions.size(); ++i)
             {
                 const ActionType & a = allActions[i];

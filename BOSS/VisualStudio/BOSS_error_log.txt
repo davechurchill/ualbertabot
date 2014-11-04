@@ -76,3 +76,75 @@ File:      ..\source\ActionTypeData.cpp
 Message:   Race ID invalid: 4 None
 Line:      397
 Time:      2014-10-20_16:09:29
+
+!Assert:   index < size()
+File:      d:\ualbertabot\boss\source\Array.hpp
+Message:   Vec out of bounds exception, Size = 50, Index = 50
+Line:      52
+Time:      2014-11-03_11:08:37
+
+!Assert:   index < size()
+File:      d:\ualbertabot\boss\source\Array.hpp
+Message:   Vec out of bounds exception, Size = 50, Index = 50
+Line:      52
+Time:      2014-11-03_11:09:18
+
+!Assert:   index < size()
+File:      d:\ualbertabot\boss\source\Array.hpp
+Message:   Vec out of bounds exception, Size = 50, Index = 51
+Line:      52
+Time:      2014-11-03_11:10:16
+
+!Assert:   index < size()
+File:      d:\ualbertabot\boss\source\Array.hpp
+Message:   Vec out of bounds exception, Size = 50, Index = 52
+Line:      52
+Time:      2014-11-03_11:10:17
+
+!Assert:   index < size()
+File:      d:\ualbertabot\boss\source\Array.hpp
+Message:   Vec out of bounds exception, Size = 50, Index = 53
+Line:      52
+Time:      2014-11-03_11:10:18
+
+!Assert:   index < size()
+File:      d:\ualbertabot\boss\source\Array.hpp
+Message:   Vec out of bounds exception, Size = 50, Index = 54
+Line:      52
+Time:      2014-11-03_11:10:19
+
+!Assert:   index < size()
+File:      d:\ualbertabot\boss\source\Array.hpp
+Message:   Vec out of bounds exception, Size = 50, Index = 55
+Line:      52
+Time:      2014-11-03_11:10:21
+
+!Assert:   index < size()
+File:      d:\ualbertabot\boss\source\Array.hpp
+Message:   Vec out of bounds exception, Size = 50, Index = 50
+Line:      52
+Time:      2014-11-03_11:11:16
+
+!Assert:   index < size()
+File:      d:\ualbertabot\boss\source\array.hpp
+Message:   Vec out of bounds exception, Size = 50, Index = 50
+Line:      52
+Time:      2014-11-03_11:15:03
+
+!Assert:   index < size()
+File:      d:\ualbertabot\boss\source\array.hpp
+Message:   Vec out of bounds exception, Size = 50, Index = 50
+Line:      52
+Time:      2014-11-03_11:18:16
+
+!Assert:   _minerals >= action.mineralPrice()
+File:      d:\ualbertabot\boss\source\gamestate.cpp
+Message:   Minerals less than price: 99 < 100, ffTime=150 
+0 50 0 Protoss Probe
+300 53 0 Protoss Probe
+600 71 0 Protoss Probe
+900 102 0 Protoss Probe
+1050 99 0 Protoss Pylon
+
+Line:      273
+Time:      2014-11-03_11:45:37

@@ -90,8 +90,6 @@ void GUI::OnFrame()
     Render();
 
     SDL_GL_SwapBuffers();
-
-    OnFrame();
 }
 
 void GUI::OnResize(SDL_Event & event)
@@ -217,6 +215,111 @@ void GUI::Render()
 
 void GUI::DrawGameState()
 {
+    GLfloat white[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+    const RaceID race = _currentState.getRace();
+    const std::vector<ActionType> & allActions = ActionTypes::GetAllActionTypes(race);
+
+    std::stringstream ssres;
+    ssres << "Frame:    " << _currentState.getCurrentFrame() << " " << _currentState.getCurrentFrame()/24 <<"\n";
+    ssres << "Minerals: " << (int)_currentState.getMinerals() << "\n";
+    ssres << "Gas:      " << (int)_currentState.getGas();
+    GUITools::DrawStringLargeWithShadow(Position(5, 15), ssres.str(), white);
+
+    const size_t width = 64;
+    Position completed(200,0);
+    for (size_t a(0); a < allActions.size(); ++a)
+    {
+        const size_t numCompleted = _currentState.getUnitData().getNumCompleted(allActions[a]);
+
+        if (numCompleted > 0)
+        {
+            DrawActionType(allActions[a], completed, width);
+            std::stringstream num; num << numCompleted;
+            GUITools::DrawStringLargeWithShadow(completed + Position(10, 20), num.str(), white);
+            completed.add(width, 0);
+        }
+    }
+
+    Position legal(200,100);
+    ActionSet legalActions;
+    _currentState.getAllLegalActions(legalActions);
+    for (size_t a(0); a < legalActions.size(); ++a)
+    {
+        const ActionType & action = legalActions[a];
+        DrawActionType(legalActions[a], legal, width);
+        legal.add(width, 0);
+    }
+
+    GLfloat grey2[4] = {0.4f, 0.4f, 0.4f, 1.0f};
+    GLfloat grey[4] = {0.1f, 0.1f, 0.1f, 1.0f};
+    GLfloat blue[4] = {0.0f, 0.0f, 1.0f, 1.0f};
+
+    Position progress(0, 200);
+    Position progressBar(200,32);
+    Position progressBuffer(100, 16);
+    for (size_t a(0); a < _currentState.getUnitData().getNumActionsInProgress(); ++a)
+    {
+        size_t index = _currentState.getUnitData().getNumActionsInProgress() - a - 1;
+
+        const ActionType actionInProgress = _currentState.getUnitData().getActionInProgressByIndex(index);
+        const FrameCountType finishTime = _currentState.getUnitData().getActionInProgressFinishTimeByIndex(index);
+        
+        DrawActionType(actionInProgress, progress, width);
+        double remainingTime = (finishTime - _currentState.getCurrentFrame());
+        double timeRatio = remainingTime / actionInProgress.buildTime();
+        Position ratioBar(timeRatio * progressBar.x(), progressBar.y());
+
+        GUITools::DrawRect(progress + progressBuffer - Position(2,2), progress + progressBuffer + Position(2,2) + progressBar, grey2);
+        GUITools::DrawRect(progress + progressBuffer, progress + progressBuffer + progressBar, grey);
+        GUITools::DrawRect(progress + progressBuffer, progress + progressBuffer + ratioBar, blue);
+
+        std::stringstream time; time << (int)remainingTime;
+        GUITools::DrawStringLargeWithShadow(progress + progressBuffer + Position(10, 20), time.str(), white);
+        progress.add(0, width);
+    }
+
+    Position buildings(350, 200);
+    const BuildingData & buildingData = _currentState.getBuildingData();
+    for (size_t i(0); i < buildingData.size(); ++i)
+    {
+        const BuildingStatus & buildingStatus = buildingData.getBuilding(i);
+
+        const ActionType & type = buildingStatus._type;
+        const FrameCountType & finishTime = buildingStatus._timeRemaining;
+        const ActionType & makingType = buildingStatus._isConstructing;
+
+        DrawActionType(type, buildings, width);
+        
+        if (finishTime > 0)
+        {
+            double remainingTime = finishTime;
+            double timeRatio = remainingTime / makingType.buildTime();
+            Position ratioBar(timeRatio * progressBar.x(), progressBar.y());
+        
+            GUITools::DrawRect(buildings + progressBuffer - Position(2,2), buildings + progressBuffer + Position(2,2) + progressBar, grey2);
+            GUITools::DrawRect(buildings + progressBuffer, buildings + progressBuffer + progressBar , grey);
+            GUITools::DrawRect(buildings + progressBuffer, buildings + progressBuffer + ratioBar, blue);
+            std::stringstream time; time << (int)remainingTime;
+            GUITools::DrawStringLargeWithShadow(buildings + progressBuffer + Position(10, 20), time.str(), white);
+        }
+        
+            buildings.add(0, width);
+    }
+}
+
+void GUI::DrawActionType(const ActionType & type, const Position & topLeft, const size_t & width)
+{
+    GLfloat white[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+    
+    int textureNumber = getTextureNumber(type);
+    float ratio = (float)width / textureSizes[textureNumber].x();
+    Position size = Position(textureSizes[textureNumber].x() * ratio, textureSizes[textureNumber].y() * ratio);
+    Position bottomRight(topLeft + size);
+    GUITools::DrawTexturedRect(topLeft, bottomRight, textureNumber, white);
+}
+
+void GUI::DrawAllUnits()
+{
     GLfloat color[4] = {1.0f, 1.0f, 1.0f, 1.0f};
     
     float width = 64;
@@ -227,23 +330,16 @@ void GUI::DrawGameState()
     {
         for (size_t i(0); i < ActionTypes::GetAllActionTypes(r).size(); ++i)
         {   
-            
             const ActionType & type = ActionTypes::GetAllActionTypes(r)[i];
-            int textureNumber = getTextureNumber(type);
-            float ratio = (float)width / textureSizes[textureNumber].x();
-            Position size = Position(textureSizes[textureNumber].x() * ratio, textureSizes[textureNumber].y() * ratio);
-
-            Position br((type.isUnit() ? p : techp) + size);
-
-            GUITools::DrawTexturedRect(type.isUnit() ? p : techp, br, textureNumber, color);
-
+            DrawActionType(type, (type.isUnit() ? p : techp), width);
+            
             if (type.isUnit())
             {
-                p = p + Position(size.x(), 0);
+                p = p + Position(width, 0);
             }
             else
             {
-                techp = techp + Position(size.x(), 0);
+                techp = techp + Position(width, 0);
             }
         }
         
@@ -345,6 +441,11 @@ void GUI::LoadTexture(int textureNumber, const char * fileName, bool mipmap)
         //printf("Loaded Image %s\n", fileName);
         SDL_FreeSurface( surface );
     }
+}
+
+void GUI::SetState(const GameState & state)
+{
+    _currentState = state;
 }
 
 bool GUI::saveScreenshotBMP(const std::string & filename) 

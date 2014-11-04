@@ -39,6 +39,8 @@ class GUI
     std::vector<GLuint>         textures;
     std::vector<Position>       textureSizes;
 
+    GameState                   _currentState;
+
 #ifdef WIN32
     void setVSync(int interval);
 #endif
@@ -49,7 +51,9 @@ class GUI
     void LoadTextures();
     void LoadTexture(int textureNumber, const char * fileName, bool mipmap = false);
     void OnResize(SDL_Event & event);
+    void DrawAllUnits();
     void DrawGameState();
+    void DrawActionType(const ActionType & type, const Position & tl, const size_t & width);
 
     const std::string getTextureFileName(const ActionType & type) const;
     const int getTextureNumber(const ActionType & type) const;
@@ -64,8 +68,9 @@ public:
     void OnStart();
     void OnFrame();
     bool isStarted() const;
-
     bool saveScreenshotBMP(const std::string & filename);
+
+    void SetState(const GameState & state);
 };
 }
 

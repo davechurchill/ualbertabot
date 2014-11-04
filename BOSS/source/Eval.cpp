@@ -8,7 +8,7 @@ namespace Eval
     {
         ResourceCountType sum(0);
 	    
-        const ActionSet & allActions = ActionTypes::GetAllActionTypes(state.getRace());
+        const std::vector<ActionType> & allActions = ActionTypes::GetAllActionTypes(state.getRace());
 	    for (ActionID i(0); i<allActions.size(); ++i)
 	    {
             const ActionType & a = allActions[i];
@@ -26,7 +26,7 @@ namespace Eval
     {
         ResourceCountType sum(0);
 	    
-	    const ActionSet & allActions = ActionTypes::GetAllActionTypes(state.getRace());
+	    const std::vector<ActionType> & allActions = ActionTypes::GetAllActionTypes(state.getRace());
 	    for (ActionID i(0); i<allActions.size(); ++i)
 	    {
             const ActionType & a = allActions[i];

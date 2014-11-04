@@ -52,6 +52,7 @@ public:
     const UnitCountType     getSupplyInProgress() const;
 
     const ActionType &      getActionInProgressByIndex(const UnitCountType & index) const;
+    const FrameCountType &  getActionInProgressFinishTimeByIndex(const UnitCountType & index) const;
 
     const FrameCountType    getNextBuildingFinishTime() const;
     const FrameCountType    getFinishTime(const ActionType & action) const;
@@ -79,6 +80,8 @@ public:
     void                    setLarva(const UnitCountType & larva);
 
     void                    finishNextActionInProgress();
+
+    const BuildingData &    getBuildingData() const;
 };
 
 }

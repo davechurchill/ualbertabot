@@ -80,6 +80,7 @@ public:
 	void queueAction(const ActionType & action);
 	void fastForwardBuildings(const FrameCountType frames);
 	void printBuildingInformation() const;
+    const size_t & size() const;
 
     const bool canBuildNow(const ActionType & action) const;
     const bool canBuildEventually(const ActionType & action) const;

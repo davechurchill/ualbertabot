@@ -117,6 +117,58 @@ void testNaiveBuildOrder()
     std::cout << "New build order took " << initialStateNew.getLastActionFinishTime() << " frames to complete with " << initialStateNew.getUnitData().getNumTotal(ActionTypes::GetWorker(initialStateNew.getRace())) << " total workers in " << msnew << " ms" << std::endl;
 }
 
+void testBuildOrderVisualization()
+{
+    GameState state(Races::Protoss);
+    state.setStartingState();
+
+    std::vector<ActionType> buildOrder;
+    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Probe"));
+    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Probe"));
+    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Probe"));
+    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Probe"));
+    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Pylon"));
+    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Probe"));
+    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Assimilator"));
+    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Probe"));
+    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Gateway"));
+    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Probe"));
+    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Probe"));
+    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Zealot"));
+    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Cybernetics_Core"));
+    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Pylon"));
+    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Pylon"));
+    buildOrder.push_back(ActionTypes::GetActionType("Protoss_Pylon"));
+    
+    BOSS::GUI::Instance().OnStart();
+    BOSS::GUI::Instance().SetState(state);
+
+    size_t nextActionIndex = 0;
+    while (true)
+    {
+        BOSS::GUI::Instance().OnFrame();
+
+        if (nextActionIndex < buildOrder.size())
+        {
+            FrameCountType nextActionFrame = state.whenCanPerform(buildOrder[nextActionIndex]);
+
+            if (nextActionFrame == state.getCurrentFrame())
+            {
+                state.doAction(buildOrder[nextActionIndex]);
+                std::cout << state.getCurrentFrame() << " Action Performed: " << buildOrder[nextActionIndex].getName() << std::endl;
+                nextActionIndex++;
+            }
+        }
+
+        state.fastForward(state.getCurrentFrame() + 1);
+        BOSS::GUI::Instance().SetState(state);
+        
+        Timer t;
+        t.start();
+        while (t.getElapsedTimeInMilliSec() < 20) {}
+    }
+}
+
 int main(int argc, char *argv[])
 {
     #ifdef BOSS_ENABLE_GUI
@@ -124,11 +176,11 @@ int main(int argc, char *argv[])
     #endif
 
     BOSS::init();
-    BOSS::GUI::Instance().OnStart();
-    BOSS::GUI::Instance().OnFrame();
 
     GameState initialState(Races::Protoss);
     initialState.setStartingState();
+
+    testBuildOrderVisualization();
 
     //testNaiveBuildOrder();
 

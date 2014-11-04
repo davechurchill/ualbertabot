@@ -75,7 +75,7 @@ class ActionSet;
 namespace ActionTypes
 {
     void init();
-    const ActionSet &  GetAllActionTypes(const RaceID race);
+    const std::vector<ActionType> &  GetAllActionTypes(const RaceID race);
     const ActionType & GetActionType(const RaceID & race, const ActionID & id);
     const ActionType & GetWorker(const RaceID raceID);
     const ActionType & GetSupplyProvider(const RaceID raceID);

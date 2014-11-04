@@ -108,7 +108,7 @@ namespace BOSS
 {
 namespace ActionTypes
 {
-    std::vector<ActionSet> allActionTypes;
+    std::vector< std::vector<ActionType> > allActionTypes;
     std::map<std::string, ActionType> nameMap;
     std::vector<ActionType>  workerActionTypes;
     std::vector<ActionType>  refineryActionTypes;
@@ -120,11 +120,11 @@ namespace ActionTypes
     {
         for (RaceID r(0); r < Races::NUM_RACES; ++r)
         {
-            allActionTypes.push_back(ActionSet());
+            allActionTypes.push_back(std::vector<ActionType>());
             for (ActionID a(0); a < ActionTypeData::GetNumActionTypes(r); ++a)
             {
                 ActionType type(r, a);
-                allActionTypes[r].add(type);
+                allActionTypes[r].push_back(type);
 
                 // add the name with spaces
                 nameMap[type.getName()] = type;
@@ -207,7 +207,7 @@ namespace ActionTypes
         return nameMap.find(name) != nameMap.end();
     }
 
-    const ActionSet & GetAllActionTypes(const RaceID race)
+    const std::vector<ActionType> & GetAllActionTypes(const RaceID race)
     {
         BOSS_ASSERT(race < Races::NUM_RACES, "Race is not valid: %d", race);
 

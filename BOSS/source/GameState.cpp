@@ -162,7 +162,7 @@ const RaceID GameState::getRace() const
 
 void GameState::getAllLegalActions(ActionSet & actions) const
 {
-    const ActionSet & allActions = ActionTypes::GetAllActionTypes(getRace());
+    const std::vector<ActionType> & allActions = ActionTypes::GetAllActionTypes(getRace());
 	for (ActionID i(0); i<allActions.size(); ++i)
 	{
         const ActionType & action = allActions[i];
@@ -176,7 +176,6 @@ void GameState::getAllLegalActions(ActionSet & actions) const
 
 bool GameState::isLegal(const ActionType & action) const
 {
-    //std::cout << ACTIONS[a].getName() << ": ";
     const ActionType & workerType = ActionTypes::GetWorker(getRace());
     const size_t numRefineries  = _units.getNumTotal(ActionTypes::GetRefinery(getRace()));
     const size_t numDepots      = _units.getNumTotal(ActionTypes::GetResourceDepot(getRace()));
@@ -236,7 +235,6 @@ bool GameState::isLegal(const ActionType & action) const
         return false;
     }
 
-    //std::cout << "  LEGAL!\n";
     return true;
 }
 
@@ -270,8 +268,8 @@ void GameState::doAction(const ActionType & action)
     // queue the action
     _units.addActionInProgress(action, _currentFrame + action.buildTime());
 
-    BOSS_ASSERT(_minerals   >= action.mineralPrice(),   "Minerals less than price: %d < %d, ffTime=%d %s", (int)_minerals, (int)action.mineralPrice(), (int)elapsed, getActionsPerformedString().c_str());
-    BOSS_ASSERT(_gas        >= action.gasPrice(),       "Gas less than price: %d < %d, ffTime=%d %s", (int)_gas, (int)action.gasPrice(), (int)elapsed, getActionsPerformedString().c_str());
+    BOSS_ASSERT(_minerals   >= action.mineralPrice(),   "Minerals less than price: %lf < %d, ffTime=%d %s", _minerals, action.mineralPrice(), (int)elapsed, getActionsPerformedString().c_str());
+    BOSS_ASSERT(_gas        >= action.gasPrice(),       "Gas less than price: %lf < %d, ffTime=%d %s", _gas, (int)action.gasPrice(), (int)elapsed, getActionsPerformedString().c_str());
 
     // modify our resources
     _minerals   -= action.mineralPrice();
@@ -371,8 +369,8 @@ void GameState::fastForward(const FrameCountType toFrame)
     moreGas                 += elapsed * getGasPerFrame();
     totalTime               += elapsed;
 
-    _minerals               += (ResourceCountType)(ceil(moreMinerals));
-    _gas                    += (ResourceCountType)(ceil(moreGas));
+    _minerals               += moreMinerals;
+    _gas                    += moreGas;
 
     // we are now in the FUTURE... "the future, conan?"
     _currentFrame           = toFrame;
@@ -701,7 +699,7 @@ const FrameCountType GameState::whenMineralsReady(const ActionType & action) con
     //if (GSN_DEBUG) printf("\tMinerals Needs Adding: Minerals(%d, %lf) Frames(%lf, %d > %d)\n", difference, addMinerals, addTime, currentFrame, (int)ceil(m));
 
     // for some reason if i don't return +1, i mine 1 less mineral in the interval
-    return (FrameCountType)ceil(m + 1);
+    return (FrameCountType)ceil(m);
 }
 
 const FrameCountType GameState::whenGasReady(const ActionType & action) const
@@ -777,7 +775,7 @@ const FrameCountType GameState::whenGasReady(const ActionType & action) const
 
     //if (GSN_DEBUG) printf("\tGas Needs Adding: Gas(%d, %lf) Frames(%lf, %d > %d)\n", difference, addGas, addTime, currentFrame, (int)ceil(g));
 
-    return (FrameCountType)(ceil(g) + 1);
+    return (FrameCountType)ceil(g);
 }
 
 const FrameCountType GameState::getCurrentFrame() const
@@ -856,6 +854,11 @@ const UnitData & GameState::getUnitData() const
     return _units;
 }
 
+const BuildingData & GameState::getBuildingData() const
+{
+    return _units.getBuildingData();
+}
+
 const std::string GameState::toString() const
 {
     std::cout << "\n-----------------------------------------------------------\n";
@@ -863,7 +866,7 @@ const std::string GameState::toString() const
     std::cout << "Current Frame: " << _currentFrame << "(" << (_currentFrame / 24) << "m " << ((_currentFrame / 24) % 60) << "s)\n\n";
 
     std::cout << "Units Completed:\n\n";
-    const ActionSet & allActions = ActionTypes::GetAllActionTypes(getRace());
+    const std::vector<ActionType> & allActions = ActionTypes::GetAllActionTypes(getRace());
 	for (ActionID i(0); i<allActions.size(); ++i)
 	{
         const ActionType & action = allActions[i];

@@ -8,7 +8,7 @@ namespace BOSS
     namespace Constants
     {
         
-        const size_t MAX_ACTIONS            = 50;       // maximum number of actions allowed in StarcraftData
+        const size_t MAX_ACTIONS            = 64;       // maximum number of actions allowed in StarcraftData
 
         const size_t MAX_PROGRESS           = 50;       // maximum number of actions in progress allowed
 

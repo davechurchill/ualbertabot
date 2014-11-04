@@ -290,6 +290,11 @@ const ActionType & UnitData::getActionInProgressByIndex(const UnitCountType & in
     return _progress.getAction(index);
 }
 
+const FrameCountType & UnitData::getActionInProgressFinishTimeByIndex(const UnitCountType & index) const
+{
+    return _progress.getTime(index);
+}
+
 const FrameCountType UnitData::getLastActionFinishTime() const
 {
     return _progress.getLastFinishTime();
@@ -334,4 +339,9 @@ const PrerequisiteSet UnitData::getPrerequistesInProgress(const ActionType & act
 const UnitCountType UnitData::getNumLarva() const
 {
     return _numLarva;
+}
+
+const BuildingData & UnitData::getBuildingData() const
+{
+    return _buildings;
 }

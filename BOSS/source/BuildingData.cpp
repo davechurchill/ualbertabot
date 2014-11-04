@@ -103,6 +103,11 @@ BuildingData::BuildingData()
 {
 }
 
+const size_t & BuildingData::size() const
+{
+    return _buildings.size();
+}
+
 void BuildingData::addBuilding(const ActionType & action, const ActionType & addon)
 {
 	BOSS_ASSERT(action.isBuilding(), "Trying to add a non-building to the building data");
