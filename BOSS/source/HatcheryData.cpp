@@ -58,16 +58,26 @@ void HatcheryData::fastForward(const FrameCountType & currentFrame, const FrameC
 
 void HatcheryData::useLarva()
 {
+    int maxLarvaIndex = -1;
     for (size_t i(0); i < _hatcheries.size(); ++i)
     {
         if (_hatcheries[i].numLarva() > 0)
         {
-            _hatcheries[i].useLarva();
-            return;
+            if (maxLarvaIndex == -1 || (_hatcheries[i].numLarva() > _hatcheries[maxLarvaIndex].numLarva()))
+            {
+                maxLarvaIndex = i;
+            }
         }
     }
 
-    BOSS_ASSERT(false, "Should have found a larva to use");
+    if (maxLarvaIndex != -1)
+    {
+        _hatcheries[maxLarvaIndex].useLarva();
+    }
+    else
+    {
+        BOSS_ASSERT(false, "Should have found a larva to use");
+    }
 }
 
 const FrameCountType HatcheryData::nextLarvaFrameAfter(const FrameCountType & currentFrame) const

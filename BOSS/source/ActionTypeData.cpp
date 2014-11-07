@@ -275,17 +275,14 @@ void ActionTypeData::AddActions()
 
         if (type.getRace() == BWAPI::Races::Protoss)
         {
-            //std::cout << type.getName() << std::endl;
             allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(type, allActionTypeDataVec[Races::Protoss].size()));
         }
         else if (type.getRace() == BWAPI::Races::Terran)
         {
-            //std::cout << type.getName() << std::endl;
             allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(type, allActionTypeDataVec[Races::Terran].size()));
         }
         else if (type.getRace() == BWAPI::Races::Zerg)
         {
-            std::cout << type.getName() << std::endl;
             allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(type, allActionTypeDataVec[Races::Zerg].size()));
         }
     }
@@ -304,17 +301,14 @@ void ActionTypeData::AddActions()
 
         if (type.getRace() == BWAPI::Races::Protoss)
         {
-            //std::cout << type.getName() << std::endl;
             allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(type, allActionTypeDataVec[Races::Protoss].size()));
         }
         else if (type.getRace() == BWAPI::Races::Terran)
         {
-            //std::cout << type.getName() << std::endl;
             allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(type, allActionTypeDataVec[Races::Terran].size()));
         }
         else if (type.getRace() == BWAPI::Races::Zerg)
         {
-            std::cout << type.getName() << std::endl;
             allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(type, allActionTypeDataVec[Races::Zerg].size()));
         }
     }

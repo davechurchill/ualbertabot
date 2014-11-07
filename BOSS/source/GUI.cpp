@@ -4,8 +4,8 @@
 
 using namespace BOSS;
 
-#define GUI_INITIAL_WIDTH  1280
-#define GUI_INITIAL_HEIGHT 720
+#define GUI_INITIAL_WIDTH  1920
+#define GUI_INITIAL_HEIGHT 1080
 
 #define BOSS_MAX_TEXTURES 200
 #define BOSS_TEXTURE_INTERVAL 64
@@ -202,7 +202,9 @@ void GUI::Render()
             glPushMatrix();
             {
                 glTranslatef(static_cast<float>(-cameraX),static_cast<float>(-cameraY),0);
+                
                 DrawGameState();
+                DrawConcurrency();
             }
 
             glPopMatrix();
@@ -211,6 +213,97 @@ void GUI::Render()
         glPopMatrix();
     }
     glPopAttrib();
+}
+
+void GUI::DrawConcurrency()
+{
+    std::vector<int> layers(_startTimes.size(), -1);
+    int maxLayer = 0;
+
+    for (size_t i(0); i < _startTimes.size(); ++i)
+    {
+        FrameCountType start    = _startTimes[i];
+        FrameCountType finish   = _finishTimes[i];
+
+        std::vector<int> layerOverlap;
+        // loop through everything up to this action and see which layers it can't be in
+        for (size_t j(0); j < i; ++j)
+        {
+            if (start <= _finishTimes[j])
+            {
+                layerOverlap.push_back(layers[j]);
+            }
+        }
+
+        // find a layer we can assign to this value
+        int layerTest = 0;
+        while (true)
+        {
+            if (std::find(layerOverlap.begin(), layerOverlap.end(), layerTest) == layerOverlap.end())
+            {
+                layers[i] = layerTest;
+                if (layerTest > maxLayer)
+                {
+                    maxLayer = layerTest;
+                }
+                break;
+            }
+
+            layerTest++;
+        }
+    }
+
+    
+    float maxWidth = 1600;
+    float maxFinishTime = 1;
+    for (size_t i(0); i < _finishTimes.size(); ++i)
+    {
+        if (_finishTimes[i] > maxFinishTime)
+        {
+            maxFinishTime = _finishTimes[i];
+        }
+    }
+
+    if (_currentState.getCurrentFrame() > maxFinishTime)
+    {
+        maxFinishTime = _currentState.getCurrentFrame();
+    }
+
+    float scale = maxWidth / maxFinishTime;
+
+    // draw it
+
+    GLfloat black[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+    GLfloat white2[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+    GLfloat white[4] = {1.0f, 1.0f, 1.0f, 0.8f};
+    GLfloat grey[4] = {0.1f, 0.1f, 0.1f, 1.0f};
+    GLfloat red[4] = {0.6f, 0.0f, 0.0f, 1.0f};
+    PositionType height = 20;
+    PositionType heightBuffer = 3;
+    Position concurrent(225, 800);
+    float framePos =  (concurrent.x() + scale*_currentState.getCurrentFrame());
+    
+    GUITools::DrawRect(Position(concurrent.x() - 10, concurrent.y() - 10), Position(concurrent.x() + maxWidth + 10, concurrent.y() + (maxLayer)*(height + heightBuffer) + 10 + height), grey);
+
+    
+
+    for (size_t i(0); i < layers.size(); ++i)
+    {
+        Position topLeft(concurrent.x() + _startTimes[i]*scale, concurrent.y() + (height + heightBuffer) * layers[i]);
+        Position bottomRight(topLeft.x() + (_finishTimes[i] - _startTimes[i])*scale, topLeft.y() + height);
+
+        std::string name = _buildOrder[i].getName();
+        size_t loc = name.find(" ");
+        if (loc != std::string::npos)
+        {
+            name = name.substr(loc);
+        }
+
+        GUITools::DrawRect(topLeft, bottomRight, red);
+        GUITools::DrawStringWithShadow(topLeft + Position(2, 13), name, white);
+    }
+
+    GUITools::DrawLine(Position((PositionType)framePos, concurrent.y() - 10), Position((PositionType)framePos, concurrent.y() + (maxLayer)*(height + heightBuffer) + 10 + height), 2, white);
 }
 
 void GUI::DrawGameState()
@@ -254,7 +347,7 @@ void GUI::DrawGameState()
 
         DrawActionType(Larva, completed, cwidth);
         std::stringstream num; num << numLarva << "\n" << (Constants::ZERG_LARVA_TIMER-(_currentState.getCurrentFrame() % Constants::ZERG_LARVA_TIMER));
-        GUITools::DrawStringLargeWithShadow(completed + Position(10, 20), num.str(), white);
+        GUITools::DrawString(completed + Position(10, 20), num.str(), white);
         completed.add(cwidth, 0);
     }
 
@@ -300,7 +393,7 @@ void GUI::DrawGameState()
         DrawActionType(actionInProgress, progress, width);
         double remainingTime = (finishTime - _currentState.getCurrentFrame());
         double timeRatio = remainingTime / actionInProgress.buildTime();
-        Position ratioBar(timeRatio * progressBar.x(), progressBar.y());
+        Position ratioBar((PositionType)(timeRatio * progressBar.x()), progressBar.y());
 
         GUITools::DrawRect(progress + progressBuffer - Position(2,2), progress + progressBuffer + Position(2,2) + progressBar, grey2);
         GUITools::DrawRect(progress + progressBuffer, progress + progressBuffer + progressBar, grey);
@@ -328,7 +421,7 @@ void GUI::DrawGameState()
         {
             double remainingTime = finishTime;
             double timeRatio = remainingTime / makingType.buildTime();
-            Position ratioBar(timeRatio * progressBar.x(), progressBar.y());
+            Position ratioBar((PositionType)(timeRatio * progressBar.x()), progressBar.y());
         
             GUITools::DrawRect(buildings + progressBuffer - Position(2,2), buildings + progressBuffer + Position(2,2) + progressBar, grey2);
             GUITools::DrawRect(buildings + progressBuffer, buildings + progressBuffer + progressBar , grey);
@@ -363,9 +456,15 @@ void GUI::DrawActionType(const ActionType & type, const Position & topLeft, cons
     
     int textureNumber = getTextureNumber(type);
     float ratio = (float)width / textureSizes[textureNumber].x();
-    Position size = Position(textureSizes[textureNumber].x() * ratio, textureSizes[textureNumber].y() * ratio);
+    Position size = Position((PositionType)(textureSizes[textureNumber].x() * ratio), (PositionType)(textureSizes[textureNumber].y() * ratio));
     Position bottomRight(topLeft + size);
     GUITools::DrawTexturedRect(topLeft, bottomRight, textureNumber, white);
+}
+
+void GUI::SetActionTimes(const std::vector<FrameCountType> & startTimes, std::vector<FrameCountType> & finishTimes)
+{
+    _startTimes = startTimes;
+    _finishTimes = finishTimes;
 }
 
 void GUI::SetBuildOrder(const std::vector<ActionType> & buildOrder, const size_t boIndex)
@@ -389,15 +488,15 @@ void GUI::DrawAllUnits()
         for (size_t i(0); i < ActionTypes::GetAllActionTypes(r).size(); ++i)
         {   
             const ActionType & type = ActionTypes::GetAllActionTypes(r)[i];
-            DrawActionType(type, (type.isUnit() ? p : techp), width);
+            DrawActionType(type, (type.isUnit() ? p : techp), (PositionType)width);
             
             if (type.isUnit())
             {
-                p = p + Position(width, 0);
+                p = p + Position((PositionType)width, 0);
             }
             else
             {
-                techp = techp + Position(width, 0);
+                techp = techp + Position((PositionType)width, 0);
             }
         }
         

@@ -201,48 +201,11 @@ void testBuildOrderVisualization()
         buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
         buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
 
-        /*buildOrder.push_back(ActionTypes::GetActionType("Zerg_Hatchery"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Overlord"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Overlord"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Extractor"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Spawning_Pool"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Lair"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Spire"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Overlord"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Overlord"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Overlord"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
-        buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));*/
     }
     
+    std::vector<FrameCountType> startTimes;
+    std::vector<FrameCountType> finishTimes;
+
     BOSS::GUI::Instance().OnStart();
     BOSS::GUI::Instance().SetState(state);
     
@@ -250,6 +213,9 @@ void testBuildOrderVisualization()
     while (true)
     {
         BOSS::GUI::Instance().OnFrame();
+        
+        Timer t;
+        t.start();
 
         if (nextActionIndex < buildOrder.size())
         {
@@ -257,6 +223,17 @@ void testBuildOrderVisualization()
 
             if (nextActionFrame == state.getCurrentFrame())
             {
+                ActionType type = buildOrder[nextActionIndex];
+                FrameCountType finish = state.getCurrentFrame() + buildOrder[nextActionIndex].buildTime();
+                if (type.isBuilding() && !type.isAddon() && !type.isMorphed())
+                {
+                    finish += Constants::BUILDING_PLACEMENT;
+                }
+
+                startTimes.push_back(state.getCurrentFrame());
+                finishTimes.push_back(finish);
+
+
                 state.doAction(buildOrder[nextActionIndex]);
                 std::cout << state.getCurrentFrame() << " Action Performed: " << buildOrder[nextActionIndex].getName() << std::endl;
                 nextActionIndex++;
@@ -265,11 +242,16 @@ void testBuildOrderVisualization()
 
         state.fastForward(state.getCurrentFrame() + 1);
         BOSS::GUI::Instance().SetState(state);
+        BOSS::GUI::Instance().SetActionTimes(startTimes, finishTimes);
         BOSS::GUI::Instance().SetBuildOrder(buildOrder, nextActionIndex);
         
-        Timer t;
-        t.start();
         while (t.getElapsedTimeInMilliSec() < 5) {}
+
+    }
+
+    for (size_t i(0); i < startTimes.size(); ++i)
+    {
+        std::cout << startTimes[i] << " " << finishTimes[i] << std::endl;
     }
 }
 

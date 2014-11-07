@@ -42,6 +42,8 @@ class GUI
     GameState                   _currentState;
     std::vector<ActionType>     _buildOrder;
     size_t                      _boIndex;
+    std::vector<FrameCountType> _startTimes;
+    std::vector<FrameCountType> _finishTimes;
 
 #ifdef WIN32
     void setVSync(int interval);
@@ -55,6 +57,7 @@ class GUI
     void OnResize(SDL_Event & event);
     void DrawAllUnits();
     void DrawGameState();
+    void DrawConcurrency();
     void DrawActionType(const ActionType & type, const Position & tl, const size_t & width);
 
     const std::string getTextureFileName(const ActionType & type) const;
@@ -74,6 +77,7 @@ public:
 
     void SetState(const GameState & state);
     void SetBuildOrder(const std::vector<ActionType> & buildOrder, const size_t boIndex);
+    void SetActionTimes(const std::vector<FrameCountType> & startTimes, std::vector<FrameCountType> & endTimes);
 };
 }
 
