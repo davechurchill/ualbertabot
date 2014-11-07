@@ -117,6 +117,64 @@ void testNaiveBuildOrder()
     std::cout << "New build order took " << initialStateNew.getLastActionFinishTime() << " frames to complete with " << initialStateNew.getUnitData().getNumTotal(ActionTypes::GetWorker(initialStateNew.getRace())) << " total workers in " << msnew << " ms" << std::endl;
 }
 
+std::vector<ActionType> threeHatchMutaLessDrone()
+{
+    std::vector<ActionType> buildOrder;
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Overlord"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Hatchery"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Spawning_Pool"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Hatchery"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Extractor"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Overlord"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Lair"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Extractor"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Zergling"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Zergling"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Zergling"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Overlord"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Overlord"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Overlord"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Spire"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Drone"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+    buildOrder.push_back(ActionTypes::GetActionType("Zerg_Mutalisk"));
+    return buildOrder;
+}
+
 std::vector<ActionType> threeHatchMuta()
 {
     std::vector<ActionType> buildOrder;
@@ -179,7 +237,7 @@ std::vector<ActionType> threeHatchMuta()
 void testBuildOrderVisualizationSkip()
 {
     const RaceID race = Races::Zerg;
-
+    
     GameState state(race);
     state.setStartingState();
 
@@ -189,12 +247,11 @@ void testBuildOrderVisualizationSkip()
     std::vector<FrameCountType> finishTimes;
 
     BOSS::GUI::Instance().OnStart();
-    BOSS::GUI::Instance().SetState(state);
     
     size_t nextActionIndex = 0;
     while (true)
     {
-        BOSS::GUI::Instance().OnFrame();
+        
         
         Timer t;
         t.start();
@@ -218,9 +275,10 @@ void testBuildOrderVisualizationSkip()
             
         }
         
-        BOSS::GUI::Instance().SetState(state);
-        BOSS::GUI::Instance().SetActionTimes(startTimes, finishTimes);
-        BOSS::GUI::Instance().SetBuildOrder(buildOrder, nextActionIndex);
+        BOSS::GUI::Instance().AddState(state);
+        BOSS::GUI::Instance().AddActionTimes(startTimes, finishTimes);
+        BOSS::GUI::Instance().AddBuildOrder(buildOrder, nextActionIndex);
+        BOSS::GUI::Instance().OnFrame();
         
         if (nextActionIndex >= buildOrder.size())
         {
@@ -240,78 +298,70 @@ void testBuildOrderVisualizationSkip()
 void testBuildOrderVisualization()
 {
     const RaceID race = Races::Zerg;
+    GameState initialState(race);
+    initialState.setStartingState();
 
-    GameState state(race);
-    state.setStartingState();
+    std::vector<GameState> states;
+    states.push_back(initialState);
+    states.push_back(initialState);
 
-    std::vector<ActionType> buildOrder = threeHatchMuta();
+    std::vector<std::vector<ActionType> > buildOrders;
+    buildOrders.push_back(threeHatchMuta());
+    buildOrders.push_back(threeHatchMutaLessDrone());
     
-    std::vector<FrameCountType> startTimes;
-    std::vector<FrameCountType> finishTimes;
-
+    std::vector<std::vector<FrameCountType> > startTimes(2, std::vector<FrameCountType>());
+    std::vector<std::vector<FrameCountType> > finishTimes(2, std::vector<FrameCountType>());;
+    std::vector<size_t> nextActionIndexes(2, 0);
     BOSS::GUI::Instance().OnStart();
-    BOSS::GUI::Instance().SetState(state);
     
-    size_t nextActionIndex = 0;
     while (true)
     {
-        BOSS::GUI::Instance().OnFrame();
-        
         Timer t;
         t.start();
 
-        bool didAction = false;
-
-        if (nextActionIndex < buildOrder.size())
+        for (size_t s(0); s < states.size(); ++s)
         {
-            FrameCountType nextActionFrame = state.whenCanPerform(buildOrder[nextActionIndex]);
+            bool didAction = false;
 
-            if (nextActionFrame == state.getCurrentFrame())
+            if (nextActionIndexes[s] < buildOrders[s].size())
             {
-                ActionType type = buildOrder[nextActionIndex];
-                FrameCountType finish = state.getCurrentFrame() + buildOrder[nextActionIndex].buildTime();
-                if (type.isBuilding() && !type.isAddon() && !type.isMorphed())
+                FrameCountType nextActionFrame = states[s].whenCanPerform(buildOrders[s][nextActionIndexes[s]]);
+
+                if (nextActionFrame == states[s].getCurrentFrame())
                 {
-                    finish += Constants::BUILDING_PLACEMENT;
+                    ActionType type = buildOrders[s][nextActionIndexes[s]];
+                    FrameCountType finish = states[s].getCurrentFrame() + buildOrders[s][nextActionIndexes[s]].buildTime();
+                    if (type.isBuilding() && !type.isAddon() && !type.isMorphed())
+                    {
+                        finish += Constants::BUILDING_PLACEMENT;
+                    }
+
+                    startTimes[s].push_back(states[s].getCurrentFrame());
+                    finishTimes[s].push_back(finish);
+
+                    states[s].doAction(buildOrders[s][nextActionIndexes[s]]);
+
+                    didAction = true;
+                    //std::cout << states[s].getCurrentFrame() << " Action Performed: " << buildOrder[nextActionIndex].getName() << std::endl;
+                    nextActionIndexes[s]++;
                 }
-
-                startTimes.push_back(state.getCurrentFrame());
-                finishTimes.push_back(finish);
-
-                state.doAction(buildOrder[nextActionIndex]);
-
-                if (state.getCurrentFrame() != nextActionFrame)
-                {
-                    int a = 7;
-                }
-
-                didAction = true;
-                std::cout << state.getCurrentFrame() << " Action Performed: " << buildOrder[nextActionIndex].getName() << std::endl;
-                nextActionIndex++;
             }
+        
+            if (!didAction)
+            {
+                states[s].fastForward(states[s].getCurrentFrame() + 1);
+            }
+
+            BOSS::GUI::Instance().AddState(states[s]);
+            BOSS::GUI::Instance().AddActionTimes(startTimes[s], finishTimes[s]);
+            BOSS::GUI::Instance().AddBuildOrder(buildOrders[s], nextActionIndexes[s]);
+        
+        
         }
         
-        if (!didAction)
-        {
-            state.fastForward(state.getCurrentFrame() + 1);
-        }
+        BOSS::GUI::Instance().OnFrame();
+        while (t.getElapsedTimeInMilliSec() < 21) {}
 
-        if (nextActionIndex >= buildOrder.size())
-        {
-            break;
-        }
-
-        BOSS::GUI::Instance().SetState(state);
-        BOSS::GUI::Instance().SetActionTimes(startTimes, finishTimes);
-        BOSS::GUI::Instance().SetBuildOrder(buildOrder, nextActionIndex);
-        
-        //while (t.getElapsedTimeInMilliSec() < 5) {}
-
-    }
-
-    for (size_t i(0); i < startTimes.size(); ++i)
-    {
-        std::cout << startTimes[i] << " " << finishTimes[i] << std::endl;
     }
 }
 

@@ -203,8 +203,16 @@ void GUI::Render()
             {
                 glTranslatef(static_cast<float>(-cameraX),static_cast<float>(-cameraY),0);
                 
-                DrawGameState();
-                DrawConcurrency();
+                for (size_t i(0); i < _currentStates.size(); ++i)
+                {
+                    DrawConcurrency(Position(0, i*540), _currentStates[i], _buildOrders[i], _boIndexes[i], _startTimes[i], _finishTimes[i]);
+                }
+
+                _currentStates.clear();
+                _buildOrders.clear();
+                _boIndexes.clear();
+                _startTimes.clear();
+                _finishTimes.clear();
             }
 
             glPopMatrix();
@@ -215,21 +223,101 @@ void GUI::Render()
     glPopAttrib();
 }
 
-void GUI::DrawConcurrency()
+std::string GUI::getTimeString(const FrameCountType & frameCount)
 {
-    std::vector<int> layers(_startTimes.size(), -1);
-    int maxLayer = 0;
+    std::stringstream min;
+    min << (frameCount/24)/60;
+    std::string minString = min.str();
 
-    for (size_t i(0); i < _startTimes.size(); ++i)
+    std::stringstream sec;
+    sec << (frameCount/24)%60;
+    std::string secString = sec.str();
+    while (secString.length() < 2) secString = "0" + secString;
+
+    std::string timeString = minString + ":" + secString;
+    return timeString;
+}
+
+void GUI::DrawConcurrency(const Position & pos, const GameState & currentState, const std::vector<ActionType> & buildOrder, const size_t & boIndex, const std::vector<FrameCountType> & startTimes, const std::vector<FrameCountType> & finishTimes)
+{
+    
+    const std::vector<ActionType> & allActions = ActionTypes::GetAllActionTypes(currentState.getRace());
+    static const ActionType & Larva = ActionTypes::GetActionType("Zerg_Larva");
+    static const ActionType & Hatchery = ActionTypes::GetActionType("Zerg_Hatchery");
+    GLfloat black[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+    GLfloat white2[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+    GLfloat white[4] = {1.0f, 1.0f, 1.0f, 0.8f};
+    GLfloat grey[4] = {0.1f, 0.1f, 0.1f, 1.0f};
+    GLfloat grey2[4] = {0.4f, 0.4f, 0.4f, 1.0f};
+    GLfloat red[4] = {0.6f, 0.0f, 0.0f, 1.0f};
+    GLfloat blue[4] = {0.0f, 0.0f, 0.5f, 1.0f};
+    GLfloat bblue[4] = {0.5f, 0.5f, 1.0f, 1.0f};
+    GLfloat bred[4] = {1.0f, 0.0f, 0.0f, 1.0f};
+    GLfloat green[4] = {0.0f, 0.4f, 0.0f, 1.0f};
+    GLfloat bgreen[4] = {0.0f, 1.0f, 0.0f, 1.0f};
+
+    std::string stateTime = getTimeString(currentState.getCurrentFrame());
+
+    std::stringstream ssres;
+    ssres << "Frame:    " << currentState.getCurrentFrame() <<"\n";
+    ssres << "Minerals: " << currentState.getMinerals()/Constants::RESOURCE_SCALE << "\n";
+    ssres << "Gas:      " << currentState.getGas()/Constants::RESOURCE_SCALE << "\n";
+    ssres << "MWorkers: " << currentState.getNumMineralWorkers() << "\n";
+    ssres << "GWorkers: " << currentState.getNumGasWorkers() << "\n";
+    ssres << "C Supply: " << currentState.getUnitData().getCurrentSupply() << "\n";
+    ssres << "M Supply: " << currentState.getUnitData().getMaxSupply() << "\n";
+    GUITools::DrawStringLargeWithShadow(pos + Position(20, 20), ssres.str(), white);
+
+    Position completed = pos + Position(225,0);
+    size_t cwidth = 64;
+    if (currentState.getRace() == Races::Zerg)
     {
-        FrameCountType start    = _startTimes[i];
-        FrameCountType finish   = _finishTimes[i];
+        const UnitCountType & numLarva = currentState.getHatcheryData().numLarva();
+
+        DrawActionType(Larva, completed, cwidth);
+        std::stringstream num; num << numLarva << "\n" << (Constants::ZERG_LARVA_TIMER-(currentState.getCurrentFrame() % Constants::ZERG_LARVA_TIMER));
+        GUITools::DrawString(completed + Position(10, 20), num.str(), white);
+        completed.add(cwidth, 0);
+    }
+
+    for (size_t a(0); a < allActions.size(); ++a)
+    {
+        const size_t numCompleted = currentState.getUnitData().getNumCompleted(allActions[a]);
+
+        if (numCompleted > 0)
+        {
+            DrawActionType(allActions[a], completed, cwidth);
+            std::stringstream num; num << numCompleted;
+            GUITools::DrawStringLargeWithShadow(completed + Position(10, 20), num.str(), white);
+            completed.add(cwidth, 0);
+        }
+    }
+
+    Position legal = pos + Position(225,80);
+    ActionSet legalActions;
+    currentState.getAllLegalActions(legalActions);
+    GUITools::DrawStringWithShadow(legal + Position(0,-5), "Legal Actions", white);
+    for (size_t a(0); a < legalActions.size(); ++a)
+    {
+        const ActionType & action = legalActions[a];
+        DrawActionType(legalActions[a], legal, 32);
+        legal.add(32, 0);
+    }
+
+
+    std::vector<int> layers(startTimes.size(), -1);
+    int maxLayer = 6;
+
+    for (size_t i(0); i < startTimes.size(); ++i)
+    {
+        FrameCountType start    = startTimes[i];
+        FrameCountType finish   = finishTimes[i];
 
         std::vector<int> layerOverlap;
         // loop through everything up to this action and see which layers it can't be in
         for (size_t j(0); j < i; ++j)
         {
-            if (start <= _finishTimes[j])
+            if (start < finishTimes[j])
             {
                 layerOverlap.push_back(layers[j]);
             }
@@ -254,154 +342,132 @@ void GUI::DrawConcurrency()
     }
 
     
-    float maxWidth = 1600;
+    float maxWidth = windowSizeX - 430;
     float maxFinishTime = 1;
+
     for (size_t i(0); i < _finishTimes.size(); ++i)
     {
-        if (_finishTimes[i] > maxFinishTime)
+        for (size_t j(0); j < _finishTimes[i].size(); ++j)
         {
-            maxFinishTime = (float)_finishTimes[i];
+            if (_finishTimes[i][j] > maxFinishTime)
+            {
+                maxFinishTime = (float)_finishTimes[i][j];
+            }
         }
     }
 
-    if (_currentState.getCurrentFrame() > maxFinishTime)
+    if (currentState.getCurrentFrame() < maxWidth && currentState.getCurrentFrame() > maxFinishTime)
     {
-        maxFinishTime = (float)_currentState.getCurrentFrame();
+        maxFinishTime = (float)currentState.getCurrentFrame();
     }
+
+    maxFinishTime = std::max(maxFinishTime, maxWidth);
+    //maxFinishTime = std::max(currentState.getCurrentFrame()*1.10f, maxWidth);
 
     float scale = maxWidth / maxFinishTime;
 
     // draw it
 
-    GLfloat black[4] = {0.0f, 0.0f, 0.0f, 1.0f};
-    GLfloat white2[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-    GLfloat white[4] = {1.0f, 1.0f, 1.0f, 0.8f};
-    GLfloat grey[4] = {0.1f, 0.1f, 0.1f, 1.0f};
-    GLfloat red[4] = {0.6f, 0.0f, 0.0f, 1.0f};
-    PositionType height = 20;
-    PositionType heightBuffer = 3;
-    Position concurrent(225, 800);
-    float framePos =  (concurrent.x() + scale*_currentState.getCurrentFrame());
+    PositionType height         = 20;
+    PositionType heightBuffer   = 3;
+    Position concurrent         = pos + Position(25, 200);
+
+    float framePos              =  (concurrent.x() + scale*currentState.getCurrentFrame());
+    Position boxTopLeft         = Position(concurrent.x() - 10, concurrent.y() - 10);
+    Position boxBottomRight     = Position(PositionType(concurrent.x() + maxWidth + 10), (PositionType)(concurrent.y() + (maxLayer)*(height + heightBuffer) + 10 + height));
     
-    GUITools::DrawRect(Position(concurrent.x() - 10, concurrent.y() - 10), Position(PositionType(concurrent.x() + maxWidth + 10), (PositionType)(concurrent.y() + (maxLayer)*(height + heightBuffer) + 10 + height)), grey);
+    GUITools::DrawRect(boxTopLeft, boxBottomRight, grey2);
+    GUITools::DrawRect(boxTopLeft + Position(1,1), boxBottomRight - Position(1,1), grey);
 
     for (size_t i(0); i < layers.size(); ++i)
     {
-        Position topLeft(PositionType(concurrent.x() + _startTimes[i]*scale), PositionType(concurrent.y() + (height + heightBuffer) * layers[i]));
-        Position bottomRight(PositionType(topLeft.x() + (_finishTimes[i] - _startTimes[i])*scale), topLeft.y() + height);
+        float boxWidth = (finishTimes[i] - startTimes[i])*scale;
 
-        std::string name = _buildOrder[i].getName();
+        Position topLeft(PositionType(concurrent.x() + startTimes[i]*scale), PositionType(concurrent.y() + (height + heightBuffer) * layers[i]));
+        Position bottomRight(PositionType(topLeft.x() + boxWidth), topLeft.y() + height);
+
+        std::string name = buildOrder[i].getName();
         size_t loc = name.find(" ");
         if (loc != std::string::npos)
         {
             name = name.substr(loc);
         }
 
-        GUITools::DrawRect(topLeft, bottomRight, red);
+        GUITools::DrawRect(topLeft, bottomRight, white);
+        GUITools::DrawRect(topLeft+Position(1,1), bottomRight-Position(1,1), finishTimes[i] < currentState.getCurrentFrame() ? red : blue);
         GUITools::DrawStringWithShadow(topLeft + Position(2, 13), name, white);
     }
 
-    GUITools::DrawLine(Position((PositionType)framePos, concurrent.y() - 10), Position((PositionType)framePos, concurrent.y() + (maxLayer)*(height + heightBuffer) + 10 + height), 2, white);
-}
-
-void GUI::DrawGameState()
-{
-    GLfloat green[4] = {0.0f, 1.0f, 0.0f, 1.0f};
-    GLfloat white[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-    GLfloat greyx[4] = {0.7f, 0.7f, 0.7f, 1.0f};
-    const RaceID race = _currentState.getRace();
-    const std::vector<ActionType> & allActions = ActionTypes::GetAllActionTypes(race);
-    static const ActionType & Larva = ActionTypes::GetActionType("Zerg_Larva");
-    static const ActionType & Hatchery = ActionTypes::GetActionType("Zerg_Hatchery");
-
-    Position bopos(0,20);
-    for (size_t i(0); i < _buildOrder.size(); ++i)
+    PositionType boWidth = maxWidth / buildOrder.size();
+    for (size_t i(0); i < buildOrder.size(); ++i)
     {
-        std::stringstream ss;
-        ss << ((i == _boIndex) ? " > " : "   ") << _buildOrder[i].getName();
-        GUITools::DrawStringLargeWithShadow(bopos + Position(0, 15*i), ss.str(), i < _boIndex ? green : greyx);
-    }
+        Position topLeft(concurrent.x() + i*boWidth, concurrent.y() - boWidth - 20);
 
-    std::stringstream ssres;
-    ssres << "Frame:    " << _currentState.getCurrentFrame() << " " << _currentState.getCurrentFrame()/24 <<"\n";
-    ssres << "Minerals: " << _currentState.getMinerals()/Constants::RESOURCE_SCALE << "\n";
-    ssres << "MWorkers: " << _currentState.getNumMineralWorkers() << "\n";
-    ssres << "Gas:      " << _currentState.getGas()/Constants::RESOURCE_SCALE << "\n";
-    ssres << "GWorkers: " << _currentState.getNumGasWorkers() << "\n";
-    ssres << "C Supply: " << _currentState.getUnitData().getCurrentSupply() << "\n";
-    ssres << "M Supply: " << _currentState.getUnitData().getMaxSupply() << "\n";
-    GUITools::DrawStringLargeWithShadow(Position(225, 45), ssres.str(), white);
-
-    const size_t width = 64;
-    const size_t cwidth = 96;
-    Position completed(400,0);
-    
-    if (_currentState.getRace() == Races::Zerg)
-    {
-        const UnitCountType & numLarva = _currentState.getHatcheryData().numLarva();
-
-        DrawActionType(Larva, completed, cwidth);
-        std::stringstream num; num << numLarva << "\n" << (Constants::ZERG_LARVA_TIMER-(_currentState.getCurrentFrame() % Constants::ZERG_LARVA_TIMER));
-        GUITools::DrawString(completed + Position(10, 20), num.str(), white);
-        completed.add(cwidth, 0);
-    }
-
-    for (size_t a(0); a < allActions.size(); ++a)
-    {
-        const size_t numCompleted = _currentState.getUnitData().getNumCompleted(allActions[a]);
-
-        if (numCompleted > 0)
+        if (i < boIndex)
         {
-            DrawActionType(allActions[a], completed, cwidth);
-            std::stringstream num; num << numCompleted;
-            GUITools::DrawStringLargeWithShadow(completed + Position(10, 20), num.str(), white);
-            completed.add(cwidth, 0);
+            GUITools::DrawRect(topLeft, topLeft + Position(boWidth, boWidth), grey2);
+            GUITools::DrawRect(topLeft + Position(1,1), topLeft + Position(boWidth-1, boWidth-1), finishTimes[i] < currentState.getCurrentFrame() ? grey : blue);
         }
+
+        if (i < startTimes.size())
+        {
+            //GUITools::DrawString(topLeft - Position(-2,20), getTimeString(startTimes[i]).c_str(), bblue);
+            //GUITools::DrawString(topLeft - Position(-2,9), getTimeString(finishTimes[i]).c_str(), bred);
+        }
+
+        DrawActionType(buildOrder[i], topLeft, boWidth);
+
+        std::string name = buildOrder[i].getName();
+        size_t loc = name.find(" ");
+        if (loc != std::string::npos)
+        {
+            name = name.substr(loc, 3);
+        }
+
+        GUITools::DrawStringWithShadow(topLeft - Position(2, 3), name, white);
     }
 
-    Position legal(400,125);
-    ActionSet legalActions;
-    _currentState.getAllLegalActions(legalActions);
-    GUITools::DrawStringLargeWithShadow(legal + Position(0,-5), "Legal Actions", white);
-    for (size_t a(0); a < legalActions.size(); ++a)
+    if (currentState.getCurrentFrame() < maxFinishTime)
     {
-        const ActionType & action = legalActions[a];
-        DrawActionType(legalActions[a], legal, width/2);
-        legal.add(width/2, 0);
+        GUITools::DrawLine(Position((PositionType)framePos, concurrent.y() - 10), Position((PositionType)framePos, concurrent.y() + (maxLayer)*(height + heightBuffer) + 10 + height), 1, white);
+        GUITools::DrawStringWithShadow(Position((PositionType)framePos, concurrent.y() + (maxLayer)*(height + heightBuffer) + 10 + height + 20), stateTime.c_str(), white);
     }
 
-    GLfloat grey2[4] = {0.4f, 0.4f, 0.4f, 1.0f};
-    GLfloat grey[4] = {0.1f, 0.1f, 0.1f, 1.0f};
-    GLfloat blue[4] = {0.0f, 0.0f, 1.0f, 1.0f};
-
-    Position progress(225, 200);
-    Position progressBar(200,32);
-    Position progressBuffer(100, 16);
-    GUITools::DrawStringLargeWithShadow(progress, "Actions in Progress", white);
-    for (size_t a(0); a < _currentState.getUnitData().getNumActionsInProgress(); ++a)
+    for (FrameCountType timeFrame = 0; timeFrame < maxFinishTime; timeFrame += 24*30)
     {
-        size_t index = _currentState.getUnitData().getNumActionsInProgress() - a - 1;
+        float xPos = concurrent.x() + timeFrame*scale;
+        GUITools::DrawStringWithShadow(Position((PositionType)xPos, concurrent.y() + (maxLayer)*(height + heightBuffer) + 10 + height + 20), getTimeString(timeFrame).c_str(), white);
+    }
 
-        const ActionType actionInProgress = _currentState.getUnitData().getActionInProgressByIndex(index);
-        const FrameCountType finishTime = _currentState.getUnitData().getActionInProgressFinishTimeByIndex(index);
+    Position progress = concurrent + Position(maxWidth + 20, 0);
+    Position progressBar(175,20);
+    Position progressBuffer(0, 3);
+
+    GUITools::DrawStringWithShadow(progress - Position(0,5), "Actions in Progress:", white);
+    for (size_t a(0); a < currentState.getUnitData().getNumActionsInProgress(); ++a)
+    {
+        size_t index = currentState.getUnitData().getNumActionsInProgress() - a - 1;
+
+        const ActionType actionInProgress = currentState.getUnitData().getActionInProgressByIndex(index);
+        const FrameCountType finishTime = currentState.getUnitData().getActionInProgressFinishTimeByIndex(index);
         
-        DrawActionType(actionInProgress, progress, width);
-        double remainingTime = (finishTime - _currentState.getCurrentFrame());
+        //DrawActionType(actionInProgress, progress, width);
+        double remainingTime = (finishTime - currentState.getCurrentFrame());
         double timeRatio = remainingTime / actionInProgress.buildTime();
         Position ratioBar((PositionType)(timeRatio * progressBar.x()), progressBar.y());
 
-        GUITools::DrawRect(progress + progressBuffer - Position(2,2), progress + progressBuffer + Position(2,2) + progressBar, grey2);
-        GUITools::DrawRect(progress + progressBuffer, progress + progressBuffer + progressBar, grey);
-        GUITools::DrawRect(progress + progressBuffer, progress + progressBuffer + ratioBar, blue);
+        GUITools::DrawRect(progress + progressBuffer, progress + progressBuffer + progressBar, white);
+        GUITools::DrawRect(progress + progressBuffer + Position(1,1), progress + progressBuffer - Position(1,1) + progressBar, grey);
+        GUITools::DrawRect(progress + progressBuffer + Position(1,1), progress + progressBuffer - Position(1,1) + ratioBar, blue);
 
-        std::stringstream time; time << (int)remainingTime;
-        GUITools::DrawStringLargeWithShadow(progress + progressBuffer + Position(10, 20), time.str(), white);
-        progress.add(0, width);
+        std::stringstream time; time << actionInProgress.getName() << " " << (int)remainingTime;
+        GUITools::DrawStringWithShadow(progress + progressBuffer + Position(10, 13), time.str(), white);
+        progress.add(0, progressBar.y() + progressBuffer.y());
     }
 
-    Position buildings(650, 200);
-    const BuildingData & buildingData = _currentState.getBuildingData();
-    GUITools::DrawStringLargeWithShadow(buildings, "Completed Buildings", white);
+    Position buildings(progress.x() + 195, concurrent.y());
+    const BuildingData & buildingData = currentState.getBuildingData();
+    GUITools::DrawStringWithShadow(buildings - Position(0,5), "Completed Buildings", white);
     for (size_t i(0); i < buildingData.size(); ++i)
     {
         const BuildingStatus & buildingStatus = buildingData.getBuilding(i);
@@ -410,38 +476,26 @@ void GUI::DrawGameState()
         const FrameCountType & finishTime = buildingStatus._timeRemaining;
         const ActionType & makingType = buildingStatus._isConstructing;
 
-        DrawActionType(type, buildings, width);
-        
+        GUITools::DrawRect(buildings + progressBuffer, buildings + progressBuffer + progressBar, white);
+        GUITools::DrawRect(buildings + progressBuffer + Position(1,1), buildings + progressBuffer - Position(1,1) + progressBar, grey);
+
         if (finishTime > 0)
         {
             double remainingTime = finishTime;
             double timeRatio = remainingTime / makingType.buildTime();
             Position ratioBar((PositionType)(timeRatio * progressBar.x()), progressBar.y());
         
-            GUITools::DrawRect(buildings + progressBuffer - Position(2,2), buildings + progressBuffer + Position(2,2) + progressBar, grey2);
-            GUITools::DrawRect(buildings + progressBuffer, buildings + progressBuffer + progressBar , grey);
-            GUITools::DrawRect(buildings + progressBuffer, buildings + progressBuffer + ratioBar, blue);
-            std::stringstream time; time << (int)remainingTime;
-            GUITools::DrawStringLargeWithShadow(buildings + progressBuffer + Position(10, 20), time.str(), white);
+            GUITools::DrawRect(buildings + progressBuffer + Position(1,1), buildings + progressBuffer - Position(1,1) + ratioBar, blue);
+            std::stringstream time; time << type.getName() << " " << (int)remainingTime;
+            
+            GUITools::DrawStringWithShadow(buildings + progressBuffer + Position(10, 13), time.str(), white);
+        }
+        else
+        {
+            GUITools::DrawStringWithShadow(buildings + progressBuffer + Position(10, 13), type.getName(), white);
         }
         
-        buildings.add(0, width);
-    }
-
-    Position hatcheries(1000, 200);
-    const HatcheryData & hatcheryData = _currentState.getHatcheryData();
-    GUITools::DrawStringLargeWithShadow(hatcheries, "Hatchery Data", white);
-    for (size_t i(0); i < hatcheryData.size(); ++i)
-    {
-        DrawActionType(Hatchery, hatcheries, width);
-        std::stringstream num; num << hatcheryData.getHatchery(i).numLarva();
-        for (size_t l(0); l < hatcheryData.getHatchery(i).numLarva(); ++l)
-        {
-            DrawActionType(Larva, hatcheries + Position(width * (l+1), 0), width);
-        }
-
-        //GUITools::DrawStringLargeWithShadow(hatcheries + Position(10, 20), num.str(), white);
-        hatcheries.add(0, width);
+        buildings.add(0, progressBar.y() + progressBuffer.y());
     }
 }
 
@@ -456,18 +510,18 @@ void GUI::DrawActionType(const ActionType & type, const Position & topLeft, cons
     GUITools::DrawTexturedRect(topLeft, bottomRight, textureNumber, white);
 }
 
-void GUI::SetActionTimes(const std::vector<FrameCountType> & startTimes, std::vector<FrameCountType> & finishTimes)
+void GUI::AddActionTimes(const std::vector<FrameCountType> & startTimes, std::vector<FrameCountType> & finishTimes)
 {
-    _startTimes = startTimes;
-    _finishTimes = finishTimes;
+    _startTimes.push_back(startTimes);
+    _finishTimes.push_back(finishTimes);
 }
 
-void GUI::SetBuildOrder(const std::vector<ActionType> & buildOrder, const size_t boIndex)
+void GUI::AddBuildOrder(const std::vector<ActionType> & buildOrder, const size_t boIndex)
 {
     Position bopos(0,0);
 
-    _buildOrder = buildOrder;
-    _boIndex = boIndex;
+    _buildOrders.push_back(buildOrder);
+    _boIndexes.push_back(boIndex);
 }
 
 void GUI::DrawAllUnits()
@@ -595,9 +649,9 @@ void GUI::LoadTexture(int textureNumber, const char * fileName, bool mipmap)
     }
 }
 
-void GUI::SetState(const GameState & state)
+void GUI::AddState(const GameState & state)
 {
-    _currentState = state;
+    _currentStates.push_back(state);
 }
 
 bool GUI::saveScreenshotBMP(const std::string & filename) 

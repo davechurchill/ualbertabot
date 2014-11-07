@@ -39,11 +39,11 @@ class GUI
     std::vector<GLuint>         textures;
     std::vector<Position>       textureSizes;
 
-    GameState                   _currentState;
-    std::vector<ActionType>     _buildOrder;
-    size_t                      _boIndex;
-    std::vector<FrameCountType> _startTimes;
-    std::vector<FrameCountType> _finishTimes;
+    std::vector<GameState>                 _currentStates;
+    std::vector<std::vector<ActionType> >  _buildOrders;
+    std::vector<size_t>                      _boIndexes;
+    std::vector<std::vector<FrameCountType> > _startTimes;
+    std::vector<std::vector<FrameCountType> > _finishTimes;
 
 #ifdef WIN32
     void setVSync(int interval);
@@ -57,8 +57,10 @@ class GUI
     void OnResize(SDL_Event & event);
     void DrawAllUnits();
     void DrawGameState();
-    void DrawConcurrency();
+    void DrawConcurrency(const Position & pos, const GameState & currentState, const std::vector<ActionType> & buildOrder, const size_t & boIndex, const std::vector<FrameCountType> & startTimes, const std::vector<FrameCountType> & finishTimes);
     void DrawActionType(const ActionType & type, const Position & tl, const size_t & width);
+
+    std::string getTimeString(const FrameCountType & frameCount);
 
     const std::string getTextureFileName(const ActionType & type) const;
     const int getTextureNumber(const ActionType & type) const;
@@ -75,9 +77,9 @@ public:
     bool isStarted() const;
     bool saveScreenshotBMP(const std::string & filename);
 
-    void SetState(const GameState & state);
-    void SetBuildOrder(const std::vector<ActionType> & buildOrder, const size_t boIndex);
-    void SetActionTimes(const std::vector<FrameCountType> & startTimes, std::vector<FrameCountType> & endTimes);
+    void AddState(const GameState & state);
+    void AddBuildOrder(const std::vector<ActionType> & buildOrder, const size_t boIndex);
+    void AddActionTimes(const std::vector<FrameCountType> & startTimes, std::vector<FrameCountType> & endTimes);
 };
 }
 
