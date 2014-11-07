@@ -260,13 +260,13 @@ void GUI::DrawConcurrency()
     {
         if (_finishTimes[i] > maxFinishTime)
         {
-            maxFinishTime = _finishTimes[i];
+            maxFinishTime = (float)_finishTimes[i];
         }
     }
 
     if (_currentState.getCurrentFrame() > maxFinishTime)
     {
-        maxFinishTime = _currentState.getCurrentFrame();
+        maxFinishTime = (float)_currentState.getCurrentFrame();
     }
 
     float scale = maxWidth / maxFinishTime;
@@ -283,14 +283,12 @@ void GUI::DrawConcurrency()
     Position concurrent(225, 800);
     float framePos =  (concurrent.x() + scale*_currentState.getCurrentFrame());
     
-    GUITools::DrawRect(Position(concurrent.x() - 10, concurrent.y() - 10), Position(concurrent.x() + maxWidth + 10, concurrent.y() + (maxLayer)*(height + heightBuffer) + 10 + height), grey);
-
-    
+    GUITools::DrawRect(Position(concurrent.x() - 10, concurrent.y() - 10), Position(PositionType(concurrent.x() + maxWidth + 10), (PositionType)(concurrent.y() + (maxLayer)*(height + heightBuffer) + 10 + height)), grey);
 
     for (size_t i(0); i < layers.size(); ++i)
     {
-        Position topLeft(concurrent.x() + _startTimes[i]*scale, concurrent.y() + (height + heightBuffer) * layers[i]);
-        Position bottomRight(topLeft.x() + (_finishTimes[i] - _startTimes[i])*scale, topLeft.y() + height);
+        Position topLeft(PositionType(concurrent.x() + _startTimes[i]*scale), PositionType(concurrent.y() + (height + heightBuffer) * layers[i]));
+        Position bottomRight(PositionType(topLeft.x() + (_finishTimes[i] - _startTimes[i])*scale), topLeft.y() + height);
 
         std::string name = _buildOrder[i].getName();
         size_t loc = name.find(" ");
@@ -316,7 +314,6 @@ void GUI::DrawGameState()
     static const ActionType & Larva = ActionTypes::GetActionType("Zerg_Larva");
     static const ActionType & Hatchery = ActionTypes::GetActionType("Zerg_Hatchery");
 
-    
     Position bopos(0,20);
     for (size_t i(0); i < _buildOrder.size(); ++i)
     {
@@ -325,17 +322,15 @@ void GUI::DrawGameState()
         GUITools::DrawStringLargeWithShadow(bopos + Position(0, 15*i), ss.str(), i < _boIndex ? green : greyx);
     }
 
-
     std::stringstream ssres;
     ssres << "Frame:    " << _currentState.getCurrentFrame() << " " << _currentState.getCurrentFrame()/24 <<"\n";
-    ssres << "Minerals: " << (int)_currentState.getMinerals() << "\n";
-    ssres << "MWorkers: " << (int)_currentState.getNumMineralWorkers() << "\n";
-    ssres << "Gas:      " << (int)_currentState.getGas() << "\n";
-    ssres << "GWorkers: " << (int)_currentState.getNumGasWorkers() << "\n";
-    ssres << "C Supply: " << (int)_currentState.getUnitData().getCurrentSupply() << "\n";
-    ssres << "M Supply: " << (int)_currentState.getUnitData().getMaxSupply() << "\n";
+    ssres << "Minerals: " << _currentState.getMinerals()/Constants::RESOURCE_SCALE << "\n";
+    ssres << "MWorkers: " << _currentState.getNumMineralWorkers() << "\n";
+    ssres << "Gas:      " << _currentState.getGas()/Constants::RESOURCE_SCALE << "\n";
+    ssres << "GWorkers: " << _currentState.getNumGasWorkers() << "\n";
+    ssres << "C Supply: " << _currentState.getUnitData().getCurrentSupply() << "\n";
+    ssres << "M Supply: " << _currentState.getUnitData().getMaxSupply() << "\n";
     GUITools::DrawStringLargeWithShadow(Position(225, 45), ssres.str(), white);
-
 
     const size_t width = 64;
     const size_t cwidth = 96;

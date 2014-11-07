@@ -26,9 +26,11 @@ namespace BOSS
 
         const size_t NUM_HASHES             = 2;
 
-        const double MPWPF                  = 0.045;
+        const size_t MPWPF                  = 45;
 
-        const double GPWPF                  = 0.07;
+        const size_t GPWPF                  = 70;
+
+        const size_t RESOURCE_SCALE         = 1000;
     
         const size_t MAX_ACTION_TYPES       = 100;
 

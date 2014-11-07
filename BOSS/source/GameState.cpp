@@ -19,9 +19,9 @@ GameState::GameState(BWAPI::Game * game, BWAPI::Player * self)
     , _currentFrame         (game->getFrameCount())
     , _lastActionFrame      (0)
     , _units                (Races::GetRaceID(self->getRace()))
-    , _minerals             (self->minerals())
-    , _gas                  (self->gas())
-{
+    , _minerals             (self->minerals() * Constants::RESOURCE_SCALE)
+    , _gas                  (self->gas() * Constants::RESOURCE_SCALE)
+{ 
     // we will count the worker jobs as we add units
     UnitCountType mineralWorkerCount    = 0;
     UnitCountType gasWorkerCount        = 0;
@@ -138,7 +138,7 @@ GameState::GameState(BWAPI::Game * game, BWAPI::Player * self)
 
 void GameState::setStartingState()
 {
-    _minerals = 50;
+    _minerals = 50 * Constants::RESOURCE_SCALE;
     _gas = 0;
 
     _units.addCompletedAction(ActionTypes::GetResourceDepot(getRace()), false);
@@ -219,13 +219,13 @@ bool GameState::isLegal(const ActionType & action) const
     }
 
     // if we have no gas income we can't make a gas unit
-    if (((action.gasPrice() - _gas) > 0) && !_units.hasGasIncome())
+    if (!canAffordGas(action) && !_units.hasGasIncome())
     {
         return false;
     }
 
     // if we have no mineral income we'll never have a minerla unit
-    if (((action.mineralPrice() - _minerals) > 0) && !_units.hasMineralIncome())
+    if (!canAffordMinerals(action) && !_units.hasMineralIncome())
     {
         return false;
     }
@@ -257,6 +257,7 @@ void GameState::doAction(const ActionType & action)
 
     _actionsPerformed.push_back(ActionPerformed());
     _actionsPerformed[_actionsPerformed.size()-1].actionType = action;
+
     BOSS_ASSERT(isLegal(action), "Trying to perform an illegal action: %s %s", action.getName().c_str(), getActionsPerformedString().c_str());
     
     // set the actionPerformed
@@ -277,8 +278,8 @@ void GameState::doAction(const ActionType & action)
     FrameCountType elapsed(_currentFrame - _lastActionFrame);
     _lastActionFrame = _currentFrame;
 
-    BOSS_ASSERT(_minerals   >= action.mineralPrice(),   "Minerals less than price: %lf < %d, ffTime=%d %s", _minerals, action.mineralPrice(), (int)elapsed, getActionsPerformedString().c_str());
-    BOSS_ASSERT(_gas        >= action.gasPrice(),       "Gas less than price: %lf < %d, ffTime=%d %s", _gas, (int)action.gasPrice(), (int)elapsed, getActionsPerformedString().c_str());
+    BOSS_ASSERT(canAffordMinerals(action),   "Minerals less than price: %lf < %d, ffTime=%d %s", _minerals, action.mineralPrice(), (int)elapsed, action.getName().c_str());
+    BOSS_ASSERT(canAffordGas(action),       "Gas less than price: %lf < %d, ffTime=%d %s", _gas, (int)action.gasPrice(), (int)elapsed, action.getName().c_str());
 
     // modify our resources
     _minerals   -= action.mineralPrice();
@@ -334,10 +335,10 @@ void GameState::fastForward(const FrameCountType toFrame)
     _units.setBuildingFrame(toFrame - _currentFrame);
 
     // update resources & finish each action
-    FrameCountType      lastActionFinished(_currentFrame);
-    FrameCountType      totalTime(0);
-    double              moreGas(0);
-    double              moreMinerals(0);
+    FrameCountType      lastActionFinished  = _currentFrame;
+    FrameCountType      totalTime           = 0;
+    ResourceCountType   moreGas             = 0;
+    ResourceCountType   moreMinerals        = 0;
 
     // while we still have units in progress
     while ((_units.getNumActionsInProgress() > 0) && (_units.getNextActionFinishTime() <= toFrame))
@@ -436,11 +437,14 @@ const FrameCountType GameState::raceSpecificWhenReady(const ActionType & a) cons
 
 const FrameCountType GameState::whenSupplyReady(const ActionType & action) const
 {
-    if (GSN_DEBUG) printf("\tWhen Supply Ready\n");
-    FrameCountType s = _currentFrame;
-
-    // set when we will have enough supply for this unit
     int supplyNeeded = action.supplyRequired() + _units.getCurrentSupply() - _units.getMaxSupply();
+    if (supplyNeeded <= 0)
+    {
+        return getCurrentFrame();
+    }
+
+    FrameCountType whenSupplyReady = _currentFrame;
+
     if (supplyNeeded > 0)
     {
         FrameCountType min = 99999;
@@ -457,11 +461,11 @@ const FrameCountType GameState::whenSupplyReady(const ActionType & action) const
             }
 
             // then set supply time to min
-            s = min;
+            whenSupplyReady = min;
         }
     }
 
-    return s;
+    return whenSupplyReady;
 }
 
 const FrameCountType GameState::whenPrerequisitesReady(const ActionType & action) const
@@ -486,6 +490,7 @@ const FrameCountType GameState::whenPrerequisitesReady(const ActionType & action
             preReqReadyTime = _units.getFinishTime(reqInProgress);
         }
     }
+
     return preReqReadyTime;
 }
 
@@ -516,22 +521,22 @@ const FrameCountType GameState::whenBuildingPrereqReady(const ActionType & actio
     // this will give us when the building will be free to build this action
     buildingAvailableTime = std::min(constructedBuildingFreeTime, buildingInProgressFinishTime);
 
-    // get all prerequisites currently in progress but do not have any completed
-    PrerequisiteSet prereqInProgress = _units.getPrerequistesInProgress(action);
+    //// get all prerequisites currently in progress but do not have any completed
+    //PrerequisiteSet prereqInProgress = _units.getPrerequistesInProgress(action);
 
-    // remove the specific builder from this list since we calculated that earlier
-    prereqInProgress.remove(builder);
+    //// remove the specific builder from this list since we calculated that earlier
+    //prereqInProgress.remove(builder);
 
-    // if we actually have some prerequisites in progress other than the building
-    if (!prereqInProgress.isEmpty())
-    {
-        // get the max time the earliest of each type will be finished in
-        FrameCountType C = _units.getFinishTime(prereqInProgress);
+    //// if we actually have some prerequisites in progress other than the building
+    //if (!prereqInProgress.isEmpty())
+    //{
+    //    // get the max time the earliest of each type will be finished in
+    //    FrameCountType C = _units.getFinishTime(prereqInProgress);
 
-        // take the maximum of this value and when the building was available
-        buildingAvailableTime = (C > buildingAvailableTime) ? C : buildingAvailableTime;
-    }
-
+    //    // take the maximum of this value and when the building was available
+    //    buildingAvailableTime = (C > buildingAvailableTime) ? C : buildingAvailableTime;
+    //}
+    
     return buildingAvailableTime;
 }
 
@@ -546,167 +551,163 @@ const FrameCountType GameState::whenConstructedBuildingReady(const ActionType & 
         return returnTime;
     }
 
-    return _currentFrame;
+    return getCurrentFrame();
 }
 
 // when will minerals be ready
 const FrameCountType GameState::whenMineralsReady(const ActionType & action) const
 {
-    ResourceCountType difference = action.mineralPrice() - _minerals;
-
-    double m = _currentFrame;
-    double addMinerals = 0;
-    double addTime = 0;
-
-    if (difference > 0)
+    if (_minerals >= action.mineralPrice())
     {
-        FrameCountType lastAction = _currentFrame;
-        int tmw = _units.getNumMineralWorkers();
-        int tgw = _units.getNumGasWorkers();
+        return getCurrentFrame();
+    }
+    
+    UnitCountType currentMineralWorkers     = _units.getNumMineralWorkers();
+    UnitCountType currentGasWorkers         = _units.getNumGasWorkers();
+    FrameCountType lastActionFinishFrame    = _currentFrame;
+    FrameCountType addedTime                = 0;
+    ResourceCountType addedMinerals         = 0;
+    ResourceCountType actionCost            = action.mineralPrice();
+    ResourceCountType difference            = action.mineralPrice() - _minerals;
 
-        for (int i(0); i<_units.getNumActionsInProgress(); ++i)
+    // loop through each action in progress, adding the minerals we would gather from each interval
+    for (size_t i(0); i<_units.getNumActionsInProgress(); ++i)
+    {
+        // the vector is sorted in descending order
+        size_t progressIndex = _units.getNumActionsInProgress() - i - 1;
+
+        // the time elapsed and the current minerals per frame
+        FrameCountType elapsed = _units.getFinishTimeByIndex(progressIndex) - lastActionFinishFrame;
+        ResourceCountType mineralsPerFrame = (currentMineralWorkers * Constants::MPWPF);
+
+        // the amount of minerals that would be added this time step
+        ResourceCountType tempAdd = elapsed * mineralsPerFrame;
+        FrameCountType tempTime = elapsed;
+
+        // if this amount isn't enough, update the amount added for this interval
+        if (addedMinerals + tempAdd < difference)
         {
-            // the vector is sorted in descending order
-            int ri = _units.getNumActionsInProgress() - i - 1;
-
-            // the time elapsed and the current minerals per frame
-            int elapsed = _units.getFinishTimeByIndex(ri) - lastAction;
-            double mpf = (tmw * Constants::MPWPF);
-
-            // the amount of minerals that would be added this time step
-            double tempAdd = elapsed * mpf;
-            double tempTime = elapsed;
-
-            // if this amount is enough to push us over what we need
-            if (addMinerals + tempAdd >= difference)
-            {
-                // figure out when we go over
-                tempTime = (difference - addMinerals) / mpf;
-
-                // add the minerals and time
-                addMinerals += tempTime * mpf;
-                addTime += tempTime;
-
-                //if (GSN_DEBUG) printf("Necessary Minerals Acquired Mid-Iteration: %lf\n", addMinerals); 
-
-                // break out of the loop
-                break;
-
-                // otherwise, add the whole interval
-            }
-            else
-            {
-                addMinerals += tempAdd;
-                addTime += elapsed;
-
-                //if (GSN_DEBUG) printf("Another Mineral Iteration Necessary: %lf\n", addMinerals);
-            }
-
-            // if it was a drone or extractor update the temp variables
-            if (_units.getActionInProgressByIndex(ri).isWorker())
-            {
-                tmw++;
-            }
-            else if (_units.getActionInProgressByIndex(ri).isRefinery())
-            {
-                tmw -= 3; tgw += 3;
-            }
-
-            // update the last action
-            lastAction = _units.getFinishTimeByIndex(ri);
+            addedMinerals += tempAdd;
+            addedTime += elapsed;
+        }
+        else
+        {
+            // otherwise we can just break out and update at the end
+            break;
         }
 
-        // if we still haven't added enough minerals, add more time
-        if (addMinerals < difference)
+        // if it was a drone or extractor update the temp variables
+        const ActionType & actionPerformed = _units.getActionInProgressByIndex(progressIndex);
+        if (actionPerformed.isWorker())
         {
-            addTime += (difference - addMinerals) / (tmw * Constants::MPWPF);
-
-            //if (GSN_DEBUG) printf("\t\tNot Enough Minerals, Adding: minerals(%lf) time(%lf)\n", (difference - addMinerals), addTime); 
+            currentMineralWorkers++;
+        }
+        else if (actionPerformed.isRefinery())
+        {
+            BOSS_ASSERT(currentMineralWorkers >= 3, "Not enough mineral workers");
+            currentMineralWorkers -= 3; currentGasWorkers += 3;
         }
 
-        m += addTime;
+        // update the last action
+        lastActionFinishFrame = _units.getFinishTimeByIndex(progressIndex);
     }
 
-    //if (GSN_DEBUG) printf("\tMinerals Needs Adding: Minerals(%d, %lf) Frames(%lf, %d > %d)\n", difference, addMinerals, addTime, currentFrame, (int)ceil(m));
+    // if we still haven't added enough minerals, add more time
+    if (addedMinerals < difference)
+    {
+        FrameCountType finalTimeToAdd = (difference - addedMinerals) / (currentMineralWorkers * Constants::MPWPF);
+        addedMinerals += finalTimeToAdd * currentMineralWorkers * Constants::MPWPF;
+        addedTime     += finalTimeToAdd;
+
+        // the last operation could have added one frame too little due to integer division so we need to check
+        if (addedMinerals < difference)
+        {
+            addedTime += 1;
+            addedMinerals += currentMineralWorkers * Constants::MPWPF;
+        }
+    }
+    
+    BOSS_ASSERT(addedMinerals >= difference, "Mineral prediction error");
 
     // for some reason if i don't return +1, i mine 1 less mineral in the interval
-    return (FrameCountType)ceil(m);
+    return _currentFrame + addedTime;
 }
 
 const FrameCountType GameState::whenGasReady(const ActionType & action) const
 {
-    double g = _currentFrame;
-    double difference = action.gasPrice() - _gas;
-    double addGas = 0;
-    double addTime = 0;
-
-    if (difference > 0)
+    if (_gas >= action.gasPrice())
     {
-        int lastAction = _currentFrame;
-        int tmw = _units.getNumMineralWorkers();
-        int tgw = _units.getNumGasWorkers();
+        return getCurrentFrame();
+    }
+    
+    UnitCountType currentMineralWorkers     = _units.getNumMineralWorkers();
+    UnitCountType currentGasWorkers         = _units.getNumGasWorkers();
+    FrameCountType lastActionFinishFrame    = _currentFrame;
+    FrameCountType addedTime                = 0;
+    ResourceCountType addedGas              = 0;
+    ResourceCountType difference            = action.gasPrice() - _gas;
 
+    // loop through each action in progress, adding the minerals we would gather from each interval
+    for (size_t i(0); i<_units.getNumActionsInProgress(); ++i)
+    {
+        // the vector is sorted in descending order
+        size_t progressIndex = _units.getNumActionsInProgress() - i - 1;
 
-        for (int i(0); i<_units.getNumActionsInProgress(); ++i)
+        // the time elapsed and the current minerals per frame
+        FrameCountType elapsed = _units.getFinishTimeByIndex(progressIndex) - lastActionFinishFrame;
+        ResourceCountType gasPerFrame = (currentGasWorkers * Constants::GPWPF);
+
+        // the amount of minerals that would be added this time step
+        ResourceCountType tempAdd = elapsed * gasPerFrame;
+        FrameCountType tempTime = elapsed;
+
+        // if this amount isn't enough, update the amount added for this interval
+        if (addedGas + tempAdd < difference)
         {
-            // the vector is sorted in descending order
-            int ri = _units.getNumActionsInProgress() - i - 1;
-
-            // the time elapsed and the current minerals per frame
-            int elapsed = _units.getFinishTimeByIndex(ri) - lastAction;
-            double gpf = (tgw * Constants::GPWPF);
-
-            // the amount of minerals that would be added this time step
-            double tempAdd = elapsed * gpf;
-            double tempTime = elapsed;
-
-            // if this amount is enough to push us over what we need
-            if (addGas + tempAdd >= difference)
-            {
-                // figure out when we go over
-                tempTime = (difference - addGas) / gpf;
-
-                // add the minerals and time
-                addGas += tempTime * gpf;
-                addTime += tempTime;
-
-                // break out of the loop
-                break;
-
-                // otherwise, add the whole interval
-            }
-            else {
-
-                addGas += tempAdd;
-                addTime += elapsed;
-            }
-
-            // if it was a drone or extractor update temp variables
-            if (_units.getActionInProgressByIndex(ri).isWorker())
-            {
-                tmw++;
-            }
-            else if (_units.getActionInProgressByIndex(ri).isRefinery())
-            {
-                tmw -= 3; tgw += 3;
-            }
-
-            // update the last action
-            lastAction = _units.getFinishTimeByIndex(ri);
+            addedGas += tempAdd;
+            addedTime += elapsed;
+        }
+        else
+        {
+            // otherwise we can just break out and update at the end
+            break;
         }
 
-        // if we still haven't added enough minerals, add more time
-        if (addGas < difference)
+        // if it was a drone or extractor update the temp variables
+        const ActionType & actionPerformed = _units.getActionInProgressByIndex(progressIndex);
+        if (actionPerformed.isWorker())
         {
-            addTime += (difference - addGas) / (tgw * Constants::GPWPF);
+            currentMineralWorkers++;
+        }
+        else if (actionPerformed.isRefinery())
+        {
+            BOSS_ASSERT(currentMineralWorkers >= 3, "Not enough mineral workers");
+            currentMineralWorkers -= 3; currentGasWorkers += 3;
         }
 
-        g += addTime;
+        // update the last action
+        lastActionFinishFrame = _units.getFinishTimeByIndex(progressIndex);
     }
 
-    //if (GSN_DEBUG) printf("\tGas Needs Adding: Gas(%d, %lf) Frames(%lf, %d > %d)\n", difference, addGas, addTime, currentFrame, (int)ceil(g));
+    // if we still haven't added enough minerals, add more time
+    if (addedGas < difference)
+    {
+        FrameCountType finalTimeToAdd = (difference - addedGas) / (currentGasWorkers * Constants::GPWPF);
+        addedGas    += finalTimeToAdd * currentGasWorkers * Constants::GPWPF;
+        addedTime   += finalTimeToAdd;
 
-    return (FrameCountType)ceil(g);
+        // the last operation could have added one frame too little due to integer division so we need to check
+        if (addedGas < difference)
+        {
+            addedTime += 1;
+            addedGas += currentGasWorkers * Constants::GPWPF;
+        }
+    }
+    
+    BOSS_ASSERT(addedGas >= difference, "Gas prediction error");
+
+    // for some reason if i don't return +1, i mine 1 less mineral in the interval
+    return _currentFrame + addedTime;
 }
 
 const FrameCountType GameState::getCurrentFrame() const
@@ -719,13 +720,28 @@ const FrameCountType GameState::getLastActionFinishTime() const
     return _units.getLastActionFinishTime();
 }
 
+bool GameState::canAfford(const ActionType & action) const
+{
+    return canAffordMinerals(action) && canAffordGas(action);
+}
+
+bool GameState::canAffordGas(const ActionType & action) const
+{
+    return _gas >= action.gasPrice();
+}
+
+bool GameState::canAffordMinerals(const ActionType & action) const
+{
+    return _minerals >= action.mineralPrice();
+}
+
 // getter methods for the internal variables
-double GameState::getMineralsPerFrame() const
+size_t GameState::getMineralsPerFrame() const
 {
     return Constants::MPWPF * _units.getNumMineralWorkers();
 }
 
-double GameState::getGasPerFrame() const
+size_t GameState::getGasPerFrame() const
 {
     return Constants::GPWPF * _units.getNumGasWorkers();
 }

@@ -233,3 +233,56 @@ File:      d:\ualbertabot\boss\source\gamestate.cpp
 Message:   We will never be able to build action: Burrowing
 Line:      499
 Time:      2014-11-04_01:51:05
+
+!Assert:   isLegal(action)
+File:      d:\ualbertabot\boss\source\gamestate.cpp
+Message:   Trying to perform an illegal action: Zerg Drone 
+0 50 0 Zerg Drone
+278 50 0 Zerg Drone
+505 50 0 Zerg Drone
+702 50 0 Zerg Drone
+876 50 0 Zerg Drone
+0 0 0 Zerg Drone
+
+Line:      260
+Time:      2014-11-06_21:54:09
+
+!Assert:   addedMinerals > difference
+File:      d:\ualbertabot\boss\source\gamestate.cpp
+Message:   Mineral prediction error
+Line:      624
+Time:      2014-11-07_00:37:43
+
+!Assert:   addedMinerals > difference
+File:      d:\ualbertabot\boss\source\gamestate.cpp
+Message:   Mineral prediction error
+Line:      625
+Time:      2014-11-07_00:39:25
+
+!Assert:   isLegal(action)
+File:      d:\ualbertabot\boss\source\gamestate.cpp
+Message:   Trying to perform an illegal action: Zerg Drone 
+0 0 0 Zerg Drone
+
+Line:      260
+Time:      2014-11-07_00:39:47
+
+!Assert:   isLegal(action)
+File:      d:\ualbertabot\boss\source\gamestate.cpp
+Message:   Trying to perform an illegal action: Zerg Drone 
+0 0 0 Zerg Drone
+
+Line:      260
+Time:      2014-11-07_00:40:54
+
+!Assert:   addedGas >= difference
+File:      d:\ualbertabot\boss\source\gamestate.cpp
+Message:   Gas prediction error
+Line:      708
+Time:      2014-11-07_00:42:34
+
+!Assert:   addedGas >= difference
+File:      d:\ualbertabot\boss\source\gamestate.cpp
+Message:   Gas prediction error
+Line:      708
+Time:      2014-11-07_00:44:20

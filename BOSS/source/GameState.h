@@ -77,9 +77,12 @@ public:
 
     void                        getAllLegalActions(ActionSet & actions)                   const;
     bool                        isLegal(const ActionType & action)                                      const;
+    bool                        canAfford(const ActionType & action)                                    const;
+    bool                        canAffordGas(const ActionType & action)                                 const;
+    bool                        canAffordMinerals(const ActionType & action)                            const;
 
-    double 				        getMineralsPerFrame()		    const;
-    double 				        getGasPerFrame()	            const;
+    size_t 				        getMineralsPerFrame()		    const;
+    size_t 				        getGasPerFrame()	            const;
     const UnitCountType 		getNumMineralWorkers()	        const;				
     const UnitCountType 		getNumGasWorkers()		        const;					
     const UnitCountType 		getNumBuildingWorkers()	        const;		

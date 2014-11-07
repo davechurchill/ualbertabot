@@ -2,7 +2,7 @@
 
 namespace BOSS
 {
-    typedef		double          ResourceCountType;
+    typedef		int             ResourceCountType;
     typedef 	int             SupplyCountType;
     typedef 	int             FrameCountType;
     typedef 	unsigned short  UnitCountType;
