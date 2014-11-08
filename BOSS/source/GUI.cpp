@@ -203,9 +203,11 @@ void GUI::Render()
             {
                 glTranslatef(static_cast<float>(-cameraX),static_cast<float>(-cameraY),0);
                 
+                Position drawAt(0,0);
                 for (size_t i(0); i < _currentStates.size(); ++i)
                 {
-                    DrawConcurrency(Position(0, i*540), _currentStates[i], _buildOrders[i], _boIndexes[i], _startTimes[i], _finishTimes[i]);
+                    PositionType endY = DrawConcurrency(drawAt, _currentStates[i], _buildOrders[i], _boIndexes[i], _startTimes[i], _finishTimes[i]);
+                    drawAt = Position(0, endY);
                 }
 
                 _currentStates.clear();
@@ -238,7 +240,7 @@ std::string GUI::getTimeString(const FrameCountType & frameCount)
     return timeString;
 }
 
-void GUI::DrawConcurrency(const Position & pos, const GameState & currentState, const std::vector<ActionType> & buildOrder, const size_t & boIndex, const std::vector<FrameCountType> & startTimes, const std::vector<FrameCountType> & finishTimes)
+PositionType GUI::DrawConcurrency(const Position & pos, const GameState & currentState, const std::vector<ActionType> & buildOrder, const size_t & boIndex, const std::vector<FrameCountType> & startTimes, const std::vector<FrameCountType> & finishTimes)
 {
     
     const std::vector<ActionType> & allActions = ActionTypes::GetAllActionTypes(currentState.getRace());
@@ -306,7 +308,7 @@ void GUI::DrawConcurrency(const Position & pos, const GameState & currentState, 
 
 
     std::vector<int> layers(startTimes.size(), -1);
-    int maxLayer = 6;
+    int maxLayer = 0;
 
     for (size_t i(0); i < startTimes.size(); ++i)
     {
@@ -398,7 +400,7 @@ void GUI::DrawConcurrency(const Position & pos, const GameState & currentState, 
         GUITools::DrawStringWithShadow(topLeft + Position(2, 13), name, white);
     }
 
-    PositionType boWidth = (PositionType)(maxWidth / buildOrder.size());
+    PositionType boWidth = std::min(32, (PositionType)(maxWidth / buildOrder.size()));
     for (size_t i(0); i < buildOrder.size(); ++i)
     {
         Position topLeft(concurrent.x() + i*boWidth, concurrent.y() - boWidth - 20);
@@ -497,6 +499,8 @@ void GUI::DrawConcurrency(const Position & pos, const GameState & currentState, 
         
         buildings.add(0, progressBar.y() + progressBuffer.y());
     }
+
+    return concurrent.y() + (maxLayer)*(height + heightBuffer) + 10 + height + 20 + 30;
 }
 
 void GUI::DrawActionType(const ActionType & type, const Position & topLeft, const size_t & width)

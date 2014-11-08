@@ -57,7 +57,7 @@ class GUI
     void OnResize(SDL_Event & event);
     void DrawAllUnits();
     void DrawGameState();
-    void DrawConcurrency(const Position & pos, const GameState & currentState, const std::vector<ActionType> & buildOrder, const size_t & boIndex, const std::vector<FrameCountType> & startTimes, const std::vector<FrameCountType> & finishTimes);
+    PositionType DrawConcurrency(const Position & pos, const GameState & currentState, const std::vector<ActionType> & buildOrder, const size_t & boIndex, const std::vector<FrameCountType> & startTimes, const std::vector<FrameCountType> & finishTimes);
     void DrawActionType(const ActionType & type, const Position & tl, const size_t & width);
 
     std::string getTimeString(const FrameCountType & frameCount);
