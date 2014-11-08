@@ -251,8 +251,6 @@ void testBuildOrderVisualizationSkip()
     size_t nextActionIndex = 0;
     while (true)
     {
-        
-        
         Timer t;
         t.start();
 
@@ -365,14 +363,8 @@ void testBuildOrderVisualization()
     }
 }
 
-int main(int argc, char *argv[])
+void oldMain()
 {
-    #ifdef BOSS_ENABLE_GUI
-        glutInit(&argc, argv);
-    #endif
-
-    BOSS::init();
-    int a;
     GameState initialState(Races::Protoss);
     initialState.setStartingState();
 
@@ -403,6 +395,19 @@ int main(int argc, char *argv[])
 
     //testCombatSearch();
     //testThreadCombatSearch();
+}
+
+#include "BOSSExperiments.h"
+int main(int argc, char *argv[])
+{
+    #ifdef BOSS_ENABLE_GUI
+        glutInit(&argc, argv);
+    #endif
+
+    BOSS::init();
+    
+    BOSSExperiments experiments("config/config.txt");
+    experiments.runExperiments();
 
     return 0;
 }

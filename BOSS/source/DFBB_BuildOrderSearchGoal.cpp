@@ -4,8 +4,8 @@ using namespace BOSS;
 
 DFBB_BuildOrderSearchGoal::DFBB_BuildOrderSearchGoal(const RaceID race)
     : _supplyRequiredVal(0)
-    , _goalUnits(ActionTypes::GetAllActionTypes(race).size(), 0)
-    , _goalUnitsMax(ActionTypes::GetAllActionTypes(race).size(), 0)
+    , _goalUnits(race != Races::None ? ActionTypes::GetAllActionTypes(race).size() : 0, 0)
+    , _goalUnitsMax(race != Races::None ? ActionTypes::GetAllActionTypes(race).size() : 0, 0)
     , _race(race)
 {
  

@@ -811,6 +811,25 @@ const HatcheryData & GameState::getHatcheryData() const
     return _units.getHatcheryData();
 }
 
+void GameState::setMinerals(const ResourceCountType & minerals)
+{
+    _minerals = minerals * Constants::RESOURCE_SCALE;
+}
+
+void GameState::setGas(const ResourceCountType & gas)
+{
+    _gas = gas * Constants::RESOURCE_SCALE;
+}
+
+void GameState::addCompletedAction(const ActionType & action, const size_t num)
+{
+    for (size_t i(0); i < num; ++i)
+    {
+        _units.addCompletedAction(action, false);
+        _units.setCurrentSupply(_units.getCurrentSupply() + action.supplyRequired());
+    }
+}
+
 const std::string GameState::toString() const
 {
     std::cout << "\n-----------------------------------------------------------\n";

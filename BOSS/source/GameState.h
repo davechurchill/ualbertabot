@@ -101,6 +101,10 @@ public:
     const std::string           getActionsPerformedString()     const;
     const BuildingData &        getBuildingData()               const;
     const HatcheryData &        getHatcheryData()               const;
+
     void                        setStartingState();
+    void                        setMinerals(const ResourceCountType & minerals);
+    void                        setGas(const ResourceCountType & gas);
+    void                        addCompletedAction(const ActionType & action, const size_t num = 1);
 };
 }

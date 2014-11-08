@@ -286,3 +286,15 @@ File:      d:\ualbertabot\boss\source\gamestate.cpp
 Message:   Gas prediction error
 Line:      708
 Time:      2014-11-07_00:44:20
+
+!Assert:   false
+File:      d:\ualbertabot\boss\source\jsontools.cpp
+Message:   Problem Opening File: config/config.txt
+Line:      12
+Time:      2014-11-08_03:08:17
+
+!Assert:   false
+File:      ..\source\JSONTools.cpp
+Message:   Could not open file: config/config.txt
+Line:      12
+Time:      2014-11-08_03:17:42

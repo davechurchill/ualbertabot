@@ -342,7 +342,7 @@ void GUI::DrawConcurrency(const Position & pos, const GameState & currentState, 
     }
 
     
-    float maxWidth = windowSizeX - 430;
+    float maxWidth = (float)windowSizeX - 430;
     float maxFinishTime = 1;
 
     for (size_t i(0); i < _finishTimes.size(); ++i)
@@ -398,7 +398,7 @@ void GUI::DrawConcurrency(const Position & pos, const GameState & currentState, 
         GUITools::DrawStringWithShadow(topLeft + Position(2, 13), name, white);
     }
 
-    PositionType boWidth = maxWidth / buildOrder.size();
+    PositionType boWidth = (PositionType)(maxWidth / buildOrder.size());
     for (size_t i(0); i < buildOrder.size(); ++i)
     {
         Position topLeft(concurrent.x() + i*boWidth, concurrent.y() - boWidth - 20);
@@ -439,7 +439,7 @@ void GUI::DrawConcurrency(const Position & pos, const GameState & currentState, 
         GUITools::DrawStringWithShadow(Position((PositionType)xPos, concurrent.y() + (maxLayer)*(height + heightBuffer) + 10 + height + 20), getTimeString(timeFrame).c_str(), white);
     }
 
-    Position progress = concurrent + Position(maxWidth + 20, 0);
+    Position progress = concurrent + Position(PositionType(maxWidth + 20), 0);
     Position progressBar(175,20);
     Position progressBuffer(0, 3);
 
