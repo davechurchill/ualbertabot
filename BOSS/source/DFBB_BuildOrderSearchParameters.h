@@ -97,7 +97,7 @@ public:
 	//SearchSaveState				saveState;
 
 	// alternate constructor
-	DFBB_BuildOrderSearchParameters(const RaceID & r = BWAPI::Races::None);
+	DFBB_BuildOrderSearchParameters(const RaceID & r = Races::None);
 	
     void setMaxActions(const ActionType & a, const UnitCountType & max);
 	void setRepetitions(const ActionType & a, const UnitCountType & repetitions);

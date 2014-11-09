@@ -111,6 +111,21 @@ void BOSSExperiments::runBuildOrderVisualizationExperiment(const rapidjson::Valu
         
         BOSS::GUI::Instance().OnFrame();
         while (t.getElapsedTimeInMilliSec() < frameDelayMS) {}
+
+        bool anyLess = false;
+        for (size_t i(0); i < states.size(); ++i)
+        {
+            if (nextActionIndexes[i] < buildOrders[i].size() || states[i].getCurrentFrame() < states[i].getLastActionFinishTime())
+            {
+                anyLess = true;
+                break;
+            }
+        }
+
+        if (!anyLess)
+        {
+            break;
+        }
     }
 }
 

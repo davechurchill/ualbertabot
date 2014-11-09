@@ -298,3 +298,21 @@ File:      ..\source\JSONTools.cpp
 Message:   Could not open file: config/config.txt
 Line:      12
 Time:      2014-11-08_03:17:42
+
+!Assert:   false
+File:      ..\source\JSONTools.cpp
+Message:   Could not open file: config/config.txt
+Line:      12
+Time:      2014-11-08_21:25:39
+
+!Assert:   false
+File:      ..\source\JSONTools.cpp
+Message:   Could not open file: config/config.txt
+Line:      12
+Time:      2014-11-08_21:26:04
+
+!Assert:   false
+File:      ..\source\JSONTools.cpp
+Message:   Could not open file: config/config.txt
+Line:      12
+Time:      2014-11-09_00:58:09

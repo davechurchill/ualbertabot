@@ -3,7 +3,7 @@
 #include "Common.h"
 #include <cstdio>
 #include <cstdarg>
-#include "Logger.h"
+#include "BOSSLogger.h"
 #include <sstream>
 #include <stdarg.h>
 

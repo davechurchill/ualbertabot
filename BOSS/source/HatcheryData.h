@@ -1,10 +1,11 @@
 #pragma once
 
+#include "Common.h"
+
 #include <string.h>
 #include <queue>
 #include <algorithm>
 
-#include "BWAPI.h"
 #include "PrerequisiteSet.h"
 #include "Array.hpp"
 #include "ActionType.h"
@@ -42,7 +43,7 @@ public:
 
     const FrameCountType    nextLarvaFrameAfter(const FrameCountType & currentFrame) const;
     const UnitCountType     numLarva() const;
-    const UnitCountType &   size() const;
+    const UnitCountType     size() const;
     const Hatchery &        getHatchery(const UnitCountType & index) const;
 };
 

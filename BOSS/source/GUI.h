@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Common.h"
-
-#ifdef BOSS_ENABLE_GUI
+#include "BOSS.h"
+#include "GUITools.h"
 
 #include "freeglut.h"
 #include <SDL.h>
@@ -82,5 +82,3 @@ public:
     void AddActionTimes(const std::vector<FrameCountType> & startTimes, std::vector<FrameCountType> & endTimes);
 };
 }
-
-#endif

@@ -11,7 +11,7 @@ ActionTypeData::ActionTypeData()
 }
 
 // UnitType constructor
-ActionTypeData::ActionTypeData(BWAPI::UnitType t, const ActionID id) 
+ActionTypeData::ActionTypeData(BWAPIDATA::UnitType t, const ActionID id) 
 	: type                      (UnitType)
 	, unit                      (t)
     , raceID                    (GetRaceID(t.getRace()))
@@ -37,25 +37,25 @@ ActionTypeData::ActionTypeData(BWAPI::UnitType t, const ActionID id)
     , reqAddon                  (false)
     , reqAddonID                (0)
 {
-	if (t == BWAPI::UnitTypes::Zerg_Zergling || t == BWAPI::UnitTypes::Zerg_Scourge)
+	if (t == BWAPIDATA::UnitTypes::Zerg_Zergling || t == BWAPIDATA::UnitTypes::Zerg_Scourge)
 	{
 		numberProduced = 2;
 	}
 
-    if (t == BWAPI::UnitTypes::Zerg_Lair ||
-        t == BWAPI::UnitTypes::Zerg_Hive ||
-        t == BWAPI::UnitTypes::Zerg_Greater_Spire ||
-        t == BWAPI::UnitTypes::Zerg_Lurker ||
-        t == BWAPI::UnitTypes::Zerg_Guardian ||
-        t == BWAPI::UnitTypes::Zerg_Sunken_Colony ||
-        t == BWAPI::UnitTypes::Zerg_Spore_Colony)
+    if (t == BWAPIDATA::UnitTypes::Zerg_Lair ||
+        t == BWAPIDATA::UnitTypes::Zerg_Hive ||
+        t == BWAPIDATA::UnitTypes::Zerg_Greater_Spire ||
+        t == BWAPIDATA::UnitTypes::Zerg_Lurker ||
+        t == BWAPIDATA::UnitTypes::Zerg_Guardian ||
+        t == BWAPIDATA::UnitTypes::Zerg_Sunken_Colony ||
+        t == BWAPIDATA::UnitTypes::Zerg_Spore_Colony)
     {
         morphed = true;
     }
 }
 
 // UpgradeType action
-ActionTypeData::ActionTypeData(BWAPI::UpgradeType t, const ActionID id) 
+ActionTypeData::ActionTypeData(BWAPIDATA::UpgradeType t, const ActionID id) 
 	: type(UpgradeType)
 	, upgrade(t)
 	, actionID(id)
@@ -84,7 +84,7 @@ ActionTypeData::ActionTypeData(BWAPI::UpgradeType t, const ActionID id)
 }
 
 // TechType action
-ActionTypeData::ActionTypeData(BWAPI::TechType t, const ActionID id)
+ActionTypeData::ActionTypeData(BWAPIDATA::TechType t, const ActionID id)
 	: type(TechType)
 	, tech(t)
 	, actionID(id)
@@ -114,10 +114,10 @@ ActionTypeData::ActionTypeData(BWAPI::TechType t, const ActionID id)
 RaceID              ActionTypeData::getRaceID()             const   { return raceID; }
 ActionID            ActionTypeData::getActionID()           const   { return actionID; }
 
-BWAPI::UnitType		ActionTypeData::getUnitType()			const	{ return unit; }
-BWAPI::UnitType		ActionTypeData::whatBuildsBWAPI() 		const	{ return whatBuildsUnitType; }
-BWAPI::UpgradeType	ActionTypeData::getUpgradeType()		const	{ return upgrade; }
-BWAPI::TechType		ActionTypeData::getTechType()			const	{ return tech; }
+BWAPIDATA::UnitType		ActionTypeData::getUnitType()			const	{ return unit; }
+BWAPIDATA::UnitType		ActionTypeData::whatBuildsBWAPI() 		const	{ return whatBuildsUnitType; }
+BWAPIDATA::UpgradeType	ActionTypeData::getUpgradeType()		const	{ return upgrade; }
+BWAPIDATA::TechType		ActionTypeData::getTechType()			const	{ return tech; }
 	
 ActionID            ActionTypeData::whatBuildsAction()		const	{ return whatBuildsActionID; }	
 int 			    ActionTypeData::getType() 				const	{ return type; }
@@ -209,8 +209,8 @@ void ActionTypeData::AddActions()
     std::string protoss("Protoss");
     std::string terran("Terran");
     std::string zerg("Zerg");
-    std::set<BWAPI::UnitType> unitTypesSet = BWAPI::UnitTypes::allUnitTypes();
-    std::vector<BWAPI::UnitType> unitTypes;
+    std::set<BWAPIDATA::UnitType> unitTypesSet = BWAPIDATA::UnitTypes::allUnitTypes();
+    std::vector<BWAPIDATA::UnitType> unitTypes;
     std::copy(unitTypesSet.begin(), unitTypesSet.end(), std::back_inserter(unitTypes));
 
     for (size_t i(0); i < unitTypes.size()-1; ++i)
@@ -229,20 +229,20 @@ void ActionTypeData::AddActions()
 
     for (size_t i(0); i < unitTypes.size(); ++i)
     {
-        const BWAPI::UnitType & type = unitTypes[i];
+        const BWAPIDATA::UnitType & type = unitTypes[i];
 
         // blacklist temporary unit types which aren't buildable
-        if (type == BWAPI::UnitTypes::Zerg_Egg ||
-            type == BWAPI::UnitTypes::Zerg_Lurker_Egg ||
-            type == BWAPI::UnitTypes::Zerg_Cocoon ||
-            type == BWAPI::UnitTypes::Zerg_Infested_Terran ||
-            type == BWAPI::UnitTypes::Zerg_Infested_Command_Center ||
-            type == BWAPI::UnitTypes::Zerg_Broodling ||
-            type == BWAPI::UnitTypes::Protoss_Interceptor ||
-            type == BWAPI::UnitTypes::Protoss_Scarab ||
-            type == BWAPI::UnitTypes::Terran_Civilian ||
-            type == BWAPI::UnitTypes::Terran_Nuclear_Missile ||
-            type == BWAPI::UnitTypes::Terran_Vulture_Spider_Mine)
+        if (type == BWAPIDATA::UnitTypes::Zerg_Egg ||
+            type == BWAPIDATA::UnitTypes::Zerg_Lurker_Egg ||
+            type == BWAPIDATA::UnitTypes::Zerg_Cocoon ||
+            type == BWAPIDATA::UnitTypes::Zerg_Infested_Terran ||
+            type == BWAPIDATA::UnitTypes::Zerg_Infested_Command_Center ||
+            type == BWAPIDATA::UnitTypes::Zerg_Broodling ||
+            type == BWAPIDATA::UnitTypes::Protoss_Interceptor ||
+            type == BWAPIDATA::UnitTypes::Protoss_Scarab ||
+            type == BWAPIDATA::UnitTypes::Terran_Civilian ||
+            type == BWAPIDATA::UnitTypes::Terran_Nuclear_Missile ||
+            type == BWAPIDATA::UnitTypes::Terran_Vulture_Spider_Mine)
         {
             continue;
         }
@@ -261,70 +261,70 @@ void ActionTypeData::AddActions()
         }
     }
 
-    const std::set<BWAPI::TechType> & techTypes = BWAPI::TechTypes::allTechTypes();
-    std::set<BWAPI::TechType>::const_iterator tit;
+    const std::set<BWAPIDATA::TechType> & techTypes = BWAPIDATA::TechTypes::allTechTypes();
+    std::set<BWAPIDATA::TechType>::const_iterator tit;
     for (tit = techTypes.begin(); tit != techTypes.end(); tit++)
     {
-        const BWAPI::TechType & type = *tit;
+        const BWAPIDATA::TechType & type = *tit;
 
         // blacklisted tech types we cannot create
-        if (type.whatResearches() == BWAPI::UnitTypes::None)
+        if (type.whatResearches() == BWAPIDATA::UnitTypes::None)
         {
             continue;
         }
 
-        if (type.getRace() == BWAPI::Races::Protoss)
+        if (type.getRace() == BWAPIDATA::Races::Protoss)
         {
             allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(type, allActionTypeDataVec[Races::Protoss].size()));
         }
-        else if (type.getRace() == BWAPI::Races::Terran)
+        else if (type.getRace() == BWAPIDATA::Races::Terran)
         {
             allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(type, allActionTypeDataVec[Races::Terran].size()));
         }
-        else if (type.getRace() == BWAPI::Races::Zerg)
+        else if (type.getRace() == BWAPIDATA::Races::Zerg)
         {
             allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(type, allActionTypeDataVec[Races::Zerg].size()));
         }
     }
 
-    const std::set<BWAPI::UpgradeType> & upgradeTypes = BWAPI::UpgradeTypes::allUpgradeTypes();
-    std::set<BWAPI::UpgradeType>::const_iterator uit;
+    const std::set<BWAPIDATA::UpgradeType> & upgradeTypes = BWAPIDATA::UpgradeTypes::allUpgradeTypes();
+    std::set<BWAPIDATA::UpgradeType>::const_iterator uit;
     for (uit = upgradeTypes.begin(); uit != upgradeTypes.end(); uit++)
     {
-        const BWAPI::UpgradeType & type = *uit;
+        const BWAPIDATA::UpgradeType & type = *uit;
 
         // blacklisted tech types we cannot create
-        if (type.whatUpgrades() == BWAPI::UnitTypes::None)
+        if (type.whatUpgrades() == BWAPIDATA::UnitTypes::None)
         {
             continue;
         }
 
-        if (type.getRace() == BWAPI::Races::Protoss)
+        if (type.getRace() == BWAPIDATA::Races::Protoss)
         {
             allActionTypeDataVec[Races::Protoss].push_back(ActionTypeData(type, allActionTypeDataVec[Races::Protoss].size()));
         }
-        else if (type.getRace() == BWAPI::Races::Terran)
+        else if (type.getRace() == BWAPIDATA::Races::Terran)
         {
             allActionTypeDataVec[Races::Terran].push_back(ActionTypeData(type, allActionTypeDataVec[Races::Terran].size()));
         }
-        else if (type.getRace() == BWAPI::Races::Zerg)
+        else if (type.getRace() == BWAPIDATA::Races::Zerg)
         {
             allActionTypeDataVec[Races::Zerg].push_back(ActionTypeData(type, allActionTypeDataVec[Races::Zerg].size()));
         }
     }
 }
 
-const RaceID ActionTypeData::GetRaceID(BWAPI::Race r)
+const RaceID ActionTypeData::GetRaceID(BWAPIDATA::Race r)
 {
-    if (r == BWAPI::Races::Protoss)
+    if (r == BWAPIDATA::Races::Protoss)
     {
         return Races::Protoss;
     }
-    else if (r == BWAPI::Races::Terran)
+    else if (r == BWAPIDATA::Races::Terran)
     {
         return Races::Terran;
     }
-    else if (r == BWAPI::Races::Zerg)
+    else if (r == BWAPIDATA::Races::Zerg)
     {
         return Races::Zerg;
     }
@@ -346,7 +346,7 @@ const ActionTypeData & ActionTypeData::GetActionTypeData(const RaceID raceID, co
 
 
 
-ActionID ActionTypeData::GetActionID(const BWAPI::UnitType & type) 
+ActionID ActionTypeData::GetActionID(const BWAPIDATA::UnitType & type) 
 {
     const RaceID raceID = GetRaceID(type.getRace());
     BOSS_ASSERT(raceID < Races::NUM_RACES, "Race ID invalid: %d %s", (int)raceID, type.getName().c_str());
@@ -365,7 +365,7 @@ ActionID ActionTypeData::GetActionID(const BWAPI::UnitType & type)
     return 0;
 }
 
-ActionID ActionTypeData::GetActionID(const BWAPI::TechType & type) 
+ActionID ActionTypeData::GetActionID(const BWAPIDATA::TechType & type) 
 {
     const RaceID raceID = GetRaceID(type.getRace());
     for (ActionID a(0); a < ActionTypeData::GetNumActionTypes(raceID); ++a)
@@ -381,7 +381,7 @@ ActionID ActionTypeData::GetActionID(const BWAPI::TechType & type)
     return 0;
 }
 
-ActionID ActionTypeData::GetActionID(const BWAPI::UpgradeType & type) 
+ActionID ActionTypeData::GetActionID(const BWAPIDATA::UpgradeType & type) 
 {
     const RaceID raceID = GetRaceID(type.getRace());
     for (ActionID a(0); a < ActionTypeData::GetNumActionTypes(raceID); ++a)
@@ -397,17 +397,17 @@ ActionID ActionTypeData::GetActionID(const BWAPI::UpgradeType & type)
     return 0;
 }
 
-ActionTypeData ActionTypeData::GetActionTypeData(const BWAPI::UnitType & a)
+ActionTypeData ActionTypeData::GetActionTypeData(const BWAPIDATA::UnitType & a)
 {
     return GetActionTypeData(GetRaceID(a.getRace()), GetActionID(a));
 }
 
-ActionTypeData ActionTypeData::GetActionTypeData(const BWAPI::TechType & a)
+ActionTypeData ActionTypeData::GetActionTypeData(const BWAPIDATA::TechType & a)
 {
     return GetActionTypeData(GetRaceID(a.getRace()), GetActionID(a));
 }
 
-ActionTypeData ActionTypeData::GetActionTypeData(const BWAPI::UpgradeType & a)
+ActionTypeData ActionTypeData::GetActionTypeData(const BWAPIDATA::UpgradeType & a)
 {
     return GetActionTypeData(GetRaceID(a.getRace()), GetActionID(a));
 }
@@ -466,9 +466,9 @@ void ActionTypeData::CalculateWhatBuilds()
         for (ActionID a(0); a < ActionTypeData::GetNumActionTypes(r); ++a)
         {
             ActionTypeData & actionTypeData = allActionTypeDataVec[r][a];
-            if (actionTypeData.whatBuildsBWAPI() == BWAPI::UnitTypes::Zerg_Larva)
+            if (actionTypeData.whatBuildsBWAPI() == BWAPIDATA::UnitTypes::Zerg_Larva)
 		    {
-			    actionTypeData.setWhatBuildsActionID(GetActionID(BWAPI::UnitTypes::Zerg_Larva), false, true);
+			    actionTypeData.setWhatBuildsActionID(GetActionID(BWAPIDATA::UnitTypes::Zerg_Larva), false, true);
 		    }
 		    else
 		    {
@@ -487,26 +487,26 @@ PrerequisiteSet ActionTypeData::CalculatePrerequisites(const ActionTypeData & ac
 	// if it's a UnitType
 	if (action.getType() == ActionTypeData::UnitType)
 	{
-		std::map<BWAPI::UnitType, int> requiredUnits = action.getUnitType().requiredUnits();
-		BWAPI::UnitType actionType = action.getUnitType();
+		std::map<BWAPIDATA::UnitType, int> requiredUnits = action.getUnitType().requiredUnits();
+		BWAPIDATA::UnitType actionType = action.getUnitType();
 
 		// if it's a protoss building that isn't a Nexus or Assimilator, we need a pylon (indirectly)
-		if (actionType.getRace() == BWAPI::Races::Protoss && actionType.isBuilding() && !actionType.isResourceDepot() && 
-			!(actionType == BWAPI::UnitTypes::Protoss_Pylon) && !(actionType == BWAPI::UnitTypes::Protoss_Assimilator))
+		if (actionType.getRace() == BWAPIDATA::Races::Protoss && actionType.isBuilding() && !actionType.isResourceDepot() && 
+			!(actionType == BWAPIDATA::UnitTypes::Protoss_Pylon) && !(actionType == BWAPIDATA::UnitTypes::Protoss_Assimilator))
 		{
-            pre.add(ActionType(Races::Protoss, GetActionID(BWAPI::UnitTypes::Protoss_Pylon)), 1);
+            pre.add(ActionType(Races::Protoss, GetActionID(BWAPIDATA::UnitTypes::Protoss_Pylon)), 1);
 		}
 
 		// for each of the required UnitTypes
-		for (std::map<BWAPI::UnitType, int>::iterator unitIt = requiredUnits.begin(); unitIt != requiredUnits.end(); unitIt++)
+		for (std::map<BWAPIDATA::UnitType, int>::iterator unitIt = requiredUnits.begin(); unitIt != requiredUnits.end(); unitIt++)
 		{
 			//if (DEBUG_StarcraftData) printf("\tPRE: %s\n", unitIt->first.getName().c_str());
 	
-			BWAPI::UnitType type = unitIt->first;
+			BWAPIDATA::UnitType type = unitIt->first;
             int count = unitIt->second;
 
 			// add the action to the PrerequisiteSet if it is not a larva
-			if (type != BWAPI::UnitTypes::Zerg_Larva)
+			if (type != BWAPIDATA::UnitTypes::Zerg_Larva)
 			{
 				//printf("\t\tAdding %s\n", type.getName().c_str());
 				pre.add(ActionType(action.getRaceID(), GetActionID(type)), count);
@@ -514,10 +514,10 @@ PrerequisiteSet ActionTypeData::CalculatePrerequisites(const ActionTypeData & ac
 		}
 
 		// if there is a TechType required
-		if (action.getUnitType().requiredTech() != BWAPI::TechTypes::None)
+		if (action.getUnitType().requiredTech() != BWAPIDATA::TechTypes::None)
 		{
 			//if (DEBUG_StarcraftData) printf("\tPRE: %s\n", action.getUnitType().requiredTech().getName().c_str());
-            BWAPI::TechType required = action.getUnitType().requiredTech();
+            BWAPIDATA::TechType required = action.getUnitType().requiredTech();
 			// add it to the PrerequisiteSet
 			pre.add(ActionType(action.getRaceID(), GetActionID(required)), 1);
 		}
@@ -526,7 +526,7 @@ PrerequisiteSet ActionTypeData::CalculatePrerequisites(const ActionTypeData & ac
 	// if it's a TechType
 	if (action.getType() == ActionTypeData::TechType)
 	{
-		if (action.getTechType().whatResearches() != BWAPI::UnitTypes::None)
+		if (action.getTechType().whatResearches() != BWAPIDATA::UnitTypes::None)
 		{
 			//if (DEBUG_StarcraftData) printf("\tPRE: %s\n", action.getTechType().whatResearches().getName().c_str());
 
@@ -538,7 +538,7 @@ PrerequisiteSet ActionTypeData::CalculatePrerequisites(const ActionTypeData & ac
 	// if it's an UpgradeType
 	if (action.getType() == ActionTypeData::UpgradeType)
 	{
-		if (action.getUpgradeType().whatUpgrades() != BWAPI::UnitTypes::None)
+		if (action.getUpgradeType().whatUpgrades() != BWAPIDATA::UnitTypes::None)
 		{
 			//if (DEBUG_StarcraftData) printf("\tPRE: %s\n", action.getUpgradeType().whatUpgrades().getName().c_str());
 
@@ -562,15 +562,15 @@ void ActionTypeData::CalculateRecursivePrerequisites(PrerequisiteSet & allPre, c
     {
         if (action.raceID == Races::Protoss)
         {
-            pre.add(ActionType(Races::Protoss, GetActionID(BWAPI::UnitTypes::Protoss_Assimilator)));
+            pre.add(ActionType(Races::Protoss, GetActionID(BWAPIDATA::UnitTypes::Protoss_Assimilator)));
         }
         else if (action.raceID == Races::Terran)
         {
-            pre.add(ActionType(Races::Terran, GetActionID(BWAPI::UnitTypes::Terran_Refinery)));
+            pre.add(ActionType(Races::Terran, GetActionID(BWAPIDATA::UnitTypes::Terran_Refinery)));
         }
         if (action.raceID == Races::Zerg)
         {
-            pre.add(ActionType(Races::Zerg, GetActionID(BWAPI::UnitTypes::Zerg_Extractor)));
+            pre.add(ActionType(Races::Zerg, GetActionID(BWAPIDATA::UnitTypes::Zerg_Extractor)));
         }
     }
 

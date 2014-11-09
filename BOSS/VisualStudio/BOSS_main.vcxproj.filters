@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\source\GUITools.cpp">
+      <Filter>gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\GUI.cpp">
+      <Filter>gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\BOSS_main.cpp" />
+    <ClCompile Include="..\source\BOSSExperiments.cpp" />
+    <ClCompile Include="..\source\JSONTools.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="gui">
+      <UniqueIdentifier>{3d80a73e-cfef-4628-9cb5-7c132f896eea}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\source\GUI.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\GUITools.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\BOSSExperiments.h" />
+    <ClInclude Include="..\source\JSONTools.h" />
+  </ItemGroup>
+</Project>

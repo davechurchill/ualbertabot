@@ -1,0 +1,16 @@
+#pragma once
+#include <BWAPIDATA/Client/Client.h>
+#include <BWAPIDATA/Client/Command.h>
+#include <BWAPIDATA/Client/CommandType.h>
+#include <BWAPIDATA/Client/Event.h>
+#include <BWAPIDATA/Client/ForceData.h>
+#include <BWAPIDATA/Client/ForceImpl.h>
+#include <BWAPIDATA/Client/GameData.h>
+#include <BWAPIDATA/Client/GameImpl.h>
+#include <BWAPIDATA/Client/PlayerData.h>
+#include <BWAPIDATA/Client/PlayerImpl.h>
+#include <BWAPIDATA/Client/Shape.h>
+#include <BWAPIDATA/Client/ShapeType.h>
+#include <BWAPIDATA/Client/UnitCommand.h>
+#include <BWAPIDATA/Client/UnitData.h>
+#include <BWAPIDATA/Client/UnitImpl.h>

@@ -104,7 +104,7 @@ const UnitCountType HatcheryData::numLarva() const
     return sumLarva;
 }
 
-const UnitCountType & HatcheryData::size() const
+const UnitCountType HatcheryData::size() const
 {
     return _hatcheries.size();
 }

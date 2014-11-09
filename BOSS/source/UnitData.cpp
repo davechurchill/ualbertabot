@@ -55,7 +55,7 @@ void UnitData::addCompletedBuilding(const ActionType & action, const FrameCountT
 	}
 
     // special case for hatcheries
-    if (action.isBuilding() && (action.getUnitType() == BWAPI::UnitTypes::Zerg_Hatchery))
+    if (action.isBuilding() && (action.getUnitType() == BWAPIDATA::UnitTypes::Zerg_Hatchery))
     {
         _hatcheryData.addHatchery(1);
     }
@@ -93,7 +93,7 @@ void UnitData::addCompletedAction(const ActionType & action, bool wasBuilt)
 	}
 
     // special case for hatcheries
-    if (action.isBuilding() && (action.getUnitType() == BWAPI::UnitTypes::Zerg_Hatchery))
+    if (action.isBuilding() && (action.getUnitType() == BWAPIDATA::UnitTypes::Zerg_Hatchery))
     {
         _hatcheryData.addHatchery(wasBuilt ? 1 : 3);
     }
@@ -283,7 +283,7 @@ const ActionType & UnitData::getActionInProgressByIndex(const UnitCountType & in
     return _progress.getAction(index);
 }
 
-const FrameCountType & UnitData::getActionInProgressFinishTimeByIndex(const UnitCountType & index) const
+const FrameCountType UnitData::getActionInProgressFinishTimeByIndex(const UnitCountType & index) const
 {
     return _progress.getTime(index);
 }

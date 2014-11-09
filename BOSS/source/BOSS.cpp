@@ -5,7 +5,7 @@ namespace BOSS
     void init()
     {
         // Initialize data
-        BWAPI::BWAPI_init();
+        BWAPIDATA::BWAPIDATA_init();
         ActionTypeData::Init();
         ActionTypes::init();
     }

@@ -210,7 +210,6 @@ void DFBB_BuildOrderSmartSearch::setRelevantActions()
 UnitCountType DFBB_BuildOrderSmartSearch::calculateSupplyProvidersRequired()
 {
     const ActionType & resourceDepot    = ActionTypes::GetResourceDepot(getRace());
-    const ActionType & refinery         = ActionTypes::GetRefinery(getRace());
     const ActionType & worker           = ActionTypes::GetWorker(getRace());
     const ActionType & supplyProvider   = ActionTypes::GetSupplyProvider(getRace());
 
@@ -238,10 +237,10 @@ UnitCountType DFBB_BuildOrderSmartSearch::calculateSupplyProvidersRequired()
 
 void DFBB_BuildOrderSmartSearch::setRepetitions()
 {
-    const ActionType & resourceDepot    = ActionTypes::GetResourceDepot(getRace());
-    const ActionType & refinery         = ActionTypes::GetRefinery(getRace());
-    const ActionType & worker           = ActionTypes::GetWorker(getRace());
-    const ActionType & supplyProvider   = ActionTypes::GetSupplyProvider(getRace());
+    //const ActionType & resourceDepot    = ActionTypes::GetResourceDepot(getRace());
+    //const ActionType & refinery         = ActionTypes::GetRefinery(getRace());
+    //const ActionType & worker           = ActionTypes::GetWorker(getRace());
+    //const ActionType & supplyProvider   = ActionTypes::GetSupplyProvider(getRace());
 
     //_params.setRepetitions(supplyProvider, 1);
     //_params.setRepetitionThreshold(supplyProvider, 3);

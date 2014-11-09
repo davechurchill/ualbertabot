@@ -5,17 +5,17 @@ namespace BOSS
 {
     namespace Races
     {
-        RaceID GetRaceID(BWAPI::Race r)
+        RaceID GetRaceID(BWAPIDATA::Race r)
         {
-            if (r == BWAPI::Races::Protoss)
+            if (r == BWAPIDATA::Races::Protoss)
             {
                 return Races::Protoss;
             }
-            else if (r == BWAPI::Races::Terran)
+            else if (r == BWAPIDATA::Races::Terran)
             {
                 return Races::Terran;
             }
-            else if (r == BWAPI::Races::Zerg)
+            else if (r == BWAPIDATA::Races::Zerg)
             {
                 return Races::Zerg;
             }

@@ -1,7 +1,5 @@
 #include "GUI.h"
 
-#ifdef BOSS_ENABLE_GUI
-
 using namespace BOSS;
 
 #define GUI_INITIAL_WIDTH  1920
@@ -725,7 +723,5 @@ void GUI::setVSync(int interval)
         //puts("VSync change unsupported");
     } 
 }
-
-#endif
 
 #endif

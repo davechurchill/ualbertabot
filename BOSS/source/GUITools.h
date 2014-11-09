@@ -2,8 +2,6 @@
 
 #include "Common.h"
 
-#ifdef BOSS_ENABLE_GUI
-
 #include "Position.hpp"
 #include "freeglut.h"
 #include <SDL.h>
@@ -34,5 +32,3 @@ namespace BOSS
         void put_pixel32( SDL_Surface *surface, int x, int y, Uint32 pixel );
     }
 }
-
-#endif

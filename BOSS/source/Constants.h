@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BWAPI.h"
+#include "BWAPIDATA.h"
 #include "BaseTypes.h"
 
 namespace BOSS
@@ -42,7 +42,7 @@ namespace BOSS
     {
         enum {Protoss, Terran, Zerg, NUM_RACES, None};
 
-        RaceID GetRaceID(BWAPI::Race r);
+        RaceID GetRaceID(BWAPIDATA::Race r);
         RaceID GetRaceID(const std::string & race);
     }
 

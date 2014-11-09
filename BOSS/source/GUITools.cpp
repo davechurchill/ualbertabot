@@ -1,8 +1,6 @@
 #include "GUITools.h"
 #include "GUI.h"
 
-#ifdef BOSS_ENABLE_GUI
-
 namespace BOSS
 {
 namespace GUITools
@@ -212,5 +210,3 @@ namespace GUITools
     }
 }
 }
-
-#endif

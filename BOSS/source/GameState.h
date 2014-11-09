@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Common.h"
-#include "BWAPI/Game.h"
 
 #include "ActionInProgress.h"
 #include "BuildingData.h"
@@ -65,7 +64,7 @@ public:
 
     GameState(const RaceID r = Races::None);
 
-    GameState(BWAPI::Game * game, BWAPI::Player * player);
+    //GameState(BWAPI::Game * game, BWAPI::Player * player);
 
     void                        doAction(const ActionType & action);
     void                        fastForward(const FrameCountType toFrame) ;

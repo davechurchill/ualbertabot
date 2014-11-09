@@ -1,10 +1,11 @@
 #pragma once
 
+#include "Common.h"
+
 #include <string.h>
 #include <queue>
 #include <algorithm>
 
-#include "BWAPI.h"
 #include "PrerequisiteSet.h"
 #include "Array.hpp"
 #include "ActionType.h"
