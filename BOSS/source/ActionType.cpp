@@ -26,21 +26,21 @@ ActionType::ActionType(const ActionType & type)
 
 }
 
-ActionType::ActionType(const BWAPIDATA::UnitType & type)
+ActionType::ActionType(const BWAPI::UnitType & type)
     : _race(ActionTypeData::GetRaceID(type.getRace()))
     , _id(ActionTypeData::GetActionID(type))
 {
 
 }
 
-ActionType::ActionType(const BWAPIDATA::UpgradeType & type)
+ActionType::ActionType(const BWAPI::UpgradeType & type)
     : _race(ActionTypeData::GetRaceID(type.getRace()))
     , _id(ActionTypeData::GetActionID(type))
 {
 
 }
 
-ActionType::ActionType(const BWAPIDATA::TechType & type)
+ActionType::ActionType(const BWAPI::TechType & type)
     : _race(ActionTypeData::GetRaceID(type.getRace()))
     , _id(ActionTypeData::GetActionID(type))
 {
@@ -60,11 +60,11 @@ ActionType & ActionType::operator = (const ActionType & rhs)
 const ActionID              ActionType::ID()                    const { return _id; }
 const RaceID                ActionType::getRace()               const { return _race; }
 
-BWAPIDATA::UnitType             ActionType::getUnitType()           const { return ActionTypeData::GetActionTypeData(_race, _id).getUnitType(); }
-BWAPIDATA::UpgradeType          ActionType::getUpgradeType()        const { return ActionTypeData::GetActionTypeData(_race, _id).getUpgradeType(); }
-BWAPIDATA::TechType             ActionType::getTechType()           const { return ActionTypeData::GetActionTypeData(_race, _id).getTechType(); }
+BWAPI::UnitType             ActionType::getUnitType()           const { return ActionTypeData::GetActionTypeData(_race, _id).getUnitType(); }
+BWAPI::UpgradeType          ActionType::getUpgradeType()        const { return ActionTypeData::GetActionTypeData(_race, _id).getUpgradeType(); }
+BWAPI::TechType             ActionType::getTechType()           const { return ActionTypeData::GetActionTypeData(_race, _id).getTechType(); }
 
-BWAPIDATA::UnitType             ActionType::whatBuildsBWAPI()       const { return ActionTypeData::GetActionTypeData(_race, _id).whatBuildsBWAPI(); }
+BWAPI::UnitType             ActionType::whatBuildsBWAPI()       const { return ActionTypeData::GetActionTypeData(_race, _id).whatBuildsBWAPI(); }
 ActionType		            ActionType::whatBuildsActionType()  const { return ActionTypes::GetActionType(_race, whatBuildsAction()); }
 ActionID                    ActionType::whatBuildsAction()      const { return ActionTypeData::GetActionTypeData(_race, _id).whatBuildsAction(); }	
 
@@ -215,7 +215,7 @@ namespace ActionTypes
         return allActionTypes[race];
     }
 
-    const bool TypeExists(const BWAPIDATA::UnitType & type) 
+    const bool TypeExists(const BWAPI::UnitType & type) 
     {
         const RaceID raceID = ActionTypeData::GetRaceID(type.getRace());
 
@@ -236,7 +236,7 @@ namespace ActionTypes
 	    return false;
     }
 
-    const bool TypeExists(const BWAPIDATA::UpgradeType & type) 
+    const bool TypeExists(const BWAPI::UpgradeType & type) 
     {
         const RaceID raceID = ActionTypeData::GetRaceID(type.getRace());
 
@@ -257,7 +257,7 @@ namespace ActionTypes
 	    return false;
     }
 
-    const bool TypeExists(const BWAPIDATA::TechType & type) 
+    const bool TypeExists(const BWAPI::TechType & type) 
     {
         const RaceID raceID = ActionTypeData::GetRaceID(type.getRace());
 

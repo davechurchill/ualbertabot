@@ -3,6 +3,7 @@
 #include "Common.h"
 #include "Array.hpp"
 #include "PrerequisiteSet.h"
+#include <set>
 
 namespace BOSS
 {
@@ -23,10 +24,10 @@ private:
     RaceID              raceID;
 
     int                 type;				// the enum type of action this is
-    BWAPIDATA::Race         race;				// the race of this action
-    BWAPIDATA::UnitType     unit;				// holds UnitType, if it's a unit
-    BWAPIDATA::UpgradeType  upgrade;			// holds UpgradeType, if it's an upgrade
-    BWAPIDATA::TechType     tech;				// holds TechType, if it's a tech
+    BWAPI::Race         race;				// the race of this action
+    BWAPI::UnitType     unit;				// holds UnitType, if it's a unit
+    BWAPI::UpgradeType  upgrade;			// holds UpgradeType, if it's an upgrade
+    BWAPI::TechType     tech;				// holds TechType, if it's a tech
 
     ResourceCountType	mineralPriceVal; 	// mineral price of the action
     ResourceCountType	gasPriceVal; 		// gas price of the action
@@ -56,15 +57,15 @@ private:
 
     ActionID            reqAddonID;
 
-    BWAPIDATA::UnitType     whatBuildsUnitType;		// the unit type that builds this
+    BWAPI::UnitType     whatBuildsUnitType;		// the unit type that builds this
 
     ActionID            whatBuildsActionID;	// the action that builds this 
 
     // Private Constructors
     ActionTypeData();
-    ActionTypeData(BWAPIDATA::UnitType t, const ActionID id);
-    ActionTypeData(BWAPIDATA::UpgradeType t, const ActionID id);
-    ActionTypeData(BWAPIDATA::TechType t, const ActionID id);
+    ActionTypeData(BWAPI::UnitType t, const ActionID id);
+    ActionTypeData(BWAPI::UpgradeType t, const ActionID id);
+    ActionTypeData(BWAPI::TechType t, const ActionID id);
 
     static void         AddActions();
     static void         CalculateWhatBuilds();
@@ -73,9 +74,9 @@ private:
     static PrerequisiteSet CalculatePrerequisites(const ActionTypeData & action);
     static void CalculateRecursivePrerequisites(PrerequisiteSet & allPre, const ActionTypeData & action);
 
-    static ActionTypeData   GetActionTypeData(const BWAPIDATA::UnitType & a);
-    static ActionTypeData   GetActionTypeData(const BWAPIDATA::TechType & a);
-    static ActionTypeData   GetActionTypeData(const BWAPIDATA::UpgradeType & a);
+    static ActionTypeData   GetActionTypeData(const BWAPI::UnitType & a);
+    static ActionTypeData   GetActionTypeData(const BWAPI::TechType & a);
+    static ActionTypeData   GetActionTypeData(const BWAPI::UpgradeType & a);
     
     void setWhatBuildsActionID(const ActionID a,const bool wbib,const bool wbil);
 
@@ -84,22 +85,22 @@ public:
     static void                     Init();
     static const ActionID           GetNumActionTypes(const RaceID race);
     static const ActionTypeData &   GetActionTypeData(const RaceID raceID,const ActionID & id);
-    static const RaceID             GetRaceID(BWAPIDATA::Race r);
+    static const RaceID             GetRaceID(BWAPI::Race r);
 
     RaceID              getRaceID()             const;
     ActionID            getActionID()           const;
 
     ActionType          whatBuildsActionType()  const;
 
-    BWAPIDATA::UnitType		getUnitType()			const;
-    BWAPIDATA::UnitType		whatBuildsBWAPI()       const;
-    BWAPIDATA::UpgradeType	getUpgradeType()		const;
-    BWAPIDATA::TechType		getTechType()			const;
+    BWAPI::UnitType		getUnitType()			const;
+    BWAPI::UnitType		whatBuildsBWAPI()       const;
+    BWAPI::UpgradeType	getUpgradeType()		const;
+    BWAPI::TechType		getTechType()			const;
 
 
-    static ActionID     GetActionID(const BWAPIDATA::UnitType & a);
-    static ActionID     GetActionID(const BWAPIDATA::TechType & a);
-    static ActionID     GetActionID(const BWAPIDATA::UpgradeType & a);
+    static ActionID     GetActionID(const BWAPI::UnitType & a);
+    static ActionID     GetActionID(const BWAPI::TechType & a);
+    static ActionID     GetActionID(const BWAPI::UpgradeType & a);
 
     ActionID            whatBuildsAction()		const;
     const PrerequisiteSet & getPrerequisites()  const;

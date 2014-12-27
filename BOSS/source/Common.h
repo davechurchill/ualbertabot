@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BWAPIDATA.h"
+#include "BWAPI.h"
 #include <stdio.h>
 #include <math.h>
 #include <fstream>

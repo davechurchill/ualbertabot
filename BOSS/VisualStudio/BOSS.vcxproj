@@ -18,70 +18,6 @@
     <ClInclude Include="..\source\Array.hpp" />
     <ClInclude Include="..\source\BaseTypes.h" />
     <ClInclude Include="..\source\BOSSAssert.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\AIModule.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Bitmap.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Bullet.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\BulletType.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Client.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Client\BulletData.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Client\BulletImpl.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Client\Client.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Client\Command.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Client\CommandType.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Client\Event.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Client\ForceData.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Client\ForceImpl.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Client\GameData.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Client\GameImpl.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Client\PlayerData.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Client\PlayerImpl.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Client\Shape.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Client\ShapeType.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Client\UnitCommand.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Client\UnitData.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Client\UnitImpl.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Color.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Constants.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\CoordinateType.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\DamageType.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Error.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Event.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\EventType.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\ExplosionType.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Flag.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Force.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Game.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\GameType.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Input.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Latency.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Order.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Player.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\PlayerType.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Position.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Race.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\TechType.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\TilePosition.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\Unit.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\UnitCommand.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\UnitCommandType.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\UnitSizeType.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\UnitType.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\UpgradeType.h" />
-    <ClInclude Include="..\source\bwapidata\BWAPIDATA\WeaponType.h" />
-    <ClInclude Include="..\source\bwapidata\Common.h" />
-    <ClInclude Include="..\source\bwapidata\Util\Bitmask.h" />
-    <ClInclude Include="..\source\bwapidata\Util\Exceptions.h" />
-    <ClInclude Include="..\source\bwapidata\Util\FileLogger.h" />
-    <ClInclude Include="..\source\bwapidata\Util\Foreach.h" />
-    <ClInclude Include="..\source\bwapidata\Util\Gnu.h" />
-    <ClInclude Include="..\source\bwapidata\Util\Logger.h" />
-    <ClInclude Include="..\source\bwapidata\Util\LogLevel.h" />
-    <ClInclude Include="..\source\bwapidata\Util\RectangleArray.h" />
-    <ClInclude Include="..\source\bwapidata\Util\RegionQuadTree.h" />
-    <ClInclude Include="..\source\bwapidata\Util\sha1.h" />
-    <ClInclude Include="..\source\bwapidata\Util\Strings.h" />
-    <ClInclude Include="..\source\bwapidata\Util\Types.h" />
     <ClInclude Include="..\source\CombatSearchBucket.h" />
     <ClInclude Include="..\source\CombatSearchIntegral.h" />
     <ClInclude Include="..\source\Constants.h" />
@@ -114,33 +50,6 @@
     <ClCompile Include="..\source\ActionType.cpp" />
     <ClCompile Include="..\source\ActionTypeData.cpp" />
     <ClCompile Include="..\source\BOSSAssert.cpp" />
-    <ClCompile Include="..\source\bwapidata\AIModule.cpp" />
-    <ClCompile Include="..\source\bwapidata\Bitmap.cpp" />
-    <ClCompile Include="..\source\bwapidata\BulletType.cpp" />
-    <ClCompile Include="..\source\bwapidata\BWAPIDATA.cpp" />
-    <ClCompile Include="..\source\bwapidata\Color.cpp" />
-    <ClCompile Include="..\source\bwapidata\Common.cpp" />
-    <ClCompile Include="..\source\bwapidata\DamageType.cpp" />
-    <ClCompile Include="..\source\bwapidata\Error.cpp" />
-    <ClCompile Include="..\source\bwapidata\Event.cpp" />
-    <ClCompile Include="..\source\bwapidata\ExplosionType.cpp" />
-    <ClCompile Include="..\source\bwapidata\GameType.cpp" />
-    <ClCompile Include="..\source\bwapidata\Order.cpp" />
-    <ClCompile Include="..\source\bwapidata\PlayerType.cpp" />
-    <ClCompile Include="..\source\bwapidata\Position.cpp" />
-    <ClCompile Include="..\source\bwapidata\Race.cpp" />
-    <ClCompile Include="..\source\bwapidata\TechType.cpp" />
-    <ClCompile Include="..\source\bwapidata\TilePosition.cpp" />
-    <ClCompile Include="..\source\bwapidata\UnitCommandType.cpp" />
-    <ClCompile Include="..\source\bwapidata\UnitSizeType.cpp" />
-    <ClCompile Include="..\source\bwapidata\UnitType.cpp" />
-    <ClCompile Include="..\source\bwapidata\UpgradeType.cpp" />
-    <ClCompile Include="..\source\bwapidata\Util\Exceptions.cpp" />
-    <ClCompile Include="..\source\bwapidata\Util\FileLogger.cpp" />
-    <ClCompile Include="..\source\bwapidata\Util\Logger.cpp" />
-    <ClCompile Include="..\source\bwapidata\Util\sha1.cpp" />
-    <ClCompile Include="..\source\bwapidata\Util\Strings.cpp" />
-    <ClCompile Include="..\source\bwapidata\WeaponType.cpp" />
     <ClCompile Include="..\source\CombatSearch.cpp" />
     <ClCompile Include="..\source\BOSS.cpp" />
     <ClCompile Include="..\source\BuildingData.cpp" />
@@ -211,7 +120,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../source/bwapidata;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BWAPI_DIR)/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -229,7 +138,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../source/bwapidata;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BWAPI_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
