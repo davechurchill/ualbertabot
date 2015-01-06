@@ -33,13 +33,13 @@ void InformationManager::update()
 void InformationManager::updateUnitInfo() 
 {
 	// update enemy unit information
-	BOOST_FOREACH (BWAPI::Unit * unit, BWAPI::Broodwar->enemy()->getUnits())
+	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->enemy()->getUnits())
 	{
 		updateUnit(unit);
 	}
 
 	// update enemy unit information
-	BOOST_FOREACH (BWAPI::Unit * unit, BWAPI::Broodwar->self()->getUnits())
+	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits())
 	{
 		updateUnit(unit);
 	}
@@ -75,7 +75,7 @@ void InformationManager::updateBaseLocationInfo()
 		// an undexplored base location holder
 		BWTA::BaseLocation * unexplored = NULL;
 
-		BOOST_FOREACH (BWTA::BaseLocation * startLocation, BWTA::getStartLocations()) 
+		for (BWTA::BaseLocation * startLocation : BWTA::getStartLocations()) 
 		{
 			if (isEnemyBuildingInRegion(BWTA::getRegion(startLocation->getTilePosition()))) 
 			{
@@ -142,7 +142,7 @@ void InformationManager::updateBaseLocationInfo()
 	}
 }
 
-void InformationManager::updateOccupiedRegions(BWTA::Region * region, BWAPI::Player * player) 
+void InformationManager::updateOccupiedRegions(BWTA::Region * region, BWAPI::PlayerInterface * player) 
 {
 	// if the region is valid (flying buildings may be in NULL regions)
 	if (region)
@@ -152,7 +152,7 @@ void InformationManager::updateOccupiedRegions(BWTA::Region * region, BWAPI::Pla
 	}
 }
 
-int InformationManager::getIndex(BWAPI::Player * player)
+int InformationManager::getIndex(BWAPI::PlayerInterface * player)
 {
 	return player == BWAPI::Broodwar->self() ? SELF_INDEX : ENEMY_INDEX;
 }
@@ -189,7 +189,7 @@ int InformationManager::numEnemyUnitsInRegion(BWTA::Region * region)
 	}
 
 	int unitsInRegion(0);
-	BOOST_FOREACH(BWAPI::Unit * unit, BWAPI::Broodwar->enemy()->getUnits()) 
+	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->enemy()->getUnits()) 
 	{
 		if (unit->isVisible() && BWTA::getRegion(BWAPI::TilePosition(unit->getPosition())) == region) 
 		{
@@ -200,7 +200,7 @@ int InformationManager::numEnemyUnitsInRegion(BWTA::Region * region)
 	return unitsInRegion;
 }
 
-const UIMap & InformationManager::getUnitInfo(BWAPI::Player * player) const
+const UIMap & InformationManager::getUnitInfo(BWAPI::PlayerInterface * player) const
 {
 	return getUnitData(player).getUnits();
 }
@@ -208,7 +208,7 @@ const UIMap & InformationManager::getUnitInfo(BWAPI::Player * player) const
 int InformationManager::numEnemyFlyingUnitsInRegion(BWTA::Region * region) 
 {
 	int unitsInRegion(0);
-	BOOST_FOREACH(BWAPI::Unit * unit, BWAPI::Broodwar->enemy()->getUnits()) 
+	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->enemy()->getUnits()) 
 	{
 		if (unit->isVisible() && BWTA::getRegion(BWAPI::TilePosition(unit->getPosition())) == region && unit->getType().isFlyer()) 
 		{
@@ -219,12 +219,12 @@ int InformationManager::numEnemyFlyingUnitsInRegion(BWTA::Region * region)
 	return unitsInRegion;
 }
 
-std::set<BWTA::Region *> & InformationManager::getOccupiedRegions(BWAPI::Player * player)
+std::set<BWTA::Region *> & InformationManager::getOccupiedRegions(BWAPI::PlayerInterface * player)
 {
 	return occupiedRegions[getIndex(player)];
 }
 
-BWTA::BaseLocation * InformationManager::getMainBaseLocation(BWAPI::Player * player) 
+BWTA::BaseLocation * InformationManager::getMainBaseLocation(BWAPI::PlayerInterface * player) 
 {
 	return mainBaseLocations[getIndex(player)];
 }
@@ -243,7 +243,7 @@ void InformationManager::drawUnitInformation(int x, int y) {
 	int yspace = 0;
 
 	// for each unit in the queue
-	BOOST_FOREACH (BWAPI::UnitType t, BWAPI::UnitTypes::allUnitTypes()) 
+	for (BWAPI::UnitType t : BWAPI::UnitTypes::allUnitTypes()) 
 	{
 		int numUnits = enemyUnitData.getNumUnits(t);
 		int numDeadUnits = enemyUnitData.getNumDeadUnits(t);
@@ -265,7 +265,7 @@ void InformationManager::drawUnitInformation(int x, int y) {
 
 void InformationManager::onStart() {}
 
-void InformationManager::updateUnit(BWAPI::Unit * unit)
+void InformationManager::updateUnit(BWAPI::UnitInterface* unit)
 {
 	if (unit->getPlayer() == BWAPI::Broodwar->enemy())
 	{
@@ -278,7 +278,7 @@ void InformationManager::updateUnit(BWAPI::Unit * unit)
 }
 
 // is the unit valid?
-bool InformationManager::isValidUnit(BWAPI::Unit * unit) 
+bool InformationManager::isValidUnit(BWAPI::UnitInterface* unit) 
 {
 	// we only care about our units and enemy units
 	if (unit->getPlayer() != BWAPI::Broodwar->self() && unit->getPlayer() != BWAPI::Broodwar->enemy()) 
@@ -303,7 +303,7 @@ bool InformationManager::isValidUnit(BWAPI::Unit * unit)
 	return true;
 }
 
-void InformationManager::onUnitDestroy(BWAPI::Unit * unit) 
+void InformationManager::onUnitDestroy(BWAPI::UnitInterface* unit) 
 { 
 	// erase the unit
 	if (unit->getPlayer() == BWAPI::Broodwar->enemy())
@@ -316,12 +316,12 @@ void InformationManager::onUnitDestroy(BWAPI::Unit * unit)
 	}
 }
 
-BWAPI::Unit * InformationManager::getClosestUnitToTarget(BWAPI::UnitType type, BWAPI::Position target)
+BWAPI::UnitInterface* InformationManager::getClosestUnitToTarget(BWAPI::UnitType type, BWAPI::Position target)
 {
-	BWAPI::Unit * closestUnit = NULL;
+	BWAPI::UnitInterface* closestUnit = NULL;
 	double closestDist = 100000;
 
-	BOOST_FOREACH (BWAPI::Unit * unit, BWAPI::Broodwar->self()->getUnits())
+	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits())
 	{
 		if (unit->getType() == type)
 		{
@@ -359,7 +359,7 @@ bool InformationManager::isCombatUnit(BWAPI::UnitType type) const
 	return false;
 }
 
-void InformationManager::getNearbyForce(std::vector<UnitInfo> & unitInfo, BWAPI::Position p, BWAPI::Player * player, int radius) 
+void InformationManager::getNearbyForce(std::vector<UnitInfo> & unitInfo, BWAPI::Position p, BWAPI::PlayerInterface * player, int radius) 
 {
 	// for each unit we know about for that player
 	FOR_EACH_UIMAP_CONST(iter, getUnitData(player).getUnits())
@@ -386,9 +386,9 @@ void InformationManager::getNearbyForce(std::vector<UnitInfo> & unitInfo, BWAPI:
 	}
 }
 
-bool InformationManager::nearbyForceHasCloaked(BWAPI::Position p, BWAPI::Player * player, int radius) 
+bool InformationManager::nearbyForceHasCloaked(BWAPI::Position p, BWAPI::PlayerInterface * player, int radius) 
 {
-	if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawCircleMap(p.x(), p.y(), radius, BWAPI::Colors::Red);
+	if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawCircleMap(p.x, p.y, radius, BWAPI::Colors::Red);
 
 	FOR_EACH_UIMAP_CONST(iter, getUnitData(player).getUnits())
 	{
@@ -424,17 +424,17 @@ bool InformationManager::nearbyForceHasCloaked(BWAPI::Position p, BWAPI::Player 
 	return false;
 }
 
-int InformationManager::getNumUnits(BWAPI::UnitType t, BWAPI::Player * player)
+int InformationManager::getNumUnits(BWAPI::UnitType t, BWAPI::PlayerInterface * player)
 {
 	return getUnitData(player).getNumUnits(t);
 }
 
-const UnitData & InformationManager::getUnitData(BWAPI::Player * player) const
+const UnitData & InformationManager::getUnitData(BWAPI::PlayerInterface * player) const
 {
 	return (player == BWAPI::Broodwar->self()) ? selfUnitData : enemyUnitData;
 }
 
-const UnitData & InformationManager::getUnitData(BWAPI::Unit * unit) const
+const UnitData & InformationManager::getUnitData(BWAPI::UnitInterface* unit) const
 {
 	return getUnitData(unit->getPlayer());
 }

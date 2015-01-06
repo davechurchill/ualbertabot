@@ -22,12 +22,12 @@
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v90</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v90</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -55,14 +55,14 @@
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">BasicDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
-    <RunCodeAnalysis Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</RunCodeAnalysis>
+    <RunCodeAnalysis Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</RunCodeAnalysis>
     <CodeAnalysisIgnoreGeneratedCode Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CodeAnalysisIgnoreGeneratedCode>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectName)_d</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../SparCraft/source;../Source;$(BWAPI_DIR)/include;$(BOOST_DIR);$(FREETYPE_DIR)/include/freetype2;$(FREETYPE_DIR)/include;$(SDL_IMAGE_DIR);$(SDL_DIR)/include;$(SDL_GFX_DIR);$(FTGL_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../SparCraft/source;../Source;$(BWTA_DIR)/include;$(BWAPI_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;EXAMPLEAIMODULE_EXPORTS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -71,9 +71,10 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPId.lib;$(BWAPI_DIR)/lib/BWTAd.lib;$(BWAPI_DIR)/lib/tinyxmld.lib;$(BWAPI_DIR)/lib/CGAL-vc90-mt-gd.lib;$(BWAPI_DIR)/lib/libboost_thread-vc90-mt-gd-1_40.lib;$(BWAPI_DIR)/lib/gmp-vc90-mt-gd.lib;$(BWAPI_DIR)/lib/mpfr-vc90-mt-gd.lib;$(Configuration)/SparCraft/SparCraft_d.lib;$(Configuration)/BOSS/BOSS_d.lib;$(EXTERNAL_LIB_DIR)/SDL.lib;$(EXTERNAL_LIB_DIR)/SDLmain.lib;$(EXTERNAL_LIB_DIR)/opengl32.lib;$(EXTERNAL_LIB_DIR)/SDL_image.lib;$(EXTERNAL_LIB_DIR)/SDL_gfx.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPId.lib;$(Configuration)/SparCraft/SparCraft_d.lib;$(Configuration)/BOSS/BOSS_d.lib;$(BWTA_DIR)/lib/BWTA.lib;$(BWTA_DIR)/lib/libboost_system-vc120-mt-1_56.lib;$(BWTA_DIR)/lib/libboost_thread-vc120-mt-1_56.lib;$(BWTA_DIR)/lib/libCGAL-vc120-mt-4.4.lib;$(BWTA_DIR)/lib/libgmp-10.lib;$(BWTA_DIR)/lib/libmpfr-4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -83,7 +84,7 @@
     <ClCompile>
       <Optimization>Full</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>../Source;$(BWAPI_DIR)/include;$(BOOST_DIR);$(SDL_DIR)/include;$(SDL_IMAGE_DIR);$(SDL_GFX_DIR);$(FREETYPE_DIR)/include;$(FREETYPE_DIR)/include/freetype2;$(FTGL_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Source;$(BWAPI_DIR)/include;$(BWTA_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;EXAMPLEAIMODULE_EXPORTS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -93,14 +94,14 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <EnablePREfast>true</EnablePREfast>
+      <EnablePREfast>false</EnablePREfast>
       <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPI.lib;$(BWAPI_DIR)/lib/BWTA.lib;$(BWAPI_DIR)/lib/tinyxml.lib;$(BWAPI_DIR)/lib/CGAL-vc90-mt.lib;$(BWAPI_DIR)/lib/libboost_thread-vc90-mt-1_40.lib;$(BWAPI_DIR)/lib/gmp-vc90-mt.lib;$(BWAPI_DIR)/lib/mpfr-vc90-mt.lib;$(Configuration)/SparCraft/SparCraft.lib;$(Configuration)/BOSS/BOSS.lib;$(EXTERNAL_LIB_DIR)/SDL.lib;$(EXTERNAL_LIB_DIR)/SDLmain.lib;$(EXTERNAL_LIB_DIR)/opengl32.lib;$(EXTERNAL_LIB_DIR)/SDL_image.lib;$(EXTERNAL_LIB_DIR)/SDL_gfx.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPI.lib;$(Configuration)/SparCraft/SparCraft.lib;$(Configuration)/BOSS/BOSS.lib;$(BWTA_DIR)/lib/BWTA.lib;$(BWTA_DIR)/lib/libboost_system-vc120-mt-1_56.lib;$(BWTA_DIR)/lib/libboost_thread-vc120-mt-1_56.lib;$(BWTA_DIR)/lib/libCGAL-vc120-mt-4.4.lib;$(BWTA_DIR)/lib/libgmp-10.lib;$(BWTA_DIR)/lib/libmpfr-4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>

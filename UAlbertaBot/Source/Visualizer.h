@@ -17,8 +17,8 @@ class Visualizer
 	SparCraft::GameState state;
 	SparCraft::Map map;
 
-	const IDType getPlayer(BWAPI::Unit * unit) const;
-	const IDType getPlayer(BWAPI::Player * player) const;
+	const IDType getPlayer(BWAPI::UnitInterface* unit) const;
+	const IDType getPlayer(BWAPI::PlayerInterface * player) const;
 
 public:
 

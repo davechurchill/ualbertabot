@@ -13,7 +13,7 @@ UnitCommandData::UnitCommandData()
 
 }
 
-UnitCommandData::UnitCommandData(BWAPI::Unit * unit)
+UnitCommandData::UnitCommandData(BWAPI::UnitInterface* unit)
 	: _unit(unit)
 	, _phase(UnitCommandData::NONE)
 	, _enteredReady(0)

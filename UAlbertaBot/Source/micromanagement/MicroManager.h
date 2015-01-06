@@ -10,44 +10,44 @@ namespace UAlbertaBot
 {
 struct AirThreat
 {
-	BWAPI::Unit *	unit;
+	BWAPI::UnitInterface*	unit;
 	double			weight;
 };
 
 struct GroundThreat
 {
-	BWAPI::Unit *	unit;
+	BWAPI::UnitInterface*	unit;
 	double			weight;
 };
 
 class MicroManager
 {
-	UnitVector			units;
+	std::vector<BWAPI::UnitInterface *>			units;
 	int					lastRegroupPerformed;
 
 protected:
 	
 	SquadOrder			order;
 
-	virtual void		executeMicro(const UnitVector & targets) = 0;
+	virtual void		executeMicro(const std::vector<BWAPI::UnitInterface *> & targets) = 0;
 	bool				checkPositionWalkable(BWAPI::Position pos);
 	bool				drawDebugVectors;
 	void				drawOrderText();
-	void				smartAttackUnit(BWAPI::Unit * attacker, BWAPI::Unit * target) const;
-	void				smartAttackMove(BWAPI::Unit * attacker, BWAPI::Position targetPosition) const;
-	void				smartMove(BWAPI::Unit * attacker, BWAPI::Position targetPosition) const;
-	bool				unitNearEnemy(BWAPI::Unit * unit);
-	bool				unitNearChokepoint(BWAPI::Unit * unit) const;
-	void				trainSubUnits(BWAPI::Unit * unit) const;
+	void				smartAttackUnit(BWAPI::UnitInterface* attacker, BWAPI::UnitInterface* target) const;
+	void				smartAttackMove(BWAPI::UnitInterface* attacker, BWAPI::Position targetPosition) const;
+	void				smartMove(BWAPI::UnitInterface* attacker, BWAPI::Position targetPosition) const;
+	bool				unitNearEnemy(BWAPI::UnitInterface* unit);
+	bool				unitNearChokepoint(BWAPI::UnitInterface* unit) const;
+	void				trainSubUnits(BWAPI::UnitInterface* unit) const;
 
 public:
 						MicroManager() : drawDebugVectors(true), lastRegroupPerformed(0) {}
     virtual				~MicroManager(){}
 
-	const UnitVector &	getUnits() const { return units; }
+	const std::vector<BWAPI::UnitInterface *> &	getUnits() const { return units; }
 	BWAPI::Position     calcCenter() const;
 
-	void				setUnits(const UnitVector & u);
+	void				setUnits(const std::vector<BWAPI::UnitInterface *> & u);
 	void				execute(const SquadOrder & order);
 	void				regroup(const BWAPI::Position & regroupPosition) const;
 };

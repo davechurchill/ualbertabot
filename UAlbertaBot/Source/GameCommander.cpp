@@ -80,8 +80,8 @@ void GameCommander::drawDebugInterface()
 	if (Options::Debug::DRAW_UALBERTABOT_DEBUG)
 	{
 		BWAPI::Broodwar->drawTextScreen(20, 20, "Frame: %7d\nTime: %4dm %3ds", BWAPI::Broodwar->getFrameCount(), BWAPI::Broodwar->getFrameCount()/(24*60), (BWAPI::Broodwar->getFrameCount()/24)%60);
-		int mouseX = BWAPI::Broodwar->getMousePosition().x() + BWAPI::Broodwar->getScreenPosition().x();
-		int mouseY = BWAPI::Broodwar->getMousePosition().y() + BWAPI::Broodwar->getScreenPosition().y();
+		int mouseX = BWAPI::Broodwar->getMousePosition().x + BWAPI::Broodwar->getScreenPosition().x;
+		int mouseY = BWAPI::Broodwar->getMousePosition().y + BWAPI::Broodwar->getScreenPosition().y;
 		BWAPI::Broodwar->drawTextMap(mouseX + 20, mouseY, " %d %d", mouseX, mouseY);
 	}
 }
@@ -98,7 +98,7 @@ void GameCommander::populateUnitVectors()
 	setWorkerUnits();
 }
 
-const bool GameCommander::isAssigned(BWAPI::Unit * unit) const
+const bool GameCommander::isAssigned(BWAPI::UnitInterface* unit) const
 {
 	return assignedUnits.find(unit) != assignedUnits.end();
 }
@@ -110,7 +110,7 @@ void GameCommander::setValidUnits()
 	assignedUnits.clear();
 
 	// make sure the unit is completed and alive and usable
-	BOOST_FOREACH(BWAPI::Unit * unit, BWAPI::Broodwar->self()->getUnits())
+	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits())
 	{
 		if (isValidUnit(unit))
 		{	
@@ -129,13 +129,13 @@ void GameCommander::setScoutUnits()
 	if (numWorkerScouts == 0)
 	{
 		// get the first supply provider we come across in our units, this should be the first one we make
-		BWAPI::Unit * supplyProvider = getFirstSupplyProvider();
+		BWAPI::UnitInterface* supplyProvider = getFirstSupplyProvider();
 
 		// if it exists
 		if (supplyProvider)
 		{
 			// grab the closest worker to the supply provider to send to scout
-			BWAPI::Unit * workerScout = getClosestWorkerToTarget(supplyProvider->getPosition());
+			BWAPI::UnitInterface* workerScout = getClosestWorkerToTarget(supplyProvider->getPosition());
 
 			// if we find a worker (which we should) add it to the scout vector
 			if (workerScout)
@@ -154,7 +154,7 @@ void GameCommander::setCombatUnits()
 {
 	combatUnits.clear();
 
-	BOOST_FOREACH (BWAPI::Unit * unit, validUnits)
+	for (BWAPI::UnitInterface* unit : validUnits)
 	{
 		if (!isAssigned(unit) && isCombatUnit(unit))		
 		{	
@@ -168,7 +168,7 @@ void GameCommander::setCombatUnits()
     int workersToDefend = StrategyManager::Instance().defendWithWorkers();
 	if (combatUnits.empty() && (workersToDefend > 0))
 	{
-		BOOST_FOREACH (BWAPI::Unit * unit, validUnits)
+		for (BWAPI::UnitInterface* unit : validUnits)
 		{
 			// if it's a worker
 			if (!isAssigned(unit) && unit->getType().isWorker())			
@@ -190,7 +190,7 @@ void GameCommander::setCombatUnits()
 	}
 }
 
-bool GameCommander::isCombatUnit(BWAPI::Unit * unit) const
+bool GameCommander::isCombatUnit(BWAPI::UnitInterface* unit) const
 {
 	UAB_ASSERT(unit != NULL, "Unit was null");
 
@@ -212,13 +212,13 @@ bool GameCommander::isCombatUnit(BWAPI::Unit * unit) const
 	return false;
 }
 
-BWAPI::Unit * GameCommander::getFirstSupplyProvider()
+BWAPI::UnitInterface* GameCommander::getFirstSupplyProvider()
 {
-	BWAPI::Unit * supplyProvider = NULL;
+	BWAPI::UnitInterface* supplyProvider = NULL;
 
 	if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Zerg)
 	{
-		BOOST_FOREACH(BWAPI::Unit * unit, BWAPI::Broodwar->self()->getUnits())
+		for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits())
 		{
 			if (unit->getType() == BWAPI::UnitTypes::Zerg_Spawning_Pool)
 			{
@@ -229,7 +229,7 @@ BWAPI::Unit * GameCommander::getFirstSupplyProvider()
 	else
 	{
 		
-		BOOST_FOREACH(BWAPI::Unit * unit, BWAPI::Broodwar->self()->getUnits())
+		for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits())
 		{
 			if (unit->getType() == BWAPI::Broodwar->self()->getRace().getSupplyProvider())
 			{
@@ -245,7 +245,7 @@ void GameCommander::setWorkerUnits()
 {
 	workerUnits.clear();
 
-	BOOST_FOREACH (BWAPI::Unit * unit, validUnits)
+	for (BWAPI::UnitInterface* unit : validUnits)
 	{
 		if (!isAssigned(unit) && unit->getType().isWorker())			
 		{	
@@ -256,7 +256,7 @@ void GameCommander::setWorkerUnits()
 
 }
 
-bool GameCommander::isValidUnit(BWAPI::Unit * unit)
+bool GameCommander::isValidUnit(BWAPI::UnitInterface* unit)
 {
 	if (!unit)
 	{
@@ -267,8 +267,8 @@ bool GameCommander::isValidUnit(BWAPI::Unit * unit)
 		&& unit->getHitPoints() > 0 
 		&& unit->exists() 
 		&& unit->getType() != BWAPI::UnitTypes::Unknown 
-		&& unit->getPosition().x() != BWAPI::Positions::Unknown.x() 
-		&& unit->getPosition().y() != BWAPI::Positions::Unknown.y()) 
+		&& unit->getPosition().x != BWAPI::Positions::Unknown.x 
+		&& unit->getPosition().y != BWAPI::Positions::Unknown.y) 
 	{
 		return true;
 	}
@@ -278,46 +278,46 @@ bool GameCommander::isValidUnit(BWAPI::Unit * unit)
 	}
 }
 
-void GameCommander::onUnitShow(BWAPI::Unit * unit)			
+void GameCommander::onUnitShow(BWAPI::UnitInterface* unit)			
 { 
 	InformationManager::Instance().onUnitShow(unit); 
 	WorkerManager::Instance().onUnitShow(unit);
 }
 
-void GameCommander::onUnitHide(BWAPI::Unit * unit)			
+void GameCommander::onUnitHide(BWAPI::UnitInterface* unit)			
 { 
 	InformationManager::Instance().onUnitHide(unit); 
 }
 
-void GameCommander::onUnitCreate(BWAPI::Unit * unit)		
+void GameCommander::onUnitCreate(BWAPI::UnitInterface* unit)		
 { 
 	InformationManager::Instance().onUnitCreate(unit); 
 }
 
-void GameCommander::onUnitRenegade(BWAPI::Unit * unit)		
+void GameCommander::onUnitRenegade(BWAPI::UnitInterface* unit)		
 { 
 	InformationManager::Instance().onUnitRenegade(unit); 
 }
 
-void GameCommander::onUnitDestroy(BWAPI::Unit * unit)		
+void GameCommander::onUnitDestroy(BWAPI::UnitInterface* unit)		
 { 	
 	ProductionManager::Instance().onUnitDestroy(unit);
 	WorkerManager::Instance().onUnitDestroy(unit);
 	InformationManager::Instance().onUnitDestroy(unit); 
 }
 
-void GameCommander::onUnitMorph(BWAPI::Unit * unit)		
+void GameCommander::onUnitMorph(BWAPI::UnitInterface* unit)		
 { 
 	InformationManager::Instance().onUnitMorph(unit);
 	WorkerManager::Instance().onUnitMorph(unit);
 }
 
-BWAPI::Unit * GameCommander::getClosestUnitToTarget(BWAPI::UnitType type, BWAPI::Position target)
+BWAPI::UnitInterface* GameCommander::getClosestUnitToTarget(BWAPI::UnitType type, BWAPI::Position target)
 {
-	BWAPI::Unit * closestUnit = NULL;
+	BWAPI::UnitInterface* closestUnit = NULL;
 	double closestDist = 100000;
 
-	BOOST_FOREACH (BWAPI::Unit * unit, validUnits)
+	for (BWAPI::UnitInterface* unit : validUnits)
 	{
 		if (unit->getType() == type)
 		{
@@ -333,12 +333,12 @@ BWAPI::Unit * GameCommander::getClosestUnitToTarget(BWAPI::UnitType type, BWAPI:
 	return closestUnit;
 }
 
-BWAPI::Unit * GameCommander::getClosestWorkerToTarget(BWAPI::Position target)
+BWAPI::UnitInterface* GameCommander::getClosestWorkerToTarget(BWAPI::Position target)
 {
-	BWAPI::Unit * closestUnit = NULL;
+	BWAPI::UnitInterface* closestUnit = NULL;
 	double closestDist = 100000;
 
-	BOOST_FOREACH (BWAPI::Unit * unit, validUnits)
+	for (BWAPI::UnitInterface* unit : validUnits)
 	{
 		if (!isAssigned(unit) && unit->getType().isWorker() && WorkerManager::Instance().isFree(unit))
 		{

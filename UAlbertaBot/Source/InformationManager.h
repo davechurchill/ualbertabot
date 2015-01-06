@@ -16,7 +16,7 @@ class InformationManager {
 
 	InformationManager();
 
-	SparCraft::Map					map;
+	SparCraft::Map					    map;
 
 	UnitData							enemyUnitData;
 	UnitData							selfUnitData;
@@ -25,19 +25,19 @@ class InformationManager {
 	BWTA::BaseLocation *				mainBaseLocations[2];
 	std::set<BWTA::Region *>			occupiedRegions[2];
 
-	int									getIndex(BWAPI::Player * player);
+	int									getIndex(BWAPI::PlayerInterface * player);
 
-	void								updateUnit(BWAPI::Unit * unit);
+	void								updateUnit(BWAPI::UnitInterface* unit);
 	void								initializeRegionInformation();
 	void								initializeBaseInfoVector();
 	void								updateUnitInfo();
 	void								updateBaseInfo();
 	void								updateBaseLocationInfo();
-	void								updateOccupiedRegions(BWTA::Region * region, BWAPI::Player * player);
-	bool								isValidUnit(BWAPI::Unit * unit);
+	void								updateOccupiedRegions(BWTA::Region * region, BWAPI::PlayerInterface * player);
+	bool								isValidUnit(BWAPI::UnitInterface* unit);
 
-	const UnitData &					getUnitData(BWAPI::Player * player) const;
-	const UnitData &					getUnitData(BWAPI::Unit * unit) const;
+	const UnitData &					getUnitData(BWAPI::PlayerInterface * player) const;
+	const UnitData &					getUnitData(BWAPI::UnitInterface* unit) const;
 
 public:
 
@@ -51,38 +51,38 @@ public:
 	void								onStart();
 
 	// event driven stuff
-	void					onUnitShow(BWAPI::Unit * unit)			{ updateUnit(unit); }
-	void					onUnitHide(BWAPI::Unit * unit)			{ updateUnit(unit); }
-	void					onUnitCreate(BWAPI::Unit * unit)		{ updateUnit(unit); }
-	void					onUnitMorph(BWAPI::Unit * unit)			{ updateUnit(unit); }
-	void					onUnitRenegade(BWAPI::Unit * unit)		{ updateUnit(unit); }
-	void					onUnitDestroy(BWAPI::Unit * unit);
+	void					onUnitShow(BWAPI::UnitInterface* unit)			{ updateUnit(unit); }
+	void					onUnitHide(BWAPI::UnitInterface* unit)			{ updateUnit(unit); }
+	void					onUnitCreate(BWAPI::UnitInterface* unit)		{ updateUnit(unit); }
+	void					onUnitMorph(BWAPI::UnitInterface* unit)			{ updateUnit(unit); }
+	void					onUnitRenegade(BWAPI::UnitInterface* unit)		{ updateUnit(unit); }
+	void					onUnitDestroy(BWAPI::UnitInterface* unit);
 
 	bool					positionInRangeOfEnemyDetector(BWAPI::Position p);
 	bool					enemyFlyerThreat();
 	bool					isEnemyBuildingInRegion(BWTA::Region * region);
-	int						getNumUnits(BWAPI::UnitType type, BWAPI::Player * player);
-	int						getNumTotalDeadUnits(BWAPI::Player * player);
+	int						getNumUnits(BWAPI::UnitType type, BWAPI::PlayerInterface * player);
+	int						getNumTotalDeadUnits(BWAPI::PlayerInterface * player);
 	int						numEnemyUnitsInRegion(BWTA::Region * region);
 	int						numEnemyFlyingUnitsInRegion(BWTA::Region * region);
-	bool					nearbyForceHasCloaked(BWAPI::Position p, BWAPI::Player * player, int radius);
+	bool					nearbyForceHasCloaked(BWAPI::Position p, BWAPI::PlayerInterface * player, int radius);
 	bool					isCombatUnit(BWAPI::UnitType type) const;
 	bool					canWinNearby(BWAPI::Position p);
 	bool					tileContainsUnit(BWAPI::TilePosition tile);
 
-	void					getNearbyForce(std::vector<UnitInfo> & unitInfo, BWAPI::Position p, BWAPI::Player * player, int radius);
+	void					getNearbyForce(std::vector<UnitInfo> & unitInfo, BWAPI::Position p, BWAPI::PlayerInterface * player, int radius);
 
-	std::pair<double, double>	nearbyCombatInfo(BWAPI::Position p, BWAPI::Player * player);
+	std::pair<double, double>	nearbyCombatInfo(BWAPI::Position p, BWAPI::PlayerInterface * player);
 	double						getDPS(BWAPI::UnitType type);
 
 	UnitInfoVector &			getEnemyDetectors();
-	UnitInfoVector &			getKnownUnitInfo(BWAPI::UnitType type, BWAPI::Player * player);
-	const UIMap &				getUnitInfo(BWAPI::Player * player) const;
+	UnitInfoVector &			getKnownUnitInfo(BWAPI::UnitType type, BWAPI::PlayerInterface * player);
+	const UIMap &				getUnitInfo(BWAPI::PlayerInterface * player) const;
 
-	BWAPI::Unit *				getClosestUnitToTarget(BWAPI::UnitType type, BWAPI::Position target);
+	BWAPI::UnitInterface*				getClosestUnitToTarget(BWAPI::UnitType type, BWAPI::Position target);
 
-	std::set<BWTA::Region *> &	getOccupiedRegions(BWAPI::Player * player);
-	BWTA::BaseLocation *		getMainBaseLocation(BWAPI::Player * player);
+	std::set<BWTA::Region *> &	getOccupiedRegions(BWAPI::PlayerInterface * player);
+	BWTA::BaseLocation *		getMainBaseLocation(BWAPI::PlayerInterface * player);
 
 	bool						enemyHasCloakedUnits();
 	bool						enemyHasDetector();

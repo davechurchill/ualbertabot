@@ -12,8 +12,8 @@ struct UnitInfo
 
 	int					unitID;
 	int					lastHealth;
-    BWAPI::Player *     player;
-	BWAPI::Unit *		unit;
+    BWAPI::PlayerInterface *      player;
+	BWAPI::UnitInterface *		    unit;
 	BWAPI::Position		lastPosition;
 	BWAPI::UnitType		type;
     bool                completed;
@@ -47,7 +47,7 @@ struct UnitInfo
 
 	}
 
-	UnitInfo(int id, BWAPI::Unit * u, BWAPI::Position last, BWAPI::UnitType t) 
+	UnitInfo(int id, BWAPI::UnitInterface* u, BWAPI::Position last, BWAPI::UnitType t) 
         : unitID(id)
         , lastHealth(u->getHitPoints() + u->getShields())
         , player(u->getPlayer())
@@ -59,7 +59,7 @@ struct UnitInfo
 		
 	}
 
-	const bool operator == (BWAPI::Unit * unit) const
+	const bool operator == (BWAPI::UnitInterface* unit) const
 	{
 		return unitID == unit->getID();
 	}
@@ -76,7 +76,7 @@ struct UnitInfo
 };
 
 typedef std::vector<UnitInfo> UnitInfoVector;
-typedef std::map<BWAPI::Unit *, UnitInfo> UIMap;
+typedef std::map<BWAPI::UnitInterface*, UnitInfo> UIMap;
 typedef UIMap::iterator UIMapIter;
 typedef UIMap::const_iterator ConstUIMapIter;
 #define FOR_EACH_UIMAP(ITER, MAP) for (UIMapIter ITER(MAP.begin()); ITER != MAP.end(); ITER++)
@@ -84,7 +84,7 @@ typedef UIMap::const_iterator ConstUIMapIter;
 
 class UnitData {
 
-	std::map<BWAPI::Unit *, UnitInfo>		unitMap;
+	std::map<BWAPI::UnitInterface*, UnitInfo>		unitMap;
 
 	std::vector<int>						numDeadUnits;
 	std::vector<int>						numUnits;
@@ -99,8 +99,8 @@ public:
 	UnitData();
 	~UnitData() {}
 
-	void	updateUnit(BWAPI::Unit * unit);
-	void	removeUnit(BWAPI::Unit * unit);
+	void	updateUnit(BWAPI::UnitInterface* unit);
+	void	removeUnit(BWAPI::UnitInterface* unit);
 	void	removeBadUnits();
 
 	void	getCloakedUnits(std::set<UnitInfo> & v)				const;
@@ -113,6 +113,6 @@ public:
 	int		getMineralsLost()									const	{ return mineralsLost; }
 	int		getNumUnits(BWAPI::UnitType t)						const	{ return numUnits[t.getID()]; }
 	int		getNumDeadUnits(BWAPI::UnitType t)					const	{ return numDeadUnits[t.getID()]; }
-	const	std::map<BWAPI::Unit *, UnitInfo> & getUnits()		const	{ return unitMap; }
+	const	std::map<BWAPI::UnitInterface*, UnitInfo> & getUnits()		const	{ return unitMap; }
 };
 }

@@ -9,9 +9,9 @@ namespace UAlbertaBot
 
 class UnitCommandManager
 {
-	std::map<BWAPI::Unit *, UnitCommandData> map;
+	std::map<BWAPI::UnitInterface*, UnitCommandData> map;
 
-	UnitCommandData & getUnitData(BWAPI::Unit * unit);
+	UnitCommandData & getUnitData(BWAPI::UnitInterface* unit);
 
 	UnitCommandManager();
 
@@ -20,25 +20,25 @@ public:
 	static UnitCommandManager &	Instance();
 
 	void update();
-	void updateUnit(BWAPI::Unit * unit);
-	void addUnit(BWAPI::Unit * unit);
-	void removeUnit(BWAPI::Unit * unit);
-	void drawDebugPlate(BWAPI::Unit * unit, char * string);
-	void drawCommandStatus(BWAPI::Unit * unit);
+	void updateUnit(BWAPI::UnitInterface* unit);
+	void addUnit(BWAPI::UnitInterface* unit);
+	void removeUnit(BWAPI::UnitInterface* unit);
+	void drawDebugPlate(BWAPI::UnitInterface* unit, char * string);
+	void drawCommandStatus(BWAPI::UnitInterface* unit);
 
-	bool exists(BWAPI::Unit * unit) const;
-	bool commandWillInterruptAttack(BWAPI::Unit * unit);
-	bool canIssueAttackCommand(BWAPI::Unit * attacker, BWAPI::Unit * target);
-	bool canIssueMoveCommand(BWAPI::Unit * unit, BWAPI::Position & position);
-	bool canIssueStopCommand(BWAPI::Unit * unit);
-	int attackAnimStartTime(BWAPI::Unit * unit);
+	bool exists(BWAPI::UnitInterface* unit) const;
+	bool commandWillInterruptAttack(BWAPI::UnitInterface* unit);
+	bool canIssueAttackCommand(BWAPI::UnitInterface* attacker, BWAPI::UnitInterface* target);
+	bool canIssueMoveCommand(BWAPI::UnitInterface* unit, BWAPI::Position & position);
+	bool canIssueStopCommand(BWAPI::UnitInterface* unit);
+	int attackAnimStartTime(BWAPI::UnitInterface* unit);
 
-	void smartAttackUnit(BWAPI::Unit * attacker, BWAPI::Unit * target);
-	void smartMove(BWAPI::Unit * attacker, BWAPI::Position targetPosition);
-	void smartReload(BWAPI::Unit * unit);
+	void smartAttackUnit(BWAPI::UnitInterface* attacker, BWAPI::UnitInterface* target);
+	void smartMove(BWAPI::UnitInterface* attacker, BWAPI::Position targetPosition);
+	void smartReload(BWAPI::UnitInterface* unit);
 
-	void waitCommand(BWAPI::Unit * unit);
-	void attackCommand(BWAPI::Unit * unit);
+	void waitCommand(BWAPI::UnitInterface* unit);
+	void attackCommand(BWAPI::UnitInterface* unit);
 };
 
 }

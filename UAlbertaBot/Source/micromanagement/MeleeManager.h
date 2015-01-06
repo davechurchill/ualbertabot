@@ -14,11 +14,11 @@ public:
 
 	MeleeManager();
 	~MeleeManager() {}
-	void executeMicro(const UnitVector & targets);
+	void executeMicro(const std::vector<BWAPI::UnitInterface *> & targets);
 
-	BWAPI::Unit * chooseTarget(BWAPI::Unit * meleeUnit, const UnitVector & targets, std::map<BWAPI::Unit *, int> & numTargeting);
-	BWAPI::Unit * closestMeleeUnit(BWAPI::Unit * target, std::set<BWAPI::Unit *> & meleeUnitToAssign);
-	int getAttackPriority(BWAPI::Unit * unit);
-	BWAPI::Unit * getTarget(BWAPI::Unit * meleeUnit, UnitVector & targets);
+	BWAPI::UnitInterface* chooseTarget(BWAPI::UnitInterface* meleeUnit, const std::vector<BWAPI::UnitInterface *> & targets, std::map<BWAPI::UnitInterface*, int> & numTargeting);
+	BWAPI::UnitInterface* closestMeleeUnit(BWAPI::UnitInterface* target, std::set<BWAPI::UnitInterface*> & meleeUnitToAssign);
+	int getAttackPriority(BWAPI::UnitInterface* unit);
+	BWAPI::UnitInterface* getTarget(BWAPI::UnitInterface* meleeUnit, std::vector<BWAPI::UnitInterface *> & targets);
 };
 }

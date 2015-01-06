@@ -13,7 +13,7 @@ UnitCommandManager & UnitCommandManager::Instance()
 
 void UnitCommandManager::update()
 {
-	BOOST_FOREACH (BWAPI::Unit * unit, BWAPI::Broodwar->self()->getUnits())
+	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits())
 	{
 		if (unit->getType().canAttack())
 		{
@@ -22,12 +22,12 @@ void UnitCommandManager::update()
 	}
 }
 
-UnitCommandData & UnitCommandManager::getUnitData(BWAPI::Unit * unit)
+UnitCommandData & UnitCommandManager::getUnitData(BWAPI::UnitInterface* unit)
 {
 	return map[unit];
 }
 
-void UnitCommandManager::updateUnit(BWAPI::Unit * unit)
+void UnitCommandManager::updateUnit(BWAPI::UnitInterface* unit)
 {
     if (!unit)
     {
@@ -43,22 +43,22 @@ void UnitCommandManager::updateUnit(BWAPI::Unit * unit)
 	getUnitData(unit).update();
 }
 
-void UnitCommandManager::addUnit(BWAPI::Unit * unit)
+void UnitCommandManager::addUnit(BWAPI::UnitInterface* unit)
 {
 	map[unit] = UnitCommandData(unit);
 }
 
-void UnitCommandManager::removeUnit(BWAPI::Unit * unit)
+void UnitCommandManager::removeUnit(BWAPI::UnitInterface* unit)
 {
 	map.erase(unit);
 }
 
-bool UnitCommandManager::exists(BWAPI::Unit * unit) const
+bool UnitCommandManager::exists(BWAPI::UnitInterface* unit) const
 {
 	return map.find(unit) != map.end();
 }
 
-bool UnitCommandManager::commandWillInterruptAttack(BWAPI::Unit * unit)
+bool UnitCommandManager::commandWillInterruptAttack(BWAPI::UnitInterface* unit)
 {
 	const UnitCommandData & unitData(getUnitData(unit));
 
@@ -72,7 +72,7 @@ bool UnitCommandManager::commandWillInterruptAttack(BWAPI::Unit * unit)
 	return false;
 }
 
-bool UnitCommandManager::canIssueAttackCommand(BWAPI::Unit * attacker, BWAPI::Unit * target)
+bool UnitCommandManager::canIssueAttackCommand(BWAPI::UnitInterface* attacker, BWAPI::UnitInterface* target)
 {
 	BWAPI::UnitCommand currentCommand(attacker->getLastCommand());
 	BWAPI::UnitCommandType commandType = currentCommand.getType();
@@ -99,7 +99,7 @@ bool UnitCommandManager::canIssueAttackCommand(BWAPI::Unit * attacker, BWAPI::Un
 	return !commandWillInterruptAttack(attacker);
 }
 
-bool UnitCommandManager::canIssueMoveCommand(BWAPI::Unit * unit, BWAPI::Position & position)
+bool UnitCommandManager::canIssueMoveCommand(BWAPI::UnitInterface* unit, BWAPI::Position & position)
 {
 	BWAPI::UnitCommand currentCommand(unit->getLastCommand());
 	BWAPI::UnitCommandType commandType = currentCommand.getType();
@@ -135,7 +135,7 @@ bool UnitCommandManager::canIssueMoveCommand(BWAPI::Unit * unit, BWAPI::Position
 	return !commandWillInterruptAttack(unit);
 }
 
-bool UnitCommandManager::canIssueStopCommand(BWAPI::Unit * unit)
+bool UnitCommandManager::canIssueStopCommand(BWAPI::UnitInterface* unit)
 {
 	// if the last move was attacking a unit do nothing
 	if (unit->getLastCommand().getType() == BWAPI::UnitCommandTypes::Attack_Unit)
@@ -146,30 +146,30 @@ bool UnitCommandManager::canIssueStopCommand(BWAPI::Unit * unit)
 	return !commandWillInterruptAttack(unit);
 }
 
-void UnitCommandManager::drawDebugPlate(BWAPI::Unit * unit, char * string)
+void UnitCommandManager::drawDebugPlate(BWAPI::UnitInterface* unit, char * string)
 {
-	BWAPI::Broodwar->drawBoxMap(unit->getPosition().x()-15, unit->getPosition().y()-10, unit->getPosition().x() + 10, unit->getPosition().y(), BWAPI::Colors::Black, true);
-	BWAPI::Broodwar->drawTextMap(unit->getPosition().x()-15, unit->getPosition().y()-10, string);
+	BWAPI::Broodwar->drawBoxMap(unit->getPosition().x-15, unit->getPosition().y-10, unit->getPosition().x + 10, unit->getPosition().y, BWAPI::Colors::Black, true);
+	BWAPI::Broodwar->drawTextMap(unit->getPosition().x-15, unit->getPosition().y-10, string);
 }
 
-void UnitCommandManager::drawCommandStatus(BWAPI::Unit * unit)
+void UnitCommandManager::drawCommandStatus(BWAPI::UnitInterface* unit)
 {
 	BWAPI::UnitType type = unit->getType();
 	int width = type.dimensionRight();
 	int height = type.dimensionDown()/6;
 
-	int x1 = unit->getPosition().x() - width;
-	int x2 = unit->getPosition().y() + width;
-	int y1 = unit->getPosition().y() - height;
-	int y2 = unit->getPosition().y() + height;
+	int x1 = unit->getPosition().x - width;
+	int x2 = unit->getPosition().y + width;
+	int y1 = unit->getPosition().y - height;
+	int y2 = unit->getPosition().y + height;
 }
 
-void UnitCommandManager::waitCommand(BWAPI::Unit * unit)
+void UnitCommandManager::waitCommand(BWAPI::UnitInterface* unit)
 {
 	getUnitData(unit).waitCommand();
 }
 
-void UnitCommandManager::smartReload(BWAPI::Unit * unit)
+void UnitCommandManager::smartReload(BWAPI::UnitInterface* unit)
 {
 	assert(unit);
 
@@ -182,7 +182,7 @@ void UnitCommandManager::smartReload(BWAPI::Unit * unit)
 	waitCommand(unit);
 }
 
-void UnitCommandManager::smartAttackUnit(BWAPI::Unit * attacker, BWAPI::Unit * target)
+void UnitCommandManager::smartAttackUnit(BWAPI::UnitInterface* attacker, BWAPI::UnitInterface* target)
 {
 	assert(attacker && target);
 
@@ -195,11 +195,11 @@ void UnitCommandManager::smartAttackUnit(BWAPI::Unit * attacker, BWAPI::Unit * t
 
 	if (Options::Debug::DRAW_UALBERTABOT_DEBUG) 
 	{
-		BWAPI::Broodwar->drawLineMap(attacker->getPosition().x()+3, attacker->getPosition().y()+3, target->getPosition().x()+3, target->getPosition().y()+3, BWAPI::Colors::Red );
+		BWAPI::Broodwar->drawLineMap(attacker->getPosition().x+3, attacker->getPosition().y+3, target->getPosition().x+3, target->getPosition().y+3, BWAPI::Colors::Red );
 	}
 }
 
-void UnitCommandManager::smartMove(BWAPI::Unit * attacker, BWAPI::Position targetPosition)
+void UnitCommandManager::smartMove(BWAPI::UnitInterface* attacker, BWAPI::Position targetPosition)
 {
 	assert(attacker);
 
@@ -212,6 +212,6 @@ void UnitCommandManager::smartMove(BWAPI::Unit * attacker, BWAPI::Position targe
 
 	if (Options::Debug::DRAW_UALBERTABOT_DEBUG) 
 	{
-		BWAPI::Broodwar->drawLineMap(attacker->getPosition().x(), attacker->getPosition().y(), targetPosition.x(), targetPosition.y(), BWAPI::Colors::Orange);
+		BWAPI::Broodwar->drawLineMap(attacker->getPosition().x, attacker->getPosition().y, targetPosition.x, targetPosition.y, BWAPI::Colors::Orange);
 	}
 }

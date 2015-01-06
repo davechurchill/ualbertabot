@@ -17,7 +17,7 @@ bool CombatCommander::squadUpdateFrame()
 	return BWAPI::Broodwar->getFrameCount() % 24 == 0;
 }
 
-void CombatCommander::update(std::set<BWAPI::Unit *> unitsToAssign)
+void CombatCommander::update(std::set<BWAPI::UnitInterface*> unitsToAssign)
 {
 	if(squadUpdateFrame())
 	{
@@ -37,22 +37,22 @@ void CombatCommander::update(std::set<BWAPI::Unit *> unitsToAssign)
 	squadData.update();
 }
 
-void CombatCommander::assignIdleSquads(std::set<BWAPI::Unit *> & unitsToAssign)
+void CombatCommander::assignIdleSquads(std::set<BWAPI::UnitInterface*> & unitsToAssign)
 {
 	if (unitsToAssign.empty()) { return; }
 
-	UnitVector combatUnits(unitsToAssign.begin(), unitsToAssign.end());
+	std::vector<BWAPI::UnitInterface *> combatUnits(unitsToAssign.begin(), unitsToAssign.end());
 	unitsToAssign.clear();
 
 	squadData.addSquad(Squad(combatUnits, SquadOrder(SquadOrder::Defend, BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation()), 1000, "Defend Idle")));
 }
 
-void CombatCommander::assignAttackSquads(std::set<BWAPI::Unit *> & unitsToAssign)
+void CombatCommander::assignAttackSquads(std::set<BWAPI::UnitInterface*> & unitsToAssign)
 {
 	if (unitsToAssign.empty()) { return; }
 
 	bool workersDefending = false;
-	BOOST_FOREACH (BWAPI::Unit * unit, unitsToAssign)
+	for (BWAPI::UnitInterface* unit : unitsToAssign)
 	{
 		if (unit->getType().isWorker())
 		{
@@ -79,7 +79,7 @@ BWTA::Region * CombatCommander::getClosestEnemyRegion()
 	double closestDistance = 100000;
 
 	// for each region that our opponent occupies
-	BOOST_FOREACH (BWTA::Region * region, InformationManager::Instance().getOccupiedRegions(BWAPI::Broodwar->enemy()))
+	for (BWTA::Region * region : InformationManager::Instance().getOccupiedRegions(BWAPI::Broodwar->enemy()))
 	{
 		double distance = region->getCenter().getDistance(BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation()));
 
@@ -96,7 +96,7 @@ BWTA::Region * CombatCommander::getClosestEnemyRegion()
 void CombatCommander::assignScoutDefenseSquads() 
 {
 	// for each of our occupied regions
-	BOOST_FOREACH(BWTA::Region * myRegion, InformationManager::Instance().getOccupiedRegions(BWAPI::Broodwar->self()))
+	for (BWTA::Region * myRegion : InformationManager::Instance().getOccupiedRegions(BWAPI::Broodwar->self()))
 	{
 		BWAPI::Position regionCenter = myRegion->getCenter();
 		if (!regionCenter.isValid())
@@ -105,8 +105,8 @@ void CombatCommander::assignScoutDefenseSquads()
 		}
 
 		// all of the enemy units in this region
-		std::set<BWAPI::Unit *> enemyUnitsInRegion;
-		BOOST_FOREACH (BWAPI::Unit * enemyUnit, BWAPI::Broodwar->enemy()->getUnits())
+		std::set<BWAPI::UnitInterface*> enemyUnitsInRegion;
+		for (BWAPI::UnitInterface* enemyUnit : BWAPI::Broodwar->enemy()->getUnits())
 		{			
 			if (BWTA::getRegion(BWAPI::TilePosition(enemyUnit->getPosition())) == myRegion)
 			{
@@ -118,16 +118,16 @@ void CombatCommander::assignScoutDefenseSquads()
         if (enemyUnitsInRegion.size() == 1 && (*enemyUnitsInRegion.begin())->getType().isWorker())
         {
             // the enemy worker that is attacking us
-            BWAPI::Unit * enemyWorker       = *enemyUnitsInRegion.begin();
+            BWAPI::UnitInterface* enemyWorker       = *enemyUnitsInRegion.begin();
 
             // get our worker unit that is mining that is closest to it
-            BWAPI::Unit * workerDefender    = WorkerManager::Instance().getClosestMineralWorkerTo(enemyWorker);
+            BWAPI::UnitInterface* workerDefender    = WorkerManager::Instance().getClosestMineralWorkerTo(enemyWorker);
 
             // grab it from the worker manager
             WorkerManager::Instance().setCombatWorker(workerDefender);
             
             // put it into a unit vector
-            UnitVector workerDefenseForce;
+            std::vector<BWAPI::UnitInterface *> workerDefenseForce;
             workerDefenseForce.push_back(workerDefender);
 
             // make a squad using the worker to defend
@@ -137,12 +137,12 @@ void CombatCommander::assignScoutDefenseSquads()
 	}
 }
 
-void CombatCommander::assignDefenseSquads(std::set<BWAPI::Unit *> & unitsToAssign) 
+void CombatCommander::assignDefenseSquads(std::set<BWAPI::UnitInterface*> & unitsToAssign) 
 {
 	if (unitsToAssign.empty()) { return; }
 
 	// for each of our occupied regions
-	BOOST_FOREACH(BWTA::Region * myRegion, InformationManager::Instance().getOccupiedRegions(BWAPI::Broodwar->self()))
+	for (BWTA::Region * myRegion : InformationManager::Instance().getOccupiedRegions(BWAPI::Broodwar->self()))
 	{
 		BWAPI::Position regionCenter = myRegion->getCenter();
 		if (!regionCenter.isValid())
@@ -157,8 +157,8 @@ void CombatCommander::assignDefenseSquads(std::set<BWAPI::Unit *> & unitsToAssig
         int numEnemyGroundInRegion = 0;
 
 		// all of the enemy units in this region
-		std::set<BWAPI::Unit *> enemyUnitsInRegion;
-		BOOST_FOREACH (BWAPI::Unit * enemyUnit, BWAPI::Broodwar->enemy()->getUnits())
+		std::set<BWAPI::UnitInterface*> enemyUnitsInRegion;
+		for (BWAPI::UnitInterface* enemyUnit : BWAPI::Broodwar->enemy()->getUnits())
 		{			
 			if (BWTA::getRegion(BWAPI::TilePosition(enemyUnit->getPosition())) == myRegion)
 			{
@@ -188,10 +188,10 @@ void CombatCommander::assignDefenseSquads(std::set<BWAPI::Unit *> & unitsToAssig
 		if(numGroundNeeded > 0 || numFlyingNeeded > 0)
 		{
 			// our defenders
-			std::set<BWAPI::Unit *> flyingDefenders;
-			std::set<BWAPI::Unit *> groundDefenders;
+			std::set<BWAPI::UnitInterface*> flyingDefenders;
+			std::set<BWAPI::UnitInterface*> groundDefenders;
 
-			BOOST_FOREACH (BWAPI::Unit * unit, unitsToAssign)
+			for (BWAPI::UnitInterface* unit : unitsToAssign)
 			{
 				if (unit->getType().airWeapon() != BWAPI::WeaponTypes::None)
 				{
@@ -204,12 +204,12 @@ void CombatCommander::assignDefenseSquads(std::set<BWAPI::Unit *> & unitsToAssig
 			}
 
 			// the defense force we want to send
-			UnitVector defenseForce;
+			std::vector<BWAPI::UnitInterface *> defenseForce;
 
 			// get flying defenders
 			for (int i=0; i<numFlyingNeeded && !flyingDefenders.empty(); ++i)
 			{
-				BWAPI::Unit * flyingDefender = findClosestDefender(enemyUnitsInRegion, flyingDefenders);
+				BWAPI::UnitInterface* flyingDefender = findClosestDefender(enemyUnitsInRegion, flyingDefenders);
 				defenseForce.push_back(flyingDefender);
 				unitsToAssign.erase(flyingDefender);
 				flyingDefenders.erase(flyingDefender);
@@ -218,7 +218,7 @@ void CombatCommander::assignDefenseSquads(std::set<BWAPI::Unit *> & unitsToAssig
 			// get ground defenders
 			for (int i=0; i<numGroundNeeded && !groundDefenders.empty(); ++i)
 			{
-				BWAPI::Unit * groundDefender = findClosestDefender(enemyUnitsInRegion, groundDefenders);
+				BWAPI::UnitInterface* groundDefender = findClosestDefender(enemyUnitsInRegion, groundDefenders);
 
 				if (groundDefender->getType().isWorker())
 				{
@@ -240,7 +240,7 @@ void CombatCommander::assignDefenseSquads(std::set<BWAPI::Unit *> & unitsToAssig
 	}
 }
 
-void CombatCommander::assignAttackRegion(std::set<BWAPI::Unit *> & unitsToAssign) 
+void CombatCommander::assignAttackRegion(std::set<BWAPI::UnitInterface*> & unitsToAssign) 
 {
 	if (unitsToAssign.empty()) { return; }
 
@@ -248,13 +248,13 @@ void CombatCommander::assignAttackRegion(std::set<BWAPI::Unit *> & unitsToAssign
 
 	if (enemyRegion && enemyRegion->getCenter().isValid()) 
 	{
-		UnitVector oppUnitsInArea, ourUnitsInArea;
+		std::vector<BWAPI::UnitInterface *> oppUnitsInArea, ourUnitsInArea;
 		MapGrid::Instance().GetUnits(oppUnitsInArea, enemyRegion->getCenter(), 800, false, true);
 		MapGrid::Instance().GetUnits(ourUnitsInArea, enemyRegion->getCenter(), 200, true, false);
 
 		if (!oppUnitsInArea.empty())
 		{
-			UnitVector combatUnits(unitsToAssign.begin(), unitsToAssign.end());
+			std::vector<BWAPI::UnitInterface *> combatUnits(unitsToAssign.begin(), unitsToAssign.end());
 			unitsToAssign.clear();
 
 			squadData.addSquad(Squad(combatUnits, SquadOrder(SquadOrder::Attack, enemyRegion->getCenter(), 1000, "Attack Region")));
@@ -262,15 +262,15 @@ void CombatCommander::assignAttackRegion(std::set<BWAPI::Unit *> & unitsToAssign
 	}
 }
 
-void CombatCommander::assignAttackVisibleUnits(std::set<BWAPI::Unit *> & unitsToAssign) 
+void CombatCommander::assignAttackVisibleUnits(std::set<BWAPI::UnitInterface*> & unitsToAssign) 
 {
 	if (unitsToAssign.empty()) { return; }
 
-	BOOST_FOREACH (BWAPI::Unit * unit, BWAPI::Broodwar->enemy()->getUnits())
+	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->enemy()->getUnits())
 	{
 		if (unit->isVisible())
 		{
-			UnitVector combatUnits(unitsToAssign.begin(), unitsToAssign.end());
+			std::vector<BWAPI::UnitInterface *> combatUnits(unitsToAssign.begin(), unitsToAssign.end());
 			unitsToAssign.clear();
 
 			squadData.addSquad(Squad(combatUnits, SquadOrder(SquadOrder::Attack, unit->getPosition(), 1000, "Attack Visible")));
@@ -280,7 +280,7 @@ void CombatCommander::assignAttackVisibleUnits(std::set<BWAPI::Unit *> & unitsTo
 	}
 }
 
-void CombatCommander::assignAttackKnownBuildings(std::set<BWAPI::Unit *> & unitsToAssign) 
+void CombatCommander::assignAttackKnownBuildings(std::set<BWAPI::UnitInterface*> & unitsToAssign) 
 {
 	if (unitsToAssign.empty()) { return; }
 
@@ -289,7 +289,7 @@ void CombatCommander::assignAttackKnownBuildings(std::set<BWAPI::Unit *> & units
 		const UnitInfo ui(iter->second);
 		if(ui.type.isBuilding())
 		{
-			UnitVector combatUnits(unitsToAssign.begin(), unitsToAssign.end());
+			std::vector<BWAPI::UnitInterface *> combatUnits(unitsToAssign.begin(), unitsToAssign.end());
 			unitsToAssign.clear();
 
 			squadData.addSquad(Squad(combatUnits, SquadOrder(SquadOrder::Attack, ui.lastPosition, 1000, "Attack Known")));
@@ -298,24 +298,24 @@ void CombatCommander::assignAttackKnownBuildings(std::set<BWAPI::Unit *> & units
 	}
 }
 
-void CombatCommander::assignAttackExplore(std::set<BWAPI::Unit *> & unitsToAssign) 
+void CombatCommander::assignAttackExplore(std::set<BWAPI::UnitInterface*> & unitsToAssign) 
 {
 	if (unitsToAssign.empty()) { return; }
 
-	UnitVector combatUnits(unitsToAssign.begin(), unitsToAssign.end());
+	std::vector<BWAPI::UnitInterface *> combatUnits(unitsToAssign.begin(), unitsToAssign.end());
 	unitsToAssign.clear();
 
 	squadData.addSquad(Squad(combatUnits, SquadOrder(SquadOrder::Attack, MapGrid::Instance().getLeastExplored(), 1000, "Attack Explore")));
 }
 
-BWAPI::Unit* CombatCommander::findClosestDefender(std::set<BWAPI::Unit *> & enemyUnitsInRegion, const std::set<BWAPI::Unit *> & units) 
+BWAPI::UnitInterface* CombatCommander::findClosestDefender(std::set<BWAPI::UnitInterface*> & enemyUnitsInRegion, const std::set<BWAPI::UnitInterface*> & units) 
 {
-	BWAPI::Unit * closestUnit = NULL;
+	BWAPI::UnitInterface* closestUnit = NULL;
 	double minDistance = 1000000;
 
-	BOOST_FOREACH (BWAPI::Unit * enemyUnit, enemyUnitsInRegion) 
+	for (BWAPI::UnitInterface* enemyUnit : enemyUnitsInRegion) 
 	{
-		BOOST_FOREACH (BWAPI::Unit * unit, units)
+		for (BWAPI::UnitInterface* unit : units)
 		{
 			double dist = unit->getDistance(enemyUnit);
 			if (!closestUnit || dist < minDistance) 

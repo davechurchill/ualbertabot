@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Common.h"
-#include <BWTA.h>
+
 #include "MetaType.h"
 
 namespace UAlbertaBot

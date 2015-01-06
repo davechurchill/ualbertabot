@@ -146,8 +146,8 @@ void MapGrid::update()
 		{
 			GridCell & cell = getCellByIndex(r,c);
 			
-			if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextMap(cell.center.x(), cell.center.y(), "Last Seen %d", cell.timeLastVisited);
-			if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextMap(cell.center.x(), cell.center.y()+10, "Row/Col (%d, %d)", r, c);
+			if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextMap(cell.center.x, cell.center.y, "Last Seen %d", cell.timeLastVisited);
+			if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextMap(cell.center.x, cell.center.y+10, "Row/Col (%d, %d)", r, c);
 		}
 	}
 
@@ -157,14 +157,14 @@ void MapGrid::update()
 	//BWAPI::Broodwar->printf("MapGrid info: WH(%d, %d)  CS(%d)  RC(%d, %d)  C(%d)", mapWidth, mapHeight, cellSize, rows, cols, cells.size());
 
 	// add our units to the appropriate cell
-	BOOST_FOREACH(BWAPI::Unit * unit, BWAPI::Broodwar->self()->getUnits()) 
+	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits()) 
 	{
 		getCell(unit).ourUnits.push_back(unit);
 		getCell(unit).timeLastVisited = BWAPI::Broodwar->getFrameCount();
 	}
 
 	// add enemy units to the appropriate cell
-	BOOST_FOREACH(BWAPI::Unit * unit, BWAPI::Broodwar->enemy()->getUnits()) 
+	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->enemy()->getUnits()) 
 	{
 		if (unit->getHitPoints() > 0) 
 		{
@@ -174,12 +174,12 @@ void MapGrid::update()
 	}
 }
 
-void MapGrid::GetUnits(UnitVector & units, BWAPI::Position center, int radius, bool ourUnits, bool oppUnits)
+void MapGrid::GetUnits(std::vector<BWAPI::UnitInterface *> & units, BWAPI::Position center, int radius, bool ourUnits, bool oppUnits)
 {
-	const int x0(std::max( (center.x() - radius) / cellSize, 0));
-	const int x1(std::min( (center.x() + radius) / cellSize, cols-1));
-	const int y0(std::max( (center.y() - radius) / cellSize, 0));
-	const int y1(std::min( (center.y() + radius) / cellSize, rows-1));
+	const int x0(std::max( (center.x - radius) / cellSize, 0));
+	const int x1(std::min( (center.x + radius) / cellSize, cols-1));
+	const int y0(std::max( (center.y - radius) / cellSize, 0));
+	const int y1(std::min( (center.y + radius) / cellSize, rows-1));
 	const int radiusSq(radius * radius);
 	for(int y(y0); y<=y1; ++y)
 	{
@@ -191,10 +191,10 @@ void MapGrid::GetUnits(UnitVector & units, BWAPI::Position center, int radius, b
 			GridCell & cell(getCellByIndex(row,col));
 			if(ourUnits)
 			{
-				BOOST_FOREACH(BWAPI::Unit * unit, cell.ourUnits)
+				for (BWAPI::UnitInterface* unit : cell.ourUnits)
 				{
 					BWAPI::Position d(unit->getPosition() - center);
-					if(d.x() * d.x() + d.y() * d.y() <= radiusSq)
+					if(d.x * d.x + d.y * d.y <= radiusSq)
 					{
 						if (!contains(units, unit)) 
 						{
@@ -205,10 +205,10 @@ void MapGrid::GetUnits(UnitVector & units, BWAPI::Position center, int radius, b
 			}
 			if(oppUnits)
 			{
-				BOOST_FOREACH(BWAPI::Unit * unit, cell.oppUnits) if (unit->getType() != BWAPI::UnitTypes::Unknown && unit->isVisible())
+				for (BWAPI::UnitInterface* unit : cell.oppUnits) if (unit->getType() != BWAPI::UnitTypes::Unknown && unit->isVisible())
 				{
 					BWAPI::Position d(unit->getPosition() - center);
-					if(d.x() * d.x() + d.y() * d.y() <= radiusSq)
+					if(d.x * d.x + d.y * d.y <= radiusSq)
 					{
 						if (!contains(units, unit)) 
 						{ 
@@ -221,7 +221,7 @@ void MapGrid::GetUnits(UnitVector & units, BWAPI::Position center, int radius, b
 	}
 }
 
-bool MapGrid::contains(UnitVector & units, BWAPI::Unit * unit) 
+bool MapGrid::contains(std::vector<BWAPI::UnitInterface *> & units, BWAPI::UnitInterface* unit) 
 {
 	for (size_t i(0); i<units.size(); ++i) 
 	{

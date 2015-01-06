@@ -15,6 +15,6 @@ public:
 	TransportManager();
 	~TransportManager() {}
 
-	void executeMicro(const UnitVector & targets);
+	void executeMicro(const std::vector<BWAPI::UnitInterface *> & targets);
 };
 }

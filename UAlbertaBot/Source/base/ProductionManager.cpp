@@ -115,7 +115,7 @@ void ProductionManager::update()
 }
 
 // on unit destroy
-void ProductionManager::onUnitDestroy(BWAPI::Unit * unit)
+void ProductionManager::onUnitDestroy(BWAPI::UnitInterface* unit)
 {
 	// we don't care if it's not our unit
 	if (!unit || unit->getPlayer() != BWAPI::Broodwar->self())
@@ -153,7 +153,7 @@ void ProductionManager::manageBuildOrderQueue()
 	while (!queue.isEmpty()) 
 	{
 		// this is the unit which can produce the currentItem
-        BWAPI::Unit * producer = getProducer(currentItem.metaType);
+        BWAPI::UnitInterface* producer = getProducer(currentItem.metaType);
 
 		// check to see if we can make it right now
 		bool canMake = canMakeNow(producer, currentItem.metaType);
@@ -209,14 +209,14 @@ void ProductionManager::manageBuildOrderQueue()
 	}
 }
 
-BWAPI::Unit * ProductionManager::getProducer(MetaType t, BWAPI::Position closestTo)
+BWAPI::UnitInterface* ProductionManager::getProducer(MetaType t, BWAPI::Position closestTo)
 {
     // get the type of unit that builds this
     BWAPI::UnitType producerType = t.whatBuilds();
 
     // make a set of all candidate producers
-    std::set<BWAPI::Unit *> candidateProducers;
-    BOOST_FOREACH (BWAPI::Unit * unit, BWAPI::Broodwar->self()->getUnits())
+    std::set<BWAPI::UnitInterface*> candidateProducers;
+    for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits())
     {
         UAB_ASSERT(unit != NULL, "Unit was null");
 
@@ -225,7 +225,7 @@ BWAPI::Unit * ProductionManager::getProducer(MetaType t, BWAPI::Position closest
         if (!unit->isCompleted())                               { continue; }
         if (unit->isTraining())                                 { continue; }
         if (unit->isLifted())                                   { continue; }
-        if (unit->isUnpowered())                                { continue; }
+        if (!unit->isPowered())                                 { continue; }
 
         // if the type is an addon, some special cases
         if (t.unitType.isAddon())
@@ -246,28 +246,28 @@ BWAPI::Unit * ProductionManager::getProducer(MetaType t, BWAPI::Position closest
             bool isBlocked = false;
 
             // if the unit doesn't have space to build an addon, it can't make one
-            BWAPI::TilePosition addonPosition(unit->getTilePosition().x() + unit->getType().tileWidth(), unit->getTilePosition().y() + unit->getType().tileHeight() - t.unitType.tileHeight());
-            BWAPI::Broodwar->drawBoxMap(addonPosition.x()*32, addonPosition.y()*32, addonPosition.x()*32 + 64, addonPosition.y()*32 + 64, BWAPI::Colors::Red);
+            BWAPI::TilePosition addonPosition(unit->getTilePosition().x + unit->getType().tileWidth(), unit->getTilePosition().y + unit->getType().tileHeight() - t.unitType.tileHeight());
+            BWAPI::Broodwar->drawBoxMap(addonPosition.x*32, addonPosition.y*32, addonPosition.x*32 + 64, addonPosition.y*32 + 64, BWAPI::Colors::Red);
             
             for (int i=0; i<unit->getType().tileWidth() + t.unitType.tileWidth(); ++i)
             {
                 for (int j=0; j<unit->getType().tileHeight(); ++j)
                 {
-                    BWAPI::TilePosition tilePos(unit->getTilePosition().x() + i, unit->getTilePosition().y() + j);
+                    BWAPI::TilePosition tilePos(unit->getTilePosition().x + i, unit->getTilePosition().y + j);
 
                     // if the map won't let you build here, we can't build it
                     if (!BWAPI::Broodwar->isBuildable(tilePos))
                     {
                         isBlocked = true;
-                        BWAPI::Broodwar->drawBoxMap(tilePos.x()*32, tilePos.y()*32, tilePos.x()*32 + 32, tilePos.y()*32 + 32, BWAPI::Colors::Red);
+                        BWAPI::Broodwar->drawBoxMap(tilePos.x*32, tilePos.y*32, tilePos.x*32 + 32, tilePos.y*32 + 32, BWAPI::Colors::Red);
                     }
 
                     // if there are any units on the addon tile, we can't build it
-                    std::set<BWAPI::Unit *> uot = BWAPI::Broodwar->getUnitsOnTile(tilePos.x(), tilePos.y());
+                    BWAPI::Unitset uot = BWAPI::Broodwar->getUnitsOnTile(tilePos.x, tilePos.y);
                     if (uot.size() > 0 && !(uot.size() == 1 && *(uot.begin()) == unit))
                     {
                         isBlocked = true;;
-                        BWAPI::Broodwar->drawBoxMap(tilePos.x()*32, tilePos.y()*32, tilePos.x()*32 + 32, tilePos.y()*32 + 32, BWAPI::Colors::Red);
+                        BWAPI::Broodwar->drawBoxMap(tilePos.x*32, tilePos.y*32, tilePos.x*32 + 32, tilePos.y*32 + 32, BWAPI::Colors::Red);
                     }
                 }
             }
@@ -280,7 +280,7 @@ BWAPI::Unit * ProductionManager::getProducer(MetaType t, BWAPI::Position closest
         
         // if the type requires an addon and the producer doesn't have one
         typedef std::pair<BWAPI::UnitType, int> ReqPair;
-        BOOST_FOREACH (const ReqPair & pair , t.unitType.requiredUnits())
+        for (const ReqPair & pair : t.unitType.requiredUnits())
         {
             BWAPI::UnitType requiredType = pair.first;
             if (requiredType.isAddon())
@@ -299,7 +299,7 @@ BWAPI::Unit * ProductionManager::getProducer(MetaType t, BWAPI::Position closest
     return getClosestUnitToPosition(candidateProducers, closestTo);
 }
 
-BWAPI::Unit * ProductionManager::getClosestUnitToPosition(std::set<BWAPI::Unit *> & units, BWAPI::Position closestTo)
+BWAPI::UnitInterface* ProductionManager::getClosestUnitToPosition(std::set<BWAPI::UnitInterface*> & units, BWAPI::Position closestTo)
 {
     if (units.size() == 0)
     {
@@ -312,10 +312,10 @@ BWAPI::Unit * ProductionManager::getClosestUnitToPosition(std::set<BWAPI::Unit *
         return *(units.begin());
     }
 
-    BWAPI::Unit * closestUnit = NULL;
+    BWAPI::UnitInterface* closestUnit = NULL;
     double minDist(1000000);
 
-	BOOST_FOREACH (BWAPI::Unit * unit, units) 
+	for (BWAPI::UnitInterface* unit : units) 
     {
         UAB_ASSERT(unit != NULL, "Unit was null");
 
@@ -331,7 +331,7 @@ BWAPI::Unit * ProductionManager::getClosestUnitToPosition(std::set<BWAPI::Unit *
 }
 
 // this function will check to see if all preconditions are met and then create a unit
-void ProductionManager::createMetaType(BWAPI::Unit * producer, MetaType t) 
+void ProductionManager::createMetaType(BWAPI::UnitInterface* producer, MetaType t) 
 {
     if (!producer)
     {
@@ -351,7 +351,7 @@ void ProductionManager::createMetaType(BWAPI::Unit * producer, MetaType t)
     else if (t.unitType.isAddon())
     {
         BWAPI::Broodwar->printf("Building Addon");
-        //BWAPI::TilePosition addonPosition(producer->getTilePosition().x() + producer->getType().tileWidth(), producer->getTilePosition().y() + producer->getType().tileHeight() - t.unitType.tileHeight());
+        //BWAPI::TilePosition addonPosition(producer->getTilePosition().x + producer->getType().tileWidth(), producer->getTilePosition().y + producer->getType().tileHeight() - t.unitType.tileHeight());
         producer->buildAddon(t.unitType);
     }
     // if we're dealing with a non-building unit
@@ -384,7 +384,7 @@ void ProductionManager::createMetaType(BWAPI::Unit * producer, MetaType t)
     }
 }
 
-bool ProductionManager::canMakeNow(BWAPI::Unit * producer, MetaType t)
+bool ProductionManager::canMakeNow(BWAPI::UnitInterface* producer, MetaType t)
 {
     //UAB_ASSERT(producer != NULL, "Producer was null");
 
@@ -393,15 +393,15 @@ bool ProductionManager::canMakeNow(BWAPI::Unit * producer, MetaType t)
 	{
 		if (t.isUnit())
 		{
-			canMake = BWAPI::Broodwar->canMake(producer, t.unitType);
+			canMake = BWAPI::Broodwar->canMake(t.unitType, producer);
 		}
 		else if (t.isTech())
 		{
-			canMake = BWAPI::Broodwar->canResearch(producer, t.techType);
+			canMake = BWAPI::Broodwar->canResearch(t.techType, producer);
 		}
 		else if (t.isUpgrade())
 		{
-			canMake = BWAPI::Broodwar->canUpgrade(producer, t.upgradeType);
+			canMake = BWAPI::Broodwar->canUpgrade(t.upgradeType, producer);
 		}
 		else
 		{	
@@ -425,6 +425,7 @@ bool ProductionManager::detectBuildOrderDeadlock()
 								BuildingManager::Instance().isBeingBuilt(BWAPI::Broodwar->self()->getRace().getSupplyProvider());
 
 	// does the current item being built require more supply
+    
 	int supplyCost			= queue.getHighestPriorityItem().metaType.supplyRequired();
 	int supplyAvailable		= std::max(0, BWAPI::Broodwar->self()->supplyTotal() - BWAPI::Broodwar->self()->supplyUsed());
 
@@ -457,9 +458,9 @@ void ProductionManager::predictWorkerMovement(const Building & b)
 	}
 	
 	// draw a box where the building will be placed
-	int x1 = predictedTilePosition.x() * 32;
+	int x1 = predictedTilePosition.x * 32;
 	int x2 = x1 + (b.type.tileWidth()) * 32;
-	int y1 = predictedTilePosition.y() * 32;
+	int y1 = predictedTilePosition.y * 32;
 	int y2 = y1 + (b.type.tileHeight()) * 32;
 	if (Options::Debug::DRAW_UALBERTABOT_DEBUG) 
     {
@@ -474,7 +475,7 @@ void ProductionManager::predictWorkerMovement(const Building & b)
 	int gasRequired						= std::max(0, b.type.gasPrice() - getFreeGas());
 
 	// get a candidate worker to move to this location
-	BWAPI::Unit * moveWorker			= WorkerManager::Instance().getMoveWorker(walkToPosition);
+	BWAPI::UnitInterface* moveWorker			= WorkerManager::Instance().getMoveWorker(walkToPosition);
 
 	// Conditions under which to move the worker: 
 	//		- there's a valid worker to move
@@ -497,8 +498,8 @@ void ProductionManager::performCommand(BWAPI::UnitCommandType t)
 	// if it is a cancel construction, it is probably the extractor trick
 	if (t == BWAPI::UnitCommandTypes::Cancel_Construction)
 	{
-		BWAPI::Unit * extractor = NULL;
-		BOOST_FOREACH(BWAPI::Unit * unit, BWAPI::Broodwar->self()->getUnits())
+		BWAPI::UnitInterface* extractor = NULL;
+		for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits())
 		{
 			if (unit->getType() == BWAPI::UnitTypes::Zerg_Extractor)
 			{
@@ -532,7 +533,7 @@ bool ProductionManager::meetsReservedResources(MetaType type)
 
 
 // selects a unit of a given type
-BWAPI::Unit * ProductionManager::selectUnitOfType(BWAPI::UnitType type, BWAPI::Position closestTo) 
+BWAPI::UnitInterface* ProductionManager::selectUnitOfType(BWAPI::UnitType type, BWAPI::Position closestTo) 
 {
 	// if we have none of the unit type, return NULL right away
 	if (BWAPI::Broodwar->self()->completedUnitCount(type) == 0) 
@@ -540,14 +541,14 @@ BWAPI::Unit * ProductionManager::selectUnitOfType(BWAPI::UnitType type, BWAPI::P
 		return NULL;
 	}
 
-	BWAPI::Unit * unit = NULL;
+	BWAPI::UnitInterface* unit = NULL;
 
 	// if we are concerned about the position of the unit, that takes priority
     if (closestTo != BWAPI::Positions::None) 
     {
 		double minDist(1000000);
 
-		BOOST_FOREACH (BWAPI::Unit * u, BWAPI::Broodwar->self()->getUnits()) 
+		for (BWAPI::UnitInterface* u : BWAPI::Broodwar->self()->getUnits()) 
         {
 			if (u->getType() == type) 
             {
@@ -564,11 +565,11 @@ BWAPI::Unit * ProductionManager::selectUnitOfType(BWAPI::UnitType type, BWAPI::P
 	} 
     else if (type.isBuilding()) 
     {
-		BOOST_FOREACH (BWAPI::Unit * u, BWAPI::Broodwar->self()->getUnits()) 
+		for (BWAPI::UnitInterface* u : BWAPI::Broodwar->self()->getUnits()) 
         {
             UAB_ASSERT(u != NULL, "Unit was null");
 
-			if (u->getType() == type && u->isCompleted() && !u->isTraining() && !u->isLifted() &&!u->isUnpowered()) {
+			if (u->getType() == type && u->isCompleted() && !u->isTraining() && !u->isLifted() &&u->isPowered()) {
 
 				return u;
 			}
@@ -577,11 +578,11 @@ BWAPI::Unit * ProductionManager::selectUnitOfType(BWAPI::UnitType type, BWAPI::P
 	} 
     else 
     {
-		BOOST_FOREACH(BWAPI::Unit * u, BWAPI::Broodwar->self()->getUnits()) 
+		for (BWAPI::UnitInterface* u : BWAPI::Broodwar->self()->getUnits()) 
 		{
             UAB_ASSERT(u != NULL, "Unit was null");
 
-			if (u->getType() == type && u->isCompleted() && u->getHitPoints() > 0 && !u->isLifted() &&!u->isUnpowered()) 
+			if (u->getType() == type && u->isCompleted() && u->getHitPoints() > 0 && !u->isLifted() &&u->isPowered()) 
 			{
 				return u;
 			}
@@ -613,8 +614,8 @@ void ProductionManager::populateTypeCharMap()
 void ProductionManager::drawProductionInformation(int x, int y)
 {
 	// fill prod with each unit which is under construction
-	std::vector<BWAPI::Unit *> prod;
-	BOOST_FOREACH (BWAPI::Unit * unit, BWAPI::Broodwar->self()->getUnits())
+	std::vector<BWAPI::UnitInterface*> prod;
+	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits())
 	{
         UAB_ASSERT(unit != NULL, "Unit was null");
 

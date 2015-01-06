@@ -15,10 +15,6 @@
 #include <set>
 #include <map>
 
-#include <boost/foreach.hpp>
-#include <boost/progress.hpp>
-#include <boost/timer.hpp>
-
 #include <BWAPI.h>
 #include <BWTA.h>
 #include "Logger.h"
@@ -26,10 +22,7 @@
 #include "Options.h"
 #include "UABAssert.h"
 
-typedef std::vector<BWAPI::Unit*> UnitVector;
-
 BWAPI::AIModule * __NewAIModule();
-
 
 struct double2
 {
@@ -37,7 +30,7 @@ struct double2
 
 	double2() {}
 	double2(double x, double y) : x(x), y(y) {}
-	double2(const BWAPI::Position & p) : x(p.x()), y(p.y()) {}
+	double2(const BWAPI::Position & p) : x(p.x), y(p.y) {}
 
 	operator BWAPI::Position()				const { return BWAPI::Position(static_cast<int>(x),static_cast<int>(y)); }
 

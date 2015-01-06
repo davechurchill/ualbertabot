@@ -9,7 +9,7 @@ namespace UAlbertaBot
 {
 class UnitCommandData
 {	
-	BWAPI::Unit * _unit;
+	BWAPI::UnitInterface* _unit;
 
 	int		_phase,
 			_enteredReady,
@@ -22,7 +22,7 @@ public:
 	enum	{ NONE, READY, ATTACKING, RELOADING };
 
 	UnitCommandData();
-	UnitCommandData(BWAPI::Unit * unit);
+	UnitCommandData(BWAPI::UnitInterface* unit);
 
 	void update();
 	void waitCommand();

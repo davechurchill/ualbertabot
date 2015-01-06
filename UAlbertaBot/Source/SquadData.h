@@ -22,7 +22,7 @@ public:
 	void				drawSquadInformation(int x, int y);
 
 	void				update();
-	void				setSquad(const UnitVector & units, const SquadOrder & order);
+	void				setSquad(const std::vector<BWAPI::UnitInterface *> & units, const SquadOrder & order);
 	void				setRegroup();
 };
 }

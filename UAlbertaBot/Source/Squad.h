@@ -23,7 +23,7 @@ class DetectorManager;
 
 class Squad
 {
-	UnitVector			units;
+	std::vector<BWAPI::UnitInterface *>			units;
 	std::string			regroupStatus;
 	bool				squadObserverNear(BWAPI::Position p);
 	
@@ -33,21 +33,21 @@ class Squad
 	DetectorManager		detectorManager;
 	TransportManager	transportManager;
 
-	std::map<BWAPI::Unit *, bool>	nearEnemy;
+	std::map<BWAPI::UnitInterface*, bool>	nearEnemy;
 
 	void				updateUnits();
 	void				addUnitsToMicroManagers();
 	void				setNearEnemyUnits();
 	void				setAllUnits();
 	
-	void				setUnits(const UnitVector & u)	{ units = u; }
+	void				setUnits(const std::vector<BWAPI::UnitInterface *> & u)	{ units = u; }
 	
-	bool				unitNearEnemy(BWAPI::Unit * unit);
+	bool				unitNearEnemy(BWAPI::UnitInterface* unit);
 	bool				needsToRegroup();
-	BWAPI::Unit *		getRegroupUnit();
+	BWAPI::UnitInterface*		getRegroupUnit();
 	int					squadUnitsNear(BWAPI::Position p);
 
-	BWAPI::Unit *		unitClosestToEnemy();
+	BWAPI::UnitInterface*		unitClosestToEnemy();
 
     static int          lastRetreatSwitch;
     static bool         lastRetreatSwitchVal;
@@ -55,7 +55,7 @@ class Squad
 public:
 
 
-	Squad(const UnitVector & units, SquadOrder order);
+	Squad(const std::vector<BWAPI::UnitInterface *> & units, SquadOrder order);
 	Squad() {}
 	~Squad() {}
 
@@ -64,7 +64,7 @@ public:
 
 	void				update();
 
-	const UnitVector &	getUnits() const;
+	const std::vector<BWAPI::UnitInterface *> &	getUnits() const;
 	const SquadOrder &	getSquadOrder()	const;
 
 	void				setSquadOrder(const SquadOrder & so);

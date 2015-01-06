@@ -41,7 +41,7 @@ class StrategyManager
 	void	readResults();
 	void	writeResults();
 
-	const	int					getScore(BWAPI::Player * player) const;
+	const	int					getScore(BWAPI::PlayerInterface * player) const;
 	const	double				getUCBValue(const size_t & strategy) const;
 	
 	// protoss strategy
@@ -75,7 +75,7 @@ public:
 			void				onEnd(const bool isWinner);
 	
 	const	bool				regroup(int numInRadius);
-	const	bool				doAttack(const std::set<BWAPI::Unit *> & freeUnits);
+	const	bool				doAttack(const std::set<BWAPI::UnitInterface*> & freeUnits);
 	const	int				    defendWithWorkers();
 	const	bool				rushDetected();
 

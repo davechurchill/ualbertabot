@@ -14,15 +14,15 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
 {
 	SparCraft::GameState s;
 
-	BWAPI::Broodwar->drawCircleMap(center.x(), center.y(), 10, BWAPI::Colors::Red, true);
+	BWAPI::Broodwar->drawCircleMap(center.x, center.y, 10, BWAPI::Colors::Red, true);
 
-	std::vector<BWAPI::Unit *> ourCombatUnits;
+	std::vector<BWAPI::UnitInterface*> ourCombatUnits;
 	std::vector<UnitInfo> enemyCombatUnits;
 
 	MapGrid::Instance().GetUnits(ourCombatUnits,   center, Options::Micro::COMBAT_REGROUP_RADIUS, true, false);
 	InformationManager::Instance().getNearbyForce(enemyCombatUnits, center, BWAPI::Broodwar->enemy(), Options::Micro::COMBAT_REGROUP_RADIUS);
 
-	BOOST_FOREACH (BWAPI::Unit * unit, ourCombatUnits)
+	for (BWAPI::UnitInterface* unit : ourCombatUnits)
 	{
         if (InformationManager::Instance().isCombatUnit(unit->getType()) && SparCraft::System::isSupportedUnitType(unit->getType()))
 		{
@@ -38,7 +38,7 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
 		}
 	}
 
-	BOOST_FOREACH (UnitInfo ui, enemyCombatUnits)
+	for (UnitInfo & ui : enemyCombatUnits)
 	{
         if (!ui.type.isFlyer() && SparCraft::System::isSupportedUnitType(ui.type) && ui.completed)
 		{
@@ -65,16 +65,16 @@ bool CombatSimulation::checkZealotVsZergling(const BWAPI::Position & center, con
         return false;
     }
 
-	BWAPI::Broodwar->drawCircleMap(center.x(), center.y(), 10, BWAPI::Colors::Red, true);
+	BWAPI::Broodwar->drawCircleMap(center.x, center.y, 10, BWAPI::Colors::Red, true);
 
-	std::vector<BWAPI::Unit *> ourCombatUnits;
+	std::vector<BWAPI::UnitInterface*> ourCombatUnits;
 	std::vector<UnitInfo> enemyCombatUnits;
 
 	MapGrid::Instance().GetUnits(ourCombatUnits,   center, Options::Micro::COMBAT_REGROUP_RADIUS, true, false);
 	InformationManager::Instance().getNearbyForce(enemyCombatUnits, center, BWAPI::Broodwar->enemy(), Options::Micro::COMBAT_REGROUP_RADIUS);
 
     int numZealots = 0;
-	BOOST_FOREACH (BWAPI::Unit * unit, ourCombatUnits)
+	for (BWAPI::UnitInterface* unit : ourCombatUnits)
 	{
         if (InformationManager::Instance().isCombatUnit(unit->getType()) && SparCraft::System::isSupportedUnitType(unit->getType()))
 		{
@@ -87,7 +87,7 @@ bool CombatSimulation::checkZealotVsZergling(const BWAPI::Position & center, con
 
     bool onlyZerglings = enemyCombatUnits.empty() ? false : true;
     int numZerglings = 0;
-	BOOST_FOREACH (UnitInfo ui, enemyCombatUnits)
+	for (UnitInfo & ui : enemyCombatUnits)
 	{
         if (!ui.type.isFlyer() && SparCraft::System::isSupportedUnitType(ui.type) && ui.completed)
 		{
@@ -111,7 +111,7 @@ bool CombatSimulation::checkZealotVsZergling(const BWAPI::Position & center, con
 }
 
 // Gets a SparCraft unit from a BWAPI::Unit, used for our own units since we have all their info
-const SparCraft::Unit CombatSimulation::getSparCraftUnit(BWAPI::Unit * unit) const
+const SparCraft::Unit CombatSimulation::getSparCraftUnit(BWAPI::UnitInterface* unit) const
 {
     return SparCraft::Unit( unit->getType(),
                             SparCraft::Position(unit->getPosition()), 
@@ -180,7 +180,7 @@ const SparCraft::GameState & CombatSimulation::getSparCraftState() const
 	return state;
 }
 
-const SparCraft::IDType CombatSimulation::getSparCraftPlayerID(BWAPI::Player * player) const
+const SparCraft::IDType CombatSimulation::getSparCraftPlayerID(BWAPI::PlayerInterface * player) const
 {
 	if (player == BWAPI::Broodwar->self())
 	{

@@ -4,13 +4,14 @@
 #include "base/WorkerManager.h"
 #include "../../BOSS/source/BOSS.h"
 #include "StrategyManager.h"
+#include <memory>
 
 namespace UAlbertaBot
 {
 
 #define SEARCH_FRAME_LIMIT 240
 
-typedef boost::shared_ptr<BOSS::DFBB_BuildOrderSmartSearch> SearchPtr;
+typedef std::shared_ptr<BOSS::DFBB_BuildOrderSmartSearch> SearchPtr;
 
 class BOSSManager
 {

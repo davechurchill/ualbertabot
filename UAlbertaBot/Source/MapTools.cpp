@@ -104,7 +104,7 @@ int MapTools::getGroundDistance(BWAPI::Position origin, BWAPI::Position destinat
 // computes walk distance from Position P to all other points on the map
 void MapTools::computeDistance(DistanceMap & dmap, const BWAPI::Position p)
 {
-	search(dmap, p.y() / 32, p.x() / 32);
+	search(dmap, p.y / 32, p.x / 32);
 }
 
 // does the dynamic programming search
@@ -196,7 +196,7 @@ BWAPI::TilePosition MapTools::getNextExpansion()
 	BWAPI::TilePosition homeTile = BWAPI::Broodwar->self()->getStartLocation();
 
 	// for each base location
-	BOOST_FOREACH(BWTA::BaseLocation * base, BWTA::getBaseLocations())
+	for (BWTA::BaseLocation * base : BWTA::getBaseLocations())
 	{
 		// if the base has gas
 		if(!base->isMineralOnly() && !(base == BWTA::getStartLocation(BWAPI::Broodwar->self())))
@@ -205,15 +205,15 @@ BWAPI::TilePosition MapTools::getNextExpansion()
 			BWAPI::TilePosition tile = base->getTilePosition();
 
 			// the rectangle for this base location
-			int x1 = tile.x() * 32;
-			int y1 = tile.y() * 32;
+			int x1 = tile.x * 32;
+			int y1 = tile.y * 32;
 			int x2 = x1 + BWAPI::UnitTypes::Protoss_Nexus.tileWidth() * 32;
 			int y2 = y1 + BWAPI::UnitTypes::Protoss_Nexus.tileHeight() * 32;
 
 			bool buildingInTheWay = false;
 
 			// for each unit in the rectangle where we want to build it
-			BOOST_FOREACH (BWAPI::Unit * unit, BWAPI::Broodwar->getUnitsInRectangle(x1, y1, x2, y2))
+			for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->getUnitsInRectangle(x1, y1, x2, y2))
 			{
 				// if the unit is a building, we can't build here
 				if (unit->getType().isBuilding())

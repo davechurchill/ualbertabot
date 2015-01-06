@@ -248,7 +248,7 @@ const double StrategyManager::getUCBValue(const size_t & strategy) const
 	return ucb;
 }
 
-const int StrategyManager::getScore(BWAPI::Player * player) const
+const int StrategyManager::getScore(BWAPI::PlayerInterface * player) const
 {
 	return player->getBuildingScore() + player->getKillScore() + player->getRazingScore() + player->getUnitScore();
 }
@@ -310,7 +310,7 @@ const int StrategyManager::defendWithWorkers()
 	int defenseRadius = 300;
 
 	// fill the set with the types of units we're concerned about
-	BOOST_FOREACH (BWAPI::Unit * unit, BWAPI::Broodwar->enemy()->getUnits())
+	for (BWAPI::UnitInterface * unit : BWAPI::Broodwar->enemy()->getUnits())
 	{
 		// if it's a zergling or a worker we want to defend
 		if (unit->getType() == BWAPI::UnitTypes::Zerg_Zergling)
@@ -328,7 +328,7 @@ const int StrategyManager::defendWithWorkers()
 
 // called by combat commander to determine whether or not to send an attack force
 // freeUnits are the units available to do this attack
-const bool StrategyManager::doAttack(const std::set<BWAPI::Unit *> & freeUnits)
+const bool StrategyManager::doAttack(const std::set<BWAPI::UnitInterface*> & freeUnits)
 {
 	int ourForceSize = (int)freeUnits.size();
 

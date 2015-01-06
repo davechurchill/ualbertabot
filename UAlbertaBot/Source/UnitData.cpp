@@ -8,7 +8,7 @@ UnitData::UnitData()
 	, gasLost(0)
 {
 	int maxTypeID(0);
-	BOOST_FOREACH (BWAPI::UnitType t, BWAPI::UnitTypes::allUnitTypes())
+	for (BWAPI::UnitType & t : BWAPI::UnitTypes::allUnitTypes())
 	{
 		maxTypeID = maxTypeID > t.getID() ? maxTypeID : t.getID();
 	}
@@ -17,7 +17,7 @@ UnitData::UnitData()
 	numUnits		= std::vector<int>(maxTypeID + 1, 0);
 }
 
-void UnitData::updateUnit(BWAPI::Unit * unit)
+void UnitData::updateUnit(BWAPI::UnitInterface* unit)
 {
 	if (!unit) { return; }
 	
@@ -43,7 +43,7 @@ void UnitData::updateUnit(BWAPI::Unit * unit)
 	}
 }
 
-void UnitData::removeUnit(BWAPI::Unit * unit)
+void UnitData::removeUnit(BWAPI::UnitInterface* unit)
 {
 	if (!unit) { return; }
 
@@ -83,7 +83,7 @@ const bool UnitData::badUnitInfo(const UnitInfo & ui) const
 	}
 
 	// If the unit is a building and we can currently see its position and it is not there
-	if(ui.type.isBuilding() && BWAPI::Broodwar->isVisible(ui.lastPosition.x()/32, ui.lastPosition.y()/32) && !ui.unit->isVisible())
+	if(ui.type.isBuilding() && BWAPI::Broodwar->isVisible(ui.lastPosition.x/32, ui.lastPosition.y/32) && !ui.unit->isVisible())
 	{
 		return true;
 	}

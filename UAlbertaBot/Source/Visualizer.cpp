@@ -23,7 +23,7 @@ void Visualizer::setBWAPIState()
 	SparCraft::GameState state;
 	state.setMap(&map);
 
-	BOOST_FOREACH (BWAPI::Unit * unit, BWAPI::Broodwar->getAllUnits())
+	BOOST_FOREACH (BWAPI::UnitInterface* unit, BWAPI::Broodwar->getAllUnits())
 	{
 		const IDType player(getPlayer(unit->getPlayer()));
 
@@ -54,12 +54,12 @@ void Visualizer::onFrame()
 	display.OnFrame();
 }
 
-const IDType Visualizer::getPlayer(BWAPI::Unit * unit) const
+const IDType Visualizer::getPlayer(BWAPI::UnitInterface* unit) const
 {
 	return getPlayer(unit->getPlayer());
 }
 
-const IDType Visualizer::getPlayer(BWAPI::Player * player) const
+const IDType Visualizer::getPlayer(BWAPI::PlayerInterface * player) const
 {
 	if (player == BWAPI::Broodwar->self())
 	{

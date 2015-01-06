@@ -26,9 +26,9 @@ bool BuildingPlacer::isInResourceBox(int x, int y) const
 void BuildingPlacer::computeResourceBox()
 {
 	BWAPI::Position start(BWAPI::Broodwar->self()->getStartLocation());
-	std::vector<BWAPI::Unit *> unitsAroundNexus;
+	std::vector<BWAPI::UnitInterface*> unitsAroundNexus;
 
-	BOOST_FOREACH(BWAPI::Unit * unit, BWAPI::Broodwar->getAllUnits())
+	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->getAllUnits())
 	{
 		// if the units are less than 400 away add them if they are resources
 		if (unit->getDistance(start) < 400 && unit->getType().isResourceContainer())
@@ -37,10 +37,10 @@ void BuildingPlacer::computeResourceBox()
 		}
 	}
 
-	BOOST_FOREACH(BWAPI::Unit * unit, unitsAroundNexus)
+	for (BWAPI::UnitInterface* unit : unitsAroundNexus)
 	{
-		int x = unit->getPosition().x();
-		int y = unit->getPosition().y();
+		int x = unit->getPosition().x;
+		int y = unit->getPosition().y;
 
 		int left = x - unit->getType().dimensionLeft();
 		int right = x + unit->getType().dimensionRight() + 1;
@@ -65,15 +65,15 @@ bool BuildingPlacer::canBuildHere(BWAPI::TilePosition position, const Building &
 	}
 
 	//returns true if we can build this type of unit here. Takes into account reserved tiles.
-	if (!BWAPI::Broodwar->canBuildHere(b.builderUnit, position, b.type))
+	if (!BWAPI::Broodwar->canBuildHere(position, b.type, b.builderUnit))
 	{
 		return false;
 	}
 
 	// check the reserve map
-	for(int x = position.x(); x < position.x() + b.type.tileWidth(); x++)
+	for(int x = position.x; x < position.x + b.type.tileWidth(); x++)
 	{
-		for(int y = position.y(); y < position.y() + b.type.tileHeight(); y++)
+		for(int y = position.y; y < position.y + b.type.tileHeight(); y++)
 		{
 			if (reserveMap[x][y])
 			{
@@ -96,7 +96,7 @@ bool BuildingPlacer::tileBlocksAddon(BWAPI::TilePosition position) const
     
     for (int i=0; i<=2; ++i)
     {
-        BOOST_FOREACH (BWAPI::Unit * unit, BWAPI::Broodwar->getUnitsOnTile(position.x() - i, position.y()))
+        for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->getUnitsOnTile(position.x - i, position.y))
         {
             if ( unit->getType() == BWAPI::UnitTypes::Terran_Command_Center ||
 		        unit->getType() == BWAPI::UnitTypes::Terran_Factory || 
@@ -137,21 +137,21 @@ bool BuildingPlacer::canBuildHereWithSpace(BWAPI::TilePosition position, const B
 	}
 
 	// define the rectangle of the building spot
-	int startx = position.x() - buildDist;
-	int starty = position.y() - buildDist;
-	int endx   = position.x() + width + buildDist;
-	int endy   = position.y() + height + buildDist;
+	int startx = position.x - buildDist;
+	int starty = position.y - buildDist;
+	int endx   = position.x + width + buildDist;
+	int endy   = position.y + height + buildDist;
 
     if (b.type.isAddon())
     {
         const BWAPI::UnitType builderType = type.whatBuilds().first;
 
-        BWAPI::TilePosition builderTile(position.x() - builderType.tileWidth(), position.y() + 2 - builderType.tileHeight());
+        BWAPI::TilePosition builderTile(position.x - builderType.tileWidth(), position.y + 2 - builderType.tileHeight());
 
-        startx = builderTile.x() - buildDist;
-        starty = builderTile.y() - buildDist;
-        endx = position.x() + width + buildDist;
-        endy = position.y() + height + buildDist;
+        startx = builderTile.x - buildDist;
+        starty = builderTile.y - buildDist;
+        endx = position.x + width + buildDist;
+        endy = position.y + height + buildDist;
     }
 
 	if (horizontalOnly)
@@ -161,7 +161,7 @@ bool BuildingPlacer::canBuildHereWithSpace(BWAPI::TilePosition position, const B
 	}
 
 	// if this rectangle doesn't fit on the map we can't build here
-	if (startx < 0 || starty < 0 || endx > BWAPI::Broodwar->mapWidth() || endx < position.x() + width || endy > BWAPI::Broodwar->mapHeight()) 
+	if (startx < 0 || starty < 0 || endx > BWAPI::Broodwar->mapWidth() || endx < position.x + width || endy > BWAPI::Broodwar->mapHeight()) 
 	{
 		return false;
 	}
@@ -182,7 +182,7 @@ bool BuildingPlacer::canBuildHereWithSpace(BWAPI::TilePosition position, const B
 	}
 
 	// special cases for terran buildings that can land into addons?
-	/*if (position.x() > 3 && b.type.isFlyingBuilding())
+	/*if (position.x > 3 && b.type.isFlyingBuilding())
 	{
 		int startx2 = startx - 2;
 		if (startx2 < 0) 
@@ -194,7 +194,7 @@ bool BuildingPlacer::canBuildHereWithSpace(BWAPI::TilePosition position, const B
 		{
 			for(int y = starty; y < endy; y++)
 			{
-				BOOST_FOREACH(BWAPI::Unit * unit, BWAPI::Broodwar->getUnitsOnTile(x, y))
+				BOOST_FOREACH(BWAPI::UnitInterface* unit, BWAPI::Broodwar->getUnitsOnTile(x, y))
 				{
 					if (!unit->isLifted())
 					{
@@ -218,8 +218,8 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
 {
 	//returns a valid build location near the specified tile position.
 	//searches outward in a spiral.
-	int x      = b.desiredPosition.x();
-	int y      = b.desiredPosition.y();
+	int x      = b.desiredPosition.x;
+	int y      = b.desiredPosition.y;
 	int length = 1;
 	int j      = 0;
 	bool first = true;
@@ -335,17 +335,17 @@ bool BuildingPlacer::tileOverlapsBaseLocation(BWAPI::TilePosition tile, BWAPI::U
 	}
 
 	// dimensions of the proposed location
-	int tx1 = tile.x();
-	int ty1 = tile.y();
+	int tx1 = tile.x;
+	int ty1 = tile.y;
 	int tx2 = tx1 + type.tileWidth();
 	int ty2 = ty1 + type.tileHeight();
 
 	// for each base location
-	BOOST_FOREACH (BWTA::BaseLocation * base, BWTA::getBaseLocations())
+	for (BWTA::BaseLocation * base : BWTA::getBaseLocations())
 	{
 		// dimensions of the base location
-		int bx1 = base->getTilePosition().x();
-		int by1 = base->getTilePosition().y();
+		int bx1 = base->getTilePosition().x;
+		int by1 = base->getTilePosition().y;
 		int bx2 = bx1 + BWAPI::Broodwar->self()->getRace().getCenter().tileWidth();
 		int by2 = by1 + BWAPI::Broodwar->self()->getRace().getCenter().tileHeight();
 
@@ -376,7 +376,7 @@ bool BuildingPlacer::buildable(int x, int y) const
         return false;
     }
 
-	BOOST_FOREACH (BWAPI::Unit * unit, BWAPI::Broodwar->getUnitsOnTile(x, y))
+	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->getUnitsOnTile(x, y))
 	{
 		if (unit->getType().isBuilding() && !unit->isLifted()) 
 		{
@@ -395,7 +395,7 @@ bool BuildingPlacer::buildable(int x, int y) const
 				continue;
 			}
 
-			BOOST_FOREACH (BWAPI::Unit * unit, BWAPI::Broodwar->getUnitsOnTile(i, j))
+			for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->getUnitsOnTile(i, j))
 			{
 				if (unit->getType() == BWAPI::UnitTypes::Protoss_Gateway) 
 				{
@@ -412,9 +412,9 @@ void BuildingPlacer::reserveTiles(BWAPI::TilePosition position, int width, int h
 {
 	int rwidth = reserveMap.size();
 	int rheight = reserveMap[0].size();
-	for(int x = position.x(); x < position.x() + width && x < rwidth; x++) 
+	for(int x = position.x; x < position.x + width && x < rwidth; x++) 
 	{
-		for(int y = position.y(); y < position.y() + height && y < rheight; y++) 
+		for(int y = position.y; y < position.y + height && y < rheight; y++) 
 		{
 			reserveMap[x][y] = true;
 		}
@@ -448,9 +448,9 @@ void BuildingPlacer::freeTiles(BWAPI::TilePosition position, int width, int heig
 	int rwidth = reserveMap.size();
 	int rheight = reserveMap[0].size();
 
-	for(int x = position.x(); x < position.x() + width && x < rwidth; x++) 
+	for(int x = position.x; x < position.x + width && x < rwidth; x++) 
 	{
-		for(int y = position.y(); y < position.y() + height && y < rheight; y++) 
+		for(int y = position.y; y < position.y + height && y < rheight; y++) 
 		{
 			reserveMap[x][y] = false;
 		}
@@ -470,13 +470,13 @@ int BuildingPlacer::getBuildDistance() const
 BWAPI::TilePosition BuildingPlacer::getRefineryPosition()
 {
 	// for each of our units
-	BOOST_FOREACH (BWAPI::Unit * depot, BWAPI::Broodwar->self()->getUnits())
+	for (BWAPI::UnitInterface* depot : BWAPI::Broodwar->self()->getUnits())
 	{
 		// if it's a resource depot
 		if (depot->getType().isResourceDepot())
 		{
 			// for all units around it
-			BOOST_FOREACH (BWAPI::Unit * unit, BWAPI::Broodwar->getAllUnits())
+			for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->getAllUnits())
 			{
 				// if it's a geyser around it
 				if (unit->getType() == BWAPI::UnitTypes::Resource_Vespene_Geyser && unit->getDistance(depot) < 300)

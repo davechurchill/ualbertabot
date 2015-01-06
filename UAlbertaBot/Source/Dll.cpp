@@ -5,10 +5,11 @@
 #include <tchar.h>
 
 #include <BWAPI.h>
-#include <BWTA.h>
 
 #include "UAlbertaBotModule.h"
-namespace BWAPI { Game* Broodwar; }
+
+extern "C" __declspec(dllexport) void gameInit(BWAPI::Game* game) { BWAPI::BroodwarPtr = game; }
+
 BOOL APIENTRY DllMain( HANDLE hModule, 
                        DWORD  ul_reason_for_call, 
                        LPVOID lpReserved
@@ -18,7 +19,6 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 	switch (ul_reason_for_call)
 	{
 		case DLL_PROCESS_ATTACH:
-			BWAPI::BWAPI_init();
 			break;
 		case DLL_PROCESS_DETACH:
 			break;
@@ -27,8 +27,7 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 	return TRUE;
 }
 
- extern "C" __declspec(dllexport) BWAPI::AIModule* newAIModule(BWAPI::Game* game)
+ extern "C" __declspec(dllexport) BWAPI::AIModule* newAIModule(BWAPI::GameWrapper game)
 {
-	BWAPI::Broodwar=game;
 	return new UAlbertaBot::UAlbertaBotModule();
 }

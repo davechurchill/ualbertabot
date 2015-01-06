@@ -85,25 +85,25 @@ void UAlbertaBotModule::onFrame()
 
 	if (Options::Modules::USING_REPLAY_VISUALIZER)
 	{
-		BOOST_FOREACH (BWAPI::Unit * unit, BWAPI::Broodwar->getAllUnits())
+		for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->getAllUnits())
 		{
-			BWAPI::Broodwar->drawTextMap(unit->getPosition().x(), unit->getPosition().y(), "   %d", unit->getPlayer()->getID());
+			BWAPI::Broodwar->drawTextMap(unit->getPosition().x, unit->getPosition().y, "   %d", unit->getPlayer()->getID());
 
 			if (unit->isSelected())
 			{
-				BWAPI::Broodwar->drawCircleMap(unit->getPosition().x(), unit->getPosition().y(), 1000, BWAPI::Colors::Red);
+				BWAPI::Broodwar->drawCircleMap(unit->getPosition().x, unit->getPosition().y, 1000, BWAPI::Colors::Red);
 			}
 		}
 	}
 }
 
-void UAlbertaBotModule::onUnitDestroy(BWAPI::Unit * unit)
+void UAlbertaBotModule::onUnitDestroy(BWAPI::UnitInterface* unit)
 {
 	if (Options::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitDestroy(unit); }
 	if (Options::Modules::USING_ENHANCED_INTERFACE) { eui.onUnitDestroy(unit); }
 }
 
-void UAlbertaBotModule::onUnitMorph(BWAPI::Unit * unit)
+void UAlbertaBotModule::onUnitMorph(BWAPI::UnitInterface* unit)
 {
 	if (Options::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitMorph(unit); }
 }
@@ -112,8 +112,8 @@ void UAlbertaBotModule::onSendText(std::string text)
 { 
 	if (Options::Modules::USING_REPLAY_VISUALIZER && (text.compare("sim") == 0))
 	{
-		BWAPI::Unit * selected = NULL;
-		BOOST_FOREACH (BWAPI::Unit * unit, BWAPI::Broodwar->getAllUnits())
+		BWAPI::UnitInterface* selected = NULL;
+		for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->getAllUnits())
 		{
 			if (unit->isSelected())
 			{
@@ -156,36 +156,52 @@ void UAlbertaBotModule::onSendText(std::string text)
 
 		numUnits = atoi(numUnitType.str().c_str());
 
+        BWAPI::UnitType t;
+        for (BWAPI::UnitType & tt : BWAPI::UnitTypes::allUnitTypes())
+        {
+            if (tt.getName().compare(type.str()) == 0)
+            {
+                t = tt;
+                break;
+            }
+        }
 	
-		BWAPI::UnitType t = BWAPI::UnitTypes::getUnitType(type.str());
-
 		BWAPI::Broodwar->printf("Searching for %d of %s", numUnits, t.getName().c_str());
 
-		MetaPairVector goal;
-		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Probe, 8));
-		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Gateway, 2));
-		goal.push_back(MetaPair(t, numUnits));
+        if (t != BWAPI::UnitType())
+        {
+            MetaPairVector goal;
+		    goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Probe, 8));
+		    goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Gateway, 2));
+		    goal.push_back(MetaPair(t, numUnits));
 
-		ProductionManager::Instance().setSearchGoal(goal);
+		    ProductionManager::Instance().setSearchGoal(goal);
+        }
+        else
+        {
+            BWAPI::Broodwar->printf("Unknown unit type %s", type.str().c_str());
+        }
+
+		
 	}
 }
 
-void UAlbertaBotModule::onUnitCreate(BWAPI::Unit * unit)
+void UAlbertaBotModule::onUnitCreate(BWAPI::UnitInterface* unit)
 { 
 	if (Options::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitCreate(unit); }
 }
 
-void UAlbertaBotModule::onUnitShow(BWAPI::Unit * unit)
+void UAlbertaBotModule::onUnitShow(BWAPI::UnitInterface* unit)
 { 
 	if (Options::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitShow(unit); }
 }
 
-void UAlbertaBotModule::onUnitHide(BWAPI::Unit * unit)
+void UAlbertaBotModule::onUnitHide(BWAPI::UnitInterface* unit)
 { 
 	if (Options::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitHide(unit); }
 }
 
-void UAlbertaBotModule::onUnitRenegade(BWAPI::Unit * unit)
+void UAlbertaBotModule::onUnitRenegade(BWAPI::UnitInterface* unit)
 { 
 	if (Options::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitRenegade(unit); }
 }

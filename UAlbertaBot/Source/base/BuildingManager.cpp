@@ -86,7 +86,7 @@ void BuildingManager::assignWorkersToUnassignedBuildings()
 		}
 
         // grab a worker unit from WorkerManager which is closest to this final position
-		BWAPI::Unit * workerToAssign = WorkerManager::Instance().getBuilder(b);
+		BWAPI::UnitInterface* workerToAssign = WorkerManager::Instance().getBuilder(b);
         
 		// if the worker exists
 		if (workerToAssign) 
@@ -244,7 +244,7 @@ void BuildingManager::constructAssignedBuildings()
 				if (debugMode) { BWAPI::Broodwar->printf("Issuing Build Command To %s", b.type.getName().c_str()); }
 
 				// issue the build order!
-				b.builderUnit->build(b.finalPosition, b.type);
+				b.builderUnit->build(b.type, b.finalPosition);
 
 				// set the flag to true
 				b.buildCommandGiven = true;
@@ -257,7 +257,7 @@ void BuildingManager::constructAssignedBuildings()
 void BuildingManager::checkForStartedConstruction() 
 {
 	// for each building unit which is being constructed
-	BOOST_FOREACH (BWAPI::Unit * buildingStarted, BWAPI::Broodwar->self()->getUnits())
+	for (BWAPI::UnitInterface* buildingStarted : BWAPI::Broodwar->self()->getUnits())
     {
 		// filter out units which aren't buildings under construction
 		if (!(buildingStarted->getType().isBuilding() && buildingStarted->isBeingConstructed()))
@@ -388,7 +388,7 @@ bool BuildingManager::isBuildingPositionExplored(const Building & b) const
 	{
 		for (int y=0; y<b.type.tileHeight(); ++y)
 		{
-			if (!BWAPI::Broodwar->isExplored(tile.x() + x, tile.y() + y))
+			if (!BWAPI::Broodwar->isExplored(tile.x + x, tile.y + y))
 			{
 				return false;
 			}
@@ -415,9 +415,9 @@ int BuildingManager::getReservedGas() {
 
 void BuildingManager::drawBuildingInformation(int x, int y) 
 {
-	BOOST_FOREACH (BWAPI::Unit * unit, BWAPI::Broodwar->self()->getUnits())
+	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits())
 	{
-		if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextMap(unit->getPosition().x(), unit->getPosition().y()+5, "\x07%d", unit->getID()); 
+		if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextMap(unit->getPosition().x, unit->getPosition().y+5, "\x07%d", unit->getID()); 
 	}
 
 	if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(x, y, "\x04 Building Information:");
@@ -441,14 +441,14 @@ void BuildingManager::drawBuildingInformation(int x, int y)
 		Building & b = buildingData.getNextBuilding(ConstructionData::Assigned);
 
 		if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(x, y+40+((yspace)*10), "\x03 %s %d", b.type.getName().c_str(), b.builderUnit->getID());
-		if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(x+150, y+40+((yspace++)*10), "\x03 A %c (%d,%d)", getBuildingWorkerCode(b), b.finalPosition.x(), b.finalPosition.y());
+		if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(x+150, y+40+((yspace++)*10), "\x03 A %c (%d,%d)", getBuildingWorkerCode(b), b.finalPosition.x, b.finalPosition.y);
 
-		int x1 = b.finalPosition.x()*32;
-		int y1 = b.finalPosition.y()*32;
-		int x2 = (b.finalPosition.x() + b.type.tileWidth())*32;
-		int y2 = (b.finalPosition.y() + b.type.tileHeight())*32;
+		int x1 = b.finalPosition.x*32;
+		int y1 = b.finalPosition.y*32;
+		int x2 = (b.finalPosition.x + b.type.tileWidth())*32;
+		int y2 = (b.finalPosition.y + b.type.tileHeight())*32;
 
-		if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawLineMap(b.builderUnit->getPosition().x(), b.builderUnit->getPosition().y(), (x1+x2)/2, (y1+y2)/2, BWAPI::Colors::Orange);
+		if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawLineMap(b.builderUnit->getPosition().x, b.builderUnit->getPosition().y, (x1+x2)/2, (y1+y2)/2, BWAPI::Colors::Orange);
 		if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawBoxMap(x1, y1, x2, y2, BWAPI::Colors::Red, false);
 	}
 
@@ -468,19 +468,19 @@ BuildingManager & BuildingManager::Instance()
 	return instance;
 }
 
-BWAPI::Unit * BuildingManager::getAddonProducer(MetaType t)
+BWAPI::UnitInterface* BuildingManager::getAddonProducer(MetaType t)
 {
     // get the type of unit that builds this
     BWAPI::UnitType producerType = t.whatBuilds();
 
-    BOOST_FOREACH (BWAPI::Unit * unit, BWAPI::Broodwar->self()->getUnits())
+    for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits())
     {
         // reasons a unit can not train the desired type
         if (unit->getType() != producerType)                    { continue; }
         if (!unit->isCompleted())                               { continue; }
         if (unit->isTraining())                                 { continue; }
         if (unit->isLifted())                                   { continue; }
-        if (unit->isUnpowered())                                { continue; }
+        if (!unit->isPowered())                                { continue; }
 
         // if the type is an addon, some special cases
         if (t.unitType.isAddon())
@@ -493,7 +493,7 @@ BWAPI::Unit * BuildingManager::getAddonProducer(MetaType t)
 
             // if the unit doesn't have space to build an addon, it can't make one
             /*BWAPI::TilePosition addonPosition = unit->getTilePosition() + BWAPI::TilePosition(unit->getType().tileWidth(), unit->getType().tileHeight()-t.unitType.tileHeight());
-            BWAPI::Broodwar->drawBoxMap(addonPosition.x()*32, addonPosition.y()*32, addonPosition.x()*32 + 64, addonPosition.y()*32 + 64, BWAPI::Colors::Blue);
+            BWAPI::Broodwar->drawBoxMap(addonPosition.x*32, addonPosition.y*32, addonPosition.x*32 + 64, addonPosition.y*32 + 64, BWAPI::Colors::Blue);
             for (int i=0; i<=unit->getType().tileWidth(); ++i)
             {
                 for (int j=0; j<=unit->getType().tileHeight(); ++j)
@@ -507,7 +507,7 @@ BWAPI::Unit * BuildingManager::getAddonProducer(MetaType t)
                     }
 
                     // if there are any units on the addon tile, we can't build it
-                    if (BWAPI::Broodwar->getUnitsOnTile(tilePos.x(), tilePos.y()).size() > 0)
+                    if (BWAPI::Broodwar->getUnitsOnTile(tilepos.x, tilepos.y).size() > 0)
                     {
                         continue;
                     }
@@ -517,7 +517,7 @@ BWAPI::Unit * BuildingManager::getAddonProducer(MetaType t)
         
         // if the type requires an addon and the producer doesn't have one
         typedef std::pair<BWAPI::UnitType, int> ReqPair;
-        BOOST_FOREACH (const ReqPair & pair , t.unitType.requiredUnits())
+        for (const ReqPair & pair : t.unitType.requiredUnits())
         {
             BWAPI::UnitType requiredType = pair.first;
             if (requiredType.isAddon())

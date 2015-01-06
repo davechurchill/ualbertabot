@@ -4,12 +4,12 @@ using namespace UAlbertaBot;
 
 MeleeManager::MeleeManager() { }
 
-void MeleeManager::executeMicro(const UnitVector & targets) 
+void MeleeManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & targets) 
 {
-	const UnitVector & meleeUnits = getUnits();
+	const std::vector<BWAPI::UnitInterface *> & meleeUnits = getUnits();
 
 	// figure out targets
-	UnitVector meleeUnitTargets;
+	std::vector<BWAPI::UnitInterface *> meleeUnitTargets;
 	for (size_t i(0); i<targets.size(); i++) 
 	{
 		// conditions for targeting
@@ -24,7 +24,7 @@ void MeleeManager::executeMicro(const UnitVector & targets)
 	}
 
 	// for each meleeUnit
-	BOOST_FOREACH(BWAPI::Unit * meleeUnit, meleeUnits)
+	for (BWAPI::UnitInterface* meleeUnit : meleeUnits)
 	{
 		// if the order is to attack or defend
 		if (order.type == order.Attack || order.type == order.Defend) {
@@ -33,7 +33,7 @@ void MeleeManager::executeMicro(const UnitVector & targets)
 			if (!meleeUnitTargets.empty())
 			{
 				// find the best target for this meleeUnit
-				BWAPI::Unit * target = getTarget(meleeUnit, meleeUnitTargets);
+				BWAPI::UnitInterface* target = getTarget(meleeUnit, meleeUnitTargets);
 				// attack it
 				smartAttackUnit(meleeUnit, target);
 			}
@@ -51,21 +51,21 @@ void MeleeManager::executeMicro(const UnitVector & targets)
 
 		if (Options::Debug::DRAW_UALBERTABOT_DEBUG)
 		{
-			BWAPI::Broodwar->drawLineMap(meleeUnit->getPosition().x(), meleeUnit->getPosition().y(), 
-			meleeUnit->getTargetPosition().x(), meleeUnit->getTargetPosition().y(), Options::Debug::COLOR_LINE_TARGET);
+			BWAPI::Broodwar->drawLineMap(meleeUnit->getPosition().x, meleeUnit->getPosition().y, 
+			meleeUnit->getTargetPosition().x, meleeUnit->getTargetPosition().y, Options::Debug::COLOR_LINE_TARGET);
 		}
 	}
 }
 
 // get a target for the meleeUnit to attack
-BWAPI::Unit * MeleeManager::getTarget(BWAPI::Unit * meleeUnit, UnitVector & targets)
+BWAPI::UnitInterface* MeleeManager::getTarget(BWAPI::UnitInterface* meleeUnit, std::vector<BWAPI::UnitInterface *> & targets)
 {
 	int highPriority(0);
 	int closestDist(100000);
-	BWAPI::Unit * closestTarget = NULL;
+	BWAPI::UnitInterface* closestTarget = NULL;
 
 	// for each target possiblity
-	BOOST_FOREACH(BWAPI::Unit * unit, targets)
+	for (BWAPI::UnitInterface* unit : targets)
 	{
 		int priority = getAttackPriority(unit);
 		if (meleeUnit->getType() == BWAPI::UnitTypes::Protoss_Dark_Templar && unit->getType().isWorker())
@@ -73,7 +73,7 @@ BWAPI::Unit * MeleeManager::getTarget(BWAPI::Unit * meleeUnit, UnitVector & targ
 			priority = 11;
 		}
 
-		if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextMap(unit->getPosition().x(), unit->getPosition().y(), "%d", priority);
+		if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextMap(unit->getPosition().x, unit->getPosition().y, "%d", priority);
 
 		int distance = meleeUnit->getDistance(unit);
 
@@ -90,7 +90,7 @@ BWAPI::Unit * MeleeManager::getTarget(BWAPI::Unit * meleeUnit, UnitVector & targ
 }
 
 	// get the attack priority of a type in relation to a zergling
-int MeleeManager::getAttackPriority(BWAPI::Unit * unit) 
+int MeleeManager::getAttackPriority(BWAPI::UnitInterface* unit) 
 {
 	BWAPI::UnitType type = unit->getType();
 
@@ -135,12 +135,12 @@ int MeleeManager::getAttackPriority(BWAPI::Unit * unit)
 	}
 }
 
-BWAPI::Unit * MeleeManager::closestMeleeUnit(BWAPI::Unit * target, std::set<BWAPI::Unit *> & meleeUnitsToAssign)
+BWAPI::UnitInterface* MeleeManager::closestMeleeUnit(BWAPI::UnitInterface* target, std::set<BWAPI::UnitInterface*> & meleeUnitsToAssign)
 {
 	double minDistance = 0;
-	BWAPI::Unit * closest = NULL;
+	BWAPI::UnitInterface* closest = NULL;
 
-	BOOST_FOREACH (BWAPI::Unit * meleeUnit, meleeUnitsToAssign)
+	for (BWAPI::UnitInterface* meleeUnit : meleeUnitsToAssign)
 	{
 		double distance = meleeUnit->getDistance(target);
 		if (!closest || distance < minDistance)

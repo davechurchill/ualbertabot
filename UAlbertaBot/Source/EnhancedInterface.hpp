@@ -8,7 +8,7 @@ namespace UAlbertaBot
 {
 class ControlGroupData
 {
-	std::map<BWAPI::Key, std::set<BWAPI::Unit *>> keyMap;
+	std::map<BWAPI::Key, std::set<BWAPI::UnitInterface*>> keyMap;
 
 public:
 
@@ -21,10 +21,10 @@ public:
 		
 	}
 
-	void onUnitDestroy(BWAPI::Unit * unit)
+	void onUnitDestroy(BWAPI::UnitInterface* unit)
 	{
-		typedef std::map<BWAPI::Key, std::set<BWAPI::Unit *>> mapType;
-		BOOST_FOREACH (mapType::value_type & t, keyMap)
+		typedef std::map<BWAPI::Key, std::set<BWAPI::UnitInterface*>> mapType;
+		for (mapType::value_type & t : keyMap)
 		{
 			t.second.erase(unit);
 		}
@@ -35,9 +35,9 @@ public:
 	{
 		BWAPI::Broodwar->printf("New control group %d", k-BWAPI::K_0);
 
-		keyMap[k] = std::set<BWAPI::Unit *>();
+		keyMap[k] = std::set<BWAPI::UnitInterface*>();
 
-		BOOST_FOREACH (BWAPI::Unit * unit, BWAPI::Broodwar->getSelectedUnits())
+		for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->getSelectedUnits())
 		{
 			if (unit->getPlayer() == BWAPI::Broodwar->self())
 			{
@@ -52,10 +52,10 @@ public:
 
 		if (!controlGroupExists(k))
 		{
-			keyMap[k] = std::set<BWAPI::Unit *>();
+			keyMap[k] = std::set<BWAPI::UnitInterface*>();
 		}
 
-		BOOST_FOREACH (BWAPI::Unit * unit, BWAPI::Broodwar->getSelectedUnits())
+		for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->getSelectedUnits())
 		{
 			if (unit->getPlayer() == BWAPI::Broodwar->self())
 			{
@@ -69,11 +69,11 @@ public:
 		return keyMap.find(k) != keyMap.end();
 	}
 
-	std::set<BWAPI::Unit *> * getControlGroupUnits(BWAPI::Key k)
+	std::set<BWAPI::UnitInterface*> * getControlGroupUnits(BWAPI::Key k)
 	{
 		if (!controlGroupExists(k))
 		{
-			keyMap[k] = std::set<BWAPI::Unit *>();
+			keyMap[k] = std::set<BWAPI::UnitInterface*>();
 		}
 
 		return &keyMap[k];
@@ -88,7 +88,7 @@ class EnhancedInterface
 
 	ControlGroupData data;
 
-	std::set<BWAPI::Unit *> * selectedUnits;
+	std::set<BWAPI::UnitInterface*> * selectedUnits;
 
 public:
 
@@ -140,7 +140,7 @@ public:
 	
 	~EnhancedInterface() {}
 
-	void onUnitDestroy(BWAPI::Unit * unit)
+	void onUnitDestroy(BWAPI::UnitInterface* unit)
 	{
 		data.onUnitDestroy(unit);
 	}
@@ -159,7 +159,7 @@ public:
 
 	void processKeyboardEvents()
 	{
-		BOOST_FOREACH (BWAPI::Key k, keys)
+		for (BWAPI::Key k : keys)
 		{
 			if (BWAPI::Broodwar->getKeyState(k))
 			{
@@ -178,14 +178,14 @@ public:
 
 	void mouseEvent(BWAPI::MouseButton m)
 	{
-		int mouseMapX = BWAPI::Broodwar->getMousePosition().x() + BWAPI::Broodwar->getScreenPosition().x();
-		int mouseMapY = BWAPI::Broodwar->getMousePosition().y() + BWAPI::Broodwar->getScreenPosition().y();
+		int mouseMapX = BWAPI::Broodwar->getMousePosition().x + BWAPI::Broodwar->getScreenPosition().x;
+		int mouseMapY = BWAPI::Broodwar->getMousePosition().y + BWAPI::Broodwar->getScreenPosition().y;
 
 		if (m == BWAPI::M_RIGHT)
 		{
 			if (selectedUnits)
 			{
-				BOOST_FOREACH (BWAPI::Unit * unit, *selectedUnits)
+				for (BWAPI::UnitInterface* unit : *selectedUnits)
 				{
 					unit->rightClick(BWAPI::Position(mouseMapX, mouseMapY));
 				}
@@ -259,16 +259,16 @@ public:
 		int yy = y;
 
 
-		BOOST_FOREACH (BWAPI::Unit * unit, *selectedUnits)
+		for (BWAPI::UnitInterface* unit : *selectedUnits)
 		{
 			xx = x + (col%cols) * 22;
 			yy = y + (col/cols) * 26;
 
-			BWAPI::Broodwar->drawCircleMap(unit->getPosition().x(), unit->getPosition().y(), unit->getType().dimensionLeft(), BWAPI::Colors::Green, false);
+			BWAPI::Broodwar->drawCircleMap(unit->getPosition().x, unit->getPosition().y, unit->getType().dimensionLeft(), BWAPI::Colors::Green, false);
 			
 			if (unit->getType().isBuilding())
 			{
-				BWAPI::Broodwar->drawLineMap(unit->getPosition().x(), unit->getPosition().y(), unit->getRallyPosition().x(), unit->getRallyPosition().y(), BWAPI::Colors::White);
+				BWAPI::Broodwar->drawLineMap(unit->getPosition().x, unit->getPosition().y, unit->getRallyPosition().x, unit->getRallyPosition().y, BWAPI::Colors::White);
 			}
 
 			
@@ -278,7 +278,7 @@ public:
 		}
 	}
 
-	void drawUnit(BWAPI::Unit * unit, int x, int y)
+	void drawUnit(BWAPI::UnitInterface* unit, int x, int y)
 	{
 		int BOX_HEIGHT = 20;
 		int BOX_WIDTH = 20;
@@ -314,7 +314,7 @@ public:
 		BWAPI::Broodwar->drawBoxScreen(x, y+BOX_HEIGHT+1, x+(int)(getBoxWidth(unit)*BOX_WIDTH), y+BOX_HEIGHT+SUB_BOX_HEIGHT, statusColor, true);
 	}
 
-	BWAPI::Color getUnitColor(BWAPI::Unit * unit)
+	BWAPI::Color getUnitColor(BWAPI::UnitInterface* unit)
 	{
 		if (unit->getType().isWorker())
 		{
@@ -347,7 +347,7 @@ public:
 		return BWAPI::Colors::Red;
 	}
 
-	double getBoxWidth(BWAPI::Unit * unit)
+	double getBoxWidth(BWAPI::UnitInterface* unit)
 	{
 		if (unit->isTraining())
 		{

@@ -10,20 +10,20 @@ class MicroManager;
 class DetectorManager : public MicroManager
 {
 
-	std::map<BWAPI::Unit *, bool>	cloakedUnitMap;
+	std::map<BWAPI::UnitInterface*, bool>	cloakedUnitMap;
 
-	bool isAssigned(BWAPI::Unit * unit);
+	bool isAssigned(BWAPI::UnitInterface* unit);
 
-	BWAPI::Unit * unitClosestToEnemy;
+	BWAPI::UnitInterface* unitClosestToEnemy;
 
 public:
 
 	DetectorManager();
 	~DetectorManager() {}
 
-	void setUnitClosestToEnemy(BWAPI::Unit * unit) { unitClosestToEnemy = unit; }
-	void executeMicro(const UnitVector & targets);
+	void setUnitClosestToEnemy(BWAPI::UnitInterface* unit) { unitClosestToEnemy = unit; }
+	void executeMicro(const std::vector<BWAPI::UnitInterface *> & targets);
 
-	BWAPI::Unit * closestCloakedUnit(const UnitVector & cloakedUnits, BWAPI::Unit * detectorUnit);
+	BWAPI::UnitInterface* closestCloakedUnit(const std::vector<BWAPI::UnitInterface *> & cloakedUnits, BWAPI::UnitInterface* detectorUnit);
 };
 }

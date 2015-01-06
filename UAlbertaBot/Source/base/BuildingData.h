@@ -12,8 +12,8 @@ public:
 	BWAPI::TilePosition finalPosition;
 	BWAPI::Position position;
 	BWAPI::UnitType type;
-	BWAPI::Unit * buildingUnit;
-	BWAPI::Unit * builderUnit;
+	BWAPI::UnitInterface* buildingUnit;
+	BWAPI::UnitInterface* builderUnit;
 	int lastOrderFrame;
 	bool buildCommandGiven;
 	bool underConstruction;
@@ -62,7 +62,7 @@ private:
 	std::vector< size_t >						buildingIndex;
 	std::vector< std::vector<Building> >		buildings;			// buildings which do not yet have builders assigned
 
-	std::set<BWAPI::Unit *>		buildingUnitsConstructing;		// units which have been recently detected as started construction
+	std::set<BWAPI::UnitInterface*>		buildingUnitsConstructing;		// units which have been recently detected as started construction
 
 public:
 

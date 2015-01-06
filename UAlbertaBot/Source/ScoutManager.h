@@ -9,24 +9,24 @@ namespace UAlbertaBot
 {
 class ScoutManager {
 
-	BWAPI::Unit *	workerScout;
+	BWAPI::UnitInterface*	workerScout;
 	int				numWorkerScouts;
 
 	bool			immediateThreat();
 
-	BWAPI::Unit *	closestEnemyWorker();
+	BWAPI::UnitInterface*	closestEnemyWorker();
 
 	bool			scoutUnderAttack;
 	
-	void smartMove(BWAPI::Unit * attacker, BWAPI::Position targetPosition);
-	void smartAttack(BWAPI::Unit * attacker, BWAPI::Unit * target);
+	void smartMove(BWAPI::UnitInterface* attacker, BWAPI::Position targetPosition);
+	void smartAttack(BWAPI::UnitInterface* attacker, BWAPI::UnitInterface* target);
 	bool enemyWorkerInRadius();
 
-	BWAPI::Position		calcFleePosition(const std::vector<GroundThreat> & threats, BWAPI::Unit * target);
+	BWAPI::Position		calcFleePosition(const std::vector<GroundThreat> & threats, BWAPI::UnitInterface* target);
 	bool				isValidFleePosition(BWAPI::Position pos);
 	void				fillGroundThreats(std::vector<GroundThreat> & threats, BWAPI::Position target);
 	double2				getFleeVector(const std::vector<GroundThreat> & threats);
-	BWAPI::Unit *		getEnemyGeyser();
+	BWAPI::UnitInterface*		getEnemyGeyser();
 
 
 public:
@@ -34,15 +34,15 @@ public:
 	ScoutManager();
 	~ScoutManager() {};
 
-	void update(const std::set<BWAPI::Unit *> & scoutUnits);
+	void update(const std::set<BWAPI::UnitInterface*> & scoutUnits);
 	void moveScouts();
 
 	void onSendText(std::string text);
-	void onUnitShow(BWAPI::Unit * unit);
-	void onUnitHide(BWAPI::Unit * unit);
-	void onUnitCreate(BWAPI::Unit * unit);
-	void onUnitRenegade(BWAPI::Unit * unit);
-	void onUnitDestroy(BWAPI::Unit * unit);
-	void onUnitMorph(BWAPI::Unit * unit);
+	void onUnitShow(BWAPI::UnitInterface* unit);
+	void onUnitHide(BWAPI::UnitInterface* unit);
+	void onUnitCreate(BWAPI::UnitInterface* unit);
+	void onUnitRenegade(BWAPI::UnitInterface* unit);
+	void onUnitDestroy(BWAPI::UnitInterface* unit);
+	void onUnitMorph(BWAPI::UnitInterface* unit);
 };
 }

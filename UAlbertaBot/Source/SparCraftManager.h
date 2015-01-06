@@ -5,7 +5,6 @@
 #include "GameCommander.h"
 #include "UnitCommandManager.h"
 #include "../../SparCraft/Source/SparCraft.h"
-#include <boost/shared_ptr.hpp>
 
 namespace UAlbertaBot
 {
@@ -19,8 +18,8 @@ public:
 
 	SparCraft::GameState				extractGameState();
 		
-	const SparCraft::IDType				getPlayerID(BWAPI::Player * player) const;
-	const bool							isCombatUnit(BWAPI::Unit * unit) const;
+	const SparCraft::IDType				getPlayerID(BWAPI::PlayerInterface * player) const;
+	const bool							isCombatUnit(BWAPI::UnitInterface* unit) const;
 	void                        		getMoves(SparCraft::GameState & state, std::vector<SparCraft::UnitAction> & moveVec);
 
 	void update();
@@ -28,14 +27,14 @@ public:
 	
 	void doUnitMove(SparCraft::GameState & currentState, SparCraft::Unit & unit, SparCraft::UnitAction & move);
 	void drawUnitMove(SparCraft::GameState & currentState, SparCraft::Unit & unit, SparCraft::UnitAction & move);
-	void drawUnitCooldown(BWAPI::Unit * unit);
-	void drawUnitHP(BWAPI::Unit * unit);
+	void drawUnitCooldown(BWAPI::UnitInterface* unit);
+	void drawUnitHP(BWAPI::UnitInterface* unit);
 	void drawSearchResults(int x, int y);
 	void drawAttackDebug();
 	void performSparCraft();
 
-    SparCraft::Unit getSparCraftUnit(const BWAPI::Unit * bwapiUnit, BWAPI::Game * game);
-	BWAPI::Unit * getUnit(SparCraft::Unit & unit);
-	const std::pair<int, int> getUnitCooldown(BWAPI::Unit * unit, SparCraft::Unit & u) const;
+    SparCraft::Unit getSparCraftUnit(const BWAPI::UnitInterface* bwapiUnit, BWAPI::GameWrapper & game);
+	BWAPI::UnitInterface* getUnit(SparCraft::Unit & unit);
+	const std::pair<int, int> getUnitCooldown(BWAPI::UnitInterface* unit, SparCraft::Unit & u) const;
 };
 }

@@ -4,9 +4,9 @@ using namespace UAlbertaBot;
 
 TransportManager::TransportManager()  { }
 
-void TransportManager::executeMicro(const UnitVector & targets) 
+void TransportManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & targets) 
 {
-	const UnitVector & transportUnits = getUnits();
+	const std::vector<BWAPI::UnitInterface *> & transportUnits = getUnits();
 
 	if (transportUnits.empty())
 	{

@@ -21,16 +21,16 @@ void SparCraftManager::update()
     if (!gameOver)
     {
         // for each unit that we control, do some book keeping
-        BOOST_FOREACH (BWAPI::Unit * unit, BWAPI::Broodwar->self()->getUnits())
+        for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits())
         {
-            BWAPI::Broodwar->drawTextMap(unit->getPosition().x()-20, unit->getPosition().y()-12, "%d", unit->getID());
+            BWAPI::Broodwar->drawTextMap(unit->getPosition().x-20, unit->getPosition().y-12, "%d", unit->getID());
 
             // if it is a combat unit
             if (isCombatUnit(unit))
             {
                 if (Options::Debug::DRAW_UALBERTABOT_DEBUG && unit->getTarget())
                 {
-                    BWAPI::Broodwar->drawLineMap(unit->getPosition().x()-2, unit->getPosition().y()-2, 	unit->getTarget()->getPosition().x(), unit->getTarget()->getPosition().y(), BWAPI::Colors::White);
+                    BWAPI::Broodwar->drawLineMap(unit->getPosition().x-2, unit->getPosition().y-2, 	unit->getTarget()->getPosition().x, unit->getTarget()->getPosition().y, BWAPI::Colors::White);
                 }
             }
         }
@@ -56,9 +56,9 @@ void SparCraftManager::performSparCraft()
 
     int currentFrame = BWAPI::Broodwar->getFrameCount();
 
-    BOOST_FOREACH(BWAPI::Unit * unit, BWAPI::Broodwar->enemy()->getUnits())
+    for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->enemy()->getUnits())
     {
-        BWAPI::Broodwar->drawTextMap(unit->getPosition().x(), unit->getPosition().y(), "%d", unit->getGroundWeaponCooldown());
+        BWAPI::Broodwar->drawTextMap(unit->getPosition().x, unit->getPosition().y, "%d", unit->getGroundWeaponCooldown());
     }
 
     // draw our units
@@ -70,10 +70,10 @@ void SparCraftManager::performSparCraft()
 
         std::pair<int, int> cooldown = getUnitCooldown(BWAPI::Broodwar->getUnit(unit.ID()), unit);
 
-        BWAPI::Unit * realUnit = getUnit(unit);
+        BWAPI::UnitInterface* realUnit = getUnit(unit);
 
         BWAPI::Broodwar->drawTextMap(unit.x(), unit.y(), "%d (%d %d %d)", unit.ID(), cooldown.first-currentFrame, cooldown.second-currentFrame, BWAPI::Broodwar->getUnit(unit.ID())->getGroundWeaponCooldown());
-        BWAPI::Broodwar->drawLineMap(unit.x(), unit.y(), realUnit->getPosition().x(), realUnit->getPosition().y(), BWAPI::Colors::Purple);
+        BWAPI::Broodwar->drawLineMap(unit.x(), unit.y(), realUnit->getPosition().x, realUnit->getPosition().y, BWAPI::Colors::Purple);
     }
 
     // TODO: Check why zealots aren't being given commands
@@ -83,7 +83,7 @@ void SparCraftManager::performSparCraft()
     {
         SparCraft::Unit & unit = currentState.getUnit(SparCraft::Players::Player_Two, u);
         drawUnitHP(BWAPI::Broodwar->getUnit(unit.ID()));
-        //BWAPI::Broodwar->drawCircleMap(unit.x(), unit.y(), 5, BWAPI::Colors::Red);
+        //BWAPI::Broodwar->drawCircleMap(unit.x, unit.y, 5, BWAPI::Colors::Red);
     }
 
     // draw our moves if we are the player to move
@@ -124,7 +124,7 @@ void SparCraftManager::doUnitMove(SparCraft::GameState & currentState, SparCraft
 {
     SparCraft::IDType enemyPlayer = (unit.player() + 1) % 2;
 
-    BWAPI::Unit * u = BWAPI::Broodwar->getUnit(unit.ID());
+    BWAPI::UnitInterface* u = BWAPI::Broodwar->getUnit(unit.ID());
 
     if (move._moveType == SparCraft::UnitActionTypes::ATTACK)
     {
@@ -154,10 +154,10 @@ void SparCraftManager::drawAttackDebug()
     char * trueFix = "\x07";
     char * falseFix = "\x06";
 
-    BOOST_FOREACH(BWAPI::Unit * unit, BWAPI::Broodwar->self()->getUnits())
+    for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits())
     {
-        int x = unit->getPosition().x();
-        int y = unit->getPosition().y() + 9;
+        int x = unit->getPosition().x;
+        int y = unit->getPosition().y + 9;
 
         BWAPI::Broodwar->drawTextMap(x, y, "%s isAttacking", unit->isAttacking() ? trueFix : falseFix);
         BWAPI::Broodwar->drawTextMap(x, y+10, "%s isAttackFrame", unit->isAttackFrame() ? trueFix : falseFix);
@@ -184,7 +184,7 @@ void SparCraftManager::drawUnitMove(SparCraft::GameState & currentState, SparCra
     }
 }
 
-void SparCraftManager::drawUnitCooldown(BWAPI::Unit * unit)
+void SparCraftManager::drawUnitCooldown(BWAPI::UnitInterface* unit)
 {
     double totalCooldown = unit->getType().groundWeapon().damageCooldown();
     double remainingCooldown = unit->getGroundWeaponCooldown();
@@ -196,14 +196,14 @@ void SparCraftManager::drawUnitCooldown(BWAPI::Unit * unit)
     int cw = w - (int)(w * percCooldown);
     int ch = h;
 
-    int x1 = unit->getPosition().x() - w/2;
-    int y1 = unit->getPosition().y() - 16;
+    int x1 = unit->getPosition().x - w/2;
+    int y1 = unit->getPosition().y - 16;
 
     BWAPI::Broodwar->drawBoxMap(x1, y1, x1 + w, y1 + h, BWAPI::Colors::Grey, true);
     BWAPI::Broodwar->drawBoxMap(x1, y1, x1 + cw, y1 + ch, BWAPI::Colors::Red, true);
 }
 
-void SparCraftManager::drawUnitHP(BWAPI::Unit * unit)
+void SparCraftManager::drawUnitHP(BWAPI::UnitInterface* unit)
 {
     double totalHP = unit->getType().maxHitPoints() + unit->getType().maxShields();
     double currentHP = unit->getHitPoints() + unit->getShields();
@@ -215,19 +215,19 @@ void SparCraftManager::drawUnitHP(BWAPI::Unit * unit)
     int cw = (int)(w * percHP);
     int ch = h;
 
-    int x1 = unit->getPosition().x() - w/2;
-    int y1 = unit->getPosition().y() - 12;
+    int x1 = unit->getPosition().x - w/2;
+    int y1 = unit->getPosition().y - 12;
 
     BWAPI::Broodwar->drawBoxMap(x1, y1, x1 + w, y1 + h, BWAPI::Colors::Grey, true);
     BWAPI::Broodwar->drawBoxMap(x1, y1, x1 + cw, y1 + ch, BWAPI::Colors::Green, true);
 }
 
-const SparCraft::IDType SparCraftManager::getPlayerID(BWAPI::Player * player) const
+const SparCraft::IDType SparCraftManager::getPlayerID(BWAPI::PlayerInterface * player) const
 {
     return (player == BWAPI::Broodwar->self()) ? SparCraft::Players::Player_One : SparCraft::Players::Player_Two;
 }
 
-const bool SparCraftManager::isCombatUnit(BWAPI::Unit * unit) const
+const bool SparCraftManager::isCombatUnit(BWAPI::UnitInterface* unit) const
 {
     assert(unit != NULL);
 
@@ -249,9 +249,9 @@ const bool SparCraftManager::isCombatUnit(BWAPI::Unit * unit) const
     return false;
 }
 
-BWAPI::Unit * SparCraftManager::getUnit(SparCraft::Unit & unit)
+BWAPI::UnitInterface* SparCraftManager::getUnit(SparCraft::Unit & unit)
 {
-    BOOST_FOREACH (BWAPI::Unit * u, BWAPI::Broodwar->getAllUnits())
+    for (BWAPI::UnitInterface* u : BWAPI::Broodwar->getAllUnits())
     {
         if (u->getID() == unit.ID())
         {
@@ -262,7 +262,7 @@ BWAPI::Unit * SparCraftManager::getUnit(SparCraft::Unit & unit)
     return NULL;
 }
 
-const std::pair<int, int> SparCraftManager::getUnitCooldown(BWAPI::Unit * unit, SparCraft::Unit & u) const
+const std::pair<int, int> SparCraftManager::getUnitCooldown(BWAPI::UnitInterface* unit, SparCraft::Unit & u) const
 {
     int attackCooldown(0);
     int moveCooldown(0);
@@ -308,10 +308,10 @@ const std::pair<int, int> SparCraftManager::getUnitCooldown(BWAPI::Unit * unit, 
 
 //Unit(const BWAPI::UnitType unitType, const Position & pos, const IDType & unitID, const IDType & playerID, 
 //		 const HealthType & hp, const HealthType & energy, const TimeType & tm, const TimeType & ta);
-SparCraft::Unit SparCraftManager::getSparCraftUnit(const BWAPI::Unit * bwapiUnit, BWAPI::Game * game)
+SparCraft::Unit SparCraftManager::getSparCraftUnit(const BWAPI::UnitInterface* bwapiUnit, BWAPI::GameWrapper & game)
 {
     BWAPI::UnitType         type        = bwapiUnit->getType();
-    SparCraft::Position     pos         = SparCraft::Position(bwapiUnit->getPosition().x(), bwapiUnit->getPosition().y()); 
+    SparCraft::Position     pos         = SparCraft::Position(bwapiUnit->getPosition().x, bwapiUnit->getPosition().y); 
     SparCraft::IDType       unitID      = (SparCraft::IDType)bwapiUnit->getID();
     SparCraft::IDType       playerID    = (SparCraft::IDType)getPlayerID(bwapiUnit->getPlayer());
     SparCraft::HealthType   health      = (SparCraft::HealthType)(bwapiUnit->getHitPoints() + bwapiUnit->getShields());
@@ -323,10 +323,10 @@ SparCraft::Unit SparCraftManager::getSparCraftUnit(const BWAPI::Unit * bwapiUnit
 }
 
 // constructor based on a BWAPI unit, used by UAlbertaBot
-/*Unit::Unit(BWAPI::Unit * unit, BWAPI::Game * game, const IDType & playerID, const TimeType & gameTime)
+/*Unit::Unit(BWAPI::UnitInterface* unit, BWAPI::Game * game, const IDType & playerID, const TimeType & gameTime)
     : _unitType             (unit->getType() == BWAPI::UnitTypes::Terran_Medic ? BWAPI::UnitTypes::Terran_Marine : unit->getType())
     , _range                (unit->getType().groundWeapon().maxRange() + 32)
-    , _position             (Position(unit->getPosition().x(), unit->getPosition().y()))
+    , _position             (Position(unit->getPosition().x, unit->getPosition().y))
     , _unitID               ((IDType)unit->getID())
     , _playerID             (playerID)
     , _currentHP            ((HealthType)(unit->getHitPoints() + unit->getShields()))
@@ -335,7 +335,7 @@ SparCraft::Unit SparCraftManager::getSparCraftUnit(const BWAPI::Unit * bwapiUnit
     , _timeCanAttack        ((TimeType)(game->getFrameCount() + unit->getGroundWeaponCooldown() + unit->getAirWeaponCooldown()))
     , _previousActionTime   (gameTime)
     , _prevCurrentPosTime   (0)
-    , _previousPosition     (Position(unit->getPosition().x(), unit->getPosition().y()))
+    , _previousPosition     (Position(unit->getPosition().x, unit->getPosition().y))
 {
 }*/
 
@@ -347,7 +347,7 @@ SparCraft::GameState SparCraftManager::extractGameState()
     state.setTime(BWAPI::Broodwar->getFrameCount());
 
     // add each of our fighting units
-    BOOST_FOREACH (BWAPI::Unit * unit, BWAPI::Broodwar->self()->getUnits())
+    for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits())
     {
         if (isCombatUnit(unit))
         {
@@ -358,7 +358,7 @@ SparCraft::GameState SparCraftManager::extractGameState()
         }
     }
 
-    BOOST_FOREACH (BWAPI::Unit * unit, BWAPI::Broodwar->enemy()->getUnits())
+    for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->enemy()->getUnits())
     {
         if (isCombatUnit(unit))
         {

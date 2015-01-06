@@ -85,10 +85,10 @@ class UnitToAssign
 {
 public:
 
-	BWAPI::Unit * unit;
+	BWAPI::UnitInterface* unit;
 	bool isAssigned;
 
-	UnitToAssign(BWAPI::Unit * u)
+	UnitToAssign(BWAPI::UnitInterface* u)
 	{
 		unit = u;
 		isAssigned = false;
@@ -101,17 +101,17 @@ class GameCommander
 	ScoutManager		scoutManager;
 	TimerManager		timerManager;
 
-	std::set<BWAPI::Unit *> combatUnits;
-	std::set<BWAPI::Unit *> scoutUnits;
-	std::set<BWAPI::Unit *> workerUnits;
+	std::set<BWAPI::UnitInterface*> combatUnits;
+	std::set<BWAPI::UnitInterface*> scoutUnits;
+	std::set<BWAPI::UnitInterface*> workerUnits;
 
-	std::set<BWAPI::Unit *>	validUnits;
-	std::set<BWAPI::Unit *> assignedUnits;
+	std::set<BWAPI::UnitInterface*>	validUnits;
+	std::set<BWAPI::UnitInterface*> assignedUnits;
 
-	BWAPI::Unit * currentScout;
+	BWAPI::UnitInterface* currentScout;
 	int numWorkerScouts;
 
-	const bool isAssigned(BWAPI::Unit * unit) const;
+	const bool isAssigned(BWAPI::UnitInterface* unit) const;
 
 public:
 
@@ -128,19 +128,19 @@ public:
 
 	void drawDebugInterface();
 
-	bool isValidUnit(BWAPI::Unit * unit);
-	bool isCombatUnit(BWAPI::Unit * unit) const;
+	bool isValidUnit(BWAPI::UnitInterface* unit);
+	bool isCombatUnit(BWAPI::UnitInterface* unit) const;
 
-	BWAPI::Unit * getFirstSupplyProvider();
-	BWAPI::Unit * getClosestUnitToTarget(BWAPI::UnitType type, BWAPI::Position target);
-	BWAPI::Unit * getClosestWorkerToTarget(BWAPI::Position target);
+	BWAPI::UnitInterface* getFirstSupplyProvider();
+	BWAPI::UnitInterface* getClosestUnitToTarget(BWAPI::UnitType type, BWAPI::Position target);
+	BWAPI::UnitInterface* getClosestWorkerToTarget(BWAPI::Position target);
 
-	void onUnitShow(BWAPI::Unit * unit);
-	void onUnitHide(BWAPI::Unit * unit);
-	void onUnitCreate(BWAPI::Unit * unit);
-	void onUnitRenegade(BWAPI::Unit * unit);
-	void onUnitDestroy(BWAPI::Unit * unit);
-	void onUnitMorph(BWAPI::Unit * unit);
+	void onUnitShow(BWAPI::UnitInterface* unit);
+	void onUnitHide(BWAPI::UnitInterface* unit);
+	void onUnitCreate(BWAPI::UnitInterface* unit);
+	void onUnitRenegade(BWAPI::UnitInterface* unit);
+	void onUnitDestroy(BWAPI::UnitInterface* unit);
+	void onUnitMorph(BWAPI::UnitInterface* unit);
 };
 
 }

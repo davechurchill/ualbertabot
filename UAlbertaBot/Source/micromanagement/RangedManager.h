@@ -13,14 +13,14 @@ public:
 
 	RangedManager();
 	~RangedManager() {}
-	void executeMicro(const UnitVector & targets);
+	void executeMicro(const std::vector<BWAPI::UnitInterface *> & targets);
 
-	BWAPI::Unit * chooseTarget(BWAPI::Unit * rangedUnit, const UnitVector & targets, std::map<BWAPI::Unit *, int> & numTargeting);
-	BWAPI::Unit * closestrangedUnit(BWAPI::Unit * target, std::set<BWAPI::Unit *> & rangedUnitsToAssign);
+	BWAPI::UnitInterface* chooseTarget(BWAPI::UnitInterface* rangedUnit, const std::vector<BWAPI::UnitInterface *> & targets, std::map<BWAPI::UnitInterface*, int> & numTargeting);
+	BWAPI::UnitInterface* closestrangedUnit(BWAPI::UnitInterface* target, std::set<BWAPI::UnitInterface*> & rangedUnitsToAssign);
 
-	int getAttackPriority(BWAPI::Unit * rangedUnit, BWAPI::Unit * target);
-	BWAPI::Unit * getTarget(BWAPI::Unit * rangedUnit, UnitVector & targets);
+	int getAttackPriority(BWAPI::UnitInterface* rangedUnit, BWAPI::UnitInterface* target);
+	BWAPI::UnitInterface* getTarget(BWAPI::UnitInterface* rangedUnit, std::vector<BWAPI::UnitInterface *> & targets);
 
-	void kiteTarget(BWAPI::Unit * rangedUnit, BWAPI::Unit * target);
+	void kiteTarget(BWAPI::UnitInterface* rangedUnit, BWAPI::UnitInterface* target);
 };
 }

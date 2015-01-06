@@ -30,13 +30,13 @@ public:
 	void	onStart();
 	void	onFrame();
 	void	onEnd(bool isWinner);
-	void	onUnitDestroy(BWAPI::Unit * unit);
-	void	onUnitMorph(BWAPI::Unit * unit);
+	void	onUnitDestroy(BWAPI::UnitInterface* unit);
+	void	onUnitMorph(BWAPI::UnitInterface* unit);
 	void	onSendText(std::string text);
-	void	onUnitCreate(BWAPI::Unit * unit);
-	void	onUnitShow(BWAPI::Unit * unit);
-	void	onUnitHide(BWAPI::Unit * unit);
-	void	onUnitRenegade(BWAPI::Unit * unit);
+	void	onUnitCreate(BWAPI::UnitInterface* unit);
+	void	onUnitShow(BWAPI::UnitInterface* unit);
+	void	onUnitHide(BWAPI::UnitInterface* unit);
+	void	onUnitRenegade(BWAPI::UnitInterface* unit);
 };
 
 }

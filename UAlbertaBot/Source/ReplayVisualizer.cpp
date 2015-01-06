@@ -37,7 +37,7 @@ void ReplayVisualizer::setCombatUnits(SparCraft::GameState & state, const BWAPI:
 {
 
 	int selfUnits = 0;
-	BOOST_FOREACH (BWAPI::Unit * unit, BWAPI::Broodwar->getPlayer(1)->getUnits())
+	BOOST_FOREACH (BWAPI::UnitInterface* unit, BWAPI::Broodwar->getPlayer(1)->getUnits())
 	{
 		bool inRadius = unit->getDistance(center) < radius;
 
@@ -53,7 +53,7 @@ void ReplayVisualizer::setCombatUnits(SparCraft::GameState & state, const BWAPI:
 	}
 
 	int enemyUnits = 0;
-	BOOST_FOREACH (BWAPI::Unit * unit, BWAPI::Broodwar->getPlayer(0)->getUnits())
+	BOOST_FOREACH (BWAPI::UnitInterface* unit, BWAPI::Broodwar->getPlayer(0)->getUnits())
 	{
 		if (enemyUnits >= 8)
 		{
@@ -74,7 +74,7 @@ void ReplayVisualizer::setCombatUnits(SparCraft::GameState & state, const BWAPI:
 	}
 
 	int neutralUnits = 0;
-	BOOST_FOREACH (BWAPI::Unit * unit, BWAPI::Broodwar->getAllUnits())
+	BOOST_FOREACH (BWAPI::UnitInterface* unit, BWAPI::Broodwar->getAllUnits())
 	{
 		neutralUnits++;
 
@@ -137,16 +137,16 @@ const MicroSearch::Unit ReplayVisualizer::getUnit(const UnitInfo & ui, const IDT
 {
 	BWAPI::UnitType type = ui.type;
 
-	return MicroSearch::Unit(ui.type, MicroSearch::Position(ui.lastPosition.x(), ui.lastPosition.y()), ui.unitID, playerID, ui.lastHealth, 0,
+	return MicroSearch::Unit(ui.type, MicroSearch::Position(ui.lastPosition.x, ui.lastPosition.y), ui.unitID, playerID, ui.lastHealth, 0,
 		BWAPI::Broodwar->getFrameCount(), BWAPI::Broodwar->getFrameCount());	
 }
 
-const IDType ReplayVisualizer::getPlayer(BWAPI::Unit * unit) const
+const IDType ReplayVisualizer::getPlayer(BWAPI::UnitInterface* unit) const
 {
 	return getPlayer(unit->getPlayer());
 }
 
-const IDType ReplayVisualizer::getPlayer(BWAPI::Player * player) const
+const IDType ReplayVisualizer::getPlayer(BWAPI::PlayerInterface * player) const
 {
 	if (player == BWAPI::Broodwar->self())
 	{

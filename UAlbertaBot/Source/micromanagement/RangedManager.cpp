@@ -4,12 +4,12 @@ using namespace UAlbertaBot;
 
 RangedManager::RangedManager() { }
 
-void RangedManager::executeMicro(const UnitVector & targets) 
+void RangedManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & targets) 
 {
-	const UnitVector & rangedUnits = getUnits();
+	const std::vector<BWAPI::UnitInterface *> & rangedUnits = getUnits();
 
 	// figure out targets
-	UnitVector rangedUnitTargets;
+	std::vector<BWAPI::UnitInterface *> rangedUnitTargets;
 	for (size_t i(0); i<targets.size(); i++) 
 	{
 		// conditions for targeting
@@ -20,7 +20,7 @@ void RangedManager::executeMicro(const UnitVector & targets)
 	}
 
 	// for each zealot
-	BOOST_FOREACH(BWAPI::Unit * rangedUnit, rangedUnits)
+	for (BWAPI::UnitInterface* rangedUnit : rangedUnits)
 	{
 		// train sub units such as scarabs or interceptors
 		//trainSubUnits(rangedUnit);
@@ -32,7 +32,7 @@ void RangedManager::executeMicro(const UnitVector & targets)
 			if (!rangedUnitTargets.empty())
 			{
 				// find the best target for this zealot
-				BWAPI::Unit * target = getTarget(rangedUnit, rangedUnitTargets);
+				BWAPI::UnitInterface* target = getTarget(rangedUnit, rangedUnitTargets);
 
 				// attack it
 				kiteTarget(rangedUnit, target);
@@ -51,13 +51,13 @@ void RangedManager::executeMicro(const UnitVector & targets)
 
 		if (Options::Debug::DRAW_UALBERTABOT_DEBUG) 
 		{
-			BWAPI::Broodwar->drawLineMap(rangedUnit->getPosition().x(), rangedUnit->getPosition().y(), 
-				rangedUnit->getTargetPosition().x(), rangedUnit->getTargetPosition().y(), Options::Debug::COLOR_LINE_TARGET);
+			BWAPI::Broodwar->drawLineMap(rangedUnit->getPosition().x, rangedUnit->getPosition().y, 
+				rangedUnit->getTargetPosition().x, rangedUnit->getTargetPosition().y, Options::Debug::COLOR_LINE_TARGET);
 		}
 	}
 }
 
-void RangedManager::kiteTarget(BWAPI::Unit * rangedUnit, BWAPI::Unit * target)
+void RangedManager::kiteTarget(BWAPI::UnitInterface* rangedUnit, BWAPI::UnitInterface* target)
 {
 	
 	double range(rangedUnit->getType().groundWeapon().maxRange());
@@ -92,7 +92,7 @@ void RangedManager::kiteTarget(BWAPI::Unit * rangedUnit, BWAPI::Unit * target)
 
 	if (rangedUnit->isSelected())
 	{
-		BWAPI::Broodwar->drawCircleMap(rangedUnit->getPosition().x(), rangedUnit->getPosition().y(), 
+		BWAPI::Broodwar->drawCircleMap(rangedUnit->getPosition().x, rangedUnit->getPosition().y, 
 			(int)range, BWAPI::Colors::Cyan);
 	}
 
@@ -101,8 +101,8 @@ void RangedManager::kiteTarget(BWAPI::Unit * rangedUnit, BWAPI::Unit * target)
 	{
 		BWAPI::Position fleePosition(rangedUnit->getPosition() - target->getPosition() + rangedUnit->getPosition());
 
-		BWAPI::Broodwar->drawLineMap(rangedUnit->getPosition().x(), rangedUnit->getPosition().y(), 
-			fleePosition.x(), fleePosition.y(), BWAPI::Colors::Cyan);
+		BWAPI::Broodwar->drawLineMap(rangedUnit->getPosition().x, rangedUnit->getPosition().y, 
+			fleePosition.x, fleePosition.y, BWAPI::Colors::Cyan);
 
 		smartMove(rangedUnit, fleePosition);
 	}
@@ -114,7 +114,7 @@ void RangedManager::kiteTarget(BWAPI::Unit * rangedUnit, BWAPI::Unit * target)
 }
 
 // get a target for the zealot to attack
-BWAPI::Unit * RangedManager::getTarget(BWAPI::Unit * rangedUnit, UnitVector & targets)
+BWAPI::UnitInterface* RangedManager::getTarget(BWAPI::UnitInterface* rangedUnit, std::vector<BWAPI::UnitInterface *> & targets)
 {
 	int range(rangedUnit->getType().groundWeapon().maxRange());
 
@@ -123,10 +123,10 @@ BWAPI::Unit * RangedManager::getTarget(BWAPI::Unit * rangedUnit, UnitVector & ta
 	int lowestInRangeHitPoints(10000);
 	int lowestNotInRangeDistance(10000);
 
-	BWAPI::Unit * inRangeTarget = NULL;
-	BWAPI::Unit * notInRangeTarget = NULL;
+	BWAPI::UnitInterface* inRangeTarget = NULL;
+	BWAPI::UnitInterface* notInRangeTarget = NULL;
 
-	BOOST_FOREACH(BWAPI::Unit * unit, targets)
+	for (BWAPI::UnitInterface* unit : targets)
 	{
 		int priority = getAttackPriority(rangedUnit, unit);
 		int distance = rangedUnit->getDistance(unit);
@@ -160,7 +160,7 @@ BWAPI::Unit * RangedManager::getTarget(BWAPI::Unit * rangedUnit, UnitVector & ta
 }
 
 	// get the attack priority of a type in relation to a zergling
-int RangedManager::getAttackPriority(BWAPI::Unit * rangedUnit, BWAPI::Unit * target) 
+int RangedManager::getAttackPriority(BWAPI::UnitInterface* rangedUnit, BWAPI::UnitInterface* target) 
 {
 	BWAPI::UnitType rangedUnitType = rangedUnit->getType();
 	BWAPI::UnitType targetType = target->getType();
@@ -187,12 +187,12 @@ int RangedManager::getAttackPriority(BWAPI::Unit * rangedUnit, BWAPI::Unit * tar
 	}
 }
 
-BWAPI::Unit * RangedManager::closestrangedUnit(BWAPI::Unit * target, std::set<BWAPI::Unit *> & rangedUnitsToAssign)
+BWAPI::UnitInterface* RangedManager::closestrangedUnit(BWAPI::UnitInterface* target, std::set<BWAPI::UnitInterface*> & rangedUnitsToAssign)
 {
 	double minDistance = 0;
-	BWAPI::Unit * closest = NULL;
+	BWAPI::UnitInterface* closest = NULL;
 
-	BOOST_FOREACH (BWAPI::Unit * rangedUnit, rangedUnitsToAssign)
+	for (BWAPI::UnitInterface* rangedUnit : rangedUnitsToAssign)
 	{
 		double distance = rangedUnit->getDistance(target);
 		if (!closest || distance < minDistance)

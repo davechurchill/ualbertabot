@@ -11,7 +11,7 @@ BuildOrderGoalManager::BuildOrderGoalManager()
 bool BuildOrderGoalManager::isCompleted(const BuildOrderGoal & bog) const
 {
 	// for each item in the goal
-	BOOST_FOREACH (const BuildOrderGoalItem & bogi, bog.getGoal())
+	for (const BuildOrderGoalItem & bogi : bog.getGoal())
 	{
 		if (bogi.metaType().type == MetaType::Unit)
 		{

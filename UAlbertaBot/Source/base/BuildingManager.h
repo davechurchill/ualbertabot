@@ -22,13 +22,13 @@ class BuildingManager {
 	int							reservedGas;					// gas reserved for planned buildings
 	int							buildingSpace;					// how much space we want between buildings
 
-	std::vector<BWAPI::Unit *>	builders;						// workers which have been assigned to buildings
+	std::vector<BWAPI::UnitInterface*>	builders;						// workers which have been assigned to buildings
 	std::vector<Building>		buildingsNeedingBuilders;		// buildings which do not yet have builders assigned
 	std::vector<Building>		buildingsAssigned;				// buildings which have workers but not yet under construction
 	std::vector<Building>		buildingsUnderConstruction;		// buildings which are under construction
-	std::vector<BWAPI::Unit *>	buildingUnitsConstructing;		// units which have been recently detected as started construction
+	std::vector<BWAPI::UnitInterface*>	buildingUnitsConstructing;		// units which have been recently detected as started construction
 
-    BWAPI::Unit *               getAddonProducer(MetaType t);
+    BWAPI::UnitInterface*               getAddonProducer(MetaType t);
 
 	// functions
 	bool						isEvolvedBuilding(BWAPI::UnitType type);
@@ -43,7 +43,7 @@ class BuildingManager {
 	void						checkForCompletedBuildings();			// STEP 6
 
 	// functions for performing tedious vector tasks
-	void						removeBuildingFromVector(BWAPI::Unit * buildingUnit, std::vector<Building> & vec);
+	void						removeBuildingFromVector(BWAPI::UnitInterface* buildingUnit, std::vector<Building> & vec);
 	void						removeBuildingFromVector(Building & b, std::vector<Building> & vec);
 
 	char						getBuildingWorkerCode(const Building & b) const;
@@ -51,8 +51,8 @@ class BuildingManager {
 public:
 
 	void						update();
-	void						onUnitMorph(BWAPI::Unit * unit);
-	void						onUnitDestroy(BWAPI::Unit * unit);
+	void						onUnitMorph(BWAPI::UnitInterface* unit);
+	void						onUnitDestroy(BWAPI::UnitInterface* unit);
 	void						addBuildingTask(BWAPI::UnitType type, BWAPI::TilePosition desiredLocation);
 	BWAPI::TilePosition			getBuildingLocation(const Building & b);
 

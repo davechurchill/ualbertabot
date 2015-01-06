@@ -52,7 +52,7 @@ public:
         resetVectors();
     }
 
-	Map(BWAPI::Game * game) 
+	Map(BWAPI::GameWrapper & game) 
         : _walkTileWidth(game->mapWidth() * 4)
 		, _walkTileHeight(game->mapHeight() * 4)
 		, _buildTileWidth(game->mapWidth())
@@ -141,7 +141,7 @@ public:
 		_mapData[walkTileX][walkTileY] = val;
 	}
 
-	void setUnitData(BWAPI::Game * game)
+	void setUnitData(BWAPI::GameWrapper & game)
 	{
 		_unitData = bvv(getBuildTileWidth(), std::vector<bool>(getBuildTileHeight(), true));
 
@@ -159,7 +159,7 @@ public:
 		return _unitData[pos.x][pos.y] && _buildingData[pos.x][pos.y];
 	}
 
-	void setBuildingData(BWAPI::Game * game)
+	void setBuildingData(BWAPI::GameWrapper & game)
 	{
 		_buildingData = bvv(getBuildTileWidth(), std::vector<bool>(getBuildTileHeight(), true));
 

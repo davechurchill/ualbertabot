@@ -22,21 +22,21 @@ class CombatCommander
 	// Functions
 
     void				assignScoutDefenseSquads();
-	void				assignDefenseSquads(std::set<BWAPI::Unit *> & combatUnits);
-	void				assignAttackSquads(std::set<BWAPI::Unit *> & combatUnits);
-	void				assignIdleSquads(std::set<BWAPI::Unit *> & combatUnits);
+	void				assignDefenseSquads(std::set<BWAPI::UnitInterface*> & combatUnits);
+	void				assignAttackSquads(std::set<BWAPI::UnitInterface*> & combatUnits);
+	void				assignIdleSquads(std::set<BWAPI::UnitInterface*> & combatUnits);
 
-	void				assignAttackRegion(std::set<BWAPI::Unit *> & unitsToAssign);
-	void				assignAttackVisibleUnits(std::set<BWAPI::Unit *> & unitsToAssign);
-	void				assignAttackKnownBuildings(std::set<BWAPI::Unit *> & unitsToAssign);
-	void				assignAttackExplore(std::set<BWAPI::Unit *> & unitsToAssign);
+	void				assignAttackRegion(std::set<BWAPI::UnitInterface*> & unitsToAssign);
+	void				assignAttackVisibleUnits(std::set<BWAPI::UnitInterface*> & unitsToAssign);
+	void				assignAttackKnownBuildings(std::set<BWAPI::UnitInterface*> & unitsToAssign);
+	void				assignAttackExplore(std::set<BWAPI::UnitInterface*> & unitsToAssign);
 
 	bool				isBuildingAtBaselocation(BWTA::BaseLocation * baseLocation);
 	bool				squadUpdateFrame();
 
-	int					getNumType(UnitVector & units, BWAPI::UnitType type);
+	int					getNumType(std::vector<BWAPI::UnitInterface *> & units, BWAPI::UnitType type);
 
-	BWAPI::Unit *		findClosestDefender(std::set<BWAPI::Unit *> & enemyUnitsInRegion, const std::set<BWAPI::Unit *> & units);
+	BWAPI::UnitInterface*		findClosestDefender(std::set<BWAPI::UnitInterface*> & enemyUnitsInRegion, const std::set<BWAPI::UnitInterface*> & units);
 	BWTA::Region *		getClosestEnemyRegion();
 	BWAPI::Position		getDefendLocation();
 
@@ -45,15 +45,15 @@ public:
 	CombatCommander();
 
 	// pass by value is not a typo, saves a line of copying into new set
-	void update(std::set<BWAPI::Unit *> unitsToAssign);
+	void update(std::set<BWAPI::UnitInterface*> unitsToAssign);
 	bool enemyInOurBase();
 
-	void onRemoveUnit(BWAPI::Unit * unit);
-	void onUnitShow(BWAPI::Unit * unit);
-	void onUnitCreate(BWAPI::Unit * unit);
-	void onUnitHide(BWAPI::Unit * unit);
-	void onUnitMorph(BWAPI::Unit * unit);
-	void onUnitRenegade(BWAPI::Unit * unit);
+	void onRemoveUnit(BWAPI::UnitInterface* unit);
+	void onUnitShow(BWAPI::UnitInterface* unit);
+	void onUnitCreate(BWAPI::UnitInterface* unit);
+	void onUnitHide(BWAPI::UnitInterface* unit);
+	void onUnitMorph(BWAPI::UnitInterface* unit);
+	void onUnitRenegade(BWAPI::UnitInterface* unit);
 	void handleEvent(int eventType);
 
 	void drawSquadInformation(int x, int y);
