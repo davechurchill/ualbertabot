@@ -2,7 +2,6 @@
 
 #include "Common.h"
 #include "PlayerProperties.h"
-#include <boost/foreach.hpp>
 
 namespace SparCraft
 {

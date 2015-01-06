@@ -4,6 +4,7 @@
 #include "Common.h"
 #include "GameState.h"
 #include "UnitAction.hpp"
+#include <memory>
 
 namespace SparCraft
 {
@@ -129,5 +130,5 @@ public:
 	void print();
 };
 
-typedef	boost::shared_ptr<TranspositionTable> TTPtr;
+typedef	std::shared_ptr<TranspositionTable> TTPtr;
 }

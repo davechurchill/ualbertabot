@@ -8,8 +8,6 @@
 #include "AlphaBetaSearchParameters.hpp"
 #include "AlphaBetaSearchResults.hpp"
 
-#include <boost/shared_ptr.hpp>
-
 namespace SparCraft
 {
    

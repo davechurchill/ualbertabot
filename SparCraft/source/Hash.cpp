@@ -19,12 +19,7 @@ const HashType Hash::HashValues::positionHash(const IDType & player, const Posit
 
 Hash::HashValues::HashValues(int seed)
 {
-	RandomInt rand(std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), seed);
-
-	if (Constants::Seed_Hash_Time)
-	{
-		rand.seed(static_cast<int>(std::time(0)));
-	}
+	RandomInt rand(std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), Constants::Seed_Hash_Time ? 0 : seed);
 
 	for (size_t p(0); p<Constants::Num_Players; ++p)
 	{

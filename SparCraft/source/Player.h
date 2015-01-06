@@ -4,8 +4,7 @@
 #include "GameState.h"
 #include "MoveArray.h"
 #include "Unit.h"
-
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 namespace SparCraft
 {
@@ -34,6 +33,6 @@ class CompareUnitDPSThreat
     }
 };
 
-typedef	boost::shared_ptr<Player> PlayerPtr; 
+typedef	std::shared_ptr<Player> PlayerPtr; 
 
 }

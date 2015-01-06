@@ -59,7 +59,7 @@ using namespace BWAPI::UnitTypes;
 
 void UnitProperties::Init()
 {
-	BOOST_FOREACH (const BWAPI::UnitType & type, BWAPI::UnitTypes::allUnitTypes())
+	for (const BWAPI::UnitType & type : BWAPI::UnitTypes::allUnitTypes())
 	{
 		props[type.getID()].SetType(type);
 	}

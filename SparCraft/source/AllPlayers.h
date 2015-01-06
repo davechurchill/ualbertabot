@@ -2,8 +2,7 @@
 
 #include "Common.h"
 #include "Player.h"
-
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 // search-based players
 #include "Player_AlphaBeta.h"
@@ -24,7 +23,7 @@
 namespace SparCraft
 {
     
-typedef boost::shared_ptr<SparCraft::Player> PlayerPtr;
+typedef std::shared_ptr<SparCraft::Player> PlayerPtr;
 
 namespace AllPlayers
 {

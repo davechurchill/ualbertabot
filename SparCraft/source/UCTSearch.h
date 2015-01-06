@@ -15,9 +15,7 @@
 #include "UCTNode.h"
 #include "GraphViz.hpp"
 #include "UCTMemoryPool.hpp"
-
-#include <boost/shared_ptr.hpp>
-#include <boost/multi_array.hpp>
+#include <memory>
 
 namespace SparCraft
 {

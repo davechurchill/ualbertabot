@@ -1,8 +1,6 @@
 #pragma once
 
 #include <ctime>
-#include <boost/random/mersenne_twister.hpp>
-#include <boost/random/uniform_int_distribution.hpp>
 #include <limits>
 
 namespace SparCraft
@@ -12,30 +10,22 @@ namespace SparCraft
 	
 class SparCraft::RandomInt
 {
-	boost::random::mt19937 gen;
-	boost::random::uniform_int_distribution<> dist;
+	int _seed;
+    int _min;
+    int _max;
 
 public:
 
 	RandomInt(int min, int max, int seed)
-		: dist(min, max)
+        : _seed(seed)
+        , _min(min)
+        , _max(max)
 	{
-		gen.seed(seed);
+		srand(seed);
 	}
 
 	int nextInt()
 	{
-		return dist(gen);
-	}
-
-	void seed(int seed)
-	{
-		gen.seed(seed);
-	}
-
-	int reset(int min, int max, int seed)
-	{
-		dist = boost::random::uniform_int_distribution<>(min, max);
-		gen.seed(seed);
+		return ( rand() % (_max-_min) ) + _min;
 	}
 };

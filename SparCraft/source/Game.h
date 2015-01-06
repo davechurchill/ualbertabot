@@ -6,7 +6,7 @@
 #include "AllPlayers.h"
 #include "UnitAction.hpp"
 #include "UnitScriptData.h"
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "Timer.h"
 
 #ifdef USING_VISUALIZATION_LIBRARIES
@@ -16,7 +16,7 @@
 namespace SparCraft
 {
 	
-typedef	boost::shared_ptr<Player> PlayerPtr;
+typedef	std::shared_ptr<Player> PlayerPtr;
 
 class UnitScriptData;
 

@@ -53,7 +53,7 @@ using namespace BWAPI::WeaponTypes;
 
 void WeaponProperties::Init()
 {
-    BOOST_FOREACH (const BWAPI::WeaponType & type, BWAPI::WeaponTypes::allWeaponTypes())
+    for (const BWAPI::WeaponType & type : BWAPI::WeaponTypes::allWeaponTypes())
 	{
 		props[type.getID()].SetType(type);
 	}

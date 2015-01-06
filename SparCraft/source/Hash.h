@@ -2,7 +2,6 @@
 
 #include "Common.h"
 #include <ctime>
-#include <boost/array.hpp>
 #include "Random.hpp"
 
 namespace SparCraft

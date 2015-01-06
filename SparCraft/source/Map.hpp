@@ -4,8 +4,6 @@
 #include "Array.hpp"
 #include "Unit.h"
 
-#include <boost/foreach.hpp>
-
 namespace SparCraft
 {
 
@@ -147,7 +145,7 @@ public:
 	{
 		_unitData = bvv(getBuildTileWidth(), std::vector<bool>(getBuildTileHeight(), true));
 
-		BOOST_FOREACH (BWAPI::Unit * unit, game->getAllUnits())
+		for (BWAPI::Unit & unit : game->getAllUnits())
 		{
 			if (!unit->getType().isBuilding())
 			{
@@ -158,14 +156,14 @@ public:
 
 	const bool canBuildHere(BWAPI::TilePosition pos)
 	{
-		return _unitData[pos.x()][pos.y()] && _buildingData[pos.x()][pos.y()];
+		return _unitData[pos.x][pos.y] && _buildingData[pos.x][pos.y];
 	}
 
 	void setBuildingData(BWAPI::Game * game)
 	{
 		_buildingData = bvv(getBuildTileWidth(), std::vector<bool>(getBuildTileHeight(), true));
 
-		BOOST_FOREACH (BWAPI::Unit * unit, game->getAllUnits())
+		for (BWAPI::Unit & unit : game->getAllUnits())
 		{
 			if (unit->getType().isBuilding())
 			{
@@ -174,12 +172,13 @@ public:
 		}
 	}
 
-	void addUnit(BWAPI::Unit * unit)
+	void addUnit(BWAPI::Unit & unit)
 	{
+        
 		if (unit->getType().isBuilding())
 		{
-			int tx = unit->getPosition().x() / TILE_SIZE;
-			int ty = unit->getPosition().y() / TILE_SIZE;
+			int tx = unit->getPosition().x / TILE_SIZE;
+			int ty = unit->getPosition().y / TILE_SIZE;
 			int sx = unit->getType().tileWidth(); 
 			int sy = unit->getType().tileHeight();
 			for(int x = tx; x < tx + sx && x < (int)getBuildTileWidth(); ++x)
@@ -192,10 +191,10 @@ public:
 		}
 		else
 		{
-			int startX = (unit->getPosition().x() - unit->getType().dimensionLeft()) / TILE_SIZE;
-			int endX   = (unit->getPosition().x() + unit->getType().dimensionRight() + TILE_SIZE - 1) / TILE_SIZE; // Division - round up
-			int startY = (unit->getPosition().y() - unit->getType().dimensionUp()) / TILE_SIZE;
-			int endY   = (unit->getPosition().y() + unit->getType().dimensionDown() + TILE_SIZE - 1) / TILE_SIZE;
+			int startX = (unit->getPosition().x - unit->getType().dimensionLeft()) / TILE_SIZE;
+			int endX   = (unit->getPosition().x + unit->getType().dimensionRight() + TILE_SIZE - 1) / TILE_SIZE; // Division - round up
+			int startY = (unit->getPosition().y - unit->getType().dimensionUp()) / TILE_SIZE;
+			int endY   = (unit->getPosition().y + unit->getType().dimensionDown() + TILE_SIZE - 1) / TILE_SIZE;
 			for (int x = startX; x < endX && x < (int)getBuildTileWidth(); ++x)
 			{
 				for (int y = startY; y < endY && y < (int)getBuildTileHeight(); ++y)

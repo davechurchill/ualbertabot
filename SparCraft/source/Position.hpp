@@ -27,8 +27,8 @@ public:
 	}
 
     Position(const BWAPI::Position & p)
-        : _x(p.x())
-        , _y(p.y())
+        : _x(p.x)
+        , _y(p.y)
     {
 
     }

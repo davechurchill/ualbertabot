@@ -9,8 +9,9 @@
 #include "GraphViz.hpp"
 #include "Array.hpp"
 #include "Logger.h"
+#include <memory>
 
-typedef boost::shared_ptr<SparCraft::Map> MapPtr;
+typedef std::shared_ptr<SparCraft::Map> MapPtr;
 
 namespace SparCraft
 {

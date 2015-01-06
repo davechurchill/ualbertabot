@@ -246,7 +246,14 @@ void SearchExperiment::parseConfigFile(const std::string & filename)
             iss >> upgradeName;
             iss >> upgradeLevel;
 
-            PlayerProperties::Get(playerID).SetUpgradeLevel(BWAPI::UpgradeTypes::getUpgradeType(upgradeName), upgradeLevel);
+            for (BWAPI::UpgradeType & type : BWAPI::UpgradeTypes::allUpgradeTypes())
+            {
+                if (type.getName().compare(upgradeName) == 0)
+                {
+                    PlayerProperties::Get(playerID).SetUpgradeLevel(type, upgradeLevel);
+                    break;
+                }
+            }
         }
         else if (strcmp(option.c_str(), "PlayerTech") == 0)
         {
@@ -256,7 +263,14 @@ void SearchExperiment::parseConfigFile(const std::string & filename)
             iss >> playerID;
             iss >> techName;
 
-            PlayerProperties::Get(playerID).SetResearched(BWAPI::TechTypes::getTechType(techName), true);
+            for (BWAPI::TechType & type : BWAPI::TechTypes::allTechTypes())
+            {
+                if (type.getName().compare(techName) == 0)
+                {
+                    PlayerProperties::Get(playerID).SetResearched(type, true);
+                    break;
+                }
+            }
         }
         else
         {
@@ -386,7 +400,15 @@ void SearchExperiment::parseStateDescriptionFile(const std::string & fileName)
 
 BWAPI::UnitType SearchExperiment::getUnitType(const std::string & unitTypeString)
 {
-    BWAPI::UnitType type(BWAPI::UnitTypes::getUnitType(unitTypeString));
+    BWAPI::UnitType type;
+
+    for (BWAPI::UnitType & t : BWAPI::UnitTypes::allUnitTypes())
+    {
+        if (t.getName().compare(unitTypeString) == 0)
+        {
+            type = t;
+        }
+    }
 
     System::checkSupportedUnitType(type);
 
@@ -650,7 +672,15 @@ GameState SearchExperiment::getSymmetricState( std::vector<std::string> & unitTy
     // for each unit type to add
     for (size_t i(0); i<unitTypes.size(); ++i)
     {
-        BWAPI::UnitType type = BWAPI::UnitTypes::getUnitType(unitTypes[i]);
+        BWAPI::UnitType type;
+        for (BWAPI::UnitType & t : BWAPI::UnitTypes::allUnitTypes())
+        {
+            if (t.getName().compare(unitTypes[i]) == 0)
+            {
+                type = t;
+                break;
+            } 
+        }
 
         // add the symmetric unit for each count in the numUnits Vector
         for (int u(0); u<numUnits[i]; ++u)
@@ -680,7 +710,15 @@ void SearchExperiment::addSeparatedState(  std::vector<std::string> & unitTypes,
     // for each unit type to add
     for (size_t i(0); i<unitTypes.size(); ++i)
     {
-        BWAPI::UnitType type = BWAPI::UnitTypes::getUnitType(unitTypes[i]);
+        BWAPI::UnitType type;
+        for (BWAPI::UnitType & t : BWAPI::UnitTypes::allUnitTypes())
+        {
+            if (t.getName().compare(unitTypes[i]) == 0)
+            {
+                type = t;
+                break;
+            } 
+        }
 
         // add the symmetric unit for each count in the numUnits Vector
         for (int u(0); u<numUnits[i]; ++u)

@@ -78,7 +78,7 @@ AlphaBetaValue AlphaBetaSearch::IDAlphaBeta(GameState & initialState, const size
 				MoveArray moves;
 				const IDType playerToMove(getPlayerToMove(initialState, 1, Players::Player_None, true));
 				initialState.generateMoves(moves, playerToMove);
-				boost::shared_ptr<Player> bestScript(new Player_NOKDPS(playerToMove));
+				PlayerPtr bestScript(new Player_NOKDPS(playerToMove));
 				bestScript->getMoves(initialState, moves, _results.bestMoves);
 			}
 
