@@ -1,14 +1,18 @@
 CC=g++
-CFLAGS=-O4 
-LDFLAGS=
-INCLUDES=-Isource/rapidjson source/
-SOURCES=$(wildcard source*.cpp ) 
-OBJECTS=$(SOURCES_SWC:.cpp=.o)
+SDL_LDFLAGS=`sdl-config --libs` 
+SDL_CFLAGS=`sdl-config --cflags` 
+CFLAGS=-O3 $(SDL_CFLAGS)
+LDFLAGS=-lGL -lGLU -lSDL_image $(SDL_LDFLAGS)
+INCLUDES=-Isource/rapidjson -Isource/
+SOURCES=$(wildcard source/*.cpp) 
+OBJECTS=$(SOURCES:.cpp=.o)
 
-all:BOSS  
+all:BOSS 
 
 BOSS:$(OBJECTS) 
-	$(CC) $(OBJECTS) $(LDFLAGS) -o bin/BOSS
+	$(CC) $(OBJECTS) -o $@  $(LDFLAGS)
 
 .cpp.o:
+	$(CC) -c $(CFLAGS) $(INCLUDES) $< -o $@ 
+.cc.o:
 	$(CC) -c $(CFLAGS) $(INCLUDES) $< -o $@
