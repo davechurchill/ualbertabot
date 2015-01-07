@@ -1,5 +1,5 @@
 #pragma once
-#include "Assert.h"
+#include "BOSSAssert.h"
 #include "Common.h"
 #include <algorithm>
 
