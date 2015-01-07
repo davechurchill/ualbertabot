@@ -35,6 +35,6 @@ void CombatSearchResults::printBuildOrder()
 {
     for (size_t i(0); i<buildOrder.size(); ++i)
     {
-        printf("%d ",buildOrder[buildOrder.size()-1-i]);
+        printf("%d ", buildOrder[buildOrder.size()-1-i].ID());
     }
 }
