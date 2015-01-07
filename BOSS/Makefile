@@ -1,7 +1,7 @@
 CC=g++
 CFLAGS=-O3 $(SDL_CFLAGS) -std=c++11
 LDFLAGS=-lGL -lGLU -lSDL_image $(SDL_LDFLAGS)
-INCLUDES=-Isource/bwapidata/include -Isource/rapidjson -Isource/GL -Isource
+INCLUDES=-Isource/bwapidata/include -Isource/rapidjson -Isource/SDL -Isource/GL -Isource
 SOURCES=$(wildcard source/bwapidata/include/*.cpp) $(wildcard source/*.cpp) 
 OBJECTS=$(SOURCES:.cpp=.o)
 
