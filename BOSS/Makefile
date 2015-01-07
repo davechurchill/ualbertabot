@@ -1,4 +1,6 @@
 CC=g++
+SDL_LDFLAGS=`sdl-config --libs` 
+SDL_CFLAGS=`sdl-config --cflags` 
 CFLAGS=-O3 $(SDL_CFLAGS) -std=c++11
 LDFLAGS=-lGL -lGLU -lSDL_image $(SDL_LDFLAGS)
 INCLUDES=-Isource/bwapidata/include -Isource/rapidjson -Isource/SDL -Isource/GL -Isource
