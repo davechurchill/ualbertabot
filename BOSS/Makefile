@@ -3,8 +3,8 @@ SDL_LDFLAGS=`sdl-config --libs`
 SDL_CFLAGS=`sdl-config --cflags` 
 CFLAGS=-O3 $(SDL_CFLAGS)
 LDFLAGS=-lGL -lGLU -lSDL_image $(SDL_LDFLAGS)
-INCLUDES=-Ibwapidata/include -Isource/rapidjson -Isource
-SOURCES=$(wildcard bwapidata/include/*.cpp) $(wildcard source/*.cpp) 
+INCLUDES=-Isource/bwapidata/include -Isource/rapidjson -Isource
+SOURCES=$(wildcard source/bwapidata/include/*.cpp) $(wildcard source/*.cpp) 
 OBJECTS=$(SOURCES:.cpp=.o)
 
 all:BOSS 
