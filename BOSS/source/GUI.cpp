@@ -181,7 +181,6 @@ void GUI::HandleEvents()
             {
                 std::cerr << "SDL_QUIT caught\n\n";
                 exit(0);
-                //MCDS::System::FatalError("Visualization Shut Down");
             }
         }
     }
