@@ -12,7 +12,11 @@
 
 #define BOSS_LOGFILE "BOSS_error_log.txt"
 
-#define BOSS_BREAK __debugbreak();
+#ifdef _MSC_VER
+    #define BOSS_BREAK __debugbreak();
+#else
+    #define BOSS_BREAK exit(-1);
+#endif
 
 #define BOSS_ASSERT_ALL
 
