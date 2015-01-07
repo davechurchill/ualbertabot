@@ -4,6 +4,7 @@
 #include <string.h>
 #include <queue>
 #include <algorithm>
+#include <limits.h>
 
 #include "PrerequisiteSet.h"
 #include <math.h>

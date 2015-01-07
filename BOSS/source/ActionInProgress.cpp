@@ -142,7 +142,7 @@ FrameCountType ActionsInProgress::whenActionsFinished(const PrerequisiteSet & ac
 		const ActionType & a = actions.getActionType(uc);
 			
 		// define a new minimum
-		int actionMin = INT_MAX;
+		int actionMin = std::numeric_limits<int>::max();
 		
 		// for each unit in our progress vector
 		for (size_t i(0); i<_inProgress.size(); ++i) 
@@ -156,7 +156,7 @@ FrameCountType ActionsInProgress::whenActionsFinished(const PrerequisiteSet & ac
 		}
 			
 		// if we found a new minimum
-		if (actionMin < INT_MAX)
+		if (actionMin < std::numeric_limits<int>::max())
 		{
 			// check to see if we have a new maximum
 			totalMax = (actionMin > totalMax) ? actionMin : totalMax;
