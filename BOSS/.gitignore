@@ -1,5 +1,9 @@
 VisualStudio/Release
 VisualStudio/Debug
-bin/*
+bin/*.exe
+bin/*.pdb
+bin/*.ilk
+bin/*.txt
+bin/*.map
 source/*.o
 qtgui/*
