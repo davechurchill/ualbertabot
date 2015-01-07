@@ -10,7 +10,7 @@ OBJECTS=$(SOURCES:.cpp=.o)
 all:BOSS 
 
 BOSS:$(OBJECTS) 
-	$(CC) $(OBJECTS) -o $@  $(LDFLAGS)
+	$(CC) $(OBJECTS) -o bin/$@  $(LDFLAGS)
 
 .cpp.o:
 	$(CC) -c $(CFLAGS) $(INCLUDES) $< -o $@ 
