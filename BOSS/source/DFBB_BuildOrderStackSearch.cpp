@@ -210,6 +210,9 @@ void DFBB_BuildOrderStackSearch::updateResults(const GameState & state)
 // recursive function which does all search logic
 void DFBB_BuildOrderStackSearch::DFBB()
 {
+    FrameCountType actionFinishTime = 0;
+    FrameCountType heuristicTime = 0;
+    FrameCountType maxHeuristic = 0;
 
 SEARCH_BEGIN:
 
@@ -225,9 +228,9 @@ SEARCH_BEGIN:
     {
         ACTION_TYPE = LEGAL_ACTINS[CHILD_NUM];
 
-        FrameCountType actionFinishTime = STATE.whenCanPerform(ACTION_TYPE) + ACTION_TYPE.buildTime();
-        FrameCountType heuristicTime    = STATE.getCurrentFrame() + Tools::GetLowerBound(STATE, _params.goal);
-        FrameCountType maxHeuristic     = (actionFinishTime > heuristicTime) ? actionFinishTime : heuristicTime;
+        actionFinishTime = STATE.whenCanPerform(ACTION_TYPE) + ACTION_TYPE.buildTime();
+        heuristicTime    = STATE.getCurrentFrame() + Tools::GetLowerBound(STATE, _params.goal);
+        maxHeuristic     = (actionFinishTime > heuristicTime) ? actionFinishTime : heuristicTime;
 
         if (maxHeuristic > _results.upperBound)
         {
