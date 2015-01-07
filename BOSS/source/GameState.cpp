@@ -500,8 +500,8 @@ const FrameCountType GameState::whenBuildingPrereqReady(const ActionType & actio
 
     bool buildingIsConstructed                  = _units.getNumCompleted(builder) > 0;
     bool buildingInProgress                     = _units.getNumInProgress(builder) > 0;
-    FrameCountType constructedBuildingFreeTime  = INT_MAX-10;
-    FrameCountType buildingInProgressFinishTime = INT_MAX-10;
+    FrameCountType constructedBuildingFreeTime  = std::numeric_limits<int>::max()-10;
+    FrameCountType buildingInProgressFinishTime = std::numeric_limits<int>::max()-10;
 
     BOSS_ASSERT(buildingIsConstructed || (!action.requiresAddon() && buildingInProgress), "We will never be able to build action: %s", action.getName().c_str());
 

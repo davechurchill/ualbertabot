@@ -8,6 +8,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <limits>
 
 #include "BOSSAssert.h"
 #include "BaseTypes.h"
