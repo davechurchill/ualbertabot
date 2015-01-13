@@ -30,9 +30,9 @@ namespace GUITools
                     Position charEnd = charStart + fontSize;
 
                     char cc = text[i];
-                    float xPos = ((cc % 16) / 16.0);
-                    float yPos = (cc >> 4) / 16.0;
-                    float del = 1/16.0;
+                    float xPos = ((cc % 16) / 16.0f);
+                    float yPos = (cc >> 4) / 16.0f;
+                    float del = 1/16.0f;
                     glTexCoord2f(xPos,yPos);            glVertex2i(charStart.x(),charStart.y());
                     glTexCoord2f(xPos+del,yPos);        glVertex2i(charEnd.x(),charStart.y());
                     glTexCoord2f(xPos+del,yPos+del);    glVertex2i(charEnd.x(),charEnd.y());
