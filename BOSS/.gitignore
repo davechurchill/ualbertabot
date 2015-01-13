@@ -1,5 +1,8 @@
 VisualStudio/Release
 VisualStudio/Debug
+VisualStudio/ipch
+VisualStudio/*.txt
+VisualStudio/*.vsp
 bin/*.exe
 bin/*.pdb
 bin/*.ilk

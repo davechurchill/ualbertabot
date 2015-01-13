@@ -7,34 +7,58 @@ namespace GUITools
 {
     void DrawString(const Position & p, const std::string & text, const GLfloat * rgba) 
     {
+        Position origin(p);
+        Position fontSize(8,8);
+
         glPushMatrix();
-            glColor4fv(rgba);
-            glRasterPos2i(p.x(), p.y());
-            glutBitmapString(GLUT_BITMAP_HELVETICA_10, (const unsigned char*)text.c_str());
+        glColor4fv(rgba);
+        glEnable( GL_TEXTURE_2D );
+        glBindTexture( GL_TEXTURE_2D, GUI::TextureFont );
+        glBegin( GL_QUADS );
+
+            int linePos = 0;
+            for (size_t i(0); i < text.length(); ++i)
+            {
+                if (text[i] == '\n') 
+                { 
+                    origin = Position(p.x(), origin.y() + fontSize.y()); 
+                    linePos = 0;
+                }
+                else
+                {
+                    Position charStart = Position(origin.x() + linePos*fontSize.x(), origin.y() - fontSize.y());
+                    Position charEnd = charStart + fontSize;
+
+                    char cc = text[i];
+                    float xPos = ((cc % 16) / 16.0);
+                    float yPos = (cc >> 4) / 16.0;
+                    float del = 1/16.0;
+                    glTexCoord2f(xPos,yPos);            glVertex2i(charStart.x(),charStart.y());
+                    glTexCoord2f(xPos+del,yPos);        glVertex2i(charEnd.x(),charStart.y());
+                    glTexCoord2f(xPos+del,yPos+del);    glVertex2i(charEnd.x(),charEnd.y());
+                    glTexCoord2f(xPos,yPos+del);        glVertex2i(charStart.x(),charEnd.y());
+                    
+                    linePos++;    
+                }
+            }
+        glEnd();
+        glDisable( GL_TEXTURE_2D );
         glPopMatrix();
     }
 
     void DrawStringLarge(const Position & p, const std::string & text, const GLfloat * rgba) 
     {
-        glPushMatrix();
-            glColor4fv(rgba);
-            glRasterPos2i(p.x(), p.y());
-            glutBitmapString(GLUT_BITMAP_9_BY_15, (const unsigned char*)text.c_str());
-        glPopMatrix();
+        DrawString(p, text, rgba);
     }
 
     void DrawStringWithShadow(const Position & p, const std::string & text, const GLfloat * rgba) 
     {
-        const GLfloat black[4] = {0.0f, 0.0f, 0.0f, 1.0f};
-        DrawString(p + Position(1,1), text, black);
-        DrawString(p, text, rgba);
+       DrawString(p, text, rgba);
     }
 
     void DrawStringLargeWithShadow(const Position & p, const std::string & text, const GLfloat * rgba) 
     {
-        const GLfloat black[4] = {0.0f, 0.0f, 0.0f, 1.0f};
-        DrawStringLarge(p + Position(1,1), text, black);
-        DrawStringLarge(p, text, rgba);
+        DrawString(p, text, rgba);
     }
 
     void DrawLine(const Position & p1, const Position & p2, const float thickness, const GLfloat * rgba)
@@ -104,10 +128,10 @@ namespace GUITools
                 glColor4fv(rgba);
                 glBindTexture( GL_TEXTURE_2D, textureID );
                 glBegin( GL_QUADS );
-                    glTexCoord3d(0.0,0.0,.5); glVertex2i(tl.x(),tl.y());
-                    glTexCoord3d(1.0,0.0,.5); glVertex2i(br.x(),tl.y());
-                    glTexCoord3d(1.0,1.0,.5); glVertex2i(br.x(),br.y());
-                    glTexCoord3d(0.0,1.0,.5); glVertex2i(tl.x(),br.y());
+                    glTexCoord2f(0.0,0.0); glVertex2i(tl.x(),tl.y());
+                    glTexCoord2f(1.0,0.0); glVertex2i(br.x(),tl.y());
+                    glTexCoord2f(1.0,1.0); glVertex2i(br.x(),br.y());
+                    glTexCoord2f(0.0,1.0); glVertex2i(tl.x(),br.y());
                 glEnd();
             glDisable( GL_TEXTURE_2D );
         glPopMatrix();
@@ -122,91 +146,6 @@ namespace GUITools
         GUITools::DrawTexturedRect(statusNumPos, statusNumPos + iconSize.scale(0.65f), textureID2, rgba); 
     }
 
-    void SetColor(const GLfloat * src, GLfloat * dest)
-    {
-        std::copy(src, src + 4, dest);
-    }
     
-    Uint32 get_pixel32( SDL_Surface *surface, int x, int y )
-    {
-        //Convert the pixels to 32 bit
-        Uint32 *pixels = (Uint32 *)surface->pixels;
-
-        //Get the requested pixel
-        return pixels[ ( y * surface->w ) + x ];
-    }
-
-    void put_pixel32( SDL_Surface *surface, int x, int y, Uint32 pixel )
-    {
-        //Convert the pixels to 32 bit
-        Uint32 *pixels = (Uint32 *)surface->pixels;
-
-        //Set the pixel
-        pixels[ ( y * surface->w ) + x ] = pixel;
-    }
-
-    SDL_Surface *flip_surface( SDL_Surface *surface, int flags )
-    {
-        //Pointer to the soon to be flipped surface
-        SDL_Surface *flipped = NULL;
-
-        //If the image is color keyed
-        if( surface->flags & SDL_SRCCOLORKEY )
-        {
-            flipped = SDL_CreateRGBSurface( SDL_SWSURFACE, surface->w, surface->h, surface->format->BitsPerPixel, surface->format->Rmask, surface->format->Gmask, surface->format->Bmask, 0 );
-        }
-        //Otherwise
-        else
-        {
-            flipped = SDL_CreateRGBSurface( SDL_SWSURFACE, surface->w, surface->h, surface->format->BitsPerPixel, surface->format->Rmask, surface->format->Gmask, surface->format->Bmask, surface->format->Amask );
-        }
-
-        //If the surface must be locked
-        if( SDL_MUSTLOCK( surface ) )
-        {
-            //Lock the surface
-            SDL_LockSurface( surface );
-        }
-
-        //Go through columns
-        for( int x = 0, rx = flipped->w - 1; x < flipped->w; x++, rx-- )
-        {
-            //Go through rows
-            for( int y = 0, ry = flipped->h - 1; y < flipped->h; y++, ry-- )
-            {
-                //Get pixel
-                Uint32 pixel = get_pixel32( surface, x, y );
-
-                //Copy pixel
-                if( ( flags & FLIP_VERTICAL ) && ( flags & FLIP_HORIZONTAL ) )
-                {
-                    put_pixel32( flipped, rx, ry, pixel );
-                }
-                else if( flags & FLIP_HORIZONTAL )
-                {
-                    put_pixel32( flipped, rx, y, pixel );
-                }
-                else if( flags & FLIP_VERTICAL )
-                {
-                    put_pixel32( flipped, x, ry, pixel );
-                }
-            }
-        }
-
-        //Unlock surface
-        if( SDL_MUSTLOCK( surface ) )
-        {
-            SDL_UnlockSurface( surface );
-        }
-
-        //Copy color key
-        if( surface->flags & SDL_SRCCOLORKEY )
-        {
-            SDL_SetColorKey( flipped, SDL_RLEACCEL | SDL_SRCCOLORKEY, surface->format->colorkey );
-        }
-
-        //Return flipped surface
-        return flipped;
-    }
 }
 }

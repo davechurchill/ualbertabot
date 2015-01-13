@@ -3,10 +3,8 @@
 #include "Common.h"
 
 #include "Position.hpp"
-#include "freeglut.h"
 #include <SDL.h>
 #include <SDL_opengl.h>
-#include <SDL_gfxPrimitives.h>
 
 namespace BOSS
 {
@@ -27,8 +25,5 @@ namespace BOSS
         void SetColor(const GLfloat * src, GLfloat * dest);
         void SetColor(const GLfloat * src, GLfloat * dest);
 
-        SDL_Surface *flip_surface( SDL_Surface *surface, int flags );
-        Uint32 get_pixel32( SDL_Surface *surface, int x, int y );
-        void put_pixel32( SDL_Surface *surface, int x, int y, Uint32 pixel );
     }
 }

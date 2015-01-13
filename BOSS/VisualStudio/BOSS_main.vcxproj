@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\BOSSExperiments.cpp" />
+    <ClCompile Include="..\source\BOSSVisExperiment.cpp" />
     <ClCompile Include="..\source\GUI.cpp" />
     <ClCompile Include="..\source\GUITools.cpp" />
     <ClCompile Include="..\source\JSONTools.cpp" />
@@ -19,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\BOSSExperiments.h" />
+    <ClInclude Include="..\source\BOSSVisExperiment.h" />
     <ClInclude Include="..\source\GUI.h" />
     <ClInclude Include="..\source\GUITools.h" />
     <ClInclude Include="..\source\JSONTools.h" />
@@ -70,12 +72,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(BWAPI_DIR)/include;../source/glext;../source/SDL;../source/GL;../source/rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BWAPI_DIR)/include;$(SDL_IMAGE_DIR)/include;$(SDL_DIR)/include;../source/rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPId.lib;$(SolutionDir)\$(Configuration)\BOSS\BOSS_d.lib;../lib/opengl32.lib;../lib/SDL.lib;../lib/SDLmain.lib;../lib/freeglut.lib;../lib/SDL_gfx.lib;../lib/SDL_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPId.lib;$(SolutionDir)\$(Configuration)\BOSS\BOSS_d.lib;../lib/opengl32.lib;../lib/SDL2.lib;../lib/SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -87,7 +89,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(BWAPI_DIR)/include;../source/glext;../source/sdl;../source/rapidjson;../source/GL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BWAPI_DIR)/include;$(SDL_IMAGE_DIR)/include;$(SDL_DIR)/include;../source/rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -97,7 +99,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPI.lib;$(SolutionDir)\$(Configuration)\BOSS\BOSS.lib;../lib/opengl32.lib;../lib/SDL.lib;../lib/SDLmain.lib;../lib/freeglut.lib;../lib/SDL_gfx.lib;../lib/SDL_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPI.lib;$(SolutionDir)\$(Configuration)\BOSS\BOSS.lib;../lib/opengl32.lib;../lib/SDL2.lib;../lib/SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateMapFile>true</GenerateMapFile>
     </Link>
   </ItemDefinitionGroup>

@@ -8,12 +8,20 @@
       <Filter>gui</Filter>
     </ClCompile>
     <ClCompile Include="..\source\BOSS_main.cpp" />
-    <ClCompile Include="..\source\BOSSExperiments.cpp" />
     <ClCompile Include="..\source\JSONTools.cpp" />
+    <ClCompile Include="..\source\BOSSExperiments.cpp">
+      <Filter>experiments</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\BOSSVisExperiment.cpp">
+      <Filter>experiments</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="gui">
       <UniqueIdentifier>{3d80a73e-cfef-4628-9cb5-7c132f896eea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="experiments">
+      <UniqueIdentifier>{1d1bf021-f0f5-44d7-abf5-ded9f0d6ed4d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -23,7 +31,12 @@
     <ClInclude Include="..\source\GUITools.h">
       <Filter>gui</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\BOSSExperiments.h" />
     <ClInclude Include="..\source\JSONTools.h" />
+    <ClInclude Include="..\source\BOSSExperiments.h">
+      <Filter>experiments</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\BOSSVisExperiment.h">
+      <Filter>experiments</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

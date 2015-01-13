@@ -62,7 +62,7 @@ void testCombatSearch()
     RaceID race = Races::Protoss;
     CombatSearchParameters params = getParams(race);
     params.setInitialState(getInitialState(race));
-    params.setFrameTimeLimit(3600);
+    params.setFrameTimeLimit(3000);
 
     //params.setSearchTimeLimit(100);
     
@@ -146,17 +146,41 @@ void oldMain()
     //testThreadCombatSearch();
 }
 
+#ifdef EMSCRIPTEN
+#include <emscripten.h>
+#endif
 
 #include "GUI.h"
+void mainLoop()
+{
+    GUI::Instance().OnFrame();
+}
+
 #include "BOSSExperiments.h"
 int main(int argc, char *argv[])
 {
-    glutInit(&argc, argv);
-    
     BOSS::init();
+
+#ifndef EMSCRIPTEN
+    BOSS::BOSSExperiments experiments("../asset/config/config.txt");
+#else
+    BOSS::BOSSExperiments experiments("asset/config/config.txt");
+#endif
     
-    BOSS::BOSSExperiments experiments("config/config.txt");
-    experiments.runExperiments();
+    if (experiments.getVisExperiments().size() > 0)
+    {
+        GUI::Instance().OnStart();
+        GUI::Instance().SetVisExperiment(experiments.getVisExperiments()[0]);
+    }
+
+#ifndef EMSCRIPTEN
+    while (true)
+    {
+        mainLoop();
+    }
+#else
+    emscripten_set_main_loop(mainLoop,0,true);
+#endif
 
     return 0;
 }
