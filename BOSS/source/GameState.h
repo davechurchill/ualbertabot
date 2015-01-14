@@ -64,7 +64,11 @@ public:
 
     GameState(const RaceID r = Races::None);
 
-    //GameState(BWAPI::Game * game, BWAPI::Player * player);
+// constructor based on BWAPI::Game only makes sense if using VS
+// we won't be using this if we're compiling to emscripten or linux
+#ifdef _MSC_VER
+    GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * player);
+#endif
 
     void                        doAction(const ActionType & action);
     void                        fastForward(const FrameCountType toFrame) ;

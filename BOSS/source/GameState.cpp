@@ -14,125 +14,122 @@ GameState::GameState(const RaceID r)
     
 }
 
-//GameState::GameState(BWAPI::Game * game, BWAPI::Player * self)
-//    : _race                 (Races::GetRaceID(self->getRace()))
-//    , _currentFrame         (game->getFrameCount())
-//    , _lastActionFrame      (0)
-//    , _units                (Races::GetRaceID(self->getRace()))
-//    , _minerals             (self->minerals() * Constants::RESOURCE_SCALE)
-//    , _gas                  (self->gas() * Constants::RESOURCE_SCALE)
-//{ 
-//    // we will count the worker jobs as we add units
-//    UnitCountType mineralWorkerCount    = 0;
-//    UnitCountType gasWorkerCount        = 0;
-//    UnitCountType buildingWorkerCount   = 0;
-//    UnitCountType larvaCount            = 0;
-//
-//    _units.setMineralWorkers(mineralWorkerCount);
-//    _units.setGasWorkers(gasWorkerCount);
-//    _units.setBuildingWorkers(buildingWorkerCount);
-//
-//	// add each unit we have to the current state
-//	for (std::set<BWAPI::Unit *>::const_iterator it = self->getUnits().begin(); it != self->getUnits().end(); it++)
-//	{
-//        BWAPI::Unit * unit = *it;
-//
-//		if (unit->getType() == BWAPI::UnitTypes::Zerg_Larva)
-//		{
-//			++larvaCount;
-//			continue;
-//		}
-//
-//		if (!ActionTypes::TypeExists(unit->getType()))
-//		{
-//			continue;
-//		}
-//        
-//        const ActionType actionType(unit->getType());
-//
-//		// if the unit is completed
-//		if (unit->isCompleted())
-//		{
-//			// if it is a building
-//			if (unit->getType().isBuilding() && !unit->getType().isAddon())
-//			{
-//                // add the building data accordingly
-//				FrameCountType  trainTime = unit->getRemainingTrainTime() + unit->getRemainingResearchTime() + unit->getRemainingUpgradeTime();
-//                ActionType      constructing;
-//                ActionType      addon;
-//
-//                if (unit->getRemainingTrainTime() > 0)
-//                {
-//                    constructing = ActionType(*unit->getTrainingQueue().begin());
-//                }
-//				else if (unit->getRemainingResearchTime() > 0)
-//				{
-//					constructing = ActionType(unit->getTech());
-//				}
-//				else if (unit->getRemainingUpgradeTime() > 0)
-//				{
-//					constructing = ActionType(unit->getTech());
-//				}
-//
-//                // TODO: special case for Zerg_Hatchery
-//                if (unit->getAddon() != NULL)
-//                {
-//                    if (unit->getAddon()->isConstructing())
-//                    {
-//                        constructing = ActionType(unit->getAddon()->getType());
-//                    }
-//                    else
-//                    {
-//                        addon = ActionType(unit->getAddon()->getType());    
-//                    }
-//                }
-//
-//                _units.addCompletedBuilding(actionType, trainTime, constructing, addon);
-//			}
-//            else
-//            {
-//                // add the unit to the state
-//			    _units.addCompletedAction(actionType);
-//
-//                _units.setCurrentSupply(_units.getCurrentSupply() + actionType.supplyRequired());
-//            }
-//		}
-//		else if (unit->isBeingConstructed() && !unit->getType().isAddon())
-//		{
-//			_units.addActionInProgress(ActionType(unit->getType()), game->getFrameCount() + unit->getRemainingBuildTime(), false);
-//		}
-//	}
-//
-//    // TODO: set correct number of larva from state
-//
-//    for (std::set<BWAPI::UpgradeType>::const_iterator it = BWAPI::UpgradeTypes::allUpgradeTypes().begin(); it != BWAPI::UpgradeTypes::allUpgradeTypes().end(); it++)
-//	{
-//        BWAPI::UpgradeType type = *it;
-//        if (!ActionTypes::TypeExists(type))
-//		{
-//			continue;
-//		}
-//
-//		if (self->getUpgradeLevel(type) > 0)
-//		{
-//			_units.addCompletedAction(ActionType(type));
-//		}
-//	}
-//    
-//    for (std::set<BWAPI::TechType>::const_iterator it = BWAPI::TechTypes::allTechTypes().begin(); it != BWAPI::TechTypes::allTechTypes().end(); it++)
-//	{
-//        BWAPI::TechType type = *it;
-//        if (!ActionTypes::TypeExists(type))
-//		{
-//			continue;
-//		}
-//
-//		if (self->hasResearched(type))
-//		{
-//		    _units.addCompletedAction(ActionType(type));
-//		}
-//	}
-//}
+#ifdef _MSC_VER
+GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self)
+    : _race                 (Races::GetRaceID(self->getRace()))
+    , _currentFrame         (game->getFrameCount())
+    , _lastActionFrame      (0)
+    , _units                (Races::GetRaceID(self->getRace()))
+    , _minerals             (self->minerals() * Constants::RESOURCE_SCALE)
+    , _gas                  (self->gas() * Constants::RESOURCE_SCALE)
+{ 
+    // we will count the worker jobs as we add units
+    UnitCountType mineralWorkerCount    = 0;
+    UnitCountType gasWorkerCount        = 0;
+    UnitCountType buildingWorkerCount   = 0;
+    UnitCountType larvaCount            = 0;
+
+    _units.setMineralWorkers(mineralWorkerCount);
+    _units.setGasWorkers(gasWorkerCount);
+    _units.setBuildingWorkers(buildingWorkerCount);
+
+	// add each unit we have to the current state
+	for (BWAPI::UnitInterface * unit : self->getUnits())
+	{
+		if (unit->getType() == BWAPI::UnitTypes::Zerg_Larva)
+		{
+			++larvaCount;
+			continue;
+		}
+
+		if (!ActionTypes::TypeExists(unit->getType()))
+		{
+			continue;
+		}
+        
+        const ActionType actionType(unit->getType());
+
+		// if the unit is completed
+		if (unit->isCompleted())
+		{
+			// if it is a building
+			if (unit->getType().isBuilding() && !unit->getType().isAddon())
+			{
+                // add the building data accordingly
+				FrameCountType  trainTime = unit->getRemainingTrainTime() + unit->getRemainingResearchTime() + unit->getRemainingUpgradeTime();
+                ActionType      constructing;
+                ActionType      addon;
+
+                if (unit->getRemainingTrainTime() > 0)
+                {
+                    constructing = ActionType(*unit->getTrainingQueue().begin());
+                }
+				else if (unit->getRemainingResearchTime() > 0)
+				{
+					constructing = ActionType(unit->getTech());
+				}
+				else if (unit->getRemainingUpgradeTime() > 0)
+				{
+					constructing = ActionType(unit->getTech());
+				}
+
+                // TODO: special case for Zerg_Hatchery
+                if (unit->getAddon() != NULL)
+                {
+                    if (unit->getAddon()->isConstructing())
+                    {
+                        constructing = ActionType(unit->getAddon()->getType());
+                    }
+                    else
+                    {
+                        addon = ActionType(unit->getAddon()->getType());    
+                    }
+                }
+
+                _units.addCompletedBuilding(actionType, trainTime, constructing, addon);
+			}
+            else
+            {
+                // add the unit to the state
+			    _units.addCompletedAction(actionType);
+
+                _units.setCurrentSupply(_units.getCurrentSupply() + actionType.supplyRequired());
+            }
+		}
+		else if (unit->isBeingConstructed() && !unit->getType().isAddon())
+		{
+			_units.addActionInProgress(ActionType(unit->getType()), game->getFrameCount() + unit->getRemainingBuildTime(), false);
+		}
+	}
+
+    // TODO: set correct number of larva from state
+    for (BWAPI::UpgradeType & type : BWAPI::UpgradeTypes::allUpgradeTypes())
+	{
+        if (!ActionTypes::TypeExists(type))
+		{
+			continue;
+		}
+
+		if (self->getUpgradeLevel(type) > 0)
+		{
+			_units.addCompletedAction(ActionType(type));
+		}
+	}
+    
+    for (BWAPI::TechType & type : BWAPI::TechTypes::allTechTypes())
+	{
+        if (!ActionTypes::TypeExists(type))
+		{
+			continue;
+		}
+
+		if (self->hasResearched(type))
+		{
+		    _units.addCompletedAction(ActionType(type));
+		}
+	}
+}
+#endif
 
 void GameState::setStartingState()
 {

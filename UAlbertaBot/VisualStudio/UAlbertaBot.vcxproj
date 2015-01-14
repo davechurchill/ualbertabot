@@ -62,7 +62,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../SparCraft/source;../Source;$(BWTA_DIR)/include;$(BWAPI_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../BOSS/source;../SparCraft/source;../Source;$(BWTA_DIR)/include;$(BWAPI_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;EXAMPLEAIMODULE_EXPORTS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -71,7 +71,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPId.lib;$(Configuration)/SparCraft/SparCraft_d.lib;$(Configuration)/BOSS/BOSS_d.lib;$(BWTA_DIR)/lib/BWTA.lib;$(BWTA_DIR)/lib/libboost_system-vc120-mt-1_56.lib;$(BWTA_DIR)/lib/libboost_thread-vc120-mt-1_56.lib;$(BWTA_DIR)/lib/libCGAL-vc120-mt-4.4.lib;$(BWTA_DIR)/lib/libgmp-10.lib;$(BWTA_DIR)/lib/libmpfr-4.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -84,7 +84,7 @@
     <ClCompile>
       <Optimization>Full</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>../Source;$(BWAPI_DIR)/include;$(BWTA_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../BOSS/source;../SparCraft/source;../Source;$(BWAPI_DIR)/include;$(BWTA_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;EXAMPLEAIMODULE_EXPORTS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>

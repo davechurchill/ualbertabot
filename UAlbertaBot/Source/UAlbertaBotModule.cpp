@@ -15,13 +15,10 @@
 
 using namespace UAlbertaBot;
 
-BWAPI::AIModule * __NewAIModule()
-{
-	return new UAlbertaBotModule();
-}
-
-UAlbertaBotModule::UAlbertaBotModule()  {}
-UAlbertaBotModule::~UAlbertaBotModule() {}
+//BWAPI::AIModule * __NewAIModule()
+//{
+//	return new UAlbertaBotModule();
+//}
 
 void UAlbertaBotModule::onStart()
 {

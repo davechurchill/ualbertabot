@@ -62,7 +62,7 @@ void BOSSManager::startNewSearch(const std::vector<MetaPair> & goalUnits)
 {
     // convert from UAlbertaBot's meta goal type to BOSS ActionType goal
     BOSS::DFBB_BuildOrderSearchGoal goal = GetGoal(goalUnits);
-    BOSS::GameState initialState;// TODO TODO(BWAPI::Broodwar, BWAPI::Broodwar->self());
+    BOSS::GameState initialState(BWAPI::Broodwar, BWAPI::Broodwar->self());
 
     _smartSearch = SearchPtr(new BOSS::DFBB_BuildOrderSmartSearch(initialState.getRace()));
     _smartSearch->setGoal(GetGoal(goalUnits));
@@ -192,7 +192,7 @@ void BOSSManager::drawSearchInformation(int x, int y)
 
 std::vector<MetaType> BOSSManager::GetNaiveBuildOrder(const std::vector<MetaPair> & goalUnits)
 {
-    BOSS::GameState                     initialState; //(BWAPI::Broodwar, BWAPI::Broodwar->self());
+    BOSS::GameState                     initialState(BWAPI::Broodwar, BWAPI::Broodwar->self());
     BOSS::DFBB_BuildOrderSearchGoal     goal = GetGoal(goalUnits);
 
     std::vector<BOSS::ActionType>       buildOrder = BOSS::Tools::GetNaiveBuildOrder(initialState, goal);
@@ -202,7 +202,7 @@ std::vector<MetaType> BOSSManager::GetNaiveBuildOrder(const std::vector<MetaPair
 	
 std::vector<MetaType> BOSSManager::GetOptimizedNaiveBuildOrder(const std::vector<MetaPair> & goalUnits)
 {
-    BOSS::GameState                     initialState; //(BWAPI::Broodwar, BWAPI::Broodwar->self());
+    BOSS::GameState                     initialState(BWAPI::Broodwar, BWAPI::Broodwar->self());
     BOSS::DFBB_BuildOrderSearchGoal     goal = GetGoal(goalUnits);
 
     std::vector<BOSS::ActionType>       buildOrder = BOSS::Tools::GetOptimizedNaiveBuildOrder(initialState, goal);

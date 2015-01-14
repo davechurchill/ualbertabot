@@ -23,9 +23,6 @@ class UAlbertaBotModule : public BWAPI::AIModule
     SparCraftManager        sparcraftManager;
 
 public:
-			
-	UAlbertaBotModule();
-	~UAlbertaBotModule();
 
 	void	onStart();
 	void	onFrame();
