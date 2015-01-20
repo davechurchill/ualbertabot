@@ -6,7 +6,7 @@ using namespace BOSS;
 std::vector<ActionType> Tools::GetNaiveBuildOrder(const GameState & state, const DFBB_BuildOrderSearchGoal & goal)
 {
     PrerequisiteSet wanted;
-    int minWorkers = 8;
+    int minWorkers = 12;
 
     const ActionType & worker = ActionTypes::GetWorker(state.getRace());
     std::vector<size_t> buildOrderActionTypeCount(ActionTypes::GetAllActionTypes(state.getRace()).size(), 0);

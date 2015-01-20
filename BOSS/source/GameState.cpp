@@ -195,19 +195,19 @@ bool GameState::isLegal(const ActionType & action) const
     }
 
     // specific rule for never leaving 0 workers on minerals
-    if (action.isRefinery() && (getNumMineralWorkers() < 4))
+    if (action.isRefinery() && (getNumMineralWorkers() < (4 + 3*refineriesInProgress)))
     {
         return false;
     }
 
     // if it's a new building and no workers are available, it's not legal
-    if (action.isBuilding() && (getNumMineralWorkers() <= 1) && (getNumBuildingWorkers() == 0))
+    if (action.isBuilding() && !action.isAddon() && (getNumMineralWorkers() <= 1) && (getNumBuildingWorkers() == 0))
     {
         return false;
     }
 
     // we can't build a building with our last worker
-    if (action.isBuilding() && (getNumMineralWorkers() <= 1 + 3*refineriesInProgress) && (getNumBuildingWorkers() == 0))
+    if (action.isBuilding() && !action.isAddon() && (getNumMineralWorkers() <= (1 + 3*refineriesInProgress)) && (getNumBuildingWorkers() == 0))
     {
         return false;
     }
@@ -236,18 +236,16 @@ bool GameState::isLegal(const ActionType & action) const
         return false;
     }
 
+    // can only build one of a tech type
     if (action.isTech() && getUnitData().getNumTotal(action) > 0)
     {
         return false;
     }
 
-    // if it's an addon and we don't have enough of the builder type without addons
-    if (action.isAddon())
+    // check to see if an addon can ever be built
+    if (action.isAddon() && !_units.getBuildingData().canBuildEventually(action) && (_units.getNumInProgress(action.whatBuildsActionType()) == 0))
     {
-        const ActionType & builder = action.whatBuildsActionType();
-        size_t numBuilder = _units.getNumTotal(builder);
-
-        //_units.getB
+        return false;
     }
 
     return true;
@@ -297,6 +295,7 @@ void GameState::doAction(const ActionType & action)
     {
         if (action.isBuilding() && !action.isAddon())
         {
+            BOSS_ASSERT(getNumMineralWorkers() > 1, "Shouldn't be using our last mineral worker to build");
             _units.setBuildingWorker();
         }
 
@@ -602,15 +601,24 @@ const FrameCountType GameState::whenMineralsReady(const ActionType & action) con
 
         // if it was a drone or extractor update the temp variables
         const ActionType & actionPerformed = _units.getActionInProgressByIndex(progressIndex);
+
+        // finishing a building as terran gives you a mineral worker back
+        if (actionPerformed.isBuilding() && !actionPerformed.isAddon() && (getRace() == Races::Terran))
+        {
+            currentMineralWorkers++;
+        }
+
         if (actionPerformed.isWorker())
         {
             currentMineralWorkers++;
         }
         else if (actionPerformed.isRefinery())
         {
-            BOSS_ASSERT(currentMineralWorkers >= 3, "Not enough mineral workers");
-            currentMineralWorkers -= 3; currentGasWorkers += 3;
+            BOSS_ASSERT(currentMineralWorkers > 3, "Not enough mineral workers \n%s", toString().c_str());
+            currentMineralWorkers -= 3; 
+            currentGasWorkers += 3;
         }
+
 
         // update the last action
         lastActionFinishFrame = _units.getFinishTimeByIndex(progressIndex);
@@ -619,6 +627,8 @@ const FrameCountType GameState::whenMineralsReady(const ActionType & action) con
     // if we still haven't added enough minerals, add more time
     if (addedMinerals < difference)
     {
+        BOSS_ASSERT(currentMineralWorkers > 0, "Shouldn't have 0 mineral workers");
+
         FrameCountType finalTimeToAdd = (difference - addedMinerals) / (currentMineralWorkers * Constants::MPWPF);
         addedMinerals += finalTimeToAdd * currentMineralWorkers * Constants::MPWPF;
         addedTime     += finalTimeToAdd;
@@ -678,13 +688,20 @@ const FrameCountType GameState::whenGasReady(const ActionType & action) const
 
         // if it was a drone or extractor update the temp variables
         const ActionType & actionPerformed = _units.getActionInProgressByIndex(progressIndex);
+
+        // finishing a building as terran gives you a mineral worker back
+        if (actionPerformed.isBuilding() && !actionPerformed.isAddon() && (getRace() == Races::Terran))
+        {
+            currentMineralWorkers++;
+        }
+
         if (actionPerformed.isWorker())
         {
             currentMineralWorkers++;
         }
         else if (actionPerformed.isRefinery())
         {
-            BOSS_ASSERT(currentMineralWorkers >= 3, "Not enough mineral workers");
+            BOSS_ASSERT(currentMineralWorkers > 3, "Not enough mineral workers");
             currentMineralWorkers -= 3; currentGasWorkers += 3;
         }
 
@@ -869,6 +886,7 @@ const std::string GameState::toString() const
     std::cout << "\t" << _gas << "\tGas\n";
     std::cout << "\t" << _units.getNumMineralWorkers() << "\tMineral Workers\n";
     std::cout << "\t" << _units.getNumGasWorkers() << "\tGas Workers\n";
+    std::cout << "\t" << _units.getNumBuildingWorkers() << "\tBuilding Workers\n";
     std::cout << "\n\t" << _units.getCurrentSupply()/2 << " / " << _units.getMaxSupply()/2 << "\tSupply\n";
 
 
