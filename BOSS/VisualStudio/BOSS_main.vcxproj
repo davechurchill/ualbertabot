@@ -17,6 +17,7 @@
     <ClCompile Include="..\source\GUITools.cpp" />
     <ClCompile Include="..\source\JSONTools.cpp" />
     <ClCompile Include="..\source\BOSS_main.cpp" />
+    <ClCompile Include="..\source\BuildOrderTester.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\BOSSExperiments.h" />
@@ -24,6 +25,7 @@
     <ClInclude Include="..\source\GUI.h" />
     <ClInclude Include="..\source\GUITools.h" />
     <ClInclude Include="..\source\JSONTools.h" />
+    <ClInclude Include="..\source\BuildOrderTester.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{25544976-2D9A-4669-8EF6-B622C3B5A42E}</ProjectGuid>

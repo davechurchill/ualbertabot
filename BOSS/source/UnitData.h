@@ -58,7 +58,7 @@ public:
     const FrameCountType    getFinishTimeByIndex(const UnitCountType & index) const;
     const FrameCountType    getNextActionFinishTime() const;
     const FrameCountType    getLastActionFinishTime() const;
-    const FrameCountType    getTimeUntilBuildingFree(const ActionType & action) const;
+    //const FrameCountType    getTimeUntilBuildingFree(const ActionType & action) const;
 
     const FrameCountType    getWhenBuildingCanBuild(const ActionType & action) const;
 

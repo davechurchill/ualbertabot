@@ -38,6 +38,17 @@ namespace BOSS
 {
     namespace Assert
     {
+        class BOSSException : public std::exception
+        {
+            std::string s;
+
+        public :
+
+            BOSSException(std::string ss) : s(ss) {}
+            ~BOSSException() throw () {} 
+            const char* what() const throw() { return s.c_str(); }
+        }; 
+
         void ShutDown();
 
         extern std::string lastErrorMessage;

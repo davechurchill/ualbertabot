@@ -215,7 +215,7 @@ void UnitData::finishNextActionInProgress()
 	if (getRace() == Races::Terran)
 	{
 		// if it's a building, release the worker back
-		if (action.isBuilding())
+		if (action.isBuilding() && !action.isAddon())
 		{
 			releaseBuildingWorker();
 		}
@@ -303,10 +303,10 @@ const FrameCountType UnitData::getFinishTime(const PrerequisiteSet & set) const
     return _progress.whenActionsFinished(set);
 }
 
-const FrameCountType UnitData::getTimeUntilBuildingFree(const ActionType & action) const
-{
-    return _buildings.timeUntilFree(action);
-}
+//const FrameCountType UnitData::getTimeUntilBuildingFree(const ActionType & action) const
+//{
+//    return _buildings.timeUntilFree(action);
+//}
 
 const FrameCountType UnitData::getFinishTime(const ActionType & action) const
 {

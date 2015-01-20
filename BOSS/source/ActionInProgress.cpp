@@ -83,12 +83,21 @@ FrameCountType ActionsInProgress::nextActionFinishTime(const ActionType & a) con
 
 FrameCountType ActionsInProgress::nextBuildingFinishTime() const
 {
-	for (size_t i=_inProgress.size()-1; i >=0; --i)
+    BOSS_ASSERT(_inProgress.size() > 0, "There are no buildings in progress");
+
+	for (size_t i(0); i<_inProgress.size(); ++i)
 	{
-		if (_inProgress[i]._action.isBuilding() && !_inProgress[i]._action.isAddon())
+        size_t ri = _inProgress.size()-1-i;
+		if (_inProgress[ri]._action.isBuilding() && !_inProgress[ri]._action.isAddon())
 		{
-			return _inProgress[i]._time;
+			return _inProgress[ri]._time;
 		}
+	}
+
+    for (size_t i(0); i<_inProgress.size(); ++i)
+	{
+        size_t ri = _inProgress.size()-1-i;
+		std::cout << _inProgress[ri]._action.getName() << std::endl;
 	}
 		
     BOSS_ASSERT(false, "There were no buildings in progress");

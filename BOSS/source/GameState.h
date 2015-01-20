@@ -56,7 +56,7 @@ class GameState
     const FrameCountType        whenSupplyReady(const ActionType & action)                              const;
     const FrameCountType        whenPrerequisitesReady(const ActionType & action)                       const;
     const FrameCountType        whenBuildingPrereqReady(const ActionType & action)                      const;
-    const FrameCountType        whenConstructedBuildingReady(const ActionType & builder)                const;
+    //const FrameCountType        whenConstructedBuildingReady(const ActionType & builder)                const;
     const FrameCountType        whenMineralsReady(const ActionType & action)                            const;
     const FrameCountType        whenGasReady(const ActionType & action)                                 const;
 
@@ -78,7 +78,8 @@ public:
     const FrameCountType        whenCanPerform(const ActionType & action)                               const;
     const FrameCountType        getLastActionFinishTime()                                               const;
 
-    void                        getAllLegalActions(ActionSet & actions)                   const;
+    void                        getAllLegalActions(ActionSet & actions)                                 const;
+    bool                        whyIsNotLegal(const ActionType & action)                                const;
     bool                        isLegal(const ActionType & action)                                      const;
     bool                        canAfford(const ActionType & action)                                    const;
     bool                        canAffordGas(const ActionType & action)                                 const;

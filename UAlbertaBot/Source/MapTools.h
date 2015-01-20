@@ -73,6 +73,8 @@ public:
 	int	getEnemyBaseDistance(BWAPI::Position p);
 	int	getMyBaseDistance(BWAPI::Position p);
 	BWAPI::Position getEnemyBaseMoveTo(BWAPI::Position p);
+
+    std::vector<BWAPI::UnitInterface *> getUnitsOfTypeNear(BWAPI::Position & nearTo, int groundDistance, BWAPI::UnitType type);
 	
 	void parseMap();
 };

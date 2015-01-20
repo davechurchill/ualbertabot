@@ -188,6 +188,24 @@ void MapTools::search(DistanceMap & dmap, const int sR, const int sC)
 	}
 }
 
+std::vector<BWAPI::UnitInterface *> MapTools::getUnitsOfTypeNear(BWAPI::Position & nearTo, int groundDistance, BWAPI::UnitType type)
+{
+    std::vector<BWAPI::UnitInterface *> unitsNear;
+
+    auto it =   std::copy_if
+                ( 
+                    BWAPI::Broodwar->getAllUnits().begin(), 
+                    BWAPI::Broodwar->getAllUnits().end(), 
+                    unitsNear.begin(), 
+                    [this, &type, &nearTo, &groundDistance](BWAPI::Unit unit)
+                    { 
+                        return (unit->getType() == type) && (getGroundDistance(unit->getPosition(), nearTo) < groundDistance ); 
+                    } 
+                );
+
+    return unitsNear;
+}
+
 BWAPI::TilePosition MapTools::getNextExpansion()
 {
 	BWTA::BaseLocation * closestBase = NULL;

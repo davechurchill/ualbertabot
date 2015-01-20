@@ -241,7 +241,9 @@ void ActionTypeData::AddActions()
             type == BWAPI::UnitTypes::Protoss_Scarab ||
             type == BWAPI::UnitTypes::Terran_Civilian ||
             type == BWAPI::UnitTypes::Terran_Nuclear_Missile ||
-            type == BWAPI::UnitTypes::Terran_Vulture_Spider_Mine)
+            type == BWAPI::UnitTypes::Terran_Vulture_Spider_Mine ||
+            type == BWAPI::UnitTypes::Protoss_Dark_Archon ||
+            type == BWAPI::UnitTypes::Protoss_Archon)
         {
             continue;
         }

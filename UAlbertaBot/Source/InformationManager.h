@@ -21,9 +21,11 @@ class InformationManager {
 	UnitData							enemyUnitData;
 	UnitData							selfUnitData;
 
-	//BaseInfoVector						allBases;
+	//BaseInfoVector					allBases;
+    BWAPI::TilePosition                 mainBaseTilePositions[2];
 	BWTA::BaseLocation *				mainBaseLocations[2];
 	std::set<BWTA::Region *>			occupiedRegions[2];
+    std::set<BWAPI::Position>			occupiedBases[2];
 
 	int									getIndex(BWAPI::PlayerInterface * player);
 

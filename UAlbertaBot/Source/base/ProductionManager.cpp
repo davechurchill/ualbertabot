@@ -13,9 +13,9 @@ ProductionManager::ProductionManager()
 {
 	populateTypeCharMap();
 
-	//if (!Options::Modules::USING_BUILD_ORDER_DEMO)
+	if (!Options::Modules::USING_BUILD_ORDER_DEMO)
 	{
-        //setBuildOrder(StrategyManager::Instance().getOpeningBookBuildOrder());
+        setBuildOrder(StrategyManager::Instance().getOpeningBookBuildOrder());
 	}
 }
 

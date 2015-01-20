@@ -13,7 +13,7 @@ namespace Tools
     FrameCountType              GetBuildOrderCompletionTime(const GameState & state, const std::vector<ActionType> & buildOrder, size_t buildOrderStartIndex = 0);
     FrameCountType              CalculatePrerequisitesLowerBound(const GameState & state, const PrerequisiteSet & needed, FrameCountType timeSoFar, int depth = 0);
     std::vector<ActionType>     GetNaiveBuildOrder(const GameState & state, const DFBB_BuildOrderSearchGoal & goal);
-    std::vector<ActionType>     GetNaiveBuildOrderNew(const GameState & state, const DFBB_BuildOrderSearchGoal & goal, UnitCountType maxWorkers);
+    std::vector<ActionType>     GetNaiveBuildOrderAddWorkers(const GameState & state, const DFBB_BuildOrderSearchGoal & goal, UnitCountType maxWorkers);
     void                        InsertActionIntoBuildOrder(std::vector<ActionType> & result, const std::vector<ActionType> & buildOrder, const GameState & initialState, const ActionType & action);
     void                        CalculatePrerequisitesRequiredToBuild(const GameState & state, const PrerequisiteSet & wanted, PrerequisiteSet & requiredToBuild);
     bool                        MeetsGoal(const GameState & state, const DFBB_BuildOrderSearchGoal & goal);
@@ -21,5 +21,8 @@ namespace Tools
     UnitCountType               GetWorkerCount(const std::vector<ActionType> & buildOrder);
 
     void                        TestBuildOrderUpperBound();
+
+    bool                        IsBuildOrderLegal(const GameState & state, const std::vector<ActionType> & buildOrder);
+    bool                        PerformBuildOrder(GameState & state, const std::vector<ActionType> & buildOrder);                   
 }
 }

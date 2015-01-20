@@ -55,7 +55,7 @@ public:
 	
 	// gets the time until building of type t is free
 	// this will only ever be called if t exists, so min will always be set to a lower value
-	FrameCountType timeUntilFree(const ActionType & action) const;
+	//FrameCountType timeUntilFree(const ActionType & action) const;
 
     const FrameCountType getTimeUntilCanBuild(const ActionType & action) const;
 

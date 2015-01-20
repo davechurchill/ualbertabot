@@ -200,7 +200,7 @@ bool GameState::isLegal(const ActionType & action) const
         return false;
     }
 
-    // if it's a new building and no drones are available, it's not legal
+    // if it's a new building and no workers are available, it's not legal
     if (action.isBuilding() && (getNumMineralWorkers() <= 1) && (getNumBuildingWorkers() == 0))
     {
         return false;
@@ -239,6 +239,15 @@ bool GameState::isLegal(const ActionType & action) const
     if (action.isTech() && getUnitData().getNumTotal(action) > 0)
     {
         return false;
+    }
+
+    // if it's an addon and we don't have enough of the builder type without addons
+    if (action.isAddon())
+    {
+        const ActionType & builder = action.whatBuildsActionType();
+        size_t numBuilder = _units.getNumTotal(builder);
+
+        //_units.getB
     }
 
     return true;
@@ -286,7 +295,7 @@ void GameState::doAction(const ActionType & action)
     }
     else if (getRace() == Races::Terran)
     {
-        if (action.isBuilding())
+        if (action.isBuilding() && !action.isAddon())
         {
             _units.setBuildingWorker();
         }
@@ -495,16 +504,19 @@ const FrameCountType GameState::whenBuildingPrereqReady(const ActionType & actio
 
     BOSS_ASSERT(builder.isBuilding(), "The thing that builds this is not a building");
 
-    bool buildingIsConstructed                  = _units.getNumCompleted(builder) > 0;
+    bool buildingIsConstructed                  = _units.getBuildingData().canBuildEventually(action);//getNumCompleted(builder) > 0;
     bool buildingInProgress                     = _units.getNumInProgress(builder) > 0;
     FrameCountType constructedBuildingFreeTime  = std::numeric_limits<int>::max()-10;
     FrameCountType buildingInProgressFinishTime = std::numeric_limits<int>::max()-10;
 
     BOSS_ASSERT(buildingIsConstructed || (!action.requiresAddon() && buildingInProgress), "We will never be able to build action: %s", action.getName().c_str());
 
+    // JAN TODO: IF IT'S AN ADDON WE HAVE TO CHECK IF THE COMPLETED BUILDING HAS AN ADDON ALREADY
+    //if 
+
     if (buildingIsConstructed)
     {
-        constructedBuildingFreeTime  = _currentFrame + _units.getWhenBuildingCanBuild(action);
+        constructedBuildingFreeTime  = _currentFrame + _units.getBuildingData().getTimeUntilCanBuild(action);
     }
         
     if (!action.requiresAddon() && buildingInProgress)
@@ -534,19 +546,19 @@ const FrameCountType GameState::whenBuildingPrereqReady(const ActionType & actio
     return buildingAvailableTime;
 }
 
-const FrameCountType GameState::whenConstructedBuildingReady(const ActionType & builder) const
-{
-    // if what builds a is a building and we have at least one of them completed so far
-    if (builder.isBuilding() && _units.getNumTotal(builder) > 0)
-    {
-        FrameCountType returnTime = _currentFrame + _units.getTimeUntilBuildingFree(builder);
-
-        // get when the next building is available
-        return returnTime;
-    }
-
-    return getCurrentFrame();
-}
+//const FrameCountType GameState::whenConstructedBuildingReady(const ActionType & builder) const
+//{
+//    // if what builds a is a building and we have at least one of them completed so far
+//    if (builder.isBuilding() && _units.getNumTotal(builder) > 0)
+//    {
+//        FrameCountType returnTime = _currentFrame + _units.getTimeUntilBuildingFree(builder);
+//
+//        // get when the next building is available
+//        return returnTime;
+//    }
+//
+//    return getCurrentFrame();
+//}
 
 // when will minerals be ready
 const FrameCountType GameState::whenMineralsReady(const ActionType & action) const
@@ -876,4 +888,90 @@ const std::string GameState::getActionsPerformedString() const
     }
 
     return ss.str();
+}
+
+bool GameState::whyIsNotLegal(const ActionType & action) const
+{
+    const size_t numRefineries  = _units.getNumTotal(ActionTypes::GetRefinery(getRace()));
+    const size_t numDepots      = _units.getNumTotal(ActionTypes::GetResourceDepot(getRace()));
+    const size_t refineriesInProgress = _units.getNumInProgress(ActionTypes::GetRefinery(getRace()));
+
+    // we can never build a larva
+    static const ActionType & Zerg_Larva = ActionTypes::GetActionType("Zerg_Larva");
+    if (action == Zerg_Larva)
+    {
+        std::cout << "WhyNotLegal: " << action.getName() << " - Cannot build a Larva" << std::endl;
+        return false;
+    }
+
+    // check if the tech requirements are met
+    if (!_units.hasPrerequisites(action.getPrerequisites()))
+    {
+        std::cout << "WhyNotLegal: " << action.getName() << " - Tech requirements not met" << std::endl;
+        return false;
+    }
+
+    // if it's a unit and we are out of supply and aren't making an overlord, it's not legal
+    if ((_units.getCurrentSupply() + action.supplyRequired()) > (_units.getMaxSupply() + _units.getSupplyInProgress()))
+    {
+        std::cout << "WhyNotLegal: " << action.getName() << " - Not enough supply to construct" << std::endl;
+        return false;
+    }
+
+    // specific rule for never leaving 0 workers on minerals
+    if (action.isRefinery() && (getNumMineralWorkers() < 4))
+    {
+        std::cout << "WhyNotLegal: " << action.getName() << " - Cannot leave 0 workers on minerals" << std::endl;
+        return false;
+    }
+
+    // if it's a new building and no drones are available, it's not legal
+    if (action.isBuilding() && (getNumMineralWorkers() <= 1) && (getNumBuildingWorkers() == 0))
+    {
+        std::cout << "WhyNotLegal: " << action.getName() << " - No building worker available" << std::endl;
+        return false;
+    }
+
+    // we can't build a building with our last worker
+    if (action.isBuilding() && (getNumMineralWorkers() <= 1 + 3*refineriesInProgress) && (getNumBuildingWorkers() == 0))
+    {
+        std::cout << "WhyNotLegal: " << action.getName() << " - Can't build with last worker" << std::endl;
+        return false;
+    }
+
+    // if we have no gas income we can't make a gas unit
+    if (!canAffordGas(action) && !_units.hasGasIncome())
+    {
+        std::cout << "WhyNotLegal: " << action.getName() << " - No gas income for gas unit" << std::endl;
+        return false;
+    }
+
+    // if we have no mineral income we'll never have a minerla unit
+    if (!canAffordMinerals(action) && !_units.hasMineralIncome())
+    {
+        std::cout << "WhyNotLegal: " << action.getName() << " - No mineral income" << std::endl;
+        return false;
+    }
+
+    // don't build more refineries than resource depots
+    if (action.isRefinery() && (numRefineries >= numDepots))
+    {
+        std::cout << "WhyNotLegal: " << action.getName() << " - Can't have more refineries than depots" << std::endl;
+        return false;
+    }
+
+    // we don't need to go over the maximum supply limit with supply providers
+    if (action.isSupplyProvider() && (_units.getMaxSupply() + _units.getSupplyInProgress() >= 400))
+    {
+        std::cout << "WhyNotLegal: " << action.getName() << " - Can't go over max supply bound with providers" << std::endl;
+        return false;
+    }
+
+    if (action.isTech() && getUnitData().getNumTotal(action) > 0)
+    {
+        std::cout << "WhyNotLegal: " << action.getName() << " - Can't produce additional copy of tech" << std::endl;
+        return false;
+    }
+
+    return true;
 }

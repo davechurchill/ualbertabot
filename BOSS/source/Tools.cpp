@@ -8,6 +8,9 @@ std::vector<ActionType> Tools::GetNaiveBuildOrder(const GameState & state, const
     PrerequisiteSet wanted;
     int minWorkers = 8;
 
+    const ActionType & worker = ActionTypes::GetWorker(state.getRace());
+    std::vector<size_t> buildOrderActionTypeCount(ActionTypes::GetAllActionTypes(state.getRace()).size(), 0);
+
     // add everything from the goal to the needed set
     for (size_t a(0); a < ActionTypes::GetAllActionTypes(state.getRace()).size(); ++a)
     {
@@ -33,23 +36,28 @@ std::vector<ActionType> Tools::GetNaiveBuildOrder(const GameState & state, const
     std::vector<ActionType> buildOrder;
     for (size_t a(0); a < requiredToBuild.size(); ++a)
     {
-        buildOrder.push_back(requiredToBuild.getActionType(a));
+        const ActionType & type = requiredToBuild.getActionType(a);
+        buildOrder.push_back(type);
+        buildOrderActionTypeCount[type.ID()]++;
     }
 
     // Add some workers to the build order if we don't have many, this usually gives a lower upper bound
     int requiredWorkers = minWorkers - state.getUnitData().getNumCompleted(ActionTypes::GetWorker(state.getRace()));
     while (requiredWorkers-- > 0)
     {
-        buildOrder.push_back(ActionTypes::GetWorker(state.getRace()));
+        buildOrder.push_back(worker);
+        buildOrderActionTypeCount[worker.ID()]++;
     }
 
     // Add the goal units to the end of the build order 
     for (size_t a(0); a < ActionTypes::GetAllActionTypes(state.getRace()).size(); ++a)
     {
         const ActionType & actionType = ActionTypes::GetActionType(state.getRace(), a);
-        int numNeeded = (int)goal.getGoal(actionType) - (int)state.getUnitData().getNumTotal(actionType);
+        int need = (int)goal.getGoal(actionType);
+        int have = (int)state.getUnitData().getNumTotal(actionType);
+        int numNeeded = need - have - buildOrderActionTypeCount[actionType.ID()]; 
             
-        while (numNeeded-- > 1)
+        for (int i(0); i < numNeeded; ++i)
         {
             buildOrder.push_back(actionType);
         }
@@ -64,9 +72,9 @@ std::vector<ActionType> Tools::GetNaiveBuildOrder(const GameState & state, const
         int sciAddons = 0;
 
         static const ActionType commandCenter = ActionTypes::GetActionType("Terran_Command_Center");
-        static const ActionType factory = ActionTypes::GetActionType("Terran_Command_Center");
-        static const ActionType starport = ActionTypes::GetActionType("Terran_Command_Center");
-        static const ActionType scienceFacility = ActionTypes::GetActionType("Terran_Command_Center");
+        static const ActionType factory = ActionTypes::GetActionType("Terran_Factory");
+        static const ActionType starport = ActionTypes::GetActionType("Terran_Starport");
+        static const ActionType scienceFacility = ActionTypes::GetActionType("Terran_Science_Facility");
 
         int numCommandCenters = state.getUnitData().getNumTotal(commandCenter);
         int numFactories = state.getUnitData().getNumTotal(factory);
@@ -186,13 +194,13 @@ std::vector<ActionType> Tools::GetNaiveBuildOrder(const GameState & state, const
 
 std::vector<ActionType> Tools::GetOptimizedNaiveBuildOrder(const GameState & state, const DFBB_BuildOrderSearchGoal & goal)
 {
-    std::vector<ActionType> bestBuildOrder = GetNaiveBuildOrderNew(state, goal, 4);
+    std::vector<ActionType> bestBuildOrder = GetNaiveBuildOrderAddWorkers(state, goal, 4);
     FrameCountType minCompletionTime = Tools::GetBuildOrderCompletionTime(state, bestBuildOrder);
     UnitCountType bestNumWorkers = GetWorkerCount(bestBuildOrder);
 
     for (UnitCountType numWorkers(8); numWorkers < 27; ++numWorkers)
     {
-        std::vector<ActionType> buildOrder = Tools::GetNaiveBuildOrderNew(state, goal, numWorkers);
+        std::vector<ActionType> buildOrder = Tools::GetNaiveBuildOrderAddWorkers(state, goal, numWorkers);
         FrameCountType completionTime = Tools::GetBuildOrderCompletionTime(state, buildOrder);
         UnitCountType workers = GetWorkerCount(buildOrder);
         
@@ -207,7 +215,7 @@ std::vector<ActionType> Tools::GetOptimizedNaiveBuildOrder(const GameState & sta
     FrameCountType bestCompletionTime = Tools::GetBuildOrderCompletionTime(state, bestBuildOrder);
     std::vector<ActionType> testBuildOrder;
 
-    std::cout << "Found a better build order that takes " << bestCompletionTime << " frames\n";
+    //std::cout << "Found a better build order that takes " << bestCompletionTime << " frames\n";
     while (true)
     {
         const static ActionType gateway = ActionTypes::GetActionType("Protoss_Gateway");
@@ -217,7 +225,7 @@ std::vector<ActionType> Tools::GetOptimizedNaiveBuildOrder(const GameState & sta
 
         if (completionTime < bestCompletionTime)
         {
-            std::cout << "Found a better build order that takes " << completionTime << " frames\n";
+            //std::cout << "Found a better build order that takes " << completionTime << " frames\n";
             bestCompletionTime = completionTime;
             bestBuildOrder = testBuildOrder;
         }
@@ -231,10 +239,13 @@ std::vector<ActionType> Tools::GetOptimizedNaiveBuildOrder(const GameState & sta
     return bestBuildOrder;
 }
 
-std::vector<ActionType> Tools::GetNaiveBuildOrderNew(const GameState & state, const DFBB_BuildOrderSearchGoal & goal, UnitCountType maxWorkers)
+std::vector<ActionType> Tools::GetNaiveBuildOrderAddWorkers(const GameState & state, const DFBB_BuildOrderSearchGoal & goal, UnitCountType maxWorkers)
 {
     PrerequisiteSet wanted;
     int minWorkers = 8;
+
+    const ActionType & worker = ActionTypes::GetWorker(state.getRace());
+    std::vector<size_t> buildOrderActionTypeCount(ActionTypes::GetAllActionTypes(state.getRace()).size(), 0);
 
     // add everything from the goal to the needed set
     for (size_t a(0); a < ActionTypes::GetAllActionTypes(state.getRace()).size(); ++a)
@@ -261,20 +272,39 @@ std::vector<ActionType> Tools::GetNaiveBuildOrderNew(const GameState & state, co
     std::vector<ActionType> buildOrder;
     for (size_t a(0); a < requiredToBuild.size(); ++a)
     {
-        buildOrder.push_back(requiredToBuild.getActionType(a));
+        const ActionType & type = requiredToBuild.getActionType(a);
+        buildOrder.push_back(type);
+        buildOrderActionTypeCount[type.ID()]++;
+    }
+
+    // Add some workers to the build order if we don't have many, this usually gives a lower upper bound
+    int requiredWorkers = minWorkers - state.getUnitData().getNumCompleted(ActionTypes::GetWorker(state.getRace()));
+    while (requiredWorkers-- > 0)
+    {
+        buildOrder.push_back(worker);
+        buildOrderActionTypeCount[worker.ID()]++;
     }
 
     // Add the goal units to the end of the build order 
     for (size_t a(0); a < ActionTypes::GetAllActionTypes(state.getRace()).size(); ++a)
     {
         const ActionType & actionType = ActionTypes::GetActionType(state.getRace(), a);
-        int numNeeded = (int)goal.getGoal(actionType) - (int)state.getUnitData().getNumTotal(actionType);
+        int need = (int)goal.getGoal(actionType);
+        int have = (int)state.getUnitData().getNumTotal(actionType);
+        int numNeeded = need - have - buildOrderActionTypeCount[actionType.ID()]; 
             
-        while (numNeeded-- > 1)
+        for (int i(0); i < numNeeded; ++i)
         {
             buildOrder.push_back(actionType);
         }
     }
+
+    
+    static const ActionType commandCenter = ActionTypes::GetActionType("Terran_Command_Center");
+    static const ActionType factory = ActionTypes::GetActionType("Terran_Factory");
+    static const ActionType starport = ActionTypes::GetActionType("Terran_Starport");
+    static const ActionType scienceFacility = ActionTypes::GetActionType("Terran_Science_Facility");
+
 
     // Check to see if we have enough buildings for the required addons
     if (state.getRace() == Races::Terran)
@@ -283,11 +313,6 @@ std::vector<ActionType> Tools::GetNaiveBuildOrderNew(const GameState & state, co
         int factoryAddons = 0;
         int starportAddons = 0;
         int sciAddons = 0;
-
-        static const ActionType commandCenter = ActionTypes::GetActionType("Terran_Command_Center");
-        static const ActionType factory = ActionTypes::GetActionType("Terran_Command_Center");
-        static const ActionType starport = ActionTypes::GetActionType("Terran_Command_Center");
-        static const ActionType scienceFacility = ActionTypes::GetActionType("Terran_Command_Center");
 
         int numCommandCenters = state.getUnitData().getNumTotal(commandCenter);
         int numFactories = state.getUnitData().getNumTotal(factory);
@@ -318,7 +343,7 @@ std::vector<ActionType> Tools::GetNaiveBuildOrderNew(const GameState & state, co
                 }
                 else
                 {
-                    BOSS_ASSERT(false, "Inconceivable: %s", actionType.getName().c_str());
+                    BOSS_ASSERT(false, "Addon has no builder: %s %s", actionType.getName().c_str(), actionType.whatBuildsActionType().getName().c_str());
                 }
             }
 
@@ -421,7 +446,9 @@ std::vector<ActionType> Tools::GetNaiveBuildOrderNew(const GameState & state, co
         }
         else
         {
+            ActionType testNextAction = buildOrder[i];
             finalBuildOrder.push_back(nextAction);
+
             currentState.doAction(nextAction);
             ++i;
         }
@@ -670,6 +697,49 @@ bool Tools::MeetsGoal(const GameState & state, const DFBB_BuildOrderSearchGoal &
         {
             return false;
         }
+    }
+
+    return true;
+}
+
+bool Tools::PerformBuildOrder(GameState & state, const std::vector<ActionType> & buildOrder)
+{
+    size_t i = 0;
+    GameState stateCopy(state);
+    try
+    {
+        for (i = 0; i<buildOrder.size(); ++i)
+        {
+            if (!state.isLegal(buildOrder[i]))
+            {
+                state.whyIsNotLegal(buildOrder[i]);
+                return false;
+            }
+            else
+            {
+                state.doAction(buildOrder[i]);
+            }
+        }
+    }
+    catch (BOSS::Assert::BOSSException e)
+    {
+        std::cout << "Build order failed at: " << i << " : " << (int)buildOrder[i].ID() << ":" << buildOrder[i].getName() << " " << (int)buildOrder[i].whatBuildsActionType().ID() << ":" << buildOrder[i].whatBuildsActionType().getName() << std::endl;
+
+        GameState errorState(stateCopy);
+        for (size_t j=0; j < i; ++j)
+        {
+            std::cout << "Doing: " << j << " " << buildOrder[j].getName() << std::endl;
+            errorState.doAction(buildOrder[j]);
+        }
+
+        for (size_t j=i; j < buildOrder.size(); ++j)
+        {
+            std::cout << "Doing: " << j << " " << buildOrder[j].getName() << std::endl;
+            errorState.doAction(buildOrder[j]);
+        }
+
+
+        int a = 0;
     }
 
     return true;

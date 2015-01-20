@@ -157,9 +157,14 @@ void mainLoop()
 }
 
 #include "BOSSExperiments.h"
+#include "BuildOrderTester.h"
 int main(int argc, char *argv[])
 {
     BOSS::init();
+
+    BuildOrderTester::DoRandomTests(Races::Terran, 10000);
+
+    return 0;
 
 #ifndef EMSCRIPTEN
     BOSS::BOSSExperiments experiments("../asset/config/config.txt");

@@ -22,7 +22,7 @@ using namespace UAlbertaBot;
 
 void UAlbertaBotModule::onStart()
 {
-	BWAPI::Broodwar->setLocalSpeed(5);
+	BWAPI::Broodwar->setLocalSpeed(0);
 	//BWAPI::Broodwar->setFrameSkip(0);
 
     SparCraft::init();

@@ -33,13 +33,13 @@ void InformationManager::update()
 void InformationManager::updateUnitInfo() 
 {
 	// update enemy unit information
-	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->enemy()->getUnits())
+	for (BWAPI::UnitInterface * unit : BWAPI::Broodwar->enemy()->getUnits())
 	{
 		updateUnit(unit);
 	}
 
 	// update enemy unit information
-	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits())
+	for (BWAPI::UnitInterface * unit : BWAPI::Broodwar->self()->getUnits())
 	{
 		updateUnit(unit);
 	}
@@ -54,6 +54,9 @@ void InformationManager::initializeRegionInformation()
 	// set initial pointers to null
 	mainBaseLocations[SELF_INDEX] = BWTA::getStartLocation(BWAPI::Broodwar->self());
 	mainBaseLocations[ENEMY_INDEX] = BWTA::getStartLocation(BWAPI::Broodwar->enemy());
+
+    mainBaseTilePositions[SELF_INDEX] = BWAPI::Broodwar->self()->getStartLocation();
+    mainBaseTilePositions[ENEMY_INDEX] = BWAPI::Broodwar->enemy()->getStartLocation();
 
 	// push that region into our occupied vector
 	updateOccupiedRegions(BWTA::getRegion(mainBaseLocations[SELF_INDEX]->getTilePosition()), BWAPI::Broodwar->self());

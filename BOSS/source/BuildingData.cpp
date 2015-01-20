@@ -30,9 +30,20 @@ const bool BuildingStatus::canBuildEventually(const ActionType & action) const
         return false;
     }
 
-    if (action.isAddon() && (_addon != ActionTypes::None))
+    // if the type is an addon
+    if (action.isAddon())
     {
-        return false;
+        // if we already have an addon we can't build it
+        if (_addon != ActionTypes::None)
+        {
+            return false;
+        }
+
+        // if we are building an addon we can't ever build it
+        if (_timeRemaining > 0 && _isConstructing.isAddon())
+        {
+            return false;
+        }
     }
 
     if (action.requiresAddon() && (_addon != action.requiredAddonType()))
@@ -92,6 +103,8 @@ void BuildingStatus::fastForward(const FrameCountType frames)
         {
             _addon = _isConstructing;
         }
+
+        _isConstructing = ActionTypes::None;
     }
     else
     {
@@ -158,32 +171,33 @@ const FrameCountType BuildingData::getTimeUntilCanBuild(const ActionType & actio
         }
     }
 
+
     BOSS_ASSERT(minset, "Min was not set");
     return min;
 }
 
 // gets the time until building of type t is free
 // this will only ever be called if t exists, so min will always be set to a lower value
-FrameCountType BuildingData::timeUntilFree(const ActionType & action) const
-{
-    BOSS_ASSERT(_buildings.size() > 0, "Called timeUntilFree on empty building data");
-
-    bool minset = false;
-	FrameCountType min = 0;
-	
-	for (size_t i=0; i<_buildings.size(); ++i)
-	{
-		if (_buildings[i]._type == action && (!minset || _buildings[i]._timeRemaining < min))
-		{
-			min = _buildings[i]._timeRemaining;
-            minset = true;
-		}
-	}
-		
-	BOSS_ASSERT(minset, "No min was set");
-	
-	return min;
-}
+//FrameCountType BuildingData::timeUntilFree(const ActionType & action) const
+//{
+//    BOSS_ASSERT(_buildings.size() > 0, "Called timeUntilFree on empty building data");
+//
+//    bool minset = false;
+//	FrameCountType min = 0;
+//	
+//	for (size_t i=0; i<_buildings.size(); ++i)
+//	{
+//		if (_buildings[i]._type == action && (!minset || _buildings[i]._timeRemaining < min))
+//		{
+//			min = _buildings[i]._timeRemaining;
+//            minset = true;
+//		}
+//	}
+//		
+//	BOSS_ASSERT(minset, "No min was set");
+//	
+//	return min;
+//}
 
 void BuildingData::queueAction(const ActionType & action)
 {	

@@ -15,6 +15,9 @@
     <ClCompile Include="..\source\BOSSVisExperiment.cpp">
       <Filter>experiments</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\BuildOrderTester.cpp">
+      <Filter>testing</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="gui">
@@ -22,6 +25,9 @@
     </Filter>
     <Filter Include="experiments">
       <UniqueIdentifier>{1d1bf021-f0f5-44d7-abf5-ded9f0d6ed4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="testing">
+      <UniqueIdentifier>{b8dbb056-eafb-4ae0-8475-538af1b4bae4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -37,6 +43,9 @@
     </ClInclude>
     <ClInclude Include="..\source\BOSSVisExperiment.h">
       <Filter>experiments</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\BuildOrderTester.h">
+      <Filter>testing</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -27,7 +27,7 @@ void ScoutManager::update(const std::set<BWAPI::UnitInterface*> & scoutUnits)
 
 void ScoutManager::moveScouts()
 {
-	if (!workerScout || !workerScout->exists() || !workerScout->getPosition().isValid())
+	if (!workerScout || !workerScout->exists() || !workerScout->getPosition().isValid() || !(workerScout->getHitPoints() > 0))
 	{
 		return;
 	}
@@ -253,7 +253,7 @@ bool ScoutManager::isValidFleePosition(BWAPI::Position pos)
 	if (!good) return false;
 	
 	// for each of those units, if it's a building or an attacking enemy unit we don't want to go there
-	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->getUnitsOnTile(x/32, y/32)) 
+	for (BWAPI::Unit unit : BWAPI::Broodwar->getUnitsOnTile(x/32, y/32)) 
 	{
 		if	(unit->getType().isBuilding() || unit->getType().isResourceContainer() || 
 			(unit->getPlayer() != BWAPI::Broodwar->self() && unit->getType().groundWeapon() != BWAPI::WeaponTypes::None)) 
@@ -266,28 +266,27 @@ bool ScoutManager::isValidFleePosition(BWAPI::Position pos)
 	int mineralDist = 32;
 
 	BWTA::BaseLocation * enemyLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
+    if (!enemyLocation)
+    {
+        return true;
+    }
+    
+    UAB_ASSERT(enemyLocation, "Should know an enemy location");
 
-	BWAPI::UnitInterface* geyser = getEnemyGeyser();
-	if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawCircleMap(geyser->getPosition().x, geyser->getPosition().y, geyserDist, BWAPI::Colors::Red);
+    for (auto & unit : BWAPI::Broodwar->getAllUnits())
+    {
+        BWAPI::UnitType type = unit->getType();
 
-	if (geyser->getDistance(pos) < geyserDist)
-	{
-		return false;
-	}
-
-	for (BWAPI::UnitInterface* mineral : enemyLocation->getMinerals())
-	{
-		if (mineral->getDistance(pos) < mineralDist)
-		{
-			return false;
-		}
-	}
-
-	BWTA::Region * enemyRegion = enemyLocation->getRegion();
-	if (enemyRegion && BWTA::getRegion(BWAPI::TilePosition(pos)) != enemyRegion)
-	{
-		return false;
-	}
+        if (type == BWAPI::UnitTypes::Resource_Vespene_Geyser && unit->getDistance(pos) < geyserDist)
+        {
+            return false;
+        }
+        
+        if (type == BWAPI::UnitTypes::Resource_Mineral_Field && unit->getDistance(pos) < mineralDist)
+        {
+            return false;
+        }
+    }
 
 	// otherwise it's okay
 	return true;
