@@ -189,7 +189,7 @@ bool GameState::isLegal(const ActionType & action) const
     }
 
     // if it's a unit and we are out of supply and aren't making an overlord, it's not legal
-    if ((_units.getCurrentSupply() + action.supplyRequired()) > (_units.getMaxSupply() + _units.getSupplyInProgress()))
+    if (!action.isMorphed() && ((_units.getCurrentSupply() + action.supplyRequired()) > (_units.getMaxSupply() + _units.getSupplyInProgress())))
     {
         return false;
     }
@@ -201,13 +201,13 @@ bool GameState::isLegal(const ActionType & action) const
     }
 
     // if it's a new building and no workers are available, it's not legal
-    if (action.isBuilding() && !action.isAddon() && (getNumMineralWorkers() <= 1) && (getNumBuildingWorkers() == 0))
+    if (!action.isMorphed() && action.isBuilding() && !action.isAddon() && (getNumMineralWorkers() <= 1) && (getNumBuildingWorkers() == 0))
     {
         return false;
     }
 
     // we can't build a building with our last worker
-    if (action.isBuilding() && !action.isAddon() && (getNumMineralWorkers() <= (1 + 3*refineriesInProgress)) && (getNumBuildingWorkers() == 0))
+    if (!action.isMorphed() && action.isBuilding() && !action.isAddon() && (getNumMineralWorkers() <= (1 + 3*refineriesInProgress)) && (getNumBuildingWorkers() == 0))
     {
         return false;
     }
@@ -267,7 +267,7 @@ void GameState::doAction(const ActionType & action)
 
     FrameCountType ffTime = whenCanPerform(action);
 
-    BOSS_ASSERT(ffTime >= 0 && ffTime < 100000, "FFTime is very strange: %d", ffTime);
+    BOSS_ASSERT(ffTime >= 0 && ffTime < 1000000, "FFTime is very strange: %d", ffTime);
 
     fastForward(ffTime);
 
@@ -509,10 +509,7 @@ const FrameCountType GameState::whenBuildingPrereqReady(const ActionType & actio
     FrameCountType buildingInProgressFinishTime = std::numeric_limits<int>::max()-10;
 
     BOSS_ASSERT(buildingIsConstructed || (!action.requiresAddon() && buildingInProgress), "We will never be able to build action: %s", action.getName().c_str());
-
-    // JAN TODO: IF IT'S AN ADDON WE HAVE TO CHECK IF THE COMPLETED BUILDING HAS AN ADDON ALREADY
-    //if 
-
+    
     if (buildingIsConstructed)
     {
         constructedBuildingFreeTime  = _currentFrame + _units.getBuildingData().getTimeUntilCanBuild(action);
@@ -854,7 +851,7 @@ const std::string GameState::toString() const
 {
     std::cout << "\n-----------------------------------------------------------\n";
     
-    std::cout << "Current Frame: " << _currentFrame << "(" << (_currentFrame / 24) << "m " << ((_currentFrame / 24) % 60) << "s)\n\n";
+    std::cout << "Current Frame: " << _currentFrame << "(" << (_currentFrame / (60*24)) << "m " << ((_currentFrame / 24) % 60) << "s)\n\n";
 
     std::cout << "Units Completed:\n\n";
     const std::vector<ActionType> & allActions = ActionTypes::GetAllActionTypes(getRace());
@@ -873,13 +870,13 @@ const std::string GameState::toString() const
         std::cout << "\t" << (int)_units.getFinishTimeByIndex(i) << "\t" << _units.getActionInProgressByIndex(i).getName() << "\n";
     }
 
-    std::cout << "\nLegal Actions:\n\n";
+    /*std::cout << "\nLegal Actions:\n\n";
     ActionSet legalActions;
     getAllLegalActions(legalActions);
     for (UnitCountType a(0); a<legalActions.size(); ++a)
     {
         std::cout << "\t" << legalActions[a].getName() << "\n";
-    }
+    }*/
 
     std::cout << "\nResources:\n\n";
     std::cout << "\t" << _minerals << "\tMinerals\n";
@@ -930,7 +927,7 @@ bool GameState::whyIsNotLegal(const ActionType & action) const
     }
 
     // if it's a unit and we are out of supply and aren't making an overlord, it's not legal
-    if ((_units.getCurrentSupply() + action.supplyRequired()) > (_units.getMaxSupply() + _units.getSupplyInProgress()))
+    if (!action.isMorphed() && ((_units.getCurrentSupply() + action.supplyRequired()) > (_units.getMaxSupply() + _units.getSupplyInProgress())))
     {
         std::cout << "WhyNotLegal: " << action.getName() << " - Not enough supply to construct" << std::endl;
         return false;
@@ -944,14 +941,14 @@ bool GameState::whyIsNotLegal(const ActionType & action) const
     }
 
     // if it's a new building and no drones are available, it's not legal
-    if (action.isBuilding() && (getNumMineralWorkers() <= 1) && (getNumBuildingWorkers() == 0))
+    if (!action.isMorphed() && action.isBuilding() && (getNumMineralWorkers() <= 1) && (getNumBuildingWorkers() == 0))
     {
         std::cout << "WhyNotLegal: " << action.getName() << " - No building worker available" << std::endl;
         return false;
     }
 
     // we can't build a building with our last worker
-    if (action.isBuilding() && (getNumMineralWorkers() <= 1 + 3*refineriesInProgress) && (getNumBuildingWorkers() == 0))
+    if (!action.isMorphed() && action.isBuilding() && (getNumMineralWorkers() <= 1 + 3*refineriesInProgress) && (getNumBuildingWorkers() == 0))
     {
         std::cout << "WhyNotLegal: " << action.getName() << " - Can't build with last worker" << std::endl;
         return false;

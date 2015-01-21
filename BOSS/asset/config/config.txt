@@ -24,8 +24,7 @@
             "outputFile" : "UAB_Openers.txt", 
             "scenarios"     :   
             [ 
-                { "state":"Protoss Start State", "buildOrder" : "UAB Zealot Rush" },
-                { "state":"Zerg Start State", "buildOrder" : "3 Hatch Muta" }
+                { "state":"Zerg Start State", "buildOrder" : "Test Build" }
             ] 
         },
         
@@ -57,7 +56,8 @@
         "8 Zealots"             : [ "Protoss_Probe", "Protoss_Probe", "Protoss_Probe", "Protoss_Probe", "Protoss_Pylon", "Protoss_Probe", "Protoss_Probe", "Protoss_Gateway", "Protoss_Probe", "Protoss_Probe", "Protoss_Gateway", "Protoss_Probe", "Protoss_Gateway", "Protoss_Pylon",  "Protoss_Pylon", "Protoss_Zealot", "Protoss_Zealot", "Protoss_Zealot", "Protoss_Zealot", "Protoss_Zealot", "Protoss_Zealot", "Protoss_Zealot", "Protoss_Zealot" ],
         "UAB Zealot Rush"       : [ "Protoss_Probe", "Protoss_Probe", "Protoss_Probe", "Protoss_Probe", "Protoss_Pylon", "Protoss_Probe", "Protoss_Gateway", "Protoss_Gateway", "Protoss_Probe", "Protoss_Probe", "Protoss_Zealot", "Protoss_Pylon", "Protoss_Zealot", "Protoss_Zealot", "Protoss_Probe", "Protoss_Zealot", "Protoss_Zealot", "Protoss_Probe", "Protoss_Pylon", "Protoss_Zealot", "Protoss_Gateway", "Protoss_Probe", "Protoss_Pylon", "Protoss_Probe", "Protoss_Zealot", "Protoss_Probe", "Protoss_Zealot", "Protoss_Zealot", "Protoss_Zealot", "Protoss_Zealot", "Protoss_Pylon", "Protoss_Probe", "Protoss_Zealot", "Protoss_Zealot", "Protoss_Zealot" ],
         "UAB DT Rush"           : [ "Protoss_Probe", "Protoss_Probe", "Protoss_Probe", "Protoss_Probe", "Protoss_Pylon", "Protoss_Probe", "Protoss_Gateway", "Protoss_Probe", "Protoss_Assimilator", "Protoss_Probe", "Protoss_Cybernetics_Core", "Protoss_Probe", "Protoss_Citadel_of_Adun", "Protoss_Probe", "Protoss_Templar_Archives", "Protoss_Gateway", "Protoss_Dark_Templar", "Protoss_Dark_Templar", "Protoss_Pylon", "Protoss_Dark_Templar", "Protoss_Dark_Templar", "Protoss_Probe", "Protoss_Pylon", "Protoss_Probe"],
-        "UAB Dragoon Rush"      : [ "Protoss_Probe", "Protoss_Probe", "Protoss_Probe", "Protoss_Probe", "Protoss_Pylon", "Protoss_Probe", "Protoss_Probe", "Protoss_Gateway", "Protoss_Probe", "Protoss_Assimilator", "Protoss_Probe", "Protoss_Probe", "Protoss_Cybernetics_Core", "Protoss_Probe", "Protoss_Probe", "Protoss_Gateway", "Singularity_Charge", "Protoss_Dragoon", "Protoss_Gateway", "Protoss_Pylon", "Protoss_Dragoon", "Protoss_Dragoon", "Protoss_Probe", "Protoss_Gateway", "Protoss_Pylon", "Protoss_Probe", "Protoss_Dragoon", "Protoss_Dragoon", "Protoss_Dragoon"]
+        "UAB Dragoon Rush"      : [ "Protoss_Probe", "Protoss_Probe", "Protoss_Probe", "Protoss_Probe", "Protoss_Pylon", "Protoss_Probe", "Protoss_Probe", "Protoss_Gateway", "Protoss_Probe", "Protoss_Assimilator", "Protoss_Probe", "Protoss_Probe", "Protoss_Cybernetics_Core", "Protoss_Probe", "Protoss_Probe", "Protoss_Gateway", "Singularity_Charge", "Protoss_Dragoon", "Protoss_Gateway", "Protoss_Pylon", "Protoss_Dragoon", "Protoss_Dragoon", "Protoss_Probe", "Protoss_Gateway", "Protoss_Pylon", "Protoss_Probe", "Protoss_Dragoon", "Protoss_Dragoon", "Protoss_Dragoon"],
+        "Test Build" : ["Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Overlord", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Hatchery", "Zerg_Hatchery", "Zerg_Extractor", "Zerg_Spawning_Pool", "Zerg_Lair", "Zerg_Lair", "Zerg_Lair", "Zerg_Spire", "Zerg_Queens_Nest", "Zerg_Scourge", "Ventral_Sacs", "Zerg_Scourge", "Zerg_Scourge", "Zerg_Hive", "Zerg_Mutalisk", "Zerg_Hive", "Zerg_Hive", "Zerg_Greater_Spire"]
     },
 
     "Build Order Search Goals" :

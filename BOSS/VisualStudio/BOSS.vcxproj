@@ -38,6 +38,7 @@
     <ClInclude Include="..\source\GameState.h" />
     <ClInclude Include="..\source\HatcheryData.h" />
     <ClInclude Include="..\source\BOSSLogger.h" />
+    <ClInclude Include="..\source\JSONTools.h" />
     <ClInclude Include="..\source\Position.hpp" />
     <ClInclude Include="..\source\PrerequisiteSet.h" />
     <ClInclude Include="..\source\Timer.hpp" />
@@ -68,6 +69,7 @@
     <ClCompile Include="..\source\GameState.cpp" />
     <ClCompile Include="..\source\HatcheryData.cpp" />
     <ClCompile Include="..\source\BOSSLogger.cpp" />
+    <ClCompile Include="..\source\JSONTools.cpp" />
     <ClCompile Include="..\source\PrerequisiteSet.cpp" />
     <ClCompile Include="..\source\Tools.cpp" />
     <ClCompile Include="..\source\UnitData.cpp" />

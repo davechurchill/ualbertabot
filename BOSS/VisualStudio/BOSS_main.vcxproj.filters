@@ -8,7 +8,6 @@
       <Filter>gui</Filter>
     </ClCompile>
     <ClCompile Include="..\source\BOSS_main.cpp" />
-    <ClCompile Include="..\source\JSONTools.cpp" />
     <ClCompile Include="..\source\BOSSExperiments.cpp">
       <Filter>experiments</Filter>
     </ClCompile>
@@ -37,7 +36,6 @@
     <ClInclude Include="..\source\GUITools.h">
       <Filter>gui</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\JSONTools.h" />
     <ClInclude Include="..\source\BOSSExperiments.h">
       <Filter>experiments</Filter>
     </ClInclude>

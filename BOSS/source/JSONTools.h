@@ -21,5 +21,7 @@ namespace JSONTools
 
     DFBB_BuildOrderSearchGoal GetBuildOrderSearchGoal(const std::string & jsonString);
     DFBB_BuildOrderSearchGoal GetBuildOrderSearchGoal(const rapidjson::Value & stateVal);
+
+    std::string GetBuildOrderString(const std::vector<ActionType> & buildOrder);
 }
 }

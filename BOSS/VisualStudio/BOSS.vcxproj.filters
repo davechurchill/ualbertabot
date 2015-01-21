@@ -79,6 +79,9 @@
     <ClCompile Include="..\source\BOSSLogger.cpp">
       <Filter>util</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\JSONTools.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\Timer.hpp">
@@ -175,6 +178,9 @@
       <Filter>state</Filter>
     </ClInclude>
     <ClInclude Include="..\source\BOSSLogger.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\JSONTools.h">
       <Filter>util</Filter>
     </ClInclude>
   </ItemGroup>

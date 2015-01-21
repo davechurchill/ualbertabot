@@ -63,10 +63,24 @@ void UnitData::addCompletedBuilding(const ActionType & action, const FrameCountT
 
 void UnitData::addCompletedAction(const ActionType & action, bool wasBuilt)
 {
+    const static ActionType Lair = ActionTypes::GetActionType("Zerg_Lair");
+    const static ActionType Hive = ActionTypes::GetActionType("Zerg_Hive");
+
     _numUnits[action.ID()] += action.numProduced();
 
-    _maxSupply += action.supplyProvided();
-
+    if (wasBuilt)
+    {
+        // a lair or hive from a hatchery don't produce additional supply
+        if (action != Lair && action != Hive)
+        {
+            _maxSupply += action.supplyProvided();
+        }
+    }
+    else
+    {
+        _maxSupply += action.supplyProvided();
+    }
+    
     if (action.isWorker()) 
 	{ 
 		_mineralWorkers++;
@@ -82,11 +96,7 @@ void UnitData::addCompletedAction(const ActionType & action, bool wasBuilt)
     // if it's a building that can produce units, add it to the building data
 	if (action.isBuilding() && !action.isSupplyProvider())
 	{
-        if (action.isMorphed() && wasBuilt)
-        {
-		    _buildings.morphBuilding(action.whatBuildsActionType(), action);   
-        }
-        else
+        if (!action.isMorphed())
         {
             _buildings.addBuilding(action, ActionTypes::None);
         }
@@ -106,7 +116,10 @@ void UnitData::addActionInProgress(const ActionType & action, const FrameCountTy
 	// add it to the actions in progress
 	_progress.addAction(action, finishTime);
     
-    _currentSupply += action.supplyRequired() * action.numProduced();
+    if (!action.isMorphed())
+    {
+        _currentSupply += action.supplyRequired() * action.numProduced();
+    }
 
     if (queueAction && action.whatBuildsIsBuilding())
 	{
@@ -175,7 +188,6 @@ void UnitData::morphUnit(const ActionType & from, const ActionType & to, const F
     BOSS_ASSERT(getNumCompleted(from) > 0, "Must have the unit type to morph it");
     _numUnits[from.ID()]--;
     _currentSupply -= from.supplyRequired();
-    _maxSupply -= from.supplyProvided();
 
     if (from.isWorker())
     {
@@ -249,9 +261,37 @@ const UnitCountType UnitData::getNumTotal(const ActionType & action) const
 
 const bool UnitData::hasPrerequisites(const PrerequisiteSet & required) const
 {
+    static const ActionType & Hatchery      = ActionTypes::GetActionType("Zerg_Hatchery");
+    static const ActionType & Lair          = ActionTypes::GetActionType("Zerg_Lair");
+    static const ActionType & Hive          = ActionTypes::GetActionType("Zerg_Hive");
+    static const ActionType & Spire         = ActionTypes::GetActionType("Zerg_Spire");
+    static const ActionType & GreaterSpire  = ActionTypes::GetActionType("Zerg_Greater_Spire");
+
     for (size_t a(0); a<required.size(); ++a)
     {
-        if (getNumTotal(required.getActionType(a)) < required.getActionTypeCount(a))
+        const ActionType & type = required.getActionType(a);
+        const size_t & req = required.getActionTypeCount(a);
+        size_t have = getNumTotal(type);
+
+        // special check for zerg moprhed buildings
+        if (_race == Races::Zerg)
+        {
+            if (type == Hatchery)
+            {
+                have += getNumTotal(Lair);
+                have += getNumTotal(Hive);
+            }
+            else if (type == Lair)
+            {
+                have += getNumTotal(Hive);
+            }
+            else if (type == Spire)
+            {
+                have += getNumTotal(GreaterSpire);
+            }
+        }
+
+        if (have < req)
         {
             return false;
         }

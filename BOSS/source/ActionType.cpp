@@ -99,6 +99,48 @@ bool                        ActionType::canProduce()            const { return A
 bool                        ActionType::requiresAddon()         const { return ActionTypeData::GetActionTypeData(_race, _id).requiresAddon(); }
 bool                        ActionType::isMorphed()             const { return ActionTypeData::GetActionTypeData(_race, _id).isMorphed(); }
 
+bool ActionType::canBuild(const ActionType & t) const 
+{ 
+    if (t.getRace() != getRace())
+    {
+        return false;
+    }
+
+    static const ActionType & Hatchery      = ActionTypes::GetActionType("Zerg_Hatchery");
+    static const ActionType & Lair          = ActionTypes::GetActionType("Zerg_Lair");
+    static const ActionType & Hive          = ActionTypes::GetActionType("Zerg_Hive");
+    static const ActionType & Spire         = ActionTypes::GetActionType("Zerg_Spire");
+    static const ActionType & GreaterSpire  = ActionTypes::GetActionType("Zerg_Greater_Spire");
+
+    const ActionType & whatBuilds = t.whatBuildsActionType();
+
+    if (whatBuilds == *this)
+    {
+        return true;
+    }
+    
+    // if this is a zerg unit which is not morphed
+    // then an upgraded version of the building can construct it
+    // morphed units need the *exact* unit to morph from which is covered above
+    if ((t.getRace() == Races::Zerg) && !t.isMorphed())
+    {
+        if (whatBuilds == Hatchery)
+        {
+            return (*this == Lair || *this == Hive);
+        }
+        else if (whatBuilds == Lair)
+        {
+            return (*this == Hive);
+        }
+        else if (whatBuilds == Spire)
+        {
+            return (*this == GreaterSpire);
+        }
+    }
+    
+    return false;
+}
+
 ActionType                  ActionType::requiredAddonType()     const { return ActionTypes::GetActionType(_race, ActionTypeData::GetActionTypeData(_race, _id).requiredAddonID()); }
 
 const bool ActionType::operator == (const ActionType & rhs)     const { return _race == rhs._race && _id == rhs._id; }

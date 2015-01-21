@@ -161,3 +161,19 @@ DFBB_BuildOrderSearchGoal JSONTools::GetBuildOrderSearchGoal(const rapidjson::Va
 
     return goal;
 }
+
+std::string JSONTools::GetBuildOrderString(const std::vector<ActionType> & buildOrder)
+{
+    std::stringstream ss;
+
+    ss << "\"Test Build\" : [";
+
+    for (size_t i(0); i < buildOrder.size(); ++i)
+    {
+        ss << "\"" << buildOrder[i].getName() << "\"" << (i < buildOrder.size() - 1 ? ", " : "");
+    }
+
+    ss << "]";
+
+    return ss.str();
+}

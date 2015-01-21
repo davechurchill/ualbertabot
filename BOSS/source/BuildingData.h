@@ -47,7 +47,6 @@ public:
 
 	BuildingData();
 
-    void morphBuilding(const ActionType & from, const ActionType & to);
 	void addBuilding(const ActionType & action, const ActionType & addon);
 	void addBuilding(const ActionType & action, const FrameCountType timeUntilFree, const ActionType & constructing, const ActionType & addon);
 

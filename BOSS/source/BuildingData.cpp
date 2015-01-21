@@ -3,7 +3,10 @@
 using namespace BOSS;
 
 BuildingStatus::BuildingStatus() 
-: _timeRemaining(0) 
+: _type(ActionTypes::None)
+, _timeRemaining(0) 
+, _isConstructing(ActionTypes::None)
+, _addon(ActionTypes::None)
 {
 	
 }
@@ -11,6 +14,7 @@ BuildingStatus::BuildingStatus()
 BuildingStatus::BuildingStatus(const ActionType & action, const ActionType & addon) 
 : _type(action)
 , _timeRemaining(0) 
+, _isConstructing(ActionTypes::None)
 , _addon(addon)
 {
 }
@@ -25,7 +29,7 @@ BuildingStatus::BuildingStatus(const ActionType & action, FrameCountType time, c
 
 const bool BuildingStatus::canBuildEventually(const ActionType & action) const
 {
-    if (action.whatBuildsActionType() != _type)
+    if (!_type.canBuild(action))
     {
         return false;
     }
@@ -54,6 +58,12 @@ const bool BuildingStatus::canBuildEventually(const ActionType & action) const
         }
     }
 
+    // if the built type is morphed and we are morphing something, we won't be able to build it
+    if (action.isMorphed() && (_timeRemaining > 0) && (_isConstructing.isMorphed()))
+    {
+        return false;
+    }
+
     return true;
 }
 
@@ -64,7 +74,7 @@ const bool BuildingStatus::canBuildNow(const ActionType & action) const
         return false;
     }
 
-    if (action.whatBuildsActionType() != _type)
+    if (!_type.canBuild(action))
     {
         return false;
     }
@@ -94,19 +104,25 @@ void BuildingStatus::fastForward(const FrameCountType frames)
     // if we fastforward more than the current time remaining, we will complete the action
     bool willComplete = _timeRemaining <= frames;
 
-    if (willComplete)
+    if ((_timeRemaining > 0) && willComplete)
     {
         _timeRemaining = 0;
 
         // if it's building an addon, add it
-        if (_isConstructing != ActionTypes::None && _isConstructing.isAddon())
+        if (_isConstructing.isAddon())
         {
             _addon = _isConstructing;
         }
 
+        // if we are finishing a morphed type, it becomes that type
+        if (_isConstructing.isMorphed())
+        {
+            _type = _isConstructing;
+        }
+
         _isConstructing = ActionTypes::None;
     }
-    else
+    else if (_timeRemaining > 0)
     {
         _timeRemaining -= frames;
     }
@@ -119,19 +135,6 @@ BuildingData::BuildingData()
 const size_t & BuildingData::size() const
 {
     return _buildings.size();
-}
-
-void BuildingData::morphBuilding(const ActionType & from, const ActionType & to)
-{
-    for (size_t i(0); i<_buildings.size(); ++i)
-	{
-        if (_buildings[i]._type == from)
-        {
-            
-            _buildings[i]._type = to;
-            return;
-        }
-    }
 }
 
 void BuildingData::addBuilding(const ActionType & action, const ActionType & addon)
