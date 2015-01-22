@@ -1,8 +1,8 @@
-#include "DFBB_BuildOrderSearchGoal.h"
+#include "BuildOrderSearchGoal.h"
 
 using namespace BOSS;
 
-DFBB_BuildOrderSearchGoal::DFBB_BuildOrderSearchGoal(const RaceID race)
+BuildOrderSearchGoal::BuildOrderSearchGoal(const RaceID race)
     : _supplyRequiredVal(0)
     , _goalUnits(race != Races::None ? ActionTypes::GetAllActionTypes(race).size() : 0, 0)
     , _goalUnitsMax(race != Races::None ? ActionTypes::GetAllActionTypes(race).size() : 0, 0)
@@ -11,7 +11,7 @@ DFBB_BuildOrderSearchGoal::DFBB_BuildOrderSearchGoal(const RaceID race)
  
 }
 
-void DFBB_BuildOrderSearchGoal::calculateSupplyRequired()
+void BuildOrderSearchGoal::calculateSupplyRequired()
 {
     _supplyRequiredVal = 0;
     for (ActionID a(0); a<_goalUnits.size(); ++a)
@@ -20,7 +20,7 @@ void DFBB_BuildOrderSearchGoal::calculateSupplyRequired()
     }
 }
 
-bool DFBB_BuildOrderSearchGoal::operator == (const DFBB_BuildOrderSearchGoal & g)
+bool BuildOrderSearchGoal::operator == (const BuildOrderSearchGoal & g)
 {
     for (ActionID a(0); a<_goalUnits.size(); ++a)
     {
@@ -33,7 +33,7 @@ bool DFBB_BuildOrderSearchGoal::operator == (const DFBB_BuildOrderSearchGoal & g
     return true;
 }
 
-void DFBB_BuildOrderSearchGoal::setGoal(const ActionType & a, const UnitCountType num)
+void BuildOrderSearchGoal::setGoal(const ActionType & a, const UnitCountType num)
 {
     BOSS_ASSERT(a.ID() >= 0 && a.ID() < _goalUnits.size(), "Action type not valid");
     BOSS_ASSERT(a.getRace() == _race, "Action type race doesn't match this goal object");
@@ -43,7 +43,7 @@ void DFBB_BuildOrderSearchGoal::setGoal(const ActionType & a, const UnitCountTyp
     calculateSupplyRequired();
 }
 
-bool DFBB_BuildOrderSearchGoal::hasGoal() const
+bool BuildOrderSearchGoal::hasGoal() const
 {
     for (ActionID a(0); a<_goalUnits.size(); ++a)
     {
@@ -56,7 +56,7 @@ bool DFBB_BuildOrderSearchGoal::hasGoal() const
     return false;
 }
 
-void DFBB_BuildOrderSearchGoal::setGoalMax(const ActionType & a, const UnitCountType num)
+void BuildOrderSearchGoal::setGoalMax(const ActionType & a, const UnitCountType num)
 {
     BOSS_ASSERT(a.ID() >= 0 && a.ID() < _goalUnitsMax.size(), "Action type not valid");
     BOSS_ASSERT(a.getRace() == _race, "Action type race doesn't match this goal object");
@@ -64,7 +64,7 @@ void DFBB_BuildOrderSearchGoal::setGoalMax(const ActionType & a, const UnitCount
     _goalUnitsMax[a.ID()] = num;
 }
 
-UnitCountType DFBB_BuildOrderSearchGoal::getGoal(const ActionType & a) const
+UnitCountType BuildOrderSearchGoal::getGoal(const ActionType & a) const
 {
     BOSS_ASSERT(a.ID() >= 0 && a.ID() < _goalUnits.size(), "Action type not valid");
     BOSS_ASSERT(a.getRace() == _race, "Action type race doesn't match this goal object");
@@ -72,7 +72,7 @@ UnitCountType DFBB_BuildOrderSearchGoal::getGoal(const ActionType & a) const
     return _goalUnits[a.ID()];
 }
 
-UnitCountType DFBB_BuildOrderSearchGoal::getGoalMax(const ActionType & a) const
+UnitCountType BuildOrderSearchGoal::getGoalMax(const ActionType & a) const
 {
     BOSS_ASSERT(a.ID() >= 0 && a.ID() < _goalUnitsMax.size(), "Action type not valid");
     BOSS_ASSERT(a.getRace() == _race, "Action type race doesn't match this goal object");
@@ -80,12 +80,12 @@ UnitCountType DFBB_BuildOrderSearchGoal::getGoalMax(const ActionType & a) const
     return _goalUnitsMax[a.ID()];
 }
 
-SupplyCountType DFBB_BuildOrderSearchGoal::supplyRequired() const
+SupplyCountType BuildOrderSearchGoal::supplyRequired() const
 {
     return _supplyRequiredVal;
 }
 
-void DFBB_BuildOrderSearchGoal::printGoal() const
+void BuildOrderSearchGoal::printGoal() const
 {
     printf("\nSearch Goal Information\n\n");
 
@@ -104,4 +104,44 @@ void DFBB_BuildOrderSearchGoal::printGoal() const
             printf("        MAX %7d %s\n", _goalUnitsMax[a], ActionTypes::GetActionType(_race, a).getName().c_str());
         }
     }
+}
+
+bool BuildOrderSearchGoal::isAchievedBy(const GameState & state)
+{
+    static const ActionType & Hatchery      = ActionTypes::GetActionType("Zerg_Hatchery");
+    static const ActionType & Lair          = ActionTypes::GetActionType("Zerg_Lair");
+    static const ActionType & Hive          = ActionTypes::GetActionType("Zerg_Hive");
+    static const ActionType & Spire         = ActionTypes::GetActionType("Zerg_Spire");
+    static const ActionType & GreaterSpire  = ActionTypes::GetActionType("Zerg_Greater_Spire");
+
+    for (size_t a(0); a < ActionTypes::GetAllActionTypes(state.getRace()).size(); ++a)
+    {
+        const ActionType & actionType = ActionTypes::GetActionType(state.getRace(), a);
+
+        int have = state.getUnitData().getNumTotal(actionType);
+
+        if (state.getRace() == Races::Zerg)
+        {
+            if (actionType == Hatchery)
+            {
+                have += state.getUnitData().getNumTotal(Lair);
+                have += state.getUnitData().getNumTotal(Hive);
+            }
+            else if (actionType == Lair)
+            {
+                have += state.getUnitData().getNumTotal(Hive);
+            }
+            else if (actionType == Spire)
+            {
+                have += state.getUnitData().getNumTotal(GreaterSpire);
+            }
+        }
+
+        if (have < getGoal(actionType))
+        {
+            return false;
+        }
+    }
+
+    return true;
 }

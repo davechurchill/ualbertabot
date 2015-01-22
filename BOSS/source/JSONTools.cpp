@@ -118,14 +118,14 @@ std::vector<ActionType> JSONTools::GetBuildOrder(const rapidjson::Value & stateV
     return buildOrder;
 }
 
-DFBB_BuildOrderSearchGoal JSONTools::GetBuildOrderSearchGoal(const std::string & jsonString)
+BuildOrderSearchGoal JSONTools::GetBuildOrderSearchGoal(const std::string & jsonString)
 {
     rapidjson::Document document;
     JSONTools::ParseJSONString(document, jsonString);
     return GetBuildOrderSearchGoal(document);
 }
 
-DFBB_BuildOrderSearchGoal JSONTools::GetBuildOrderSearchGoal(const rapidjson::Value & val)
+BuildOrderSearchGoal JSONTools::GetBuildOrderSearchGoal(const rapidjson::Value & val)
 {
     BOSS_ASSERT(val.HasMember("race") && val["race"].IsString(), "State doesn't have a race");
     
@@ -133,7 +133,7 @@ DFBB_BuildOrderSearchGoal JSONTools::GetBuildOrderSearchGoal(const rapidjson::Va
 
     BOSS_ASSERT(race != Races::None, "Unknown race (make sure to use a single upper case): %s", val["race"].GetString());
 
-    DFBB_BuildOrderSearchGoal goal(race);
+    BuildOrderSearchGoal goal(race);
 
     if (val.HasMember("goal") && val["goal"].IsArray())
     {

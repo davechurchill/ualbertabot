@@ -86,7 +86,7 @@ const std::vector<ActionType> & BOSSExperiments::getBuildOrder(const std::string
     return _buildOrderMap[key];
 }
 
-const DFBB_BuildOrderSearchGoal & BOSSExperiments::getBuildOrderSearchGoalMap(const std::string & key)
+const BuildOrderSearchGoal & BOSSExperiments::getBuildOrderSearchGoalMap(const std::string & key)
 {
     BOSS_ASSERT(_buildOrderSearchGoalMap.find(key) != _buildOrderSearchGoalMap.end(), "Couldn't find state: %s", key.c_str());
 

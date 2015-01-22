@@ -9,6 +9,8 @@
 #include "Tools.h"
 #include "DFBB_BuildOrderSmartSearch.h"
 #include "Position.hpp"
+#include "BuildOrderSearchGoal.h"
+#include "BuildOrder.h"
 
 namespace BOSS
 {

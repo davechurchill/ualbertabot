@@ -81,41 +81,6 @@ void testCombatSearch()
     }
 }
 
-void testNaiveBuildOrder()
-{
-    GameState initialState(Races::Protoss);
-    initialState.setStartingState();
-    GameState initialStateNew(initialState);
-    DFBB_BuildOrderSearchGoal goal(initialState.getRace());
-
-    goal.setGoal(ActionTypes::GetActionType("Protoss_Zealot"), 3);
-
-    Timer t;
-    t.start();
-    std::vector<ActionType> buildOrder = Tools::GetNaiveBuildOrder(initialStateNew, goal);
-    double ms = t.getElapsedTimeInMilliSec();
-
-    Timer tnew;
-    tnew.start();
-    std::vector<ActionType> buildOrderNew = Tools::GetOptimizedNaiveBuildOrder(initialStateNew, goal);
-    double msnew = tnew.getElapsedTimeInMilliSec();
-
-    for (size_t i(0); i<buildOrder.size(); ++i)
-    {
-        std::cout << buildOrder[i].getName() << std::endl;
-        initialState.doAction(buildOrder[i]);
-    }
-
-    std::cout << "Build order took " << initialState.getLastActionFinishTime() << " frames to complete in " << ms << " ms\n\n" << std::endl;
-
-    for (size_t i(0); i<buildOrderNew.size(); ++i)
-    {
-        std::cout << buildOrderNew[i].getName() << std::endl;
-        initialStateNew.doAction(buildOrderNew[i]);
-    }
-
-    std::cout << "New build order took " << initialStateNew.getLastActionFinishTime() << " frames to complete with " << initialStateNew.getUnitData().getNumTotal(ActionTypes::GetWorker(initialStateNew.getRace())) << " total workers in " << msnew << " ms" << std::endl;
-}
 
 void oldMain()
 {
@@ -162,7 +127,7 @@ int main(int argc, char *argv[])
 {
     BOSS::init();
 
-    BuildOrderTester::DoRandomTests(Races::Zerg, 1000000);
+    BuildOrderTester::DoRandomTests(Races::Terran, 1000000);
 
     return 0;
 

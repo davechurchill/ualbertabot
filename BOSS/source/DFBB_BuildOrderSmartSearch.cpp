@@ -271,7 +271,7 @@ void DFBB_BuildOrderSmartSearch::addGoal(const ActionType & a, const UnitCountTy
     _goal.setGoal(a,count);
 }
 
-void DFBB_BuildOrderSmartSearch::setGoal(const DFBB_BuildOrderSearchGoal & g)
+void DFBB_BuildOrderSmartSearch::setGoal(const BuildOrderSearchGoal & g)
 {
     _goal = g;    
 }

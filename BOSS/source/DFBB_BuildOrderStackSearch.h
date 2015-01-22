@@ -6,6 +6,7 @@
 #include "DFBB_BuildOrderSearchParameters.h"
 #include "Timer.hpp"
 #include "Tools.h"
+#include "BuildOrder.h"
 
 #define DFBB_TIMEOUT_EXCEPTION 1
 
@@ -38,7 +39,7 @@ class DFBB_BuildOrderStackSearch
 	DFBB_BuildOrderSearchResults        _results;                     //the results of the search so far
 					
     Timer                               _searchTimer;
-    std::vector<ActionType>             _buildOrder;
+    BuildOrder                          _buildOrder;
 
     std::vector<StackData>              _stack;
     size_t                              _depth;

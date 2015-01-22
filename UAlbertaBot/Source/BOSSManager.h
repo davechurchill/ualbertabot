@@ -22,7 +22,7 @@ class BOSSManager
     SearchPtr                               _smartSearch;
 
     BOSS::DFBB_BuildOrderSearchResults      _previousSearchResults;
-    std::vector<BOSS::ActionType>           _previousBuildOrder;
+    BOSS::BuildOrder                        _previousBuildOrder;
 
 	BOSS::GameState				            getCurrentState();
 	BOSS::GameState				            getStartState();
@@ -54,8 +54,8 @@ public:
 	void						drawSearchInformation(int x, int y);
 
     
-	static BOSS::DFBB_BuildOrderSearchGoal      GetGoal(const std::vector<MetaPair> & goalUnits);	
-    static std::vector<MetaType>				GetMetaVector(const std::vector<BOSS::ActionType> & buildOrder);
+	static BOSS::BuildOrderSearchGoal      GetGoal(const std::vector<MetaPair> & goalUnits);	
+    static std::vector<MetaType>				GetMetaVector(const BOSS::BuildOrder & buildOrder);
 	static BOSS::ActionType						GetActionType(const MetaType & t);
 	static MetaType					            GetMetaType(const BOSS::ActionType & a);
 

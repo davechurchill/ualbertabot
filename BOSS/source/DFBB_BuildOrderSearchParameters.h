@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Common.h"
-#include "DFBB_BuildOrderSearchGoal.h"
+#include "BuildOrderSearchGoal.h"
 #include "GameState.h"
 #include "DFBB_BuildOrderSearchSaveState.h"
 
@@ -85,7 +85,7 @@ public:
 	int		initialUpperBound;
 			
     //      StarcraftSearchGoal used for the search. See StarcraftSearchGoal.hpp for details
-	DFBB_BuildOrderSearchGoal			goal;	
+	BuildOrderSearchGoal			goal;	
 	
 	//      Initial StarcraftState used for the search. See StarcraftState.hpp for details
 	GameState				initialState;

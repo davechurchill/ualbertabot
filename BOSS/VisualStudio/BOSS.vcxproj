@@ -18,6 +18,7 @@
     <ClInclude Include="..\source\Array.hpp" />
     <ClInclude Include="..\source\BaseTypes.h" />
     <ClInclude Include="..\source\BOSSAssert.h" />
+    <ClInclude Include="..\source\BuildOrder.h" />
     <ClInclude Include="..\source\CombatSearchBucket.h" />
     <ClInclude Include="..\source\CombatSearchIntegral.h" />
     <ClInclude Include="..\source\Constants.h" />
@@ -27,7 +28,7 @@
     <ClInclude Include="..\source\CombatSearchParameters.h" />
     <ClInclude Include="..\source\CombatSearchResults.h" />
     <ClInclude Include="..\source\Common.h" />
-    <ClInclude Include="..\source\DFBB_BuildOrderSearchGoal.h" />
+    <ClInclude Include="..\source\BuildOrderSearchGoal.h" />
     <ClInclude Include="..\source\DFBB_BuildOrderSearchParameters.h" />
     <ClInclude Include="..\source\DFBB_BuildOrderSearchResults.h" />
     <ClInclude Include="..\source\DFBB_BuildOrderSearchSaveState.h" />
@@ -39,6 +40,7 @@
     <ClInclude Include="..\source\HatcheryData.h" />
     <ClInclude Include="..\source\BOSSLogger.h" />
     <ClInclude Include="..\source\JSONTools.h" />
+    <ClInclude Include="..\source\NaiveBuildOrderSearch.h" />
     <ClInclude Include="..\source\Position.hpp" />
     <ClInclude Include="..\source\PrerequisiteSet.h" />
     <ClInclude Include="..\source\Timer.hpp" />
@@ -51,6 +53,7 @@
     <ClCompile Include="..\source\ActionType.cpp" />
     <ClCompile Include="..\source\ActionTypeData.cpp" />
     <ClCompile Include="..\source\BOSSAssert.cpp" />
+    <ClCompile Include="..\source\BuildOrder.cpp" />
     <ClCompile Include="..\source\CombatSearch.cpp" />
     <ClCompile Include="..\source\BOSS.cpp" />
     <ClCompile Include="..\source\BuildingData.cpp" />
@@ -59,7 +62,7 @@
     <ClCompile Include="..\source\CombatSearchParameters.cpp" />
     <ClCompile Include="..\source\CombatSearchResults.cpp" />
     <ClCompile Include="..\source\Constants.cpp" />
-    <ClCompile Include="..\source\DFBB_BuildOrderSearchGoal.cpp" />
+    <ClCompile Include="..\source\BuildOrderSearchGoal.cpp" />
     <ClCompile Include="..\source\DFBB_BuildOrderSearchParameters.cpp" />
     <ClCompile Include="..\source\DFBB_BuildOrderSearchResults.cpp" />
     <ClCompile Include="..\source\DFBB_BuildOrderSearchSaveState.cpp" />
@@ -70,6 +73,7 @@
     <ClCompile Include="..\source\HatcheryData.cpp" />
     <ClCompile Include="..\source\BOSSLogger.cpp" />
     <ClCompile Include="..\source\JSONTools.cpp" />
+    <ClCompile Include="..\source\NaiveBuildOrderSearch.cpp" />
     <ClCompile Include="..\source\PrerequisiteSet.cpp" />
     <ClCompile Include="..\source\Tools.cpp" />
     <ClCompile Include="..\source\UnitData.cpp" />

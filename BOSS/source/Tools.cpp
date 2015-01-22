@@ -1,372 +1,373 @@
 #include "Tools.h"
-#include "DFBB_BuildOrderSearchGoal.h"
+#include "BuildOrderSearchGoal.h"
+#include "NaiveBuildOrderSearch.h"
 
 using namespace BOSS;
 
 #include "JSONTools.h"
 
-std::vector<ActionType> Tools::GetNaiveBuildOrder(const GameState & state, const DFBB_BuildOrderSearchGoal & goal)
+//BuildOrder Tools::GetNaiveBuildOrder(const GameState & state, const BuildOrderSearchGoal & goal)
+//{
+//    PrerequisiteSet wanted;
+//    int minWorkers = 12;
+//
+//    const ActionType & worker = ActionTypes::GetWorker(state.getRace());
+//    std::vector<size_t> buildOrderActionTypeCount(ActionTypes::GetAllActionTypes(state.getRace()).size(), 0);
+//
+//    // add everything from the goal to the needed set
+//    for (size_t a(0); a < ActionTypes::GetAllActionTypes(state.getRace()).size(); ++a)
+//    {
+//        const ActionType & actionType = ActionTypes::GetActionType(state.getRace(), a);
+//        UnitCountType numCompleted = state.getUnitData().getNumTotal(actionType);
+//            
+//        if (goal.getGoal(actionType) > numCompleted)
+//        {
+//            wanted.addUnique(actionType);
+//        }
+//    }
+//
+//    if (wanted.size() == 0)
+//    {
+//        return BuildOrder();
+//    }
+//
+//    // Calculate which prerequisite units we need to build to achieve the units we want from the goal
+//    PrerequisiteSet requiredToBuild;
+//    CalculatePrerequisitesRequiredToBuild(state, wanted, requiredToBuild);
+//
+//    // Add the required units to a preliminary build order
+//    BuildOrder buildOrder;
+//    for (size_t a(0); a < requiredToBuild.size(); ++a)
+//    {
+//        const ActionType & type = requiredToBuild.getActionType(a);
+//        buildOrder.add(type);
+//        buildOrderActionTypeCount[type.ID()]++;
+//    }
+//
+//    // Add some workers to the build order if we don't have many, this usually gives a lower upper bound
+//    int requiredWorkers = minWorkers - state.getUnitData().getNumCompleted(ActionTypes::GetWorker(state.getRace()));
+//    while (requiredWorkers-- > 0)
+//    {
+//        buildOrder.add(worker);
+//        buildOrderActionTypeCount[worker.ID()]++;
+//    }
+//
+//    // Add the goal units to the end of the build order 
+//    for (size_t a(0); a < ActionTypes::GetAllActionTypes(state.getRace()).size(); ++a)
+//    {
+//        const ActionType & actionType = ActionTypes::GetActionType(state.getRace(), a);
+//        int need = (int)goal.getGoal(actionType);
+//        int have = (int)state.getUnitData().getNumTotal(actionType);
+//        int numNeeded = need - have - buildOrderActionTypeCount[actionType.ID()];
+//         
+//        for (int i(0); i < numNeeded; ++i)
+//        {
+//            buildOrder.add(actionType);
+//            buildOrderActionTypeCount[actionType.ID()]++;
+//        }
+//    }
+//
+//    // if we are zerg, make sure we have enough morphers for morphed units
+//    if (state.getRace() == Races::Zerg)
+//    {
+//        // do this whole thing twice so that Hive->Lair->Hatchery is satisfied
+//        for (size_t t=0; t<2; ++t)
+//        {
+//            std::vector<size_t> neededMorphers(ActionTypes::GetAllActionTypes(state.getRace()).size(), 0);
+//            for (size_t i(0); i < buildOrderActionTypeCount.size(); ++i)
+//            {
+//                const ActionType & type = ActionTypes::GetActionType(Races::Zerg, i);
+//
+//                if (type.isMorphed())
+//                {
+//                    const ActionType & morpher = type.whatBuildsActionType();
+//
+//                    int willMorph = buildOrderActionTypeCount[i];
+//                    int haveMorpher = state.getUnitData().getNumTotal(morpher);
+//                    int boMoprher = buildOrderActionTypeCount[morpher.ID()];
+//
+//                    int need = willMorph - haveMorpher - boMoprher;
+//
+//                    if (need > 0)
+//                    {
+//                        neededMorphers[morpher.ID()] += need;
+//                    }
+//                }
+//            }
+//
+//            // add the morphers to the build order
+//            for (size_t i(0); i<neededMorphers.size(); ++i)
+//            {
+//                for (size_t n(0); n < neededMorphers[i]; ++n)
+//                {
+//                    buildOrder.add(ActionTypes::GetActionType(Races::Zerg, i));
+//                    buildOrderActionTypeCount[i]++;
+//                }
+//            }
+//        }
+//
+//        // special case: hydra/lurker both in goal, need to add hydras, same with creep/sunken and muta/guardian
+//        // ignore other spire / hatchery since they recursively serve all purposes
+//        static const ActionType & Hydralisk     = ActionTypes::GetActionType("Zerg_Hydralisk");
+//        static const ActionType & Lurker        = ActionTypes::GetActionType("Zerg_Lurker");
+//        static const ActionType & Creep         = ActionTypes::GetActionType("Zerg_Creep_Colony");
+//        static const ActionType & Sunken        = ActionTypes::GetActionType("Zerg_Sunken_Colony");
+//        static const ActionType & Spore         = ActionTypes::GetActionType("Zerg_Spore_Colony");
+//        static const ActionType & Mutalisk      = ActionTypes::GetActionType("Zerg_Mutalisk");
+//        static const ActionType & Guardian      = ActionTypes::GetActionType("Zerg_Guardian");
+//        static const ActionType & Devourer      = ActionTypes::GetActionType("Zerg_Devourer");
+//
+//        if (goal.getGoal(Hydralisk) > 0)
+//        {
+//            int currentHydras = state.getUnitData().getNumTotal(Hydralisk) + buildOrderActionTypeCount[Hydralisk.ID()] - buildOrderActionTypeCount[Lurker.ID()];
+//            int additionalHydras = goal.getGoal(Hydralisk) - currentHydras;
+//
+//            for (int i=0; i<additionalHydras; ++i)
+//            {
+//                buildOrder.add(Hydralisk);
+//                buildOrderActionTypeCount[Hydralisk.ID()]++;
+//            }
+//        }
+//
+//        if (goal.getGoal(Guardian) > 0 && goal.getGoal(Devourer) > 0)
+//        {
+//            int currentMutas = state.getUnitData().getNumTotal(Mutalisk) + buildOrderActionTypeCount[Mutalisk.ID()];
+//            int additionalMutas = buildOrderActionTypeCount[Guardian.ID()] + buildOrderActionTypeCount[Devourer.ID()] - currentMutas;
+//
+//            for (int i=0; i<additionalMutas; ++i)
+//            {
+//                buildOrder.add(Mutalisk);
+//                buildOrderActionTypeCount[Mutalisk.ID()]++;
+//            }
+//        }
+//
+//        if (goal.getGoal(Mutalisk) > 0)
+//        {
+//            int currentMutas = state.getUnitData().getNumTotal(Mutalisk) + buildOrderActionTypeCount[Mutalisk.ID()] - buildOrderActionTypeCount[Guardian.ID()] - buildOrderActionTypeCount[Devourer.ID()];
+//            int additionalMutas = goal.getGoal(Mutalisk) - currentMutas;
+//
+//            for (int i=0; i<additionalMutas; ++i)
+//            {
+//                buildOrder.add(Mutalisk);
+//                buildOrderActionTypeCount[Mutalisk.ID()]++;
+//            }
+//        }
+//
+//        if (goal.getGoal(Sunken) > 0 && goal.getGoal(Spore) > 0)
+//        {
+//            int currentCreep = state.getUnitData().getNumTotal(Creep) + buildOrderActionTypeCount[Creep.ID()];
+//            int additionalCreep = buildOrderActionTypeCount[Spore.ID()] + buildOrderActionTypeCount[Sunken.ID()] - currentCreep;
+//
+//            for (int i=0; i<additionalCreep; ++i)
+//            {
+//                buildOrder.add(Creep);
+//                buildOrderActionTypeCount[Creep.ID()]++;
+//            }
+//        }
+//
+//        if (goal.getGoal(Creep) > 0)
+//        {
+//            int currentCreep = state.getUnitData().getNumTotal(Creep) + buildOrderActionTypeCount[Creep.ID()] - buildOrderActionTypeCount[Spore.ID()] - buildOrderActionTypeCount[Sunken.ID()];
+//            int additionalCreep = goal.getGoal(Creep) - currentCreep;
+//
+//            for (int i=0; i<additionalCreep; ++i)
+//            {
+//                buildOrder.add(Creep);
+//                buildOrderActionTypeCount[Creep.ID()]++;
+//            }
+//        }
+//    }
+//
+//    // figure out how many workers are needed for the build order to be legal      
+//    size_t workersNeeded = 2 + goal.getGoal(worker);
+//
+//    // we need enough workers to fill all the refineries that will be built
+//    workersNeeded += 3*state.getUnitData().getNumTotal(ActionTypes::GetRefinery(state.getRace()));
+//    workersNeeded += 3*buildOrderActionTypeCount[ActionTypes::GetRefinery(state.getRace()).ID()];
+//
+//    // special case for zerg: buildings consume drones
+//    if (state.getRace() == Races::Zerg)
+//    {
+//        workersNeeded += 3*buildOrderActionTypeCount[ActionTypes::GetRefinery(state.getRace()).ID()];
+//
+//        for (size_t i(0); i < buildOrderActionTypeCount.size(); ++i)
+//        {
+//            const ActionType & type = ActionTypes::GetActionType(Races::Zerg, i);
+//
+//            if (type.whatBuildsActionType().isWorker() && !type.isMorphed())
+//            {
+//                workersNeeded += buildOrderActionTypeCount[i];
+//            }
+//        }
+//    }
+//
+//    int workersToAdd = workersNeeded - state.getUnitData().getNumTotal(worker) - buildOrderActionTypeCount[worker.ID()];
+//    for (int i(0); i < workersToAdd; ++i)
+//    {
+//        buildOrder.add(worker);
+//        buildOrderActionTypeCount[worker.ID()]++;
+//    }
+//
+//
+//    // Check to see if we have enough buildings for the required addons
+//    if (state.getRace() == Races::Terran)
+//    {
+//        int commandCenterAddons = 0;
+//        int factoryAddons = 0;
+//        int starportAddons = 0;
+//        int sciAddons = 0;
+//
+//        static const ActionType commandCenter = ActionTypes::GetActionType("Terran_Command_Center");
+//        static const ActionType factory = ActionTypes::GetActionType("Terran_Factory");
+//        static const ActionType starport = ActionTypes::GetActionType("Terran_Starport");
+//        static const ActionType scienceFacility = ActionTypes::GetActionType("Terran_Science_Facility");
+//
+//        int numCommandCenters = state.getUnitData().getNumTotal(commandCenter);
+//        int numFactories = state.getUnitData().getNumTotal(factory);
+//        int numStarports = state.getUnitData().getNumTotal(starport);
+//        int numSci = state.getUnitData().getNumTotal(scienceFacility);
+//        
+//        for (size_t a(0); a < buildOrder.size(); ++a)
+//        {
+//            const ActionType & actionType = buildOrder[a];
+//
+//            if (actionType.isAddon())
+//            {
+//                if (actionType.whatBuildsActionType() == commandCenter)
+//                {
+//                    ++commandCenterAddons;
+//                }
+//                else if (actionType.whatBuildsActionType() == factory)
+//                {
+//                    ++factoryAddons;
+//                }
+//                else if (actionType.whatBuildsActionType() == starport)
+//                {
+//                    ++starportAddons;
+//                }
+//                else if (actionType.whatBuildsActionType() == scienceFacility)
+//                {
+//                    ++sciAddons;
+//                }
+//                else
+//                {
+//                    BOSS_ASSERT(false, "Inconceivable: %s", actionType.getName().c_str());
+//                }
+//            }
+//
+//            if (actionType == commandCenter)
+//            {
+//                ++numCommandCenters;
+//            }
+//            else if (actionType == factory)
+//            {
+//                ++numFactories;
+//            }
+//            else if (actionType == starport)
+//            {
+//                ++numStarports;
+//            }
+//            else if (actionType == scienceFacility)
+//            {
+//                ++numSci;
+//            }
+//        }
+//
+//        // add the necessary buildings to make the addons
+//        for (int n(0); n < commandCenterAddons - numCommandCenters; ++n)
+//        {
+//            buildOrder.add(commandCenter);
+//        }
+//
+//        for (int n(0); n < factoryAddons - numFactories; ++n)
+//        {
+//            buildOrder.add(factory);
+//        }
+//
+//        for (int n(0); n < starportAddons - numStarports; ++n)
+//        {
+//            buildOrder.add(starport);
+//        }
+//        for (int n(0); n < sciAddons - numSci; ++n)
+//        {
+//            buildOrder.add(scienceFacility);
+//        }
+//    }
+//
+//    // Bubble sort the build order so that prerequites always come before what requires them
+//    for (size_t i(0); i < buildOrder.size()-1; ++i)
+//    {
+//        for (size_t j(i+1); j < buildOrder.size(); ++j)
+//        {
+//            const PrerequisiteSet & recursivePre = buildOrder[i].getRecursivePrerequisites();
+//
+//            if (recursivePre.contains(buildOrder[j]))
+//            {
+//                std::swap(buildOrder[i], buildOrder[j]);
+//            }
+//        }
+//    }
+//
+//    // Insert supply buildings so that build order is legal w.r.t. supply counts
+//    int maxSupply = state.getUnitData().getMaxSupply() + state.getUnitData().getSupplyInProgress();
+//    int currentSupply = state.getUnitData().getCurrentSupply();
+//
+//    GameState currentState(state);
+//    const ActionType & supplyProvider = ActionTypes::GetSupplyProvider(state.getRace());
+//
+//    BuildOrder finalBuildOrder;
+//    for (size_t a(0); a < buildOrder.size(); ++a)
+//    {
+//        const ActionType & nextAction = buildOrder[a];
+//        UnitCountType maxSupply = currentState.getUnitData().getMaxSupply();
+//        UnitCountType currentSupply = currentState.getUnitData().getCurrentSupply();
+//        UnitCountType supplyInProgress = currentState.getUnitData().getSupplyInProgress();
+//
+//        // insert a supply provider if we need one
+//        if (!nextAction.isMorphed() && (nextAction.supplyRequired() > (maxSupply+supplyInProgress-currentSupply)))
+//        {
+//            if (!currentState.isLegal(supplyProvider))
+//            {
+//                currentState.whyIsNotLegal(supplyProvider);
+//
+//                for (size_t i(0); i<finalBuildOrder.size(); ++i)
+//                {
+//                    std::cout << i << " " << finalBuildOrder[i].getName() << std::endl;
+//                }
+//
+//                std::cout << finalBuildOrder.getJSONString() << std::endl;
+//            }
+//
+//            BOSS_ASSERT(currentState.isLegal(supplyProvider), "Should be able to build more supply here");
+//            finalBuildOrder.add(supplyProvider);
+//            currentState.doAction(supplyProvider);
+//        }
+//
+//        if (!currentState.isLegal(nextAction))
+//        {
+//            currentState.isLegal(nextAction);
+//            currentState.whyIsNotLegal(nextAction);
+//        }
+//
+//        BOSS_ASSERT(currentState.isLegal(nextAction), "Should be able to build the next action now");
+//        finalBuildOrder.add(nextAction);
+//        currentState.doAction(nextAction);
+//    }
+//
+//    return finalBuildOrder;
+//}
+
+BuildOrder Tools::GetOptimizedNaiveBuildOrder(const GameState & state, const BuildOrderSearchGoal & goal)
 {
-    PrerequisiteSet wanted;
-    int minWorkers = 12;
-
-    const ActionType & worker = ActionTypes::GetWorker(state.getRace());
-    std::vector<size_t> buildOrderActionTypeCount(ActionTypes::GetAllActionTypes(state.getRace()).size(), 0);
-
-    // add everything from the goal to the needed set
-    for (size_t a(0); a < ActionTypes::GetAllActionTypes(state.getRace()).size(); ++a)
-    {
-        const ActionType & actionType = ActionTypes::GetActionType(state.getRace(), a);
-        UnitCountType numCompleted = state.getUnitData().getNumTotal(actionType);
-            
-        if (goal.getGoal(actionType) > numCompleted)
-        {
-            wanted.addUnique(actionType);
-        }
-    }
-
-    if (wanted.size() == 0)
-    {
-        return std::vector<ActionType>();
-    }
-
-    // Calculate which prerequisite units we need to build to achieve the units we want from the goal
-    PrerequisiteSet requiredToBuild;
-    CalculatePrerequisitesRequiredToBuild(state, wanted, requiredToBuild);
-
-    // Add the required units to a preliminary build order
-    std::vector<ActionType> buildOrder;
-    for (size_t a(0); a < requiredToBuild.size(); ++a)
-    {
-        const ActionType & type = requiredToBuild.getActionType(a);
-        buildOrder.push_back(type);
-        buildOrderActionTypeCount[type.ID()]++;
-    }
-
-    // Add some workers to the build order if we don't have many, this usually gives a lower upper bound
-    int requiredWorkers = minWorkers - state.getUnitData().getNumCompleted(ActionTypes::GetWorker(state.getRace()));
-    while (requiredWorkers-- > 0)
-    {
-        buildOrder.push_back(worker);
-        buildOrderActionTypeCount[worker.ID()]++;
-    }
-
-    // Add the goal units to the end of the build order 
-    for (size_t a(0); a < ActionTypes::GetAllActionTypes(state.getRace()).size(); ++a)
-    {
-        const ActionType & actionType = ActionTypes::GetActionType(state.getRace(), a);
-        int need = (int)goal.getGoal(actionType);
-        int have = (int)state.getUnitData().getNumTotal(actionType);
-        int numNeeded = need - have - buildOrderActionTypeCount[actionType.ID()];
-         
-        for (int i(0); i < numNeeded; ++i)
-        {
-            buildOrder.push_back(actionType);
-            buildOrderActionTypeCount[actionType.ID()]++;
-        }
-    }
-
-    // if we are zerg, make sure we have enough morphers for morphed units
-    if (state.getRace() == Races::Zerg)
-    {
-        // do this whole thing twice so that Hive->Lair->Hatchery is satisfied
-        for (size_t t=0; t<2; ++t)
-        {
-            std::vector<size_t> neededMorphers(ActionTypes::GetAllActionTypes(state.getRace()).size(), 0);
-            for (size_t i(0); i < buildOrderActionTypeCount.size(); ++i)
-            {
-                const ActionType & type = ActionTypes::GetActionType(Races::Zerg, i);
-
-                if (type.isMorphed())
-                {
-                    const ActionType & morpher = type.whatBuildsActionType();
-
-                    int willMorph = buildOrderActionTypeCount[i];
-                    int haveMorpher = state.getUnitData().getNumTotal(morpher);
-                    int boMoprher = buildOrderActionTypeCount[morpher.ID()];
-
-                    int need = willMorph - haveMorpher - boMoprher;
-
-                    if (need > 0)
-                    {
-                        neededMorphers[morpher.ID()] += need;
-                    }
-                }
-            }
-
-            // add the morphers to the build order
-            for (size_t i(0); i<neededMorphers.size(); ++i)
-            {
-                for (size_t n(0); n < neededMorphers[i]; ++n)
-                {
-                    buildOrder.push_back(ActionTypes::GetActionType(Races::Zerg, i));
-                    buildOrderActionTypeCount[i]++;
-                }
-            }
-        }
-
-        // special case: hydra/lurker both in goal, need to add hydras, same with creep/sunken and muta/guardian
-        // ignore other spire / hatchery since they recursively serve all purposes
-        static const ActionType & Hydralisk     = ActionTypes::GetActionType("Zerg_Hydralisk");
-        static const ActionType & Lurker        = ActionTypes::GetActionType("Zerg_Lurker");
-        static const ActionType & Creep         = ActionTypes::GetActionType("Zerg_Creep_Colony");
-        static const ActionType & Sunken        = ActionTypes::GetActionType("Zerg_Sunken_Colony");
-        static const ActionType & Spore         = ActionTypes::GetActionType("Zerg_Spore_Colony");
-        static const ActionType & Mutalisk      = ActionTypes::GetActionType("Zerg_Mutalisk");
-        static const ActionType & Guardian      = ActionTypes::GetActionType("Zerg_Guardian");
-        static const ActionType & Devourer      = ActionTypes::GetActionType("Zerg_Devourer");
-
-        if (goal.getGoal(Hydralisk) > 0)
-        {
-            int currentHydras = state.getUnitData().getNumTotal(Hydralisk) + buildOrderActionTypeCount[Hydralisk.ID()] - buildOrderActionTypeCount[Lurker.ID()];
-            int additionalHydras = goal.getGoal(Hydralisk) - currentHydras;
-
-            for (int i=0; i<additionalHydras; ++i)
-            {
-                buildOrder.push_back(Hydralisk);
-                buildOrderActionTypeCount[Hydralisk.ID()]++;
-            }
-        }
-
-        if (goal.getGoal(Guardian) > 0 && goal.getGoal(Devourer) > 0)
-        {
-            int currentMutas = state.getUnitData().getNumTotal(Mutalisk) + buildOrderActionTypeCount[Mutalisk.ID()];
-            int additionalMutas = buildOrderActionTypeCount[Guardian.ID()] + buildOrderActionTypeCount[Devourer.ID()] - currentMutas;
-
-            for (int i=0; i<additionalMutas; ++i)
-            {
-                buildOrder.push_back(Mutalisk);
-                buildOrderActionTypeCount[Mutalisk.ID()]++;
-            }
-        }
-
-        if (goal.getGoal(Mutalisk) > 0)
-        {
-            int currentMutas = state.getUnitData().getNumTotal(Mutalisk) + buildOrderActionTypeCount[Mutalisk.ID()] - buildOrderActionTypeCount[Guardian.ID()] - buildOrderActionTypeCount[Devourer.ID()];
-            int additionalMutas = goal.getGoal(Mutalisk) - currentMutas;
-
-            for (int i=0; i<additionalMutas; ++i)
-            {
-                buildOrder.push_back(Mutalisk);
-                buildOrderActionTypeCount[Mutalisk.ID()]++;
-            }
-        }
-
-        if (goal.getGoal(Sunken) > 0 && goal.getGoal(Spore) > 0)
-        {
-            int currentCreep = state.getUnitData().getNumTotal(Creep) + buildOrderActionTypeCount[Creep.ID()];
-            int additionalCreep = buildOrderActionTypeCount[Spore.ID()] + buildOrderActionTypeCount[Sunken.ID()] - currentCreep;
-
-            for (int i=0; i<additionalCreep; ++i)
-            {
-                buildOrder.push_back(Creep);
-                buildOrderActionTypeCount[Creep.ID()]++;
-            }
-        }
-
-        if (goal.getGoal(Creep) > 0)
-        {
-            int currentCreep = state.getUnitData().getNumTotal(Creep) + buildOrderActionTypeCount[Creep.ID()] - buildOrderActionTypeCount[Spore.ID()] - buildOrderActionTypeCount[Sunken.ID()];
-            int additionalCreep = goal.getGoal(Creep) - currentCreep;
-
-            for (int i=0; i<additionalCreep; ++i)
-            {
-                buildOrder.push_back(Creep);
-                buildOrderActionTypeCount[Creep.ID()]++;
-            }
-        }
-    }
-
-    // figure out how many workers are needed for the build order to be legal      
-    size_t workersNeeded = 2 + goal.getGoal(worker);
-
-    // we need enough workers to fill all the refineries that will be built
-    workersNeeded += 3*state.getUnitData().getNumTotal(ActionTypes::GetRefinery(state.getRace()));
-    workersNeeded += 3*buildOrderActionTypeCount[ActionTypes::GetRefinery(state.getRace()).ID()];
-
-    // special case for zerg: buildings consume drones
-    if (state.getRace() == Races::Zerg)
-    {
-        workersNeeded += 3*buildOrderActionTypeCount[ActionTypes::GetRefinery(state.getRace()).ID()];
-
-        for (size_t i(0); i < buildOrderActionTypeCount.size(); ++i)
-        {
-            const ActionType & type = ActionTypes::GetActionType(Races::Zerg, i);
-
-            if (type.whatBuildsActionType().isWorker() && !type.isMorphed())
-            {
-                workersNeeded += buildOrderActionTypeCount[i];
-            }
-        }
-    }
-
-    int workersToAdd = workersNeeded - state.getUnitData().getNumTotal(worker) - buildOrderActionTypeCount[worker.ID()];
-    for (int i(0); i < workersToAdd; ++i)
-    {
-        buildOrder.push_back(worker);
-        buildOrderActionTypeCount[worker.ID()]++;
-    }
-
-
-    // Check to see if we have enough buildings for the required addons
-    if (state.getRace() == Races::Terran)
-    {
-        int commandCenterAddons = 0;
-        int factoryAddons = 0;
-        int starportAddons = 0;
-        int sciAddons = 0;
-
-        static const ActionType commandCenter = ActionTypes::GetActionType("Terran_Command_Center");
-        static const ActionType factory = ActionTypes::GetActionType("Terran_Factory");
-        static const ActionType starport = ActionTypes::GetActionType("Terran_Starport");
-        static const ActionType scienceFacility = ActionTypes::GetActionType("Terran_Science_Facility");
-
-        int numCommandCenters = state.getUnitData().getNumTotal(commandCenter);
-        int numFactories = state.getUnitData().getNumTotal(factory);
-        int numStarports = state.getUnitData().getNumTotal(starport);
-        int numSci = state.getUnitData().getNumTotal(scienceFacility);
-        
-        for (size_t a(0); a < buildOrder.size(); ++a)
-        {
-            const ActionType & actionType = buildOrder[a];
-
-            if (actionType.isAddon())
-            {
-                if (actionType.whatBuildsActionType() == commandCenter)
-                {
-                    ++commandCenterAddons;
-                }
-                else if (actionType.whatBuildsActionType() == factory)
-                {
-                    ++factoryAddons;
-                }
-                else if (actionType.whatBuildsActionType() == starport)
-                {
-                    ++starportAddons;
-                }
-                else if (actionType.whatBuildsActionType() == scienceFacility)
-                {
-                    ++sciAddons;
-                }
-                else
-                {
-                    BOSS_ASSERT(false, "Inconceivable: %s", actionType.getName().c_str());
-                }
-            }
-
-            if (actionType == commandCenter)
-            {
-                ++numCommandCenters;
-            }
-            else if (actionType == factory)
-            {
-                ++numFactories;
-            }
-            else if (actionType == starport)
-            {
-                ++numStarports;
-            }
-            else if (actionType == scienceFacility)
-            {
-                ++numSci;
-            }
-        }
-
-        // add the necessary buildings to make the addons
-        for (int n(0); n < commandCenterAddons - numCommandCenters; ++n)
-        {
-            buildOrder.push_back(commandCenter);
-        }
-
-        for (int n(0); n < factoryAddons - numFactories; ++n)
-        {
-            buildOrder.push_back(factory);
-        }
-
-        for (int n(0); n < starportAddons - numStarports; ++n)
-        {
-            buildOrder.push_back(starport);
-        }
-        for (int n(0); n < sciAddons - numSci; ++n)
-        {
-            buildOrder.push_back(scienceFacility);
-        }
-    }
-
-    // Bubble sort the build order so that prerequites always come before what requires them
-    for (size_t i(0); i < buildOrder.size()-1; ++i)
-    {
-        for (size_t j(i+1); j < buildOrder.size(); ++j)
-        {
-            const PrerequisiteSet & recursivePre = buildOrder[i].getRecursivePrerequisites();
-
-            if (recursivePre.contains(buildOrder[j]))
-            {
-                std::swap(buildOrder[i], buildOrder[j]);
-            }
-        }
-    }
-
-    // Insert supply buildings so that build order is legal w.r.t. supply counts
-    int maxSupply = state.getUnitData().getMaxSupply() + state.getUnitData().getSupplyInProgress();
-    int currentSupply = state.getUnitData().getCurrentSupply();
-
-    GameState currentState(state);
-    const ActionType & supplyProvider = ActionTypes::GetSupplyProvider(state.getRace());
-
-    std::vector<ActionType> finalBuildOrder;
-    for (size_t a(0); a < buildOrder.size(); ++a)
-    {
-        const ActionType & nextAction = buildOrder[a];
-        UnitCountType maxSupply = currentState.getUnitData().getMaxSupply();
-        UnitCountType currentSupply = currentState.getUnitData().getCurrentSupply();
-        UnitCountType supplyInProgress = currentState.getUnitData().getSupplyInProgress();
-
-        // insert a supply provider if we need one
-        if (!nextAction.isMorphed() && (nextAction.supplyRequired() > (maxSupply+supplyInProgress-currentSupply)))
-        {
-            if (!currentState.isLegal(supplyProvider))
-            {
-                currentState.whyIsNotLegal(supplyProvider);
-
-                for (size_t i(0); i<finalBuildOrder.size(); ++i)
-                {
-                    std::cout << i << " " << finalBuildOrder[i].getName() << std::endl;
-                }
-
-                std::cout << JSONTools::GetBuildOrderString(finalBuildOrder) << std::endl;
-            }
-
-            BOSS_ASSERT(currentState.isLegal(supplyProvider), "Should be able to build more supply here");
-            finalBuildOrder.push_back(supplyProvider);
-            currentState.doAction(supplyProvider);
-        }
-
-        if (!currentState.isLegal(nextAction))
-        {
-            currentState.isLegal(nextAction);
-            currentState.whyIsNotLegal(nextAction);
-        }
-
-        BOSS_ASSERT(currentState.isLegal(nextAction), "Should be able to build the next action now");
-        finalBuildOrder.push_back(nextAction);
-        currentState.doAction(nextAction);
-    }
-
-    return finalBuildOrder;
-}
-
-std::vector<ActionType> Tools::GetOptimizedNaiveBuildOrder(const GameState & state, const DFBB_BuildOrderSearchGoal & goal)
-{
-    std::vector<ActionType> bestBuildOrder = GetNaiveBuildOrderAddWorkers(state, goal, 4);
-    FrameCountType minCompletionTime = Tools::GetBuildOrderCompletionTime(state, bestBuildOrder);
-    UnitCountType bestNumWorkers = GetWorkerCount(bestBuildOrder);
+    BuildOrder bestBuildOrder = GetNaiveBuildOrderAddWorkers(state, goal, 4);
+    FrameCountType minCompletionTime = bestBuildOrder.getCompletionTime(state);
+    UnitCountType bestNumWorkers = bestBuildOrder.getTypeCount(ActionTypes::GetWorker(state.getRace()));
 
     for (UnitCountType numWorkers(8); numWorkers < 27; ++numWorkers)
     {
-        std::vector<ActionType> buildOrder = Tools::GetNaiveBuildOrderAddWorkers(state, goal, numWorkers);
-        FrameCountType completionTime = Tools::GetBuildOrderCompletionTime(state, buildOrder);
-        UnitCountType workers = GetWorkerCount(buildOrder);
+        BuildOrder buildOrder = Tools::GetNaiveBuildOrderAddWorkers(state, goal, numWorkers);
+        FrameCountType completionTime = buildOrder.getCompletionTime(state);
+        UnitCountType workers = buildOrder.getTypeCount(ActionTypes::GetWorker(state.getRace()));
         
         if (completionTime <= minCompletionTime + ((workers-bestNumWorkers)*24))
         {
@@ -376,8 +377,8 @@ std::vector<ActionType> Tools::GetOptimizedNaiveBuildOrder(const GameState & sta
     }
 
     
-    FrameCountType bestCompletionTime = Tools::GetBuildOrderCompletionTime(state, bestBuildOrder);
-    std::vector<ActionType> testBuildOrder;
+    FrameCountType bestCompletionTime = bestBuildOrder.getCompletionTime(state);
+    BuildOrder testBuildOrder;
 
     //std::cout << "Found a better build order that takes " << bestCompletionTime << " frames\n";
     while (true)
@@ -385,7 +386,7 @@ std::vector<ActionType> Tools::GetOptimizedNaiveBuildOrder(const GameState & sta
         const static ActionType gateway = ActionTypes::GetActionType("Protoss_Gateway");
         InsertActionIntoBuildOrder(testBuildOrder, bestBuildOrder, state, gateway);
 
-        FrameCountType completionTime = Tools::GetBuildOrderCompletionTime(state, testBuildOrder);
+        FrameCountType completionTime = testBuildOrder.getCompletionTime(state);
 
         if (completionTime < bestCompletionTime)
         {
@@ -403,7 +404,7 @@ std::vector<ActionType> Tools::GetOptimizedNaiveBuildOrder(const GameState & sta
     return bestBuildOrder;
 }
 
-std::vector<ActionType> Tools::GetNaiveBuildOrderAddWorkers(const GameState & state, const DFBB_BuildOrderSearchGoal & goal, UnitCountType maxWorkers)
+BuildOrder Tools::GetNaiveBuildOrderAddWorkers(const GameState & state, const BuildOrderSearchGoal & goal, UnitCountType maxWorkers)
 {
     PrerequisiteSet wanted;
     int minWorkers = 8;
@@ -425,7 +426,7 @@ std::vector<ActionType> Tools::GetNaiveBuildOrderAddWorkers(const GameState & st
 
     if (wanted.size() == 0)
     {
-        return std::vector<ActionType>();
+        return BuildOrder();
     }
 
     // Calculate which prerequisite units we need to build to achieve the units we want from the goal
@@ -433,11 +434,11 @@ std::vector<ActionType> Tools::GetNaiveBuildOrderAddWorkers(const GameState & st
     CalculatePrerequisitesRequiredToBuild(state, wanted, requiredToBuild);
 
     // Add the required units to a preliminary build order
-    std::vector<ActionType> buildOrder;
+    BuildOrder buildOrder;
     for (size_t a(0); a < requiredToBuild.size(); ++a)
     {
         const ActionType & type = requiredToBuild.getActionType(a);
-        buildOrder.push_back(type);
+        buildOrder.add(type);
         buildOrderActionTypeCount[type.ID()]++;
     }
 
@@ -445,7 +446,7 @@ std::vector<ActionType> Tools::GetNaiveBuildOrderAddWorkers(const GameState & st
     int requiredWorkers = minWorkers - state.getUnitData().getNumCompleted(ActionTypes::GetWorker(state.getRace()));
     while (requiredWorkers-- > 0)
     {
-        buildOrder.push_back(worker);
+        buildOrder.add(worker);
         buildOrderActionTypeCount[worker.ID()]++;
     }
 
@@ -459,7 +460,7 @@ std::vector<ActionType> Tools::GetNaiveBuildOrderAddWorkers(const GameState & st
             
         for (int i(0); i < numNeeded; ++i)
         {
-            buildOrder.push_back(actionType);
+            buildOrder.add(actionType);
         }
     }
 
@@ -532,21 +533,21 @@ std::vector<ActionType> Tools::GetNaiveBuildOrderAddWorkers(const GameState & st
         // add the necessary buildings to make the addons
         for (int n(0); n < commandCenterAddons - numCommandCenters; ++n)
         {
-            buildOrder.push_back(commandCenter);
+            buildOrder.add(commandCenter);
         }
 
         for (int n(0); n < factoryAddons - numFactories; ++n)
         {
-            buildOrder.push_back(factory);
+            buildOrder.add(factory);
         }
 
         for (int n(0); n < starportAddons - numStarports; ++n)
         {
-            buildOrder.push_back(starport);
+            buildOrder.add(starport);
         }
         for (int n(0); n < sciAddons - numSci; ++n)
         {
-            buildOrder.push_back(scienceFacility);
+            buildOrder.add(scienceFacility);
         }
 
     }
@@ -566,7 +567,7 @@ std::vector<ActionType> Tools::GetNaiveBuildOrderAddWorkers(const GameState & st
     }
 
     // finish the build order with workers and supply
-    std::vector<ActionType> finalBuildOrder;
+    BuildOrder finalBuildOrder;
     GameState currentState(state);
     size_t i = 0;
     while (i < buildOrder.size())
@@ -580,7 +581,7 @@ std::vector<ActionType> Tools::GetNaiveBuildOrderAddWorkers(const GameState & st
 
         if (numWorkers < 8)
         {
-            finalBuildOrder.push_back(worker);
+            finalBuildOrder.add(worker);
             currentState.doAction(worker);
             continue;
         }
@@ -590,7 +591,7 @@ std::vector<ActionType> Tools::GetNaiveBuildOrderAddWorkers(const GameState & st
         if (surplusSupply < nextAction.supplyRequired() + 2)
         {
             BOSS_ASSERT(currentState.isLegal(supplyProvider), "supplyProvider should be legal");
-            finalBuildOrder.push_back(supplyProvider);
+            finalBuildOrder.add(supplyProvider);
             currentState.doAction(supplyProvider);
             continue;
         }
@@ -604,14 +605,14 @@ std::vector<ActionType> Tools::GetNaiveBuildOrderAddWorkers(const GameState & st
 
         if ((numWorkers < maxWorkers) && (whenWorkerReady < whennextActionReady))
         {
-            finalBuildOrder.push_back(worker);
+            finalBuildOrder.add(worker);
             currentState.doAction(worker);
             continue;
         }
         else
         {
             ActionType testNextAction = buildOrder[i];
-            finalBuildOrder.push_back(nextAction);
+            finalBuildOrder.add(nextAction);
 
             currentState.doAction(nextAction);
             ++i;
@@ -621,28 +622,14 @@ std::vector<ActionType> Tools::GetNaiveBuildOrderAddWorkers(const GameState & st
     return finalBuildOrder;
 }
 
-UnitCountType Tools::GetWorkerCount(const std::vector<ActionType> & buildOrder)
-{
-    UnitCountType count = 0;
-    for (size_t a(0); a < buildOrder.size(); ++a)
-    {
-        if (buildOrder[a].isWorker())
-        {
-            ++count;
-        }
-    }
-
-    return count;
-}
-
-void Tools::InsertActionIntoBuildOrder(std::vector<ActionType> & result, const std::vector<ActionType> & buildOrder, const GameState & initialState, const ActionType & action)
+void Tools::InsertActionIntoBuildOrder(BuildOrder & result, const BuildOrder & buildOrder, const GameState & initialState, const ActionType & action)
 {
     int bestInsertIndex = -1;
-    std::vector<ActionType> runningBuildOrder;
+    BuildOrder runningBuildOrder;
     GameState runningState(initialState);
-    FrameCountType minCompletionTime = Tools::GetBuildOrderCompletionTime(initialState, buildOrder);
+    FrameCountType minCompletionTime = buildOrder.getCompletionTime(initialState);
 
-    std::vector<ActionType> testBuildOrder = buildOrder;
+    BuildOrder testBuildOrder = buildOrder;
 
     for (size_t insertIndex(0); insertIndex < buildOrder.size(); ++insertIndex)
     {
@@ -667,7 +654,7 @@ void Tools::InsertActionIntoBuildOrder(std::vector<ActionType> & result, const s
         }
 
         BOSS_ASSERT(runningState.isLegal(buildOrder[insertIndex]), "We have made the next action illegal somehow");
-        runningBuildOrder.push_back(buildOrder[insertIndex]);
+        runningBuildOrder.add(buildOrder[insertIndex]);
         runningState.doAction(buildOrder[insertIndex]);
     }
 
@@ -676,43 +663,23 @@ void Tools::InsertActionIntoBuildOrder(std::vector<ActionType> & result, const s
     {
         if (bestInsertIndex == a)
         {
-            result.push_back(action);
+            result.add(action);
         }
 
-        result.push_back(buildOrder[a]);
+        result.add(buildOrder[a]);
     }
 }
 
-FrameCountType Tools::GetBuildOrderCompletionTime(const GameState & state, const std::vector<ActionType> & buildOrder, size_t buildOrderStartIndex)
+FrameCountType Tools::GetUpperBound(const GameState & state, const BuildOrderSearchGoal & goal)
 {
-    if (buildOrder.size() == 0)
-    {
-        return 0;
-    }
-
-    GameState currentState(state);
-
-    BOSS_ASSERT(buildOrderStartIndex < buildOrder.size(), "We can't start at an index that's past the end");
-
-    for (size_t a(buildOrderStartIndex); a < buildOrder.size(); ++a)
-    {
-        BOSS_ASSERT(currentState.isLegal(buildOrder[a]), "build order item not legal");
-        currentState.doAction(buildOrder[a]);
-    }
-
-    return currentState.getLastActionFinishTime();
-}
-
-FrameCountType Tools::GetUpperBound(const GameState & state, const DFBB_BuildOrderSearchGoal & goal)
-{
-    std::vector<ActionType> naiveBuildOrder = Tools::GetNaiveBuildOrder(state, goal);
-        
-    FrameCountType upperBound = Tools::GetBuildOrderCompletionTime(state, naiveBuildOrder);
+    NaiveBuildOrderSearch naiveSearch(state, goal);
+    const BuildOrder & naiveBuildOrder = naiveSearch.solve();
+    FrameCountType upperBound = naiveBuildOrder.getCompletionTime(state);
 
     return upperBound;
 }
 
-FrameCountType Tools::GetLowerBound(const GameState & state, const DFBB_BuildOrderSearchGoal & goal)
+FrameCountType Tools::GetLowerBound(const GameState & state, const BuildOrderSearchGoal & goal)
 {
     PrerequisiteSet wanted;
 
@@ -812,131 +779,3 @@ FrameCountType Tools::CalculatePrerequisitesLowerBound(const GameState & state, 
     return max;
 }
 
-void Tools::TestBuildOrderUpperBound()
-{
-    GameState initialStates[Races::NUM_RACES];
-    for (size_t r(0); r<Races::NUM_RACES; ++r)
-    {
-        initialStates[r] = GameState(r);
-        initialStates[r].setStartingState();
-    }
-    
-    size_t numTests = 10;
-    for (size_t test(0); test < numTests; ++test)
-    {
-        RaceID race = test % 2; // ignore zerg until it works
-        DFBB_BuildOrderSearchGoal goal(race);
-
-        if (test % 10000 == 0)
-        {
-            std::cout << test << std::endl;
-        }
-
-        // add 5 random units to the goal
-        size_t numRandom = 10;
-        for (size_t r(0); r < numRandom; ++r)
-        {
-            const ActionType & actionType = ActionTypes::GetActionType(race, rand() % ActionTypes::GetAllActionTypes(race).size());
-
-            if (!actionType.isRefinery() && !actionType.isAddon())
-            {
-                goal.setGoal(actionType, goal.getGoal(actionType) + 1);
-            }
-        }
-        
-        goal.printGoal();
-
-        FrameCountType upperBound = Tools::GetUpperBound(initialStates[race], goal);
-        std::cout << "\nUpper Bound is: " << upperBound << std::endl;
-    }
-}
-
-bool Tools::MeetsGoal(const GameState & state, const DFBB_BuildOrderSearchGoal & goal)
-{
-    static const ActionType & Hatchery      = ActionTypes::GetActionType("Zerg_Hatchery");
-    static const ActionType & Lair          = ActionTypes::GetActionType("Zerg_Lair");
-    static const ActionType & Hive          = ActionTypes::GetActionType("Zerg_Hive");
-    static const ActionType & Spire         = ActionTypes::GetActionType("Zerg_Spire");
-    static const ActionType & GreaterSpire  = ActionTypes::GetActionType("Zerg_Greater_Spire");
-
-    for (size_t a(0); a < ActionTypes::GetAllActionTypes(state.getRace()).size(); ++a)
-    {
-        const ActionType & actionType = ActionTypes::GetActionType(state.getRace(), a);
-
-        int have = state.getUnitData().getNumTotal(actionType);
-
-        if (state.getRace() == Races::Zerg)
-        {
-            if (actionType == Hatchery)
-            {
-                have += state.getUnitData().getNumTotal(Lair);
-                have += state.getUnitData().getNumTotal(Hive);
-            }
-            else if (actionType == Lair)
-            {
-                have += state.getUnitData().getNumTotal(Hive);
-            }
-            else if (actionType == Spire)
-            {
-                have += state.getUnitData().getNumTotal(GreaterSpire);
-            }
-        }
-
-        if (have < goal.getGoal(actionType))
-        {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-#include "JSONTools.h"
-bool Tools::PerformBuildOrder(GameState & state, const std::vector<ActionType> & buildOrder)
-{
-    size_t i = 0;
-    GameState stateCopy(state);
-    try
-    {
-        for (i = 0; i<buildOrder.size(); ++i)
-        {
-            if (!state.isLegal(buildOrder[i]))
-            {
-                std::cout << "Action " << i << " not legal" << std::endl;
-                state.whyIsNotLegal(buildOrder[i]);
-                std::cout << state.toString() << std::endl;
-                return false;
-            }
-            else
-            {
-                state.doAction(buildOrder[i]);
-            }
-        }
-    }
-    catch (BOSS::Assert::BOSSException e)
-    {
-        std::cout << "Build order failed at: " << i << " : " << (int)buildOrder[i].ID() << ":" << buildOrder[i].getName() << " " << (int)buildOrder[i].whatBuildsActionType().ID() << ":" << buildOrder[i].whatBuildsActionType().getName() << std::endl;
-        std::cout << JSONTools::GetBuildOrderString(buildOrder) << std::endl;
-
-        GameState errorState(stateCopy);
-        for (size_t j=0; j < i; ++j)
-        {
-            std::cout << "Doing: " << j << " " << buildOrder[j].getName() << std::endl;
-            errorState.doAction(buildOrder[j]);
-        }
-
-        std::cout << errorState.toString() << std::endl;
-        errorState.getBuildingData().printBuildingInformation();
-
-        for (size_t j=i; j < buildOrder.size(); ++j)
-        {
-            std::cout << "Doing: " << j << " " << buildOrder[j].getName() << std::endl;
-            errorState.doAction(buildOrder[j]);
-        }
-
-
-        int a = 0;
-    }
-
-    return true;
-}

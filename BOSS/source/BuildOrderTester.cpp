@@ -1,11 +1,12 @@
 #include "BuildOrderTester.h"
 #include "JSONTools.h"
+#include "NaiveBuildOrderSearch.h"
 
 using namespace BOSS;
 
-DFBB_BuildOrderSearchGoal BuildOrderTester::GetRandomGoal(const RaceID race)
+BuildOrderSearchGoal BuildOrderTester::GetRandomGoal(const RaceID race)
 {
-    DFBB_BuildOrderSearchGoal goal(race);
+    BuildOrderSearchGoal goal(race);
     
     const std::vector<ActionType> & allActionTypes = ActionTypes::GetAllActionTypes(race);
     size_t totalActionTypes = allActionTypes.size();
@@ -44,22 +45,24 @@ void BuildOrderTester::DoRandomTests(const RaceID race, const size_t numTests)
 {
     GameState startState(race);
     startState.setStartingState();
-    srand(time(NULL));
+    srand((int)time(NULL));
 
     for (size_t i(0); i < numTests; ++i)
     {
         // make a pseudo-random goal
-        DFBB_BuildOrderSearchGoal goal = GetRandomGoal(race);
+        BuildOrderSearchGoal goal = GetRandomGoal(race);
         //goal.printGoal();
         
-        std::vector<ActionType> buildOrder = Tools::GetNaiveBuildOrder(startState, goal);
+        NaiveBuildOrderSearch naiveSearch(startState, goal);
+        
+        const BuildOrder & buildOrder = naiveSearch.solve();
 
         GameState currentState(startState);
-        bool buildOrderIsLegal = Tools::PerformBuildOrder(currentState, buildOrder);
+        bool buildOrderIsLegal = buildOrder.doActions(currentState);
 
         if (buildOrderIsLegal)
         {
-            if (Tools::MeetsGoal(currentState, goal))
+            if (goal.isAchievedBy(currentState))
             {
                 //std::cout << i << "  Test Passed!" << std::endl;
             }
@@ -71,7 +74,7 @@ void BuildOrderTester::DoRandomTests(const RaceID race, const size_t numTests)
                     std::cout << a << " " << buildOrder[a].getName() << std::endl;
                 }
                 std::cout << i << "  Found build order did not meet goal" << std::endl;
-                std::cout << JSONTools::GetBuildOrderString(buildOrder) << std::endl;
+                std::cout << buildOrder.getJSONString() << std::endl;
                 std::cout << currentState.toString() << std::endl;
                 goal.printGoal();
             }
@@ -83,7 +86,7 @@ void BuildOrderTester::DoRandomTests(const RaceID race, const size_t numTests)
             {
                 std::cout << a << " " << buildOrder[a].getName() << std::endl;
             }
-            std::cout << JSONTools::GetBuildOrderString(buildOrder) << std::endl;
+            std::cout << buildOrder.getJSONString() << std::endl;
             std::cout << i << "  Found build-order was not legal" << std::endl;
             std::cout << currentState.toString() << std::endl;
 

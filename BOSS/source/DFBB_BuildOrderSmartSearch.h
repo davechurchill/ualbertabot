@@ -12,7 +12,7 @@ class DFBB_BuildOrderSmartSearch
     RaceID                              _race;
 
 	DFBB_BuildOrderSearchParameters		_params;
-	DFBB_BuildOrderSearchGoal 			_goal;
+	BuildOrderSearchGoal 			_goal;
 
     ActionSet                           _relevantActions;
 
@@ -43,7 +43,7 @@ public:
 	DFBB_BuildOrderSmartSearch(const RaceID race);
 	
 	void addGoal(const ActionType & a, const UnitCountType count);
-	void setGoal(const DFBB_BuildOrderSearchGoal & goal);
+	void setGoal(const BuildOrderSearchGoal & goal);
 	void setState(const GameState & state);
 	void print();
 	void setTimeLimit(int n);

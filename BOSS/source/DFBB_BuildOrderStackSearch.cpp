@@ -63,7 +63,7 @@ const DFBB_BuildOrderSearchResults & DFBB_BuildOrderStackSearch::getResults() co
 void DFBB_BuildOrderStackSearch::generateLegalActions(const GameState & state, ActionSet & legalActions)
 {
     legalActions.clear();
-    DFBB_BuildOrderSearchGoal & goal = _params.goal;
+    BuildOrderSearchGoal & goal = _params.goal;
     const ActionType & worker = ActionTypes::GetWorker(state.getRace());
     
     // add all legal relevant actions that are in the goal
@@ -246,7 +246,7 @@ SEARCH_BEGIN:
         {
             if (CHILD_STATE.isLegal(ACTION_TYPE))
             {
-                _buildOrder.push_back(ACTION_TYPE);
+                _buildOrder.add(ACTION_TYPE);
                 CHILD_STATE.doAction(ACTION_TYPE);
             }
             else
@@ -255,7 +255,7 @@ SEARCH_BEGIN:
             }
         }
 
-        if (Tools::MeetsGoal(CHILD_STATE, _params.goal))
+        if (_params.goal.isAchievedBy(CHILD_STATE))
         {
             updateResults(CHILD_STATE);
         }

@@ -3,6 +3,7 @@
 #include "Common.h"
 #include "ActionType.h"
 #include "GameState.h"
+#include "BuildOrder.h"
 
 namespace BOSS
 {
@@ -11,7 +12,7 @@ class DFBB_BuildOrderSearchResults
 
 public:
    
-	std::vector<ActionType>     buildOrder;		// the build order
+	BuildOrder                  buildOrder;		// the build order
 
 	bool 				        solved;			// whether ot not a solution was found
     bool    			        timedOut;		// did the search time-out?

@@ -17,7 +17,7 @@ class BOSSExperiments
 
     std::map< std::string, GameState >                  _stateMap;
     std::map< std::string, std::vector<ActionType> >    _buildOrderMap;
-    std::map< std::string, DFBB_BuildOrderSearchGoal >  _buildOrderSearchGoalMap;
+    std::map< std::string, BuildOrderSearchGoal >  _buildOrderSearchGoalMap;
 
     std::vector< BOSSVisExperiment >                    _visExperiments;
 
@@ -32,7 +32,7 @@ public:
     void parseExperiments();
     const GameState &                   getState(const std::string & key);
     const std::vector<ActionType> &     getBuildOrder(const std::string & key);
-    const DFBB_BuildOrderSearchGoal &   getBuildOrderSearchGoalMap(const std::string & key);
+    const BuildOrderSearchGoal &   getBuildOrderSearchGoalMap(const std::string & key);
 
     std::vector< BOSSVisExperiment > &  getVisExperiments();
 };
