@@ -22,7 +22,8 @@ public:
     void                    pop_back();
     void                    sortByPrerequisites();
 
-    bool                    doActions(GameState & state,  const size_t buildOrderStartIndex = 0) const;
+    bool                    doActions(GameState & state, const size_t buildOrderStartIndex = 0) const;
+    bool                    doActions(GameState & state, const size_t buildOrderStartIndex, const size_t buildOrderEndIndex) const;
 
     const ActionType &      operator [] (const size_t & i) const;
     ActionType &            operator [] (const size_t & i);
@@ -34,6 +35,7 @@ public:
     const FrameCountType    getCompletionTime(const GameState & state, const size_t buildOrderStartIndex = 0) const;
 
     std::string             getJSONString() const;
+    std::string             getNumberedString() const;
 };
 
 }

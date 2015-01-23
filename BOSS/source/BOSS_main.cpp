@@ -127,7 +127,9 @@ int main(int argc, char *argv[])
 {
     BOSS::init();
 
+    BuildOrderTester::DoRandomTests(Races::Protoss, 1000000);
     BuildOrderTester::DoRandomTests(Races::Terran, 1000000);
+    BuildOrderTester::DoRandomTests(Races::Zerg, 1000000);
 
     return 0;
 

@@ -59,6 +59,7 @@ class GameState
     //const FrameCountType        whenConstructedBuildingReady(const ActionType & builder)                const;
     const FrameCountType        whenMineralsReady(const ActionType & action)                            const;
     const FrameCountType        whenGasReady(const ActionType & action)                                 const;
+    const FrameCountType        whenWorkerReady(const ActionType & action)                              const;
 
 public: 
 

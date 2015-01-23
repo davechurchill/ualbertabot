@@ -123,6 +123,23 @@ std::string BuildOrder::getJSONString() const
     return ss.str();
 }
 
+bool BuildOrder::doActions(GameState & state, const size_t buildOrderStartIndex, const size_t buildOrderEndIndex) const
+{
+    BOSS_ASSERT(buildOrderEndIndex < _buildOrder.size(), "Can't have this end index");
+
+    for (size_t i(buildOrderStartIndex); i < buildOrderEndIndex; ++i)
+    {
+        if(!state.isLegal(_buildOrder[i]))
+        {
+            return false;
+        }
+
+        state.doAction(_buildOrder[i]);
+    }
+
+    return true;
+}
+
 // returns whether or not all the actions were legal
 bool BuildOrder::doActions(GameState & state, size_t buildOrderStartIndex) const
 {
@@ -154,4 +171,23 @@ const FrameCountType BuildOrder::getCompletionTime(const GameState & state, size
     BOSS_ASSERT(isLegal, "Build order was not legal");
 
     return currentState.getLastActionFinishTime();
+}
+
+std::string BuildOrder::getNumberedString() const
+{
+    std::stringstream ss;
+
+    for (size_t i(0); i < _buildOrder.size(); ++i)
+    {
+        std::stringstream num;
+        num << i;
+        while (num.str().length() < 5)
+        {
+            num << " ";
+        }
+
+        ss << num.str() << _buildOrder[i].getName() << std::endl;
+    }
+
+    return ss.str();
 }

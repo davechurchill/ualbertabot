@@ -57,6 +57,8 @@ public:
 	void popNextAction();
 	bool isEmpty() const;
 	const UnitCountType size() const;
+
+    //bool willBuildingFinsishBeforeRefinery();
 	
 	FrameCountType getLastFinishTime() const;
 	FrameCountType nextActionFinishTime(const ActionType & a) const;

@@ -159,7 +159,7 @@ const bool UnitData::hasGasIncome() const
 
 const bool UnitData::hasMineralIncome() const
 {
-    return _mineralWorkers > 0 || getNumInProgress(ActionTypes::GetWorker(getRace())) > 0;
+    return getNumMineralWorkers() > 0 || getNumBuildingWorkers() > 0 || getNumInProgress(ActionTypes::GetWorker(getRace())) > 0;
 }
 
 void UnitData::releaseBuildingWorker()

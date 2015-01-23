@@ -194,22 +194,26 @@ bool GameState::isLegal(const ActionType & action) const
         return false;
     }
 
-    // specific rule for never leaving 0 workers on minerals
-    if (action.isRefinery() && (getNumMineralWorkers() < (4 + 3*refineriesInProgress)))
+    // TODO: require an extra for refineries byt not buildings
+    // rules for buildings which are built by workers
+    if (action.isBuilding() && !action.isMorphed() && !action.isAddon())
     {
-        return false;
-    }
+        // be very strict about when we can make refineries to ensure we have enough workers to go in gas
+        if (action.isRefinery() && (getNumMineralWorkers() <= (4 + 3*refineriesInProgress)))
+        {
+            return false;
+        }
 
-    // if it's a new building and no workers are available, it's not legal
-    if (!action.isMorphed() && action.isBuilding() && !action.isAddon() && (getNumMineralWorkers() <= 1) && (getNumBuildingWorkers() == 0))
-    {
-        return false;
-    }
+        int workersPerRefinery = 3;
+        int workersRequiredToBuild = getRace() == Races::Protoss ? 0 : 1;
+        int buildingIsRefinery = action.isRefinery() ? 1 : 0;
+        int candidateWorkers = getNumMineralWorkers() + _units.getNumInProgress(ActionTypes::GetWorker(getRace())) + getNumBuildingWorkers();
+        int workersToBeUsed = workersRequiredToBuild + workersPerRefinery*(refineriesInProgress);
 
-    // we can't build a building with our last worker
-    if (!action.isMorphed() && action.isBuilding() && !action.isAddon() && (getNumMineralWorkers() <= (1 + 3*refineriesInProgress)) && (getNumBuildingWorkers() == 0))
-    {
-        return false;
+        if (candidateWorkers < workersToBeUsed)
+        {
+            return false;
+        }
     }
 
     // if we have no gas income we can't make a gas unit
@@ -265,6 +269,7 @@ void GameState::doAction(const ActionType & action)
     _actionPerformed = action;
     _actionPerformedK = 1;
 
+    FrameCountType workerReadyTime = whenWorkerReady(action);
     FrameCountType ffTime = whenCanPerform(action);
 
     BOSS_ASSERT(ffTime >= 0 && ffTime < 1000000, "FFTime is very strange: %d", ffTime);
@@ -295,7 +300,12 @@ void GameState::doAction(const ActionType & action)
     {
         if (action.isBuilding() && !action.isAddon())
         {
-            BOSS_ASSERT(getNumMineralWorkers() > 1, "Shouldn't be using our last mineral worker to build");
+            if (getNumMineralWorkers() == 0)
+            {
+                std::cout << toString() << std::endl;
+            }
+
+            BOSS_ASSERT(getNumMineralWorkers() > 0, "Don't have any mineral workers to assign");
             _units.setBuildingWorker();
         }
 
@@ -387,6 +397,7 @@ const FrameCountType GameState::whenCanPerform(const ActionType & action) const
     FrameCountType classTime    (_currentFrame); 	// class-specific
     FrameCountType supplyTime   (_currentFrame); 	// supply
     FrameCountType prereqTime   (_currentFrame); 	// prerequisites
+    FrameCountType workerTime   (_currentFrame);
     FrameCountType maxVal       (_currentFrame);
 
     // figure out when prerequisites will be ready
@@ -404,12 +415,16 @@ const FrameCountType GameState::whenCanPerform(const ActionType & action) const
     // set when we will have enough supply for this unit
     supplyTime      = whenSupplyReady(action);
 
+    // when will we have a worker ready to build it?
+    workerTime      = whenWorkerReady(action);
+
     // figure out the max of all these times
     maxVal = (mineralTime > maxVal) ? mineralTime   : maxVal;
     maxVal = (gasTime >     maxVal) ? gasTime       : maxVal;
     maxVal = (classTime >   maxVal) ? classTime     : maxVal;
     maxVal = (supplyTime >  maxVal) ? supplyTime    : maxVal;
     maxVal = (prereqTime >  maxVal) ? prereqTime    : maxVal;
+    maxVal = (workerTime >  maxVal) ? workerTime    : maxVal;
 
     // return the time
     return maxVal;
@@ -417,16 +432,7 @@ const FrameCountType GameState::whenCanPerform(const ActionType & action) const
 
 const FrameCountType GameState::raceSpecificWhenReady(const ActionType & a) const
 {
-    // PROTOSS: Nothing
-    // TERRAN:	If we have 1 or less mineral workers and a worker is building, when will it be free?
-    if (getRace() == Races::Terran)
-    {
-        if (getNumMineralWorkers() <= 1 && getNumBuildingWorkers() > 0)
-        {
-            return _units.getNextBuildingFinishTime();
-        }
-    }
-    else if (getRace() == Races::Zerg)
+    if (getRace() == Races::Zerg)
     {
         if (getHatcheryData().numLarva() == 0)
         {
@@ -435,6 +441,52 @@ const FrameCountType GameState::raceSpecificWhenReady(const ActionType & a) cons
     }
 
     return 0;
+}
+
+const FrameCountType GameState::whenWorkerReady(const ActionType & action) const
+{
+    if (!action.whatBuildsActionType().isWorker())
+    {
+        return _currentFrame;
+    }
+
+    int refineriesInProgress = _units.getNumInProgress(ActionTypes::GetRefinery(getRace()));
+
+    // protoss doesn't tie up a worker to build, so they can build whenever a mineral worker is free
+    if (getRace() == Races::Protoss && getNumMineralWorkers() > 0)
+    {
+        return _currentFrame;
+    }
+
+    // if we have a mineral worker, then it is ready right now
+    if (getNumMineralWorkers() > 3*refineriesInProgress)
+    {
+        return _currentFrame;
+    }
+    
+    // at this point we need to wait for the next worker to become free since existing workers
+    // are either all used, or they are reserved to be put into refineries
+    // so we must have either a worker in progress, or a building in progress
+    const ActionType & Worker = ActionTypes::GetWorker(getRace());
+    BOSS_ASSERT(_units.getNumInProgress(Worker) > 0 || getNumBuildingWorkers() > 0, "No worker will ever be free");
+
+    FrameCountType workerReadyTime = _currentFrame;
+
+    // if we have a worker in progress, when will it be ready?
+    FrameCountType whenWorkerInProgressFinished = std::numeric_limits<FrameCountType>::max();
+    if (_units.getNumInProgress(Worker))
+    {
+        whenWorkerInProgressFinished = _units.getFinishTime(Worker);
+    }
+
+    // if we have a worker currently building, when will it be free?
+    FrameCountType whenBuildingWorkerFree = std::numeric_limits<FrameCountType>::max();
+    if (getNumBuildingWorkers() > 0)
+    {
+        whenBuildingWorkerFree = _units.getNextBuildingFinishTime();
+    }
+
+    return std::min(whenWorkerInProgressFinished, whenBuildingWorkerFree);
 }
 
 const FrameCountType GameState::whenSupplyReady(const ActionType & action) const
@@ -879,8 +931,8 @@ const std::string GameState::toString() const
     }*/
 
     std::cout << "\nResources:\n\n";
-    std::cout << "\t" << _minerals << "\tMinerals\n";
-    std::cout << "\t" << _gas << "\tGas\n";
+    std::cout << "\t" << _minerals/Constants::RESOURCE_SCALE << "\tMinerals\n";
+    std::cout << "\t" << _gas/Constants::RESOURCE_SCALE << "\tGas\n";
     std::cout << "\t" << _units.getNumMineralWorkers() << "\tMineral Workers\n";
     std::cout << "\t" << _units.getNumGasWorkers() << "\tGas Workers\n";
     std::cout << "\t" << _units.getNumBuildingWorkers() << "\tBuilding Workers\n";
@@ -934,7 +986,7 @@ bool GameState::whyIsNotLegal(const ActionType & action) const
     }
 
     // specific rule for never leaving 0 workers on minerals
-    if (action.isRefinery() && (getNumMineralWorkers() < 4))
+    if (action.isRefinery() && (getNumMineralWorkers() <= 4))
     {
         std::cout << "WhyNotLegal: " << action.getName() << " - Cannot leave 0 workers on minerals" << std::endl;
         return false;

@@ -88,7 +88,7 @@ FrameCountType ActionsInProgress::nextBuildingFinishTime() const
 	for (size_t i(0); i<_inProgress.size(); ++i)
 	{
         size_t ri = _inProgress.size()-1-i;
-		if (_inProgress[ri]._action.isBuilding() && !_inProgress[ri]._action.isAddon())
+		if (_inProgress[ri]._action.isBuilding() && !_inProgress[ri]._action.isAddon() && !_inProgress[ri]._action.isMorphed())
 		{
 			return _inProgress[ri]._time;
 		}
@@ -136,6 +136,17 @@ void ActionsInProgress::printActionsInProgress()
 		}
 	}
 }
+
+//bool ActionsInProgress::willBuildingFinsishBeforeRefinery()
+//{
+//    int firstBuildingIndex = 100000;
+//    int lastRefineryIndex = 0;
+//
+//    for (size_t i(0); i < _inProgress.size(); ++i)
+//    {
+//        if (_inProgress.)
+//    }
+//}
 	
 FrameCountType ActionsInProgress::whenActionsFinished(const PrerequisiteSet & actions) const
 {

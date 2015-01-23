@@ -44,6 +44,7 @@ namespace BOSS
 
         RaceID GetRaceID(BWAPI::Race r);
         RaceID GetRaceID(const std::string & race);
+        std::string GetRaceName(RaceID race);
     }
 
 }

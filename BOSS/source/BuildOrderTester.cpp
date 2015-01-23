@@ -41,17 +41,97 @@ BuildOrderSearchGoal BuildOrderTester::GetRandomGoal(const RaceID race)
     return goal;
 }
 
+void BuildOrderTester::TestRandomBuilds(const RaceID race, const size_t numTests)
+{
+    for (size_t i(0); i < numTests; ++i)
+    {
+        GameState state = GetStartState(race, 20);            
+    }
+}
+
+GameState BuildOrderTester::GetStartState(const RaceID race, int randomActions)
+{
+    GameState state(race);
+    state.setStartingState();
+    GameState copyState(state);
+    
+    BuildOrder randomBuildOrder;
+    int i = 0;
+
+    //try
+    {
+        for (i = 0; i < randomActions; ++i)
+        {
+            ActionSet legalActions;
+            state.getAllLegalActions(legalActions);
+            
+            if (legalActions.isEmpty())
+            {
+                std::cout << i << " Legal Actions Empty!" << std::endl;
+                std::cout << randomBuildOrder.getNumberedString() << std::endl;
+                std::cout << state.toString() << std::endl;
+               
+            }
+
+
+            ActionType randomAction = legalActions[rand() % legalActions.size()];
+
+           
+
+            if (!randomAction.isResourceDepot())
+            {
+                BOSS_ASSERT(state.isLegal(randomAction), "Should be a legal action!");
+
+                randomBuildOrder.add(randomAction);
+                state.doAction(randomAction);
+            }
+        }
+    }
+    /*catch (Assert::BOSSException e)
+    {
+        std::cout << std::endl << "Random State Error @ " << i << ": " << randomBuildOrder[i-1].getName() << std::endl << std::endl;
+
+        std::cout << randomBuildOrder.getJSONString() << std::endl;
+
+        std::cout << randomBuildOrder.getNumberedString() << std::endl;
+
+        std::cout << state.toString() << std::endl;
+
+        for (size_t a(0); a < randomBuildOrder.size(); ++a)
+        {
+            std::cout << "About to do: " << randomBuildOrder[a].getName() << std::endl;
+            std::cout << copyState.toString() << std::endl;
+            copyState.doAction(randomBuildOrder[a]);
+        }
+
+        randomBuildOrder.doActions(copyState, 0, randomBuildOrder.size()-1);
+
+        std::cout << copyState.toString();
+
+        copyState.doAction(randomBuildOrder[randomBuildOrder.size()-1]);
+
+        exit(-1);
+    }*/
+
+    return state;
+}
+
 void BuildOrderTester::DoRandomTests(const RaceID race, const size_t numTests)
 {
     GameState startState(race);
     startState.setStartingState();
+    
     srand((int)time(NULL));
 
     for (size_t i(0); i < numTests; ++i)
     {
-        // make a pseudo-random goal
+        if (i && !(i % 100000))
+        {
+            std::cout << Races::GetRaceName(race) << " " << i << std::endl;
+        }
+
+        //GameState startState = GetStartState(race, 20);
         BuildOrderSearchGoal goal = GetRandomGoal(race);
-        //goal.printGoal();
         
         NaiveBuildOrderSearch naiveSearch(startState, goal);
         

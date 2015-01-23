@@ -44,6 +44,26 @@ namespace BOSS
                 return Races::None;
             }
         }
+
+        std::string GetRaceName(RaceID race)
+        {
+            if (race == Races::Protoss)
+            {
+                return "Protoss";
+            }
+            else if (race == Races::Terran)
+            {
+                return "Terran";
+            }
+            else if (race == Races::Zerg)
+            {
+                return "Zerg";
+            }
+            else
+            {
+                return "None";
+            }
+        }
     }
 
 }
