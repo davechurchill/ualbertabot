@@ -1,1 +1,0 @@
-java -jar server.jar server_settings.ini
