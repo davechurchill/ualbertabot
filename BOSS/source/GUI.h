@@ -36,6 +36,8 @@ class GUI
 
     bool                        shiftPressed;
 
+    double                      zoomX, zoomY;
+
     size_t                      currentFrame;
     Timer                       timer;
     double                      lastFrameTime;
@@ -47,7 +49,7 @@ class GUI
     std::vector<GLuint>         textures;
     std::vector<Position>       textureSizes;
 
-    BOSSVisExperiment *         _currentExperiment;
+    BOSSVisExperiment           _currentExperiment;
     
     void HandleEvents();
     void Render();

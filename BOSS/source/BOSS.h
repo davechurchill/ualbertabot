@@ -11,6 +11,7 @@
 #include "Position.hpp"
 #include "BuildOrderSearchGoal.h"
 #include "BuildOrder.h"
+#include "NaiveBuildOrderSearch.h"
 
 namespace BOSS
 {

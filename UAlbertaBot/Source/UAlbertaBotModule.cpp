@@ -154,7 +154,7 @@ void UAlbertaBotModule::onSendText(std::string text)
 		numUnits = atoi(numUnitType.str().c_str());
 
         BWAPI::UnitType t;
-        for (BWAPI::UnitType & tt : BWAPI::UnitTypes::allUnitTypes())
+        for (const BWAPI::UnitType & tt : BWAPI::UnitTypes::allUnitTypes())
         {
             if (tt.getName().compare(type.str()) == 0)
             {

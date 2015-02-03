@@ -3,6 +3,9 @@ VisualStudio/Debug
 VisualStudio/ipch
 VisualStudio/*.txt
 VisualStudio/*.vsp
+emscripten/*.js
+emscripten/*.mem
+emscripten/*.data
 bin/*.exe
 bin/*.pdb
 bin/*.ilk

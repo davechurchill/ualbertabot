@@ -2,8 +2,8 @@
 
 using namespace BOSS;
 
-#define GUI_INITIAL_WIDTH  1600
-#define GUI_INITIAL_HEIGHT 900
+#define GUI_INITIAL_WIDTH  1280
+#define GUI_INITIAL_HEIGHT 720
 
 #define BOSS_MAX_TEXTURES 512
 #define BOSS_TEXTURE_INTERVAL 64
@@ -29,6 +29,8 @@ GUI::GUI()
     , shiftPressed(false)
     , currentFrame(0)
     , lastFrameTime(0)
+    , zoomX(1.0)
+    , zoomY(1.0)
 {
     timer.start();
     if(SDL_Init(SDL_INIT_VIDEO) != 0)
@@ -84,7 +86,7 @@ void GUI::OnStart()
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
 
-    glViewport(0,0,windowSizeX,windowSizeY);
+    glViewport(0,0,windowSizeX*zoomX,windowSizeY*zoomY);
 
     started = true;
 }
@@ -109,7 +111,7 @@ void GUI::OnResize(SDL_Event & event)
     //windowSizeX = event.resize.w;
     //windowSizeY = event.resize.h;
 
-    glViewport(0,0,windowSizeX,windowSizeY);
+    glViewport(0,0,windowSizeX*zoomX,windowSizeY*zoomY);
     OnFrame();
 }
 
@@ -131,8 +133,8 @@ void GUI::HandleEvents()
             {
                 if ((previousMouseX != 0 || previousMouseY != 0) && (event.motion.state & SDL_BUTTON_LEFT))
                 {
-                    //cameraX -= event.motion.xrel;
-                    //cameraY -= event.motion.yrel;
+                    cameraX -= event.motion.xrel * zoomX;
+                    cameraY -= event.motion.yrel * zoomY;
                 }
                 previousMouseX = event.motion.x;
                 previousMouseY = event.motion.y;
@@ -162,9 +164,18 @@ void GUI::HandleEvents()
                 }
                 break;
             }
+            case SDL_MOUSEWHEEL:
+            {
+                //cameraY -= event.wheel.y;
+                zoomX *= event.wheel.y < 0 ? 1.05 : 0.95;
+                zoomY *= event.wheel.y < 0 ? 1.05 : 0.95;
+                //glViewport(0,0,windowSizeX*zoomX,windowSizeY*zoomY);
+                break;
+            }
             case SDL_MOUSEBUTTONDOWN:
             {
-                
+				
+			
                 break;
             }
             case SDL_MOUSEBUTTONUP:
@@ -189,17 +200,14 @@ void GUI::Render()
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     {
-        glOrtho(0,windowSizeX,windowSizeY,0,-1,1);
+        glOrtho(0,windowSizeX*zoomX,windowSizeY*zoomY,0,-1,1);
 
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
         {
             glTranslatef(static_cast<float>(-cameraX),static_cast<float>(-cameraY),0);
                 
-            if (_currentExperiment != NULL)
-            {
-                _currentExperiment->onFrame();
-            }
+            _currentExperiment.onFrame();
 
             //GUITools::DrawTexturedRect(Position(0,0), Position(200,200), TextureFont, white);
         }
@@ -328,7 +336,7 @@ void GUI::LoadTexture(int textureNumber, const std::string & fileName)
 
 void GUI::SetVisExperiment(BOSSVisExperiment & exp)
 {
-    _currentExperiment = &exp;
+    _currentExperiment = exp;
 }
 
 bool GUI::saveScreenshotBMP(const std::string & filename) 

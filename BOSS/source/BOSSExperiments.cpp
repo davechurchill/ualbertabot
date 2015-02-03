@@ -2,9 +2,23 @@
 
 using namespace BOSS;
 
-BOSSExperiments::BOSSExperiments(const std::string & configFileName)
-    : _configFileName(configFileName)
+BOSSExperiments::BOSSExperiments()
 {
+}
+
+void BOSSExperiments::loadExperimentsFromFile(const std::string & configFileName)
+{
+    _configFileName = configFileName;
+    _jsonString = JSONTools::ReadJsonFile(configFileName);
+
+    parseParameters();
+    parseExperiments();
+}
+
+void BOSSExperiments::loadExperimentsFromString(const std::string & jsonString)
+{
+    _jsonString = jsonString;
+
     parseParameters();
     parseExperiments();
 }
@@ -12,7 +26,7 @@ BOSSExperiments::BOSSExperiments(const std::string & configFileName)
 void BOSSExperiments::parseExperiments()
 {
     rapidjson::Document document;
-    JSONTools::ParseJSONFile(document, _configFileName);
+    JSONTools::ParseJSONString(document, _jsonString);
 
     BOSS_ASSERT(document.HasMember("Experiments"), "No 'Experiments' member found");
 
@@ -38,11 +52,11 @@ void BOSSExperiments::parseExperiments()
 void BOSSExperiments::parseParameters()
 {
     rapidjson::Document document;
-    JSONTools::ParseJSONFile(document, _configFileName);
+    JSONTools::ParseJSONString(document, _jsonString);
 
     BOSS_ASSERT(document.HasMember("States"), "No 'States' member found");
     BOSS_ASSERT(document.HasMember("Build Orders"), "No 'Build Orders' member found");
-    BOSS_ASSERT(document.HasMember("Build Order Search Goals"), "No 'Build Order Goals' member found");
+//    BOSS_ASSERT(document.HasMember("Build Order Search Goals"), "No 'Build Order Goals' member found");
 
     const rapidjson::Value & states = document["States"];
     for (rapidjson::Value::ConstMemberIterator itr = states.MemberBegin(); itr != states.MemberEnd(); ++itr)
@@ -62,13 +76,16 @@ void BOSSExperiments::parseParameters()
         _buildOrderMap[name] = JSONTools::GetBuildOrder(val);
     }
 
-    const rapidjson::Value & buildOrderGoals = document["Build Order Search Goals"];
-    for (rapidjson::Value::ConstMemberIterator itr = buildOrderGoals.MemberBegin(); itr != buildOrderGoals.MemberEnd(); ++itr)
+    if (document.HasMember("Build Order Search Goals"))
     {
-        const std::string &         name = itr->name.GetString();
-        const rapidjson::Value &    val  = itr->value;
+        const rapidjson::Value & buildOrderGoals = document["Build Order Search Goals"];
+        for (rapidjson::Value::ConstMemberIterator itr = buildOrderGoals.MemberBegin(); itr != buildOrderGoals.MemberEnd(); ++itr)
+        {
+            const std::string &         name = itr->name.GetString();
+            const rapidjson::Value &    val  = itr->value;
                
-        _buildOrderSearchGoalMap[name] = JSONTools::GetBuildOrderSearchGoal(val);
+            _buildOrderSearchGoalMap[name] = JSONTools::GetBuildOrderSearchGoal(val);
+        }
     }
 }
 

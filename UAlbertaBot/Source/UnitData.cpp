@@ -8,7 +8,7 @@ UnitData::UnitData()
 	, gasLost(0)
 {
 	int maxTypeID(0);
-	for (BWAPI::UnitType & t : BWAPI::UnitTypes::allUnitTypes())
+	for (const BWAPI::UnitType & t : BWAPI::UnitTypes::allUnitTypes())
 	{
 		maxTypeID = maxTypeID > t.getID() ? maxTypeID : t.getID();
 	}

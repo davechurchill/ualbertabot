@@ -103,7 +103,7 @@ GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self)
 	}
 
     // TODO: set correct number of larva from state
-    for (BWAPI::UpgradeType & type : BWAPI::UpgradeTypes::allUpgradeTypes())
+    for (const BWAPI::UpgradeType & type : BWAPI::UpgradeTypes::allUpgradeTypes())
 	{
         if (!ActionTypes::TypeExists(type))
 		{
@@ -116,7 +116,7 @@ GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self)
 		}
 	}
     
-    for (BWAPI::TechType & type : BWAPI::TechTypes::allTechTypes())
+    for (const BWAPI::TechType & type : BWAPI::TechTypes::allTechTypes())
 	{
         if (!ActionTypes::TypeExists(type))
 		{
@@ -524,6 +524,11 @@ const FrameCountType GameState::whenSupplyReady(const ActionType & action) const
 
 const FrameCountType GameState::whenPrerequisitesReady(const ActionType & action) const
 {
+    if (action == ActionTypes::GetActionType("Protoss_Dark_Templar"))
+    {
+        int a = 6;
+    }
+
     FrameCountType preReqReadyTime = _currentFrame;
 
     // if a building builds this action
@@ -575,21 +580,21 @@ const FrameCountType GameState::whenBuildingPrereqReady(const ActionType & actio
     // this will give us when the building will be free to build this action
     buildingAvailableTime = std::min(constructedBuildingFreeTime, buildingInProgressFinishTime);
 
-    //// get all prerequisites currently in progress but do not have any completed
-    //PrerequisiteSet prereqInProgress = _units.getPrerequistesInProgress(action);
+    // get all prerequisites currently in progress but do not have any completed
+    PrerequisiteSet prereqInProgress = _units.getPrerequistesInProgress(action);
 
-    //// remove the specific builder from this list since we calculated that earlier
-    //prereqInProgress.remove(builder);
+    // remove the specific builder from this list since we calculated that earlier
+    prereqInProgress.remove(builder);
 
     //// if we actually have some prerequisites in progress other than the building
-    //if (!prereqInProgress.isEmpty())
-    //{
-    //    // get the max time the earliest of each type will be finished in
-    //    FrameCountType C = _units.getFinishTime(prereqInProgress);
+    if (!prereqInProgress.isEmpty())
+    {
+        // get the max time the earliest of each type will be finished in
+        FrameCountType C = _units.getFinishTime(prereqInProgress);
 
-    //    // take the maximum of this value and when the building was available
-    //    buildingAvailableTime = (C > buildingAvailableTime) ? C : buildingAvailableTime;
-    //}
+        // take the maximum of this value and when the building was available
+        buildingAvailableTime = (C > buildingAvailableTime) ? C : buildingAvailableTime;
+    }
     
     return buildingAvailableTime;
 }

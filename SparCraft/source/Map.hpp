@@ -145,7 +145,7 @@ public:
 	{
 		_unitData = bvv(getBuildTileWidth(), std::vector<bool>(getBuildTileHeight(), true));
 
-		for (BWAPI::Unit & unit : game->getAllUnits())
+		for (BWAPI::UnitInterface * unit : game->getAllUnits())
 		{
 			if (!unit->getType().isBuilding())
 			{
@@ -163,7 +163,7 @@ public:
 	{
 		_buildingData = bvv(getBuildTileWidth(), std::vector<bool>(getBuildTileHeight(), true));
 
-		for (BWAPI::Unit & unit : game->getAllUnits())
+		for (BWAPI::UnitInterface * unit : game->getAllUnits())
 		{
 			if (unit->getType().isBuilding())
 			{

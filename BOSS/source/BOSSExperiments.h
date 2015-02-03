@@ -14,10 +14,11 @@ namespace BOSS
 class BOSSExperiments
 {
     std::string                                         _configFileName;
+    std::string                                         _jsonString;
 
     std::map< std::string, GameState >                  _stateMap;
     std::map< std::string, std::vector<ActionType> >    _buildOrderMap;
-    std::map< std::string, BuildOrderSearchGoal >  _buildOrderSearchGoalMap;
+    std::map< std::string, BuildOrderSearchGoal >       _buildOrderSearchGoalMap;
 
     std::vector< BOSSVisExperiment >                    _visExperiments;
 
@@ -26,7 +27,10 @@ class BOSSExperiments
 
 public:
 
-    BOSSExperiments(const std::string & configFileName);
+    BOSSExperiments();
+
+    void loadExperimentsFromFile(const std::string & configFileName);
+    void loadExperimentsFromString(const std::string & jsonString);
     
     void onFrame();
     void parseExperiments();

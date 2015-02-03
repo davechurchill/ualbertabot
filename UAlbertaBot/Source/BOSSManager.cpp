@@ -51,7 +51,10 @@ void BOSSManager::update(double timeLimit)
             if (_previousBuildOrder.size() == 0)
             {
                 BWAPI::Broodwar->printf("Previous search didn't find a solution, resorting to Naive Build Order");
-                _previousBuildOrder = BOSS::Tools::GetNaiveBuildOrder(_smartSearch->getParameters().initialState, _smartSearch->getParameters().goal);
+
+                BOSS::NaiveBuildOrderSearch nbos(_smartSearch->getParameters().initialState, _smartSearch->getParameters().goal);
+
+                _previousBuildOrder = nbos.solve();
             }
         }
     }
@@ -195,7 +198,8 @@ std::vector<MetaType> BOSSManager::GetNaiveBuildOrder(const std::vector<MetaPair
     BOSS::GameState                     initialState(BWAPI::Broodwar, BWAPI::Broodwar->self());
     BOSS::BuildOrderSearchGoal          goal = GetGoal(goalUnits);
 
-    BOSS::BuildOrder                    buildOrder = BOSS::Tools::GetNaiveBuildOrder(initialState, goal);
+    BOSS::NaiveBuildOrderSearch         nbos(initialState, goal);
+    BOSS::BuildOrder                    buildOrder = nbos.solve();
 
     return GetMetaVector(buildOrder);
 }

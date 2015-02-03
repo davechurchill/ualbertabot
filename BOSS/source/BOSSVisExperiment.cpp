@@ -1,5 +1,7 @@
 #include "BOSSVisExperiment.h"
 
+#include "GUI.h"
+
 using namespace BOSS;
 
 BOSSVisExperiment::BOSSVisExperiment()
@@ -43,6 +45,11 @@ BOSSVisExperiment::BOSSVisExperiment(const rapidjson::Value & val, std::map< std
     }
 }
 
+const Position & BOSSVisExperiment::getLastDrawPosition() const
+{
+    return _lastDrawPosition;
+}
+
 void BOSSVisExperiment::draw()
 {
     Position drawAt(0,0);
@@ -51,6 +58,8 @@ void BOSSVisExperiment::draw()
         PositionType endY = DrawScenario(drawAt, i);
         drawAt = Position(0, endY);
     }
+
+    _lastDrawPosition = drawAt;
 }
 
 void BOSSVisExperiment::onFrame()
@@ -90,7 +99,7 @@ void BOSSVisExperiment::onFrame()
         
         if (!didAction)
         {
-            _states[s].fastForward(_states[s].getCurrentFrame() + 1);
+            _states[s].fastForward(_states[s].getCurrentFrame() + 3);
         }
     }
 

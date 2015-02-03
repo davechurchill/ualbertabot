@@ -1,7 +1,6 @@
 #pragma once
 
 #include "BOSS.h"
-#include "GUI.h"
 #include "GUITools.h"
 #include "JSONTools.h"
 #include "rapidjson/rapidjson.h"
@@ -22,6 +21,7 @@ class BOSSVisExperiment
     size_t                                          _scenarios;
 
     bool                                            _finished;
+    Position                                        _lastDrawPosition;
 
     PositionType    DrawScenario(const Position & pos, const size_t scenario);
 
@@ -36,7 +36,7 @@ public:
 
     void onFrame();
 
-
+    const Position & getLastDrawPosition() const;
 
 };
 }
