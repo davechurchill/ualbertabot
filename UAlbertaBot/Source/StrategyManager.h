@@ -80,7 +80,7 @@ public:
 	const	bool				rushDetected();
 
 	const	int					getCurrentStrategy();
-
+	void						setCurrentStrategy(int newStrategy);//for high level search to set the strategy
 	const	MetaPairVector		getBuildOrderGoal();
 	const	std::vector<MetaType>	getOpeningBookBuildOrder() const;
 };

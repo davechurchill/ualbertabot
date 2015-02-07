@@ -9,6 +9,7 @@
 #include "base/BuildingManager.h"
 #include "ScoutManager.h"
 #include "StrategyManager.h"
+#include "HLCombatCommander.h"
 
 namespace UAlbertaBot
 {
@@ -98,6 +99,8 @@ public:
 class GameCommander 
 {
 	CombatCommander		combatCommander;
+	HLCombatCommander	hlCombatCommander;
+
 	ScoutManager		scoutManager;
 	TimerManager		timerManager;
 

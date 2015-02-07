@@ -49,6 +49,9 @@
     <Filter Include="sparcraft">
       <UniqueIdentifier>{6b8863f5-e2f1-4ee3-ad58-f8c6bf761cc6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="HighLevelSearch">
+      <UniqueIdentifier>{0b67884f-3d7a-4067-b2d6-fe2e588db502}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\CombatCommander.cpp">
@@ -164,6 +167,18 @@
     </ClCompile>
     <ClCompile Include="..\Source\BOSSManager.cpp">
       <Filter>game\macro\search</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\HLCombatCommander.cpp">
+      <Filter>HighLevelSearch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\HLManager.cpp">
+      <Filter>HighLevelSearch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\HLSearch.cpp">
+      <Filter>HighLevelSearch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\HLState.cpp">
+      <Filter>HighLevelSearch</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -289,6 +304,18 @@
     </ClInclude>
     <ClInclude Include="..\Source\BOSSManager.h">
       <Filter>game\macro\search</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\HLCombatCommander.h">
+      <Filter>HighLevelSearch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\HLManager.h">
+      <Filter>HighLevelSearch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\HLSearch.h">
+      <Filter>HighLevelSearch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\HLState.h">
+      <Filter>HighLevelSearch</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

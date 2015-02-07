@@ -18,6 +18,7 @@ namespace Options
         bool USING_MICRO_SEARCH			= false;	// toggle use of Micro Search, if false script used
         bool USING_ENHANCED_INTERFACE	= false;	// toggle EnhancedUI, not needed for UAlbertaBot
 		bool USING_BUILD_ORDER_DEMO		= false;
+		bool USING_HIGH_LEVEL_SEARCH	= false;		// todo: update for different bot modes
 
 		void checkOptions()							// checks to see if options are set in a sane manner
 		{
@@ -25,6 +26,9 @@ namespace Options
 			{
 				assert(!USING_ENHANCED_INTERFACE);
 				assert(!USING_MICRO_SEARCH);
+			}
+			if (USING_HIGH_LEVEL_SEARCH){
+				assert(!USING_COMBATCOMMANDER);
 			}
 		}
 	}

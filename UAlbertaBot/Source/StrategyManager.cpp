@@ -637,3 +637,8 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
  {
 	 return currentStrategy;
  }
+
+ void StrategyManager::setCurrentStrategy(int newStrategy)
+ {
+	 currentStrategy = newStrategy;
+ }

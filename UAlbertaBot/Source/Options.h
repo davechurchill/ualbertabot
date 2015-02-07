@@ -17,6 +17,8 @@ namespace Options
 		extern bool USING_MACRO_SEARCH;				// toggle use of Build Order Search, currently no backup
 		extern bool USING_STRATEGY_IO;				// toggle the use of file io for strategy
 		extern bool USING_BUILD_ORDER_DEMO;			
+		extern bool USING_HIGH_LEVEL_SEARCH;		// toggle the use of search for strategy selection and squad
+													// assignments.
 
 		void checkOptions();							// checks to see if options are set in a sane manner
 	}
