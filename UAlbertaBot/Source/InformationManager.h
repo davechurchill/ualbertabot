@@ -90,7 +90,7 @@ public:
 	bool						enemyHasDetector();
 
 	void						drawUnitInformation(int x, int y);
-
+	void						drawMapInformation();
 	SparCraft::Map *			getMap() { return &map; }
 };
 }
