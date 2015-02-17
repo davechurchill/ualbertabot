@@ -14,6 +14,8 @@ std::string returnString("TestReturn");
 
 void mainLoop()
 {
+
+
     GUI::Instance().OnFrame();
 }
 
@@ -49,15 +51,25 @@ const char * ResetExperiment(char * paramString)
 }
 }
 
+void doCombatExperiment()
+{
+
+
+    BOSS::BOSSExperiments exp;
+    exp.loadExperimentsFromFile("../asset/config/config.txt");
+
+    for (size_t i(0); i < exp.getCombatSearchExperiments().size(); ++i)
+    {
+        exp.getCombatSearchExperiments()[i].run();
+    }
+}
+
 int main(int argc, char *argv[])
 {
     BOSS::init();
-
-    //BuildOrderTester::DoRandomTests(Races::Protoss, 1000000);
-    //BuildOrderTester::DoRandomTests(Races::Terran, 1000000);
-    //BuildOrderTester::DoRandomTests(Races::Zerg, 1000000);
-    //return 0;
-
+    
+    doCombatExperiment();
+/*
     ResetExperiment("");
 
     if (experiments.getVisExperiments().size() > 0)
@@ -73,7 +85,7 @@ int main(int argc, char *argv[])
     }
 #else
     emscripten_set_main_loop(mainLoop,0,true);
-#endif
+#endif*/
 
     return 0;
 }

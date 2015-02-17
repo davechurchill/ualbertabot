@@ -45,8 +45,15 @@ void BOSSExperiments::parseExperiments()
             {
                 _visExperiments.push_back(BOSSVisExperiment(val, _stateMap, _buildOrderMap));
             }
+
+            if (std::string(val["type"].GetString()).compare("CombatSearch") == 0)
+            {
+                _combatSearchExperiments.push_back(CombatSearchExperiment(name, val, _stateMap, _buildOrderMap));
+            }
         }
     }
+
+    std::cout << "\n\n";
 }
 
 void BOSSExperiments::parseParameters()
@@ -96,7 +103,7 @@ const GameState & BOSSExperiments::getState(const std::string & key)
     return _stateMap[key];
 }
 
-const std::vector<ActionType> & BOSSExperiments::getBuildOrder(const std::string & key)
+const BuildOrder & BOSSExperiments::getBuildOrder(const std::string & key)
 {
     BOSS_ASSERT(_buildOrderMap.find(key) != _buildOrderMap.end(), "Couldn't find build order: %s", key.c_str());
 
@@ -113,4 +120,9 @@ const BuildOrderSearchGoal & BOSSExperiments::getBuildOrderSearchGoalMap(const s
 std::vector< BOSSVisExperiment > & BOSSExperiments::getVisExperiments()
 {
     return _visExperiments;
+}
+
+std::vector< CombatSearchExperiment > & BOSSExperiments::getCombatSearchExperiments()
+{
+    return _combatSearchExperiments;
 }

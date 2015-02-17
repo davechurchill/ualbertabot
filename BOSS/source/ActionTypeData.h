@@ -107,8 +107,8 @@ public:
     const PrerequisiteSet & getRecursivePrerequisites()  const;
     int 			    getType() 				const;
 
-    std::string 		getName() 				const;
-    std::string 		getMetaName() 			const;
+    const std::string & getName() 				const;
+    const std::string & getMetaName() 			const;
 
     FrameCountType 		buildTime() 			const;
     ResourceCountType	mineralPrice()			const;

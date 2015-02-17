@@ -122,8 +122,8 @@ BWAPI::TechType		ActionTypeData::getTechType()			const	{ return tech; }
 ActionID            ActionTypeData::whatBuildsAction()		const	{ return whatBuildsActionID; }	
 int 			    ActionTypeData::getType() 				const	{ return type; }
 	
-std::string 		ActionTypeData::getName() 				const	{ return name; }
-std::string 		ActionTypeData::getMetaName() 			const	{ return metaName; }
+const std::string &	ActionTypeData::getName() 				const	{ return name; }
+const std::string &	ActionTypeData::getMetaName() 			const	{ return metaName; }
 	
 FrameCountType 		ActionTypeData::buildTime() 			const	{ return buildTimeVal; }
 ResourceCountType	ActionTypeData::mineralPrice()			const	{ return mineralPriceVal; }

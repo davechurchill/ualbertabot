@@ -17,6 +17,9 @@
     <ClCompile Include="..\source\BuildOrderTester.cpp">
       <Filter>testing</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\CombatSearchExperiment.cpp">
+      <Filter>experiments</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="gui">
@@ -44,6 +47,9 @@
     </ClInclude>
     <ClInclude Include="..\source\BuildOrderTester.h">
       <Filter>testing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\CombatSearchExperiment.h">
+      <Filter>experiments</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

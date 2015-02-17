@@ -43,12 +43,6 @@
     <ClCompile Include="..\source\Tools.cpp">
       <Filter>search\util</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\CombatSearchBucket.cpp">
-      <Filter>search\CombatSearch</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\CombatSearchIntegral.cpp">
-      <Filter>search\CombatSearch</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\DFBB_BuildOrderSearchSaveState.cpp">
       <Filter>search\BuildOrderSearch</Filter>
     </ClCompile>
@@ -87,6 +81,21 @@
     </ClCompile>
     <ClCompile Include="..\source\BuildOrder.cpp">
       <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\CombatSearch_Integral.cpp">
+      <Filter>search\CombatSearch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\CombatSearch_BucketData.cpp">
+      <Filter>search\CombatSearch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\CombatSearch_IntegralData.cpp">
+      <Filter>search\CombatSearch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\CombatSearch_Bucket.cpp">
+      <Filter>search\CombatSearch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\CombatSearch_BestResponse.cpp">
+      <Filter>search\CombatSearch</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -150,12 +159,6 @@
     <ClInclude Include="..\source\Tools.h">
       <Filter>search\util</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\CombatSearchBucket.h">
-      <Filter>search\CombatSearch</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\CombatSearchIntegral.h">
-      <Filter>search\CombatSearch</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\DFBB_BuildOrderSearchSaveState.h">
       <Filter>search\BuildOrderSearch</Filter>
     </ClInclude>
@@ -194,6 +197,21 @@
     </ClInclude>
     <ClInclude Include="..\source\BuildOrder.h">
       <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\CombatSearch_Integral.h">
+      <Filter>search\CombatSearch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\CombatSearch_BucketData.h">
+      <Filter>search\CombatSearch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\CombatSearch_IntegralData.h">
+      <Filter>search\CombatSearch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\CombatSearch_Bucket.h">
+      <Filter>search\CombatSearch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\CombatSearch_BestResponse.h">
+      <Filter>search\CombatSearch</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

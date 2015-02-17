@@ -86,7 +86,7 @@ void GUI::OnStart()
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
 
-    glViewport(0,0,windowSizeX*zoomX,windowSizeY*zoomY);
+    glViewport(0,0,(GLsizei)(windowSizeX*zoomX),(GLsizei)(windowSizeY*zoomY));
 
     started = true;
 }
@@ -111,7 +111,7 @@ void GUI::OnResize(SDL_Event & event)
     //windowSizeX = event.resize.w;
     //windowSizeY = event.resize.h;
 
-    glViewport(0,0,windowSizeX*zoomX,windowSizeY*zoomY);
+    glViewport(0,0,(GLsizei)(windowSizeX*zoomX),(GLsizei)(windowSizeY*zoomY));
     OnFrame();
 }
 
@@ -133,8 +133,8 @@ void GUI::HandleEvents()
             {
                 if ((previousMouseX != 0 || previousMouseY != 0) && (event.motion.state & SDL_BUTTON_LEFT))
                 {
-                    cameraX -= event.motion.xrel * zoomX;
-                    cameraY -= event.motion.yrel * zoomY;
+                    cameraX -= (int)(event.motion.xrel * zoomX);
+                    cameraY -= (int)(event.motion.yrel * zoomY);
                 }
                 previousMouseX = event.motion.x;
                 previousMouseY = event.motion.y;

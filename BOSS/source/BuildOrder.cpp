@@ -29,6 +29,14 @@ void BuildOrder::add(const ActionType & type, const int & amount)
     }
 }
 
+void BuildOrder::add(const BuildOrder & other)
+{
+    for (size_t i(0); i < other.size(); ++i)
+    {
+        add(other[i]);
+    }
+}
+
 void BuildOrder::clear()
 {
     _buildOrder.clear();
@@ -187,6 +195,32 @@ std::string BuildOrder::getNumberedString() const
         }
 
         ss << num.str() << _buildOrder[i].getName() << std::endl;
+    }
+
+    return ss.str();
+}
+
+std::string BuildOrder::getIDString() const
+{
+    std::stringstream ss;
+
+    for (size_t i(0); i < _buildOrder.size(); ++i)
+    {
+        ss << (int)_buildOrder[i].ID() << " ";
+    }
+
+    return ss.str();
+}
+
+std::string BuildOrder::getShortNameString() const
+{
+    std::stringstream ss;
+
+    for (size_t i(0); i < _buildOrder.size(); ++i)
+    {
+
+
+        ss << (int)_buildOrder[i].ID() << " ";
     }
 
     return ss.str();

@@ -1,17 +1,18 @@
-#include "CombatSearch.h"
+#include "BestResponseCombatSearch.h"
 
 using namespace BOSS;
 
+BestResponseCombatSearch::BestResponseCombatSearch(const CombatSearchParameters p)
+    : _params(p)
+{
+   
+    BOSS_ASSERT(_params.getInitialState().getRace() != Races::None, "Combat search initial state is invalid");
+}
 
 // function which is called to do the actual search
-void CombatSearch::search()
+void BestResponseCombatSearch::search()
 {
     _searchTimer.start();
-
-    // apply the opening build order to the initial state
-    GameState initialState(_params.getInitialState());
-    _buildOrder = _params.getOpeningBuildOrder();
-    _buildOrder.doActions(initialState);
 
     try
     {
@@ -30,7 +31,7 @@ void CombatSearch::search()
     _results.timeElapsed = _searchTimer.getElapsedTimeInMilliSec();
 }
 
-void CombatSearch::generateLegalActions(const GameState & state, ActionSet & legalActions, const CombatSearchParameters & params)
+void BestRepsonseCombatSearch::generateLegalActions(const GameState & state, ActionSet & legalActions, const CombatSearchParameters & params)
 {
     // prune actions we have too many of already
     const ActionSet & allActions = params.getRelevantActions();
@@ -51,48 +52,6 @@ void CombatSearch::generateLegalActions(const GameState & state, ActionSet & leg
         }
         
         legalActions.add(action);
-    }
-
-    // if we enabled the always make workers flag, and workers are legal
-    const ActionType & worker = ActionTypes::GetWorker(state.getRace());
-    if (_params.getAlwaysMakeWorkers() && legalActions.contains(worker))
-    {
-        bool actionLegalBeforeWorker = false;
-
-        // when can we make a worker
-        FrameCountType workerReady = state.whenCanPerform(worker);
-        
-        // if we can make a worker in the next couple of frames, do it
-        if (workerReady <= state.getCurrentFrame() + 2)
-        {
-            legalActions.clear();
-            legalActions.add(worker);
-            return;
-        }
-
-        // figure out of anything can be made before a worker
-        for (size_t a(0); a < legalActions.size(); ++a)
-        {
-            const ActionType & actionType = legalActions[a];
-            const FrameCountType whenCanPerformAction = state.whenCanPerform(actionType);
-            if (whenCanPerformAction < workerReady)
-            {
-                actionLegalBeforeWorker = true;
-                break;
-            }
-        }
-
-        // if something can be made before a worker, then don't consider workers
-        if (actionLegalBeforeWorker)
-        {
-            legalActions.remove(worker);
-        }
-        // otherwise we can make a worker next so don't consider anything else
-        else
-        {
-            legalActions.clear();
-            legalActions.add(worker);
-        }
     }
 }
 
@@ -123,19 +82,20 @@ double CombatSearch::eval(const GameState & state) const
 
 void CombatSearch::doSearch(const GameState & state, size_t depth)
 {
-    // This base class function should never be called, leaving the code
-    // here as a basis to form child classes
-
-    BOSS_ASSERT(false, "Base CombatSearch doSearch() should never be called");
-
     if (timeLimitReached())
     {
         throw BOSS_COMBATSEARCH_TIMEOUT;
     }
 
     updateResults(state);
+    _bucket.update(state, _buildOrder);
 
     if (isTerminalNode(state, depth))
+    {
+        return;
+    }
+
+    if (_bucket.isDominated(state))
     {
         return;
     }
@@ -148,19 +108,22 @@ void CombatSearch::doSearch(const GameState & state, size_t depth)
         GameState child(state);
         child.doAction(legalActions[a]);
         _buildOrder.add(legalActions[a]);
+        _integral.update(state, _buildOrder);
         
         doSearch(child,depth+1);
 
         _buildOrder.pop_back();
+        _integral.pop();
     }
 }
 
 void CombatSearch::updateResults(const GameState & state)
 {
     _results.nodesExpanded++;
-}
 
-void CombatSearch::printResults()
-{
-    std::cout << "Printing base class CombatSearch results!\n\n";
+    /*if (_results.nodesExpanded > 0 && _results.nodesExpanded % 1000000 == 0)
+    {
+        std::cout << ".";
+        std::cout.flush();
+    }*/
 }

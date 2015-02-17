@@ -12,7 +12,7 @@ BOSSVisExperiment::BOSSVisExperiment()
 
 }
 
-BOSSVisExperiment::BOSSVisExperiment(const rapidjson::Value & val, std::map< std::string, GameState > & stateMap, std::map< std::string, std::vector<ActionType> > & buildOrderMap)
+BOSSVisExperiment::BOSSVisExperiment(const rapidjson::Value & val, std::map< std::string, GameState > & stateMap, std::map< std::string, BuildOrder > & buildOrderMap)
     : _startTimes(val["scenarios"].Size(), std::vector<FrameCountType>())
     , _finishTimes(val["scenarios"].Size(), std::vector<FrameCountType>())
     , _nextActionIndexes(val["scenarios"].Size(), 0)
@@ -137,7 +137,7 @@ std::string BOSSVisExperiment::getTimeString(const FrameCountType & frameCount)
 PositionType BOSSVisExperiment::DrawScenario(const Position & pos, const size_t scenario)
 {
     const GameState & currentState                      = _states[scenario];
-    const std::vector<ActionType> & buildOrder          = _buildOrders[scenario];
+    const BuildOrder & buildOrder                       = _buildOrders[scenario];
     const std::vector<FrameCountType> & startTimes      = _startTimes[scenario];
     const std::vector<FrameCountType> & finishTimes     = _finishTimes[scenario];
     //const size_t & boIndex = _buildO

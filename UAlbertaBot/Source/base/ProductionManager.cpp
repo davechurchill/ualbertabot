@@ -80,8 +80,7 @@ void ProductionManager::update()
 	if ((queue.size() == 0) && (BWAPI::Broodwar->getFrameCount() > 10) && !Options::Modules::USING_BUILD_ORDER_DEMO)
 	{
 		BWAPI::Broodwar->drawTextScreen(150, 10, "Nothing left to build, new search!");
-		std::vector<MetaPair> newGoal;// = StrategyManager::Instance().getBuildOrderGoal();
-        newGoal.push_back(MetaPair(MetaType(BWAPI::UnitTypes::Protoss_Dark_Templar), 2));
+		std::vector<MetaPair> newGoal = StrategyManager::Instance().getBuildOrderGoal();
 		performBuildOrderSearch(newGoal);
 	}
 
