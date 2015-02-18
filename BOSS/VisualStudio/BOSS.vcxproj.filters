@@ -97,6 +97,9 @@
     <ClCompile Include="..\source\CombatSearch_BestResponse.cpp">
       <Filter>search\CombatSearch</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\BuildOrderPlot.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\Timer.hpp">
@@ -212,6 +215,9 @@
     </ClInclude>
     <ClInclude Include="..\source\CombatSearch_BestResponse.h">
       <Filter>search\CombatSearch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\BuildOrderPlot.h">
+      <Filter>util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

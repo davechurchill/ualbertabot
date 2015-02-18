@@ -64,11 +64,28 @@ void doCombatExperiment()
     }
 }
 
+#include "BuildOrderPlot.h"
+void testBuildOrderPlot()
+{
+    const std::string buildOrderJSON = "[ \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Overlord\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Hatchery\", \"Zerg_Spawning_Pool\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Hatchery\", \"Zerg_Extractor\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Overlord\", \"Zerg_Lair\", \"Zerg_Extractor\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Zergling\", \"Zerg_Zergling\", \"Zerg_Zergling\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Overlord\", \"Zerg_Drone\", \"Zerg_Overlord\", \"Zerg_Drone\", \"Zerg_Overlord\", \"Zerg_Spire\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Mutalisk\", \"Zerg_Mutalisk\", \"Zerg_Mutalisk\", \"Zerg_Mutalisk\", \"Zerg_Mutalisk\", \"Zerg_Mutalisk\", \"Zerg_Mutalisk\", \"Zerg_Mutalisk\", \"Zerg_Mutalisk\", \"Zerg_Mutalisk\", \"Zerg_Mutalisk\", \"Zerg_Mutalisk\" ]";
+
+    GameState state(Races::Zerg);
+    state.setStartingState();
+
+    BuildOrder buildOrder = JSONTools::GetBuildOrder(buildOrderJSON);
+
+    BuildOrderPlot plot(state, buildOrder);
+    plot.writeGNUPlotScript("gnuplot/test.gpl");
+
+}
+
 int main(int argc, char *argv[])
 {
     BOSS::init();
     
-    doCombatExperiment();
+    testBuildOrderPlot();
+
+    //doCombatExperiment();
 /*
     ResetExperiment("");
 

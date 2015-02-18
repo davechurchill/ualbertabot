@@ -1,0 +1,63 @@
+set title "3 Hatch Muta Build Order"
+set xlabel "Time (frames)"
+set style rect fc lt -1 fs solid 0.15
+set xrange [-280.08:9616.08]
+set yrange [-15:291]
+unset ytics
+set grid xtics
+set nokey
+set terminal wxt size 1500,300
+set object 1 rect from 0,0 to 300,20 lw 1 fc rgb "cyan"
+set object 2 rect from 278,23 to 578,43 lw 1 fc rgb "cyan"
+set object 3 rect from 505,0 to 805,20 lw 1 fc rgb "cyan"
+set object 4 rect from 702,23 to 1002,43 lw 1 fc rgb "cyan"
+set object 5 rect from 1031,0 to 1631,20 lw 1 fc rgb "gold"
+set object 6 rect from 1169,23 to 1469,43 lw 1 fc rgb "cyan"
+set object 7 rect from 1631,0 to 1931,20 lw 1 fc rgb "cyan"
+set object 8 rect from 1680,23 to 1980,43 lw 1 fc rgb "cyan"
+set object 9 rect from 2016,0 to 2316,20 lw 1 fc rgb "cyan"
+set object 10 rect from 2352,0 to 4272,20 lw 1 fc rgb "brown"
+set object 11 rect from 2650,23 to 3970,43 lw 1 fc rgb "brown"
+set object 12 rect from 2761,46 to 3061,66 lw 1 fc rgb "cyan"
+set object 13 rect from 2872,69 to 3172,89 lw 1 fc rgb "cyan"
+set object 14 rect from 3468,46 to 5388,66 lw 1 fc rgb "brown"
+set object 15 rect from 3569,69 to 4289,89 lw 1 fc rgb "green"
+set object 16 rect from 3680,92 to 3980,112 lw 1 fc rgb "cyan"
+set object 17 rect from 3791,115 to 4091,135 lw 1 fc rgb "cyan"
+set object 18 rect from 3902,138 to 4202,158 lw 1 fc rgb "cyan"
+set object 19 rect from 4110,23 to 4710,43 lw 1 fc rgb "gold"
+set object 20 rect from 4766,0 to 6266,20 lw 1 fc rgb "brown"
+set object 21 rect from 4766,23 to 5486,43 lw 1 fc rgb "green"
+set object 22 rect from 4766,69 to 5066,89 lw 1 fc rgb "cyan"
+set object 23 rect from 4766,92 to 5066,112 lw 1 fc rgb "cyan"
+set object 24 rect from 4852,115 to 5272,135 lw 1
+set object 25 rect from 4975,138 to 5395,158 lw 1
+set object 26 rect from 5093,69 to 5513,89 lw 1
+set object 27 rect from 5194,92 to 5494,112 lw 1 fc rgb "cyan"
+set object 28 rect from 5295,115 to 5595,135 lw 1 fc rgb "cyan"
+set object 29 rect from 5396,46 to 5696,66 lw 1 fc rgb "cyan"
+set object 30 rect from 5500,23 to 5800,43 lw 1 fc rgb "cyan"
+set object 31 rect from 5728,46 to 6328,66 lw 1 fc rgb "gold"
+set object 32 rect from 5827,23 to 6127,43 lw 1 fc rgb "cyan"
+set object 33 rect from 6012,69 to 6612,89 lw 1 fc rgb "gold"
+set object 34 rect from 6105,92 to 6405,112 lw 1 fc rgb "cyan"
+set object 35 rect from 6277,0 to 6877,20 lw 1 fc rgb "gold"
+set object 36 rect from 6604,23 to 8524,43 lw 1 fc rgb "brown"
+set object 37 rect from 6690,46 to 6990,66 lw 1 fc rgb "cyan"
+set object 38 rect from 6775,69 to 7075,89 lw 1 fc rgb "cyan"
+set object 39 rect from 6860,92 to 7160,112 lw 1 fc rgb "cyan"
+set object 40 rect from 6946,0 to 7246,20 lw 1 fc rgb "cyan"
+set object 41 rect from 7028,46 to 7328,66 lw 1 fc rgb "cyan"
+set object 42 rect from 8524,0 to 9124,20 lw 1
+set object 43 rect from 8524,23 to 9124,43 lw 1
+set object 44 rect from 8524,46 to 9124,66 lw 1
+set object 45 rect from 8524,69 to 9124,89 lw 1
+set object 46 rect from 8524,92 to 9124,112 lw 1
+set object 47 rect from 8524,115 to 9124,135 lw 1
+set object 48 rect from 8524,138 to 9124,158 lw 1
+set object 49 rect from 8524,161 to 9124,181 lw 1
+set object 50 rect from 8524,184 to 9124,204 lw 1
+set object 51 rect from 8736,207 to 9336,227 lw 1
+set object 52 rect from 8736,230 to 9336,250 lw 1
+set object 53 rect from 8736,253 to 9336,273 lw 1
+plot -10000
