@@ -26,7 +26,7 @@ void CombatSearch_Bucket::doSearch(const GameState & state, size_t depth)
 
     if (_bucket.isDominated(state))
     {
-        return;
+        //return;
     }
 
     ActionSet legalActions;

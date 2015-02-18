@@ -39,7 +39,7 @@ void CombatSearch_IntegralData::pop()
 void CombatSearch_IntegralData::printIntegralData(const size_t index) const
 {
     printf("%7d %10.2lf %13.2lf   ", _bestIntegralStack[index].timeAdded, _bestIntegralStack[index].eval/Constants::RESOURCE_SCALE, _bestIntegralStack[index].integral/Constants::RESOURCE_SCALE);
-    std::cout << _bestIntegralBuildOrder.getIDString() << std::endl;   
+    std::cout << _bestIntegralBuildOrder.getNameString(2) << std::endl;   
 }
 
 void CombatSearch_IntegralData::print() const

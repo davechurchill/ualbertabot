@@ -5,14 +5,14 @@
         {
             "run"               : true,
             "type"              : "CombatSearch",
-            "searchTypes"       : ["BestResponse", "Integral", "Bucket"],
+            "searchTypes"       : ["Integral", "Bucket", "BestResponse"],
             "race"              : "Protoss",
             "state"             : "Protoss Start State",
             "printNewBest"      : true,
-            "searchTimeLimitMS" : 10000,
-            "frameTimeLimit"    : 5000,
+            "searchTimeLimitMS" : 60000,
+            "frameTimeLimit"    : 4500,
             "relevantActions"   : [ "Protoss_Probe", "Protoss_Pylon", "Protoss_Nexus", "Protoss_Assimilator", "Protoss_Gateway", "Protoss_Zealot", "Protoss_Cybernetics_Core", "Protoss_Dragoon" ],
-            "maxActions"        : [ ["Protoss_Probe", 12], ["Protoss_Nexus", 1], ["Protoss_Assimilator", 1], ["Protoss_Cybernetics_Core", 1], ["Protoss_Pylon", 4], ["Protoss_Gateway", 3] ],
+            "maxActions"        : [ ["Protoss_Nexus", 1], ["Protoss_Assimilator", 1], ["Protoss_Cybernetics_Core", 1], ["Protoss_Pylon", 5], ["Protoss_Gateway", 4] ],
             "alwaysMakeWorkers" : true,
             "openingBuildOrder" : "Protoss Opening Book",
             "bestResponseParams":
@@ -68,7 +68,7 @@
     "Build Orders" :
     {
         "Empty"                 : [ ],        
-        "Protoss Opening Book"  : [ "Protoss_Probe", "Protoss_Probe", "Protoss_Probe", "Protoss_Probe", "Protoss_Pylon" ],
+        "Protoss Opening Book"  : [ "Protoss_Probe", "Protoss_Probe", "Protoss_Probe", "Protoss_Probe", "Protoss_Pylon"],
         "Zerg Opening Book"     : [ "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Overlord" ],
         "Terran Opening Book"   : [ "Terran_SCV", "Terran_SCV", "Terran_SCV", "Terran_SCV", "Terran_Supply_Depot" ],
         "3 Hatch Muta"          : [ "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Overlord", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Hatchery", "Zerg_Spawning_Pool", "Zerg_Drone", "Zerg_Drone", "Zerg_Hatchery", "Zerg_Extractor", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Overlord", "Zerg_Lair", "Zerg_Extractor", "Zerg_Drone", "Zerg_Drone", "Zerg_Zergling", "Zerg_Zergling", "Zerg_Zergling", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Overlord", "Zerg_Drone", "Zerg_Overlord", "Zerg_Drone", "Zerg_Overlord", "Zerg_Spire", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk" ],

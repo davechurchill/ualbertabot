@@ -37,6 +37,7 @@ private:
     UnitCountType		numberProduced;		// the number of units produced
 
     std::string         name;				// name of the action
+    std::string         shortName;
     std::string         metaName;			// meta name of this action, adds 'repeat' to the string
 
     PrerequisiteSet     prerequisites;
@@ -79,6 +80,7 @@ private:
     static ActionTypeData   GetActionTypeData(const BWAPI::UpgradeType & a);
     
     void setWhatBuildsActionID(const ActionID a,const bool wbib,const bool wbil);
+    void setShortName();
 
 public:
 
@@ -108,6 +110,7 @@ public:
     int 			    getType() 				const;
 
     const std::string & getName() 				const;
+    const std::string & getShortName()          const;
     const std::string & getMetaName() 			const;
 
     FrameCountType 		buildTime() 			const;

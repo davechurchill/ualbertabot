@@ -36,7 +36,7 @@ void BOSSExperiments::parseExperiments()
         const std::string &         name = itr->name.GetString();
         const rapidjson::Value &    val  = itr->value;
         
-        std::cout << "Found Experiment:   " << name << std::endl;
+        //std::cout << "Found Experiment:   " << name << std::endl;
         BOSS_ASSERT(val.HasMember("type") && val["type"].IsString(), "Experiment has no 'type' string");
 
         if (val.HasMember("run") && val["run"].IsBool() && (val["run"].GetBool() == true))

@@ -12,10 +12,6 @@
 namespace BOSS
 {
 
-#define BOSS_COMBATSEARCH_TIMEOUT -1
-#define MAX_COMBAT_SEARCH_DEPTH 100
-
-
 class CombatSearch_Integral : public CombatSearch
 {
     CombatSearch_IntegralData   _integral;

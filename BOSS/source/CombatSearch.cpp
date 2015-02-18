@@ -15,7 +15,7 @@ void CombatSearch::search()
 
     try
     {
-        doSearch(_params.getInitialState(), 0);
+        doSearch(initialState, 0);
     
         _results.solved = true;
     }
@@ -128,31 +128,31 @@ void CombatSearch::doSearch(const GameState & state, size_t depth)
 
     BOSS_ASSERT(false, "Base CombatSearch doSearch() should never be called");
 
-    if (timeLimitReached())
-    {
-        throw BOSS_COMBATSEARCH_TIMEOUT;
-    }
+    //if (timeLimitReached())
+    //{
+    //    throw BOSS_COMBATSEARCH_TIMEOUT;
+    //}
 
-    updateResults(state);
+    //updateResults(state);
 
-    if (isTerminalNode(state, depth))
-    {
-        return;
-    }
+    //if (isTerminalNode(state, depth))
+    //{
+    //    return;
+    //}
 
-    ActionSet legalActions;
-    generateLegalActions(state, legalActions, _params);
-    
-    for (UnitCountType a(0); a < legalActions.size(); ++a)
-    {
-        GameState child(state);
-        child.doAction(legalActions[a]);
-        _buildOrder.add(legalActions[a]);
-        
-        doSearch(child,depth+1);
+    //ActionSet legalActions;
+    //generateLegalActions(state, legalActions, _params);
+    //
+    //for (UnitCountType a(0); a < legalActions.size(); ++a)
+    //{
+    //    GameState child(state);
+    //    child.doAction(legalActions[a]);
+    //    _buildOrder.add(legalActions[a]);
+    //    
+    //    doSearch(child,depth+1);
 
-        _buildOrder.pop_back();
-    }
+    //    _buildOrder.pop_back();
+    //}
 }
 
 void CombatSearch::updateResults(const GameState & state)

@@ -38,7 +38,7 @@ public:
     std::string             getJSONString() const;
     std::string             getNumberedString() const;
     std::string             getIDString() const;
-    std::string             getShortNameString() const;
+    std::string             getNameString(const size_t charactersPerName = 0) const;
 };
 
 }

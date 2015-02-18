@@ -88,7 +88,7 @@ void CombatSearch_BucketData::print() const
             double sec   = frame / 24;
 
             printf("%7d %7d %12.2lf   ", (int)frame, (int)sec, _buckets[b].eval/Constants::RESOURCE_SCALE);
-            std::cout << _buckets[b].buildOrder.getIDString() << std::endl;
+            std::cout << _buckets[b].buildOrder.getNameString(2) << std::endl;
         }
     }
 }

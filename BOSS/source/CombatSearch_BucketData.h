@@ -26,7 +26,6 @@ class CombatSearch_BucketData
     std::vector<BucketData>     _buckets;
     FrameCountType              _frameLimit;
 
-    
     BucketData & getBucketData(const GameState & state);
 
 public:
@@ -35,8 +34,7 @@ public:
 
     const size_t numBuckets() const;
     const size_t getBucketIndex(const GameState & state) const;
-
-    
+        
     void update(const GameState & state, const BuildOrder & buildOrder);
 
     bool isDominated(const GameState & state);

@@ -212,15 +212,15 @@ std::string BuildOrder::getIDString() const
     return ss.str();
 }
 
-std::string BuildOrder::getShortNameString() const
+std::string BuildOrder::getNameString(const size_t charactersPerName) const
 {
     std::stringstream ss;
 
     for (size_t i(0); i < _buildOrder.size(); ++i)
     {
+        std::string name = charactersPerName == 0 ? _buildOrder[i].getShortName() : _buildOrder[i].getShortName().substr(0, charactersPerName);
 
-
-        ss << (int)_buildOrder[i].ID() << " ";
+        ss << name << " ";
     }
 
     return ss.str();

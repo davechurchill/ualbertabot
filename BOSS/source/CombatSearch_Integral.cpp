@@ -28,6 +28,8 @@ void CombatSearch_Integral::doSearch(const GameState & state, size_t depth)
     
     for (UnitCountType a(0); a < legalActions.size(); ++a)
     {
+        const UnitCountType index = legalActions.size()-1-a;
+
         GameState child(state);
         child.doAction(legalActions[a]);
         _buildOrder.add(legalActions[a]);
