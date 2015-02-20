@@ -34,11 +34,6 @@ void CombatSearch_BestResponseData::update(const GameState & initialState, const
         _bestBuildOrder = buildOrder;
         _bestState = currentState;
 
-        BuildOrderPlot plot(initialState, buildOrder);
-
-        plot.writeRectanglePlot(std::string("gnuplot/XXX") + "_BestBuildOrder");
-        plot.writeArmyValuePlot(std::string("gnuplot/XXX") + "_BestArmyValue");
-
         std::cout << eval/Constants::RESOURCE_SCALE << "   " << _bestBuildOrder.getNameString(2) << std::endl;
     }
 }
