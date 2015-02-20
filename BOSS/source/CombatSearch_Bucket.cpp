@@ -48,3 +48,14 @@ void CombatSearch_Bucket::printResults()
 {
     _bucket.print();
 }
+
+#include "BuildOrderPlot.h"
+void CombatSearch_Bucket::writeResultsFile(const std::string & filename)
+{
+    BuildOrderPlot::WriteGnuPlot(filename + "_BucketResults", _bucket.getBucketResultsString(), " with steps");
+
+    // write the final build order data
+    BuildOrderPlot plot(_params.getInitialState(), _bucket.getBucket(_bucket.numBuckets()-1).buildOrder);
+    plot.writeArmyValuePlot(filename + "_FinalBucketArmyPlot");
+    plot.writeRectanglePlot(filename + "_FinalBucketBuildOrder");
+}

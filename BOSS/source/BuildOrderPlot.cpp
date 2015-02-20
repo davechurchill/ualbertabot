@@ -1,4 +1,5 @@
 #include "BuildOrderPlot.h"
+#include "Eval.h"
 
 using namespace BOSS;
 
@@ -23,7 +24,6 @@ void BuildOrderPlot::calculateStartEndTimes()
     for (size_t i(0); i < _buildOrder.size(); ++i)
     {
         const ActionType & type = _buildOrder[i];
-
         state.doAction(type);
 
         _startTimes.push_back(state.getCurrentFrame());
@@ -37,6 +37,19 @@ void BuildOrderPlot::calculateStartEndTimes()
         _finishTimes.push_back(finish);
 
         _maxFinishTime = std::max(_maxFinishTime, finish);
+
+        _armyValues.push_back(Eval::ArmyTotalResourceSum(state));
+
+        std::pair<int, int> mineralsBefore(state.getCurrentFrame(), state.getMinerals() + type.mineralPrice());
+        std::pair<int, int> mineralsAfter(state.getCurrentFrame(), state.getMinerals());
+
+        std::pair<int, int> gasBefore(state.getCurrentFrame(), state.getGas() + type.gasPrice());
+        std::pair<int, int> gasAfter(state.getCurrentFrame(), state.getGas());
+
+        _minerals.push_back(mineralsBefore);
+        _minerals.push_back(mineralsAfter);
+        _gas.push_back(gasBefore);
+        _gas.push_back(gasAfter);
     }
 }
 
@@ -87,27 +100,64 @@ void BuildOrderPlot::calculatePlot()
     }
 }
 
-void BuildOrderPlot::writeGNUPlotScript(const std::string & filename)
+void BuildOrderPlot::writeResourcePlot(const std::string & filename)
+{
+    std::stringstream mineralss;
+
+    for (size_t i(0); i < _minerals.size(); ++i)
+    {
+        mineralss << _minerals[i].first << " " << _minerals[i].second/Constants::RESOURCE_SCALE << std::endl;
+    }
+
+    std::stringstream gasss;
+
+    for (size_t i(0); i < _gas.size(); ++i)
+    {
+        gasss << _gas[i].first << " " << _gas[i].second/Constants::RESOURCE_SCALE << std::endl;
+    }
+
+    WriteGnuPlot(filename + "_Minerals", mineralss.str(), " with lines ");
+    WriteGnuPlot(filename + "_Gas", gasss.str(), " with lines ");
+}
+
+void BuildOrderPlot::writeRectanglePlot(const std::string & filename)
 {
     std::stringstream ss;
     int maxY = (_maxLayer + 1) * (_boxHeight + _boxHeightBuffer) + 15;
 
     //ss << "set title \"Title Goes Here\"" << std::endl;
     //ss << "set xlabel \"Time (frames)\"" << std::endl;
-    ss << "set style rect fc lt -1 fs solid 0.15" << std::endl;
+    ss << "set style rect fc lt -1 fs transparent solid 0.15" << std::endl;
     ss << "set xrange [" << -(_maxFinishTime*.03) << ":" << 1.03*_maxFinishTime << "]" << std::endl;
     ss << "set yrange [-15:" << maxY << "]" << std::endl;
     ss << "unset ytics" << std::endl;
     ss << "set grid xtics" << std::endl;
     ss << "set nokey" << std::endl;
-    ss << "set size ratio " << (0.05 * _maxLayer) << std::endl;
+    //ss << "set size ratio " << (0.05 * _maxLayer) << std::endl;
     ss << "set terminal wxt size 1500,300" << std::endl;
+    ss << "plotHeight = " << 1000 << std::endl;
+    ss << "boxHeight = " << _boxHeight << std::endl;
+    ss << "boxHeightBuffer = " << _boxHeightBuffer << std::endl;
+    ss << "boxWidthScale = " << 1.0 << std::endl;
 
-    for (size_t i(0); i < _rectangles.size(); ++i)
+    for (size_t i(0); i < _buildOrder.size(); ++i)
     {
         const Rectangle & rect = _rectangles[i];
+        const int rectWidth = (rect.bottomRight.x() - rect.topLeft.x());
+        const int rectCenterX = rect.bottomRight.x() - (rectWidth / 2);
+        
+        std::stringstream pos;
+        pos << "(boxWidthScale * " << rectCenterX << "),";
+        pos << "((boxHeight + boxHeightBuffer) * " << _layers[i] << " + boxHeight/2)";
 
-        ss << "set object " << (i+1) << " rect from " << rect.topLeft.x() << "," << rect.topLeft.y() << " to " << rect.bottomRight.x() << "," << rect.bottomRight.y() << " lw 1";
+        ss << "set object " << (i+1) << " rect at ";
+        ss << pos.str();
+        ss << " size ";
+        ss << "(boxWidthScale * " << (rectWidth) << "),";
+        ss << "(boxHeight) ";
+        //ss << "(boxWidthScale * " << _finishTimes[i] << "),";
+        //ss << "((boxHeight + boxHeightBuffer) * " << _layers[i] << " + boxHeight) ";
+        ss << "lw 1";
 
         if (_buildOrder[i].isWorker())
         {
@@ -125,13 +175,80 @@ void BuildOrderPlot::writeGNUPlotScript(const std::string & filename)
         {
             ss << " fc rgb \"brown\"";
         }
+        else if (_buildOrder[i].isUpgrade())
+        {
+            ss << " fc rgb \"purple\"";
+        }
+        else if (_buildOrder[i].isTech())
+        {
+            ss << " fc rgb \"magenta\"";
+        }
 
+        ss << std::endl;
+
+        ss << "set label " << (i+1) << " at " << pos.str() << " \"" << _buildOrder[i].getShortName() << "\" front center";
         ss << std::endl;
     }
 
     ss << "plot -10000" << std::endl;
 
-    std::ofstream out(filename);
+    std::ofstream out(filename + ".gpl");
     out << ss.str();
     out.close();
+}
+
+void BuildOrderPlot::writeArmyValuePlot(const std::string & filename)
+{
+    std::stringstream datass;
+    for (size_t i(0); i < _buildOrder.size(); ++i)
+    {
+        datass << _startTimes[i] << " " << _armyValues[i]/Constants::RESOURCE_SCALE << std::endl;
+    }
+ 
+    WriteGnuPlot(filename, datass.str(), " with steps");
+}
+
+void BuildOrderPlot::WriteGnuPlot(const std::string & filename, const std::string & data, const std::string & args)
+{
+    std::string file = RemoveFileExtension(GetFileNameFromPath(filename));
+    std::string noext = RemoveFileExtension(filename);
+
+    std::ofstream dataout(noext + "_Data.txt");
+    dataout << data;
+    dataout.close();
+
+    std::stringstream ss;
+    ss << "set xlabel \"Time (frames)\"" << std::endl;
+    ss << "set ylabel \"Army Resource Sum\"" << std::endl;
+    ss << "plot \"" << (file + "_Data.txt") << "\" " << args << std::endl;
+
+    std::ofstream out(filename + ".gpl");
+    out << ss.str();
+    out.close();
+}
+
+std::string BuildOrderPlot::GetFileNameFromPath(const std::string & path)
+{
+    std::string temp(path);
+
+    const size_t last_slash_idx = temp.find_last_of("\\/");
+    if (std::string::npos != last_slash_idx)
+    {
+        temp.erase(0, last_slash_idx + 1);
+    }
+    
+    return temp;
+}
+
+std::string BuildOrderPlot::RemoveFileExtension(const std::string & path)
+{
+    std::string temp(path);
+
+    const size_t period_idx = temp.rfind('.');
+    if (std::string::npos != period_idx)
+    {
+        temp.erase(period_idx);
+    }
+
+    return temp;
 }

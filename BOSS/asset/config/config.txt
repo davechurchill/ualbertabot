@@ -1,24 +1,24 @@
 {
     "Experiments" : 
     {    
-        "Test Combat Search" :
+        "TestCombatSearch" :
         {
             "run"               : true,
             "type"              : "CombatSearch",
-            "searchTypes"       : ["Integral", "Bucket", "BestResponse"],
+            "searchTypes"       : [ "BestResponse", "Integral", "Bucket"],
             "race"              : "Protoss",
             "state"             : "Protoss Start State",
             "printNewBest"      : true,
-            "searchTimeLimitMS" : 60000,
+            "searchTimeLimitMS" : 1200000,
             "frameTimeLimit"    : 4500,
             "relevantActions"   : [ "Protoss_Probe", "Protoss_Pylon", "Protoss_Nexus", "Protoss_Assimilator", "Protoss_Gateway", "Protoss_Zealot", "Protoss_Cybernetics_Core", "Protoss_Dragoon" ],
-            "maxActions"        : [ ["Protoss_Nexus", 1], ["Protoss_Assimilator", 1], ["Protoss_Cybernetics_Core", 1], ["Protoss_Pylon", 5], ["Protoss_Gateway", 4] ],
+            "maxActions"        : [ ["Protoss_Nexus", 1], ["Protoss_Assimilator", 1], ["Protoss_Cybernetics_Core", 1], ["Protoss_Pylon", 6], ["Protoss_Gateway", 3] ],
             "alwaysMakeWorkers" : true,
             "openingBuildOrder" : "Protoss Opening Book",
             "bestResponseParams":
             {
                 "enemyState"        : "Protoss Start State",
-                "enemyBuildOrder"   : "UAB Dragoon Rush"
+                "enemyBuildOrder"   : "8 Zealots"
             }
         },
         

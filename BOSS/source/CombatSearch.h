@@ -39,6 +39,7 @@ public:
 	
 	virtual void                search();
     virtual void                printResults();
+    virtual void                writeResultsFile(const std::string & prefix);
 
     virtual const CombatSearchResults & getResults() const;
 	

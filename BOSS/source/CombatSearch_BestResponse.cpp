@@ -3,6 +3,7 @@
 using namespace BOSS;
 
 CombatSearch_BestResponse::CombatSearch_BestResponse(const CombatSearchParameters p)
+    : _bestResponseData(p.getEnemyInitialState(), p.getEnemyBuildOrder())
 {
     _params = p;
 
@@ -16,6 +17,7 @@ void CombatSearch_BestResponse::doSearch(const GameState & state, size_t depth)
         throw BOSS_COMBATSEARCH_TIMEOUT;
     }
 
+    _bestResponseData.update(_params.getInitialState(), state, _buildOrder);
     updateResults(state);
 
     if (isTerminalNode(state, depth))
@@ -28,9 +30,11 @@ void CombatSearch_BestResponse::doSearch(const GameState & state, size_t depth)
     
     for (UnitCountType a(0); a < legalActions.size(); ++a)
     {
+        size_t ri = legalActions.size() - 1 - a;
+
         GameState child(state);
-        child.doAction(legalActions[a]);
-        _buildOrder.add(legalActions[a]);
+        child.doAction(legalActions[ri]);
+        _buildOrder.add(legalActions[ri]);
         
         doSearch(child,depth+1);
 
@@ -41,4 +45,18 @@ void CombatSearch_BestResponse::doSearch(const GameState & state, size_t depth)
 void CombatSearch_BestResponse::printResults()
 {
 
+}
+
+#include "BuildOrderPlot.h"
+void CombatSearch_BestResponse::writeResultsFile(const std::string & filename)
+{
+    BuildOrderPlot plot(_params.getInitialState(), _bestResponseData.getBestBuildOrder());
+
+    plot.writeRectanglePlot(filename + "_BestBuildOrder");
+    plot.writeArmyValuePlot(filename + "_BestArmyValue");
+
+    BuildOrderPlot plot2(_params.getEnemyInitialState(), _params.getEnemyBuildOrder());
+
+    plot2.writeRectanglePlot(filename + "_EnemyBuildOrder");
+    plot2.writeArmyValuePlot(filename + "_EnemyArmyValue");
 }

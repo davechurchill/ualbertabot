@@ -92,3 +92,31 @@ void CombatSearch_BucketData::print() const
         }
     }
 }
+
+const BucketData & CombatSearch_BucketData::getBucket(const size_t index) const
+{
+    return _buckets[index];
+}
+
+std::string CombatSearch_BucketData::getBucketResultsString()
+{
+    std::stringstream ss;
+
+    ss << "0 0" << std::endl;
+
+    double maxEval = 0;
+    for (size_t b(0); b<_buckets.size(); ++b)
+    {
+        if (_buckets[b].eval > maxEval)
+        {
+            maxEval = _buckets[b].eval;
+
+            double frame = ((double)b / _buckets.size()) * _frameLimit;
+            double sec   = frame / 24;
+
+            ss << frame << " " << _buckets[b].eval/Constants::RESOURCE_SCALE << std::endl;
+        }
+    }
+
+    return ss.str();
+}

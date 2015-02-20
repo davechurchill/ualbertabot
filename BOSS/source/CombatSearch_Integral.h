@@ -23,6 +23,7 @@ public:
 	CombatSearch_Integral(const CombatSearchParameters p = CombatSearchParameters());
 	
     virtual void printResults();
+    virtual void writeResultsFile(const std::string & filename);
 };
 
 }

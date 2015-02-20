@@ -7,23 +7,28 @@
 #include "CombatSearch.h"
 #include "CombatSearchParameters.h"
 #include "CombatSearchResults.h"
+#include "CombatSearch_BestResponseData.h"
 
 namespace BOSS
 {
 
 class CombatSearch_BestResponse : public CombatSearch
 {
-	virtual void                doSearch(const GameState & s, size_t depth);
+	virtual void                    doSearch(const GameState & s, size_t depth);
 
-    BuildOrder                  _bestBuildOrder;
+    CombatSearch_BestResponseData   _bestResponseData;
 
-    double                      compareBuildOrders(const GameState & selfState, const BuildOrder & self, const GameState & enemyState, const BuildOrder & enemy);
+    BuildOrder                      _bestBuildOrder;
+
+    double                          compareBuildOrders(const GameState & selfState, const BuildOrder & selfBuildOrder, const GameState & enemyState, const BuildOrder & enemyBuildOrder);
 
 public:
 	
 	CombatSearch_BestResponse(const CombatSearchParameters p = CombatSearchParameters());
 	
     virtual void printResults();
+
+    virtual void writeResultsFile(const std::string & filename);
 };
 
 }

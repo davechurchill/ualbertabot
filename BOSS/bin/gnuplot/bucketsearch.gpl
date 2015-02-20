@@ -1,7 +1,0 @@
-set title "Combat Bucket Search"
-set xlabel "Time (sec)"
-set ylabel "Army Sum Resources"
-set object 1 rect from 1000,50 to 1500,150 lw 1
-set xrange [0:5000]
-set yrange [0:200]
-plot 0

@@ -27,6 +27,9 @@ class BuildOrderPlot
     std::vector<int>        _startTimes;
     std::vector<int>        _finishTimes;
     std::vector<int>        _layers;
+    std::vector<double>     _armyValues;
+    std::vector< std::pair<int,int> > _minerals;
+    std::vector< std::pair<int,int> > _gas;
     std::vector<Rectangle>  _rectangles;
 
     int                     _maxLayer;
@@ -37,11 +40,19 @@ class BuildOrderPlot
     void calculateStartEndTimes();
     void calculatePlot();
 
+
 public:
 
     BuildOrderPlot(const GameState & initialState, const BuildOrder & buildOrder);
 
-    void writeGNUPlotScript(const std::string & filename);
+    void writeResourcePlot(const std::string & filename);
+    void writeRectanglePlot(const std::string & filename);
+    void writeArmyValuePlot(const std::string & filename);
+    void writeHybridPlot(const std::string & filename);
+
+    static std::string GetFileNameFromPath(const std::string & path);
+    static std::string RemoveFileExtension(const std::string & path);
+    static void WriteGnuPlot(const std::string & filename, const std::string & data, const std::string & args);
 };
 
 }

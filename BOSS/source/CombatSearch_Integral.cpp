@@ -31,8 +31,8 @@ void CombatSearch_Integral::doSearch(const GameState & state, size_t depth)
         const UnitCountType index = legalActions.size()-1-a;
 
         GameState child(state);
-        child.doAction(legalActions[a]);
-        _buildOrder.add(legalActions[a]);
+        child.doAction(legalActions[index]);
+        _buildOrder.add(legalActions[index]);
         _integral.update(state, _buildOrder);
         
         doSearch(child,depth+1);
@@ -45,4 +45,14 @@ void CombatSearch_Integral::doSearch(const GameState & state, size_t depth)
 void CombatSearch_Integral::printResults()
 {
     _integral.print();
+}
+
+#include "BuildOrderPlot.h"
+void CombatSearch_Integral::writeResultsFile(const std::string & filename)
+{
+    BuildOrderPlot plot(_params.getInitialState(), _integral.getBestBuildOrder());
+
+    plot.writeResourcePlot(filename + "_Resources");
+    plot.writeRectanglePlot(filename + "_BuildOrder");
+    plot.writeArmyValuePlot(filename + "_ArmyValue");
 }

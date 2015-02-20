@@ -53,8 +53,6 @@ const char * ResetExperiment(char * paramString)
 
 void doCombatExperiment()
 {
-
-
     BOSS::BOSSExperiments exp;
     exp.loadExperimentsFromFile("../asset/config/config.txt");
 
@@ -67,25 +65,25 @@ void doCombatExperiment()
 #include "BuildOrderPlot.h"
 void testBuildOrderPlot()
 {
-    const std::string buildOrderJSON = "[ \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Overlord\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Hatchery\", \"Zerg_Spawning_Pool\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Hatchery\", \"Zerg_Extractor\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Overlord\", \"Zerg_Lair\", \"Zerg_Extractor\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Zergling\", \"Zerg_Zergling\", \"Zerg_Zergling\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Overlord\", \"Zerg_Drone\", \"Zerg_Overlord\", \"Zerg_Drone\", \"Zerg_Overlord\", \"Zerg_Spire\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Drone\", \"Zerg_Mutalisk\", \"Zerg_Mutalisk\", \"Zerg_Mutalisk\", \"Zerg_Mutalisk\", \"Zerg_Mutalisk\", \"Zerg_Mutalisk\", \"Zerg_Mutalisk\", \"Zerg_Mutalisk\", \"Zerg_Mutalisk\", \"Zerg_Mutalisk\", \"Zerg_Mutalisk\", \"Zerg_Mutalisk\" ]";
+    const std::string buildOrderJSON = "[ \"Protoss_Probe\", \"Protoss_Probe\", \"Protoss_Probe\", \"Protoss_Probe\", \"Protoss_Pylon\", \"Protoss_Probe\", \"Protoss_Probe\", \"Protoss_Gateway\", \"Protoss_Probe\", \"Protoss_Assimilator\", \"Protoss_Probe\", \"Protoss_Probe\", \"Protoss_Cybernetics_Core\", \"Protoss_Probe\", \"Protoss_Probe\", \"Protoss_Gateway\", \"Singularity_Charge\", \"Protoss_Dragoon\", \"Protoss_Gateway\", \"Protoss_Pylon\", \"Protoss_Dragoon\", \"Protoss_Dragoon\", \"Protoss_Probe\", \"Protoss_Gateway\", \"Protoss_Pylon\", \"Protoss_Probe\", \"Protoss_Dragoon\", \"Protoss_Dragoon\", \"Protoss_Dragoon\"]";
 
-    GameState state(Races::Zerg);
+    GameState state(Races::Protoss);
     state.setStartingState();
 
     BuildOrder buildOrder = JSONTools::GetBuildOrder(buildOrderJSON);
 
     BuildOrderPlot plot(state, buildOrder);
-    plot.writeGNUPlotScript("gnuplot/test.gpl");
-
+    plot.writeRectanglePlot("gnuplot/testnew.gpl");
+    plot.writeArmyValuePlot("gnuplot/testnewarmy.gpl");
 }
 
 int main(int argc, char *argv[])
 {
     BOSS::init();
     
-    testBuildOrderPlot();
+    //testBuildOrderPlot();
 
-    //doCombatExperiment();
+    doCombatExperiment();
 /*
     ResetExperiment("");
 

@@ -21,6 +21,7 @@
     <ClInclude Include="..\source\BuildOrder.h" />
     <ClInclude Include="..\source\BuildOrderPlot.h" />
     <ClInclude Include="..\source\CombatSearch_BestResponse.h" />
+    <ClInclude Include="..\source\CombatSearch_BestResponseData.h" />
     <ClInclude Include="..\source\CombatSearch_Bucket.h" />
     <ClInclude Include="..\source\CombatSearch_BucketData.h" />
     <ClInclude Include="..\source\CombatSearch_IntegralData.h" />
@@ -63,6 +64,7 @@
     <ClCompile Include="..\source\BOSS.cpp" />
     <ClCompile Include="..\source\BuildingData.cpp" />
     <ClCompile Include="..\source\CombatSearch_BestResponse.cpp" />
+    <ClCompile Include="..\source\CombatSearch_BestResponseData.cpp" />
     <ClCompile Include="..\source\CombatSearch_Bucket.cpp" />
     <ClCompile Include="..\source\CombatSearch_BucketData.cpp" />
     <ClCompile Include="..\source\CombatSearch_IntegralData.cpp" />

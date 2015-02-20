@@ -10,6 +10,7 @@ CombatSearchExperiment::CombatSearchExperiment()
 
 CombatSearchExperiment::CombatSearchExperiment(const std::string & name, const rapidjson::Value & val, std::map< std::string, GameState > & stateMap, std::map< std::string, BuildOrder > & buildOrderMap)
     : _race(Races::None)
+    , _name(name)
 {
     BOSS_ASSERT(val.HasMember("searchTypes") && val["searchTypes"].IsArray(), "CombatSearchExperiment must have a 'searchTypes' array");
     for (size_t i(0); i < val["searchTypes"].Size(); ++i)
@@ -112,20 +113,24 @@ void CombatSearchExperiment::run()
     for (size_t i(0); i < _searchTypes.size(); ++i)
     {
         std::shared_ptr<CombatSearch> combatSearch;
+        std::string resultsFile = "gnuplot/" + _name;
 
         std::cout << "\n" << stars << "\n* Running Experiment: " << _name << " [" << _searchTypes[i] << "]\n" << stars << "\n";
 
         if (_searchTypes[i].compare("Integral") == 0)
         {
             combatSearch = std::shared_ptr<CombatSearch>(new CombatSearch_Integral(_params));
+            resultsFile += "_Integral"; 
         }
         else if (_searchTypes[i].compare("Bucket") == 0)
         {
             combatSearch = std::shared_ptr<CombatSearch>(new CombatSearch_Bucket(_params));
+            resultsFile += "_Bucket"; 
         }
         else if (_searchTypes[i].compare("BestResponse") == 0)
         {
             combatSearch = std::shared_ptr<CombatSearch>(new CombatSearch_BestResponse(_params));
+            resultsFile += "_BestResponse"; 
         }
         else
         {
@@ -134,9 +139,8 @@ void CombatSearchExperiment::run()
 
         combatSearch->search();
         combatSearch->printResults();
+        combatSearch->writeResultsFile(resultsFile);
         const CombatSearchResults & results = combatSearch->getResults();
         std::cout << "\nSearched " << results.nodesExpanded << " nodes in " << results.timeElapsed << "ms @ " << (1000.0*results.nodesExpanded/results.timeElapsed) << " nodes/sec\n\n";
     }
-
-    
 }

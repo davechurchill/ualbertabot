@@ -52,3 +52,8 @@ void CombatSearch_IntegralData::print() const
         printIntegralData(i);
     }
 }
+
+const BuildOrder & CombatSearch_IntegralData::getBestBuildOrder() const
+{
+    return _bestIntegralBuildOrder;
+}

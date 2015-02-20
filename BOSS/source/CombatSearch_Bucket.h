@@ -23,6 +23,7 @@ public:
 	CombatSearch_Bucket(const CombatSearchParameters p = CombatSearchParameters());
 
     virtual void printResults();
+    virtual void writeResultsFile(const std::string & filename);
 };
 
 }

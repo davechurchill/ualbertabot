@@ -164,3 +164,8 @@ void CombatSearch::printResults()
 {
     std::cout << "Printing base class CombatSearch results!\n\n";
 }
+
+void CombatSearch::writeResultsFile(const std::string & prefix)
+{
+    std::cout << "Writing base class CombatSearch results!\n\n";
+}

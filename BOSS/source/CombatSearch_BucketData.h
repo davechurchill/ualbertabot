@@ -32,6 +32,7 @@ public:
 
     CombatSearch_BucketData(const FrameCountType frameLimit, const size_t numBuckets);
 
+    const BucketData & getBucket(const size_t index) const;
     const size_t numBuckets() const;
     const size_t getBucketIndex(const GameState & state) const;
         
@@ -40,6 +41,7 @@ public:
     bool isDominated(const GameState & state);
 
     void print() const;
+    std::string getBucketResultsString();
 };
 
 }
