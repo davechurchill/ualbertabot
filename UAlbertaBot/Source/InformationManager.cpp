@@ -279,14 +279,14 @@ void InformationManager::drawMapInformation(){//for now it's just BWTA informati
 		//draw a circle at each mineral patch
 		for (BWAPI::Unitset::iterator j = (*i)->getStaticMinerals().begin(); j != (*i)->getStaticMinerals().end(); j++)
 		{
-			BWAPI::Position q = j->getInitialPosition();
+			BWAPI::Position q = (*j)->getInitialPosition();
 			BWAPI::Broodwar->drawCircleMap(q.x, q.y, 30, BWAPI::Colors::Cyan);
 		}
 
 		//draw the outlines of vespene geysers
 		for (BWAPI::Unitset::iterator j = (*i)->getGeysers().begin(); j != (*i)->getGeysers().end(); j++)
 		{
-			BWAPI::TilePosition q = j->getInitialTilePosition();
+			BWAPI::TilePosition q = (*j)->getInitialTilePosition();
 			BWAPI::Broodwar->drawBoxMap(q.x * 32, q.y * 32, q.x * 32 + 4 * 32, q.y * 32 + 2 * 32, BWAPI::Colors::Orange);
 		}
 
