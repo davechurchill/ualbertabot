@@ -18,6 +18,7 @@ public:
 
     void                    add(const ActionType & type);
     void                    add(const ActionType & type, const int & amount);
+    void                    add(const BuildOrder & other);
     void                    clear();
     void                    pop_back();
     void                    sortByPrerequisites();
@@ -36,6 +37,8 @@ public:
 
     std::string             getJSONString() const;
     std::string             getNumberedString() const;
+    std::string             getIDString() const;
+    std::string             getNameString(const size_t charactersPerName = 0) const;
 };
 
 }

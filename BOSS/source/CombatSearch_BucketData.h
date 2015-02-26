@@ -1,5 +1,6 @@
 #pragma once
 
+#include "BuildOrder.h"
 #include "Common.h"
 #include "GameState.h"
 #include "Eval.h"
@@ -11,7 +12,7 @@ class BucketData
 {
 public:
     double                      eval;
-    std::vector<ActionType>     buildOrder;
+    BuildOrder                  buildOrder;
     GameState                   state;
 
     BucketData()
@@ -20,27 +21,27 @@ public:
     }
 };
 
-class CombatSearchBucket
+class CombatSearch_BucketData
 {
     std::vector<BucketData>     _buckets;
     FrameCountType              _frameLimit;
 
-    
     BucketData & getBucketData(const GameState & state);
 
 public:
 
-    CombatSearchBucket(const FrameCountType frameLimit, const size_t numBuckets);
+    CombatSearch_BucketData(const FrameCountType frameLimit, const size_t numBuckets);
 
+    const BucketData & getBucket(const size_t index) const;
     const size_t numBuckets() const;
     const size_t getBucketIndex(const GameState & state) const;
-
-    
-    void update(const GameState & state, const std::vector<ActionType> & buildOrder);
+        
+    void update(const GameState & state, const BuildOrder & buildOrder);
 
     bool isDominated(const GameState & state);
 
     void print() const;
+    std::string getBucketResultsString();
 };
 
 }

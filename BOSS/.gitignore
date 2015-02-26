@@ -11,5 +11,7 @@ bin/*.pdb
 bin/*.ilk
 bin/*.txt
 bin/*.map
+bin/gnuplot/*.gpl
+bin/gnuplot/*.txt
 source/*.o
 qtgui/*

@@ -14,6 +14,8 @@ std::string returnString("TestReturn");
 
 void mainLoop()
 {
+
+
     GUI::Instance().OnFrame();
 }
 
@@ -49,15 +51,40 @@ const char * ResetExperiment(char * paramString)
 }
 }
 
+void doCombatExperiment()
+{
+    BOSS::BOSSExperiments exp;
+    exp.loadExperimentsFromFile("../asset/config/config.txt");
+
+    for (size_t i(0); i < exp.getCombatSearchExperiments().size(); ++i)
+    {
+        exp.getCombatSearchExperiments()[i].run();
+    }
+}
+
+#include "BuildOrderPlot.h"
+void testBuildOrderPlot()
+{
+    const std::string buildOrderJSON = "[ \"Protoss_Probe\", \"Protoss_Probe\", \"Protoss_Probe\", \"Protoss_Probe\", \"Protoss_Pylon\", \"Protoss_Probe\", \"Protoss_Probe\", \"Protoss_Gateway\", \"Protoss_Probe\", \"Protoss_Assimilator\", \"Protoss_Probe\", \"Protoss_Probe\", \"Protoss_Cybernetics_Core\", \"Protoss_Probe\", \"Protoss_Probe\", \"Protoss_Gateway\", \"Singularity_Charge\", \"Protoss_Dragoon\", \"Protoss_Gateway\", \"Protoss_Pylon\", \"Protoss_Dragoon\", \"Protoss_Dragoon\", \"Protoss_Probe\", \"Protoss_Gateway\", \"Protoss_Pylon\", \"Protoss_Probe\", \"Protoss_Dragoon\", \"Protoss_Dragoon\", \"Protoss_Dragoon\"]";
+
+    GameState state(Races::Protoss);
+    state.setStartingState();
+
+    BuildOrder buildOrder = JSONTools::GetBuildOrder(buildOrderJSON);
+
+    BuildOrderPlot plot(state, buildOrder);
+    plot.writeRectanglePlot("gnuplot/testnew.gpl");
+    plot.writeArmyValuePlot("gnuplot/testnewarmy.gpl");
+}
+
 int main(int argc, char *argv[])
 {
     BOSS::init();
+    
+    //testBuildOrderPlot();
 
-    //BuildOrderTester::DoRandomTests(Races::Protoss, 1000000);
-    //BuildOrderTester::DoRandomTests(Races::Terran, 1000000);
-    //BuildOrderTester::DoRandomTests(Races::Zerg, 1000000);
-    //return 0;
-
+    doCombatExperiment();
+/*
     ResetExperiment("");
 
     if (experiments.getVisExperiments().size() > 0)
@@ -73,7 +100,7 @@ int main(int argc, char *argv[])
     }
 #else
     emscripten_set_main_loop(mainLoop,0,true);
-#endif
+#endif*/
 
     return 0;
 }

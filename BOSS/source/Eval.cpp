@@ -40,7 +40,7 @@ namespace Eval
 	    return sum;
     }
 
-    bool BuildOrderBetter(const std::vector<ActionType> & buildOrder, const std::vector<ActionType> & compareTo)
+    bool BuildOrderBetter(const BuildOrder & buildOrder, const BuildOrder & compareTo)
     {
         size_t numWorkers = 0;
         size_t numWorkersOther = 0;

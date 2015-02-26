@@ -95,24 +95,24 @@ GameState JSONTools::GetGameState(const rapidjson::Value & stateVal)
     return state;
 }
 
-std::vector<ActionType> JSONTools::GetBuildOrder(const std::string & jsonString)
+BuildOrder JSONTools::GetBuildOrder(const std::string & jsonString)
 {
     rapidjson::Document document;
     JSONTools::ParseJSONString(document, jsonString);
     return GetBuildOrder(document);
 }
 
-std::vector<ActionType> JSONTools::GetBuildOrder(const rapidjson::Value & stateVal)
+BuildOrder JSONTools::GetBuildOrder(const rapidjson::Value & stateVal)
 {
     BOSS_ASSERT(stateVal.IsArray(), "Build order isn't an array");
     
-    std::vector<ActionType> buildOrder;
+    BuildOrder buildOrder;
 
     for (size_t i(0); i < stateVal.Size(); ++i)
     {
         BOSS_ASSERT(stateVal[i].IsString(), "Build order item is not a string");
 
-        buildOrder.push_back(ActionTypes::GetActionType(stateVal[i].GetString()));
+        buildOrder.add(ActionTypes::GetActionType(stateVal[i].GetString()));
     }
     
     return buildOrder;

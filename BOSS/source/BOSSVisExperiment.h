@@ -12,7 +12,7 @@ namespace BOSS
 class BOSSVisExperiment
 {
     std::vector< GameState >                        _states;
-    std::vector< std::vector<ActionType> >          _buildOrders;
+    std::vector< BuildOrder >                       _buildOrders;
     std::vector< std::vector<FrameCountType> >      _startTimes;
     std::vector< std::vector<FrameCountType> >      _finishTimes;
     std::vector< size_t >                           _nextActionIndexes;
@@ -32,7 +32,7 @@ class BOSSVisExperiment
 public:
 
     BOSSVisExperiment();
-    BOSSVisExperiment(const rapidjson::Value & experimentVal, std::map< std::string, GameState > & stateMap, std::map< std::string, std::vector<ActionType> > & buildOrderMap);
+    BOSSVisExperiment(const rapidjson::Value & experimentVal, std::map< std::string, GameState > & stateMap, std::map< std::string, BuildOrder > & buildOrderMap);
 
     void onFrame();
 

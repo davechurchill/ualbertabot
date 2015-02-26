@@ -2,6 +2,7 @@
 
 #include "BOSS.h"
 #include "Common.h"
+#include "BuildOrder.h"
 #include "rapidjson/rapidjson.h"
 #include "rapidjson/document.h"
 
@@ -16,8 +17,8 @@ namespace JSONTools
     GameState GetGameState(const std::string & jsonString);
     GameState GetGameState(const rapidjson::Value & stateVal);
 
-    std::vector<ActionType> GetBuildOrder(const std::string & jsonString);
-    std::vector<ActionType> GetBuildOrder(const rapidjson::Value & stateVal);
+    BuildOrder GetBuildOrder(const std::string & jsonString);
+    BuildOrder GetBuildOrder(const rapidjson::Value & stateVal);
 
     BuildOrderSearchGoal GetBuildOrderSearchGoal(const std::string & jsonString);
     BuildOrderSearchGoal GetBuildOrderSearchGoal(const rapidjson::Value & stateVal);

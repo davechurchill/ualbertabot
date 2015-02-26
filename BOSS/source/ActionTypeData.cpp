@@ -52,6 +52,8 @@ ActionTypeData::ActionTypeData(BWAPI::UnitType t, const ActionID id)
     {
         morphed = true;
     }
+
+    setShortName();
 }
 
 // UpgradeType action
@@ -81,6 +83,7 @@ ActionTypeData::ActionTypeData(BWAPI::UpgradeType t, const ActionID id)
     , reqAddonID(0)
     , morphed(false)
 {
+    setShortName();
 }
 
 // TechType action
@@ -109,7 +112,9 @@ ActionTypeData::ActionTypeData(BWAPI::TechType t, const ActionID id)
     , reqAddon(false)
     , reqAddonID(0)
     , morphed(false)
-{}
+{
+    setShortName();
+}
 
 RaceID              ActionTypeData::getRaceID()             const   { return raceID; }
 ActionID            ActionTypeData::getActionID()           const   { return actionID; }
@@ -122,8 +127,9 @@ BWAPI::TechType		ActionTypeData::getTechType()			const	{ return tech; }
 ActionID            ActionTypeData::whatBuildsAction()		const	{ return whatBuildsActionID; }	
 int 			    ActionTypeData::getType() 				const	{ return type; }
 	
-std::string 		ActionTypeData::getName() 				const	{ return name; }
-std::string 		ActionTypeData::getMetaName() 			const	{ return metaName; }
+const std::string &	ActionTypeData::getName() 				const	{ return name; }
+const std::string &	ActionTypeData::getShortName() 			const	{ return shortName; }
+const std::string &	ActionTypeData::getMetaName() 			const	{ return metaName; }
 	
 FrameCountType 		ActionTypeData::buildTime() 			const	{ return buildTimeVal; }
 ResourceCountType	ActionTypeData::mineralPrice()			const	{ return mineralPriceVal; }
@@ -174,6 +180,17 @@ void ActionTypeData::setRequiredAddon(bool requiresAddon, const ActionID & id)
     reqAddonID = id;
 }
 
+void ActionTypeData::setShortName()
+{
+    std::string prefix = Races::GetRaceName(raceID);
+    shortName = name;
+
+    if (name.compare(0, prefix.size(), prefix) == 0)
+    {
+        shortName = name.substr(prefix.size()+1);
+    }
+}
+
 ////////////////////////////////////////////////////////////
 // STATIC FUNCTIONS BELOW THIS POINT
 ////////////////////////////////////////////////////////////
@@ -199,9 +216,6 @@ void ActionTypeData::Init()
 
 	// calculate the prerequisites of those actions
 	AddPrerequisites();
-		
-	// calculates the dependency graph tree based on prerequisite graph
-	//CalculateDependencyGraph();
 }
 
 void ActionTypeData::AddActions()

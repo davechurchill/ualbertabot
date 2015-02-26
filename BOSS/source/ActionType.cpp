@@ -72,8 +72,9 @@ const PrerequisiteSet &     ActionType::getPrerequisites()      const { return A
 const PrerequisiteSet &     ActionType::getRecursivePrerequisites()      const { return ActionTypeData::GetActionTypeData(_race, _id).getRecursivePrerequisites(); }
 int                         ActionType::getType()               const { return ActionTypeData::GetActionTypeData(_race, _id).getType(); }
 	
-std::string                 ActionType::getName()               const { return ActionTypeData::GetActionTypeData(_race, _id).getName(); }
-std::string                 ActionType::getMetaName()           const { return ActionTypeData::GetActionTypeData(_race, _id).getMetaName(); }
+const std::string &         ActionType::getName()               const { return ActionTypeData::GetActionTypeData(_race, _id).getName(); }
+const std::string &         ActionType::getShortName()          const { return ActionTypeData::GetActionTypeData(_race, _id).getShortName(); }
+const std::string &         ActionType::getMetaName()           const { return ActionTypeData::GetActionTypeData(_race, _id).getMetaName(); }
 	
 FrameCountType              ActionType::buildTime()             const { return ActionTypeData::GetActionTypeData(_race, _id).buildTime(); }
 ResourceCountType           ActionType::mineralPrice()          const { return ActionTypeData::GetActionTypeData(_race, _id).mineralPrice(); }

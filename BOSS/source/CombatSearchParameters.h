@@ -2,6 +2,7 @@
 
 #include "Common.h"
 #include "GameState.h"
+#include "BuildOrder.h"
 
 namespace BOSS
 {
@@ -10,7 +11,7 @@ class CombatSearchParameters
 {
 	void init();
 
-    Vec<int, Constants::MAX_ACTIONS> maxActions;
+    Vec<int, Constants::MAX_ACTIONS> _maxActions;
 
 	//      Flag which determines whether or not doubling macro actions will be used in search.
 	//      Macro actions (see paper) trade suboptimality for decreasing search depth. For large
@@ -19,8 +20,8 @@ class CombatSearchParameters
 	//
 	//      true:  macro actions are used, stored in repetitionValues array
     //      false: macro actions not used, all actions will be carried out once
-	bool 	useRepetitions;
-	Vec<UnitCountType, Constants::MAX_ACTIONS>	repetitionValues;
+	bool 	_useRepetitions;
+	Vec<UnitCountType, Constants::MAX_ACTIONS>	_repetitionValues;
 	
 	//      Flag which determines whether increasing repetitions will be used in search
 	//      Increasing repetitions means the reptition value will be 1 until we have at least
@@ -31,8 +32,8 @@ class CombatSearchParameters
 	//
 	//      true:  increasing repetitions are used
 	//      false: increasing repetitions not used
-	bool	useIncreasingRepetitions;
-	Vec<UnitCountType, Constants::MAX_ACTIONS> repetitionThresholds;
+	bool	_useIncreasingRepetitions;
+	Vec<UnitCountType, Constants::MAX_ACTIONS> _repetitionThresholds;
 
 	//		Flag which determines whether or not we use worker cutoff pruning in search.
 	//		Worker cutoff pruning stops workers from being constructed after a certain number
@@ -43,8 +44,8 @@ class CombatSearchParameters
 	//
 	//      true:  worker cutoff is used
 	//      false: worker cutoff not used
-	bool	useWorkerCutoff;					
-	double 	workerCutoff;
+	bool	_useWorkerCutoff;					
+	double 	_workerCutoff;
 	
 	//      Flag which determines whether or not we always make workers during search
 	//      This abstraction changes the search so that it always makes a worker if it is able to. It
@@ -55,7 +56,7 @@ class CombatSearchParameters
 	//
 	//      true:  always make workers is used
 	//      false: always make workers is not used
-	bool	useAlwaysMakeWorkers;
+	bool	_useAlwaysMakeWorkers;
 	
 	//      Flag which determines whether or not we use supply bounding in our search
 	//      Supply bounding makes supply producing buildings illegal if we are currently ahead
@@ -66,35 +67,42 @@ class CombatSearchParameters
 	//
 	//      true:  supply bounding is used
 	//      false: supply bounding is not used
-	bool	useSupplyBounding;
-	int		supplyBoundingThreshold;
+	bool	_useSupplyBounding;
+	int		_supplyBoundingThreshold;
 	
 	
 	//      Flag which determines whether or not we use various heuristics in our search.
 	//
 	//      true:  the heuristic is used
 	//      false: the heuristic is not used
-	bool	useLandmarkLowerBoundHeuristic;
-	bool	useResourceLowerBoundHeuristic;
+	bool	_useLandmarkLowerBoundHeuristic;
+	bool	_useResourceLowerBoundHeuristic;
 	
 	//      Search time limit measured in milliseconds
 	//      If searchTimeLimit is set to a value greater than zero, the search will effectively
 	//          time out and the best solution so far will be used in the results. This is
 	//          accomplished by throwing an exception if the time limit is hit. Time is checked
 	//          once every 1000 nodes expanded, as checking the time is slow.
-	double		searchTimeLimit;
+	double	_searchTimeLimit;
 	
 	//      Initial upper bound for the DFBB search
 	//      If this value is set to zero, DFBB search will automatically determine an
 	//          appropriate upper bound using an upper bound heuristic. If it is non-zero,
 	//          it will use the value as an initial bound.
-	int		initialUpperBound;
+	int		_initialUpperBound;
 			
 	//      Initial GameState used for the search. See GameState.h for details
-	GameState				initialState;
+	GameState				_initialState;
+    BuildOrder              _openingBuildOrder;
 
-    ActionSet               relevantActions;
-    FrameCountType          frameTimeLimit;
+    GameState               _enemyInitialState;
+    BuildOrder              _enemyBuildOrder;
+
+    ActionSet               _relevantActions;
+    FrameCountType          _frameTimeLimit;
+    bool                    _printNewBest;
+
+
 
 public:
 
@@ -113,11 +121,23 @@ public:
     void                setInitialState(const GameState & s);
     const GameState &   getInitialState() const;
 
+    void                setEnemyInitialState(const GameState & s);
+    const GameState &   getEnemyInitialState() const;
+
+    void                setOpeningBuildOrder(const BuildOrder & buildOrder);
+    const BuildOrder &  getOpeningBuildOrder() const;
+
+    void                setEnemyBuildOrder(const BuildOrder & buildOrder);
+    const BuildOrder &  getEnemyBuildOrder() const;
+
     void                setSearchTimeLimit(const double timeLimitMS);
     double              getSearchTimeLimit() const;
 
     void                setFrameTimeLimit(const FrameCountType limit);
     FrameCountType      getFrameTimeLimit() const;
+
+    void                setAlwaysMakeWorkers(const bool flag);
+    const bool          getAlwaysMakeWorkers() const;
 	
 	void print();
 };

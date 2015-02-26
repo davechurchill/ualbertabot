@@ -4,96 +4,139 @@ using namespace BOSS;
 
 // alternate constructor
 CombatSearchParameters::CombatSearchParameters()
-: useRepetitions(true)
-, useIncreasingRepetitions(false)
-, useWorkerCutoff(false)
-, workerCutoff(1)
-, useAlwaysMakeWorkers(false)
-, useSupplyBounding(false)
-, supplyBoundingThreshold(1)
-, useLandmarkLowerBoundHeuristic(false)
-, useResourceLowerBoundHeuristic(false)
-, searchTimeLimit(0)
-, initialUpperBound(0)
-, initialState(Races::None)
-, maxActions(Constants::MAX_ACTIONS, -1)
-, repetitionValues(Constants::MAX_ACTIONS, 1)
-, repetitionThresholds(Constants::MAX_ACTIONS, 0)
+    : _useRepetitions                (true)
+    , _useIncreasingRepetitions      (false)
+    , _useWorkerCutoff               (false)
+    , _workerCutoff                  (1)
+    , _useAlwaysMakeWorkers          (false)
+    , _useSupplyBounding             (false)
+    , _supplyBoundingThreshold       (1)
+    , _useLandmarkLowerBoundHeuristic(false)
+    , _useResourceLowerBoundHeuristic(false)
+    , _searchTimeLimit               (0)
+    , _initialUpperBound             (0)
+    , _initialState                  (Races::None)
+    , _maxActions                    (Constants::MAX_ACTIONS, -1)
+    , _repetitionValues              (Constants::MAX_ACTIONS, 1)
+    , _repetitionThresholds          (Constants::MAX_ACTIONS, 0)
+    , _printNewBest                  (false)
 {
     
 }
 
 void CombatSearchParameters::setSearchTimeLimit(const double timeLimitMS)
 {
-    searchTimeLimit = timeLimitMS;
+    _searchTimeLimit = timeLimitMS;
 }
 
 double CombatSearchParameters::getSearchTimeLimit() const
 {
-    return searchTimeLimit;
+    return _searchTimeLimit;
 }
 
 void CombatSearchParameters::setRelevantActions(const ActionSet & set)
 {
-    relevantActions = set;
+    _relevantActions = set;
 }
 
 const ActionSet & CombatSearchParameters::getRelevantActions() const
 {
-    return relevantActions;
+    return _relevantActions;
 }
 
 void CombatSearchParameters::setInitialState(const GameState & s)
 {
-    initialState = s;
+    _initialState = s;
 }
 
 const GameState & CombatSearchParameters::getInitialState() const
 {
-    return initialState;
+    return _initialState;
+}
+
+void CombatSearchParameters::setEnemyInitialState(const GameState & s)
+{
+    _enemyInitialState = s;
+}
+
+const GameState & CombatSearchParameters::getEnemyInitialState() const
+{
+    return _enemyInitialState;
 }
 
 void CombatSearchParameters::setMaxActions(const ActionType & a, int max)
 {
-    maxActions[a.ID()] = max;
+    _maxActions[a.ID()] = max;
+}
+
+void CombatSearchParameters::setOpeningBuildOrder(const BuildOrder & buildOrder)
+{
+    _openingBuildOrder = buildOrder;
+}
+
+const BuildOrder & CombatSearchParameters::getOpeningBuildOrder() const
+{
+    return _openingBuildOrder;
+}
+
+void CombatSearchParameters::setEnemyBuildOrder(const BuildOrder & buildOrder)
+{
+    _enemyBuildOrder = buildOrder;
+}
+
+const BuildOrder & CombatSearchParameters::getEnemyBuildOrder() const
+{
+    return _enemyBuildOrder;
 }
 
 void CombatSearchParameters::setRepetitions(const ActionType & a,int repetitions)
 { 
-    repetitionValues[a.ID()] = repetitions; 
+    _repetitionValues[a.ID()] = repetitions; 
 }
 
 int CombatSearchParameters::getMaxActions(const ActionType & a) const
 { 
-    return maxActions[a.ID()]; 
+    return _maxActions[a.ID()]; 
 }
 
 int CombatSearchParameters::getRepetitions(const ActionType & a) const
 { 
-    return repetitionValues[a.ID()]; 
+    return _repetitionValues[a.ID()]; 
 }
 
 void CombatSearchParameters::setFrameTimeLimit(const FrameCountType limit)
 {
-    frameTimeLimit = limit;
+    _frameTimeLimit = limit;
 }
+
+void CombatSearchParameters::setAlwaysMakeWorkers(const bool flag)
+{
+    _useAlwaysMakeWorkers = flag;
+}
+
+const bool CombatSearchParameters::getAlwaysMakeWorkers() const
+{
+    return _useAlwaysMakeWorkers;
+}   
 
 FrameCountType CombatSearchParameters::getFrameTimeLimit() const
 {
-    return frameTimeLimit;
+    return _frameTimeLimit;
 }
+
+
 
 void CombatSearchParameters::print()
 {
     printf("\n\nSearch Parameter Information\n\n");
 
-    printf("%s",useRepetitions ?                    "\tUSE      Repetitions\n" : "");
-    printf("%s",useIncreasingRepetitions ?          "\tUSE      Increasing Repetitions\n" : "");
-    printf("%s",useWorkerCutoff ?                   "\tUSE      Worker Cutoff\n" : "");
-    printf("%s",useLandmarkLowerBoundHeuristic ?    "\tUSE      Landmark Lower Bound\n" : "");
-    printf("%s",useResourceLowerBoundHeuristic ?    "\tUSE      Resource Lower Bound\n" : "");
-    printf("%s",useAlwaysMakeWorkers ?              "\tUSE      Always Make Workers\n" : "");
-    printf("%s",useSupplyBounding ?                 "\tUSE      Supply Bounding\n" : "");
+    printf("%s", _useRepetitions ?                    "\tUSE      Repetitions\n" : "");
+    printf("%s", _useIncreasingRepetitions ?          "\tUSE      Increasing Repetitions\n" : "");
+    printf("%s", _useWorkerCutoff ?                   "\tUSE      Worker Cutoff\n" : "");
+    printf("%s", _useLandmarkLowerBoundHeuristic ?    "\tUSE      Landmark Lower Bound\n" : "");
+    printf("%s", _useResourceLowerBoundHeuristic ?    "\tUSE      Resource Lower Bound\n" : "");
+    printf("%s", _useAlwaysMakeWorkers ?              "\tUSE      Always Make Workers\n" : "");
+    printf("%s", _useSupplyBounding ?                 "\tUSE      Supply Bounding\n" : "");
     printf("\n");
 
     //for (int a = 0; a < ACTIONS.size(); ++a)

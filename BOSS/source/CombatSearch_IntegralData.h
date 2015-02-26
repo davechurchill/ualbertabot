@@ -3,6 +3,7 @@
 #include "Common.h"
 #include "GameState.h"
 #include "Eval.h"
+#include "BuildOrder.h"
 
 namespace BOSS
 {
@@ -29,26 +30,27 @@ public:
     {
     
     }
-
 };
 
-class CombatSearchIntegral
+class CombatSearch_IntegralData
 {
     std::vector<IntegralData>       _integralStack;
 
     std::vector<IntegralData>       _bestIntegralStack;
     double                          _bestIntegralValue;
-    std::vector<ActionType>         _bestIntegralBuildOrder;
+    BuildOrder                      _bestIntegralBuildOrder;
 
 public:
 
-    CombatSearchIntegral();
+    CombatSearch_IntegralData();
 
-    void update(const GameState & state, const std::vector<ActionType> & buildOrder);
+    void update(const GameState & state, const BuildOrder & buildOrder);
     void pop();
 
-    void printBest() const;
+    void printIntegralData(const size_t index) const;
     void print() const;
+
+    const BuildOrder & getBestBuildOrder() const;
 };
 
 }

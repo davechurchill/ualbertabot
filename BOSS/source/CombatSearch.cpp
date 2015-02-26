@@ -2,22 +2,20 @@
 
 using namespace BOSS;
 
-CombatSearch::CombatSearch(const CombatSearchParameters p)
-    : _params(p)
-    , _bucket(p.getFrameTimeLimit(), 200)
-{
-   
-    BOSS_ASSERT(_params.getInitialState().getRace() != Races::None, "Combat search initial state is invalid");
-}
 
 // function which is called to do the actual search
 void CombatSearch::search()
 {
     _searchTimer.start();
 
+    // apply the opening build order to the initial state
+    GameState initialState(_params.getInitialState());
+    _buildOrder = _params.getOpeningBuildOrder();
+    _buildOrder.doActions(initialState);
+
     try
     {
-        doSearch(_params.getInitialState(), 0);
+        doSearch(initialState, 0);
     
         _results.solved = true;
     }
@@ -29,11 +27,7 @@ void CombatSearch::search()
         }
     }
 
-    //std::cout << _results.nodesExpanded << "\n";
-    _results.timeElapsed   = _searchTimer.getElapsedTimeInMilliSec();
-    
-    _integral.print();
-    _bucket.print();
+    _results.timeElapsed = _searchTimer.getElapsedTimeInMilliSec();
 }
 
 void CombatSearch::generateLegalActions(const GameState & state, ActionSet & legalActions, const CombatSearchParameters & params)
@@ -57,6 +51,48 @@ void CombatSearch::generateLegalActions(const GameState & state, ActionSet & leg
         }
         
         legalActions.add(action);
+    }
+
+    // if we enabled the always make workers flag, and workers are legal
+    const ActionType & worker = ActionTypes::GetWorker(state.getRace());
+    if (_params.getAlwaysMakeWorkers() && legalActions.contains(worker))
+    {
+        bool actionLegalBeforeWorker = false;
+
+        // when can we make a worker
+        FrameCountType workerReady = state.whenCanPerform(worker);
+        
+        // if we can make a worker in the next couple of frames, do it
+        if (workerReady <= state.getCurrentFrame() + 2)
+        {
+            legalActions.clear();
+            legalActions.add(worker);
+            return;
+        }
+
+        // figure out of anything can be made before a worker
+        for (size_t a(0); a < legalActions.size(); ++a)
+        {
+            const ActionType & actionType = legalActions[a];
+            const FrameCountType whenCanPerformAction = state.whenCanPerform(actionType);
+            if (whenCanPerformAction < workerReady)
+            {
+                actionLegalBeforeWorker = true;
+                break;
+            }
+        }
+
+        // if something can be made before a worker, then don't consider workers
+        if (actionLegalBeforeWorker)
+        {
+            legalActions.remove(worker);
+        }
+        // otherwise we can make a worker next so don't consider anything else
+        else
+        {
+            legalActions.clear();
+            legalActions.add(worker);
+        }
     }
 }
 
@@ -87,49 +123,49 @@ double CombatSearch::eval(const GameState & state) const
 
 void CombatSearch::doSearch(const GameState & state, size_t depth)
 {
-    if (timeLimitReached())
-    {
-        throw BOSS_COMBATSEARCH_TIMEOUT;
-    }
+    // This base class function should never be called, leaving the code
+    // here as a basis to form child classes
 
-    updateResults(state);
-    _bucket.update(state, _buildOrder);
+    BOSS_ASSERT(false, "Base CombatSearch doSearch() should never be called");
 
-    if (isTerminalNode(state, depth))
-    {
-        return;
-    }
+    //if (timeLimitReached())
+    //{
+    //    throw BOSS_COMBATSEARCH_TIMEOUT;
+    //}
 
-    if (_bucket.isDominated(state))
-    {
-        return;
-    }
+    //updateResults(state);
 
-    ActionSet legalActions;
-    generateLegalActions(state, legalActions, _params);
-    
-    for (UnitCountType a(0); a < legalActions.size(); ++a)
-    {
-        GameState child(state);
-        child.doAction(legalActions[a]);
+    //if (isTerminalNode(state, depth))
+    //{
+    //    return;
+    //}
 
-        _buildOrder.push_back(legalActions[a]);
-        _integral.update(state, _buildOrder);
-          
-        doSearch(child,depth+1);
+    //ActionSet legalActions;
+    //generateLegalActions(state, legalActions, _params);
+    //
+    //for (UnitCountType a(0); a < legalActions.size(); ++a)
+    //{
+    //    GameState child(state);
+    //    child.doAction(legalActions[a]);
+    //    _buildOrder.add(legalActions[a]);
+    //    
+    //    doSearch(child,depth+1);
 
-        _buildOrder.pop_back();
-        _integral.pop();
-    }
+    //    _buildOrder.pop_back();
+    //}
 }
 
 void CombatSearch::updateResults(const GameState & state)
 {
     _results.nodesExpanded++;
+}
 
-    /*if (_results.nodesExpanded > 0 && _results.nodesExpanded % 1000000 == 0)
-    {
-        std::cout << ".";
-        std::cout.flush();
-    }*/
+void CombatSearch::printResults()
+{
+    std::cout << "Printing base class CombatSearch results!\n\n";
+}
+
+void CombatSearch::writeResultsFile(const std::string & prefix)
+{
+    std::cout << "Writing base class CombatSearch results!\n\n";
 }
