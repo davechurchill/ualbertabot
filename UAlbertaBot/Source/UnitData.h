@@ -88,6 +88,7 @@ class UnitData {
 
 	std::vector<int>						numDeadUnits;
 	std::vector<int>						numUnits;
+	std::vector<int>						numCompletedUnits;
 
 	int										mineralsLost;
 	int										gasLost;
@@ -112,6 +113,7 @@ public:
 	int		getGasLost()										const	{ return gasLost; }
 	int		getMineralsLost()									const	{ return mineralsLost; }
 	int		getNumUnits(BWAPI::UnitType t)						const	{ return numUnits[t.getID()]; }
+	int		getNumCompletedUnits(BWAPI::UnitType t)				const	{ return numCompletedUnits[t.getID()]; }
 	int		getNumDeadUnits(BWAPI::UnitType t)					const	{ return numDeadUnits[t.getID()]; }
 	const	std::map<BWAPI::UnitInterface*, UnitInfo> & getUnits()		const	{ return unitMap; }
 };

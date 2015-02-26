@@ -56,6 +56,7 @@ public:
 	void					onUnitShow(BWAPI::UnitInterface* unit)			{ updateUnit(unit); }
 	void					onUnitHide(BWAPI::UnitInterface* unit)			{ updateUnit(unit); }
 	void					onUnitCreate(BWAPI::UnitInterface* unit)		{ updateUnit(unit); }
+	void					onUnitComplete(BWAPI::UnitInterface* unit)		{ updateUnit(unit); }
 	void					onUnitMorph(BWAPI::UnitInterface* unit)			{ updateUnit(unit); }
 	void					onUnitRenegade(BWAPI::UnitInterface* unit)		{ updateUnit(unit); }
 	void					onUnitDestroy(BWAPI::UnitInterface* unit);

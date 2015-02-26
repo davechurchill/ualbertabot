@@ -31,6 +31,7 @@ public:
 	void	onUnitMorph(BWAPI::UnitInterface* unit);
 	void	onSendText(std::string text);
 	void	onUnitCreate(BWAPI::UnitInterface* unit);
+	void	onUnitComplete(BWAPI::UnitInterface* unit);
 	void	onUnitShow(BWAPI::UnitInterface* unit);
 	void	onUnitHide(BWAPI::UnitInterface* unit);
 	void	onUnitRenegade(BWAPI::UnitInterface* unit);

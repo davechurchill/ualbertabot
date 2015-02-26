@@ -15,6 +15,7 @@ UnitData::UnitData()
 
 	numDeadUnits	= std::vector<int>(maxTypeID + 1, 0);
 	numUnits		= std::vector<int>(maxTypeID + 1, 0);
+	numCompletedUnits= std::vector<int>(maxTypeID + 1, 0);
 }
 
 void UnitData::updateUnit(BWAPI::UnitInterface* unit)
@@ -30,6 +31,9 @@ void UnitData::updateUnit(BWAPI::UnitInterface* unit)
 		ui.lastHealth = unit->getHitPoints() + unit->getShields();
 		ui.unitID = unit->getID();
 		ui.type = unit->getType();
+		if (!ui.completed&&unit->isCompleted()){
+			numCompletedUnits[unit->getType().getID()]++;
+		}
         ui.completed = unit->isCompleted();
 
 		return;
@@ -39,6 +43,9 @@ void UnitData::updateUnit(BWAPI::UnitInterface* unit)
 	{
 		// put the unit in the map
 		numUnits[unit->getType().getID()]++;
+		if (unit->isCompleted()){
+			numCompletedUnits[unit->getType().getID()]++;
+		}
 		unitMap[unit] = UnitInfo(unit->getID(), unit, unit->getPosition(), unit->getType());
 	}
 }
@@ -50,6 +57,7 @@ void UnitData::removeUnit(BWAPI::UnitInterface* unit)
 	mineralsLost += unit->getType().mineralPrice();
 	gasLost += unit->getType().gasPrice();
 	numUnits[unit->getType().getID()]--;
+	numCompletedUnits[unit->getType().getID()]--;
 	numDeadUnits[unit->getType().getID()]++;
 		
 	unitMap.erase(unit);
@@ -65,6 +73,7 @@ void UnitData::removeBadUnits()
 		{
 			// remove it from the map
 			numUnits[iter->second.type.getID()]--;
+			numCompletedUnits[iter->second.type.getID()]--;
 			iter = unitMap.erase(iter);
 		}
 		else

@@ -302,6 +302,11 @@ void GameCommander::onUnitCreate(BWAPI::UnitInterface* unit)
 	InformationManager::Instance().onUnitCreate(unit); 
 }
 
+void GameCommander::onUnitComplete(BWAPI::UnitInterface* unit)
+{
+	InformationManager::Instance().onUnitComplete(unit);
+}
+
 void GameCommander::onUnitRenegade(BWAPI::UnitInterface* unit)		
 { 
 	InformationManager::Instance().onUnitRenegade(unit); 
