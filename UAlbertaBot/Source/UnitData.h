@@ -35,6 +35,10 @@ struct UnitInfo
 		return type.isDetector();
 	}
 
+	bool isWorker() const
+	{
+		return type.isWorker();
+	}
 	UnitInfo()
 		: unitID(0)
 		, lastHealth(0)

@@ -46,23 +46,53 @@ class StrategyManager
 	
 	// protoss strategy
 	const	bool				expandProtossZealotRush() const;
-	const	std::string			getProtossZealotRushOpeningBook() const;
+	static bool					expandProtossZealotRush(
+		const UnitData &selfUnitData, 
+		const WorkerData &selfWorkerData, 
+		int frame);
+	//const	std::string			getProtossZealotRushOpeningBook() const;
 	const	MetaPairVector		getProtossZealotRushBuildOrderGoal() const;
+	static	MetaPairVector		getProtossZealotRushBuildOrderGoal(
+		const UnitData &selfUnitData, 
+		const UnitData &enemyUnitData, 
+		const WorkerData &selfWorkerData,
+		int frame);
 
-	const	bool				expandProtossDarkTemplar() const;
-	const	std::string			getProtossDarkTemplarOpeningBook() const;
+	//const	bool				expandProtossDarkTemplar() const;
+	//const	std::string			getProtossDarkTemplarOpeningBook() const;
 	const	MetaPairVector		getProtossDarkTemplarBuildOrderGoal() const;
+	static	MetaPairVector		getProtossDarkTemplarBuildOrderGoal(
+		const UnitData &selfUnitData,
+		const UnitData &enemyUnitData,
+		const WorkerData &selfWorkerData,
+		int frame);
 
-	const	bool				expandProtossDragoons() const;
-	const	std::string			getProtossDragoonsOpeningBook() const;
+	//const	bool				expandProtossDragoons() const;
+	//const	std::string			getProtossDragoonsOpeningBook() const;
 	const	MetaPairVector		getProtossDragoonsBuildOrderGoal() const;
+	static 	MetaPairVector		getProtossDragoonsBuildOrderGoal(
+		const UnitData &selfUnitData,
+		const UnitData &enemyUnitData,
+		const WorkerData &selfWorkerData,
+		int frame);
 
 	const	MetaPairVector		getTerranBuildOrderGoal() const;
+	static 	MetaPairVector		getTerranBuildOrderGoal(
+		const UnitData &selfUnitData,
+		const UnitData &enemyUnitData,
+		const WorkerData &selfWorkerData,
+		int frame); 
+	
 	const	MetaPairVector		getZergBuildOrderGoal() const;
+	static 	MetaPairVector		getZergBuildOrderGoal(
+		const UnitData &selfUnitData,
+		const UnitData &enemyUnitData,
+		const WorkerData &selfWorkerData,
+		int frame);
 
-	const	MetaPairVector		getProtossOpeningBook() const;
-	const	MetaPairVector		getTerranOpeningBook() const;
-	const	MetaPairVector		getZergOpeningBook() const;
+	//const	MetaPairVector		getProtossOpeningBook() const;
+	//const	MetaPairVector		getTerranOpeningBook() const;
+	//const	MetaPairVector		getZergOpeningBook() const;
 
 public:
 
@@ -79,9 +109,17 @@ public:
 	const	int				    defendWithWorkers();
 	const	bool				rushDetected();
 
-	const	int					getCurrentStrategy();
+	const	int					getCurrentStrategy() const;
 	void						setCurrentStrategy(int newStrategy);//for high level search to set the strategy
 	const	MetaPairVector		getBuildOrderGoal();
 	const	std::vector<MetaType>	getOpeningBookBuildOrder() const;
+
+	static MetaPairVector				getBuildOrderGoal(
+		const UnitData &selfUnitData,
+		const UnitData &enemyUnitData,
+		const WorkerData &selfWorkerData,
+		int frame, 
+		int strategy,
+		BWAPI::Race race);
 };
 }

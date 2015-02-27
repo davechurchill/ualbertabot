@@ -701,3 +701,8 @@ WorkerManager & WorkerManager::Instance()
 	static WorkerManager instance;
 	return instance;
 }
+
+const WorkerData & WorkerManager::getData() const
+{
+	return workerData;
+}

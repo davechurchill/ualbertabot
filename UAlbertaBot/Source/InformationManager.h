@@ -38,9 +38,6 @@ class InformationManager {
 	void								updateOccupiedRegions(BWTA::Region * region, BWAPI::PlayerInterface * player);
 	bool								isValidUnit(BWAPI::UnitInterface* unit);
 
-	const UnitData &					getUnitData(BWAPI::PlayerInterface * player) const;
-	const UnitData &					getUnitData(BWAPI::UnitInterface* unit) const;
-
 public:
 
 	bool goForIt;
@@ -93,5 +90,8 @@ public:
 	void						drawUnitInformation(int x, int y);
 	void						drawMapInformation();
 	SparCraft::Map *			getMap() { return &map; }
+
+	const UnitData &					getUnitData(BWAPI::PlayerInterface * player) const;
+	const UnitData &					getUnitData(BWAPI::UnitInterface* unit) const;
 };
 }
