@@ -52,6 +52,9 @@ class Squad
     static int          lastRetreatSwitch;
     static bool         lastRetreatSwitchVal;
 
+protected:
+	void				addUnit(BWAPI::UnitInterface *u);
+	bool				removeUnit(BWAPI::UnitInterface *u);
 public:
 
 

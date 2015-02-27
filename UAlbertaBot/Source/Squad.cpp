@@ -364,3 +364,19 @@ const SquadOrder & Squad::getSquadOrder()	const
 { 
 	return order; 
 }
+
+void Squad::addUnit(BWAPI::UnitInterface *u)
+{
+	units.push_back(u);
+}
+
+bool Squad::removeUnit(BWAPI::UnitInterface *u)
+{
+	for (auto it = units.begin(); it != units.end(); it++){
+		if ((*it)->getID() == u->getID()){
+			units.erase(it);
+			return true;
+		}
+	}
+	return false;
+}
