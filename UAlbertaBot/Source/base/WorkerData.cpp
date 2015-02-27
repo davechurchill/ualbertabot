@@ -215,17 +215,17 @@ void WorkerData::clearPreviousJob(BWAPI::UnitInterface* unit)
 	workerJobMap.erase(unit);
 }
 
-int WorkerData::getNumWorkers()
+int WorkerData::getNumWorkers() const
 {
 	return workers.size();
 }
 
-int WorkerData::getNumMineralWorkers()
+int WorkerData::getNumMineralWorkers() const
 {
 	size_t num = 0;
 	for (BWAPI::UnitInterface* unit : workers)
 	{
-		if (workerJobMap[unit] == WorkerData::Minerals)
+		if (workerJobMap.at(unit) == WorkerData::Minerals)
 		{
 			num++;
 		}
@@ -233,12 +233,12 @@ int WorkerData::getNumMineralWorkers()
 	return num;
 }
 
-int WorkerData::getNumGasWorkers()
+int WorkerData::getNumGasWorkers() const
 {
 	size_t num = 0;
 	for (BWAPI::UnitInterface* unit : workers)
 	{
-		if (workerJobMap[unit] == WorkerData::Gas)
+		if (workerJobMap.at(unit) == WorkerData::Gas)
 		{
 			num++;
 		}
@@ -246,12 +246,12 @@ int WorkerData::getNumGasWorkers()
 	return num;
 }
 
-int WorkerData::getNumIdleWorkers()
+int WorkerData::getNumIdleWorkers() const
 {
 	size_t num = 0;
 	for (BWAPI::UnitInterface* unit : workers)
 	{
-		if (workerJobMap[unit] == WorkerData::Idle)
+		if (workerJobMap.at(unit) == WorkerData::Idle)
 		{
 			num++;
 		}
