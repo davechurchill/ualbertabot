@@ -14,8 +14,8 @@ namespace UAlbertaBot
 	public:
 		HLCombatCommander();
 		~HLCombatCommander();
-
 		void update(std::set<BWAPI::UnitInterface*> combatUnits);
+		bool squadUpdateFrame() const;
 	};
 
 }

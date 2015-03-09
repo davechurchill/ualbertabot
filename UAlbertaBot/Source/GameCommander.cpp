@@ -12,15 +12,36 @@ GameCommander::GameCommander() : numWorkerScouts(0), currentScout(NULL)
 void GameCommander::update()
 {
 	timerManager.startTimer(TimerManager::All);
-	
+
+
+	// populate the unit vectors we will pass into various managers
+	populateUnitVectors();
+
+	// utility managers
+	timerManager.startTimer(TimerManager::InformationManager);
+	InformationManager::Instance().update();
+	timerManager.stopTimer(TimerManager::InformationManager);
+
+	timerManager.startTimer(TimerManager::MapGrid);
+	MapGrid::Instance().update();
+	timerManager.stopTimer(TimerManager::MapGrid);
+
+	timerManager.startTimer(TimerManager::MapTools);
+	MapTools::Instance().update();
+	timerManager.stopTimer(TimerManager::MapTools);
+
+	timerManager.startTimer(TimerManager::HLSearch);
 	if (Options::Modules::USING_HIGH_LEVEL_SEARCH){
-		HLManager::Instance().update();
+		HLManager::Instance().update(combatUnits, scoutUnits, workerUnits);
 	}
+	timerManager.stopTimer(TimerManager::HLSearch);
+
+	timerManager.startTimer(TimerManager::Search);
+	BOSSManager::Instance().update(35 - timerManager.getTotalElapsed());
+	timerManager.stopTimer(TimerManager::Search);
 
 	// economy and base managers
 	timerManager.startTimer(TimerManager::Worker);
-	// populate the unit vectors we will pass into various managers
-	populateUnitVectors();
 	WorkerManager::Instance().update();
 	timerManager.stopTimer(TimerManager::Worker);
 
@@ -49,23 +70,6 @@ void GameCommander::update()
 		scoutManager.update(scoutUnits);
 	}
 	timerManager.stopTimer(TimerManager::Scout);
-
-	// utility managers
-	timerManager.startTimer(TimerManager::InformationManager);
-	InformationManager::Instance().update();
-	timerManager.stopTimer(TimerManager::InformationManager);
-
-	timerManager.startTimer(TimerManager::MapGrid);
-	MapGrid::Instance().update();
-	timerManager.stopTimer(TimerManager::MapGrid);
-
-	timerManager.startTimer(TimerManager::MapTools);
-	MapTools::Instance().update();
-	timerManager.stopTimer(TimerManager::MapTools);
-
-	timerManager.startTimer(TimerManager::Search);
-	BOSSManager::Instance().update(35 - timerManager.getTotalElapsed());
-	timerManager.stopTimer(TimerManager::Search);
 		
 	timerManager.stopTimer(TimerManager::All);
 
@@ -80,7 +84,7 @@ void GameCommander::drawDebugInterface()
 	//BuildingManager::Instance().drawBuildingInformation(200,50);
 	ProductionManager::Instance().drawProductionInformation(10, 30);
 	//InformationManager::Instance().drawUnitInformation(425,30);
-	//InformationManager::Instance().drawMapInformation();
+	InformationManager::Instance().drawMapInformation();
 
 	combatCommander.drawSquadInformation(200, 30);
 

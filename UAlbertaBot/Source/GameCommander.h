@@ -24,7 +24,7 @@ class TimerManager
 
 public:
 
-	enum Type { All, Worker, Production, Building, Combat, Scout, InformationManager, MapGrid, MapTools, Search, NumTypes };
+	enum Type { All, Worker, Production, Building, Combat, Scout, InformationManager, MapGrid, MapTools, HLSearch, Search, NumTypes };
 
 
 	TimerManager() : timers(std::vector<BOSS::Timer>(NumTypes)), barWidth(40)
@@ -38,6 +38,7 @@ public:
 		timerNames.push_back("UnitInfo");
 		timerNames.push_back("MapGrid");
 		timerNames.push_back("MapTools");
+		timerNames.push_back("HLSearch");
 		timerNames.push_back("Search");
 	}
 
