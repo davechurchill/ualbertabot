@@ -256,7 +256,7 @@ bool GameState::isLegal(const ActionType & action) const
 }
 
 // do an action, action must be legal for this not to break
-void GameState::doAction(const ActionType & action)
+std::vector<ActionType> GameState::doAction(const ActionType & action)
 {
     BOSS_ASSERT(action.getRace() == _race, "Race of action does not match race of the state");
 
@@ -274,7 +274,7 @@ void GameState::doAction(const ActionType & action)
 
     BOSS_ASSERT(ffTime >= 0 && ffTime < 1000000, "FFTime is very strange: %d", ffTime);
 
-    fastForward(ffTime);
+    auto actionsFinished=fastForward(ffTime);
 
     _actionsPerformed[_actionsPerformed.size()-1].actionQueuedFrame = _currentFrame;
     _actionsPerformed[_actionsPerformed.size()-1].gasWhenQueued = _gas;
@@ -337,10 +337,12 @@ void GameState::doAction(const ActionType & action)
             _units.addActionInProgress(action, _currentFrame + action.buildTime());
         }
      }
+
+	return actionsFinished;
 }
 
 // fast forwards the current state to time toFrame
-void GameState::fastForward(const FrameCountType toFrame)
+std::vector<ActionType> GameState::fastForward(const FrameCountType toFrame)
 {
     // fast forward the building timers to the current frame
     FrameCountType previousFrame = _currentFrame;
@@ -352,6 +354,8 @@ void GameState::fastForward(const FrameCountType toFrame)
     ResourceCountType   moreGas             = 0;
     ResourceCountType   moreMinerals        = 0;
 
+
+	std::vector<ActionType> actionsFinished;
     // while we still have units in progress
     while ((_units.getNumActionsInProgress() > 0) && (_units.getNextActionFinishTime() <= toFrame))
     {
@@ -367,7 +371,7 @@ void GameState::fastForward(const FrameCountType toFrame)
         lastActionFinished 	= _units.getNextActionFinishTime();
 
         // finish the action, which updates mineral and gas rates if required
-        _units.finishNextActionInProgress();
+		actionsFinished.push_back(_units.finishNextActionInProgress());
     }
 
     // update resources from the last action finished to toFrame
@@ -386,6 +390,8 @@ void GameState::fastForward(const FrameCountType toFrame)
     {
         _units.getHatcheryData().fastForward(previousFrame, toFrame);
     }
+
+	return actionsFinished;
 }
 
 // returns the time at which all resources to perform an action will be available

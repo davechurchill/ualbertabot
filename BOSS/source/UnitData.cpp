@@ -213,10 +213,10 @@ const UnitCountType UnitData::getNumBuildingWorkers() const
     return _buildingWorkers;
 }
 
-void UnitData::finishNextActionInProgress() 
+ActionType UnitData::finishNextActionInProgress() 
 {	
 	// get the actionUnit from the progress data
-	const ActionType & action = _progress.nextAction();
+	ActionType action = _progress.nextAction();
 
 	// add the unit to the unit counter
 	addCompletedAction(action);
@@ -237,6 +237,8 @@ void UnitData::finishNextActionInProgress()
         const static ActionType hatchery = ActionTypes::GetActionType("Zerg_Hatchery");
 
 	}
+
+	return action;
 }
 
 const FrameCountType UnitData::getNextActionFinishTime() const

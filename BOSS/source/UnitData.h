@@ -77,7 +77,7 @@ public:
     void                    setBuildingWorkers(const UnitCountType & buildingWorkers);
     void                    morphUnit(const ActionType & from, const ActionType & to, const FrameCountType & completionFrame);
 
-    void                    finishNextActionInProgress();
+    ActionType              finishNextActionInProgress();
 
     const BuildingData &    getBuildingData() const;
     const HatcheryData &    getHatcheryData() const;

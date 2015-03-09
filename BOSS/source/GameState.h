@@ -71,8 +71,8 @@ public:
     GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * player);
 #endif
 
-    void                        doAction(const ActionType & action);
-    void                        fastForward(const FrameCountType toFrame) ;
+	std::vector<ActionType>     doAction(const ActionType & action);
+    std::vector<ActionType>     fastForward(const FrameCountType toFrame) ;
     void                        finishNextActionInProgress();
 
     const FrameCountType        getCurrentFrame()                                                       const;
