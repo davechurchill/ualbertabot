@@ -356,7 +356,7 @@ const bool StrategyManager::expandProtossZealotRush() const
 bool StrategyManager::expandProtossZealotRush(const UnitData &unitData, const WorkerData &selfWorkerData, int frame)
 {
 	// if there is no place to expand to, we can't expand
-	if (MapTools::Instance().getNextExpansion(unitData.getUnits().at(0).player) == BWAPI::TilePositions::None)
+	if (MapTools::Instance().getNextExpansion(unitData.getUnits().begin()->second.player) == BWAPI::TilePositions::None)
 	{
 		return false;
 	}
@@ -441,13 +441,14 @@ MetaPairVector StrategyManager::getBuildOrderGoal(
 	const WorkerData &selfWorkerData,
 	int frame,
 	int strategy,
-	BWAPI::Race race)
+	BWAPI::Race race,
+	const std::unordered_map<short, short> &choices)
 {
 	if (race == BWAPI::Races::Protoss)
 	{
 		switch (strategy){
 		case ProtossZealotRush:
-			return getProtossZealotRushBuildOrderGoal(selfUnitData, enemyUnitData, selfWorkerData, frame);
+			return getProtossZealotRushBuildOrderGoal(selfUnitData, enemyUnitData, selfWorkerData, frame, choices);
 			break;
 		case ProtossDarkTemplar:
 			return getProtossDarkTemplarBuildOrderGoal(selfUnitData, enemyUnitData, selfWorkerData, frame);
@@ -518,6 +519,7 @@ MetaPairVector StrategyManager::getProtossDragoonsBuildOrderGoal(
 
 	if (enemyUnitData.hasCloakedUnits())
 	{
+
 		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Robotics_Facility, 1));
 	
 		if (selfUnitData.getNumCompletedUnits(BWAPI::UnitTypes::Protoss_Robotics_Facility) > 0)
@@ -632,6 +634,100 @@ const MetaPairVector StrategyManager::getProtossZealotRushBuildOrderGoal() const
 		InformationManager::Instance().getUnitData(BWAPI::Broodwar->enemy()),
 		WorkerManager::Instance().getData(),
 		BWAPI::Broodwar->getFrameCount());
+}
+
+MetaPairVector StrategyManager::getProtossZealotRushBuildOrderGoal(
+	const UnitData &selfUnitData,
+	const UnitData &enemyUnitData,
+	const WorkerData &selfWorkerData,
+	int frame,
+	const std::unordered_map<short, short> &choices)
+{
+	// the goal to return
+	MetaPairVector goal;
+
+	int numZealots = selfUnitData.getNumUnits(BWAPI::UnitTypes::Protoss_Zealot);
+	int numDragoons = selfUnitData.getNumUnits(BWAPI::UnitTypes::Protoss_Dragoon);
+	int numProbes = selfUnitData.getNumUnits(BWAPI::UnitTypes::Protoss_Probe);
+	int numNexusCompleted = selfUnitData.getNumCompletedUnits(BWAPI::UnitTypes::Protoss_Nexus);
+	int numNexusAll = selfUnitData.getNumUnits(BWAPI::UnitTypes::Protoss_Nexus);
+	int numCyber = selfUnitData.getNumCompletedUnits(BWAPI::UnitTypes::Protoss_Cybernetics_Core);
+	int numCannon = selfUnitData.getNumUnits(BWAPI::UnitTypes::Protoss_Photon_Cannon);
+
+	int zealotsWanted = numZealots + 8;
+	int dragoonsWanted = numDragoons;
+
+	if (enemyUnitData.hasCloakedUnits())
+	{
+
+		//choice 0: if cloaked, robotics facility or photon cannon
+		if (choices.find(0) == choices.end()){
+			throw ChoicePoint(0, 2);
+		}
+		switch (choices.at(0)){
+		case 0:
+			goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Robotics_Facility, 1));
+			break;
+		case 1:
+			goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Photon_Cannon, (int)std::ceil(enemyUnitData.numCloakedUnits()/3.0)));
+			break;
+		default:
+			UAB_ASSERT(false, "Wrong choice point option");
+		}
+		
+
+		if (selfUnitData.getNumCompletedUnits(BWAPI::UnitTypes::Protoss_Robotics_Facility) > 0)
+		{
+			goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Observatory, 1));
+		}
+		if (selfUnitData.getNumCompletedUnits(BWAPI::UnitTypes::Protoss_Observatory) > 0)
+		{
+			goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Observer, 1));
+		}
+	}
+
+	if (numNexusAll >= 2 || frame > 9000)
+	{
+		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Assimilator, 1));
+		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Cybernetics_Core, 1));
+	}
+
+	if (numCyber > 0)
+	{
+		dragoonsWanted = numDragoons + 2;
+		goal.push_back(MetaPair(BWAPI::UpgradeTypes::Singularity_Charge, 1));
+	}
+
+	if (numNexusCompleted >= 3)
+	{
+		dragoonsWanted = numDragoons + 6;
+		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Observer, 1));
+	}
+
+	if (expandProtossZealotRush(selfUnitData, selfWorkerData, frame))
+	{
+		//choice 1: expand or not
+		if (choices.find(1) == choices.end()){
+			throw ChoicePoint(1, 2);
+		}
+		switch (choices.at(1)){
+		case 0:
+			//expand
+			goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Nexus, numNexusAll + 1));
+			break;
+		case 1:
+			//don't expand
+			break;
+		default:
+			UAB_ASSERT(false, "Wrong choice point option");
+		}
+		
+	}
+
+	goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Dragoon, dragoonsWanted));
+	goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Zealot, zealotsWanted));
+
+	return goal;
 }
 
 MetaPairVector StrategyManager::getProtossZealotRushBuildOrderGoal(
@@ -768,4 +864,21 @@ MetaPairVector StrategyManager::getZergBuildOrderGoal(
  void StrategyManager::setCurrentStrategy(int newStrategy)
  {
 	 currentStrategy = newStrategy;
+ }
+
+ int StrategyManager::getNumStrategies(BWAPI::Race race)
+ {
+	 if (race == BWAPI::Races::Protoss)
+	 {
+		 return NumProtossStrategies;
+	 }
+	 else if (race == BWAPI::Races::Zerg){
+		 return NumZergStrategies;
+	 }
+	 else if (race == BWAPI::Races::Terran){
+		 return NumTerranStrategies;
+	 }
+	 else{
+		 UAB_ASSERT(false, "Unknown race");
+	 }
  }

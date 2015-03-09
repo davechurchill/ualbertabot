@@ -58,6 +58,13 @@ class StrategyManager
 		const WorkerData &selfWorkerData,
 		int frame);
 
+	static	MetaPairVector		getProtossZealotRushBuildOrderGoal(
+		const UnitData &selfUnitData,
+		const UnitData &enemyUnitData,
+		const WorkerData &selfWorkerData,
+		int frame, 
+		const std::unordered_map<short, short> &choices);
+
 	//const	bool				expandProtossDarkTemplar() const;
 	//const	std::string			getProtossDarkTemplarOpeningBook() const;
 	const	MetaPairVector		getProtossDarkTemplarBuildOrderGoal() const;
@@ -110,16 +117,22 @@ public:
 	const	bool				rushDetected();
 
 	const	int					getCurrentStrategy() const;
+	static int					getNumStrategies(BWAPI::Race race);
 	void						setCurrentStrategy(int newStrategy);//for high level search to set the strategy
 	const	MetaPairVector		getBuildOrderGoal();
 	const	std::vector<MetaType>	getOpeningBookBuildOrder() const;
 
-	static MetaPairVector				getBuildOrderGoal(
+	static MetaPairVector		getBuildOrderGoal(
 		const UnitData &selfUnitData,
 		const UnitData &enemyUnitData,
 		const WorkerData &selfWorkerData,
-		int frame, 
+		int frame,
 		int strategy,
-		BWAPI::Race race);
+		BWAPI::Race race,
+		const std::unordered_map<short, short> &choices);
+};
+struct ChoicePoint{
+	short _point, _options;
+	ChoicePoint(short point, short options) :_point(point), _options(options){};
 };
 }
