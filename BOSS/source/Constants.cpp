@@ -25,6 +25,26 @@ namespace BOSS
             }
         }
 
+		BWAPI::Race GetRace(RaceID id)
+		{
+			if (id == Races::Protoss)
+			{
+				return BWAPI::Races::Protoss;
+			}
+			else if (id == Races::Terran)
+			{
+				return BWAPI::Races::Terran;
+			}
+			else if (id == Races::Zerg)
+			{
+				return BWAPI::Races::Zerg;
+			}
+			else
+			{
+				return BWAPI::Races::None;
+			}
+		}
+
         RaceID GetRaceID(const std::string & race)
         {
             if (race.compare("Protoss") == 0)
