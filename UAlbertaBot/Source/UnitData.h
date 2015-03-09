@@ -63,6 +63,18 @@ struct UnitInfo
 		
 	}
 
+	UnitInfo(int id, BWAPI::Player player, BWAPI::Position last, BWAPI::UnitType t, bool completed)
+		: unitID(id)
+		, lastHealth(t.maxHitPoints() + t.maxShields())
+		, player(player)
+		, unit(NULL)
+		, lastPosition(last)
+		, type(t)
+		, completed(completed)
+	{
+
+	}
+
 	const bool operator == (BWAPI::UnitInterface* unit) const
 	{
 		return unitID == unit->getID();
@@ -90,29 +102,30 @@ class UnitData {
 
 	std::map<BWAPI::UnitInterface*, UnitInfo>		unitMap;
 
+	const bool badUnitInfo(const UnitInfo & ui) const;
+
+protected:
 	std::vector<int>						numDeadUnits;
 	std::vector<int>						numUnits;
 	std::vector<int>						numCompletedUnits;
 
 	int										mineralsLost;
 	int										gasLost;
-
-	const bool badUnitInfo(const UnitInfo & ui) const;
-
 public:
 
 	UnitData();
-	~UnitData() {}
+	virtual ~UnitData() {}
 
 	void	updateUnit(BWAPI::UnitInterface* unit);
 	void	removeUnit(BWAPI::UnitInterface* unit);
 	void	removeBadUnits();
 
-	void	getCloakedUnits(std::set<UnitInfo> & v)				const;
-	void	getDetectorUnits(std::set<UnitInfo> & v)			const;
-	void	getFlyingUnits(std::set<UnitInfo> & v)				const;
-	bool	hasCloakedUnits()									const;
-	bool	hasDetectorUnits()									const;
+	virtual void	getCloakedUnits(std::set<UnitInfo> & v)				const;
+	virtual int		numCloakedUnits()									const;
+	virtual void	getDetectorUnits(std::set<UnitInfo> & v)			const;
+	virtual void	getFlyingUnits(std::set<UnitInfo> & v)				const;
+	virtual bool	hasCloakedUnits()									const;
+	virtual bool	hasDetectorUnits()									const;
 
 	int		getGasLost()										const	{ return gasLost; }
 	int		getMineralsLost()									const	{ return mineralsLost; }

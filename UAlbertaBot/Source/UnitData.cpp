@@ -159,6 +159,22 @@ bool UnitData::hasCloakedUnits() const
 	return false;
 }
 
+int UnitData::numCloakedUnits()	const
+{
+	int count = 0;
+	FOR_EACH_UIMAP_CONST(iter, unitMap)
+	{
+		const UnitInfo & ui(iter->second);
+
+		if (ui.canCloak())
+		{
+			count++;
+		}
+	}
+
+	return count;
+}
+
 bool UnitData::hasDetectorUnits() const 
 { 
 	FOR_EACH_UIMAP_CONST(iter, unitMap)
