@@ -225,18 +225,22 @@ const BuildOrder & NaiveBuildOrderSearch::solve()
         UnitCountType currentSupply = _state.getUnitData().getCurrentSupply();
         UnitCountType supplyInProgress = _state.getUnitData().getSupplyInProgress();
 
-        // insert a supply provider if we need one
-        if (!nextAction.isMorphed() && (nextAction.supplyRequired() > (maxSupply+supplyInProgress-currentSupply)))
-        {
-            BOSS_ASSERT(_state.isLegal(supplyProvider), "Should be able to build more supply here");
-            finalBuildOrder.add(supplyProvider);
-            _state.doAction(supplyProvider);
-        }
+		// insert 1 or more supply providers if needed
+		while (!nextAction.isMorphed() && !nextAction.isSupplyProvider() && (nextAction.supplyRequired() > (maxSupply + supplyInProgress - currentSupply)))
+		{
+			BOSS_ASSERT(_state.isLegal(supplyProvider), "Should be able to build more supply here. Max: %d", maxSupply);
+			finalBuildOrder.add(supplyProvider);
+			_state.doAction(supplyProvider);
 
-        BOSS_ASSERT(_state.isLegal(nextAction), "Should be able to build the next action now");
-        finalBuildOrder.add(nextAction);
-        _state.doAction(nextAction);
-    }
+			maxSupply = _state.getUnitData().getMaxSupply();
+			currentSupply = _state.getUnitData().getCurrentSupply();
+			supplyInProgress = _state.getUnitData().getSupplyInProgress();
+		}
+
+		BOSS_ASSERT(_state.isLegal(nextAction), "Should be able to build the next action now");
+		finalBuildOrder.add(nextAction);
+		_state.doAction(nextAction);
+	}
 
     _buildOrder = finalBuildOrder;
     _naiveSolved = true;
