@@ -1,18 +1,26 @@
 #include "HLUnitData.h"
 using namespace UAlbertaBot;
 
-HLUnitData::HLUnitData() :_highestID(-1)
+HLUnitData::HLUnitData() :_highestID(-1), mineralsLost(0), gasLost(0)
 {
+	int maxTypeID(0);
+	for (const BWAPI::UnitType & t : BWAPI::UnitTypes::allUnitTypes())
+	{
+		maxTypeID = maxTypeID > t.getID() ? maxTypeID : t.getID();
+	}
+
+	numDeadUnits = std::vector<int>(maxTypeID + 1, 0);
+	numUnits = std::vector<int>(maxTypeID + 1, 0);
+	numCompletedUnits = std::vector<int>(maxTypeID + 1, 0);
 }
 
-HLUnitData::HLUnitData(const UnitData &data) :UnitData(data)
+HLUnitData::HLUnitData(const UnitData &data) : HLUnitData()
 {
-	_highestID = -1;
-	for (auto unit : getUnits()){
-		if (unit.second.unitID > _highestID){
-			_highestID = unit.second.unitID;
-		}
+	for (auto unit : data.getUnits()){
+		addUnit(unit.second);
 	}
+	mineralsLost = data.getMineralsLost();
+	gasLost = data.getGasLost();
 }
 
 HLUnitData::~HLUnitData()
@@ -23,9 +31,8 @@ HLUnitData::~HLUnitData()
 //virtual methods
 void	HLUnitData::getCloakedUnits(std::set<UnitInfo> & v)				const
 {
-	UnitData::getCloakedUnits(v);
 
-	for (auto item : _fakeUnitMap)
+	for (auto item : _unitMap)
 	{
 		const UnitInfo & ui(item.second);
 
@@ -38,8 +45,8 @@ void	HLUnitData::getCloakedUnits(std::set<UnitInfo> & v)				const
 
 int		HLUnitData::numCloakedUnits()									const
 {
-	int count = UnitData::hasCloakedUnits();
-	for (auto item : _fakeUnitMap)
+	int count = 0;
+	for (auto item : _unitMap)
 	{
 		const UnitInfo & ui(item.second);
 
@@ -53,9 +60,9 @@ int		HLUnitData::numCloakedUnits()									const
 
 void	HLUnitData::getDetectorUnits(std::set<UnitInfo> & v)			const
 {
-	UnitData::getDetectorUnits(v);
 
-	for (auto item : _fakeUnitMap)
+
+	for (auto item : _unitMap)
 	{
 		const UnitInfo & ui(item.second);
 
@@ -68,9 +75,9 @@ void	HLUnitData::getDetectorUnits(std::set<UnitInfo> & v)			const
 
 void	HLUnitData::getFlyingUnits(std::set<UnitInfo> & v)				const
 {
-	UnitData::getFlyingUnits(v);
 
-	for (auto item : _fakeUnitMap)
+
+	for (auto item : _unitMap)
 	{
 		const UnitInfo & ui(item.second);
 
@@ -83,57 +90,60 @@ void	HLUnitData::getFlyingUnits(std::set<UnitInfo> & v)				const
 
 bool	HLUnitData::hasCloakedUnits()									const
 {
-	return UnitData::hasCloakedUnits() || [this](){
-		for (auto item : _fakeUnitMap)
-		{
-			const UnitInfo & ui(item.second);
 
-			if (ui.canCloak())
-			{
-				return true;
-			}
+	for (auto item : _unitMap)
+	{
+		const UnitInfo & ui(item.second);
+
+		if (ui.canCloak())
+		{
+			return true;
 		}
-		return false;
-	}();
+	}
+	return false;
+
 }
 
 bool	HLUnitData::hasDetectorUnits()									const
 {
-	return UnitData::hasDetectorUnits() || [this](){
-		for (auto item : _fakeUnitMap)
-		{
-			const UnitInfo & ui(item.second);
 
-			if (ui.isDetector())
-			{
-				return true;
-			}
+	for (auto item : _unitMap)
+	{
+		const UnitInfo & ui(item.second);
+
+		if (ui.isDetector())
+		{
+			return true;
 		}
-		return false;
-	}();
+	}
+	return false;
+
 }
 
-//int		HLUnitData::getNumUnits(BWAPI::UnitType t)						const
-//{
-//}
-//
-//int		HLUnitData::getNumCompletedUnits(BWAPI::UnitType t)				const
-//{
-//}
-//
-//int		HLUnitData::getNumDeadUnits(BWAPI::UnitType t)					const
-//{
-//}
+int		HLUnitData::getNumUnits(BWAPI::UnitType t)						const
+{
+	return numUnits[t.getID()];
+}
+
+int		HLUnitData::getNumCompletedUnits(BWAPI::UnitType t)				const
+{
+	return numCompletedUnits[t.getID()];
+}
+
+int		HLUnitData::getNumDeadUnits(BWAPI::UnitType t)					const
+{
+	return numDeadUnits[t.getID()];
+}
 
 //new methods
 void HLUnitData::removeUnit(int id)
 {
-	if (_fakeUnitMap.find(id) != _fakeUnitMap.end()){
-		const UnitInfo &unit = _fakeUnitMap.at(id);
+	if (_unitMap.find(id) != _unitMap.end()){
+		const UnitInfo &unit = _unitMap.at(id);
 		numDeadUnits[unit.type.getID()]++;
 		numCompletedUnits[unit.type.getID()]--;
 		numUnits[unit.type.getID()]--;
-		_fakeUnitMap.erase(id);
+		_unitMap.erase(id);
 	}
 
 	//todo:decrease highest ID?
@@ -141,26 +151,45 @@ void HLUnitData::removeUnit(int id)
 
 void HLUnitData::addUnit(const UnitInfo &unit)
 {
-	if (_fakeUnitMap.find(unit.unitID) == _fakeUnitMap.end()){
-		_fakeUnitMap[unit.unitID] = unit;
-		if (unit.completed)numCompletedUnits[unit.type.getID()]++;
+	if (_unitMap.find(unit.unitID) == _unitMap.end()){
+		_unitMap[unit.unitID] = unit;
+		if (unit.completed){
+			numCompletedUnits[unit.type.getID()]++;
+		}
 		numUnits[unit.type.getID()]++;
 		if (unit.unitID > _highestID){
 			_highestID = unit.unitID;
 		}
 	}
+	else{//update info
+		_unitMap[unit.unitID].completed = unit.completed;
+		_unitMap[unit.unitID].lastHealth = unit.lastHealth;
+		_unitMap[unit.unitID].lastPosition = unit.lastPosition;
+	}
 }
 
-std::vector<UnitInfo> HLUnitData::getUnitVector()						const
+bool HLUnitData::finishUnit(BWAPI::UnitType type)
 {
-	std::vector<UnitInfo> v;
-	std::transform(getUnits().begin(), getUnits().end(), std::back_inserter(v), 
-		[](const std::pair<BWAPI::UnitInterface*, UnitInfo> &item){
-		return item.second;
-	});
-	std::transform(_fakeUnitMap.begin(), _fakeUnitMap.end(), std::back_inserter(v),
-		[](const std::pair<int, UnitInfo> &item){
-		return item.second;
-	});
-	return v;
+	bool found = false;
+	for (auto item : _unitMap){
+		if (item.second.type.getID() == type.getID() && !item.second.completed){
+			item.second.completed = true;
+			numCompletedUnits[type.getID()]++;
+			found = true;
+			break;
+		}
+	}
+
+	UAB_ASSERT(found,"Couldn't find unit to finish: %s\n",type.getName().c_str());
+	return found;
 }
+
+//std::vector<UnitInfo> HLUnitData::getUnitVector()						const
+//{
+//	std::vector<UnitInfo> v;
+//	std::transform(_unitMap.begin(), _unitMap.end(), std::back_inserter(v),
+//		[](const std::pair<int, UnitInfo> &item){
+//		return item.second;
+//	});
+//	return v;
+//}

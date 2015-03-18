@@ -3,6 +3,7 @@
 
 using namespace UAlbertaBot;
 
+std::unordered_map<int, std::unordered_map<int, std::unordered_map<short, short> > > StrategyManager::defaultStrategyChoices;
 // constructor
 StrategyManager::StrategyManager() 
 	: firstAttackSent(false)
@@ -12,6 +13,9 @@ StrategyManager::StrategyManager()
 {
 	addStrategies();
 	setStrategy();
+	defaultStrategyChoices[BWAPI::Races::Protoss.getID()][ProtossZealotRush][0] = 0;
+	defaultStrategyChoices[BWAPI::Races::Protoss.getID()][ProtossZealotRush][1] = 0;
+	strategyChoices[BWAPI::Races::Protoss.getID()][ProtossZealotRush];//to create the empty map
 }
 
 // get an instance of this
@@ -353,7 +357,7 @@ const bool StrategyManager::expandProtossZealotRush() const
 		BWAPI::Broodwar->getFrameCount());
 }
 
-bool StrategyManager::expandProtossZealotRush(const UnitData &unitData, const WorkerData &selfWorkerData, int frame)
+bool StrategyManager::expandProtossZealotRush(const HLUnitData &unitData, const WorkerData &selfWorkerData, int frame)
 {
 	// if there is no place to expand to, we can't expand
 	if (MapTools::Instance().getNextExpansion(unitData.getUnits().begin()->second.player) == BWAPI::TilePositions::None)
@@ -436,8 +440,8 @@ const MetaPairVector StrategyManager::getBuildOrderGoal()
 }
 
 MetaPairVector StrategyManager::getBuildOrderGoal(
-	const UnitData &selfUnitData,
-	const UnitData &enemyUnitData,
+	const HLUnitData &selfUnitData,
+	const HLUnitData &enemyUnitData,
 	const WorkerData &selfWorkerData,
 	int frame,
 	int strategy,
@@ -448,7 +452,7 @@ MetaPairVector StrategyManager::getBuildOrderGoal(
 	{
 		switch (strategy){
 		case ProtossZealotRush:
-			return getProtossZealotRushBuildOrderGoal(selfUnitData, enemyUnitData, selfWorkerData, frame, choices);
+			return getProtossZealotRushBuildOrderGoal(selfUnitData, enemyUnitData, selfWorkerData, frame, choices, false);
 			break;
 		case ProtossDarkTemplar:
 			return getProtossDarkTemplarBuildOrderGoal(selfUnitData, enemyUnitData, selfWorkerData, frame);
@@ -457,8 +461,8 @@ MetaPairVector StrategyManager::getBuildOrderGoal(
 			return getProtossDragoonsBuildOrderGoal(selfUnitData, enemyUnitData, selfWorkerData, frame);
 			break;
 		default:
-			BWAPI::Broodwar->printf("Non existing Protoss strategy %d, using default", strategy);
-			return getProtossZealotRushBuildOrderGoal(selfUnitData, enemyUnitData, selfWorkerData, frame);
+			UAB_ASSERT(false,"Non existing Protoss strategy %d, using default", strategy);
+			//return getProtossZealotRushBuildOrderGoal(selfUnitData, enemyUnitData, selfWorkerData, frame, choices);
 			break;
 		}
 	}
@@ -500,8 +504,8 @@ const MetaPairVector StrategyManager::getProtossDragoonsBuildOrderGoal() const
 }
 
 MetaPairVector StrategyManager::getProtossDragoonsBuildOrderGoal(
-	const UnitData &selfUnitData,
-	const UnitData &enemyUnitData,
+	const HLUnitData &selfUnitData,
+	const HLUnitData &enemyUnitData,
 	const WorkerData &selfWorkerData,
 	int frame)
 {
@@ -566,8 +570,8 @@ const MetaPairVector StrategyManager::getProtossDarkTemplarBuildOrderGoal() cons
 }
 
 MetaPairVector StrategyManager::getProtossDarkTemplarBuildOrderGoal(
-	const UnitData &selfUnitData,
-	const UnitData &enemyUnitData,
+	const HLUnitData &selfUnitData,
+	const HLUnitData &enemyUnitData,
 	const WorkerData &selfWorkerData,
 	int frame)
 {
@@ -633,15 +637,18 @@ const MetaPairVector StrategyManager::getProtossZealotRushBuildOrderGoal() const
 		InformationManager::Instance().getUnitData(BWAPI::Broodwar->self()),
 		InformationManager::Instance().getUnitData(BWAPI::Broodwar->enemy()),
 		WorkerManager::Instance().getData(),
-		BWAPI::Broodwar->getFrameCount());
+		BWAPI::Broodwar->getFrameCount(),
+		strategyChoices.at(BWAPI::Races::Protoss.getID()).at(ProtossZealotRush),
+		true);
 }
 
 MetaPairVector StrategyManager::getProtossZealotRushBuildOrderGoal(
-	const UnitData &selfUnitData,
-	const UnitData &enemyUnitData,
+	const HLUnitData &selfUnitData,
+	const HLUnitData &enemyUnitData,
 	const WorkerData &selfWorkerData,
 	int frame,
-	const std::unordered_map<short, short> &choices)
+	const std::unordered_map<short, short> &choices,
+	bool useDefaultChoicesIfNeeded)
 {
 	// the goal to return
 	MetaPairVector goal;
@@ -661,20 +668,32 @@ MetaPairVector StrategyManager::getProtossZealotRushBuildOrderGoal(
 	{
 
 		//choice 0: if cloaked, robotics facility or photon cannon
-		if (choices.find(0) == choices.end()){
-			throw ChoicePoint(0, 2);
+		if (!useDefaultChoicesIfNeeded){
+			if (choices.find(0) == choices.end()){
+				throw ChoicePoint(0, 2);
+			}
+			switch (choices.at(0)){
+			case 0:
+				goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Robotics_Facility, 1));
+				break;
+			case 1:
+				goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Photon_Cannon, (int)std::ceil(enemyUnitData.numCloakedUnits() / 3.0)));
+				break;
+			default:
+				UAB_ASSERT(false, "Wrong choice point option");
+			}
+		} else{//we're in execution, not search
+			switch (defaultStrategyChoices.at(BWAPI::Races::Protoss.getID()).at(ProtossZealotRush).at(0)){
+			case 0:
+				goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Robotics_Facility, 1));
+				break;
+			case 1:
+				goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Photon_Cannon, (int)std::ceil(enemyUnitData.numCloakedUnits() / 3.0)));
+				break;
+			default:
+				UAB_ASSERT(false, "Wrong choice point option");
+			}
 		}
-		switch (choices.at(0)){
-		case 0:
-			goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Robotics_Facility, 1));
-			break;
-		case 1:
-			goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Photon_Cannon, (int)std::ceil(enemyUnitData.numCloakedUnits()/3.0)));
-			break;
-		default:
-			UAB_ASSERT(false, "Wrong choice point option");
-		}
-		
 
 		if (selfUnitData.getNumCompletedUnits(BWAPI::UnitTypes::Protoss_Robotics_Facility) > 0)
 		{
@@ -707,21 +726,35 @@ MetaPairVector StrategyManager::getProtossZealotRushBuildOrderGoal(
 	if (expandProtossZealotRush(selfUnitData, selfWorkerData, frame))
 	{
 		//choice 1: expand or not
-		if (choices.find(1) == choices.end()){
-			throw ChoicePoint(1, 2);
+		if (!useDefaultChoicesIfNeeded){
+			if (choices.find(1) == choices.end()){
+				throw ChoicePoint(1, 2);
+			}
+			switch (choices.at(1)){
+			case 0:
+				//expand
+				goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Nexus, numNexusAll + 1));
+				break;
+			case 1:
+				//don't expand
+				break;
+			default:
+				UAB_ASSERT(false, "Wrong choice point option");
+			}
 		}
-		switch (choices.at(1)){
-		case 0:
-			//expand
-			goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Nexus, numNexusAll + 1));
-			break;
-		case 1:
-			//don't expand
-			break;
-		default:
-			UAB_ASSERT(false, "Wrong choice point option");
+		else{//we're in execution, not search
+			switch (defaultStrategyChoices.at(BWAPI::Races::Protoss.getID()).at(ProtossZealotRush).at(0)){
+			case 0:
+				//expand
+				goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Nexus, numNexusAll + 1));
+				break;
+			case 1:
+				//don't expand
+				break;
+			default:
+				UAB_ASSERT(false, "Wrong choice point option");
+			}
 		}
-		
 	}
 
 	goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Dragoon, dragoonsWanted));
@@ -730,68 +763,68 @@ MetaPairVector StrategyManager::getProtossZealotRushBuildOrderGoal(
 	return goal;
 }
 
-MetaPairVector StrategyManager::getProtossZealotRushBuildOrderGoal(
-	const UnitData &selfUnitData, 
-	const UnitData &enemyUnitData,
-	const WorkerData &selfWorkerData,
-	int frame)
-{
-	// the goal to return
-	MetaPairVector goal; 
-
-	int numZealots = selfUnitData.getNumUnits(BWAPI::UnitTypes::Protoss_Zealot);
-	int numDragoons = selfUnitData.getNumUnits(BWAPI::UnitTypes::Protoss_Dragoon);
-	int numProbes = selfUnitData.getNumUnits(BWAPI::UnitTypes::Protoss_Probe);
-	int numNexusCompleted = selfUnitData.getNumCompletedUnits(BWAPI::UnitTypes::Protoss_Nexus);
-	int numNexusAll = selfUnitData.getNumUnits(BWAPI::UnitTypes::Protoss_Nexus);
-	int numCyber = selfUnitData.getNumCompletedUnits(BWAPI::UnitTypes::Protoss_Cybernetics_Core);
-	int numCannon = selfUnitData.getNumUnits(BWAPI::UnitTypes::Protoss_Photon_Cannon);
-
-	int zealotsWanted = numZealots + 8;
-	int dragoonsWanted = numDragoons;
-
-	if (enemyUnitData.hasCloakedUnits())
-	{
-		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Robotics_Facility, 1));
-
-		if (selfUnitData.getNumCompletedUnits(BWAPI::UnitTypes::Protoss_Robotics_Facility) > 0)
-		{
-			goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Observatory, 1));
-		}
-		if (selfUnitData.getNumCompletedUnits(BWAPI::UnitTypes::Protoss_Observatory) > 0)
-		{
-			goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Observer, 1));
-		}
-	}
-
-	if (numNexusAll >= 2 || frame > 9000)
-	{
-		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Assimilator, 1));
-		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Cybernetics_Core, 1));
-	}
-
-	if (numCyber > 0)
-	{
-		dragoonsWanted = numDragoons + 2;
-		goal.push_back(MetaPair(BWAPI::UpgradeTypes::Singularity_Charge, 1));
-	}
-
-	if (numNexusCompleted >= 3)
-	{
-		dragoonsWanted = numDragoons + 6;
-		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Observer, 1));
-	}
-
-	if (expandProtossZealotRush(selfUnitData,selfWorkerData,frame))
-	{
-		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Nexus, numNexusAll + 1));
-	}
-
-	goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Dragoon, dragoonsWanted));
-	goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Zealot, zealotsWanted));
-
-	return goal;
-}
+//MetaPairVector StrategyManager::getProtossZealotRushBuildOrderGoal(
+//	const HLUnitData &selfUnitData, 
+//	const HLUnitData &enemyUnitData,
+//	const WorkerData &selfWorkerData,
+//	int frame)
+//{
+//	// the goal to return
+//	MetaPairVector goal; 
+//
+//	int numZealots = selfUnitData.getNumUnits(BWAPI::UnitTypes::Protoss_Zealot);
+//	int numDragoons = selfUnitData.getNumUnits(BWAPI::UnitTypes::Protoss_Dragoon);
+//	int numProbes = selfUnitData.getNumUnits(BWAPI::UnitTypes::Protoss_Probe);
+//	int numNexusCompleted = selfUnitData.getNumCompletedUnits(BWAPI::UnitTypes::Protoss_Nexus);
+//	int numNexusAll = selfUnitData.getNumUnits(BWAPI::UnitTypes::Protoss_Nexus);
+//	int numCyber = selfUnitData.getNumCompletedUnits(BWAPI::UnitTypes::Protoss_Cybernetics_Core);
+//	int numCannon = selfUnitData.getNumUnits(BWAPI::UnitTypes::Protoss_Photon_Cannon);
+//
+//	int zealotsWanted = numZealots + 8;
+//	int dragoonsWanted = numDragoons;
+//
+//	if (enemyUnitData.hasCloakedUnits())
+//	{
+//		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Robotics_Facility, 1));
+//
+//		if (selfUnitData.getNumCompletedUnits(BWAPI::UnitTypes::Protoss_Robotics_Facility) > 0)
+//		{
+//			goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Observatory, 1));
+//		}
+//		if (selfUnitData.getNumCompletedUnits(BWAPI::UnitTypes::Protoss_Observatory) > 0)
+//		{
+//			goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Observer, 1));
+//		}
+//	}
+//
+//	if (numNexusAll >= 2 || frame > 9000)
+//	{
+//		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Assimilator, 1));
+//		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Cybernetics_Core, 1));
+//	}
+//
+//	if (numCyber > 0)
+//	{
+//		dragoonsWanted = numDragoons + 2;
+//		goal.push_back(MetaPair(BWAPI::UpgradeTypes::Singularity_Charge, 1));
+//	}
+//
+//	if (numNexusCompleted >= 3)
+//	{
+//		dragoonsWanted = numDragoons + 6;
+//		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Observer, 1));
+//	}
+//
+//	if (expandProtossZealotRush(selfUnitData,selfWorkerData,frame))
+//	{
+//		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Nexus, numNexusAll + 1));
+//	}
+//
+//	goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Dragoon, dragoonsWanted));
+//	goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Zealot, zealotsWanted));
+//
+//	return goal;
+//}
 
 const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 {
@@ -803,8 +836,8 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 }
 
 MetaPairVector StrategyManager::getTerranBuildOrderGoal(
-	const UnitData &selfUnitData,
-	const UnitData &enemyUnitData,
+	const HLUnitData &selfUnitData,
+	const HLUnitData &enemyUnitData,
 	const WorkerData &selfWorkerData,
 	int frame)
 {
@@ -834,8 +867,8 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
 }
 
 MetaPairVector StrategyManager::getZergBuildOrderGoal(
-	const UnitData &selfUnitData,
-	const UnitData &enemyUnitData,
+	const HLUnitData &selfUnitData,
+	const HLUnitData &enemyUnitData,
 	const WorkerData &selfWorkerData,
 	int frame)
 {
@@ -861,9 +894,10 @@ MetaPairVector StrategyManager::getZergBuildOrderGoal(
 	 return currentStrategy;
  }
 
- void StrategyManager::setCurrentStrategy(int newStrategy)
+ void StrategyManager::setCurrentStrategy(int newStrategy, const std::unordered_map<short, short> &choices)
  {
 	 currentStrategy = newStrategy;
+	 strategyChoices[BWAPI::Broodwar->self()->getRace().getID()][currentStrategy] = choices;
  }
 
  int StrategyManager::getNumStrategies(BWAPI::Race race)

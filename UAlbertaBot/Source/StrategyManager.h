@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 #include <cstdlib>
 #include "OpeningBuildOrders.h"
+#include "HLUnitData.h"
 
 namespace UAlbertaBot
 {
@@ -30,6 +31,8 @@ class StrategyManager
 	std::vector<IntPair>		results;
 	std::vector<int>			usableStrategies;
 	int							currentStrategy;
+	std::unordered_map<int ,std::unordered_map<int, std::unordered_map<short, short> > > strategyChoices;//race->strategy->choicepoint->option
+	static std::unordered_map<int, std::unordered_map<int, std::unordered_map<short, short> > > defaultStrategyChoices;
 
 	BWAPI::Race					selfRace;
 	BWAPI::Race					enemyRace;
@@ -47,30 +50,31 @@ class StrategyManager
 	// protoss strategy
 	const	bool				expandProtossZealotRush() const;
 	static bool					expandProtossZealotRush(
-		const UnitData &selfUnitData, 
+		const HLUnitData &selfUnitData,
 		const WorkerData &selfWorkerData, 
 		int frame);
 	//const	std::string			getProtossZealotRushOpeningBook() const;
 	const	MetaPairVector		getProtossZealotRushBuildOrderGoal() const;
-	static	MetaPairVector		getProtossZealotRushBuildOrderGoal(
-		const UnitData &selfUnitData, 
-		const UnitData &enemyUnitData, 
-		const WorkerData &selfWorkerData,
-		int frame);
+	//static	MetaPairVector		getProtossZealotRushBuildOrderGoal(
+	//	const UnitData &selfUnitData, 
+	//	const UnitData &enemyUnitData, 
+	//	const WorkerData &selfWorkerData,
+	//	int frame);
 
 	static	MetaPairVector		getProtossZealotRushBuildOrderGoal(
-		const UnitData &selfUnitData,
-		const UnitData &enemyUnitData,
+		const HLUnitData &selfUnitData,
+		const HLUnitData &enemyUnitData,
 		const WorkerData &selfWorkerData,
 		int frame, 
-		const std::unordered_map<short, short> &choices);
+		const std::unordered_map<short, short> &choices,
+		bool useDefaultChoicesIfNeeded);
 
 	//const	bool				expandProtossDarkTemplar() const;
 	//const	std::string			getProtossDarkTemplarOpeningBook() const;
 	const	MetaPairVector		getProtossDarkTemplarBuildOrderGoal() const;
 	static	MetaPairVector		getProtossDarkTemplarBuildOrderGoal(
-		const UnitData &selfUnitData,
-		const UnitData &enemyUnitData,
+		const HLUnitData &selfUnitData,
+		const HLUnitData &enemyUnitData,
 		const WorkerData &selfWorkerData,
 		int frame);
 
@@ -78,22 +82,22 @@ class StrategyManager
 	//const	std::string			getProtossDragoonsOpeningBook() const;
 	const	MetaPairVector		getProtossDragoonsBuildOrderGoal() const;
 	static 	MetaPairVector		getProtossDragoonsBuildOrderGoal(
-		const UnitData &selfUnitData,
-		const UnitData &enemyUnitData,
+		const HLUnitData &selfUnitData,
+		const HLUnitData &enemyUnitData,
 		const WorkerData &selfWorkerData,
 		int frame);
 
 	const	MetaPairVector		getTerranBuildOrderGoal() const;
 	static 	MetaPairVector		getTerranBuildOrderGoal(
-		const UnitData &selfUnitData,
-		const UnitData &enemyUnitData,
+		const HLUnitData &selfUnitData,
+		const HLUnitData &enemyUnitData,
 		const WorkerData &selfWorkerData,
 		int frame); 
 	
 	const	MetaPairVector		getZergBuildOrderGoal() const;
 	static 	MetaPairVector		getZergBuildOrderGoal(
-		const UnitData &selfUnitData,
-		const UnitData &enemyUnitData,
+		const HLUnitData &selfUnitData,
+		const HLUnitData &enemyUnitData,
 		const WorkerData &selfWorkerData,
 		int frame);
 
@@ -118,13 +122,13 @@ public:
 
 	const	int					getCurrentStrategy() const;
 	static int					getNumStrategies(BWAPI::Race race);
-	void						setCurrentStrategy(int newStrategy);//for high level search to set the strategy
+	void						setCurrentStrategy(int newStrategy, const std::unordered_map<short, short> &choices);//for high level search to set the strategy
 	const	MetaPairVector		getBuildOrderGoal();
 	const	std::vector<MetaType>	getOpeningBookBuildOrder() const;
 
 	static MetaPairVector		getBuildOrderGoal(
-		const UnitData &selfUnitData,
-		const UnitData &enemyUnitData,
+		const HLUnitData &selfUnitData,
+		const HLUnitData &enemyUnitData,
 		const WorkerData &selfWorkerData,
 		int frame,
 		int strategy,
