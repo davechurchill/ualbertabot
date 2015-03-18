@@ -70,7 +70,7 @@ GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self)
 				}
 				else if (unit->getRemainingUpgradeTime() > 0)
 				{
-					constructing = ActionType(unit->getTech());
+					constructing = ActionType(unit->getUpgrade());
 				}
 
                 // TODO: special case for Zerg_Hatchery
@@ -187,9 +187,9 @@ bool GameState::isLegal(const ActionType & action) const
     {
         return false;
     }
-
+	
     // if it's a unit and we are out of supply and aren't making an overlord, it's not legal
-    if (!action.isMorphed() && ((_units.getCurrentSupply() + action.supplyRequired()) > (_units.getMaxSupply() + _units.getSupplyInProgress())))
+	if (!action.isMorphed() && !action.isSupplyProvider() && ((_units.getCurrentSupply() + action.supplyRequired()) > (_units.getMaxSupply() + _units.getSupplyInProgress())))
     {
         return false;
     }
@@ -235,7 +235,7 @@ bool GameState::isLegal(const ActionType & action) const
     }
 
     // we don't need to go over the maximum supply limit with supply providers
-    if (action.isSupplyProvider() && (_units.getMaxSupply() + _units.getSupplyInProgress() >= 400))
+    if (action.isSupplyProvider() && (_units.getMaxSupply() + _units.getSupplyInProgress() > 400))
     {
         return false;
     }
@@ -912,25 +912,26 @@ void GameState::addCompletedAction(const ActionType & action, const size_t num)
 
 const std::string GameState::toString() const
 {
-    std::cout << "\n-----------------------------------------------------------\n";
+	std::stringstream ss;
+	ss << "\n-----------------------------------------------------------\n";
     
-    std::cout << "Current Frame: " << _currentFrame << "(" << (_currentFrame / (60*24)) << "m " << ((_currentFrame / 24) % 60) << "s)\n\n";
+	ss << "Current Frame: " << _currentFrame << "(" << (_currentFrame / (60 * 24)) << "m " << ((_currentFrame / 24) % 60) << "s)\n\n";
 
-    std::cout << "Units Completed:\n\n";
+	ss << "Units Completed:\n\n";
     const std::vector<ActionType> & allActions = ActionTypes::GetAllActionTypes(getRace());
 	for (ActionID i(0); i<allActions.size(); ++i)
 	{
         const ActionType & action = allActions[i];
         if (_units.getNumCompleted(action) > 0) 
         {
-            std::cout << "\t" << (int)_units.getNumCompleted(action) << "\t" << action.getName() << "\n";
+			ss << "\t" << (int)_units.getNumCompleted(action) << "\t" << action.getName() << "\n";
         }
     }
 
-    std::cout << "\nUnits In Progress:\n\n";
+	ss << "\nUnits In Progress:\n\n";
     for (int i(0); i<_units.getNumActionsInProgress(); i++) 
     {
-        std::cout << "\t" << (int)_units.getFinishTimeByIndex(i) << "\t" << _units.getActionInProgressByIndex(i).getName() << "\n";
+		ss << "\t" << (int)_units.getFinishTimeByIndex(i) << "\t" << _units.getActionInProgressByIndex(i).getName() << "\n";
     }
 
     /*std::cout << "\nLegal Actions:\n\n";
@@ -938,22 +939,22 @@ const std::string GameState::toString() const
     getAllLegalActions(legalActions);
     for (UnitCountType a(0); a<legalActions.size(); ++a)
     {
-        std::cout << "\t" << legalActions[a].getName() << "\n";
+        ss << "\t" << legalActions[a].getName() << "\n";
     }*/
 
-    std::cout << "\nResources:\n\n";
-    std::cout << "\t" << _minerals/Constants::RESOURCE_SCALE << "\tMinerals\n";
-    std::cout << "\t" << _gas/Constants::RESOURCE_SCALE << "\tGas\n";
-    std::cout << "\t" << _units.getNumMineralWorkers() << "\tMineral Workers\n";
-    std::cout << "\t" << _units.getNumGasWorkers() << "\tGas Workers\n";
-    std::cout << "\t" << _units.getNumBuildingWorkers() << "\tBuilding Workers\n";
-    std::cout << "\n\t" << _units.getCurrentSupply()/2 << " / " << _units.getMaxSupply()/2 << "\tSupply\n";
+	ss << "\nResources:\n\n";
+	ss << "\t" << _minerals / Constants::RESOURCE_SCALE << "\tMinerals\n";
+	ss << "\t" << _gas / Constants::RESOURCE_SCALE << "\tGas\n";
+	ss << "\t" << _units.getNumMineralWorkers() << "\tMineral Workers\n";
+    ss << "\t" << _units.getNumGasWorkers() << "\tGas Workers\n";
+    ss << "\t" << _units.getNumBuildingWorkers() << "\tBuilding Workers\n";
+    ss << "\n\t" << _units.getCurrentSupply()/2 << " / " << _units.getMaxSupply()/2 << "\tSupply\n";
 
 
-    std::cout << "-----------------------------------------------------------\n";
+    ss << "-----------------------------------------------------------\n";
     //printPath();
 
-    return "";
+    return ss.str();
 }
 
 const std::string GameState::getActionsPerformedString() const
