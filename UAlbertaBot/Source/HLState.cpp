@@ -2,17 +2,18 @@
 
 using namespace UAlbertaBot;
 
-HLSquad::HLSquad(const Squad &squad) : Squad(squad), region(BWAPI::Broodwar->getRegionAt(calcCenter()))
+HLSquad::HLSquad(const std::vector<UnitInfo> & units, BWTA::Region *region) :
+_currentRegion(region),
+_framesTravelled(0),
+_units(units),
+_order(),
+_speed(std::min_element(units.begin(), units.end(), [](const UnitInfo &u1, const UnitInfo &u2)
+{
+	return u1.type.topSpeed() < u2.type.topSpeed(); 
+})->type.topSpeed())
 {
 
 }
-
-HLSquad::HLSquad(const std::vector<BWAPI::UnitInterface *> & units, SquadOrder order) :
-HLSquad(Squad(units, order))
-{
-
-}
-
 HLState::HLState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * player, BWAPI::PlayerInterface * enemy)
 {
 
@@ -23,8 +24,8 @@ HLState::HLState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * player, BWA
 	_players[player->getID()] = player;
 	_players[enemy->getID()] = enemy;
 
-	addSquads(game, player->getID());
-	addSquads(game, enemy->getID());
+	addSquads(player);
+	addSquads(enemy);
 
 	//_buildOrderIndex[0] = 0;
 	//_buildOrderIndex[1] = 0;
@@ -43,28 +44,29 @@ HLState::HLState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * player, BWA
 	//todo: assign worker jobs
 	//3 per gas, 3 per mineral patch, 1 to build, and if scout outside nexus region
 }
-void HLState::addSquads(const BWAPI::GameWrapper & game, int playerID)
+
+void HLState::addSquads(const BWAPI::PlayerInterface *player)
 {
-	for (auto region : game->getAllRegions()){
-		auto unitSet = region->getUnits([playerID](BWAPI::Unit unit)
+	std::unordered_map < BWTA::Region*, std::vector<UnitInfo> > units;
+	for (auto unit : player->getUnits()){
+		if (unit
+			&&unit->isCompleted()
+			&& unit->getHitPoints() > 0
+			&& unit->exists()
+			&& unit->getType() != BWAPI::UnitTypes::Unknown
+			&& unit->getPosition().x != BWAPI::Positions::Unknown.x
+			&& unit->getPosition().y != BWAPI::Positions::Unknown.y
+			&& (unit->getType().canAttack() ||
+			unit->getType() == BWAPI::UnitTypes::Terran_Medic ||
+			unit->getType() == BWAPI::UnitTypes::Protoss_High_Templar ||
+			unit->getType() == BWAPI::UnitTypes::Protoss_Observer))
 		{
-			return unit
-				&&unit->isCompleted()
-				&& unit->getHitPoints() > 0
-				&& unit->exists()
-				&& unit->getType() != BWAPI::UnitTypes::Unknown
-				&& unit->getPosition().x != BWAPI::Positions::Unknown.x
-				&& unit->getPosition().y != BWAPI::Positions::Unknown.y
-				&& (unit->getType().canAttack() ||
-				unit->getType() == BWAPI::UnitTypes::Terran_Medic ||
-				unit->getType() == BWAPI::UnitTypes::Protoss_High_Templar ||
-				unit->getType() == BWAPI::UnitTypes::Protoss_Observer)
-				&& unit->getPlayer()->getID() == playerID;
-		});
-		if (!unitSet.empty()){
-			std::vector<BWAPI::Unit> units(unitSet.begin(), unitSet.end());
-			_squad[playerID].push_back(HLSquad(units, SquadOrder()));
+			units[BWTA::getRegion(unit->getPosition())].push_back(UnitInfo(unit));
 		}
+	}
+	for (auto it : units)
+	{
+		_squad[player->getID()].push_back(HLSquad(it.second, it.first));
 	}
 }
 
@@ -157,170 +159,118 @@ HLState::~HLState()
 //	//TODO: execute squad orders
 //}
 
-//bool HLState::undecidedChoicePoint(int playerID, int strategy, const std::unordered_map<short, short> choices) const{
-//	try{
-//		StrategyManager::Instance().getBuildOrderGoal(
-//			_unitData[playerID],
-//			_unitData[1 - playerID],
-//			_workerData[playerID],
-//			currentFrame(),
-//			strategy,
-//			getRace(playerID),
-//			choices);
-//	}
-//	catch (const ChoicePoint &c){
-//		return true;//if some script hit an internal choice point
-//	}
-//	return false;
-//}
+bool HLState::checkChoicePoint(const HLMove &move, int playerID) const
+{
+	try{
+		StrategyManager::Instance().getBuildOrderGoal(
+			_unitData[playerID],
+			_unitData[1 - playerID],
+			_workerData[playerID],
+			currentFrame(),
+			move.getStrategy(),
+			getRace(playerID),
+			move.getChoices());
+	}
+	catch (const ChoicePoint &){
+		return true;//if some script hit an internal choice point
+	}
+	return false;
+}
+
+BOSS::BuildOrder HLState::getBuildOrder(const HLMove &move, int playerID) const
+{
+	MetaPairVector goalUnits;
+	try{
+		goalUnits = StrategyManager::Instance().getBuildOrderGoal(
+			_unitData[playerID],
+			_unitData[1 - playerID],
+			_workerData[playerID],
+			currentFrame(),
+			move.getStrategy(),
+			getRace(playerID),
+			move.getChoices());
+	}
+
+	catch (const ChoicePoint &){
+		Logger::LogAppendToFile(UAB_LOGFILE, "Hit choice point at beginning\n");
+		return BOSS::BuildOrder();//if some script hit an internal choice point
+	}
+
+	BOSS::BuildOrder		buildOrder;
+
+	BOSS::BuildOrderSearchGoal goal(_state[playerID].getRace());
+
+	for (size_t i = 0; i < goalUnits.size(); ++i)
+	{
+		MetaType type = goalUnits[i].first;
+		BOSS::ActionType actionType;
+		if (type.isUnit())
+		{
+			actionType = type.unitType;
+		}
+		else if (type.isUpgrade())
+		{
+			actionType = type.upgradeType;
+		}
+		else if (type.isTech())
+		{
+			actionType = type.techType;
+		}
+		else{
+			UAB_ASSERT(false, "Should have found a valid type here");
+		}
+		goal.setGoal(actionType, goalUnits[i].second);
+	}
+
+	BOSS::NaiveBuildOrderSearch nbos(_state[playerID], goal);
+	buildOrder = nbos.solve();
+
+	return buildOrder;
+}
+
+
+
 void HLState::applyAndForward(const std::array<HLMove, 2> &moves)
 {
 	UAB_ASSERT(getRace(0) == BWAPI::Races::Protoss, "Non protoss?");
 	UAB_ASSERT(getRace(1) == BWAPI::Races::Protoss, "Non protoss?");
 
-	//if (undecidedChoicePoint(0, movePlayer0.getStrategy(), movePlayer0.getChoices()) ||
-	//	undecidedChoicePoint(1, movePlayer1.getStrategy(), movePlayer1.getChoices())){
-	//	return;
-	//}
 
-	MetaPairVector goalUnits[2];
-	try{
-		for (int playerID = 0; playerID < 2; playerID++){
-			goalUnits[playerID] = StrategyManager::Instance().getBuildOrderGoal(
-				_unitData[playerID],
-				_unitData[1 - playerID],
-				_workerData[playerID],
-				currentFrame(),
-				moves[playerID].getStrategy(),
-				getRace(playerID),
-				moves[playerID].getChoices());
-			Logger::LogAppendToFile(UAB_LOGFILE, "player %d goals: ", playerID);
-			for (auto u : goalUnits[playerID]){
-				Logger::LogAppendToFile(UAB_LOGFILE, "%s %d, ", u.first.getName().c_str(), u.second);
-			}
-			Logger::LogAppendToFile(UAB_LOGFILE, "\n");
-		}
-	}
-	catch (const ChoicePoint &c){
-		Logger::LogAppendToFile(UAB_LOGFILE, "Hit choice point at beginning\n");
-		return;//if some script hit an internal choice point
-	}
-
-	BOSS::BuildOrder		buildOrder[2];
-
-	for (int playerID = 0; playerID < 2; playerID++){
-		try{
-			BOSS::BuildOrderSearchGoal goal(_state[playerID].getRace());
-
-			for (size_t i = 0; i < goalUnits[playerID].size(); ++i)
-			{
-				MetaType type = goalUnits[playerID][i].first;
-				BOSS::ActionType actionType;
-				if (type.isUnit())
-				{
-					actionType = type.unitType;
-				}
-				else if (type.isUpgrade())
-				{
-					actionType = type.upgradeType;
-				}
-				else if (type.isTech())
-				{
-					actionType = type.techType;
-				}
-				else{
-					UAB_ASSERT(false, "Should have found a valid type here");
-				}
-				goal.setGoal(actionType, goalUnits[playerID][i].second);
-			}
-			//perform search
-			BOSS::DFBB_BuildOrderSmartSearch smartSearch(_state[playerID].getRace());
-			smartSearch.setGoal(goal);
-			smartSearch.setState(_state[playerID]);
-			smartSearch.setTimeLimit(100);
-			smartSearch.search();
-
-
-			//get build order from search
-			if (smartSearch.getResults().solved){
-				buildOrder[playerID] = smartSearch.getResults().buildOrder;
-				BWAPI::Broodwar->printf("Build order found");
-			}
-			else{
-				BOSS::NaiveBuildOrderSearch nbos(smartSearch.getParameters().initialState, smartSearch.getParameters().goal);
-				buildOrder[playerID] = nbos.solve();
-				BWAPI::Broodwar->printf("Build order not found, using naive");
-			}
-
-		}
-		catch (BOSS::Assert::BOSSException &e){
-			BWAPI::Broodwar->printf(e.what());
-		}
-	}
-
+	BOSS::BuildOrder buildOrder[2] = { getBuildOrder(moves[0], 0), getBuildOrder(moves[1], 1) };
 
 	//execute build orders
-	int						buildOrderIndex[2] = { 0, 0 };
+	unsigned int buildOrderIndex[2] = { 0, 0 };
 
-	//check build queues, redo script+BOSS if necessary
-	//check scripts choices after enemy starts to build
-	Logger::LogAppendToFile(UAB_LOGFILE, "Build order sizes: %d %d\n", buildOrder[0].size(), buildOrder[1].size());
-	for (int playerID = 0; playerID < 2; playerID++){
-		std::ofstream out(UAB_LOGFILE,std::ios::app);
-		std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
-		std::cout.rdbuf(out.rdbuf()); //redirect std::cout to out.txt!
-		_state[playerID].toString();
-		std::cout.rdbuf(coutbuf);
-		//Logger::LogAppendToFile(UAB_LOGFILE, "Units in progress for player %d ", playerID);
-		//for (int i = 0; i < _state[playerID].getUnitData().getNumActionsInProgress(); i++){
-		//	Logger::LogAppendToFile(UAB_LOGFILE, " %s", _state[playerID].getUnitData().getActionInProgressByIndex(i).getName().c_str());
-		//}
-		//Logger::LogAppendToFile(UAB_LOGFILE, "\n");
-	}
 	while (buildOrderIndex[0] < buildOrder[0].size() &&
-		buildOrderIndex[1] < buildOrder[1].size() ){
+		buildOrderIndex[1] < buildOrder[1].size()){
 		int nextActionStart[2];
 		for (int playerID = 0; playerID < 2; playerID++){
 			nextActionStart[playerID] = _state[playerID].whenCanPerform(buildOrder[playerID][buildOrderIndex[playerID]]);
 		}
 
+		
 		int nextPlayer = nextActionStart[0] < nextActionStart[1] ? 0 : 1;
-		Logger::LogAppendToFile(UAB_LOGFILE, "Start new unit: %s to player %d frame %d\n", buildOrder[nextPlayer][buildOrderIndex[nextPlayer]].getName().c_str(), nextPlayer, _state[nextPlayer].getCurrentFrame());
+		int framesToForward = nextActionStart[nextPlayer] - _state[nextPlayer].getCurrentFrame();
+		const BOSS::ActionType& action = buildOrder[nextPlayer][buildOrderIndex[nextPlayer]++];
+		//Logger::LogAppendToFile(UAB_LOGFILE, "Start new unit: %s to player %d frame %d\n", action.getName().c_str(), nextPlayer, _state[nextPlayer].getCurrentFrame());
 
-		synchronizeNewUnits(nextPlayer, _state[nextPlayer].doAction(buildOrder[nextPlayer][buildOrderIndex[nextPlayer]++]));
-		//doAction(nextPlayer, buildOrder[nextPlayer][buildOrderIndex[nextPlayer]++]);
-		try{
-			StrategyManager::Instance().getBuildOrderGoal(
-				_unitData[1-nextPlayer],
-				_unitData[nextPlayer],
-				_workerData[1-nextPlayer],
-				currentFrame(),
-				moves[1-nextPlayer].getStrategy(),
-				getRace(1-nextPlayer),
-				moves[1-nextPlayer].getChoices());
-		}
-		catch (const ChoicePoint &c){
-			Logger::LogAppendToFile(UAB_LOGFILE, "Hit choice point while forwarding 1\n");
+
+		synchronizeNewUnits(nextPlayer, _state[nextPlayer].doAction(action), action);
+		if (checkChoicePoint(moves[1 - nextPlayer], 1 - nextPlayer))
+		{
+			//Logger::LogAppendToFile(UAB_LOGFILE, "Hit choice point while forwarding 1\n");
 			break;;//if some script hit an internal choice point
 		}
-		if (nextActionStart[0] == nextActionStart[1]){
-			Logger::LogAppendToFile(UAB_LOGFILE, "Start new unit: %s to player %d frame %d\n", buildOrder[1 - nextPlayer][buildOrderIndex[1 - nextPlayer]].getName().c_str(), 1 - nextPlayer, _state[1-nextPlayer].getCurrentFrame());
 
-			synchronizeNewUnits(1 - nextPlayer, _state[1 - nextPlayer].doAction(buildOrder[1 - nextPlayer][buildOrderIndex[1 - nextPlayer]++]));
-			//doAction(1 - nextPlayer, buildOrder[1 - nextPlayer][buildOrderIndex[1 - nextPlayer]++]);
-			try{
-				StrategyManager::Instance().getBuildOrderGoal(
-					_unitData[nextPlayer],
-					_unitData[1 - nextPlayer],
-					_workerData[nextPlayer],
-					currentFrame(),
-					moves[nextPlayer].getStrategy(),
-					getRace(nextPlayer),
-					moves[nextPlayer].getChoices());
-			}
-			catch (const ChoicePoint &c){
-				Logger::LogAppendToFile(UAB_LOGFILE, "Hit choice point while forwarding 2\n");
-				break;//if some script hit an internal choice point
+		if (nextActionStart[0] == nextActionStart[1]){
+			const BOSS::ActionType& action = buildOrder[1 - nextPlayer][buildOrderIndex[1 - nextPlayer]++];
+			//Logger::LogAppendToFile(UAB_LOGFILE, "Start new unit: %s to player %d frame %d\n", action.getName().c_str(), 1 - nextPlayer, _state[1 - nextPlayer].getCurrentFrame());
+
+			synchronizeNewUnits(1 - nextPlayer, _state[1 - nextPlayer].doAction(action), action);
+			if (checkChoicePoint(moves[nextPlayer], nextPlayer))
+			{
+				//Logger::LogAppendToFile(UAB_LOGFILE, "Hit choice point while forwarding 1\n");
+				break;;//if some script hit an internal choice point
 			}
 		}
 		else{
@@ -329,19 +279,20 @@ void HLState::applyAndForward(const std::array<HLMove, 2> &moves)
 		}
 		//todo: if unit built is a combat unit, add it somewhere
 		//todo: move units and resolve combat 
+		forwardSquads(framesToForward);
 		synchronizeDeadUnits();
 	}
 
 	//make sure both states are at the same frame
 	int frameDiff = _state[0].getCurrentFrame() - _state[1].getCurrentFrame();
-	if (frameDiff<0){
-		synchronizeNewUnits(0,_state[0].fastForward(_state[1].getCurrentFrame()));
+	if (frameDiff < 0){
+		synchronizeNewUnits(0, _state[0].fastForward(_state[1].getCurrentFrame()));
 	}
 	else if (frameDiff > 0){
-		synchronizeNewUnits(1,_state[1].fastForward(_state[0].getCurrentFrame()));
+		synchronizeNewUnits(1, _state[1].fastForward(_state[0].getCurrentFrame()));
 	}
 
-	Logger::LogAppendToFile(UAB_LOGFILE, "Finished forwarding\n");
+	//Logger::LogAppendToFile(UAB_LOGFILE, "Finished forwarding\n");
 }
 
 //void HLState::doAction(int playerID, const BOSS::ActionType action){
@@ -353,39 +304,223 @@ void HLState::applyAndForward(const std::array<HLMove, 2> &moves)
 //		}
 //	}
 //}
-
-void HLState::synchronizeNewUnits(int playerID, const std::vector<BOSS::ActionType> &newUnits)
+void HLState::synchronizeNewUnits(int playerID, const std::vector<BOSS::ActionType> &finishedUnits)
 {
-	for (auto unit : newUnits){
+	for (auto unit : finishedUnits){
 		if (unit.isUnit()){
-			auto parentType = unit.getUnitType().whatBuilds().first;
-			//BWAPI::Position pos;
-			//for (auto temp : _unitData[playerID].getUnitVector()){//let's take the position of the first building that can build it 
-			//	if (temp.type == parentType){
-			//		pos = temp.lastPosition;
-			//		break;
-			//	}
-			//}
-			BWAPI::Position pos(_players[playerID]->getStartLocation());//everything spawns at the main base
-			
-			int newID = std::max(_unitData[playerID].highestID(), _unitData[1 - playerID].highestID()) + 1;
-			UnitInfo newUnit(newID, _players[playerID], pos, unit.getUnitType(), true);
-			
-			_unitData[playerID].addUnit(newUnit);
-			Logger::LogAppendToFile(UAB_LOGFILE, "Added new unit: %s to player %d frame %d\n", newUnit.type.getName().c_str(), playerID, _state[playerID].getCurrentFrame());
-			if (unit.isWorker()){
-				//todo:for now we'll ignore new workers 
-				//_workerData[playerID].addWorker();
+			if ((_unitData[playerID].getNumUnits(unit.getUnitType()) ==
+				_unitData[playerID].getNumCompletedUnits(unit.getUnitType())) ||
+				!_unitData[playerID].finishUnit(unit.getUnitType()))//units of this type were in progress, let's finish them
+			{//let's add a new finished unit
+
+				auto parentType = unit.getUnitType().whatBuilds().first;
+				//BWAPI::Position pos;
+				//for (auto temp : _unitData[playerID].getUnitVector()){//let's take the position of the first building that can build it 
+				//	if (temp.type == parentType){
+				//		pos = temp.lastPosition;
+				//		break;
+				//	}
+				//}
+				BWAPI::Position pos(_players[playerID]->getStartLocation());//everything spawns at the main base
+
+				int newID = std::max(_unitData[playerID].highestID(), _unitData[1 - playerID].highestID()) + 1;
+				UnitInfo newUnit(newID, _players[playerID], pos, unit.getUnitType(), true);
+
+				_unitData[playerID].addUnit(newUnit);
+				//Logger::LogAppendToFile(UAB_LOGFILE, "Added new unit: %s to player %d frame %d\n", newUnit.type.getName().c_str(), playerID, _state[playerID].getCurrentFrame());
+				if (unit.isWorker()){
+					//todo:for now we'll ignore new workers 
+					//_workerData[playerID].addWorker();
+				}
+			}
+			else{
+				//Logger::LogAppendToFile(UAB_LOGFILE, "Finished new unit: %s to player %d frame %d\n", unit.getName().c_str(), playerID, _state[playerID].getCurrentFrame());
+
 			}
 		}
 
 	}
+}
+
+void HLState::synchronizeNewUnits(int playerID, const std::vector<BOSS::ActionType> &finishedUnits, const 	BOSS::ActionType &startedUnit)
+{
+	if (startedUnit.isUnit()){
+		auto parentType = startedUnit.getUnitType().whatBuilds().first;
+		BWAPI::Position pos(_players[playerID]->getStartLocation());//everything spawns at the main base
+
+		int newID = std::max(_unitData[playerID].highestID(), _unitData[1 - playerID].highestID()) + 1;
+		UnitInfo newUnit(newID, _players[playerID], pos, startedUnit.getUnitType(), false);
+
+		_unitData[playerID].addUnit(newUnit);
+		//Logger::LogAppendToFile(UAB_LOGFILE, "Started new unit: %s to player %d frame %d\n", newUnit.type.getName().c_str(), playerID, _state[playerID].getCurrentFrame());
+		if (startedUnit.isWorker()){
+			//todo:for now we'll ignore new workers 
+			//_workerData[playerID].addWorker();
+		}
+	}
+
+	synchronizeNewUnits(playerID, finishedUnits);
 	
 }
 
 void HLState::synchronizeDeadUnits()
 {
 
+}
+
+
+void HLState::assignDefenseSquads()
+{
+	for (int playerId = 0; playerId < 2; playerId++)
+	{
+		//check if we need to defend any of our regions
+		for (BWTA::Region *r : getBaseRegions(playerId))
+		{
+			int enemyFlyingStrength = 0;
+			int enemyGroundStrength = 0;
+			for (auto s : _squad[1 - playerId])
+			{
+				if (s.getCurrentRegion() == r)
+				{
+					enemyFlyingStrength += s.getFlyingStrength();
+					enemyGroundStrength += s.getGroundStrength();
+				}
+			}
+
+			//assign closest squads to region to defend until we outnumber enemies
+			while ((enemyFlyingStrength > 0) || (enemyGroundStrength > 0))
+			{
+				try
+				{
+					HLSquad &s = getClosestUnassignedSquad(playerId,r);
+
+					if ((enemyFlyingStrength > 0) && (s.getAntiAirStrength() > 0))
+					{
+						s.order(HLSquadOrder(HLSquadOrder::Defend, r));
+						enemyFlyingStrength -= s.getAntiAirStrength();
+					}
+					else if ((enemyGroundStrength > 0) && (s.getGroundStrength() > 0))
+					{
+						s.order(HLSquadOrder(HLSquadOrder::Defend, r));
+						enemyGroundStrength -= s.getGroundStrength();
+					}
+				}
+				catch (...)
+				{
+					break;
+				}
+			}
+		}
+	}
+	
+}
+void assignAttackSquads()
+{
+	for (int playerId = 0; playerId < 2; playerId++)
+	{
+		//if there are unassigned squads, send them to the closest enemy region
+		try
+		{
+			BWTA::Region *r = getClosestBaseRegion(1 - playerId, BWTA::getStartLocation(_players[playerId]));
+			while (1)
+			{
+				HLSquad &s = getUnassignedSquad(playerId);
+				s.order(HLSquadOrder(HLSquadOrder::OrderType::Attack, r));
+			}
+		}
+		catch (...)
+		{
+
+		}
+	}
+}
+
+std::vector<std::pair<std::vector<int>, std::vector<int> > > getCombats()
+{
+	return std::vector<std::pair<std::vector<int>, std::vector<int> > >();
+}
+
+std::vector<BWTA::Region*> getNeighbours(const BWTA::Region *region)
+{
+	std::vector<BWTA::Region*> neighbours;
+	for (auto c : region->getChokepoints())
+	{
+		if(c->getRegions().first!=region)
+		{
+			neighbours.push_back(c->getRegions().first);
+		}
+		else
+		{
+			neighbours.push_back(c->getRegions().second);
+		}
+	}
+	return neighbours;
+}
+void forwardCombat(const std::vector<int> &squads1, const std::vector<int> &squads2, int frames)
+{
+
+}
+int HLSquad::travel(int frames)
+{
+	_framesTravelled += frames;
+
+	if (!_path.empty())
+	{
+		int framesToNext = _currentRegion->getCenter().getDistance(_path.front()->getCenter())/_speed;
+		while (!_path.empty() && (_framesTravelled > framesToNext))
+		{
+			_currentRegion = _path.front();
+			_path.pop_front();
+			_framesTravelled -= framesToNext;
+			framesToNext = _currentRegion->getCenter().getDistance(_path.front()->getCenter()) / _speed;
+		}
+	}
+
+	if (_path.empty())//reached destination
+	{
+		int remainingFrames = _framesTravelled;
+		_framesTravelled = 0;
+		return remainingFrames;
+	}
+	return 0;
+}
+
+void HLState::forwardSquads(int frames)
+{
+	//assign orders to squads
+	if ((currentFrame()-lastSquadUpdate)>100)
+	{
+		lastSquadUpdate = currentFrame();
+		clearOrders();
+		assignDefenseSquads();
+		assignAttackSquads();
+	}
+		
+	std::vector<bool> doneSquads[2] = { std::vector<bool>(_squad[0].size(),false), 
+		std::vector<bool>(_squad[1].size(),false) };
+
+	//execute orders
+		//if enemy in same region or path
+			//do combat
+	for (auto combat : getCombats()){
+		forwardCombat(combat.first, combat.second, frames);
+		for (int s : combat.first)
+		{
+			doneSquads[0][s] = true;
+		}
+	}
+
+		//move towards destination
+	for (int playerId = 0; playerId < 2; playerId++)
+	{
+		for (int s = 0; s < doneSquads[playerId].size(); s++)
+		{
+			if (!doneSquads[playerId][s])
+			{
+				_squad[playerId][s].travel(frames);
+			}
+		}
+	}
 }
 
 std::vector<HLMove> HLState::getMoves(int playerID, int strategy, const std::unordered_map<short, short> &choices) const
@@ -473,13 +608,13 @@ std::vector<HLMove> HLState::getMoves(int playerID) const
 	//return moves;
 }
 
-HLSquad HLState::merge(const HLSquad& s1, const HLSquad &s2)
-{
-	auto units = s1.getUnits();
-	auto units2 = s2.getUnits();
-	units.insert(units.end(), units2.begin(),units2.end());
-	return HLSquad(units, s1.getSquadOrder());
-}
+//HLSquad HLState::merge(const HLSquad& s1, const HLSquad &s2)
+//{
+//	auto units = s1.getUnits();
+//	auto units2 = s2.getUnits();
+//	units.insert(units.end(), units2.begin(),units2.end());
+//	return HLSquad(units, s1.getSquadOrder());
+//}
 
 int HLState::evaluate(int playerID) const
 {
@@ -531,7 +666,7 @@ int HLState::evaluate(int playerID) const
 
 		SparCraft::Game g(state, selfNOK, enemyNOK, 2000);
 
-		g.play();
+		//g.play();
 
 		SparCraft::ScoreType eval = g.getState().eval(
 			playerID == BWAPI::Broodwar->self()->getID() ? SparCraft::Players::Player_One : SparCraft::Players::Player_Two
@@ -539,7 +674,7 @@ int HLState::evaluate(int playerID) const
 
 		return eval;
 	}
-	catch (int e)
+	catch (int)
 	{
 		BWAPI::Broodwar->printf("SparCraft FatalError, simulateCombat() threw");
 
@@ -553,10 +688,10 @@ bool HLState::gameOver() const
 }
 
 
-HLMove::HLMove(int strategy, const std::vector<HLSquad> &squads) :_strategy(strategy), _squads(squads)
-{
-
-}
+//HLMove::HLMove(int strategy, const std::vector<HLSquad> &squads) :_strategy(strategy), _squads(squads)
+//{
+//
+//}
 
 HLMove::HLMove(int strategy, const std::unordered_map<short, short> &choices) :_strategy(strategy), _choices(choices)
 {
@@ -571,10 +706,10 @@ HLMove::HLMove() : _strategy(-1)
 {
 
 }
-void HLMove::addSquad(const HLSquad &squad)
-{
-	_squads.push_back(squad);
-}
+//void HLMove::addSquad(const HLSquad &squad)
+//{
+//	_squads.push_back(squad);
+//}
 
 std::string HLMove::toString() const
 {
