@@ -2,18 +2,7 @@
 
 using namespace UAlbertaBot;
 
-HLSquad::HLSquad(const std::vector<UnitInfo> & units, BWTA::Region *region) :
-_currentRegion(region),
-_framesTravelled(0),
-_units(units),
-_order(),
-_speed(std::min_element(units.begin(), units.end(), [](const UnitInfo &u1, const UnitInfo &u2)
-{
-	return u1.type.topSpeed() < u2.type.topSpeed(); 
-})->type.topSpeed())
-{
 
-}
 HLState::HLState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * player, BWAPI::PlayerInterface * enemy)
 {
 
@@ -363,10 +352,10 @@ void HLState::synchronizeNewUnits(int playerID, const std::vector<BOSS::ActionTy
 	
 }
 
-void HLState::synchronizeDeadUnits()
-{
-
-}
+//void HLState::synchronizeDeadUnits()
+//{
+//
+//}
 
 
 void HLState::assignDefenseSquads()
@@ -374,8 +363,9 @@ void HLState::assignDefenseSquads()
 	for (int playerId = 0; playerId < 2; playerId++)
 	{
 		//check if we need to defend any of our regions
-		for (BWTA::Region *r : getBaseRegions(playerId))
+		for ( BWTA::BaseLocation *l: getOccupiedBaseLocations(playerId))
 		{
+			BWTA::Region *r = l->getRegion();
 			int enemyFlyingStrength = 0;
 			int enemyGroundStrength = 0;
 			for (auto s : _squad[1 - playerId])
@@ -414,14 +404,14 @@ void HLState::assignDefenseSquads()
 	}
 	
 }
-void assignAttackSquads()
+void HLState::assignAttackSquads()
 {
 	for (int playerId = 0; playerId < 2; playerId++)
 	{
 		//if there are unassigned squads, send them to the closest enemy region
 		try
 		{
-			BWTA::Region *r = getClosestBaseRegion(1 - playerId, BWTA::getStartLocation(_players[playerId]));
+			BWTA::Region *r = getClosestBaseLocation(1 - playerId, BWTA::getStartLocation(_players[playerId])->getRegion())->getRegion();
 			while (1)
 			{
 				HLSquad &s = getUnassignedSquad(playerId);
@@ -435,54 +425,69 @@ void assignAttackSquads()
 	}
 }
 
-std::vector<std::pair<std::vector<int>, std::vector<int> > > getCombats()
-{
-	return std::vector<std::pair<std::vector<int>, std::vector<int> > >();
-}
+//std::vector<std::pair<std::vector<int>, std::vector<int> > > HLState::getCombats() const
+//{
+////	return std::vector<std::pair<std::vector<int>, std::vector<int> > >();
+//}
+//
+//
+//void HLState::forwardCombat(const std::vector<int> &squads1, const std::vector<int> &squads2, int frames)
+//{
+//
+//}
 
-std::vector<BWTA::Region*> getNeighbours(const BWTA::Region *region)
+BWTA::BaseLocation * HLState::getClosestBaseLocation(int playerId, BWTA::Region *r) const
 {
-	std::vector<BWTA::Region*> neighbours;
-	for (auto c : region->getChokepoints())
+	int min = std::numeric_limits<int>::max();
+	BWTA::BaseLocation *min_base = NULL;
+	for (auto l : BWTA::getBaseLocations())
 	{
-		if(c->getRegions().first!=region)
+		auto d = l->getRegion()->getCenter().getApproxDistance(r->getCenter());
+		if (d<min)
 		{
-			neighbours.push_back(c->getRegions().first);
-		}
-		else
-		{
-			neighbours.push_back(c->getRegions().second);
-		}
-	}
-	return neighbours;
-}
-void forwardCombat(const std::vector<int> &squads1, const std::vector<int> &squads2, int frames)
-{
-
-}
-int HLSquad::travel(int frames)
-{
-	_framesTravelled += frames;
-
-	if (!_path.empty())
-	{
-		int framesToNext = _currentRegion->getCenter().getDistance(_path.front()->getCenter())/_speed;
-		while (!_path.empty() && (_framesTravelled > framesToNext))
-		{
-			_currentRegion = _path.front();
-			_path.pop_front();
-			_framesTravelled -= framesToNext;
-			framesToNext = _currentRegion->getCenter().getDistance(_path.front()->getCenter()) / _speed;
+			min = d;
+			min_base = l;
 		}
 	}
-
-	if (_path.empty())//reached destination
+	return min_base;
+}
+HLSquad & HLState::getClosestUnassignedSquad(int playerId, const BWTA::Region *r)
+{
+	int min = std::numeric_limits<int>::max(), min_i = -1;
+	for (int i = 0; i < _squad[playerId].size(); i++)
 	{
-		int remainingFrames = _framesTravelled;
-		_framesTravelled = 0;
-		return remainingFrames;
+		auto s = _squad[playerId][i];
+		if ((s.order()._type == HLSquadOrder::None))
+		{
+			auto d = s.getCurrentRegion()->getCenter().getApproxDistance(r->getCenter());
+			if (d < min)
+			{
+				min = d;
+				min_i = i;
+			}
+		}
 	}
-	return 0;
+	return _squad[playerId][min_i];
+}
+HLSquad & HLState::getUnassignedSquad(int playerId) const
+{
+	for (auto s : _squad[playerId])
+	{
+		if (s.order()._type == HLSquadOrder::None)
+		{
+			return s;
+		}
+	}
+}
+void HLState::clearOrders()
+{
+	for (int playerId = 0; playerId < 2; playerId++)
+	{
+		for (auto s : _squad[playerId])
+		{
+			s.order(HLSquadOrder());
+		}
+	}
 }
 
 void HLState::forwardSquads(int frames)
