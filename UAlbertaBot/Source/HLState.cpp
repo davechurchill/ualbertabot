@@ -37,7 +37,7 @@ HLState::HLState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * player, BWA
 void HLState::addSquads(const BWAPI::PlayerInterface *player)
 {
 	std::unordered_map < BWTA::Region*, std::vector<UnitInfo> > units;
-	for (auto unit : player->getUnits()){
+	for (auto &unit : player->getUnits()){
 		if (unit
 			&&unit->isCompleted()
 			&& unit->getHitPoints() > 0
@@ -53,7 +53,7 @@ void HLState::addSquads(const BWAPI::PlayerInterface *player)
 			units[BWTA::getRegion(unit->getPosition())].push_back(UnitInfo(unit));
 		}
 	}
-	for (auto it : units)
+	for (auto &it : units)
 	{
 		_squad[player->getID()].push_back(HLSquad(it.second, it.first));
 	}
@@ -266,10 +266,7 @@ void HLState::applyAndForward(const std::array<HLMove, 2> &moves)
 
 			synchronizeNewUnits(1 - nextPlayer, _state[1 - nextPlayer].fastForward(nextActionStart[nextPlayer]));
 		}
-		//todo: if unit built is a combat unit, add it somewhere
-		//todo: move units and resolve combat 
 		forwardSquads(framesToForward);
-		synchronizeDeadUnits();
 	}
 
 	//make sure both states are at the same frame
@@ -295,7 +292,7 @@ void HLState::applyAndForward(const std::array<HLMove, 2> &moves)
 //}
 void HLState::synchronizeNewUnits(int playerID, const std::vector<BOSS::ActionType> &finishedUnits)
 {
-	for (auto unit : finishedUnits){
+	for (auto &unit : finishedUnits){
 		if (unit.isUnit()){
 			if ((_unitData[playerID].getNumUnits(unit.getUnitType()) ==
 				_unitData[playerID].getNumCompletedUnits(unit.getUnitType())) ||
@@ -352,10 +349,19 @@ void HLState::synchronizeNewUnits(int playerID, const std::vector<BOSS::ActionTy
 	
 }
 
-//void HLState::synchronizeDeadUnits()
-//{
-//
-//}
+void HLState::synchronizeDeadUnits(const std::array<std::vector<UnitInfo>,2> &units)
+{
+	for (int p = 0; p < 2; p++)
+	{
+		for (const auto &u : units[p])
+		{
+			_state[p].removeCompletedAction(BOSS::ActionType(u.type));
+			_unitData[p].removeUnit(u.unitID);
+			_workerData[p].workerDestroyed(u.unit);
+			//todo:_squad update?
+		}
+	}
+}
 
 
 void HLState::assignDefenseSquads()
@@ -363,12 +369,11 @@ void HLState::assignDefenseSquads()
 	for (int playerId = 0; playerId < 2; playerId++)
 	{
 		//check if we need to defend any of our regions
-		for ( BWTA::BaseLocation *l: getOccupiedBaseLocations(playerId))
+		for ( BWTA::Region *r: _unitData[playerId].getBaseRegions())
 		{
-			BWTA::Region *r = l->getRegion();
 			int enemyFlyingStrength = 0;
 			int enemyGroundStrength = 0;
-			for (auto s : _squad[1 - playerId])
+			for (auto &s : _squad[1 - playerId])
 			{
 				if (s.getCurrentRegion() == r)
 				{
@@ -425,16 +430,118 @@ void HLState::assignAttackSquads()
 	}
 }
 
-//std::vector<std::pair<std::vector<int>, std::vector<int> > > HLState::getCombats() const
-//{
-////	return std::vector<std::pair<std::vector<int>, std::vector<int> > >();
-//}
-//
-//
-//void HLState::forwardCombat(const std::vector<int> &squads1, const std::vector<int> &squads2, int frames)
-//{
-//
-//}
+std::vector<std::array<std::vector<int>, 2 > > HLState::getCombats() const
+{
+	std::vector<std::array<std::vector<int>, 2 > > combats;
+
+	for (auto r : BWTA::getRegions())
+	{
+		std::vector<int> first;
+		for (size_t s = 0; s < _squad[0].size();s++)
+		{
+			if (_squad[0][s].getCurrentRegion() == r)
+			{
+				first.push_back(s);
+			}
+		}
+		if (!first.empty())
+		{
+			std::vector<int> second;
+			for (size_t s = 0; s < _squad[1].size(); s++)
+			{
+				if (_squad[1][s].getCurrentRegion() == r)
+				{
+					second.push_back(s);
+				}
+			}
+			if (!second.empty())
+			{
+				combats.push_back(std::array < std::vector<int>, 2 > {{ first, second }});
+			}
+		}
+	}
+	return combats;
+}
+
+
+void HLState::forwardCombat(const std::array<std::vector<int>,2 > &squads, int frames)
+{
+
+	CombatSimulation sim;
+	SparCraft::GameState state;
+	for (int p = 0; p < 2; p++)
+	{
+		for (size_t i = 0; i < squads[p].size(); i++)
+		{
+
+			for (auto &unit : _squad[p][squads[p][i]]){
+				if (InformationManager::Instance().isCombatUnit(unit.type)
+					&& SparCraft::System::isSupportedUnitType(unit.type))
+				{
+					try
+					{
+						state.addUnit(sim.getSparCraftUnit(unit));
+					}
+					catch (int e)
+					{
+						e = 1;
+						BWAPI::Broodwar->printf("Problem Adding Unit with ID: %d", unit.unitID);
+					}
+				}
+			}
+		}
+	}
+
+	state.finishedMoving();
+
+	std::array<std::vector<UnitInfo>, 2> deadUnits;
+	try
+	{
+
+		SparCraft::PlayerPtr selfNOK(new SparCraft::Player_NOKDPS(SparCraft::Players::Player_One));
+
+		SparCraft::PlayerPtr enemyNOK(new SparCraft::Player_NOKDPS(SparCraft::Players::Player_Two));
+
+		SparCraft::Game g(state, selfNOK, enemyNOK, frames);
+
+		g.play();
+
+		//todo:get dead units
+		for (int p = 0; p < 2; p++)
+		{
+			for (size_t i = 0; i < squads[p].size(); i++)
+			{
+				auto it = _squad[p][squads[p][i]].begin();
+				while (it != _squad[p][squads[p][i]].end())
+				{
+					auto current = it++;
+					auto unit = *current;
+					try{
+						auto &sparUnit=g.getState().getUnitByID(p, unit.unitID);
+						if (!sparUnit.isAlive()){
+							_squad[p][squads[p][i]].removeUnit(current);
+							deadUnits[p].push_back(unit);
+						}
+					}
+					catch (int){
+						_squad[p][squads[p][i]].removeUnit(current);
+						deadUnits[p].push_back(unit);
+					}
+				}
+			}
+		}
+	}
+	catch (int)
+	{
+		BWAPI::Broodwar->printf("SparCraft FatalError, simulateCombat() threw");
+
+		UAB_ASSERT(false, "SparCraft FatalError, simulateCombat() threw");
+	}
+
+
+
+	synchronizeDeadUnits(deadUnits);
+}
 
 BWTA::BaseLocation * HLState::getClosestBaseLocation(int playerId, BWTA::Region *r) const
 {
@@ -442,7 +549,7 @@ BWTA::BaseLocation * HLState::getClosestBaseLocation(int playerId, BWTA::Region 
 	BWTA::BaseLocation *min_base = NULL;
 	for (auto l : BWTA::getBaseLocations())
 	{
-		auto d = l->getRegion()->getCenter().getApproxDistance(r->getCenter());
+		int d = l->getRegion()->getCenter().getApproxDistance(r->getCenter());
 		if (d<min)
 		{
 			min = d;
@@ -454,12 +561,12 @@ BWTA::BaseLocation * HLState::getClosestBaseLocation(int playerId, BWTA::Region 
 HLSquad & HLState::getClosestUnassignedSquad(int playerId, const BWTA::Region *r)
 {
 	int min = std::numeric_limits<int>::max(), min_i = -1;
-	for (int i = 0; i < _squad[playerId].size(); i++)
+	for (size_t i = 0; i < _squad[playerId].size(); i++)
 	{
-		auto s = _squad[playerId][i];
+		auto &s = _squad[playerId][i];
 		if ((s.order()._type == HLSquadOrder::None))
 		{
-			auto d = s.getCurrentRegion()->getCenter().getApproxDistance(r->getCenter());
+			int d = s.getCurrentRegion()->getCenter().getApproxDistance(r->getCenter());
 			if (d < min)
 			{
 				min = d;
@@ -469,21 +576,22 @@ HLSquad & HLState::getClosestUnassignedSquad(int playerId, const BWTA::Region *r
 	}
 	return _squad[playerId][min_i];
 }
-HLSquad & HLState::getUnassignedSquad(int playerId) const
+HLSquad & HLState::getUnassignedSquad(int playerId)
 {
-	for (auto s : _squad[playerId])
+	for (auto &s : _squad[playerId])
 	{
 		if (s.order()._type == HLSquadOrder::None)
 		{
 			return s;
 		}
 	}
+	throw 1;
 }
 void HLState::clearOrders()
 {
 	for (int playerId = 0; playerId < 2; playerId++)
 	{
-		for (auto s : _squad[playerId])
+		for (auto &s : _squad[playerId])
 		{
 			s.order(HLSquadOrder());
 		}
@@ -507,18 +615,22 @@ void HLState::forwardSquads(int frames)
 	//execute orders
 		//if enemy in same region or path
 			//do combat
-	for (auto combat : getCombats()){
-		forwardCombat(combat.first, combat.second, frames);
-		for (int s : combat.first)
+	for (auto &combat : getCombats()){
+		forwardCombat(std::array < std::vector<int>, 2 > {{combat.at(0), combat.at(1)}}, frames);
+		for (int s : combat.at(0))
 		{
 			doneSquads[0][s] = true;
+		}
+		for (int s : combat.at(1))
+		{
+			doneSquads[1][s] = true;
 		}
 	}
 
 		//move towards destination
 	for (int playerId = 0; playerId < 2; playerId++)
 	{
-		for (int s = 0; s < doneSquads[playerId].size(); s++)
+		for (size_t s = 0; s < doneSquads[playerId].size(); s++)
 		{
 			if (!doneSquads[playerId][s])
 			{
@@ -602,7 +714,7 @@ std::vector<HLMove> HLState::getMoves(int playerID) const
 
 	////attack move, just attack first neighbouring region
 	//move = HLMove(0);
-	//for (auto s : _squad[playerID]){
+	//for (auto &s : _squad[playerID]){
 	//	BWAPI::Position pos = (*s.getUnits().front()->getRegion()->getNeighbors().begin())->getCenter();
 	//	int radius = 1000;
 	//	s.setSquadOrder(SquadOrder(SquadOrder::Attack, pos, radius));
@@ -626,7 +738,7 @@ int HLState::evaluate(int playerID) const
 	CombatSimulation sim;
 	SparCraft::GameState state;
 
-	for (auto unit : _unitData[playerID].getUnits()){
+	for (auto &unit : _unitData[playerID].getUnits()){
 		if (InformationManager::Instance().isCombatUnit(unit.second.type) 
 			&& SparCraft::System::isSupportedUnitType(unit.second.type))
 		{
@@ -642,7 +754,7 @@ int HLState::evaluate(int playerID) const
 		}
 	}
 
-	for (auto unit : _unitData[1 - playerID].getUnits()){
+	for (auto &unit : _unitData[1 - playerID].getUnits()){
 		if (!unit.second.type.isFlyer() && SparCraft::System::isSupportedUnitType(unit.second.type) && unit.second.completed)
 		{
 			try
@@ -720,7 +832,7 @@ std::string HLMove::toString() const
 {
 	std::ostringstream ss;
 	ss << "[strat:"<<_strategy<<", ";
-	for (auto c : _choices){
+	for (auto &c : _choices){
 		ss << "[" << c.first << ", " << c.second << "] ";
 	}
 	ss << "]";

@@ -49,19 +49,18 @@ namespace UAlbertaBot{
 		//void forwardGameState(int frames, int playerID);
 		void synchronizeNewUnits(int playerID, const std::vector<BOSS::ActionType> &newUnits);
 		void synchronizeNewUnits(int playerID, const std::vector<BOSS::ActionType> &newUnits, const BOSS::ActionType &startedUnit);
-		void synchronizeDeadUnits();
+		void synchronizeDeadUnits(const std::array<std::vector<UnitInfo>, 2> &units);
 		BOSS::BuildOrder getBuildOrder(const HLMove &move, int playerID) const;
 		bool checkChoicePoint(const HLMove &move, int playerID) const;
 		void forwardSquads(int frames);
 		void assignDefenseSquads();
 		void assignAttackSquads();
-		void forwardCombat(const std::vector<int> &squads1, const std::vector<int> &squads2, int frames);
-		std::vector<BWTA::BaseLocation*> getOccupiedBaseLocations(int playerId) const;
+		void forwardCombat(const std::array<std::vector<int>, 2 > &squads, int frames);
 		BWTA::BaseLocation * getClosestBaseLocation(int playerId, BWTA::Region *r) const;
 		HLSquad & getClosestUnassignedSquad(int playerId, const BWTA::Region *r);
-		HLSquad & getUnassignedSquad(int playerId) const;
+		HLSquad & getUnassignedSquad(int playerId);
 		void clearOrders();
-		std::vector<std::pair<std::vector<int>, std::vector<int> > > getCombats() const;
+		std::vector<std::array<std::vector<int>, 2 > > getCombats() const;
 	public:
 		HLState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * player, BWAPI::PlayerInterface * enemy);
 		~HLState();
