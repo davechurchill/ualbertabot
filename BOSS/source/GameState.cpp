@@ -910,6 +910,15 @@ void GameState::addCompletedAction(const ActionType & action, const size_t num)
     }
 }
 
+void GameState::removeCompletedAction(const ActionType & action, const size_t num)
+{
+	for (size_t i(0); i < num; ++i)
+	{
+		_units.setCurrentSupply(_units.getCurrentSupply() - action.supplyRequired());
+		_units.removeCompletedAction(action);
+	}
+}
+
 const std::string GameState::toString() const
 {
 	std::stringstream ss;

@@ -109,6 +109,49 @@ void UnitData::addCompletedAction(const ActionType & action, bool wasBuilt)
     }
 }
 
+void UnitData::removeCompletedAction(const ActionType & action)
+{
+	const static ActionType Lair = ActionTypes::GetActionType("Zerg_Lair");
+	const static ActionType Hive = ActionTypes::GetActionType("Zerg_Hive");
+
+	_numUnits[action.ID()] -= action.numProduced();
+
+
+		// a lair or hive from a hatchery don't produce additional supply
+	if (action != Lair && action != Hive)
+	{
+		_maxSupply -= action.supplyProvided();
+	}
+
+
+	if (action.isWorker())
+	{
+		_mineralWorkers--;
+	}
+
+	// if it's an extractor
+	if (action.isRefinery())
+	{
+		// take those workers from minerals and put them into it
+		_mineralWorkers += 3; _gasWorkers -= 3;
+	}
+
+	// if it's a building that can produce units, add it to the building data
+	if (action.isBuilding() && !action.isSupplyProvider())
+	{
+		if (!action.isMorphed())
+		{
+			_buildings.removeBuilding(action, ActionTypes::None);
+		}
+	}
+
+	// special case for hatcheries
+	if (action.isBuilding() && (action.getUnitType() == BWAPI::UnitTypes::Zerg_Hatchery))
+	{
+		_hatcheryData.removeHatchery();
+	}
+}
+
 void UnitData::addActionInProgress(const ActionType & action, const FrameCountType & completionFrame, bool queueAction)
 {
     FrameCountType finishTime = (action.isBuilding() && !action.isMorphed()) ? completionFrame + Constants::BUILDING_PLACEMENT : completionFrame;

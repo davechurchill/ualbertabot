@@ -111,5 +111,6 @@ public:
     void                        setMinerals(const ResourceCountType & minerals);
     void                        setGas(const ResourceCountType & gas);
     void                        addCompletedAction(const ActionType & action, const size_t num = 1);
+	void                        removeCompletedAction(const ActionType & action, const size_t num = 1);
 };
 }

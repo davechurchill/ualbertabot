@@ -38,6 +38,7 @@ public:
     HatcheryData();
 
     void                    addHatchery(const UnitCountType & numLarva);
+	void                    removeHatchery();
     void                    useLarva();
     void                    fastForward(const FrameCountType & currentFrame, const FrameCountType & toFrame);
 
