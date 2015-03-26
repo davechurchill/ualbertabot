@@ -13,6 +13,7 @@ namespace UAlbertaBot{
 
 		std::unordered_map<int, UnitInfo>		_unitMap;//id->info
 		int										_highestID;
+		std::unordered_set<BWTA::Region *>		_baseRegions;//regions with buildings
 	public:
 		HLUnitData();
 		HLUnitData(const UnitData &data);
@@ -35,7 +36,8 @@ namespace UAlbertaBot{
 		void	addUnit(const UnitInfo &unit);
 		bool	finishUnit(BWAPI::UnitType type);
 		//std::vector<UnitInfo> getUnitVector()						const;
-		int		highestID()											const {return _highestID;};
+		int		highestID()											const {return _highestID;}
+		const std::unordered_set<BWTA::Region*>& getBaseRegions()	const { return _baseRegions; }
 
 	};
 }

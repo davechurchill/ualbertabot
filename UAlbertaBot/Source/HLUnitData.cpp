@@ -147,6 +147,7 @@ void HLUnitData::removeUnit(int id)
 	}
 
 	//todo:decrease highest ID?
+	//todo:update _baseRegions?
 }
 
 void HLUnitData::addUnit(const UnitInfo &unit)
@@ -165,6 +166,10 @@ void HLUnitData::addUnit(const UnitInfo &unit)
 		_unitMap[unit.unitID].completed = unit.completed;
 		_unitMap[unit.unitID].lastHealth = unit.lastHealth;
 		_unitMap[unit.unitID].lastPosition = unit.lastPosition;
+	}
+	if (unit.type.isBuilding())
+	{
+		_baseRegions.insert(BWTA::getRegion(unit.lastPosition));
 	}
 }
 
