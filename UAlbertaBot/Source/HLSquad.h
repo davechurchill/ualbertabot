@@ -23,7 +23,7 @@ namespace UAlbertaBot{
 		BWTA::Region *_currentRegion;
 		std::list<BWTA::Region*>  _path;
 		int _framesTravelled;
-		std::vector<UnitInfo> _units;
+		std::unordered_set<UnitInfo> _units;
 		HLSquadOrder _order;
 		double _speed;
 		mutable int _groundStrength;
@@ -45,6 +45,14 @@ namespace UAlbertaBot{
 		void calculateStrength() const;
 		void order(HLSquadOrder order);
 		HLSquadOrder order() const{ return _order; }
+		//std::vector<UnitInfo>& getUnits()  { return _units; }
+		//const std::vector<UnitInfo>& getUnits() const { return _units; }
+		void removeUnit(const UnitInfo &unit){ _units.erase(unit); }
+		void removeUnit(const std::unordered_set<UnitInfo>::iterator &unit){ _units.erase(unit); }
+		std::unordered_set<UnitInfo>::iterator begin(){ return _units.begin(); }
+		std::unordered_set<UnitInfo>::iterator end(){ return _units.end(); }
+		std::unordered_set<UnitInfo>::const_iterator begin() const{ return _units.begin(); }
+		std::unordered_set<UnitInfo>::const_iterator end() const{ return _units.end(); }
 		//HLSquad(const Squad &squad);//implicit conversion
 		//bool done();//check if order completed
 		//BWAPI::Region getRegion() const{ return region; }

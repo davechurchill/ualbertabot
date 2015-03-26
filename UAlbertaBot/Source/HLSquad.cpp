@@ -16,7 +16,7 @@ HLSquadOrder::HLSquadOrder(OrderType type, BWTA::Region* target)
 HLSquad::HLSquad(const std::vector<UnitInfo> & units, BWTA::Region *region) :
 _currentRegion(region),
 _framesTravelled(0),
-_units(units),
+_units(units.begin(),units.end()),
 _order(),
 _speed(std::min_element(units.begin(), units.end(), [](const UnitInfo &u1, const UnitInfo &u2)
 {
@@ -33,13 +33,14 @@ int HLSquad::travel(int frames)
 
 	if (!_path.empty())
 	{
-		int framesToNext = _currentRegion->getCenter().getDistance(_path.front()->getCenter()) / _speed;
-		while (!_path.empty() && (_framesTravelled > framesToNext))
+		int framesToNext;
+		while (!_path.empty() && 
+			(_framesTravelled > 
+			(framesToNext = _currentRegion->getCenter().getDistance(_path.front()->getCenter()) / _speed)))
 		{
 			_currentRegion = _path.front();
 			_path.pop_front();
 			_framesTravelled -= framesToNext;
-			framesToNext = _currentRegion->getCenter().getDistance(_path.front()->getCenter()) / _speed;
 		}
 	}
 
