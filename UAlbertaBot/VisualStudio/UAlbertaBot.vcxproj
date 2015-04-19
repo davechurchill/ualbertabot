@@ -74,7 +74,7 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPId.lib;$(Configuration)/SparCraft/SparCraft_d.lib;$(Configuration)/BOSS/BOSS_d.lib;$(BWTA_DIR)/lib/BWTA.lib;$(BWTA_DIR)/lib/libboost_system-vc120-mt-1_56.lib;$(BWTA_DIR)/lib/libboost_thread-vc120-mt-1_56.lib;$(BWTA_DIR)/lib/libCGAL-vc120-mt-4.4.lib;$(BWTA_DIR)/lib/libgmp-10.lib;$(BWTA_DIR)/lib/libmpfr-4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPId.lib;$(Configuration)/SparCraft/SparCraft_d.lib;$(Configuration)/BOSS/BOSS_d.lib;$(BWTA_DIR)/lib/BWTAd.lib;$(BWTA_DIR)/lib/libboost_system-vc120-mt-gd-1_56.lib;$(BWTA_DIR)/lib/libboost_thread-vc120-mt-gd-1_56.lib;$(BWTA_DIR)/lib/libCGAL-vc120-mt-gd-4.4.lib;$(BWTA_DIR)/lib/libgmp-10.lib;$(BWTA_DIR)/lib/libmpfr-4.lib;$(BWTA_DIR)/lib/libboost_filesystem-vc120-mt-gd-1_56.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -101,7 +101,7 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPI.lib;$(Configuration)/SparCraft/SparCraft.lib;$(Configuration)/BOSS/BOSS.lib;$(BWTA_DIR)/lib/BWTA.lib;$(BWTA_DIR)/lib/libboost_system-vc120-mt-1_56.lib;$(BWTA_DIR)/lib/libboost_thread-vc120-mt-1_56.lib;$(BWTA_DIR)/lib/libCGAL-vc120-mt-4.4.lib;$(BWTA_DIR)/lib/libgmp-10.lib;$(BWTA_DIR)/lib/libmpfr-4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPI.lib;$(Configuration)/SparCraft/SparCraft.lib;$(Configuration)/BOSS/BOSS.lib;$(BWTA_DIR)/lib/BWTA.lib;$(BWTA_DIR)/lib/libboost_system-vc120-mt-1_56.lib;$(BWTA_DIR)/lib/libboost_thread-vc120-mt-1_56.lib;$(BWTA_DIR)/lib/libCGAL-vc120-mt-4.4.lib;$(BWTA_DIR)/lib/libgmp-10.lib;$(BWTA_DIR)/lib/libmpfr-4.lib;$(BWTA_DIR)/lib/libboost_filesystem-vc120-mt-1_56.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -125,6 +125,10 @@
     <ClCompile Include="..\Source\Common.cpp" />
     <ClCompile Include="..\Source\Dll.cpp" />
     <ClCompile Include="..\Source\GameCommander.cpp" />
+    <ClCompile Include="..\Source\HLCombatCommander.cpp" />
+    <ClCompile Include="..\Source\HLManager.cpp" />
+    <ClCompile Include="..\Source\HLSearch.cpp" />
+    <ClCompile Include="..\Source\HLState.cpp" />
     <ClCompile Include="..\Source\InformationManager.cpp" />
     <ClCompile Include="..\Source\Logger.cpp" />
     <ClCompile Include="..\Source\MapGrid.cpp" />
@@ -167,6 +171,10 @@
     <ClInclude Include="..\Source\DistanceMap.hpp" />
     <ClInclude Include="..\Source\EnhancedInterface.hpp" />
     <ClInclude Include="..\Source\GameCommander.h" />
+    <ClInclude Include="..\Source\HLCombatCommander.h" />
+    <ClInclude Include="..\Source\HLManager.h" />
+    <ClInclude Include="..\Source\HLSearch.h" />
+    <ClInclude Include="..\Source\HLState.h" />
     <ClInclude Include="..\Source\InformationManager.h" />
     <ClInclude Include="..\Source\Logger.h" />
     <ClInclude Include="..\Source\MapGrid.h" />

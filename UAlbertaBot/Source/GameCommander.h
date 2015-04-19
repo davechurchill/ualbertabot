@@ -9,6 +9,7 @@
 #include "base/BuildingManager.h"
 #include "ScoutManager.h"
 #include "StrategyManager.h"
+#include "HLCombatCommander.h"
 
 namespace UAlbertaBot
 {
@@ -98,6 +99,8 @@ public:
 class GameCommander 
 {
 	CombatCommander		combatCommander;
+	HLCombatCommander	hlCombatCommander;
+
 	ScoutManager		scoutManager;
 	TimerManager		timerManager;
 
@@ -138,6 +141,7 @@ public:
 	void onUnitShow(BWAPI::UnitInterface* unit);
 	void onUnitHide(BWAPI::UnitInterface* unit);
 	void onUnitCreate(BWAPI::UnitInterface* unit);
+	void onUnitComplete(BWAPI::UnitInterface* unit);
 	void onUnitRenegade(BWAPI::UnitInterface* unit);
 	void onUnitDestroy(BWAPI::UnitInterface* unit);
 	void onUnitMorph(BWAPI::UnitInterface* unit);

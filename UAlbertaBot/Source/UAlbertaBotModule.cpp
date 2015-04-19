@@ -188,6 +188,11 @@ void UAlbertaBotModule::onUnitCreate(BWAPI::UnitInterface* unit)
 	if (Options::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitCreate(unit); }
 }
 
+void UAlbertaBotModule::onUnitComplete(BWAPI::UnitInterface* unit)
+{
+	if (Options::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitComplete(unit); }
+}
+
 void UAlbertaBotModule::onUnitShow(BWAPI::UnitInterface* unit)
 { 
 	if (Options::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitShow(unit); }

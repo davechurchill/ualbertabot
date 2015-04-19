@@ -1,5 +1,6 @@
 #include "Common.h"
 #include "GameCommander.h"
+#include "HLManager.h"
 
 using namespace UAlbertaBot;
 
@@ -12,6 +13,9 @@ void GameCommander::update()
 {
 	timerManager.startTimer(TimerManager::All);
 	
+	if (Options::Modules::USING_HIGH_LEVEL_SEARCH){
+		HLManager::Instance().update();
+	}
 
 	// economy and base managers
 	timerManager.startTimer(TimerManager::Worker);
@@ -33,6 +37,9 @@ void GameCommander::update()
 	if (Options::Modules::USING_COMBATCOMMANDER)
 	{
 		combatCommander.update(combatUnits);
+	}else if (Options::Modules::USING_HIGH_LEVEL_SEARCH)
+	{
+		hlCombatCommander.update(combatUnits);
 	}
 	timerManager.stopTimer(TimerManager::Combat);
 
@@ -73,6 +80,7 @@ void GameCommander::drawDebugInterface()
 	//BuildingManager::Instance().drawBuildingInformation(200,50);
 	ProductionManager::Instance().drawProductionInformation(10, 30);
 	//InformationManager::Instance().drawUnitInformation(425,30);
+	//InformationManager::Instance().drawMapInformation();
 
 	combatCommander.drawSquadInformation(200, 30);
 
@@ -292,6 +300,11 @@ void GameCommander::onUnitHide(BWAPI::UnitInterface* unit)
 void GameCommander::onUnitCreate(BWAPI::UnitInterface* unit)		
 { 
 	InformationManager::Instance().onUnitCreate(unit); 
+}
+
+void GameCommander::onUnitComplete(BWAPI::UnitInterface* unit)
+{
+	InformationManager::Instance().onUnitComplete(unit);
 }
 
 void GameCommander::onUnitRenegade(BWAPI::UnitInterface* unit)		
