@@ -126,6 +126,7 @@ public:
 	const	MetaPairVector		getBuildOrderGoal();
 	const	std::vector<MetaType>	getOpeningBookBuildOrder() const;
 
+	static std::vector<MetaType>	getOpeningBookBuildOrder(int strategy, BWAPI::Race race);
 	static MetaPairVector		getBuildOrderGoal(
 		const HLUnitData &selfUnitData,
 		const HLUnitData &enemyUnitData,
