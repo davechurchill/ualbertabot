@@ -990,6 +990,27 @@ void GameState::print(int indent) const
 	fprintf(stderr, "\n\n");
 }
 
+std::string GameState::toString() const
+{
+
+	std::stringstream ss;
+
+	ss << calculateHash(0) << "\n";
+	ss << "Time: " << _currentTime << std::endl;
+
+	for (IDType p(0); p<Constants::Num_Players; ++p)
+	{
+		for (UnitCountType u(0); u<_numUnits[p]; ++u)
+		{
+			const Unit & unit(getUnit(p, u));
+
+			ss << "  P" << unit.player() << " " << unit.currentHP() << " (" << unit.x() << ", " << unit.y() << ") " << unit.name() << std::endl;
+		}
+	}
+	ss << std::endl;
+
+	return ss.str();
+}
 void GameState::write(const std::string & filename) const
 {
     std::ofstream fout (filename.c_str(), std::ios::out | std::ios::binary); 
