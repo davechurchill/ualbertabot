@@ -67,10 +67,12 @@ GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self)
 				else if (unit->getRemainingResearchTime() > 0)
 				{
 					constructing = ActionType(unit->getTech());
+					_units.addActionInProgress(constructing, game->getFrameCount() + unit->getRemainingResearchTime(), false);
 				}
 				else if (unit->getRemainingUpgradeTime() > 0)
 				{
 					constructing = ActionType(unit->getUpgrade());
+					_units.addActionInProgress(constructing, game->getFrameCount() + unit->getRemainingUpgradeTime(), false);
 				}
 
                 // TODO: special case for Zerg_Hatchery
