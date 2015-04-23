@@ -230,6 +230,8 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
     t.start();
     int iter = 0;
     int buildingPlacerTimeLimit = 2000;
+	// my starting region
+	BWTA::Region * myRegion = BWTA::getRegion(BWTA::getStartLocation(BWAPI::Broodwar->self())->getTilePosition());
 
 	while (length < BWAPI::Broodwar->mapWidth()) //We'll ride the spiral to the end
 	{
@@ -240,7 +242,7 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
                 BWAPI::Broodwar->printf("Building Placer Timed Out %d ms", buildingPlacerTimeLimit);
             }
 
-            return BWAPI::TilePositions::None;
+            return BWAPI::TilePositions::Invalid;//use a different return value for timeout than not found
         }
 
 		//if we can build here, return this tile position
@@ -251,9 +253,7 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
 			// can we build this building at this location
 			bool canBuild					= this->canBuildHereWithSpace(BWAPI::TilePosition(x, y), b, buildDist, horizontalOnly);
 
-			// my starting region
-			BWTA::Region * myRegion			= BWTA::getRegion(BWTA::getStartLocation(BWAPI::Broodwar->self())->getTilePosition()); 
-
+		
 			// the region the build tile is in
 			BWTA::Region * tileRegion		= BWTA::getRegion(BWAPI::TilePosition(x,y));
 
