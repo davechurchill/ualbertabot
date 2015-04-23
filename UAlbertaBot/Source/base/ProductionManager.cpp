@@ -16,11 +16,13 @@ ProductionManager::ProductionManager()
 	if (!Options::Modules::USING_BUILD_ORDER_DEMO)
 	{
         setBuildOrder(StrategyManager::Instance().getOpeningBookBuildOrder());
+		_runningOpeningBook = true;
 	}
 }
 
 void ProductionManager::setBuildOrder(const std::vector<MetaType> & buildOrder)
 {
+	_runningOpeningBook = false;
 	// clear the current build order
 	queue.clearAll();
 
