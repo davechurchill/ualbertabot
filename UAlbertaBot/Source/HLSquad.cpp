@@ -16,7 +16,7 @@ HLSquadOrder::HLSquadOrder(OrderType type, BWTA::Region* target)
 HLSquad::HLSquad(const std::vector<UnitInfo> & units, BWTA::Region *region) :
 _currentRegion(region),
 _framesTravelled(0),
-_units(units.begin(),units.end()),
+//_units(units.begin(),units.end()),
 _order(),
 _speed(std::min_element(units.begin(), units.end(), [](const UnitInfo &u1, const UnitInfo &u2)
 {
@@ -24,7 +24,15 @@ _speed(std::min_element(units.begin(), units.end(), [](const UnitInfo &u1, const
 })->type.topSpeed()),
 _strengthCalculated(false)
 {
+	for (const auto &unit : units)
+		_units[unit.unitID] = unit;
+}
 
+void HLSquad::addUnit(const UnitInfo &unit)
+{
+	_speed = std::min(_speed, unit.type.topSpeed());
+	_strengthCalculated = false;
+	_units[unit.unitID]=unit;
 }
 
 int HLSquad::travel(int frames)
@@ -97,15 +105,15 @@ void HLSquad::calculateStrength() const
 	_groundStrength = _flyingStrength = _antiAirStrength = 0;
 	for (auto u : _units)
 	{
-		if (u.isFlyer())
+		if (u.second.isFlyer())
 		{
 			_flyingStrength++;
 		}
-		if (u.type.airWeapon() != BWAPI::WeaponTypes::None)
+		if (u.second.type.airWeapon() != BWAPI::WeaponTypes::None)
 		{
 			_antiAirStrength++;
 		}
-		if (u.type.groundWeapon() != BWAPI::WeaponTypes::None)
+		if (u.second.type.groundWeapon() != BWAPI::WeaponTypes::None)
 		{
 			_groundStrength++;
 		}
@@ -149,9 +157,9 @@ std::list<BWTA::Region*> reconstruct_path(const std::unordered_map<BWTA::Region 
 	}
 	return total_path;
 }
-static std::list<BWTA::Region*> UAlbertaBot::getPath(BWTA::Region *from, BWTA::Region *to)
+std::list<BWTA::Region*> UAlbertaBot::getPath(BWTA::Region *from, BWTA::Region *to)
 {
-
+	//Logger::LogAppendToFile(UAB_LOGFILE, "Performing A*");
 	
 	std::unordered_set <BWTA::Region *> closed;
 	std::unordered_set <BWTA::Region *> open;
@@ -230,19 +238,34 @@ static std::list<BWTA::Region*> UAlbertaBot::getPath(BWTA::Region *from, BWTA::R
 	}
 }
 
-static std::vector<BWTA::Region*> UAlbertaBot::getNeighbours(const BWTA::Region *region)
+std::unordered_set<BWTA::Region*> UAlbertaBot::getNeighbours(const BWTA::Region *region)
 {
-	std::vector<BWTA::Region*> neighbours;
+	std::unordered_set<BWTA::Region*> neighbours;
 	for (auto c : region->getChokepoints())
 	{
 		if (c->getRegions().first != region)
 		{
-			neighbours.push_back(c->getRegions().first);
+			neighbours.insert(c->getRegions().first);
 		}
 		else
 		{
-			neighbours.push_back(c->getRegions().second);
+			neighbours.insert(c->getRegions().second);
 		}
 	}
 	return neighbours;
+}
+
+
+std::string HLSquad::toString() const
+{
+	std::stringstream ss;
+
+	ss << "Squad at " << _currentRegion->getCenter() << ", Units: ";
+	for (auto u : _units)
+	{
+		ss << u.second.type.getName() << " ";
+	}
+
+
+	return ss.str();
 }

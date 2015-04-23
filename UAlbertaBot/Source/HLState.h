@@ -41,6 +41,8 @@ namespace UAlbertaBot{
 
 		HLUnitData				_unitData[2];
 		WorkerData				_workerData[2];
+
+		//bool					_opening[2];
 		//BOSS::BuildOrder		_buildOrder[2];
 		//int						_buildOrderIndex[2];
 		int lastSquadUpdate=0;
@@ -61,13 +63,15 @@ namespace UAlbertaBot{
 		HLSquad & getUnassignedSquad(int playerId);
 		void clearOrders();
 		std::vector<std::array<std::vector<int>, 2 > > getCombats() const;
+		void addNewUnitToSquad(const UnitInfo &newUnit);
+		std::vector<HLMove> getMoves(int playerID, int strategy, const std::unordered_map<short, short> &choices) const;
+
 	public:
 		HLState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * player, BWAPI::PlayerInterface * enemy);
 		~HLState();
 
 		std::vector<HLState> getChildren() const;
 		std::vector<HLMove> getMoves(int playerID) const;
-		std::vector<HLMove> getMoves(int playerID, int strategy, const std::unordered_map<short, short> &choices) const;
 		void applyAndForward(const std::array<HLMove, 2> &moves);
 		int evaluate(int playerID) const;
 		bool gameOver() const;
@@ -78,6 +82,8 @@ namespace UAlbertaBot{
 		};
 		//bool undecidedChoicePoint(int playerID, int strategy, const std::unordered_map<short, short> choices) const;
 		//void HLState::doAction(int playerID, const BOSS::ActionType action);
+		static bool HLState::isNonWorkerCombatUnit(const BWAPI::UnitInterface *unit);
+		static bool HLState::isNonWorkerCombatUnit(const UnitInfo &unit);
 	};
 
 	//class HLNode{

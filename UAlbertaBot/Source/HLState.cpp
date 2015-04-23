@@ -1,4 +1,5 @@
 #include "HLState.h"
+#include <random>
 
 using namespace UAlbertaBot;
 
@@ -30,27 +31,54 @@ HLState::HLState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * player, BWA
 			_workerData[enemy->getID()].addWorker(u);
 		}
 	}
+	//_opening[0] = false;
+	//_opening[1] = false;
+
 	//todo: assign worker jobs
 	//3 per gas, 3 per mineral patch, 1 to build, and if scout outside nexus region
 }
 
+bool HLState::isNonWorkerCombatUnit(const BWAPI::UnitInterface *unit)
+{
+	return unit
+		&&unit->isCompleted()
+		&& unit->getHitPoints() > 0
+		&& unit->exists()
+		&& unit->getType() != BWAPI::UnitTypes::Unknown
+		&& unit->getPosition().x != BWAPI::Positions::Unknown.x
+		&& unit->getPosition().y != BWAPI::Positions::Unknown.y
+		&& (unit->getType().canAttack() ||
+		unit->getType() == BWAPI::UnitTypes::Terran_Medic ||
+		unit->getType() == BWAPI::UnitTypes::Protoss_High_Templar ||
+		unit->getType() == BWAPI::UnitTypes::Protoss_Observer) &&
+		!unit->getType().isWorker();
+}
+bool HLState::isNonWorkerCombatUnit(const UnitInfo &unit)
+{
+	return  unit.lastHealth > 0
+		&& unit.type != BWAPI::UnitTypes::Unknown
+		&& unit.lastPosition.x != BWAPI::Positions::Unknown.x
+		&& unit.lastPosition.y != BWAPI::Positions::Unknown.y
+		&& (unit.type.canAttack() ||
+		unit.type == BWAPI::UnitTypes::Terran_Medic ||
+		unit.type == BWAPI::UnitTypes::Protoss_High_Templar ||
+		unit.type == BWAPI::UnitTypes::Protoss_Observer) &&
+		!unit.type.isWorker();
+}
 void HLState::addSquads(const BWAPI::PlayerInterface *player)
 {
 	std::unordered_map < BWTA::Region*, std::vector<UnitInfo> > units;
 	for (auto &unit : player->getUnits()){
-		if (unit
-			&&unit->isCompleted()
-			&& unit->getHitPoints() > 0
-			&& unit->exists()
-			&& unit->getType() != BWAPI::UnitTypes::Unknown
-			&& unit->getPosition().x != BWAPI::Positions::Unknown.x
-			&& unit->getPosition().y != BWAPI::Positions::Unknown.y
-			&& (unit->getType().canAttack() ||
-			unit->getType() == BWAPI::UnitTypes::Terran_Medic ||
-			unit->getType() == BWAPI::UnitTypes::Protoss_High_Templar ||
-			unit->getType() == BWAPI::UnitTypes::Protoss_Observer))
+		if (isNonWorkerCombatUnit(unit))
 		{
-			units[BWTA::getRegion(unit->getPosition())].push_back(UnitInfo(unit));
+			try
+			{
+				units[BWTA::getRegion(unit->getPosition())].push_back(UnitInfo(unit));
+			}
+			catch (...)
+			{
+				Logger::LogAppendToFile(UAB_LOGFILE, "Exception while running BWTA::getRegion(pos), ignoring this unit");
+			}
 		}
 	}
 	for (auto &it : units)
@@ -224,8 +252,53 @@ void HLState::applyAndForward(const std::array<HLMove, 2> &moves)
 	UAB_ASSERT(getRace(0) == BWAPI::Races::Protoss, "Non protoss?");
 	UAB_ASSERT(getRace(1) == BWAPI::Races::Protoss, "Non protoss?");
 
+	BOSS::BuildOrder buildOrder[2];
+	
+	
+	for (int playerId = 0; playerId < 2; playerId++)
+	{
+		//if (_opening[playerId])
+		//{
+		//	std::unordered_map<BOSS::ActionType, int> skipped;
+		//	for (auto build : StrategyManager::getOpeningBookBuildOrder(moves[playerId].getStrategy(), getRace(playerId)))
+		//	{
+		//		BOSS::ActionType action;
+		//		switch (build.type){
+		//		case MetaType::Unit:
+		//			action = BOSS::ActionType(build.unitType);
+		//			break;
+		//		case MetaType::Tech:
+		//			action = BOSS::ActionType(build.techType);
+		//			break;
+		//		case MetaType::Upgrade:
+		//			action = BOSS::ActionType(build.upgradeType);
+		//			break;
+		//		default:
+		//			UAB_ASSERT(false, "Problems with opening book");
+		//		}
 
-	BOSS::BuildOrder buildOrder[2] = { getBuildOrder(moves[0], 0), getBuildOrder(moves[1], 1) };
+		//		if (_state[playerId].getUnitData().getNumTotal(action) - skipped[action] > 0)
+		//		{
+		//			skipped[action]++;
+		//		}
+		//		else
+		//		{
+		//			buildOrder[playerId].add(action);
+		//		}
+
+
+		//	}
+		//	_opening[playerId] = false;
+			//Logger::LogAppendToFile(UAB_LOGFILE, "Using opening book, size: %d\n",buildOrder[playerId].size());
+		//}
+		if (buildOrder[playerId].empty())
+		{
+			buildOrder[playerId] = getBuildOrder(moves[playerId], playerId);
+			//Logger::LogAppendToFile(UAB_LOGFILE, "Using build order planning, size: %d\n", buildOrder[playerId].size());
+		}
+	}
+
+
 
 	//execute build orders
 	unsigned int buildOrderIndex[2] = { 0, 0 };
@@ -248,7 +321,7 @@ void HLState::applyAndForward(const std::array<HLMove, 2> &moves)
 		if (checkChoicePoint(moves[1 - nextPlayer], 1 - nextPlayer))
 		{
 			//Logger::LogAppendToFile(UAB_LOGFILE, "Hit choice point while forwarding 1\n");
-			break;;//if some script hit an internal choice point
+			break;//if some script hit an internal choice point
 		}
 
 		if (nextActionStart[0] == nextActionStart[1]){
@@ -266,7 +339,12 @@ void HLState::applyAndForward(const std::array<HLMove, 2> &moves)
 
 			synchronizeNewUnits(1 - nextPlayer, _state[1 - nextPlayer].fastForward(nextActionStart[nextPlayer]));
 		}
-		forwardSquads(framesToForward);
+		if (framesToForward > 0)
+		{
+			forwardSquads(framesToForward);
+		}
+		UAB_ASSERT(_state[0].getMinerals() >= 0, "negative minerals: " + _state[0].getMinerals());
+		UAB_ASSERT(_state[1].getMinerals() >= 0, "negative minerals: " + _state[1].getMinerals());
 	}
 
 	//make sure both states are at the same frame
@@ -277,7 +355,10 @@ void HLState::applyAndForward(const std::array<HLMove, 2> &moves)
 	else if (frameDiff > 0){
 		synchronizeNewUnits(1, _state[1].fastForward(_state[0].getCurrentFrame()));
 	}
-
+	if (std::abs(frameDiff) > 0)
+	{
+		forwardSquads(std::abs(frameDiff));
+	}
 	//Logger::LogAppendToFile(UAB_LOGFILE, "Finished forwarding\n");
 }
 
@@ -313,6 +394,7 @@ void HLState::synchronizeNewUnits(int playerID, const std::vector<BOSS::ActionTy
 				UnitInfo newUnit(newID, _players[playerID], pos, unit.getUnitType(), true);
 
 				_unitData[playerID].addUnit(newUnit);
+				addNewUnitToSquad(newUnit);
 				//Logger::LogAppendToFile(UAB_LOGFILE, "Added new unit: %s to player %d frame %d\n", newUnit.type.getName().c_str(), playerID, _state[playerID].getCurrentFrame());
 				if (unit.isWorker()){
 					//todo:for now we'll ignore new workers 
@@ -358,11 +440,34 @@ void HLState::synchronizeDeadUnits(const std::array<std::vector<UnitInfo>,2> &un
 			_state[p].removeCompletedAction(BOSS::ActionType(u.type));
 			_unitData[p].removeUnit(u.unitID);
 			_workerData[p].workerDestroyed(u.unit);
-			//todo:_squad update?
+			//_squad updated previously
 		}
 	}
 }
 
+void HLState::addNewUnitToSquad(const UnitInfo &newUnit)
+{
+	if (isNonWorkerCombatUnit(newUnit))
+	{
+		//todo:find squad in region, or create new squad
+		BWTA::Region *r = BWTA::getRegion(newUnit.lastPosition);
+		bool added = false;
+		for (auto &s : _squad[newUnit.player->getID()])
+		{
+			if (s.getCurrentRegion() == r)
+			{
+				s.addUnit(newUnit);
+				added = true;
+				break;
+			}
+		}
+		if (!added)
+		{
+			std::vector<UnitInfo> v(1,newUnit);
+			_squad[newUnit.player->getID()].push_back(HLSquad(v, r));
+		}
+	}
+}
 
 void HLState::assignDefenseSquads()
 {
@@ -464,25 +569,47 @@ std::vector<std::array<std::vector<int>, 2 > > HLState::getCombats() const
 }
 
 
-void HLState::forwardCombat(const std::array<std::vector<int>,2 > &squads, int frames)
+void HLState::forwardCombat(const std::array<std::vector<int>,2 > &squadIndex, int frames)
 {
 
 	CombatSimulation sim;
 	SparCraft::GameState state;
+	static std::random_device rd;
+	static std::mt19937 gen(rd());
+	static std::uniform_int_distribution<> X(100,200);
+	static std::uniform_int_distribution<> Y(-200, 200);
 	for (int p = 0; p < 2; p++)
 	{
-		for (size_t i = 0; i < squads[p].size(); i++)
+		UAB_ASSERT(!squadIndex[p].empty(), "Adding no squads!");
+		for (size_t i = 0; i < squadIndex[p].size(); i++)
 		{
+			const HLSquad &squad = _squad[p][squadIndex[p][i]];
+			UAB_ASSERT(!squad.empty(), "Adding empty squad!");
+			BWAPI::Position squadPos=squad.getCurrentRegion()->getCenter();
 
-			for (auto &unit : _squad[p][squads[p][i]]){
+			for (auto it = squad.begin(); it != squad.end();it++)
+			{
+				const UnitInfo &unit = it->second;
 				if (InformationManager::Instance().isCombatUnit(unit.type)
 					&& SparCraft::System::isSupportedUnitType(unit.type))
 				{
 					try
 					{
-						state.addUnit(sim.getSparCraftUnit(unit));
+						int newX = squadPos.x + (p == 0 ? -1 : 1)*X(gen);
+						if (newX < 0)newX = 0;
+						int newY = squadPos.y + Y(gen);
+						if (newY < 0)newY = 0;
+						SparCraft::Unit u(unit.type,
+							SparCraft::Position(newX,newY),
+							unit.unitID,
+							sim.getSparCraftPlayerID(unit.player),
+							unit.lastHealth,
+							0,
+							currentFrame(),
+							currentFrame());
+						state.addUnitWithID(u);
 					}
-					catch (int e)
+					catch (int e) 
 					{
 						e = 1;
 						BWAPI::Broodwar->printf("Problem Adding Unit with ID: %d", unit.unitID);
@@ -493,7 +620,12 @@ void HLState::forwardCombat(const std::array<std::vector<int>,2 > &squads, int f
 	}
 
 	state.finishedMoving();
-
+	UAB_ASSERT(state.numUnits(SparCraft::Players::Player_One) > 0 && state.numUnits(SparCraft::Players::Player_Two) > 0,
+		"Someone has 0 units in this battle!");
+	if (state.numUnits(SparCraft::Players::Player_One) <= 0 || state.numUnits(SparCraft::Players::Player_Two) <= 0)
+	{
+		Logger::LogAppendToFile(UAB_LOGFILE, state.toString());
+	}
 	std::array<std::vector<UnitInfo>, 2> deadUnits;
 	try
 	{
@@ -503,30 +635,38 @@ void HLState::forwardCombat(const std::array<std::vector<int>,2 > &squads, int f
 		SparCraft::PlayerPtr enemyNOK(new SparCraft::Player_NOKDPS(SparCraft::Players::Player_Two));
 
 		SparCraft::Game g(state, selfNOK, enemyNOK, frames);
-
+		
+		int prev = g.getState().evalLTD2(SparCraft::Players::Player_One);
 		g.play();
-
+		UAB_ASSERT(prev!=g.getState().evalLTD2(SparCraft::Players::Player_One),
+			"LTD2 == before and after combat!");
 		//todo:get dead units
 		for (int p = 0; p < 2; p++)
 		{
-			for (size_t i = 0; i < squads[p].size(); i++)
-			{
-				auto it = _squad[p][squads[p][i]].begin();
-				while (it != _squad[p][squads[p][i]].end())
+			for (size_t i = 0; i < squadIndex[p].size(); i++)
+			{	
+				auto it = _squad[p][squadIndex[p][i]].begin();
+				while (it != _squad[p][squadIndex[p][i]].end())
 				{
 					auto current = it++;
-					auto unit = *current;
+					int id = current->first;
+					//UnitInfo &unit = current->second;
 					try{
-						auto &sparUnit=g.getState().getUnitByID(p, unit.unitID);
+						auto &sparUnit=g.getState().getUnitByID(p, id);
 						if (!sparUnit.isAlive()){
-							_squad[p][squads[p][i]].removeUnit(current);
-							deadUnits[p].push_back(unit);
+							_squad[p][squadIndex[p][i]].removeUnit(id);
+							deadUnits[p].push_back(current->second);
+						}
+						else//unit alive, health might have changed
+						{
+							_squad[p][squadIndex[p][i]][id].lastHealth = sparUnit.currentHP();
 						}
 					}
 					catch (int){
-						_squad[p][squads[p][i]].removeUnit(current);
-						deadUnits[p].push_back(unit);
+						_squad[p][squadIndex[p][i]].removeUnit(id);
+						deadUnits[p].push_back(current->second);
 					}
+
 				}
 			}
 		}
@@ -541,6 +681,8 @@ void HLState::forwardCombat(const std::array<std::vector<int>,2 > &squads, int f
 
 
 	synchronizeDeadUnits(deadUnits);
+
+	//Logger::LogAppendToFile(UAB_LOGFILE, "Combat executed for %d frames", frames);
 }
 
 BWTA::BaseLocation * HLState::getClosestBaseLocation(int playerId, BWTA::Region *r) const
@@ -561,6 +703,7 @@ BWTA::BaseLocation * HLState::getClosestBaseLocation(int playerId, BWTA::Region 
 HLSquad & HLState::getClosestUnassignedSquad(int playerId, const BWTA::Region *r)
 {
 	int min = std::numeric_limits<int>::max(), min_i = -1;
+	bool found = false;
 	for (size_t i = 0; i < _squad[playerId].size(); i++)
 	{
 		auto &s = _squad[playerId][i];
@@ -571,8 +714,13 @@ HLSquad & HLState::getClosestUnassignedSquad(int playerId, const BWTA::Region *r
 			{
 				min = d;
 				min_i = i;
+				found = true;
 			}
 		}
+	}
+	if (!found)
+	{
+		throw std::out_of_range("No squads to assign");
 	}
 	return _squad[playerId][min_i];
 }
@@ -600,6 +748,14 @@ void HLState::clearOrders()
 
 void HLState::forwardSquads(int frames)
 {
+	//delete empty squads
+	for (int playerId = 0; playerId < 2; playerId++)
+	{
+		_squad[playerId].erase(
+			std::remove_if(_squad[playerId].begin(), _squad[playerId].end(), 
+				[](const HLSquad &s){return s.empty(); }),
+			_squad[playerId].end());
+	}
 	//assign orders to squads
 	if ((currentFrame()-lastSquadUpdate)>100)
 	{
@@ -616,7 +772,7 @@ void HLState::forwardSquads(int frames)
 		//if enemy in same region or path
 			//do combat
 	for (auto &combat : getCombats()){
-		forwardCombat(std::array < std::vector<int>, 2 > {{combat.at(0), combat.at(1)}}, frames);
+		forwardCombat(combat, frames);
 		for (int s : combat.at(0))
 		{
 			doneSquads[0][s] = true;
@@ -667,6 +823,14 @@ std::vector<HLMove> HLState::getMoves(int playerID, int strategy, const std::uno
 std::vector<HLMove> HLState::getMoves(int playerID) const
 {
 	std::vector<HLMove> moves;
+	//if (_opening[playerID]){
+	//	std::vector<HLMove> moves;
+	//	for (int s = 0; s < StrategyManager::getNumStrategies(getRace(playerID)); s++)
+	//	{
+	//		moves.push_back(HLMove(s));
+	//	}
+	//	return moves;
+	//}
 
 	for (int s = 0; s < StrategyManager::getNumStrategies(getRace(playerID));s++){
 
@@ -776,18 +940,20 @@ int HLState::evaluate(int playerID) const
 	{
 		
 		SparCraft::PlayerPtr selfNOK(new SparCraft::Player_NOKDPS(
-			playerID == BWAPI::Broodwar->self()->getID() ? SparCraft::Players::Player_One : SparCraft::Players::Player_Two));
+			playerID == BWAPI::Broodwar->self()->getID() ? 
+			SparCraft::Players::Player_One : SparCraft::Players::Player_Two));
 
 		SparCraft::PlayerPtr enemyNOK(new SparCraft::Player_NOKDPS(
-			playerID == BWAPI::Broodwar->enemy()->getID() ? SparCraft::Players::Player_One : SparCraft::Players::Player_Two));
+			playerID == BWAPI::Broodwar->enemy()->getID() ? 
+			SparCraft::Players::Player_One : SparCraft::Players::Player_Two));
 
 		SparCraft::Game g(state, selfNOK, enemyNOK, 2000);
 
 		//g.play();
 
-		SparCraft::ScoreType eval = g.getState().eval(
-			playerID == BWAPI::Broodwar->self()->getID() ? SparCraft::Players::Player_One : SparCraft::Players::Player_Two
-			, SparCraft::EvaluationMethods::LTD2).val();
+		SparCraft::ScoreType eval = g.getState().evalLTD2(
+			playerID == BWAPI::Broodwar->self()->getID() ? 
+			SparCraft::Players::Player_One : SparCraft::Players::Player_Two);
 
 		return eval;
 	}
