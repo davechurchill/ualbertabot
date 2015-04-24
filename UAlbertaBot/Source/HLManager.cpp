@@ -1,10 +1,12 @@
 #include "HLManager.h"
+#include "base/ProductionManager.h"
 
 using namespace UAlbertaBot;
 
 HLManager::HLManager()
 {
 	BWAPI::Broodwar->printf("High Level Manager Instantiated");
+	Logger::LogAppendToFile(UAB_LOGFILE, "State size: %d", sizeof(HLState));
 }
 
 
@@ -23,13 +25,20 @@ void HLManager::update(
 	std::set<BWAPI::UnitInterface*> scoutUnits,
 	std::set<BWAPI::UnitInterface*> workerUnits)
 {
-	//scoutManager.update(HLSearch::Instance().getScouts());
+
+	static bool firstRun = true;
 	static int frame = 0;
-	if (frame++==1){
-		//BWAPI::Broodwar->printf("Race: %d %s", BWAPI::Broodwar->enemy()->getRace().getID(), BWAPI::Broodwar->enemy()->getRace().c_str());
-		//BWAPI::Broodwar->printf("UnitRace: %s", (*BWAPI::Broodwar->enemy()->getUnits().begin())->getType().getRace().c_str());
-		HLSearch::Instance().search(1000); 
-		StrategyManager::Instance().setCurrentStrategy(HLSearch::Instance().getStrategy());
+	if ((firstRun && !ProductionManager::Instance().runningOpeningBook())
+		||(!firstRun && (++frame%1500==0)))
+	{
+		firstRun = false;
+		_search.search(5000, 10000); 
+		auto move = _search.getBestMove();
+		StrategyManager::Instance().setCurrentStrategy(move.getStrategy(),move.getChoices());
+		BWAPI::Broodwar->printf("Setting move %s\n", move.toString().c_str());
+		Logger::LogAppendToFile(UAB_LOGFILE, "Setting move %s\n", move.toString().c_str());
+
+		ProductionManager::Instance().purgeQueue();
 	}
-	
+
 }

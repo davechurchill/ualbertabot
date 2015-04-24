@@ -3,6 +3,7 @@
 #include "Squad.h"
 #include "HLState.h"
 #include "HLStatistics.h"
+#include "HLTranspositionTable.h"
 
 namespace UAlbertaBot
 {
@@ -12,19 +13,23 @@ namespace UAlbertaBot
 		//std::list<std::pair<int, int> >		_strategicPV;//frame,strategy
 		//std::list<std::pair<int, Squad> >	_tacticalPV;//frame,squad
 		//todo:switch these to priority_queues?
-	
-		HLSearch();
-		~HLSearch();
+
 
 		HLStatistics _stats;
 
 		HLMove _bestMove;	//saved by the search
-		int alphaBeta(const HLState& state, int depth, int frameLimit, int turn, const HLMove &firstSideMove, int alpha, int beta);
-		void uct(const HLState &state, int playouts);
+		int alphaBeta(const HLState& state, int depth, int height, int frameLimit, int turn, const HLMove &firstSideMove, int alpha, int beta);
+		//void uct(const HLState &state, int playouts);
+		//const int _defaultStrategy = 0;
+		HLTranspositionTable _tt;
+		HLCacheTable _cache;
+		bool _timeUp;
+		int _timeLimitMs;
 	public:
-		static HLSearch &Instance();
-
-		void search(double timeLimit);
+		HLSearch(const UAlbertaBot::HLSearch &) = delete;
+		HLSearch();
+		~HLSearch();
+		void search(double timeLimit, int frameLimit);
 
 		//std::vector<Squad> getSquads(const std::set<BWAPI::UnitInterface*> & combatUnits);//get Squads and orders
 		//std::set<BWAPI::UnitInterface*> getScouts();

@@ -8,10 +8,10 @@ namespace UAlbertaBot{
 	private:
 		std::chrono::time_point<std::chrono::high_resolution_clock>  startTime;
 		int nodeCount;
-		//int TTqueries;
-		//int TTfound;
-		//int TTusefull;
-		//int TTcutoff;
+		int TTqueries;
+		int TTfound;
+		int cacheQueries;
+		int cacheFound;
 		int branches;
 		int searches;
 		//int hashCol;
@@ -21,10 +21,10 @@ namespace UAlbertaBot{
 		HLStatistics();
 		void clear(){
 			nodeCount = 0;
-			//TTqueries = 0;
-			//TTfound = 0;
-			//TTusefull = 0;
-			//TTcutoff = 0;
+			TTqueries = 0;
+			TTfound = 0;
+			cacheQueries = 0;
+			cacheFound = 0;
 			branches = 0;
 			searches = 0;
 			//hashCol = 0;
@@ -39,12 +39,7 @@ namespace UAlbertaBot{
 		long long getRunningTimeMilliSecs() const{
 			return  std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - startTime).count();
 		}
-		//void incHashCollisions(){
-		//	hashCol++;
-		//}
-		//int getHashCollisions(){
-		//	return hashCol;
-		//}
+
 		void incNodeCount(){
 			nodeCount++;
 		}
@@ -54,30 +49,30 @@ namespace UAlbertaBot{
 		double getNodesSec() const{
 			return ((float)nodeCount) / getRunningTimeMilliSecs()*1000.0;
 		}
-		//void incTTquery(){
-		//	TTqueries++;
-		//}
-		//int getTTqueries() const{
-		//	return TTqueries;
-		//}
-		//void incTTfound(){
-		//	TTfound++;
-		//}
-		//int getTTfound() const{
-		//	return TTfound;
-		//}
-		//void incTTusefull(){
-		//	TTusefull++;
-		//}
-		//int getTTusefull() const{
-		//	return TTusefull;
-		//}
-		//void incTTcutoff(){
-		//	TTcutoff++;
-		//}
-		//int getTTcutoff() const{
-		//	return TTcutoff;
-		//}
+		void incTTquery(){
+			TTqueries++;
+		}
+		int getTTqueries() const{
+			return TTqueries;
+		}
+		void incTTfound(){
+			TTfound++;
+		}
+		int getTTfound() const{
+			return TTfound;
+		}
+		void incCacheQuery(){
+			cacheQueries++;
+		}
+		int getCacheQueries() const{
+			return cacheQueries;
+		}
+		void incCacheFound(){
+			cacheFound++;
+		}
+		int getCacheFound() const{
+			return cacheFound;
+		}
 
 		void addFwd(int length){
 			forwardLength += length;

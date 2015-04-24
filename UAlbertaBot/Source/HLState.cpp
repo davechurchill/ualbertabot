@@ -3,6 +3,10 @@
 
 using namespace UAlbertaBot;
 
+unsigned int HLState::_zobristChoice[10][5][20][10];
+unsigned int HLState::_zobristStrategy[10][5];
+//_dummy_static_initializer _dummy;
+
 
 HLState::HLState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * player, BWAPI::PlayerInterface * enemy)
 {
@@ -36,6 +40,19 @@ HLState::HLState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * player, BWA
 
 	//todo: assign worker jobs
 	//3 per gas, 3 per mineral patch, 1 to build, and if scout outside nexus region
+
+	static std::mt19937 rng(1);//todo:use a seed?
+	for (int depth = 0; depth < 10; depth++){
+		for (int s = 0; s < 5; s++){
+			_zobristStrategy[depth][s] = rng();
+			for (int point = 0; point < 20; point++){
+				for (auto c = 0; c < 10; c++){
+					_zobristChoice[depth][s][point][c] = rng();
+				}
+			}
+		}
+	}
+	_hash = rng();
 }
 
 bool HLState::isNonWorkerCombatUnit(const BWAPI::UnitInterface *unit)
@@ -247,8 +264,10 @@ BOSS::BuildOrder HLState::getBuildOrder(const HLMove &move, int playerID) const
 
 
 
-void HLState::applyAndForward(const std::array<HLMove, 2> &moves)
+void HLState::applyAndForward(int depth, const std::array<HLMove, 2> &moves)
 {
+
+	_hash = getHash(depth, moves);
 	UAB_ASSERT(getRace(0) == BWAPI::Races::Protoss, "Non protoss?");
 	UAB_ASSERT(getRace(1) == BWAPI::Races::Protoss, "Non protoss?");
 

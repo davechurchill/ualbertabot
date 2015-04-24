@@ -4,6 +4,8 @@
 #include "Squad.h"
 #include "HLUnitData.h"
 #include "HLSquad.h"
+#include <random>
+#include <array>
 
 namespace UAlbertaBot{
 
@@ -29,6 +31,17 @@ namespace UAlbertaBot{
 		};
 		bool isEmpty() const{ return _strategy == -1; };
 		std::string toString() const;
+		bool operator==(const HLMove &m) const
+		{
+			return _strategy == m._strategy && _choices == m._choices;
+		}
+		//HLMove& operator=(const HLMove &m)
+		//{
+		//	_strategy = m._strategy;
+		//	_choices = m._choices;
+
+		//	return *this;
+		//}
 	};
 
 
@@ -42,6 +55,12 @@ namespace UAlbertaBot{
 		HLUnitData				_unitData[2];
 		WorkerData				_workerData[2];
 
+
+
+		static unsigned int				_zobristChoice[10][5][20][10];//10 depth, 5 strategies, 20 choice points, 10 choices each
+		static unsigned int				_zobristStrategy[10][5];
+
+		unsigned int						_hash;
 		//bool					_opening[2];
 		//BOSS::BuildOrder		_buildOrder[2];
 		//int						_buildOrderIndex[2];
@@ -67,12 +86,13 @@ namespace UAlbertaBot{
 		std::vector<HLMove> getMoves(int playerID, int strategy, const std::unordered_map<short, short> &choices) const;
 
 	public:
+		HLState(){}
 		HLState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * player, BWAPI::PlayerInterface * enemy);
 		~HLState();
 
 		std::vector<HLState> getChildren() const;
 		std::vector<HLMove> getMoves(int playerID) const;
-		void applyAndForward(const std::array<HLMove, 2> &moves);
+		void applyAndForward(int depth, const std::array<HLMove, 2> &moves);
 		int evaluate(int playerID) const;
 		bool gameOver() const;
 		friend class HLSearch;
@@ -84,11 +104,50 @@ namespace UAlbertaBot{
 		//void HLState::doAction(int playerID, const BOSS::ActionType action);
 		static bool HLState::isNonWorkerCombatUnit(const BWAPI::UnitInterface *unit);
 		static bool HLState::isNonWorkerCombatUnit(const UnitInfo &unit);
+		unsigned int getHash(int depth, const std::array < HLMove, 2 >  &moves) const
+		{
+			unsigned int hash = _hash;
+			for (int p = 0; p < 2; p++)
+			{
+				hash ^= _zobristStrategy[depth-p][moves.at(p).getStrategy()];
+				for (auto c : moves.at(p).getChoices())
+				{
+					hash ^= _zobristChoice[depth - p][moves.at(p).getStrategy()][c.first][c.second];
+				}
+			}
+			return hash;
+		}
+		unsigned int getHash(int depth, const HLMove  &move) const
+		{
+			unsigned int hash = _hash;
+			hash ^= _zobristStrategy[depth][move.getStrategy()];
+			for (auto c : move.getChoices())
+			{
+				hash ^= _zobristChoice[depth][move.getStrategy()][c.first][c.second];
+			}
+
+			return hash;
+		}
+		unsigned int getHash() const { return _hash; }
+	//	friend struct _dummy_static_initializer;
 	};
 
-	//class HLNode{
-	//	HLState _state;
-	//	HLNode *_children;
+	//struct _dummy_static_initializer{
+	//	_dummy_static_initializer(){
+	//		std::mt19937 rng(1);//todo:use a seed?
+	//		for (int depth = 0; depth < 10; depth++){
+	//			for (int s = 0; s < 5; s++){
+	//				HLState::_zobristStrategy[depth][s] = rng();
+	//				Logger::LogAppendToFile(UAB_LOGFILE, "\n");
+	//				for (int point = 0; point < 20; point++){
+	//					for (auto c = 0; c < 10; c++){
+	//						HLState::_zobristChoice[depth][s][point][c] = rng();
+	//						Logger::LogAppendToFile(UAB_LOGFILE, "%u ", HLState::_zobristChoice[depth][s][point][c]);
+	//					}
+	//				}
+	//			}
+	//		}
+	//	}
 	//};
 
 	
