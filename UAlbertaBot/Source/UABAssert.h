@@ -12,7 +12,7 @@
 
 #define UAB_LOGFILE "ualbertabot_error_log.txt"
 
-#define UAB_BREAK __debugbreak();
+#define UAB_BREAK
 
 #define UAB_ASSERT_ALL
 

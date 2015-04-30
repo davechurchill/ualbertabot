@@ -286,8 +286,8 @@ std::vector<ActionType> GameState::doAction(const ActionType & action)
     FrameCountType elapsed(_currentFrame - _lastActionFrame);
     _lastActionFrame = _currentFrame;
 
-    BOSS_ASSERT(canAffordMinerals(action),   "Minerals less than price: %lf < %d, ffTime=%d %s", _minerals, action.mineralPrice(), (int)elapsed, action.getName().c_str());
-    BOSS_ASSERT(canAffordGas(action),       "Gas less than price: %lf < %d, ffTime=%d %s", _gas, (int)action.gasPrice(), (int)elapsed, action.getName().c_str());
+    BOSS_ASSERT(canAffordMinerals(action),   "Minerals less than price: %ld < %d, ffTime=%d %s", _minerals, action.mineralPrice(), (int)elapsed, action.getName().c_str());
+    BOSS_ASSERT(canAffordGas(action),       "Gas less than price: %ld < %d, ffTime=%d %s", _gas, action.gasPrice(), (int)elapsed, action.getName().c_str());
 
     // modify our resources
     _minerals   -= action.mineralPrice();

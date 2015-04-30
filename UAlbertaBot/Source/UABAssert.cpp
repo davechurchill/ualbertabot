@@ -13,7 +13,8 @@ namespace Assert
         time_t     now = time(0);
         struct tm  tstruct;
         char       buf[80];
-        tstruct = *localtime(&now);
+        //tstruct = *localtime(&now);
+		localtime_s(&tstruct, &now);
         strftime(buf, sizeof(buf), "%Y-%m-%d_%X", &tstruct);
 
         return buf;
@@ -26,7 +27,8 @@ namespace Assert
         {
             va_list args;
             va_start(args, msg);
-            vsprintf(messageBuffer, msg, args);
+            //vsprintf(messageBuffer, msg, args);
+			vsnprintf_s(messageBuffer, 1024, msg, args);
             va_end(args);
         }
 
