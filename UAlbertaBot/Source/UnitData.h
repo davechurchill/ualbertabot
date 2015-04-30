@@ -101,6 +101,34 @@ struct UnitInfo
 	{
 		return (unitID < rhs.unitID);
 	}
+
+	float dpf(bool ground=true) const
+	{
+		return (float)damage(ground) / ((float)coolDown(ground) + 1.0f);
+	}
+	int damage(bool ground = true) const
+	{
+		if (ground)
+		{
+			return type == BWAPI::UnitTypes::Protoss_Zealot ? 
+				2 * type.groundWeapon().damageAmount() : type.groundWeapon().damageAmount();
+		}
+		else
+		{
+			return type.airWeapon().damageAmount();
+		}
+	}
+	int coolDown(bool ground = true) const
+	{
+		if (ground)
+		{
+			return type.groundWeapon().damageCooldown();
+		}
+		else
+		{
+			return type.airWeapon().damageCooldown();
+		}
+	}
 };
 
 typedef std::vector<UnitInfo> UnitInfoVector;

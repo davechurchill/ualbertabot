@@ -1,7 +1,7 @@
 #include "HLUnitData.h"
 using namespace UAlbertaBot;
 
-HLUnitData::HLUnitData() :_highestID(-1), mineralsLost(0), gasLost(0)
+HLUnitData::HLUnitData() :_highestID(-1), mineralsLost(0), gasLost(0), _player(NULL)
 {
 	int maxTypeID(0);
 	for (const BWAPI::UnitType & t : BWAPI::UnitTypes::allUnitTypes())
@@ -13,8 +13,12 @@ HLUnitData::HLUnitData() :_highestID(-1), mineralsLost(0), gasLost(0)
 	numUnits = std::vector<int>(maxTypeID + 1, 0);
 	numCompletedUnits = std::vector<int>(maxTypeID + 1, 0);
 }
+HLUnitData::HLUnitData(BWAPI::Player player) :HLUnitData()
+{
+	_player = player;
+}
 
-HLUnitData::HLUnitData(const UnitData &data) : HLUnitData()
+HLUnitData::HLUnitData(const UnitData &data, BWAPI::Player player) : HLUnitData(player)
 {
 	for (auto unit : data.getUnits()){
 		addUnit(unit.second);
@@ -169,7 +173,14 @@ void HLUnitData::addUnit(const UnitInfo &unit)
 	}
 	if (unit.type.isBuilding())
 	{
-		_baseRegions.insert(BWTA::getRegion(unit.lastPosition));
+		try
+		{
+			_baseRegions.insert(BWTA::getRegion(unit.lastPosition));
+		}
+		catch (...)
+		{
+			Logger::LogAppendToFile(UAB_LOGFILE, "Exception at BWTA::getRegion(%d, %d), ignoring unit", unit.lastPosition.x, unit.lastPosition.y);
+		}
 	}
 }
 
