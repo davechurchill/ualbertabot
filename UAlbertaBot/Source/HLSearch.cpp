@@ -14,17 +14,27 @@ HLSearch::~HLSearch()
 
 void HLSearch::search(double timeLimit, int frameLimit)
 {
-	Logger::LogAppendToFile(UAB_LOGFILE, "\n\nStarting search at frame %d\n", BWAPI::Broodwar->getFrameCount());
+	
 	_stats.clear();
 	_stats.startTimer();
 	_timeUp = false;
 	_timeLimitMs = timeLimit;
 	HLState state(BWAPI::Broodwar, BWAPI::Broodwar->self(), BWAPI::Broodwar->enemy());
+	Logger::LogAppendToFile(UAB_LOGFILE, "\n\nStarting search at frame %d, static eval: %d\n", 
+		BWAPI::Broodwar->getFrameCount(), 
+		state.evaluate(BWAPI::Broodwar->self()->getID()));
+
+	if (state.evaluate(BWAPI::Broodwar->self()->getID()) > 500)
+	{
+		Logger::LogAppendToFile(UAB_LOGFILE, "Game seems decided, skipping HL search\n");
+		//return;
+	}
 	Logger::LogAppendToFile(UAB_LOGFILE, _stats.header() + "\n"); 
 	for (int height = 2; height <= 20 && !_timeUp; height += 2)
 	{
 		int score = alphaBeta(state, 0, height, state.currentFrame() + frameLimit, BWAPI::Broodwar->self()->getID(), HLMove(), MIN_SCORE, MAX_SCORE);
-		Logger::LogAppendToFile(UAB_LOGFILE, _stats.toString() + "\n");
+		Logger::LogAppendToFile(UAB_LOGFILE, _stats.toString());
+		Logger::LogAppendToFile(UAB_LOGFILE, " %d %s\n", score, _bestMove.toString().c_str());
 	}
 
 
@@ -129,7 +139,7 @@ int HLSearch::alphaBeta(const HLState& state, int depth, int height, int frameLi
 					//Logger::LogAppendToFile(UAB_LOGFILE, " hashes: %u %u\n", entry._hash, entry._state.getHash());
 					if (state.currentFrame() == entry._state.currentFrame()){//didn't progress
 						continue;
-					}
+					} 
 					value = alphaBeta(entry._state, depth + 1, height - 1, frameLimit, 1 - turn, HLMove(), -beta, -al);
 				}
 				else

@@ -12,23 +12,23 @@ HLCombatCommander::~HLCombatCommander()
 
 void HLCombatCommander::update(std::set<BWAPI::UnitInterface*> combatUnits)
 {
-	if (squadUpdateFrame())
-	{
-		// clear all squad data
-		squadData.clearSquadData();
+	//if (squadUpdateFrame())
+	//{
+	//	// clear all squad data
+	//	squadData.clearSquadData();
 
-		// give back combat workers to worker manager
-		WorkerManager::Instance().finishedWithCombatWorkers();
+	//	// give back combat workers to worker manager
+	//	WorkerManager::Instance().finishedWithCombatWorkers();
 
-		for (auto& s : HLSearch::Instance().getSquads(combatUnits)){
-			squadData.addSquad(s);
-		}
-	}
+	//	for (auto& s : HLSearch::Instance().getSquads(combatUnits)){
+	//		squadData.addSquad(s);
+	//	}
+	//}
 
-	squadData.update();
+	//squadData.update();
 
 
-	//combatCommander.update(combatUnits);
+	combatCommander.update(combatUnits);
 }
 
 

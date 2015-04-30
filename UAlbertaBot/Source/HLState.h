@@ -78,7 +78,7 @@ namespace UAlbertaBot{
 		void assignAttackSquads();
 		void forwardCombat(const std::array<std::vector<int>, 2 > &squads, int frames);
 		BWTA::BaseLocation * getClosestBaseLocation(int playerId, BWTA::Region *r) const;
-		HLSquad & getClosestUnassignedSquad(int playerId, const BWTA::Region *r);
+		int getClosestUnassignedSquad(int playerId, const BWTA::Region *r, const std::vector<bool> skip);
 		HLSquad & getUnassignedSquad(int playerId);
 		void clearOrders();
 		std::vector<std::array<std::vector<int>, 2 > > getCombats() const;

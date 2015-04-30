@@ -25,8 +25,8 @@ HLState::HLState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * player, BWA
 	//_buildOrderIndex[1] = 0;
 
 	//TODO:change this to take UnitData as parameter
-	_unitData[player->getID()] = InformationManager::Instance().getUnitData(player);
-	_unitData[enemy->getID()] = InformationManager::Instance().getUnitData(enemy);
+	_unitData[player->getID()] = HLUnitData(InformationManager::Instance().getUnitData(player),player);
+	_unitData[enemy->getID()] = HLUnitData(InformationManager::Instance().getUnitData(enemy), player);
 
 	_workerData[player->getID()] = WorkerManager::Instance().getData();
 	_workerData[enemy->getID()]	= WorkerData();
@@ -57,30 +57,33 @@ HLState::HLState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * player, BWA
 
 bool HLState::isNonWorkerCombatUnit(const BWAPI::UnitInterface *unit)
 {
+	//if (unit->getType() == BWAPI::UnitTypes::Protoss_Dark_Templar)
+	//{
+	//	UAB_ASSERT(InformationManager::Instance().isCombatUnit(unit->getType())
+	//		&& SparCraft::System::isSupportedUnitType(unit->getType()), "Dark templar is not supported :(");
+	//}
 	return unit
 		&&unit->isCompleted()
 		&& unit->getHitPoints() > 0
 		&& unit->exists()
 		&& unit->getType() != BWAPI::UnitTypes::Unknown
-		&& unit->getPosition().x != BWAPI::Positions::Unknown.x
-		&& unit->getPosition().y != BWAPI::Positions::Unknown.y
-		&& (unit->getType().canAttack() ||
-		unit->getType() == BWAPI::UnitTypes::Terran_Medic ||
-		unit->getType() == BWAPI::UnitTypes::Protoss_High_Templar ||
-		unit->getType() == BWAPI::UnitTypes::Protoss_Observer) &&
-		!unit->getType().isWorker();
+		&& unit->getPosition().isValid()
+		&& InformationManager::Instance().isCombatUnit(unit->getType()) 
+		&& SparCraft::System::isSupportedUnitType(unit->getType());
 }
 bool HLState::isNonWorkerCombatUnit(const UnitInfo &unit)
 {
+	//if (unit.type == BWAPI::UnitTypes::Protoss_Dark_Templar)
+	//{
+	//	UAB_ASSERT(InformationManager::Instance().isCombatUnit(unit.type)
+	//		&& SparCraft::System::isSupportedUnitType(unit.type), "Dark templar is not supported :(");
+	//}
+	
 	return  unit.lastHealth > 0
 		&& unit.type != BWAPI::UnitTypes::Unknown
-		&& unit.lastPosition.x != BWAPI::Positions::Unknown.x
-		&& unit.lastPosition.y != BWAPI::Positions::Unknown.y
-		&& (unit.type.canAttack() ||
-		unit.type == BWAPI::UnitTypes::Terran_Medic ||
-		unit.type == BWAPI::UnitTypes::Protoss_High_Templar ||
-		unit.type == BWAPI::UnitTypes::Protoss_Observer) &&
-		!unit.type.isWorker();
+		&& unit.lastPosition.isValid()
+		&& InformationManager::Instance().isCombatUnit(unit.type) 
+		&& SparCraft::System::isSupportedUnitType(unit.type);
 }
 void HLState::addSquads(const BWAPI::PlayerInterface *player)
 {
@@ -94,7 +97,7 @@ void HLState::addSquads(const BWAPI::PlayerInterface *player)
 			}
 			catch (...)
 			{
-				Logger::LogAppendToFile(UAB_LOGFILE, "Exception while running BWTA::getRegion(pos), ignoring this unit");
+				Logger::LogAppendToFile(UAB_LOGFILE, "Exception while running BWTA::getRegion(%d, %d), ignoring this unit", unit->getPosition().x, unit->getPosition().y);
 			}
 		}
 	}
@@ -506,27 +509,40 @@ void HLState::assignDefenseSquads()
 				}
 			}
 
-			//assign closest squads to region to defend until we outnumber enemies
-			while ((enemyFlyingStrength > 0) || (enemyGroundStrength > 0))
-			{
-				try
-				{
-					HLSquad &s = getClosestUnassignedSquad(playerId,r);
 
-					if ((enemyFlyingStrength > 0) && (s.getAntiAirStrength() > 0))
-					{
-						s.order(HLSquadOrder(HLSquadOrder::Defend, r));
-						enemyFlyingStrength -= s.getAntiAirStrength();
-					}
-					else if ((enemyGroundStrength > 0) && (s.getGroundStrength() > 0))
-					{
-						s.order(HLSquadOrder(HLSquadOrder::Defend, r));
-						enemyGroundStrength -= s.getGroundStrength();
-					}
-				}
-				catch (...)
+			std::vector<bool> skip(_squad[playerId].size(),false);
+			//assign closest squads to region to defend until we outnumber enemies
+			while (enemyFlyingStrength > 0)
+			{
+				int i = getClosestUnassignedSquad(playerId, r, skip);
+				if (i < 0)break;
+				HLSquad &s = _squad[playerId][i];
+
+				if ((enemyFlyingStrength > 0) && (s.getAntiAirStrength() > 0))
 				{
-					break;
+					s.order(HLSquadOrder(HLSquadOrder::Defend, r));
+					enemyFlyingStrength -= s.getAntiAirStrength();
+				}
+				else
+				{
+					skip[i] = true;
+				}
+			}
+			skip = std::vector<bool>(_squad[playerId].size(), false);
+			while (enemyGroundStrength > 0)
+			{
+				int i = getClosestUnassignedSquad(playerId, r, skip);
+				if (i < 0)break;
+				HLSquad &s = _squad[playerId][i];
+
+				if ((enemyGroundStrength > 0) && (s.getGroundStrength() > 0))
+				{
+					s.order(HLSquadOrder(HLSquadOrder::Defend, r));
+					enemyGroundStrength -= s.getGroundStrength();
+				}
+				else
+				{
+					skip[i] = true;
 				}
 			}
 		}
@@ -631,7 +647,7 @@ void HLState::forwardCombat(const std::array<std::vector<int>,2 > &squadIndex, i
 					catch (int e) 
 					{
 						e = 1;
-						BWAPI::Broodwar->printf("Problem Adding Unit with ID: %d", unit.unitID);
+						Logger::LogAppendToFile(UAB_LOGFILE,"Problem Adding Unit with ID: %d", unit.unitID);
 					}
 				}
 			}
@@ -644,6 +660,22 @@ void HLState::forwardCombat(const std::array<std::vector<int>,2 > &squadIndex, i
 	if (state.numUnits(SparCraft::Players::Player_One) <= 0 || state.numUnits(SparCraft::Players::Player_Two) <= 0)
 	{
 		Logger::LogAppendToFile(UAB_LOGFILE, state.toString());
+		for (int p = 0; p < 2; p++)
+		{
+			Logger::LogAppendToFile(UAB_LOGFILE, "Player %d\n", p);
+			for (size_t i = 0; i < squadIndex[p].size(); i++)
+			{
+				Logger::LogAppendToFile(UAB_LOGFILE, "Squad %d\n", i);
+				const HLSquad &squad = _squad[p][squadIndex[p][i]];
+				BWAPI::Position squadPos = squad.getCurrentRegion()->getCenter();
+
+				for (auto it = squad.begin(); it != squad.end(); it++)
+				{
+					const UnitInfo &unit = it->second;
+					Logger::LogAppendToFile(UAB_LOGFILE, "	%s", unit.type.getName().c_str());
+				}
+			}
+		}
 	}
 	std::array<std::vector<UnitInfo>, 2> deadUnits;
 	try
@@ -658,7 +690,7 @@ void HLState::forwardCombat(const std::array<std::vector<int>,2 > &squadIndex, i
 		int prev = g.getState().evalLTD2(SparCraft::Players::Player_One);
 		g.play();
 		UAB_ASSERT(prev!=g.getState().evalLTD2(SparCraft::Players::Player_One),
-			"LTD2 == before and after combat!");
+			"LTD2 == before and after combat! Length: %d frames\n%s",frames,state.toString());
 		//todo:get dead units
 		for (int p = 0; p < 2; p++)
 		{
@@ -667,14 +699,14 @@ void HLState::forwardCombat(const std::array<std::vector<int>,2 > &squadIndex, i
 				auto it = _squad[p][squadIndex[p][i]].begin();
 				while (it != _squad[p][squadIndex[p][i]].end())
 				{
-					auto current = it++;
-					int id = current->first;
-					//UnitInfo &unit = current->second;
+					int id = it->first;
+					UnitInfo unit = it->second;
+					it++;
 					try{
 						auto &sparUnit=g.getState().getUnitByID(p, id);
 						if (!sparUnit.isAlive()){
 							_squad[p][squadIndex[p][i]].removeUnit(id);
-							deadUnits[p].push_back(current->second);
+							deadUnits[p].push_back(unit);
 						}
 						else//unit alive, health might have changed
 						{
@@ -683,7 +715,7 @@ void HLState::forwardCombat(const std::array<std::vector<int>,2 > &squadIndex, i
 					}
 					catch (int){
 						_squad[p][squadIndex[p][i]].removeUnit(id);
-						deadUnits[p].push_back(current->second);
+						deadUnits[p].push_back(unit);
 					}
 
 				}
@@ -719,12 +751,12 @@ BWTA::BaseLocation * HLState::getClosestBaseLocation(int playerId, BWTA::Region 
 	}
 	return min_base;
 }
-HLSquad & HLState::getClosestUnassignedSquad(int playerId, const BWTA::Region *r)
+int HLState::getClosestUnassignedSquad(int playerId, const BWTA::Region *r, const std::vector<bool> skip)
 {
 	int min = std::numeric_limits<int>::max(), min_i = -1;
-	bool found = false;
 	for (size_t i = 0; i < _squad[playerId].size(); i++)
 	{
+		if (skip[i])continue;
 		auto &s = _squad[playerId][i];
 		if ((s.order()._type == HLSquadOrder::None))
 		{
@@ -733,15 +765,10 @@ HLSquad & HLState::getClosestUnassignedSquad(int playerId, const BWTA::Region *r
 			{
 				min = d;
 				min_i = i;
-				found = true;
 			}
 		}
 	}
-	if (!found)
-	{
-		throw std::out_of_range("No squads to assign");
-	}
-	return _squad[playerId][min_i];
+	return min_i;
 }
 HLSquad & HLState::getUnassignedSquad(int playerId)
 {
@@ -918,70 +945,26 @@ std::vector<HLMove> HLState::getMoves(int playerID) const
 
 int HLState::evaluate(int playerID) const
 {
-	CombatSimulation sim;
-	SparCraft::GameState state;
+	//CombatSimulation sim;
+	//SparCraft::GameState state;
+
+	float sum[2] = { 0.0f, 0.0f };
 
 	for (auto &unit : _unitData[playerID].getUnits()){
-		if (InformationManager::Instance().isCombatUnit(unit.second.type) 
-			&& SparCraft::System::isSupportedUnitType(unit.second.type))
-		{
-			try
-			{
-				state.addUnit(sim.getSparCraftUnit(unit.second));
-			}
-			catch (int e)
-			{
-				e = 1;
-				BWAPI::Broodwar->printf("Problem Adding Self Unit with ID: %d", unit.second.unitID);
-			}
-		}
+		//if (unit.second.type==BWAPI::UnitTypes::Protoss_Dark_Templar)
+		//	sum[playerID] += 1000;
+		sum[playerID] += sqrtf(unit.second.lastHealth) * unit.second.dpf();
 	}
 
 	for (auto &unit : _unitData[1 - playerID].getUnits()){
-		if (!unit.second.type.isFlyer() && SparCraft::System::isSupportedUnitType(unit.second.type) && unit.second.completed)
-		{
-			try
-			{
-				state.addUnit(sim.getSparCraftUnit(unit.second));
-			}
-			catch (int e)
-			{
-				BWAPI::Broodwar->printf("Problem Adding Enemy Unit with ID: %d %d", unit.second.unitID, e);
-			}
-		}
+		//if (unit.second.type == BWAPI::UnitTypes::Protoss_Dark_Templar)
+		//	sum[1-playerID] += 1000;
+		sum[1-playerID] += sqrtf(unit.second.lastHealth) * unit.second.dpf();
 	}
+
+	return sum[playerID] - sum[1 - playerID];
 
 	
-
-	state.finishedMoving();
-
-	try
-	{
-		
-		SparCraft::PlayerPtr selfNOK(new SparCraft::Player_NOKDPS(
-			playerID == BWAPI::Broodwar->self()->getID() ? 
-			SparCraft::Players::Player_One : SparCraft::Players::Player_Two));
-
-		SparCraft::PlayerPtr enemyNOK(new SparCraft::Player_NOKDPS(
-			playerID == BWAPI::Broodwar->enemy()->getID() ? 
-			SparCraft::Players::Player_One : SparCraft::Players::Player_Two));
-
-		SparCraft::Game g(state, selfNOK, enemyNOK, 2000);
-
-		//g.play();
-
-		SparCraft::ScoreType eval = g.getState().evalLTD2(
-			playerID == BWAPI::Broodwar->self()->getID() ? 
-			SparCraft::Players::Player_One : SparCraft::Players::Player_Two);
-
-		return eval;
-	}
-	catch (int)
-	{
-		BWAPI::Broodwar->printf("SparCraft FatalError, simulateCombat() threw");
-
-		UAB_ASSERT(false, "SparCraft FatalError, simulateCombat() threw");
-	}
 }
 
 bool HLState::gameOver() const

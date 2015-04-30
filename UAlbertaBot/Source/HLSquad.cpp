@@ -25,7 +25,11 @@ _speed(std::min_element(units.begin(), units.end(), [](const UnitInfo &u1, const
 _strengthCalculated(false)
 {
 	for (const auto &unit : units)
+	{
 		_units[unit.unitID] = unit;
+	}
+
+	UAB_ASSERT(_currentRegion != NULL, "Current region is null!");
 }
 
 void HLSquad::addUnit(const UnitInfo &unit)
@@ -47,6 +51,7 @@ int HLSquad::travel(int frames)
 			(framesToNext = _currentRegion->getCenter().getDistance(_path.front()->getCenter()) / _speed)))
 		{
 			_currentRegion = _path.front();
+			UAB_ASSERT(_currentRegion != NULL, "Current region is null!");
 			_path.pop_front();
 			_framesTravelled -= framesToNext;
 		}
@@ -65,6 +70,7 @@ void HLSquad::order(HLSquadOrder order)
 {
 	if (order._type == HLSquadOrder::Attack || order._type == HLSquadOrder::Defend)
 	{
+		UAB_ASSERT(_currentRegion != NULL, "Current region is null!");
 		_path = getPath(_currentRegion, order._target);
 	}
 	else if (order._type ==HLSquadOrder::None)

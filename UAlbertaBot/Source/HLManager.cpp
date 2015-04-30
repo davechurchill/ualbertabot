@@ -32,7 +32,13 @@ void HLManager::update(
 		||(!firstRun && (++frame%1500==0)))
 	{
 		firstRun = false;
-		_search.search(5000, 10000); 
+		static int searchNumber = 0;
+		if (++searchNumber > 7)
+		{
+			BWAPI::Broodwar->printf("Too much time searching, skipping HL search");
+			return;
+		}
+		_search.search(6000, 10000); 
 		auto move = _search.getBestMove();
 		StrategyManager::Instance().setCurrentStrategy(move.getStrategy(),move.getChoices());
 		BWAPI::Broodwar->printf("Setting move %s\n", move.toString().c_str());
