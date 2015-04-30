@@ -51,8 +51,10 @@ class StrategyManager
 	const	bool				expandProtossZealotRush() const;
 	static bool					expandProtossZealotRush(
 		const HLUnitData &selfUnitData,
-		const WorkerData &selfWorkerData, 
-		int frame);
+		const WorkerData &selfWorkerData,
+		int frame,
+		int frameAdjust = 0,
+		int zealotAdjust = 0);
 	//const	std::string			getProtossZealotRushOpeningBook() const;
 	const	MetaPairVector		getProtossZealotRushBuildOrderGoal() const;
 	//static	MetaPairVector		getProtossZealotRushBuildOrderGoal(

@@ -358,15 +358,16 @@ const bool StrategyManager::doAttack(const std::set<BWAPI::UnitInterface*> & fre
 const bool StrategyManager::expandProtossZealotRush() const
 {
 	return expandProtossZealotRush(
-		InformationManager::Instance().getUnitData(BWAPI::Broodwar->self()),
+		HLUnitData(InformationManager::Instance().getUnitData(BWAPI::Broodwar->self()), BWAPI::Broodwar->self()),
 		WorkerManager::Instance().getData(),
 		BWAPI::Broodwar->getFrameCount());
 }
 
-bool StrategyManager::expandProtossZealotRush(const HLUnitData &unitData, const WorkerData &selfWorkerData, int frame)
+bool StrategyManager::expandProtossZealotRush(const HLUnitData &unitData, const WorkerData &selfWorkerData, int frame, 
+	int frameAdjust, int zealotAdjust)
 {
 	// if there is no place to expand to, we can't expand
-	if (MapTools::Instance().getNextExpansion(unitData.getUnits().begin()->second.player) == BWAPI::TilePositions::None)
+	if (MapTools::Instance().getNextExpansion(unitData.player()) == BWAPI::TilePositions::None)
 	{
 		return false;
 	}
@@ -384,7 +385,7 @@ bool StrategyManager::expandProtossZealotRush(const HLUnitData &unitData, const 
 	// 2nd Nexus Conditions:
 	//		We have 12 or more zealots
 	//		It is past frame 7000
-	if ((numNexus < 2) && (numZealots > 12 || frame > 9000))
+	if ((numNexus < 2) && (numZealots >(12 + zealotAdjust) || frame  > (9000 + frameAdjust)))
 	{
 		return true;
 	}
@@ -392,22 +393,22 @@ bool StrategyManager::expandProtossZealotRush(const HLUnitData &unitData, const 
 	// 3nd Nexus Conditions:
 	//		We have 24 or more zealots
 	//		It is past frame 12000
-	if ((numNexus < 3) && (numZealots > 24 || frame > 15000))
+	if ((numNexus < 3) && (numZealots >(24 + zealotAdjust) || frame  > (15000 + frameAdjust)))
 	{
 		return true;
 	}
 
-	if ((numNexus < 4) && (numZealots > 24 || frame > 21000))
+	if ((numNexus < 4) && (numZealots >(24 + zealotAdjust) || frame  > (21000 + frameAdjust)))
 	{
 		return true;
 	}
 
-	if ((numNexus < 5) && (numZealots > 24 || frame > 26000))
+	if ((numNexus < 5) && (numZealots >(24 + zealotAdjust) || frame  > (26000 + frameAdjust)))
 	{
 		return true;
 	}
 
-	if ((numNexus < 6) && (numZealots > 24 || frame > 30000))
+	if ((numNexus < 6) && (numZealots >(24 + zealotAdjust) || frame  > (30000 + frameAdjust)))
 	{
 		return true;
 	}
@@ -503,8 +504,8 @@ MetaPairVector StrategyManager::getBuildOrderGoal(
 const MetaPairVector StrategyManager::getProtossDragoonsBuildOrderGoal() const
 {
 	return getProtossDragoonsBuildOrderGoal(
-		InformationManager::Instance().getUnitData(BWAPI::Broodwar->self()),
-		InformationManager::Instance().getUnitData(BWAPI::Broodwar->enemy()),
+		HLUnitData(InformationManager::Instance().getUnitData(BWAPI::Broodwar->self()), BWAPI::Broodwar->self()),
+		HLUnitData(InformationManager::Instance().getUnitData(BWAPI::Broodwar->enemy()), BWAPI::Broodwar->enemy()),
 		WorkerManager::Instance().getData(),
 		BWAPI::Broodwar->getFrameCount());
 }
@@ -569,8 +570,8 @@ MetaPairVector StrategyManager::getProtossDragoonsBuildOrderGoal(
 const MetaPairVector StrategyManager::getProtossDarkTemplarBuildOrderGoal() const
 {
 	return getProtossDarkTemplarBuildOrderGoal(
-		InformationManager::Instance().getUnitData(BWAPI::Broodwar->self()),
-		InformationManager::Instance().getUnitData(BWAPI::Broodwar->enemy()),
+		HLUnitData(InformationManager::Instance().getUnitData(BWAPI::Broodwar->self()), BWAPI::Broodwar->self()),
+		HLUnitData(InformationManager::Instance().getUnitData(BWAPI::Broodwar->enemy()), BWAPI::Broodwar->enemy()),
 		WorkerManager::Instance().getData(),
 		BWAPI::Broodwar->getFrameCount());
 }
@@ -645,8 +646,8 @@ MetaPairVector StrategyManager::getProtossDarkTemplarBuildOrderGoal(
 const MetaPairVector StrategyManager::getProtossZealotRushBuildOrderGoal() const
 {
 	return getProtossZealotRushBuildOrderGoal(
-		InformationManager::Instance().getUnitData(BWAPI::Broodwar->self()),
-		InformationManager::Instance().getUnitData(BWAPI::Broodwar->enemy()),
+		HLUnitData(InformationManager::Instance().getUnitData(BWAPI::Broodwar->self()), BWAPI::Broodwar->self()),
+		HLUnitData(InformationManager::Instance().getUnitData(BWAPI::Broodwar->enemy()), BWAPI::Broodwar->enemy()),
 		WorkerManager::Instance().getData(),
 		BWAPI::Broodwar->getFrameCount(),
 		strategyChoices.at(BWAPI::Races::Protoss.getID()).at(ProtossZealotRush),
@@ -671,9 +672,11 @@ MetaPairVector StrategyManager::getProtossZealotRushBuildOrderGoal(
 	int numNexusAll = selfUnitData.getNumUnits(BWAPI::UnitTypes::Protoss_Nexus);
 	int numCyber = selfUnitData.getNumCompletedUnits(BWAPI::UnitTypes::Protoss_Cybernetics_Core);
 	int numCannon = selfUnitData.getNumUnits(BWAPI::UnitTypes::Protoss_Photon_Cannon);
+	int numDarkTemplar = selfUnitData.getNumUnits(BWAPI::UnitTypes::Protoss_Dark_Templar);
 
 	int zealotsWanted = numZealots;
 	int dragoonsWanted = numDragoons;
+	int darkTemplarWanted = numDarkTemplar;
 
 	//dragoons or zealots
 	int choice = defaultStrategyChoices.at(BWAPI::Races::Protoss.getID()).at(ProtossZealotRush).at(2);
@@ -681,7 +684,7 @@ MetaPairVector StrategyManager::getProtossZealotRushBuildOrderGoal(
 	{
 		if (!execution)
 		{
-			throw ChoicePoint(2, 3);
+			throw ChoicePoint(2, 4);
 		}
 	}
 	else
@@ -690,18 +693,29 @@ MetaPairVector StrategyManager::getProtossZealotRushBuildOrderGoal(
 	}
 	switch (choice){
 	case 0:
-		zealotsWanted += 8;
+		if (numDarkTemplar > 0)
+		{
+			dragoonsWanted += 6;
+		}
+		darkTemplarWanted = 4;
 		break;
 	case 1:
 		dragoonsWanted += 6;
 		break;
 	case 2:
 		zealotsWanted += 4;
-		dragoonsWanted += 3;
+		dragoonsWanted += 3; 
+		break;
+	case 3:
+		zealotsWanted += 8;
 		break;
 	default:
 		UAB_ASSERT(false, "Wrong choice point option");
 	}
+
+	if (numDragoons < dragoonsWanted) goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Dragoon, dragoonsWanted));
+	if (numZealots < zealotsWanted) goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Zealot, zealotsWanted));
+	if (numDarkTemplar < darkTemplarWanted) goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Dark_Templar, darkTemplarWanted));
 
 	if (enemyUnitData.hasCloakedUnits())
 	{
@@ -760,7 +774,7 @@ MetaPairVector StrategyManager::getProtossZealotRushBuildOrderGoal(
 		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Observer, 1));
 	}
 
-	if (expandProtossZealotRush(selfUnitData, selfWorkerData, frame))
+	if (expandProtossZealotRush(selfUnitData, selfWorkerData, frame, -2, -1000))
 	{
 		//choice 1: expand or not
 		int choice = defaultStrategyChoices.at(BWAPI::Races::Protoss.getID()).at(ProtossZealotRush).at(1);
@@ -768,7 +782,7 @@ MetaPairVector StrategyManager::getProtossZealotRushBuildOrderGoal(
 		{
 			if (!execution)
 			{
-				throw ChoicePoint(1, 2);
+				throw ChoicePoint(1, 3);
 			}
 		}
 		else
@@ -776,20 +790,28 @@ MetaPairVector StrategyManager::getProtossZealotRushBuildOrderGoal(
 			choice = choices.at(1);
 		}
 		switch (choice){
-		case 0:
-			//expand
-			goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Nexus, numNexusAll + 1));
+		case 0://aggressive
+			//if (expandProtossZealotRush(selfUnitData, selfWorkerData, frame, -2, -1000))
+			//{
+				goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Nexus, numNexusAll + 1));
+			//}
 			break;
-		case 1:
-			//don't expand
+		case 1://normal
+			if (expandProtossZealotRush(selfUnitData, selfWorkerData, frame, 0, 0))
+			{
+				goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Nexus, numNexusAll + 1));
+			}
+			break;
+		case 2://passive
+			if (expandProtossZealotRush(selfUnitData, selfWorkerData, frame, 2, 1000))
+			{
+				goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Nexus, numNexusAll + 1));
+			}
 			break;
 		default:
 			UAB_ASSERT(false, "Wrong choice point option");
 		}
 	}
-
-	goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Dragoon, dragoonsWanted));
-	goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Zealot, zealotsWanted));
 
 	return goal;
 }
@@ -860,8 +882,8 @@ MetaPairVector StrategyManager::getProtossZealotRushBuildOrderGoal(
 const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 {
 	return getTerranBuildOrderGoal(
-		InformationManager::Instance().getUnitData(BWAPI::Broodwar->self()),
-		InformationManager::Instance().getUnitData(BWAPI::Broodwar->enemy()),
+		HLUnitData(InformationManager::Instance().getUnitData(BWAPI::Broodwar->self()), BWAPI::Broodwar->self()),
+		HLUnitData(InformationManager::Instance().getUnitData(BWAPI::Broodwar->enemy()), BWAPI::Broodwar->enemy()),
 		WorkerManager::Instance().getData(),
 		BWAPI::Broodwar->getFrameCount());
 }
@@ -891,8 +913,8 @@ MetaPairVector StrategyManager::getTerranBuildOrderGoal(
 const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
 {
 	return getZergBuildOrderGoal(
-		InformationManager::Instance().getUnitData(BWAPI::Broodwar->self()),
-		InformationManager::Instance().getUnitData(BWAPI::Broodwar->enemy()),
+		HLUnitData(InformationManager::Instance().getUnitData(BWAPI::Broodwar->self()), BWAPI::Broodwar->self()),
+		HLUnitData(InformationManager::Instance().getUnitData(BWAPI::Broodwar->enemy()), BWAPI::Broodwar->enemy()),
 		WorkerManager::Instance().getData(),
 		BWAPI::Broodwar->getFrameCount());
 }
