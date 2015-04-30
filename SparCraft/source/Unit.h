@@ -69,6 +69,7 @@ public:
 	const bool			    canKite()                   const;
 	const bool			    canHeal()                   const;
 	const bool              equalsID(const Unit & rhs)  const;
+	bool					canSeeTarget(const Unit & unit, const TimeType & gameTime) const;
 	const bool              canAttackTarget(const Unit & unit, const TimeType & gameTime) const;
 	const bool              canHealTarget(const Unit & unit, const TimeType & gameTime) const;
 

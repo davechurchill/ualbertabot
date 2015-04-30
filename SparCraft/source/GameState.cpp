@@ -146,7 +146,22 @@ void GameState::generateMoves(MoveArray & moves, const IDType & playerIndex) con
 			for (IDType u(0); u<_numUnits[enemyPlayer]; ++u)
 			{
 				const Unit & enemyUnit(getUnit(enemyPlayer, u));
-				if (unit.canAttackTarget(enemyUnit, _currentTime) && enemyUnit.isAlive())
+				bool invisible = false;
+				if (enemyUnit.type().hasPermanentCloak())
+				{
+					invisible = true;
+					for (IDType detectorIndex(0); detectorIndex < _numUnits[playerIndex]; ++detectorIndex)
+					{
+						// unit reference
+						const Unit & detector(getUnit(playerIndex, detectorIndex));
+						if (detector.type().isDetector() && detector.canSeeTarget(enemyUnit, _currentTime))
+						{
+							invisible = false;
+							break;
+						}
+					}
+				}
+				if (!invisible && unit.canAttackTarget(enemyUnit, _currentTime) && enemyUnit.isAlive())
 				{
 					moves.add(UnitAction(unitIndex, playerIndex, UnitActionTypes::ATTACK, u));
                     //moves.add(UnitAction(unitIndex, playerIndex, UnitActionTypes::ATTACK, unit.ID()));
@@ -410,7 +425,7 @@ const Unit & GameState::getClosestOurUnit(const IDType & player, const IDType & 
 	return getUnit(player, minUnitInd);
 }
 
-const Unit & GameState::getClosestEnemyUnit(const IDType & player, const IDType & unitIndex)
+const Unit & GameState::getClosestEnemyUnit(const IDType & player, const IDType & unitIndex, bool checkCloaked)
 {
 	const IDType enemyPlayer(getEnemy(player));
 	const Unit & myUnit(getUnit(player,unitIndex));
@@ -424,6 +439,24 @@ const Unit & GameState::getClosestEnemyUnit(const IDType & player, const IDType 
 	for (IDType u(0); u<_numUnits[enemyPlayer]; ++u)
 	{
         Unit & enemyUnit(getUnit(enemyPlayer, u));
+		if (checkCloaked&& enemyUnit.type().hasPermanentCloak())
+		{
+			bool invisible = true;
+			for (IDType detectorIndex(0); detectorIndex < _numUnits[player]; ++detectorIndex)
+			{
+				// unit reference
+				const Unit & detector(getUnit(player, detectorIndex));
+				if (detector.type().isDetector() && detector.canSeeTarget(enemyUnit, _currentTime))
+				{
+					invisible = false;
+					break;
+				}
+			}
+			if (invisible)
+			{
+				continue;
+			}
+		}
         PositionType distSq = myUnit.getDistanceSqToUnit(enemyUnit, _currentTime);
 
 		if ((distSq < minDist))// || ((distSq == minDist) && (enemyUnit.ID() < minUnitID)))
@@ -1004,7 +1037,7 @@ std::string GameState::toString() const
 		{
 			const Unit & unit(getUnit(p, u));
 
-			ss << "  P" << unit.player() << " " << unit.currentHP() << " (" << unit.x() << ", " << unit.y() << ") " << unit.name() << std::endl;
+			ss << "  P" << (int)unit.player() << " " << unit.currentHP() << " (" << unit.x() << ", " << unit.y() << ") " << unit.name() << std::endl;
 		}
 	}
 	ss << std::endl;
