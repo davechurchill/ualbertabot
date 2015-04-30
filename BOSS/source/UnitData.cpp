@@ -111,6 +111,7 @@ void UnitData::addCompletedAction(const ActionType & action, bool wasBuilt)
 
 void UnitData::removeCompletedAction(const ActionType & action)
 {
+	//Logger::LogAppendToFile(BOSS_LOGFILE, "Unit removed " + action.getName());
 	const static ActionType Lair = ActionTypes::GetActionType("Zerg_Lair");
 	const static ActionType Hive = ActionTypes::GetActionType("Zerg_Hive");
 
@@ -126,7 +127,14 @@ void UnitData::removeCompletedAction(const ActionType & action)
 
 	if (action.isWorker())
 	{
-		_mineralWorkers--;
+		if (_mineralWorkers > 0)
+		{
+			_mineralWorkers--;
+		}
+		else if (_gasWorkers > 0)
+		{
+			_gasWorkers--;
+		}
 	}
 
 	// if it's an extractor
@@ -135,7 +143,8 @@ void UnitData::removeCompletedAction(const ActionType & action)
 		// take those workers from minerals and put them into it
 		_mineralWorkers += 3; _gasWorkers -= 3;
 	}
-
+	BOSS_ASSERT(_mineralWorkers >= 0, "Can't have negative mineral workers");
+	BOSS_ASSERT(_gasWorkers >= 0, "Can't have negative gas workers");
 	// if it's a building that can produce units, add it to the building data
 	if (action.isBuilding() && !action.isSupplyProvider())
 	{
