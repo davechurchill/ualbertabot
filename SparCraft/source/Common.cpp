@@ -1,6 +1,8 @@
 #include "Common.h"
 
 // SEARCH PARAMETERS
+char SPARCRAFT_LOGFILE[100] { "sparcraft_error_log.txt" };
+
 namespace SparCraft
 {
     namespace System
@@ -8,6 +10,13 @@ namespace SparCraft
         void FatalError(const std::string & errorMessage)
         {
             std::cerr << "\n\n\nSparCraft Fatal Error: \n\n\n      " << errorMessage << "\n\n";
+
+			std::ofstream logStream;
+			logStream.open(SPARCRAFT_LOGFILE, std::ofstream::app);
+			logStream << "\n\n\nSparCraft Fatal Error: \n\n\n      " << errorMessage << "\n\n";
+			logStream.flush();
+			logStream.close();
+
             throw(SPARCRAFT_FATAL_ERROR);
         }
         
