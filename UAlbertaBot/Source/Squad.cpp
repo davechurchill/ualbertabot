@@ -1,9 +1,9 @@
 #include "Squad.h"
+#include "CombatPredictor.h"
 
 using namespace UAlbertaBot;
 
 int  Squad::lastRetreatSwitch = 0;
-int	 Squad::lastRegroupSwitch = 0;
 bool Squad::lastRetreatSwitchVal = false;
 
 Squad::Squad(const std::vector<BWAPI::UnitInterface *> & units, SquadOrder order) 
@@ -18,21 +18,8 @@ void Squad::update()
 	updateUnits();
 
 	// determine whether or not we should regroup
-	// every second 
-	// every 2 frames
-	int switchTime = 0;
-	bool needToRegroup = false;
+	const bool needToRegroup(needsToRegroup());
 
-	if ((BWAPI::Broodwar->getFrameCount() - lastRegroupSwitch < switchTime))
-	{
-		; //do nothing	
-	}
-	else
-	{
-		needToRegroup = needsToRegroup();
-		lastRegroupSwitch = BWAPI::Broodwar->getFrameCount();
-	}
-	
 	
 	// draw some debug info
 	if (Options::Debug::DRAW_UALBERTABOT_DEBUG && order.type == SquadOrder::Attack) 
@@ -186,12 +173,7 @@ bool Squad::needsToRegroup()
 	int SPARCRAFTscore = 0;
 
 	//which one to use?
-	if (Options::Modules::USING_COMBAT_PREDICTOR && CombatPredictor::Instance().vsTrainedOpp)
-	{
-		//I have trained against this opponent! 
-		//can use combat predictor
-	}
-	else
+	if (!Options::Modules::USING_COMBAT_PREDICTOR)
 	{
 		//do the SparCraft Simulation!
 		CombatSimulation sim;

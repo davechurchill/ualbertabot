@@ -1,5 +1,6 @@
 #include "Common.h"
 #include "InformationManager.h"
+#include "CombatPredictor.h"
 
 using namespace UAlbertaBot;
 
@@ -397,14 +398,23 @@ BWAPI::UnitInterface* InformationManager::getClosestUnitToTarget(BWAPI::UnitType
 
 bool InformationManager::isCombatUnit(BWAPI::UnitType type) const
 {
+	if (Options::Modules::USING_COMBAT_PREDICTOR)
+	{
+		if (type == BWAPI::UnitTypes::Terran_SCV) //coz it can repair bunkers
+			return true;
 
-	if (type == BWAPI::UnitTypes::Terran_SCV) //coz it can repair bunkers
-		return true;
+		if (type.canAttack() || type == BWAPI::UnitTypes::Terran_Medic || type == BWAPI::UnitTypes::Terran_Bunker)
+		{
+			return true;
+		}
 
-	//if (type == BWAPI::UnitTypes::Zerg_Lurker || type == BWAPI::UnitTypes::Protoss_Dark_Templar)
-	//{
-	//	return false;
-	//}
+	}
+	
+
+	if (type == BWAPI::UnitTypes::Zerg_Lurker || type == BWAPI::UnitTypes::Protoss_Dark_Templar)
+	{
+		return false;
+	}
 
 	// no workers or buildings allowed
 	if (type.isWorker())
@@ -413,7 +423,7 @@ bool InformationManager::isCombatUnit(BWAPI::UnitType type) const
 	}
 
 	// check for various types of combat units
-	if (type.canAttack() || type == BWAPI::UnitTypes::Terran_Medic || type == BWAPI::UnitTypes::Terran_Bunker)
+	if (type.canAttack() || type == BWAPI::UnitTypes::Terran_Medic)
 	{
 		return true;
 	}
@@ -441,24 +451,28 @@ void InformationManager::getNearbyForce(std::vector<UnitInfo> & unitInfo, BWAPI:
 			}
 
 			if (Options::Modules::USING_COMBAT_PREDICTOR)
-			if (ui.type == BWAPI::UnitTypes::Terran_Bunker)
 			{
-				range = 160 + 40; //marines = 128, bunker = +32
-				hasBunker = true;
+				if (ui.type == BWAPI::UnitTypes::Terran_Bunker)
+				{
+					range = 160 + 40; //marines = 128, bunker = +32
+					hasBunker = true;
+				}
 			}
 			
 			if (Options::Modules::USING_COMBAT_PREDICTOR)
-			if (ui.type == BWAPI::UnitTypes::Terran_SCV) //SPECIAL CASE
 			{
-				if (ui.lastPosition.getDistance(p) <= 200)
-					unitInfo.push_back(ui);
-			}
+				if (ui.type == BWAPI::UnitTypes::Terran_SCV) //SPECIAL CASE
+				{
+					if (ui.lastPosition.getDistance(p) <= 200)
+						unitInfo.push_back(ui);
+				}
 
-			// if it can attack into the radius we care about
-			else if (ui.lastPosition.getDistance(p) <= (radius + range))
-			{
-				// add it to the vector
-				unitInfo.push_back(ui);
+				// if it can attack into the radius we care about
+				else if (ui.lastPosition.getDistance(p) <= (radius + range))
+				{
+					// add it to the vector
+					unitInfo.push_back(ui);
+				}
 			}
 		}
 		else if (ui.type.isDetector() && ui.lastPosition.getDistance(p) <= (radius + 250))

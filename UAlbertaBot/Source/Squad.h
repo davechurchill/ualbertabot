@@ -9,7 +9,7 @@
 #include "DistanceMap.hpp"
 #include "StrategyManager.h"
 #include "CombatSimulation.h"
-#include "CombatPredictor.h"
+
 
 namespace UAlbertaBot
 {
@@ -52,7 +52,6 @@ class Squad
 
     static int          lastRetreatSwitch;
     static bool         lastRetreatSwitchVal;
-	static int			lastRegroupSwitch;
 
 public:
 
