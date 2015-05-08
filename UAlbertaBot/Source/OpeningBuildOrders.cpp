@@ -118,6 +118,25 @@ MetaVector OpeningBuildOrders::ProtossDragoonRush()
     return build;
 }
 
+MetaVector OpeningBuildOrders::ProtossHighLevelSearch()
+{
+	MetaVector build;
+
+	build.push_back(BWAPI::UnitTypes::Protoss_Probe);
+	build.push_back(BWAPI::UnitTypes::Protoss_Probe);
+	build.push_back(BWAPI::UnitTypes::Protoss_Probe);
+	build.push_back(BWAPI::UnitTypes::Protoss_Probe);
+	build.push_back(BWAPI::UnitTypes::Protoss_Pylon);
+	build.push_back(BWAPI::UnitTypes::Protoss_Probe);
+	build.push_back(BWAPI::UnitTypes::Protoss_Gateway);
+	build.push_back(BWAPI::UnitTypes::Protoss_Gateway);
+	build.push_back(BWAPI::UnitTypes::Protoss_Probe);
+	build.push_back(BWAPI::UnitTypes::Protoss_Probe);
+
+
+	return build;
+}
+
 MetaVector OpeningBuildOrders::TerranMarineRush()
 {
     MetaVector build;

@@ -22,10 +22,6 @@ class StrategyManager
 	StrategyManager();
 	~StrategyManager() {}
 
-   /* std::vector<std::string>	protossOpeningBook;
-	std::vector<std::string>	terranOpeningBook;
-	std::vector<std::string>	zergOpeningBook;*/
-
 	std::string					readDir;
 	std::string					writeDir;
 	std::vector<IntPair>		results;
@@ -55,24 +51,13 @@ class StrategyManager
 		int frame,
 		int frameAdjust = 0,
 		int zealotAdjust = 0);
-	//const	std::string			getProtossZealotRushOpeningBook() const;
 	const	MetaPairVector		getProtossZealotRushBuildOrderGoal() const;
-	//static	MetaPairVector		getProtossZealotRushBuildOrderGoal(
-	//	const UnitData &selfUnitData, 
-	//	const UnitData &enemyUnitData, 
-	//	const WorkerData &selfWorkerData,
-	//	int frame);
-
 	static	MetaPairVector		getProtossZealotRushBuildOrderGoal(
 		const HLUnitData &selfUnitData,
 		const HLUnitData &enemyUnitData,
 		const WorkerData &selfWorkerData,
-		int frame, 
-		const std::unordered_map<short, short> &choices,
-		bool useDefaultChoicesIfNeeded);
+		int frame);
 
-	//const	bool				expandProtossDarkTemplar() const;
-	//const	std::string			getProtossDarkTemplarOpeningBook() const;
 	const	MetaPairVector		getProtossDarkTemplarBuildOrderGoal() const;
 	static	MetaPairVector		getProtossDarkTemplarBuildOrderGoal(
 		const HLUnitData &selfUnitData,
@@ -80,14 +65,21 @@ class StrategyManager
 		const WorkerData &selfWorkerData,
 		int frame);
 
-	//const	bool				expandProtossDragoons() const;
-	//const	std::string			getProtossDragoonsOpeningBook() const;
 	const	MetaPairVector		getProtossDragoonsBuildOrderGoal() const;
 	static 	MetaPairVector		getProtossDragoonsBuildOrderGoal(
 		const HLUnitData &selfUnitData,
 		const HLUnitData &enemyUnitData,
 		const WorkerData &selfWorkerData,
 		int frame);
+
+	const	MetaPairVector		getProtossHighLevelSearchBuildOrderGoal() const;
+	static	MetaPairVector		getProtossHighLevelSearchBuildOrderGoal(
+		const HLUnitData &selfUnitData,
+		const HLUnitData &enemyUnitData,
+		const WorkerData &selfWorkerData,
+		int frame,
+		const std::unordered_map<short, short> &choices,
+		bool useDefaultChoicesIfNeeded);
 
 	const	MetaPairVector		getTerranBuildOrderGoal() const;
 	static 	MetaPairVector		getTerranBuildOrderGoal(
@@ -109,7 +101,7 @@ class StrategyManager
 
 public:
 
-	enum { ProtossZealotRush=0, ProtossDarkTemplar=1, ProtossDragoons=2, NumProtossStrategies=3 };
+	enum { ProtossZealotRush=0, ProtossDarkTemplar=1, ProtossDragoons=2, ProtossHighLevelSearch=3, NumProtossStrategies=4 };
 	enum { TerranMarineRush=0, NumTerranStrategies=1 };
 	enum { ZergZerglingRush=0, NumZergStrategies=1 };
 
