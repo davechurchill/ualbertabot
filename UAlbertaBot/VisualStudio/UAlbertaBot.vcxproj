@@ -72,6 +72,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPId.lib;$(Configuration)/SparCraft/SparCraft_d.lib;$(Configuration)/BOSS/BOSS_d.lib;$(BWTA_DIR)/lib/BWTAd.lib;$(BWTA_DIR)/lib/libboost_system-vc120-mt-gd-1_56.lib;$(BWTA_DIR)/lib/libboost_thread-vc120-mt-gd-1_56.lib;$(BWTA_DIR)/lib/libCGAL-vc120-mt-gd-4.4.lib;$(BWTA_DIR)/lib/libgmp-10.lib;$(BWTA_DIR)/lib/libmpfr-4.lib;$(BWTA_DIR)/lib/libboost_filesystem-vc120-mt-gd-1_56.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -96,6 +97,7 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <EnablePREfast>false</EnablePREfast>
       <WholeProgramOptimization>true</WholeProgramOptimization>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -112,6 +114,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\BOSSManager.cpp" />
+    <ClCompile Include="..\Source\CombatPredictor.cpp" />
     <ClCompile Include="..\Source\CombatSimulation.cpp" />
     <ClCompile Include="..\Source\base\BuildingData.cpp" />
     <ClCompile Include="..\Source\base\BuildingManager.cpp" />
@@ -156,6 +159,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\BOSSManager.h" />
+    <ClInclude Include="..\Source\CombatPredictor.h" />
     <ClInclude Include="..\Source\CombatSimulation.h" />
     <ClInclude Include="..\Source\base\BuildingData.h" />
     <ClInclude Include="..\Source\base\BuildingManager.h" />

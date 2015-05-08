@@ -180,6 +180,9 @@
     <ClCompile Include="..\Source\HLState.cpp">
       <Filter>HighLevelSearch</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\CombatPredictor.cpp">
+      <Filter>game\combat</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\CombatCommander.h">
@@ -266,9 +269,6 @@
     <ClInclude Include="..\Source\SquadData.h">
       <Filter>game\combat\micro\squad</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\CombatSimulation.h">
-      <Filter>game\combat</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\DistanceMap.hpp">
       <Filter>game\util\map</Filter>
     </ClInclude>
@@ -316,6 +316,12 @@
     </ClInclude>
     <ClInclude Include="..\Source\HLState.h">
       <Filter>HighLevelSearch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\CombatPredictor.h">
+      <Filter>game\combat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\CombatSimulation.h">
+      <Filter>game\combat</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

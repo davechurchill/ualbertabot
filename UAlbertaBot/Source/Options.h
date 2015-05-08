@@ -19,6 +19,9 @@ namespace Options
 		extern bool USING_BUILD_ORDER_DEMO;			
 		extern bool USING_HIGH_LEVEL_SEARCH;		// toggle the use of search for strategy selection and squad
 													// assignments.
+        extern bool USING_COMBAT_PREDICTOR;         // toggle use of machine learning predictor to replace SparCraft prediction 
+		extern bool USING_BATTLE_LOG;			    // togglle logging battles to files for training
+
 
 		void checkOptions();							// checks to see if options are set in a sane manner
 	}
