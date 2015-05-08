@@ -1,5 +1,6 @@
 #include "Common.h"
 #include "InformationManager.h"
+#include "CombatPredictor.h"
 
 using namespace UAlbertaBot;
 
@@ -36,6 +37,8 @@ void InformationManager::updateUnitInfo()
 	for (BWAPI::UnitInterface * unit : BWAPI::Broodwar->enemy()->getUnits())
 	{
 		updateUnit(unit);
+		if(Options::Modules::USING_COMBAT_PREDICTOR)
+			CombatPredictor::Instance().observedHPs[unit->getID()] = unit->getHitPoints() + unit->getShields();
 	}
 
 	// update enemy unit information
@@ -395,6 +398,19 @@ BWAPI::UnitInterface* InformationManager::getClosestUnitToTarget(BWAPI::UnitType
 
 bool InformationManager::isCombatUnit(BWAPI::UnitType type) const
 {
+	if (Options::Modules::USING_COMBAT_PREDICTOR)
+	{
+		if (type == BWAPI::UnitTypes::Terran_SCV) //coz it can repair bunkers
+			return true;
+
+		if (type.canAttack() || type == BWAPI::UnitTypes::Terran_Medic || type == BWAPI::UnitTypes::Terran_Bunker)
+		{
+			return true;
+		}
+
+	}
+	
+
 	if (type == BWAPI::UnitTypes::Zerg_Lurker/* || type == BWAPI::UnitTypes::Protoss_Dark_Templar*/)
 	{
 		return false;
@@ -419,13 +435,15 @@ bool InformationManager::isCombatUnit(BWAPI::UnitType type) const
 
 void InformationManager::getNearbyForce(std::vector<UnitInfo> & unitInfo, BWAPI::Position p, BWAPI::PlayerInterface * player, int radius) 
 {
+	bool hasBunker = false;
 	// for each unit we know about for that player
 	FOR_EACH_UIMAP_CONST(iter, getUnitData(player).getUnits())
 	{
 		const UnitInfo & ui(iter->second);
 
 		// if it's a combat unit we care about
-		if (isCombatUnit(ui.type))
+		// and it's finished! 
+		if (isCombatUnit(ui.type) && ui.completed)
 		{
 			// determine its attack range
 			int range = 0;
@@ -434,12 +452,47 @@ void InformationManager::getNearbyForce(std::vector<UnitInfo> & unitInfo, BWAPI:
 				range = ui.type.groundWeapon().maxRange() + 40;
 			}
 
-			// if it can attack into the radius we care about
-			if (ui.lastPosition.getDistance(p) <= (radius + range))
+			if (Options::Modules::USING_COMBAT_PREDICTOR)
 			{
-				// add it to the vector
-				unitInfo.push_back(ui);
+				if (ui.type == BWAPI::UnitTypes::Terran_Bunker)
+				{
+					range = 160 + 40; //marines = 128, bunker = +32
+					hasBunker = true;
+				}
 			}
+			
+			if (Options::Modules::USING_COMBAT_PREDICTOR)
+			{
+				if (ui.type == BWAPI::UnitTypes::Terran_SCV) //SPECIAL CASE
+				{
+					if (ui.lastPosition.getDistance(p) <= 200)
+						unitInfo.push_back(ui);
+				}
+
+				// if it can attack into the radius we care about
+				else if (ui.lastPosition.getDistance(p) <= (radius + range))
+				{
+					// add it to the vector
+					unitInfo.push_back(ui);
+				}
+			}
+		}
+		else if (ui.type.isDetector() && ui.lastPosition.getDistance(p) <= (radius + 250))
+			// add it to the vector
+			unitInfo.push_back(ui);
+
+	}
+
+	if (Options::Modules::USING_COMBAT_PREDICTOR)
+	if (!hasBunker)
+	{
+		//delete all SCVs
+		for (int i = 0; i < unitInfo.size();)
+		{
+			if (unitInfo[i].type == BWAPI::UnitTypes::Terran_SCV)
+				unitInfo.erase(unitInfo.begin() + i);
+			else
+				i++;
 		}
 	}
 }

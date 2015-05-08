@@ -10,6 +10,7 @@
 #include "StrategyManager.h"
 #include "CombatSimulation.h"
 
+
 namespace UAlbertaBot
 {
 class ZealotManager;

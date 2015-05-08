@@ -114,6 +114,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\BOSSManager.cpp" />
+    <ClCompile Include="..\Source\CombatPredictor.cpp" />
     <ClCompile Include="..\Source\CombatSimulation.cpp" />
     <ClCompile Include="..\Source\base\BuildingData.cpp" />
     <ClCompile Include="..\Source\base\BuildingManager.cpp" />
@@ -162,6 +163,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\BOSSManager.h" />
+    <ClInclude Include="..\Source\CombatPredictor.h" />
     <ClInclude Include="..\Source\CombatSimulation.h" />
     <ClInclude Include="..\Source\base\BuildingData.h" />
     <ClInclude Include="..\Source\base\BuildingManager.h" />

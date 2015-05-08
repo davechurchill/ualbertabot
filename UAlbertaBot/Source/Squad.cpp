@@ -1,4 +1,5 @@
 #include "Squad.h"
+#include "CombatPredictor.h"
 
 using namespace UAlbertaBot;
 
@@ -18,6 +19,7 @@ void Squad::update()
 
 	// determine whether or not we should regroup
 	const bool needToRegroup(needsToRegroup());
+
 	
 	// draw some debug info
 	if (Options::Debug::DRAW_UALBERTABOT_DEBUG && order.type == SquadOrder::Attack) 
@@ -158,13 +160,6 @@ bool Squad::needsToRegroup()
 		return false;
 	}
 
-	// if we are DT rushing and we haven't lost a DT yet, no retreat!
-	if (StrategyManager::Instance().getCurrentStrategy() == StrategyManager::ProtossDarkTemplar &&
-		(BWAPI::Broodwar->self()->deadUnitCount(BWAPI::UnitTypes::Protoss_Dark_Templar) == 0))
-	{
-		regroupStatus = std::string("\x04 DARK TEMPLAR HOOOOO!");
-		return false;
-	}
 
 	BWAPI::UnitInterface* unitClosest = unitClosestToEnemy();
 
@@ -174,17 +169,166 @@ bool Squad::needsToRegroup()
 		return false;
 	}
 
-	CombatSimulation sim;
+    SparCraft::ScoreType score = 0;
+	int SPARCRAFTscore = 0;
 
-    // special case with zealots vs. zerglings. combat simulation favours zerglings due to no unit collisions, check to see if we have 1/3 zealots
-    if (sim.checkZealotVsZergling(unitClosest->getPosition(), Options::Micro::COMBAT_REGROUP_RADIUS + InformationManager::Instance().lastFrameRegroup*300))
+	//which one to use?
+	if (!Options::Modules::USING_COMBAT_PREDICTOR)
+	{
+		//do the SparCraft Simulation!
+		CombatSimulation sim;
+
+		// special case with zealots vs. zerglings. combat simulation favours zerglings due to no unit collisions, check to see if we have 1/3 zealots
+		if (sim.checkZealotVsZergling(unitClosest->getPosition(), Options::Micro::COMBAT_REGROUP_RADIUS + InformationManager::Instance().lastFrameRegroup * 300))
+		{
+			regroupStatus = std::string("\x04 Attack - Zealot vs. Zergling - 1/3 condition met!");
+			return false;
+		}
+
+		sim.setCombatUnits(unitClosest->getPosition(), Options::Micro::COMBAT_REGROUP_RADIUS + InformationManager::Instance().lastFrameRegroup * 300);
+		SPARCRAFTscore = sim.simulateCombat();
+
+		score = SPARCRAFTscore;
+	}
+
+
+    if (Options::Modules::USING_COMBAT_PREDICTOR)
     {
-        regroupStatus = std::string("\x04 Attack - Zealot vs. Zergling - 1/3 condition met!");
-        return false;
+        bool dmgHasBeenDone = false;
+
+        //find units involved
+        const BWAPI::Position center = unitClosest->getPosition();
+        const int radius = Options::Micro::COMBAT_REGROUP_RADIUS + InformationManager::Instance().lastFrameRegroup * 300;
+        BWAPI::Broodwar->drawCircleMap(center.x, center.y, 10, BWAPI::Colors::Red, true);
+
+        std::vector<BWAPI::UnitInterface*> ourCombatUnits;
+        std::vector<UnitInfo> enemyCombatUnits;
+
+        MapGrid::Instance().GetUnits(ourCombatUnits, center, Options::Micro::COMBAT_REGROUP_RADIUS, true, false);
+        InformationManager::Instance().getNearbyForce(enemyCombatUnits, center, BWAPI::Broodwar->enemy(), Options::Micro::COMBAT_REGROUP_RADIUS);
+
+        //add units 
+        std::vector<std::pair<int, int>> ArmyA;
+        std::vector<std::pair<int, int>> ArmyB;
+
+		//enemy DTs and observers? 
+		//TODO: can be coded faster
+		bool oppHasOBS = false;
+		bool oppHasDTs = false;
+		for (UnitInfo & ui : enemyCombatUnits)
+		{
+			if (ui.completed)
+			{
+				if (ui.type.isDetector())
+					oppHasOBS = true;
+				else if (ui.type == BWAPI::UnitTypes::Protoss_Dark_Templar)
+					oppHasDTs = true;
+			}
+		}
+
+
+		bool IhaveOBS = false;
+		bool IhaveDTs = false;
+
+        for (BWAPI::UnitInterface* unit : ourCombatUnits)
+        {
+            if (unit->isAttacking() || unit->isUnderAttack())
+                dmgHasBeenDone = true;
+
+
+            BWAPI::UnitType type = unit->getType();
+			if (type.isDetector()) IhaveOBS = true;
+			else if (type == BWAPI::UnitTypes::Protoss_Dark_Templar) IhaveDTs = true;
+
+            if (type.canAttack() || type.isWorker()
+				|| type.isDetector()
+                || type == BWAPI::UnitTypes::Terran_Medic
+                || type == BWAPI::UnitTypes::Terran_Bunker)
+            {
+				//visible DTs have the unit id 61 
+				//invisible DTs will have the id 74 
+				if (type == BWAPI::UnitTypes::Protoss_Dark_Templar && !oppHasOBS)
+					ArmyA.push_back(std::make_pair(74, unit->getHitPoints() + unit->getShields()));
+				else
+					ArmyA.push_back(std::make_pair(type.getID(), unit->getHitPoints()+unit->getShields()));
+            }
+        }
+
+
+		for (UnitInfo & ui : enemyCombatUnits)
+		{
+			BWAPI::UnitType type = ui.type;
+			//type.ifFlyer()
+			if (ui.completed &&
+				(type.canAttack() || type.isWorker()
+				|| type.isDetector()
+				|| type == BWAPI::UnitTypes::Terran_Medic
+				|| type == BWAPI::UnitTypes::Terran_Bunker))
+			{
+				//visible DTs have the unit id 61 
+				//invisible DTs will have the id 74 
+				if (type == BWAPI::UnitTypes::Protoss_Dark_Templar)
+				{
+					
+					if (!IhaveOBS) //I can't see it, it's invisible
+					{
+						int hp_last = ui.lastHealth; 
+						if (hp_last < 1) //if I saw it before keep the hp otherwise max hp for DT
+							hp_last = 120;
+						ArmyB.push_back(std::make_pair(type.getID() + 13, hp_last));
+					}
+					else //I can see it, normal DT stats
+						ArmyB.push_back(std::make_pair(type.getID(), ui.lastHealth));
+				}
+				else	
+					ArmyB.push_back(std::make_pair(type.getID(), ui.lastHealth));
+
+				//if (ui.canCloak())
+				//{
+				//	int hp = CombatPredictor::Instance().observedHPs[ui.unitID];
+				//	;
+				//}
+			}
+		}
+
+		//predict outcome
+		score = CombatPredictor::Instance().predictCombat(ArmyA, ArmyB);
+
+		if (Options::Modules::USING_BATTLE_LOG && dmgHasBeenDone) //actual fight! 
+		{
+			//do the SparCraft Simulation! (To compare against)
+			CombatSimulation sim;
+
+			// special case with zealots vs. zerglings. combat simulation favours zerglings due to no unit collisions, check to see if we have 1/3 zealots
+			if (sim.checkZealotVsZergling(unitClosest->getPosition(), Options::Micro::COMBAT_REGROUP_RADIUS + InformationManager::Instance().lastFrameRegroup * 300))
+			{
+				regroupStatus = std::string("\x04 Attack - Zealot vs. Zergling - 1/3 condition met!");
+				return false;
+			}
+
+			sim.setCombatUnits(unitClosest->getPosition(), Options::Micro::COMBAT_REGROUP_RADIUS + InformationManager::Instance().lastFrameRegroup * 300);
+			SPARCRAFTscore = sim.simulateCombat();
+
+			//save combat, will have to update every frame
+			Combat newCombat(ourCombatUnits, enemyCombatUnits, IhaveOBS, oppHasOBS);
+			if (!newCombat.isFinished()) //IF VALID
+			{
+				newCombat.MATLAB_Prediction = score;
+				newCombat.SparcraftPrediction = SPARCRAFTscore;
+				CombatPredictor::Instance().addCombat(newCombat);
+			}
+		}
     }
 
-	sim.setCombatUnits(unitClosest->getPosition(), Options::Micro::COMBAT_REGROUP_RADIUS + InformationManager::Instance().lastFrameRegroup*300);
-	SparCraft::ScoreType score = sim.simulateCombat();
+
+	// if we are DT rushing and we haven't lost a DT yet, no retreat!
+	if (StrategyManager::Instance().getCurrentStrategy() == StrategyManager::ProtossDarkTemplar &&
+		(BWAPI::Broodwar->self()->deadUnitCount(BWAPI::UnitTypes::Protoss_Dark_Templar) == 0))
+	{
+		regroupStatus = std::string("\x04 DARK TEMPLAR HOOOOO!");
+		return false;
+	}
+
 
     bool retreat = score < 0;
     int switchTime = 100;
