@@ -64,7 +64,7 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>../BOSS/source;../SparCraft/source;../Source;$(BWTA_DIR)/include;$(BWAPI_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;EXAMPLEAIMODULE_EXPORTS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
+      <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>
@@ -72,6 +72,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPId.lib;$(Configuration)/SparCraft/SparCraft_d.lib;$(Configuration)/BOSS/BOSS_d.lib;$(BWTA_DIR)/lib/BWTAd.lib;$(BWTA_DIR)/lib/libboost_system-vc120-mt-gd-1_56.lib;$(BWTA_DIR)/lib/libboost_thread-vc120-mt-gd-1_56.lib;$(BWTA_DIR)/lib/libCGAL-vc120-mt-gd-4.4.lib;$(BWTA_DIR)/lib/libgmp-10.lib;$(BWTA_DIR)/lib/libmpfr-4.lib;$(BWTA_DIR)/lib/libboost_filesystem-vc120-mt-gd-1_56.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -96,6 +97,7 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <EnablePREfast>false</EnablePREfast>
       <WholeProgramOptimization>true</WholeProgramOptimization>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -128,7 +130,11 @@
     <ClCompile Include="..\Source\HLCombatCommander.cpp" />
     <ClCompile Include="..\Source\HLManager.cpp" />
     <ClCompile Include="..\Source\HLSearch.cpp" />
+    <ClCompile Include="..\Source\HLSquad.cpp" />
     <ClCompile Include="..\Source\HLState.cpp" />
+    <ClCompile Include="..\Source\HLStatistics.cpp" />
+    <ClCompile Include="..\Source\HLTranspositionTable.cpp" />
+    <ClCompile Include="..\Source\HLUnitData.cpp" />
     <ClCompile Include="..\Source\InformationManager.cpp" />
     <ClCompile Include="..\Source\Logger.cpp" />
     <ClCompile Include="..\Source\MapGrid.cpp" />
@@ -174,7 +180,11 @@
     <ClInclude Include="..\Source\HLCombatCommander.h" />
     <ClInclude Include="..\Source\HLManager.h" />
     <ClInclude Include="..\Source\HLSearch.h" />
+    <ClInclude Include="..\Source\HLSquad.h" />
     <ClInclude Include="..\Source\HLState.h" />
+    <ClInclude Include="..\Source\HLStatistics.h" />
+    <ClInclude Include="..\Source\HLTranspositionTable.h" />
+    <ClInclude Include="..\Source\HLUnitData.h" />
     <ClInclude Include="..\Source\InformationManager.h" />
     <ClInclude Include="..\Source\Logger.h" />
     <ClInclude Include="..\Source\MapGrid.h" />

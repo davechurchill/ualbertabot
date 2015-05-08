@@ -27,7 +27,8 @@ namespace UAlbertaBot{
 			cacheFound = 0;
 			branches = 0;
 			searches = 0;
-			//hashCol = 0;
+			forwardLength = 0;
+			numForwards = 0;
 		}
 
 		void startTimer(){

@@ -180,6 +180,18 @@
     <ClCompile Include="..\Source\HLState.cpp">
       <Filter>HighLevelSearch</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\HLUnitData.cpp">
+      <Filter>HighLevelSearch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\HLStatistics.cpp">
+      <Filter>HighLevelSearch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\HLSquad.cpp">
+      <Filter>HighLevelSearch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\HLTranspositionTable.cpp">
+      <Filter>HighLevelSearch</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\CombatCommander.h">
@@ -315,6 +327,18 @@
       <Filter>HighLevelSearch</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\HLState.h">
+      <Filter>HighLevelSearch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\HLUnitData.h">
+      <Filter>HighLevelSearch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\HLStatistics.h">
+      <Filter>HighLevelSearch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\HLSquad.h">
+      <Filter>HighLevelSearch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\HLTranspositionTable.h">
       <Filter>HighLevelSearch</Filter>
     </ClInclude>
   </ItemGroup>

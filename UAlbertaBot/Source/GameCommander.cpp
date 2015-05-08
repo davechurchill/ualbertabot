@@ -32,7 +32,8 @@ void GameCommander::update()
 
 	timerManager.startTimer(TimerManager::HLSearch);
 	if (Options::Modules::USING_HIGH_LEVEL_SEARCH){
-		HLManager::Instance().update(combatUnits, scoutUnits, workerUnits);
+		//	HLManager::Instance().update(combatUnits, scoutUnits, workerUnits);
+		//	HLManager::Instance().update();
 	}
 	timerManager.stopTimer(TimerManager::HLSearch);
 

@@ -29,6 +29,7 @@ namespace UAlbertaBot{
 		mutable int _groundStrength;
 		mutable int _flyingStrength;
 		mutable int _antiAirStrength;
+		mutable int _strength;
 		mutable bool _strengthCalculated;
 	public:
 		HLSquad(const std::vector<UnitInfo> & units, BWTA::Region *region);
@@ -41,6 +42,7 @@ namespace UAlbertaBot{
 		int getTravelledTime() const{ return _framesTravelled; }
 		int travel(int frames);
 		int getGroundStrength() const;
+		int getStrength() const;
 		int getAntiAirStrength() const;
 		int getFlyingStrength() const;
 		void calculateStrength() const;

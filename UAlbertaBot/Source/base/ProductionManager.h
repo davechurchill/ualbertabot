@@ -81,6 +81,7 @@ public:
     BWAPI::UnitInterface*               getProducer(MetaType t, BWAPI::Position closestTo = BWAPI::Positions::None);
 
 	void						performBuildOrderSearch(const std::vector<MetaPair> & goal);
+	void						performBuildOrderSearch();
 	void						drawProductionInformation(int x, int y);
 	void						setSearchGoal(MetaPairVector & goal);
 };

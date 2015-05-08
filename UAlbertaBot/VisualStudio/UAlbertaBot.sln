@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UAlbertaBot", "UAlbertaBot.vcxproj", "{2E63AE74-758A-4607-9DE4-D28E814A6E13}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -12,6 +12,11 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SparCraft", "..\..\SparCraft\VisualStudio\SparCraft.vcxproj", "{66236439-5968-4756-B2E7-8A29BEA99078}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BOSS", "..\..\BOSS\VisualStudio\BOSS.vcxproj", "{9F8709E3-AC4F-45F2-8105-4A99D8E2A127}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F6D2F63B-08C9-4A76-BD1B-5FA0A94668AE}"
+	ProjectSection(SolutionItems) = preProject
+		Performance3.psess = Performance3.psess
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,5 +57,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal

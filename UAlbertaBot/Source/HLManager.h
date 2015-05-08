@@ -15,10 +15,11 @@ namespace UAlbertaBot
 	public:
 		static	HLManager &	Instance();
 
-		void update(
-			std::set<BWAPI::UnitInterface*> combatUnits, 
-			std::set<BWAPI::UnitInterface*> scoutUnits, 
-			std::set<BWAPI::UnitInterface*> workerUnits);
+		void update();
+		//void update(
+		//	std::set<BWAPI::UnitInterface*> combatUnits, 
+		//	std::set<BWAPI::UnitInterface*> scoutUnits, 
+		//	std::set<BWAPI::UnitInterface*> workerUnits);
 	};
 
 }

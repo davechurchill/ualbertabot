@@ -57,8 +57,8 @@ namespace UAlbertaBot{
 
 
 
-		static unsigned int				_zobristChoice[10][5][20][10];//10 depth, 5 strategies, 20 choice points, 10 choices each
-		static unsigned int				_zobristStrategy[10][5];
+		static unsigned int				_zobristChoice[20][StrategyManager::NumProtossStrategies][20][10];//10 depth, 5 strategies, 20 choice points, 10 choices each
+		static unsigned int				_zobristStrategy[20][StrategyManager::NumProtossStrategies];
 
 		unsigned int						_hash;
 		//bool					_opening[2];
@@ -92,7 +92,7 @@ namespace UAlbertaBot{
 
 		std::vector<HLState> getChildren() const;
 		std::vector<HLMove> getMoves(int playerID) const;
-		void applyAndForward(int depth, const std::array<HLMove, 2> &moves);
+		void applyAndForward(int depth, int frames, const std::array<HLMove, 2> &moves);
 		int evaluate(int playerID) const;
 		bool gameOver() const;
 		friend class HLSearch;

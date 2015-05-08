@@ -3,7 +3,7 @@
 
 using namespace UAlbertaBot;
 
-HLSearch::HLSearch() :_tt(10000), _cache(10000)
+HLSearch::HLSearch() :_tt(20000), _cache(20000)
 {
 }
 
@@ -12,32 +12,47 @@ HLSearch::~HLSearch()
 {
 }
 
-void HLSearch::search(double timeLimit, int frameLimit)
+long long HLSearch::search(double timeLimit, int frameLimit, int maxHeight)
 {
 	
 	_stats.clear();
 	_stats.startTimer();
 	_timeUp = false;
 	_timeLimitMs = timeLimit;
+	
+
 	HLState state(BWAPI::Broodwar, BWAPI::Broodwar->self(), BWAPI::Broodwar->enemy());
+	int currentEval = state.evaluate(BWAPI::Broodwar->self()->getID());
 	Logger::LogAppendToFile(UAB_LOGFILE, "\n\nStarting search at frame %d, static eval: %d\n", 
 		BWAPI::Broodwar->getFrameCount(), 
-		state.evaluate(BWAPI::Broodwar->self()->getID()));
+		currentEval);
 
-	if (state.evaluate(BWAPI::Broodwar->self()->getID()) > 500)
+
+	//if (currentEval > 150 || currentEval < -200)
+	//{
+	//	Logger::LogAppendToFile(UAB_LOGFILE, "Game seems decided, skipping HL search\n");
+	//	return _stats.getRunningTimeMilliSecs();
+	//}
+	_minFrame = 1000000;
+	Logger::LogAppendToFile(UAB_LOGFILE, _stats.header() + " score\tbest move\tmin frame\tmax frame\n"); 
+	//for (int height = 2; height <= maxHeight && !_timeUp; height += 2)
+	//{
+	int height = maxHeight;
+	for (int frames = 2000; frames <= frameLimit && !_timeUp; frames += 2000)
 	{
-		Logger::LogAppendToFile(UAB_LOGFILE, "Game seems decided, skipping HL search\n");
-		//return;
-	}
-	Logger::LogAppendToFile(UAB_LOGFILE, _stats.header() + "\n"); 
-	for (int height = 2; height <= 20 && !_timeUp; height += 2)
-	{
-		int score = alphaBeta(state, 0, height, state.currentFrame() + frameLimit, BWAPI::Broodwar->self()->getID(), HLMove(), MIN_SCORE, MAX_SCORE);
+		_maxFrame = 0;
+		int prevFrame = _minFrame;
+		_minFrame = 1000000;
+		int score = alphaBeta(state, 0, height, state.currentFrame() + frames, BWAPI::Broodwar->self()->getID(), HLMove(), MIN_SCORE, MAX_SCORE);
 		Logger::LogAppendToFile(UAB_LOGFILE, _stats.toString());
-		Logger::LogAppendToFile(UAB_LOGFILE, " %d %s\n", score, _bestMove.toString().c_str());
+		Logger::LogAppendToFile(UAB_LOGFILE, " %d %s %d %d\n", score, _bestMove.toString().c_str(), _minFrame - state.currentFrame(), _maxFrame - state.currentFrame());
+		if (prevFrame == _minFrame || (_minFrame - state.currentFrame()) > frameLimit)
+		{
+			break;
+		}
 	}
 
-
+	return _stats.getRunningTimeMilliSecs();
 }
 
 int HLSearch::alphaBeta(const HLState& state, int depth, int height, int frameLimit, int turn, const HLMove &firstSideMove, int alpha, int beta)
@@ -45,6 +60,14 @@ int HLSearch::alphaBeta(const HLState& state, int depth, int height, int frameLi
 	_stats.incNodeCount();
 	
 	if (firstSideMove.isEmpty() && (height <=0 || state.currentFrame() >= frameLimit || state.gameOver())){
+		if (state.currentFrame() < _minFrame)
+		{
+			_minFrame = state.currentFrame();
+		}
+		if (state.currentFrame() > _maxFrame)
+		{
+			_maxFrame = state.currentFrame();
+		}
 		return state.evaluate(turn);
 	}
 	if (_stats.getNodeCount() % 10 && _stats.getRunningTimeMilliSecs() > _timeLimitMs)
@@ -79,6 +102,7 @@ int HLSearch::alphaBeta(const HLState& state, int depth, int height, int frameLi
 	////todo: use value to return or at least shrink alpha-beta window?
 
 	auto &moves = state.getMoves(turn);
+	UAB_ASSERT(moves.size() != 0, "No moves generated at depth %d", depth);
 	if (!ttBest.isEmpty())
 	{
 		auto it=std::find(moves.begin(), moves.end(), ttBest);
@@ -138,6 +162,7 @@ int HLSearch::alphaBeta(const HLState& state, int depth, int height, int frameLi
 					//Logger::LogAppendToFile(UAB_LOGFILE, "Moves "+ firstSideMove.toString() + m.toString()+" matches\n");
 					//Logger::LogAppendToFile(UAB_LOGFILE, " hashes: %u %u\n", entry._hash, entry._state.getHash());
 					if (state.currentFrame() == entry._state.currentFrame()){//didn't progress
+						//Logger::LogAppendToFile(UAB_LOGFILE, "No progress (cached)");
 						continue;
 					} 
 					value = alphaBeta(entry._state, depth + 1, height - 1, frameLimit, 1 - turn, HLMove(), -beta, -al);
@@ -145,8 +170,9 @@ int HLSearch::alphaBeta(const HLState& state, int depth, int height, int frameLi
 				else
 				{
 					HLState newState(state);
-					newState.applyAndForward(depth, movePair);
+					newState.applyAndForward(depth, frameLimit-newState.currentFrame(), movePair);
 					if (state.currentFrame() == newState.currentFrame()){//didn't progress
+						//Logger::LogAppendToFile(UAB_LOGFILE, "No progress");
 						continue;
 					}
 					_stats.addFwd(newState.currentFrame() - state.currentFrame());
@@ -156,6 +182,7 @@ int HLSearch::alphaBeta(const HLState& state, int depth, int height, int frameLi
 
 			}
 			catch (const BOSS::Assert::BOSSException &){
+				//Logger::LogAppendToFile(UAB_LOGFILE, "No Legal build order");
 				continue;//couldn't find legal build order, skip
 			}
 			

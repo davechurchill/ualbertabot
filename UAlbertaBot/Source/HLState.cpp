@@ -3,8 +3,8 @@
 
 using namespace UAlbertaBot;
 
-unsigned int HLState::_zobristChoice[10][5][20][10];
-unsigned int HLState::_zobristStrategy[10][5];
+unsigned int HLState::_zobristChoice[20][StrategyManager::NumProtossStrategies][20][10];
+unsigned int HLState::_zobristStrategy[20][StrategyManager::NumProtossStrategies];
 //_dummy_static_initializer _dummy;
 
 
@@ -42,8 +42,8 @@ HLState::HLState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * player, BWA
 	//3 per gas, 3 per mineral patch, 1 to build, and if scout outside nexus region
 
 	static std::mt19937 rng(1);//todo:use a seed?
-	for (int depth = 0; depth < 10; depth++){
-		for (int s = 0; s < 5; s++){
+	for (int depth = 0; depth < 20; depth++){
+		for (int s = 0; s < StrategyManager::NumProtossStrategies; s++){
 			_zobristStrategy[depth][s] = rng();
 			for (int point = 0; point < 20; point++){
 				for (auto c = 0; c < 10; c++){
@@ -79,7 +79,8 @@ bool HLState::isNonWorkerCombatUnit(const UnitInfo &unit)
 	//		&& SparCraft::System::isSupportedUnitType(unit.type), "Dark templar is not supported :(");
 	//}
 	
-	return  unit.lastHealth > 0
+	return  unit.completed
+		&& unit.lastHealth > 0
 		&& unit.type != BWAPI::UnitTypes::Unknown
 		&& unit.lastPosition.isValid()
 		&& InformationManager::Instance().isCombatUnit(unit.type) 
@@ -103,6 +104,19 @@ void HLState::addSquads(const BWAPI::PlayerInterface *player)
 	}
 	for (auto &it : units)
 	{
+		if (it.first == nullptr)//skip null region
+		{
+			continue;
+		}
+		int totalDamage = 0;
+		for (auto &unit : it.second)
+		{
+			totalDamage += (unit.damage(true) + unit.damage(false));
+		}
+		if (totalDamage == 0)//skip squads with all observers
+		{
+			continue;
+		}
 		_squad[player->getID()].push_back(HLSquad(it.second, it.first));
 	}
 }
@@ -267,8 +281,9 @@ BOSS::BuildOrder HLState::getBuildOrder(const HLMove &move, int playerID) const
 
 
 
-void HLState::applyAndForward(int depth, const std::array<HLMove, 2> &moves)
+void HLState::applyAndForward(int depth, int frames, const std::array<HLMove, 2> &moves)
 {
+	int forwardedFrames = 0;
 
 	_hash = getHash(depth, moves);
 	UAB_ASSERT(getRace(0) == BWAPI::Races::Protoss, "Non protoss?");
@@ -279,40 +294,6 @@ void HLState::applyAndForward(int depth, const std::array<HLMove, 2> &moves)
 	
 	for (int playerId = 0; playerId < 2; playerId++)
 	{
-		//if (_opening[playerId])
-		//{
-		//	std::unordered_map<BOSS::ActionType, int> skipped;
-		//	for (auto build : StrategyManager::getOpeningBookBuildOrder(moves[playerId].getStrategy(), getRace(playerId)))
-		//	{
-		//		BOSS::ActionType action;
-		//		switch (build.type){
-		//		case MetaType::Unit:
-		//			action = BOSS::ActionType(build.unitType);
-		//			break;
-		//		case MetaType::Tech:
-		//			action = BOSS::ActionType(build.techType);
-		//			break;
-		//		case MetaType::Upgrade:
-		//			action = BOSS::ActionType(build.upgradeType);
-		//			break;
-		//		default:
-		//			UAB_ASSERT(false, "Problems with opening book");
-		//		}
-
-		//		if (_state[playerId].getUnitData().getNumTotal(action) - skipped[action] > 0)
-		//		{
-		//			skipped[action]++;
-		//		}
-		//		else
-		//		{
-		//			buildOrder[playerId].add(action);
-		//		}
-
-
-		//	}
-		//	_opening[playerId] = false;
-			//Logger::LogAppendToFile(UAB_LOGFILE, "Using opening book, size: %d\n",buildOrder[playerId].size());
-		//}
 		if (buildOrder[playerId].empty())
 		{
 			buildOrder[playerId] = getBuildOrder(moves[playerId], playerId);
@@ -335,6 +316,18 @@ void HLState::applyAndForward(int depth, const std::array<HLMove, 2> &moves)
 		
 		int nextPlayer = nextActionStart[0] < nextActionStart[1] ? 0 : 1;
 		int framesToForward = nextActionStart[nextPlayer] - _state[nextPlayer].getCurrentFrame();
+		if (forwardedFrames + framesToForward>frames)
+		{
+			framesToForward = frames - forwardedFrames;
+			synchronizeNewUnits(0, _state[0].fastForward(_state[0].getCurrentFrame() + framesToForward));
+			synchronizeNewUnits(1, _state[1].fastForward(_state[1].getCurrentFrame() + framesToForward));
+			if (framesToForward > 0)
+			{
+				forwardSquads(framesToForward);
+			}
+			break;
+		}
+		forwardedFrames += framesToForward;
 		const BOSS::ActionType& action = buildOrder[nextPlayer][buildOrderIndex[nextPlayer]++];
 		//Logger::LogAppendToFile(UAB_LOGFILE, "Start new unit: %s to player %d frame %d\n", action.getName().c_str(), nextPlayer, _state[nextPlayer].getCurrentFrame());
 
@@ -579,7 +572,7 @@ std::vector<std::array<std::vector<int>, 2 > > HLState::getCombats() const
 		std::vector<int> first;
 		for (size_t s = 0; s < _squad[0].size();s++)
 		{
-			if (_squad[0][s].getCurrentRegion() == r)
+			if (_squad[0][s].getCurrentRegion() == r && _squad[0][s].getStrength() > 0)
 			{
 				first.push_back(s);
 			}
@@ -589,7 +582,7 @@ std::vector<std::array<std::vector<int>, 2 > > HLState::getCombats() const
 			std::vector<int> second;
 			for (size_t s = 0; s < _squad[1].size(); s++)
 			{
-				if (_squad[1][s].getCurrentRegion() == r)
+				if (_squad[1][s].getCurrentRegion() == r && _squad[1][s].getStrength() > 0)
 				{
 					second.push_back(s);
 				}
@@ -606,7 +599,10 @@ std::vector<std::array<std::vector<int>, 2 > > HLState::getCombats() const
 
 void HLState::forwardCombat(const std::array<std::vector<int>,2 > &squadIndex, int frames)
 {
-
+	if (frames < 20)//don't simulate extremely short combats
+	{
+		return;
+	}
 	CombatSimulation sim;
 	SparCraft::GameState state;
 	static std::random_device rd;
@@ -703,7 +699,7 @@ void HLState::forwardCombat(const std::array<std::vector<int>,2 > &squadIndex, i
 					UnitInfo unit = it->second;
 					it++;
 					try{
-						auto &sparUnit=g.getState().getUnitByID(p, id);
+						auto &sparUnit = g.getState().getUnitByID(p, id);
 						if (!sparUnit.isAlive()){
 							_squad[p][squadIndex[p][i]].removeUnit(id);
 							deadUnits[p].push_back(unit);
@@ -717,7 +713,6 @@ void HLState::forwardCombat(const std::array<std::vector<int>,2 > &squadIndex, i
 						_squad[p][squadIndex[p][i]].removeUnit(id);
 						deadUnits[p].push_back(unit);
 					}
-
 				}
 			}
 		}
@@ -802,6 +797,29 @@ void HLState::forwardSquads(int frames)
 				[](const HLSquad &s){return s.empty(); }),
 			_squad[playerId].end());
 	}
+
+	//merge squads in same region
+	for (int playerId = 0; playerId < 2; playerId++)
+	{
+		for (auto it1 = _squad[playerId].begin(); it1 != _squad[playerId].end(); it1++)
+		{
+			auto it2 = it1;
+			it2++;
+			for (; it2 != _squad[playerId].end(); it2++)
+			{
+				if (it1->getCurrentRegion() == it2->getCurrentRegion())
+				{
+					for (auto unit : *it2)
+					{
+						it1->addUnit(unit.second);
+					}
+					_squad[playerId].erase(it2);
+					break;//todo: this assumes only 2 squads in same region, if there are three, it will merge the first 2 only
+				}
+			}
+		}
+	}
+
 	//assign orders to squads
 	if ((currentFrame()-lastSquadUpdate)>100)
 	{
@@ -878,28 +896,42 @@ std::vector<HLMove> HLState::getMoves(int playerID) const
 	//	return moves;
 	//}
 
-	for (int s = 0; s < StrategyManager::getNumStrategies(getRace(playerID));s++){
+	//for (int s = 0; s < StrategyManager::getNumStrategies(getRace(playerID));s++){
+	
+	int s = StrategyManager::ProtossHighLevelSearch; 
+	//auto enemy = BWAPI::Broodwar->enemy();
+	//if (enemy->getID() == playerID)
+	//{
+	//	if (enemy->getName().compare("Skynet") == 0)
+	//	{
+	//		s=StrategyManager::ProtossDarkTemplar;
+	//	}
+	//	else if (enemy->getName().compare("UAlbertaBot") == 0)
+	//	{
+	//		s = StrategyManager::ProtossZealotRush;
+	//	}
+	//}
 
-		try{
-			auto goalUnits = StrategyManager::Instance().getBuildOrderGoal(
-				_unitData[playerID],
-				_unitData[1 - playerID],
-				_workerData[playerID],
-				_state[playerID].getCurrentFrame(),
-				s,//strategy
-				getRace(playerID),
-				std::unordered_map<short, short>());
-			moves.push_back(HLMove(s));
-		}
-		catch (const ChoicePoint &c){
-			for (int option = 0; option < c._options; option++){
-				std::unordered_map<short, short> choices;
-				choices[c._point] = option;
-				auto temp = getMoves(playerID, s, choices);
-				moves.insert(moves.end(), temp.begin(), temp.end());
-			}
+	try{
+		auto goalUnits = StrategyManager::Instance().getBuildOrderGoal(
+			_unitData[playerID],
+			_unitData[1 - playerID],
+			_workerData[playerID],
+			_state[playerID].getCurrentFrame(),
+			s,//strategy
+			getRace(playerID),
+			std::unordered_map<short, short>());
+		moves.push_back(HLMove(s));
+	}
+	catch (const ChoicePoint &c){
+		for (int option = 0; option < c._options; option++){
+			std::unordered_map<short, short> choices;
+			choices[c._point] = option;
+			auto temp = getMoves(playerID, s, choices);
+			moves.insert(moves.end(), temp.begin(), temp.end());
 		}
 	}
+	//}
 
 	return moves;
 
@@ -949,18 +981,33 @@ int HLState::evaluate(int playerID) const
 	//SparCraft::GameState state;
 
 	float sum[2] = { 0.0f, 0.0f };
-
+	float dragFactor = 0.5;
 	for (auto &unit : _unitData[playerID].getUnits()){
+		//if (unit.second.completed)
+		//{
 		//if (unit.second.type==BWAPI::UnitTypes::Protoss_Dark_Templar)
 		//	sum[playerID] += 1000;
-		sum[playerID] += sqrtf(unit.second.lastHealth) * unit.second.dpf();
+		
+		//sum[playerID] += sqrtf(unit.second.lastHealth) * unit.second.dpf();
+
+			int score = unit.second.type == BWAPI::UnitTypes::Protoss_Dragoon ? unit.second.type.destroyScore() * dragFactor : unit.second.type.destroyScore();
+			sum[playerID] += ((float)unit.second.lastHealth) / unit.second.type.maxHitPoints() * score;
+		//}
 	}
 
 	for (auto &unit : _unitData[1 - playerID].getUnits()){
+		//if (unit.second.completed)
+		//{
 		//if (unit.second.type == BWAPI::UnitTypes::Protoss_Dark_Templar)
 		//	sum[1-playerID] += 1000;
-		sum[1-playerID] += sqrtf(unit.second.lastHealth) * unit.second.dpf();
-	}
+		
+		//sum[1-playerID] += sqrtf(unit.second.lastHealth) * unit.second.dpf();
+		
+
+			int score = unit.second.type == BWAPI::UnitTypes::Protoss_Dragoon ? unit.second.type.destroyScore() * dragFactor : unit.second.type.destroyScore();
+			sum[1 - playerID] += ((float)unit.second.lastHealth) / unit.second.type.maxHitPoints() * score;
+		//}
+	} 
 
 	return sum[playerID] - sum[1 - playerID];
 

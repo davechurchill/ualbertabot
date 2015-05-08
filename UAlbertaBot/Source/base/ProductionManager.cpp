@@ -1,4 +1,5 @@
 #include "ProductionManager.h"
+#include "HLManager.h"
 
 using namespace UAlbertaBot;
 
@@ -33,10 +34,37 @@ void ProductionManager::setBuildOrder(const std::vector<MetaType> & buildOrder)
 		queue.queueAsLowestPriority(buildOrder[i], true);
 	}
 }
-
 void ProductionManager::performBuildOrderSearch(const std::vector<MetaPair> & goal)
+{
+	if (!Options::Modules::USING_MACRO_SEARCH || goal.empty())
+	{
+		return;
+	}
+
+	//std::vector<MetaType> buildOrder = BOSSManager::GetOptimizedNaiveBuildOrder(goal);
+	//setBuildOrder(buildOrder);
+
+	std::vector<MetaType> buildOrder = BOSSManager::Instance().getBuildOrder();
+
+	if (!buildOrder.empty())
+	{
+		BWAPI::Broodwar->printf("PM: Build order found!");
+		setBuildOrder(buildOrder);
+		BOSSManager::Instance().reset();
+		searchGoal = std::vector<MetaPair>();
+	}
+	else
+	{
+		if (!BOSSManager::Instance().isSearchInProgress())
+		{
+			BWAPI::Broodwar->printf("Starting a new search!");
+			BOSSManager::Instance().startNewSearch(goal);
+		}
+	}
+}
+void ProductionManager::performBuildOrderSearch()
 {	
-    if (!Options::Modules::USING_MACRO_SEARCH || goal.empty())
+    if (!Options::Modules::USING_MACRO_SEARCH)
     {
         return;
     }
@@ -58,7 +86,11 @@ void ProductionManager::performBuildOrderSearch(const std::vector<MetaPair> & go
         if (!BOSSManager::Instance().isSearchInProgress())
         {
             BWAPI::Broodwar->printf("Starting a new search!");
-            BOSSManager::Instance().startNewSearch(goal);
+			if (Options::Modules::USING_HIGH_LEVEL_SEARCH)
+			{
+				HLManager::Instance().update();
+			}
+			BOSSManager::Instance().startNewSearch(StrategyManager::Instance().getBuildOrderGoal());
         }
     }
 }
@@ -82,8 +114,9 @@ void ProductionManager::update()
 	if ((queue.size() == 0) && (BWAPI::Broodwar->getFrameCount() > 10) && !Options::Modules::USING_BUILD_ORDER_DEMO)
 	{
 		BWAPI::Broodwar->drawTextScreen(150, 10, "Nothing left to build, new search!");
-		std::vector<MetaPair> newGoal = StrategyManager::Instance().getBuildOrderGoal();
-		performBuildOrderSearch(newGoal);
+		performBuildOrderSearch();
+
+
 	}
 
 	//// detect if there's a build order deadlock once per second

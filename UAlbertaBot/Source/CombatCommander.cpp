@@ -317,6 +317,10 @@ BWAPI::UnitInterface* CombatCommander::findClosestDefender(std::set<BWAPI::UnitI
 	{
 		for (BWAPI::UnitInterface* unit : units)
 		{
+			if (!unit)
+			{
+				continue;
+			}
 			double dist = unit->getDistance(enemyUnit);
 			if (!closestUnit || dist < minDistance) 
 			{

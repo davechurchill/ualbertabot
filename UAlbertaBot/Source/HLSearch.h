@@ -25,11 +25,12 @@ namespace UAlbertaBot
 		HLCacheTable _cache;
 		bool _timeUp;
 		int _timeLimitMs;
+		int _maxFrame,_minFrame;
 	public:
 		HLSearch(const UAlbertaBot::HLSearch &) = delete;
 		HLSearch();
 		~HLSearch();
-		void search(double timeLimit, int frameLimit);
+		long long search(double timeLimit, int frameLimit, int maxHeight);
 
 		//std::vector<Squad> getSquads(const std::set<BWAPI::UnitInterface*> & combatUnits);//get Squads and orders
 		//std::set<BWAPI::UnitInterface*> getScouts();

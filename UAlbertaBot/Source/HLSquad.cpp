@@ -81,7 +81,14 @@ void HLSquad::order(HLSquadOrder order)
 	_framesTravelled = 0;
 
 }
-
+int HLSquad::getStrength() const
+{
+	if (!_strengthCalculated)
+	{
+		calculateStrength();
+	}
+	return _strength;
+}
 int HLSquad::getGroundStrength() const
 {
 	if (!_strengthCalculated)
@@ -108,13 +115,9 @@ int HLSquad::getFlyingStrength() const
 }
 void HLSquad::calculateStrength() const
 {
-	_groundStrength = _flyingStrength = _antiAirStrength = 0;
+	_groundStrength = _flyingStrength = _antiAirStrength = _strength = 0;
 	for (auto u : _units)
 	{
-		if (u.second.isFlyer())
-		{
-			_flyingStrength++;
-		}
 		if (u.second.type.airWeapon() != BWAPI::WeaponTypes::None)
 		{
 			_antiAirStrength++;
@@ -122,6 +125,14 @@ void HLSquad::calculateStrength() const
 		if (u.second.type.groundWeapon() != BWAPI::WeaponTypes::None)
 		{
 			_groundStrength++;
+		}
+		if (u.second.type.airWeapon() != BWAPI::WeaponTypes::None || u.second.type.groundWeapon() != BWAPI::WeaponTypes::None)
+		{
+			if (u.second.isFlyer())
+			{
+				_flyingStrength++;
+			}
+			_strength++;
 		}
 	}
 }
