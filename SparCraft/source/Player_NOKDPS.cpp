@@ -28,8 +28,8 @@ void Player_NOKDPS::getMoves(GameState & state, const MoveArray & moves, std::ve
 		unsigned long long closestMoveDist		(std::numeric_limits<unsigned long long>::max());
 		
 		const Unit & ourUnit				(state.getUnit(_playerID, u));
-		const Unit & closestUnit			(ourUnit.canHeal() ? state.getClosestOurUnit(_playerID, u) : state.getClosestEnemyUnit(_playerID, u, true));
-
+		const Unit & closestUnit(ourUnit.canHeal() ? state.getClosestOurUnit(_playerID, u) : ourUnit.type().isDetector() ? state.getClosestEnemyUnit(_playerID, u, false):state.getClosestEnemyUnit(_playerID, u, true));
+		
 		for (size_t m(0); m<moves.numMoves(u); ++m)
 		{
 			const UnitAction move						(moves.getMove(u, m));

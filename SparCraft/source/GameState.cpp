@@ -208,7 +208,7 @@ void GameState::generateMoves(MoveArray & moves, const IDType & playerIndex) con
             double defaultMoveDuration      = (double)Constants::Move_Distance / unit.speed();
 
             // if we can currently attack
-            double chosenTime               = std::min(timeUntilAttack, defaultMoveDuration);
+			double chosenTime = timeUntilAttack != 0 ? std::min(timeUntilAttack, defaultMoveDuration) : defaultMoveDuration;
 
             // the chosen movement distance
             PositionType moveDistance       = (PositionType)(chosenTime * unit.speed());
@@ -216,7 +216,8 @@ void GameState::generateMoves(MoveArray & moves, const IDType & playerIndex) con
             // DEBUG: If chosen move distance is ever 0, something is wrong
             if (moveDistance == 0)
             {
-                System::FatalError("Move Action with distance 0 generated");
+                System::FatalError("Move Action with distance 0 generated. timeUntilAttack:"+
+					std::to_string(timeUntilAttack)+", speed:"+std::to_string(unit.speed()));
             }
 
             // we are only generating moves in the cardinal direction specified in common.h
@@ -337,7 +338,7 @@ const Unit & GameState::getUnitByID(const IDType & unitID) const
 		}
 	}
 
-    System::FatalError("GameState Error: getUnitByID() Unit not found");
+	System::FatalError("GameState Error: getUnitByID() Unit not found, id:" + std::to_string(unitID));
 	return getUnit(0,0);
 }
 
@@ -351,7 +352,7 @@ const Unit & GameState::getUnitByID(const IDType & player, const IDType & unitID
 		}
 	}
 
-	System::FatalError("GameState Error: getUnitByID() Unit not found");
+	System::FatalError("GameState Error: getUnitByID() Unit not found, player:"+std::to_string(player)+" id:" + std::to_string(unitID));
 	return getUnit(0,0);
 }
 
@@ -365,7 +366,7 @@ Unit & GameState::getUnitByID(const IDType & player, const IDType & unitID)
 		}
 	}
 
-	System::FatalError("GameState Error: getUnitByID() Unit not found");
+	System::FatalError("GameState Error: getUnitByID() Unit not found, player:" + std::to_string(player) + " id:" + std::to_string(unitID));
 	return getUnit(0,0);
 }
 
