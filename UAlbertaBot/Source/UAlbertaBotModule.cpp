@@ -12,6 +12,7 @@
 
 #include "Common.h"
 #include "UAlbertaBotModule.h"
+#include "CombatPredictor.h"
 
 using namespace UAlbertaBot;
 
@@ -46,6 +47,10 @@ void UAlbertaBotModule::onStart()
 		
 		sparcraftManager.onStart();
 	}
+
+    if (Options::Modules::USING_COMBAT_PREDICTOR)
+        CombatPredictor::Instance().initUnitList();
+       
 }
 
 void UAlbertaBotModule::onEnd(bool isWinner) 
@@ -92,12 +97,27 @@ void UAlbertaBotModule::onFrame()
 			}
 		}
 	}
+
+	if (Options::Modules::USING_COMBAT_PREDICTOR)
+	{
+		//update all combats
+		//slow for debug
+		std::vector<Combat> *combats = &CombatPredictor::Instance().combats;
+		for (unsigned int i = 0; i < combats->size(); i++)
+		{
+			if (!((*combats)[i].isFinished())) (*combats)[i].update();
+		}
+	}
 }
 
 void UAlbertaBotModule::onUnitDestroy(BWAPI::UnitInterface* unit)
 {
 	if (Options::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitDestroy(unit); }
 	if (Options::Modules::USING_ENHANCED_INTERFACE) { eui.onUnitDestroy(unit); }
+	if (Options::Modules::USING_COMBAT_PREDICTOR)
+	{
+		CombatPredictor::Instance().observedHPs[unit->getID()] = 0;
+	}
 }
 
 void UAlbertaBotModule::onUnitMorph(BWAPI::UnitInterface* unit)

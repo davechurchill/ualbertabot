@@ -6,7 +6,7 @@
 #include "UnitData.h"
 
 #include "..\..\SparCraft\source\SparCraft.h"
-
+#include "CombatPredictor.h"
 namespace UAlbertaBot
 {
 struct BaseInfo;
