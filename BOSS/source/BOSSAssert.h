@@ -10,7 +10,7 @@
 #include <ctime>
 #include <iomanip>
 
-#define BOSS_LOGFILE "BOSS_error_log.txt"
+extern char BOSS_LOGFILE[100];
 
 #ifdef _MSC_VER
     #define BOSS_BREAK __debugbreak();

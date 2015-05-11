@@ -23,15 +23,40 @@ using namespace UAlbertaBot;
 
 void UAlbertaBotModule::onStart()
 {
+	auto result = std::time(nullptr);
+	char time_str[100];
+	std::strftime(time_str, sizeof(time_str), "%Y%m%d-%H%M%S", std::localtime(&result));
+	std::string prefix = "bwapi-data/write/";
+	prefix += time_str;
+	std::string suffix = BWAPI::Broodwar->mapFileName() + "-" + BWAPI::Broodwar->enemy()->getName() + ".txt";
+	char temp[100];
+	strncpy_s(temp, 100, UAB_LOGFILE, std::strlen(UAB_LOGFILE));
+	strncpy_s(UAB_LOGFILE, 100, prefix.c_str(), prefix.length());
+	strncat_s(UAB_LOGFILE, 100, temp, std::strlen(temp));
+	strncat_s(UAB_LOGFILE, 100, suffix.c_str(), suffix.length());
+
+	strncpy_s(temp, 100, BOSS_LOGFILE, std::strlen(BOSS_LOGFILE));
+	strncpy_s(BOSS_LOGFILE, 100, prefix.c_str(), prefix.length());
+	strncat_s(BOSS_LOGFILE, 100, temp, std::strlen(temp));
+	strncat_s(BOSS_LOGFILE, 100, suffix.c_str(), suffix.length());
+
+	strncpy_s(temp, 100, SPARCRAFT_LOGFILE, std::strlen(SPARCRAFT_LOGFILE));
+	strncpy_s(SPARCRAFT_LOGFILE, 100, prefix.c_str(), prefix.length());
+	strncat_s(SPARCRAFT_LOGFILE, 100, temp, std::strlen(temp));
+	strncat_s(SPARCRAFT_LOGFILE, 100, suffix.c_str(), suffix.length());
+
+	Logger::LogOverwriteToFile(UAB_LOGFILE, "Start\n");
+	Logger::LogOverwriteToFile(BOSS_LOGFILE, "Start\n");
+
 	BWAPI::Broodwar->setLocalSpeed(0);
-	//BWAPI::Broodwar->setFrameSkip(0);
+	BWAPI::Broodwar->setFrameSkip(10);
 
     SparCraft::init();
     BOSS::init();
 
 	BWAPI::Broodwar->enableFlag(BWAPI::Flag::UserInput);
 
-    Options::BotModes::SetBotMode(Options::BotModes::AIIDE_TOURNAMENT);
+    //Options::BotModes::SetBotMode(Options::BotModes::AIIDE_TOURNAMENT);
 	Options::Modules::checkOptions();
 	
     if (Options::Modules::USING_GAMECOMMANDER)
@@ -48,9 +73,17 @@ void UAlbertaBotModule::onStart()
 		sparcraftManager.onStart();
 	}
 
-    if (Options::Modules::USING_COMBAT_PREDICTOR)
-        CombatPredictor::Instance().initUnitList();
-       
+
+	if (Options::Modules::USING_COMBAT_PREDICTOR)
+	{
+		CombatPredictor::Instance().initUnitList();
+	}
+
+	if (Options::Modules::USING_HIGH_LEVEL_SEARCH)
+	{
+		BWAPI::Broodwar->enableFlag(BWAPI::Flag::CompleteMapInformation);
+	}
+
 }
 
 void UAlbertaBotModule::onEnd(bool isWinner) 
@@ -61,6 +94,15 @@ void UAlbertaBotModule::onEnd(bool isWinner)
         
 		ProductionManager::Instance().onGameEnd();
 	}	
+
+	if (isWinner)
+	{
+		Logger::LogAppendToFile(UAB_LOGFILE, "WON! :)");
+	}
+	else
+	{
+		Logger::LogAppendToFile(UAB_LOGFILE, "LOST! :(");
+	}
 }
 
 void UAlbertaBotModule::onFrame()

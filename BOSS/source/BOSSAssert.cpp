@@ -1,6 +1,7 @@
 #include "BOSSAssert.h"
 
 using namespace BOSS;
+char BOSS_LOGFILE[100] { "BOSS_error_log.txt" };
 
 namespace BOSS
 {

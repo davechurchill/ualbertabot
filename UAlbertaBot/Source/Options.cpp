@@ -8,7 +8,7 @@ namespace Options
         // the default tournament bot modules
 		bool USING_GAMECOMMANDER		= true;	    // toggle GameCommander, effectively UAlbertaBot
 		bool USING_SCOUTMANAGER			= true;
-		bool USING_COMBATCOMMANDER		= true;
+		bool USING_COMBATCOMMANDER		= false;
 		bool USING_MACRO_SEARCH			= true;	    // toggle use of Build Order Search, currently no backup
 		bool USING_STRATEGY_IO			= false;	// toggle the use of file io for strategy
         bool USING_UNIT_COMMAND_MGR		= false;    // handles all unit commands
@@ -21,6 +21,7 @@ namespace Options
 		bool USING_HIGH_LEVEL_SEARCH	= false;		// todo: update for different bot modes
         bool USING_COMBAT_PREDICTOR     = false;		// instead of SparCraft simulation, needs the training files! 
 		bool USING_BATTLE_LOG			= false;		// logging all battles for future training
+
 
 		void checkOptions()							// checks to see if options are set in a sane manner
 		{

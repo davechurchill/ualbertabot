@@ -2,6 +2,8 @@
 
 using namespace UAlbertaBot;
 
+char UAB_LOGFILE[100] { "ualbertabot_error_log.txt" };
+
 namespace UAlbertaBot
 {
 namespace Assert

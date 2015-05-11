@@ -138,6 +138,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(BWAPI_DIR)/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
