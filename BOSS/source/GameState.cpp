@@ -691,7 +691,15 @@ const FrameCountType GameState::whenMineralsReady(const ActionType & action) con
     {
         BOSS_ASSERT(currentMineralWorkers > 0, "Shouldn't have 0 mineral workers");
 
-        FrameCountType finalTimeToAdd = (difference - addedMinerals) / (currentMineralWorkers * Constants::MPWPF);
+       FrameCountType finalTimeToAdd;
+	   if (currentMineralWorkers != 0)
+		{
+			finalTimeToAdd = (difference - addedMinerals) / (currentMineralWorkers * Constants::MPWPF);
+		}
+		else
+		{
+			finalTimeToAdd = 1000000;
+		}
         addedMinerals += finalTimeToAdd * currentMineralWorkers * Constants::MPWPF;
         addedTime     += finalTimeToAdd;
 
@@ -774,7 +782,16 @@ const FrameCountType GameState::whenGasReady(const ActionType & action) const
     // if we still haven't added enough minerals, add more time
     if (addedGas < difference)
     {
-        FrameCountType finalTimeToAdd = (difference - addedGas) / (currentGasWorkers * Constants::GPWPF);
+		BOSS_ASSERT(currentGasWorkers > 0, "Shouldn't have 0 gas workers");
+		FrameCountType finalTimeToAdd;
+		if (currentGasWorkers != 0)
+		{
+			finalTimeToAdd = (difference - addedGas) / (currentGasWorkers * Constants::GPWPF);
+		}
+		else
+		{
+			finalTimeToAdd = 1000000;
+		}
         addedGas    += finalTimeToAdd * currentGasWorkers * Constants::GPWPF;
         addedTime   += finalTimeToAdd;
 
