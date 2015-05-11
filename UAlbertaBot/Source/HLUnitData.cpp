@@ -187,7 +187,7 @@ void HLUnitData::addUnit(const UnitInfo &unit)
 bool HLUnitData::finishUnit(BWAPI::UnitType type)
 {
 	bool found = false;
-	for (auto item : _unitMap){
+	for (auto &item : _unitMap){
 		if (item.second.type.getID() == type.getID() && !item.second.completed){
 			item.second.completed = true;
 			numCompletedUnits[type.getID()]++;
