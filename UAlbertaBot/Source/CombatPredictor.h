@@ -2,6 +2,7 @@
 
 #include "Common.h"
 #include "MapGrid.h"
+#include "HLUnitData.h"
 
 #ifdef USING_VISUALIZATION_LIBRARIES
 #include "Visualizer.h"
@@ -69,7 +70,7 @@ public:
     void initUnitList();
 	std::string getSuffix(){ return uniqSuffix; };
     const float CombatPredictor::dpf(BWAPI::UnitType &ut);
-	const SparCraft::ScoreType predictCombat(UnitData &myUnits, UnitData &oppUnits);
+	const SparCraft::ScoreType predictCombat(const HLUnitData &myUnits, const HLUnitData &oppUnits);
 
     //predict combat, for each army need {ID, current HP+shields} x each unit
     SparCraft::ScoreType  predictCombat(std::vector<std::pair<int,int>> &ArmyA,

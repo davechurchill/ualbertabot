@@ -438,8 +438,7 @@ void CombatPredictor::initUnitList()
 	std::string enemyFile(defReadFolder + enemyFeatures);
 	std::ifstream features; // (defReadFolder + enemyFeatures);
 	features.open(enemyFile);
-
-	if (features.good())
+	if (features.is_open() && features.good())
 	{
 		CombatPredictor::Instance().vsTrainedOpp = true;
 	}
@@ -448,10 +447,11 @@ void CombatPredictor::initUnitList()
 		//default features
 		//std::ifstream features(defReadFolder + "features.txt");
 		features.open(defReadFolder + "f_default.txt");
+		UAB_ASSERT(features.is_open() && features.good(), "Couldn't open file %sf_default.txt", defReadFolder.c_str());
 		CombatPredictor::Instance().vsTrainedOpp = false;
 	}
 
-    if (features.good())
+	if (features.is_open() && features.good())
     {
         // read away
         std::string line;
@@ -470,7 +470,7 @@ void CombatPredictor::initUnitList()
     }
 }
 
-const SparCraft::ScoreType CombatPredictor::predictCombat(UnitData &myUnits, UnitData &oppUnits)
+const SparCraft::ScoreType CombatPredictor::predictCombat(const HLUnitData &myUnits, const HLUnitData &oppUnits)
 {
 
 	bool I_haveOBS = false;
@@ -481,15 +481,15 @@ const SparCraft::ScoreType CombatPredictor::predictCombat(UnitData &myUnits, Uni
 	double sumA = 0.0;
 	double sumB = 0.0;
 
-	FOR_EACH_UIMAP_CONST(iter, oppUnits.getUnits())
+	for (auto &iter : oppUnits.getUnits())
 	{
-		const UnitInfo & ui(iter->second);
+		const UnitInfo & ui(iter.second);
 		if (ui.completed && ui.type.isDetector()) He_hasOBS = true;
 	}
 
-	FOR_EACH_UIMAP_CONST(iter, myUnits.getUnits())
+	for(auto &iter: myUnits.getUnits())
 	{
-		const UnitInfo & ui(iter->second);
+		const UnitInfo & ui(iter.second);
 
 		if (ui.completed && ui.type.isDetector()) I_haveOBS = true;
 
@@ -509,9 +509,9 @@ const SparCraft::ScoreType CombatPredictor::predictCombat(UnitData &myUnits, Uni
 		}
 	}
 
-	FOR_EACH_UIMAP_CONST(iter, oppUnits.getUnits())
+	for(auto &iter: oppUnits.getUnits())
 	{
-		const UnitInfo & ui(iter->second);
+		const UnitInfo & ui(iter.second);
 
 		if (ui.completed &&
 			(ui.type.canAttack() || ui.type.isWorker()
@@ -534,7 +534,7 @@ const SparCraft::ScoreType CombatPredictor::predictCombat(UnitData &myUnits, Uni
 		}
 	}
 
-	return (int)((pow(nrA, power - 1)*sumA - pow(nrB, power - 1)*sumB)*10.0);
+	return (int)((pow(nrA, power - 1)*sumA - pow(nrB, power - 1)*sumB)*100.0);
 }
 
 SparCraft::ScoreType  CombatPredictor::predictCombat(std::vector<std::pair<int, int>> &ArmyA,
