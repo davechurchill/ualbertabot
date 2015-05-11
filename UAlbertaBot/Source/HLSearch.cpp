@@ -3,7 +3,7 @@
 
 using namespace UAlbertaBot;
 
-HLSearch::HLSearch() :_tt(20000), _cache(20000)
+HLSearch::HLSearch() :_tt(20000), _cache(20000), _bestMove(StrategyManager::ProtossHighLevelSearch)
 {
 }
 
@@ -221,7 +221,7 @@ int HLSearch::alphaBeta(const HLState& state, int depth, int height, int frameLi
 		}
 		else if (height == 2)//only use default move if first ID iteration
 		{
-			_bestMove = HLMove(0);
+			//_bestMove = HLMove(StrategyManager::ProtossHighLevelSearch);
 			Logger::LogAppendToFile(UAB_LOGFILE, "Couldn't find a strategy, using default\n");
 		}
 	}

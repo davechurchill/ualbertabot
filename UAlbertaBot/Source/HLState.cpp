@@ -1,5 +1,6 @@
 #include "HLState.h"
 #include <random>
+#include "CombatPredictor.h"
 
 using namespace UAlbertaBot;
 
@@ -977,36 +978,39 @@ std::vector<HLMove> HLState::getMoves(int playerID) const
 
 int HLState::evaluate(int playerID) const
 {
-	//CombatSimulation sim;
-	//SparCraft::GameState state;
+	if (Options::Modules::USING_COMBAT_PREDICTOR)
+	{
+		return CombatPredictor::Instance().predictCombat(_unitData[playerID], _unitData[1 - playerID]);
+	}
+
 
 	float sum[2] = { 0.0f, 0.0f };
-	float dragFactor = 0.5;
+	float dragFactor = 0.6; 
 	for (auto &unit : _unitData[playerID].getUnits()){
-		//if (unit.second.completed)
-		//{
+		if (unit.second.completed)
+		{
 		//if (unit.second.type==BWAPI::UnitTypes::Protoss_Dark_Templar)
 		//	sum[playerID] += 1000;
 		
-		//sum[playerID] += sqrtf(unit.second.lastHealth) * unit.second.dpf();
+		sum[playerID] += sqrtf(unit.second.lastHealth) * unit.second.dpf();
 
-			int score = unit.second.type == BWAPI::UnitTypes::Protoss_Dragoon ? unit.second.type.destroyScore() * dragFactor : unit.second.type.destroyScore();
-			sum[playerID] += ((float)unit.second.lastHealth) / unit.second.type.maxHitPoints() * score;
-		//}
+		//	int score = unit.second.type == BWAPI::UnitTypes::Protoss_Dragoon ? unit.second.type.destroyScore() * dragFactor : unit.second.type.destroyScore();
+		//	sum[playerID] += ((float)unit.second.lastHealth) / unit.second.type.maxHitPoints() * score;
+		}
 	}
 
 	for (auto &unit : _unitData[1 - playerID].getUnits()){
-		//if (unit.second.completed)
-		//{
+		if (unit.second.completed)
+		{
 		//if (unit.second.type == BWAPI::UnitTypes::Protoss_Dark_Templar)
 		//	sum[1-playerID] += 1000;
 		
-		//sum[1-playerID] += sqrtf(unit.second.lastHealth) * unit.second.dpf();
+		sum[1-playerID] += sqrtf(unit.second.lastHealth) * unit.second.dpf();
 		
 
-			int score = unit.second.type == BWAPI::UnitTypes::Protoss_Dragoon ? unit.second.type.destroyScore() * dragFactor : unit.second.type.destroyScore();
-			sum[1 - playerID] += ((float)unit.second.lastHealth) / unit.second.type.maxHitPoints() * score;
-		//}
+		//	int score = unit.second.type == BWAPI::UnitTypes::Protoss_Dragoon ? unit.second.type.destroyScore() * dragFactor : unit.second.type.destroyScore();
+		//	sum[1 - playerID] += ((float)unit.second.lastHealth) / unit.second.type.maxHitPoints() * score;
+		}
 	} 
 
 	return sum[playerID] - sum[1 - playerID];
