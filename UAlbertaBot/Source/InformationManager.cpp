@@ -403,6 +403,12 @@ bool InformationManager::isCombatUnit(BWAPI::UnitType type) const
 		if (type == BWAPI::UnitTypes::Terran_SCV) //coz it can repair bunkers
 			return true;
 
+		// no workers or buildings allowed
+		if (type.isWorker() &&  type != BWAPI::UnitTypes::Terran_SCV)
+		{
+			return false;
+		}
+
 		if (type.canAttack() || type == BWAPI::UnitTypes::Terran_Medic || type == BWAPI::UnitTypes::Terran_Bunker)
 		{
 			return true;
@@ -412,12 +418,6 @@ bool InformationManager::isCombatUnit(BWAPI::UnitType type) const
 	
 
 	if (type == BWAPI::UnitTypes::Zerg_Lurker/* || type == BWAPI::UnitTypes::Protoss_Dark_Templar*/)
-	{
-		return false;
-	}
-
-	// no workers or buildings allowed
-	if (type.isWorker())
 	{
 		return false;
 	}
@@ -460,19 +460,18 @@ void InformationManager::getNearbyForce(std::vector<UnitInfo> & unitInfo, BWAPI:
 					hasBunker = true;
 				}
 			}
-			
-			if (Options::Modules::USING_COMBAT_PREDICTOR)
-			{
-				if (ui.type == BWAPI::UnitTypes::Terran_SCV) //SPECIAL CASE
-				{
-					if (ui.lastPosition.getDistance(p) <= 200)
-						unitInfo.push_back(ui);
-				}
 
-				// if it can attack into the radius we care about
-				else if (ui.lastPosition.getDistance(p) <= (radius + range))
+
+			// if it can attack into the radius we care about
+			if (ui.lastPosition.getDistance(p) <= (radius + range))
+			{
+				// add it to the vector
+				unitInfo.push_back(ui);
+			}
+			else if (ui.type == BWAPI::UnitTypes::Terran_SCV && Options::Modules::USING_COMBAT_PREDICTOR)
+			{
+				if (ui.lastPosition.getDistance(p) <= 200)
 				{
-					// add it to the vector
 					unitInfo.push_back(ui);
 				}
 			}
@@ -484,15 +483,17 @@ void InformationManager::getNearbyForce(std::vector<UnitInfo> & unitInfo, BWAPI:
 	}
 
 	if (Options::Modules::USING_COMBAT_PREDICTOR)
-	if (!hasBunker)
 	{
-		//delete all SCVs
-		for (int i = 0; i < unitInfo.size();)
+		if (!hasBunker)
 		{
-			if (unitInfo[i].type == BWAPI::UnitTypes::Terran_SCV)
-				unitInfo.erase(unitInfo.begin() + i);
-			else
-				i++;
+			//delete all SCVs
+			for (int i = 0; i < unitInfo.size();)
+			{
+				if (unitInfo[i].type == BWAPI::UnitTypes::Terran_SCV)
+					unitInfo.erase(unitInfo.begin() + i);
+				else
+					i++;
+			}
 		}
 	}
 }
