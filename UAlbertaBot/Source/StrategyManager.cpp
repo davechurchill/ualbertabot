@@ -806,6 +806,10 @@ MetaPairVector StrategyManager::getProtossHighLevelSearchBuildOrderGoal(
 
 	if (enemyUnitData.hasCloakedUnits())
 	{
+		if (selfUnitData.getNumUnits(BWAPI::UnitTypes::Protoss_Photon_Cannon) < 2)
+		{
+			goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Photon_Cannon, 2));
+		}
 		if (selfUnitData.getNumUnits(BWAPI::UnitTypes::Protoss_Robotics_Facility) < 1)
 		{
 			goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Robotics_Facility, 1));
