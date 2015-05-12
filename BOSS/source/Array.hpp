@@ -18,6 +18,7 @@ public:
         : _size(0)
         ,_capacity(max_capacity)
     {
+		BOSS_ASSERT(max_capacity>0, "Vec initializing with capacity = 0");
     }
 
     Vec<T,max_capacity>(const size_t & size)
@@ -125,7 +126,7 @@ public:
 
     void push_back(const T & e)
     {
-        BOSS_ASSERT(_size < capacity(),"Array over capacity: Size = %d",capacity());
+        BOSS_ASSERT(_size < capacity(),"Array over capacity: Capacity = %d, Size = %d",capacity(), _size);
         _arr[_size] = e;
         ++_size;
     }
