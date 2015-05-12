@@ -8,7 +8,7 @@ namespace Options
         // the default tournament bot modules
 		bool USING_GAMECOMMANDER		= true;	    // toggle GameCommander, effectively UAlbertaBot
 		bool USING_SCOUTMANAGER			= true;
-		bool USING_COMBATCOMMANDER		= false;
+		bool USING_COMBATCOMMANDER		= true;
 		bool USING_MACRO_SEARCH			= true;	    // toggle use of Build Order Search, currently no backup
 		bool USING_STRATEGY_IO			= false;	// toggle the use of file io for strategy
         bool USING_UNIT_COMMAND_MGR		= false;    // handles all unit commands

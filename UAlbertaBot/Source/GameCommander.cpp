@@ -59,10 +59,11 @@ void GameCommander::update()
 	if (Options::Modules::USING_COMBATCOMMANDER)
 	{
 		combatCommander.update(combatUnits);
-	}else if (Options::Modules::USING_HIGH_LEVEL_SEARCH)
-	{
-		hlCombatCommander.update(combatUnits);
 	}
+	//else if (Options::Modules::USING_HIGH_LEVEL_SEARCH)
+	//{
+	//	hlCombatCommander.update(combatUnits);
+	//}
 	timerManager.stopTimer(TimerManager::Combat);
 
 	timerManager.startTimer(TimerManager::Scout);
