@@ -71,8 +71,8 @@ public:
     GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * player);
 #endif
 
-    void                        doAction(const ActionType & action);
-    void                        fastForward(const FrameCountType toFrame) ;
+	std::vector<ActionType>     doAction(const ActionType & action);
+    std::vector<ActionType>     fastForward(const FrameCountType toFrame) ;
     void                        finishNextActionInProgress();
 
     const FrameCountType        getCurrentFrame()                                                       const;
@@ -111,5 +111,6 @@ public:
     void                        setMinerals(const ResourceCountType & minerals);
     void                        setGas(const ResourceCountType & gas);
     void                        addCompletedAction(const ActionType & action, const size_t num = 1);
+	void                        removeCompletedAction(const ActionType & action, const size_t num = 1);
 };
 }

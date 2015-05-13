@@ -52,6 +52,7 @@ public:
 	static MapTools &	Instance();
 
 	BWAPI::TilePosition getNextExpansion();
+	BWAPI::TilePosition getNextExpansion(BWAPI::Player player);
 
 	void update();
 	void drawMyRegion();

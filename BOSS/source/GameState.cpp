@@ -67,10 +67,12 @@ GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self)
 				else if (unit->getRemainingResearchTime() > 0)
 				{
 					constructing = ActionType(unit->getTech());
+					_units.addActionInProgress(constructing, game->getFrameCount() + unit->getRemainingResearchTime(), false);
 				}
 				else if (unit->getRemainingUpgradeTime() > 0)
 				{
-					constructing = ActionType(unit->getTech());
+					constructing = ActionType(unit->getUpgrade());
+					_units.addActionInProgress(constructing, game->getFrameCount() + unit->getRemainingUpgradeTime(), false);
 				}
 
                 // TODO: special case for Zerg_Hatchery
@@ -187,9 +189,9 @@ bool GameState::isLegal(const ActionType & action) const
     {
         return false;
     }
-
+	
     // if it's a unit and we are out of supply and aren't making an overlord, it's not legal
-    if (!action.isMorphed() && ((_units.getCurrentSupply() + action.supplyRequired()) > (_units.getMaxSupply() + _units.getSupplyInProgress())))
+	if (!action.isMorphed() && !action.isSupplyProvider() && ((_units.getCurrentSupply() + action.supplyRequired()) > (_units.getMaxSupply() + _units.getSupplyInProgress())))
     {
         return false;
     }
@@ -235,7 +237,7 @@ bool GameState::isLegal(const ActionType & action) const
     }
 
     // we don't need to go over the maximum supply limit with supply providers
-    if (action.isSupplyProvider() && (_units.getMaxSupply() + _units.getSupplyInProgress() >= 400))
+    if (action.isSupplyProvider() && (_units.getMaxSupply() + _units.getSupplyInProgress() > 400))
     {
         return false;
     }
@@ -256,7 +258,7 @@ bool GameState::isLegal(const ActionType & action) const
 }
 
 // do an action, action must be legal for this not to break
-void GameState::doAction(const ActionType & action)
+std::vector<ActionType> GameState::doAction(const ActionType & action)
 {
     BOSS_ASSERT(action.getRace() == _race, "Race of action does not match race of the state");
 
@@ -274,7 +276,7 @@ void GameState::doAction(const ActionType & action)
 
     BOSS_ASSERT(ffTime >= 0 && ffTime < 1000000, "FFTime is very strange: %d", ffTime);
 
-    fastForward(ffTime);
+    auto actionsFinished=fastForward(ffTime);
 
     _actionsPerformed[_actionsPerformed.size()-1].actionQueuedFrame = _currentFrame;
     _actionsPerformed[_actionsPerformed.size()-1].gasWhenQueued = _gas;
@@ -284,8 +286,8 @@ void GameState::doAction(const ActionType & action)
     FrameCountType elapsed(_currentFrame - _lastActionFrame);
     _lastActionFrame = _currentFrame;
 
-    BOSS_ASSERT(canAffordMinerals(action),   "Minerals less than price: %lf < %d, ffTime=%d %s", _minerals, action.mineralPrice(), (int)elapsed, action.getName().c_str());
-    BOSS_ASSERT(canAffordGas(action),       "Gas less than price: %lf < %d, ffTime=%d %s", _gas, (int)action.gasPrice(), (int)elapsed, action.getName().c_str());
+    BOSS_ASSERT(canAffordMinerals(action),   "Minerals less than price: %ld < %d, ffTime=%d %s", _minerals, action.mineralPrice(), (int)elapsed, action.getName().c_str());
+    BOSS_ASSERT(canAffordGas(action),       "Gas less than price: %ld < %d, ffTime=%d %s", _gas, action.gasPrice(), (int)elapsed, action.getName().c_str());
 
     // modify our resources
     _minerals   -= action.mineralPrice();
@@ -337,10 +339,12 @@ void GameState::doAction(const ActionType & action)
             _units.addActionInProgress(action, _currentFrame + action.buildTime());
         }
      }
+
+	return actionsFinished;
 }
 
 // fast forwards the current state to time toFrame
-void GameState::fastForward(const FrameCountType toFrame)
+std::vector<ActionType> GameState::fastForward(const FrameCountType toFrame)
 {
     // fast forward the building timers to the current frame
     FrameCountType previousFrame = _currentFrame;
@@ -352,6 +356,8 @@ void GameState::fastForward(const FrameCountType toFrame)
     ResourceCountType   moreGas             = 0;
     ResourceCountType   moreMinerals        = 0;
 
+
+	std::vector<ActionType> actionsFinished;
     // while we still have units in progress
     while ((_units.getNumActionsInProgress() > 0) && (_units.getNextActionFinishTime() <= toFrame))
     {
@@ -367,7 +373,7 @@ void GameState::fastForward(const FrameCountType toFrame)
         lastActionFinished 	= _units.getNextActionFinishTime();
 
         // finish the action, which updates mineral and gas rates if required
-        _units.finishNextActionInProgress();
+		actionsFinished.push_back(_units.finishNextActionInProgress());
     }
 
     // update resources from the last action finished to toFrame
@@ -386,6 +392,8 @@ void GameState::fastForward(const FrameCountType toFrame)
     {
         _units.getHatcheryData().fastForward(previousFrame, toFrame);
     }
+
+	return actionsFinished;
 }
 
 // returns the time at which all resources to perform an action will be available
@@ -683,7 +691,15 @@ const FrameCountType GameState::whenMineralsReady(const ActionType & action) con
     {
         BOSS_ASSERT(currentMineralWorkers > 0, "Shouldn't have 0 mineral workers");
 
-        FrameCountType finalTimeToAdd = (difference - addedMinerals) / (currentMineralWorkers * Constants::MPWPF);
+       FrameCountType finalTimeToAdd;
+	   if (currentMineralWorkers != 0)
+		{
+			finalTimeToAdd = (difference - addedMinerals) / (currentMineralWorkers * Constants::MPWPF);
+		}
+		else
+		{
+			finalTimeToAdd = 1000000;
+		}
         addedMinerals += finalTimeToAdd * currentMineralWorkers * Constants::MPWPF;
         addedTime     += finalTimeToAdd;
 
@@ -766,7 +782,16 @@ const FrameCountType GameState::whenGasReady(const ActionType & action) const
     // if we still haven't added enough minerals, add more time
     if (addedGas < difference)
     {
-        FrameCountType finalTimeToAdd = (difference - addedGas) / (currentGasWorkers * Constants::GPWPF);
+		BOSS_ASSERT(currentGasWorkers > 0, "Shouldn't have 0 gas workers");
+		FrameCountType finalTimeToAdd;
+		if (currentGasWorkers != 0)
+		{
+			finalTimeToAdd = (difference - addedGas) / (currentGasWorkers * Constants::GPWPF);
+		}
+		else
+		{
+			finalTimeToAdd = 1000000;
+		}
         addedGas    += finalTimeToAdd * currentGasWorkers * Constants::GPWPF;
         addedTime   += finalTimeToAdd;
 
@@ -904,27 +929,37 @@ void GameState::addCompletedAction(const ActionType & action, const size_t num)
     }
 }
 
+void GameState::removeCompletedAction(const ActionType & action, const size_t num)
+{
+	for (size_t i(0); i < num; ++i)
+	{
+		_units.setCurrentSupply(_units.getCurrentSupply() - action.supplyRequired());
+		_units.removeCompletedAction(action);
+	}
+}
+
 const std::string GameState::toString() const
 {
-    std::cout << "\n-----------------------------------------------------------\n";
+	std::stringstream ss;
+	ss << "\n-----------------------------------------------------------\n";
     
-    std::cout << "Current Frame: " << _currentFrame << "(" << (_currentFrame / (60*24)) << "m " << ((_currentFrame / 24) % 60) << "s)\n\n";
+	ss << "Current Frame: " << _currentFrame << "(" << (_currentFrame / (60 * 24)) << "m " << ((_currentFrame / 24) % 60) << "s)\n\n";
 
-    std::cout << "Units Completed:\n\n";
+	ss << "Units Completed:\n\n";
     const std::vector<ActionType> & allActions = ActionTypes::GetAllActionTypes(getRace());
 	for (ActionID i(0); i<allActions.size(); ++i)
 	{
         const ActionType & action = allActions[i];
         if (_units.getNumCompleted(action) > 0) 
         {
-            std::cout << "\t" << (int)_units.getNumCompleted(action) << "\t" << action.getName() << "\n";
+			ss << "\t" << (int)_units.getNumCompleted(action) << "\t" << action.getName() << "\n";
         }
     }
 
-    std::cout << "\nUnits In Progress:\n\n";
+	ss << "\nUnits In Progress:\n\n";
     for (int i(0); i<_units.getNumActionsInProgress(); i++) 
     {
-        std::cout << "\t" << (int)_units.getFinishTimeByIndex(i) << "\t" << _units.getActionInProgressByIndex(i).getName() << "\n";
+		ss << "\t" << (int)_units.getFinishTimeByIndex(i) << "\t" << _units.getActionInProgressByIndex(i).getName() << "\n";
     }
 
     /*std::cout << "\nLegal Actions:\n\n";
@@ -932,22 +967,22 @@ const std::string GameState::toString() const
     getAllLegalActions(legalActions);
     for (UnitCountType a(0); a<legalActions.size(); ++a)
     {
-        std::cout << "\t" << legalActions[a].getName() << "\n";
+        ss << "\t" << legalActions[a].getName() << "\n";
     }*/
 
-    std::cout << "\nResources:\n\n";
-    std::cout << "\t" << _minerals/Constants::RESOURCE_SCALE << "\tMinerals\n";
-    std::cout << "\t" << _gas/Constants::RESOURCE_SCALE << "\tGas\n";
-    std::cout << "\t" << _units.getNumMineralWorkers() << "\tMineral Workers\n";
-    std::cout << "\t" << _units.getNumGasWorkers() << "\tGas Workers\n";
-    std::cout << "\t" << _units.getNumBuildingWorkers() << "\tBuilding Workers\n";
-    std::cout << "\n\t" << _units.getCurrentSupply()/2 << " / " << _units.getMaxSupply()/2 << "\tSupply\n";
+	ss << "\nResources:\n\n";
+	ss << "\t" << _minerals / Constants::RESOURCE_SCALE << "\tMinerals\n";
+	ss << "\t" << _gas / Constants::RESOURCE_SCALE << "\tGas\n";
+	ss << "\t" << _units.getNumMineralWorkers() << "\tMineral Workers\n";
+    ss << "\t" << _units.getNumGasWorkers() << "\tGas Workers\n";
+    ss << "\t" << _units.getNumBuildingWorkers() << "\tBuilding Workers\n";
+    ss << "\n\t" << _units.getCurrentSupply()/2 << " / " << _units.getMaxSupply()/2 << "\tSupply\n";
 
 
-    std::cout << "-----------------------------------------------------------\n";
+    ss << "-----------------------------------------------------------\n";
     //printPath();
 
-    return "";
+    return ss.str();
 }
 
 const std::string GameState::getActionsPerformedString() const

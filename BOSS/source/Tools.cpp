@@ -237,35 +237,48 @@ BuildOrder Tools::GetNaiveBuildOrderAddWorkers(const GameState & state, const Bu
 
         // insert a supply provider if we are behind
         int surplusSupply = maxSupply - currentSupply;
-        if (surplusSupply < nextAction.supplyRequired() + 2)
-        {
-            BOSS_ASSERT(currentState.isLegal(supplyProvider), "supplyProvider should be legal");
-            finalBuildOrder.add(supplyProvider);
-            currentState.doAction(supplyProvider);
-            continue;
-        }
+		if (surplusSupply < nextAction.supplyRequired() + 2)
+		{
+			try
+			{
+				BOSS_ASSERT(currentState.isLegal(supplyProvider), "supplyProvider should be legal");
+				finalBuildOrder.add(supplyProvider);
+				currentState.doAction(supplyProvider);
+				continue;
+			}
+			catch (const Assert::BOSSException &)
+			{
+				break;
+			}
 
-        // check to see if we should insert a worker
-        BOSS_ASSERT(currentState.isLegal(worker), "Worker should be legal");
-        BOSS_ASSERT(currentState.isLegal(nextAction), "nextAction should be legal");
+		}
 
+       
         FrameCountType whenWorkerReady      = currentState.whenCanPerform(worker);
         FrameCountType whennextActionReady  = currentState.whenCanPerform(nextAction);
 
         if ((numWorkers < maxWorkers) && (whenWorkerReady < whennextActionReady))
         {
-            finalBuildOrder.add(worker);
-            currentState.doAction(worker);
-            continue;
-        }
-        else
-        {
-            ActionType testNextAction = buildOrder[i];
-            finalBuildOrder.add(nextAction);
-
-            currentState.doAction(nextAction);
-            ++i;
-        }
+			// check to see if we should insert a worker
+			try
+			{
+				BOSS_ASSERT(currentState.isLegal(worker), "Worker should be legal");
+				finalBuildOrder.add(worker);
+				currentState.doAction(worker);
+			}
+			catch (const Assert::BOSSException &)
+			{
+			}
+			continue;
+		}
+		else
+		{
+			ActionType testNextAction = buildOrder[i];
+			BOSS_ASSERT(currentState.isLegal(nextAction), "nextAction should be legal");
+			finalBuildOrder.add(nextAction);
+			currentState.doAction(nextAction);
+			++i;
+		}
     }
 
     return finalBuildOrder;
@@ -378,7 +391,7 @@ void Tools::CalculatePrerequisitesRequiredToBuild(const GameState & state, const
         // if we have the needed type in progress we can add that time
         else if (state.getUnitData().getNumInProgress(neededType) > 0)
         {
-            added.add(neededType);
+            //added.add(neededType);
         }
         // otherwise we need to recurse on the needed type to build its prerequisites
         else

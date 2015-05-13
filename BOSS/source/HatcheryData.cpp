@@ -48,6 +48,11 @@ void HatcheryData::addHatchery(const UnitCountType & numLarva)
     _hatcheries.push_back(Hatchery(numLarva));
 }
 
+void HatcheryData::removeHatchery()
+{
+	_hatcheries.pop_back();
+}
+
 void HatcheryData::fastForward(const FrameCountType & currentFrame, const FrameCountType & toFrame)
 {
     for (size_t i(0); i < _hatcheries.size(); ++i)

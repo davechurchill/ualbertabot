@@ -34,8 +34,23 @@ void BOSSManager::update(double timeLimit)
     {
         double realTimeLimit = timeLimit < 0 ? 5 : timeLimit;
         _smartSearch->setTimeLimit((int)realTimeLimit);
-    	_smartSearch->search();
-        
+		try{
+			_smartSearch->search();
+		}
+		catch (const BOSS::Assert::BOSSException &){
+			BWAPI::Broodwar->printf("Previous search didn't find a solution, resorting to Naive Build Order");
+
+			BOSS::NaiveBuildOrderSearch nbos(_smartSearch->getParameters().initialState, _smartSearch->getParameters().goal);
+			try{
+				_previousBuildOrder = nbos.solve();
+				return;
+			}
+			catch (const BOSS::Assert::BOSSException &){
+				BWAPI::Broodwar->printf("No legal BuildOrder found, returning empty Build Order");
+				_previousBuildOrder = BOSS::BuildOrder();
+				return;
+			}
+		}
         if ((BWAPI::Broodwar->getFrameCount() > (_previousSearchStartFrame + SEARCH_FRAME_LIMIT)) || _smartSearch->getResults().solved)
         {
             if (_smartSearch->getResults().solved)
@@ -54,7 +69,15 @@ void BOSSManager::update(double timeLimit)
 
                 BOSS::NaiveBuildOrderSearch nbos(_smartSearch->getParameters().initialState, _smartSearch->getParameters().goal);
 
-                _previousBuildOrder = nbos.solve();
+				try{
+					_previousBuildOrder = nbos.solve();
+					return;
+				}
+				catch (const BOSS::Assert::BOSSException &){
+					BWAPI::Broodwar->printf("No legal BuildOrder found, returning empty Build Order");
+					_previousBuildOrder = BOSS::BuildOrder();
+					return;
+				}
             }
         }
     }

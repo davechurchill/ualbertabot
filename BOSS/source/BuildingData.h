@@ -48,6 +48,7 @@ public:
 	BuildingData();
 
 	void addBuilding(const ActionType & action, const ActionType & addon);
+	void removeBuilding(const ActionType & action, const ActionType & addon);
 	void addBuilding(const ActionType & action, const FrameCountType timeUntilFree, const ActionType & constructing, const ActionType & addon);
 
 	const BuildingStatus & getBuilding(const UnitCountType i) const;

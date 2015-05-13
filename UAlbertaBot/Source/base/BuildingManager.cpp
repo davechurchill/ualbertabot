@@ -139,16 +139,22 @@ BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
         // try to get a spot for this building in our starting region
 		BWAPI::TilePosition posInRegion = BuildingPlacer::Instance().getBuildLocationNear(b, 4, true);
 		
-        // if we found a place in our region
-        if (posInRegion != BWAPI::TilePositions::None)
+        // if didn't find a place in our region
+        if (posInRegion == BWAPI::TilePositions::None)
         {
-            // use it
-            return posInRegion;
+			// otherwise find a place not in our region
+			return BuildingPlacer::Instance().getBuildLocationNear(b, 4, false);
+
         }
+		//timed out
+		else if (posInRegion == BWAPI::TilePositions::Invalid)
+		{
+			return BWAPI::TilePositions::None;
+		}
         else
         {
-            // otherwise find a place not in our region
-            return BuildingPlacer::Instance().getBuildLocationNear(b, 4, false);
+			// use it
+			return posInRegion;
         }
 	}
 	// every other type of building
@@ -179,21 +185,26 @@ BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
 			// get a position within our region
 			BWAPI::TilePosition posInRegion = BuildingPlacer::Instance().getBuildLocationNear(b, distance, true,  horizontalOnly);
 
-            // if we found a place in our region
-            if (posInRegion != BWAPI::TilePositions::None)
+            // if we didn't find a place in our region
+            if (posInRegion == BWAPI::TilePositions::None)
             {
-                // use it
-                return posInRegion;
+				// just find a position somewhere
+				return BuildingPlacer::Instance().getBuildLocationNear(b, distance, false, horizontalOnly);
             }
+			//timed out
+			else if (posInRegion == BWAPI::TilePositions::Invalid)
+			{
+				return BWAPI::TilePositions::None;
+			}
             else
             {
-                // otherwise just find a position somewhere
-                return BuildingPlacer::Instance().getBuildLocationNear(b, distance, false, horizontalOnly); 
+				// use it
+				return posInRegion;
             }
 		}
 	}
 
-    return BWAPI::TilePositions::None;
+	return BWAPI::TilePositions::None;
 }
 
 // STEP 3: ISSUE CONSTRUCTION ORDERS TO ASSIGN BUILDINGS AS NEEDED

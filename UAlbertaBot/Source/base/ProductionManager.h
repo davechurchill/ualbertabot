@@ -63,7 +63,7 @@ class ProductionManager
 
 	int							getFreeMinerals();
 	int							getFreeGas();
-
+	bool						_runningOpeningBook;
 public:
 
 	static ProductionManager &	Instance();
@@ -74,11 +74,14 @@ public:
 	void						onGameEnd();
 	void						onUnitMorph(BWAPI::UnitInterface* unit);
 	void						onUnitDestroy(BWAPI::UnitInterface* unit);
-	
-    
+	bool						runningOpeningBook() const { return _runningOpeningBook; };
+	const BuildOrderQueue&		getBuildQueue() const { return queue; };
+	void						purgeQueue() { queue.clearAll(); };
+
     BWAPI::UnitInterface*               getProducer(MetaType t, BWAPI::Position closestTo = BWAPI::Positions::None);
 
 	void						performBuildOrderSearch(const std::vector<MetaPair> & goal);
+	void						performBuildOrderSearch();
 	void						drawProductionInformation(int x, int y);
 	void						setSearchGoal(MetaPairVector & goal);
 };

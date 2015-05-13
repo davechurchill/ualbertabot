@@ -211,7 +211,10 @@ BWAPI::UnitInterface* WorkerManager::getClosestMineralWorkerTo(BWAPI::UnitInterf
 	for (BWAPI::UnitInterface* worker : workerData.getWorkers())
 	{
         UAB_ASSERT(worker != NULL, "Worker was null");
-
+		if (!worker)
+		{
+			continue;
+		}
 		// if it is a move worker
         if (workerData.getWorkerJob(worker) == WorkerData::Minerals) 
 		{
@@ -700,4 +703,9 @@ WorkerManager & WorkerManager::Instance()
 {
 	static WorkerManager instance;
 	return instance;
+}
+
+const WorkerData & WorkerManager::getData() const
+{
+	return workerData;
 }

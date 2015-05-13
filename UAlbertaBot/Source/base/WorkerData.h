@@ -65,10 +65,10 @@ public:
 	void					setWorkerJob(BWAPI::UnitInterface* unit, WorkerJob job, WorkerMoveData wmd);
 	void					setWorkerJob(BWAPI::UnitInterface* unit, WorkerJob job, BWAPI::UnitType jobUnitType);
 
-	int						getNumWorkers();
-	int						getNumMineralWorkers();
-	int						getNumGasWorkers();
-	int						getNumIdleWorkers();
+	int						getNumWorkers() const;
+	int						getNumMineralWorkers() const;
+	int						getNumGasWorkers() const;
+	int						getNumIdleWorkers() const;
 	char					getJobCode(BWAPI::UnitInterface* unit);
 
 	void					getMineralWorkers(std::set<BWAPI::UnitInterface*> & mw);

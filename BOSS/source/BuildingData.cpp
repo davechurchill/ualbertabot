@@ -144,6 +144,20 @@ void BuildingData::addBuilding(const ActionType & action, const ActionType & add
     _buildings.push_back(BuildingStatus(action, addon));
 }
 
+void BuildingData::removeBuilding(const ActionType & action, const ActionType & addon)
+{
+	BOSS_ASSERT(action.isBuilding(), "Trying to remove a non-building from the building data");
+
+	for (size_t i = 0; i < _buildings.size(); i++)
+	{
+		if (_buildings[i]._type == action)
+		{
+			_buildings.remove(i);
+			break;
+		}
+	}
+}
+
 void BuildingData::addBuilding(const ActionType & action, const FrameCountType timeUntilFree, const ActionType & constructing, const ActionType & addon)
 {
 	BOSS_ASSERT(action.isBuilding(), "Trying to add a non-building to the building data");

@@ -208,16 +208,23 @@ std::vector<BWAPI::UnitInterface *> MapTools::getUnitsOfTypeNear(BWAPI::Position
 
 BWAPI::TilePosition MapTools::getNextExpansion()
 {
+	return getNextExpansion(BWAPI::Broodwar->self());
+}
+
+
+
+BWAPI::TilePosition MapTools::getNextExpansion(BWAPI::Player player)
+{
 	BWTA::BaseLocation * closestBase = NULL;
 	double minDistance = 100000;
 
-	BWAPI::TilePosition homeTile = BWAPI::Broodwar->self()->getStartLocation();
+	BWAPI::TilePosition homeTile = player->getStartLocation();
 
 	// for each base location
 	for (BWTA::BaseLocation * base : BWTA::getBaseLocations())
 	{
 		// if the base has gas
-		if(!base->isMineralOnly() && !(base == BWTA::getStartLocation(BWAPI::Broodwar->self())))
+		if (!base->isMineralOnly() && !(base == BWTA::getStartLocation(player)))
 		{
 			// get the tile position of the base
 			BWAPI::TilePosition tile = base->getTilePosition();
@@ -225,8 +232,23 @@ BWAPI::TilePosition MapTools::getNextExpansion()
 			// the rectangle for this base location
 			int x1 = tile.x * 32;
 			int y1 = tile.y * 32;
-			int x2 = x1 + BWAPI::UnitTypes::Protoss_Nexus.tileWidth() * 32;
-			int y2 = y1 + BWAPI::UnitTypes::Protoss_Nexus.tileHeight() * 32;
+			int x2, y2;
+			switch (player->getRace().getID()){
+			case BWAPI::Races::Enum::Zerg:
+				x2 = x1 + BWAPI::UnitTypes::Zerg_Hatchery.tileWidth() * 32;
+				y2 = y1 + BWAPI::UnitTypes::Zerg_Hatchery.tileHeight() * 32;
+				break;
+			case BWAPI::Races::Enum::Terran:
+				x2 = x1 + BWAPI::UnitTypes::Terran_Command_Center.tileWidth() * 32;
+				y2 = y1 + BWAPI::UnitTypes::Terran_Command_Center.tileHeight() * 32;
+				break;
+			case BWAPI::Races::Enum::Protoss:
+				x2 = x1 + BWAPI::UnitTypes::Protoss_Nexus.tileWidth() * 32;
+				y2 = y1 + BWAPI::UnitTypes::Protoss_Nexus.tileHeight() * 32;
+				break;
+			default:
+				UAB_ASSERT(false, "Unknown race when trying to find next base location");
+			}
 
 			bool buildingInTheWay = false;
 
@@ -247,7 +269,7 @@ BWAPI::TilePosition MapTools::getNextExpansion()
 			}
 
 			// the base's distance from our main nexus
-            BWAPI::Position myBasePosition(BWAPI::Broodwar->self()->getStartLocation());
+			BWAPI::Position myBasePosition(player->getStartLocation());
             BWAPI::Position thisTile = BWAPI::Position(tile);
 		    double distanceFromHome = MapTools::Instance().getGroundDistance(thisTile, myBasePosition);
 

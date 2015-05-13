@@ -104,6 +104,16 @@ const bool Unit::equalsID(const Unit & rhs) const
 { 
     return _unitID == rhs._unitID; 
 }
+// returns whether or not this unit can see a given unit at a given time
+bool Unit::canSeeTarget(const Unit & unit, const TimeType & gameTime) const
+{
+
+	// range of this unit attacking
+	PositionType r = type().sightRange();
+
+	// return whether the target unit is in range
+	return (r * r) >= getDistanceSqToUnit(unit, gameTime);
+}
 
 // returns whether or not this unit can attack a given unit at a given time
 const bool Unit::canAttackTarget(const Unit & unit, const TimeType & gameTime) const

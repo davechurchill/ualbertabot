@@ -19,6 +19,9 @@ namespace Options
         bool USING_ENHANCED_INTERFACE	= false;	// toggle EnhancedUI, not needed for UAlbertaBot
 		bool USING_BUILD_ORDER_DEMO		= false;
 		bool USING_HIGH_LEVEL_SEARCH	= false;		// todo: update for different bot modes
+        bool USING_COMBAT_PREDICTOR     = false;		// instead of SparCraft simulation, needs the training files! 
+		bool USING_BATTLE_LOG			= false;		// logging all battles for future training
+
 
 		void checkOptions()							// checks to see if options are set in a sane manner
 		{

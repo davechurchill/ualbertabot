@@ -43,6 +43,7 @@ namespace BOSS
         enum {Protoss, Terran, Zerg, NUM_RACES, None};
 
         RaceID GetRaceID(BWAPI::Race r);
+		BWAPI::Race GetRace(RaceID id);
         RaceID GetRaceID(const std::string & race);
         std::string GetRaceName(RaceID race);
     }

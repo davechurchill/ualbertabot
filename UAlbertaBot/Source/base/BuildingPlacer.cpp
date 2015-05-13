@@ -230,6 +230,8 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
     t.start();
     int iter = 0;
     int buildingPlacerTimeLimit = 2000;
+	// my starting region
+	BWTA::Region * myRegion = BWTA::getRegion(BWTA::getStartLocation(BWAPI::Broodwar->self())->getTilePosition());
 
 	while (length < BWAPI::Broodwar->mapWidth()) //We'll ride the spiral to the end
 	{
@@ -240,7 +242,7 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
                 BWAPI::Broodwar->printf("Building Placer Timed Out %d ms", buildingPlacerTimeLimit);
             }
 
-            return BWAPI::TilePositions::None;
+            return BWAPI::TilePositions::Invalid;//use a different return value for timeout than not found
         }
 
 		//if we can build here, return this tile position
@@ -251,41 +253,38 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
 			// can we build this building at this location
 			bool canBuild					= this->canBuildHereWithSpace(BWAPI::TilePosition(x, y), b, buildDist, horizontalOnly);
 
-			// my starting region
-			BWTA::Region * myRegion			= BWTA::getRegion(BWTA::getStartLocation(BWAPI::Broodwar->self())->getTilePosition()); 
-
-			// the region the build tile is in
-			BWTA::Region * tileRegion		= BWTA::getRegion(BWAPI::TilePosition(x,y));
-
-			// is the proposed tile in our region?
-			bool tileInRegion				= (tileRegion == myRegion);
-
-			// if this location has priority to be built within our own region
-			if (inRegionPriority)
+			if (canBuild)
 			{
-				// if the tile is in region and we can build it there
-				if (tileInRegion && canBuild)
+				// if this location has priority to be built within our own region
+				if (inRegionPriority)
 				{
-                    if (Options::Debug::DRAW_UALBERTABOT_DEBUG)
-                    {
-                        //BWAPI::Broodwar->printf("Building Placer Took %lf ms", t.getElapsedTimeInMilliSec());
-                    }
+					// the region the build tile is in
+					BWTA::Region * tileRegion = BWTA::getRegion(BWAPI::TilePosition(x, y));
 
-					// return that position
-					return BWAPI::TilePosition(x, y);
+					// is the proposed tile in our region?
+					bool tileInRegion = (tileRegion == myRegion);
+
+					// if the tile is in region and we can build it there
+					if (tileInRegion)
+					{
+						if (Options::Debug::DRAW_UALBERTABOT_DEBUG)
+						{
+							//BWAPI::Broodwar->printf("Building Placer Took %lf ms", t.getElapsedTimeInMilliSec());
+						}
+
+						// return that position
+						return BWAPI::TilePosition(x, y);
+					}
 				}
-			}
-			// otherwise priority is not set for this building
-			else
-			{
-				if (canBuild)
+				// otherwise priority is not set for this building
+				else
 				{
-                    if (Options::Debug::DRAW_UALBERTABOT_DEBUG)
-                    {
-                        //BWAPI::Broodwar->printf("Building Placer Took %lf ms", t.getElapsedTimeInMilliSec());
-                    }
+					if (Options::Debug::DRAW_UALBERTABOT_DEBUG)
+					{
+						//BWAPI::Broodwar->printf("Building Placer Took %lf ms", t.getElapsedTimeInMilliSec());
+					}
 
-			        return BWAPI::TilePosition(x, y);
+					return BWAPI::TilePosition(x, y);
 				}
 			}
 		}

@@ -10,9 +10,9 @@
 #include <ctime>
 #include <iomanip>
 
-#define UAB_LOGFILE "ualbertabot_error_log.txt"
+extern char UAB_LOGFILE[100];
 
-#define UAB_BREAK __debugbreak();
+#define UAB_BREAK
 
 #define UAB_ASSERT_ALL
 

@@ -146,7 +146,22 @@ void GameState::generateMoves(MoveArray & moves, const IDType & playerIndex) con
 			for (IDType u(0); u<_numUnits[enemyPlayer]; ++u)
 			{
 				const Unit & enemyUnit(getUnit(enemyPlayer, u));
-				if (unit.canAttackTarget(enemyUnit, _currentTime) && enemyUnit.isAlive())
+				bool invisible = false;
+				if (enemyUnit.type().hasPermanentCloak())
+				{
+					invisible = true;
+					for (IDType detectorIndex(0); detectorIndex < _numUnits[playerIndex]; ++detectorIndex)
+					{
+						// unit reference
+						const Unit & detector(getUnit(playerIndex, detectorIndex));
+						if (detector.type().isDetector() && detector.canSeeTarget(enemyUnit, _currentTime))
+						{
+							invisible = false;
+							break;
+						}
+					}
+				}
+				if (!invisible && unit.canAttackTarget(enemyUnit, _currentTime) && enemyUnit.isAlive())
 				{
 					moves.add(UnitAction(unitIndex, playerIndex, UnitActionTypes::ATTACK, u));
                     //moves.add(UnitAction(unitIndex, playerIndex, UnitActionTypes::ATTACK, unit.ID()));
@@ -193,7 +208,7 @@ void GameState::generateMoves(MoveArray & moves, const IDType & playerIndex) con
             double defaultMoveDuration      = (double)Constants::Move_Distance / unit.speed();
 
             // if we can currently attack
-            double chosenTime               = std::min(timeUntilAttack, defaultMoveDuration);
+			double chosenTime = timeUntilAttack != 0 ? std::min(timeUntilAttack, defaultMoveDuration) : defaultMoveDuration;
 
             // the chosen movement distance
             PositionType moveDistance       = (PositionType)(chosenTime * unit.speed());
@@ -201,7 +216,8 @@ void GameState::generateMoves(MoveArray & moves, const IDType & playerIndex) con
             // DEBUG: If chosen move distance is ever 0, something is wrong
             if (moveDistance == 0)
             {
-                System::FatalError("Move Action with distance 0 generated");
+                System::FatalError("Move Action with distance 0 generated. timeUntilAttack:"+
+					std::to_string(timeUntilAttack)+", speed:"+std::to_string(unit.speed()));
             }
 
             // we are only generating moves in the cardinal direction specified in common.h
@@ -322,7 +338,7 @@ const Unit & GameState::getUnitByID(const IDType & unitID) const
 		}
 	}
 
-    System::FatalError("GameState Error: getUnitByID() Unit not found");
+	System::FatalError("GameState Error: getUnitByID() Unit not found, id:" + std::to_string(unitID));
 	return getUnit(0,0);
 }
 
@@ -336,7 +352,7 @@ const Unit & GameState::getUnitByID(const IDType & player, const IDType & unitID
 		}
 	}
 
-	System::FatalError("GameState Error: getUnitByID() Unit not found");
+	System::FatalError("GameState Error: getUnitByID() Unit not found, player:"+std::to_string(player)+" id:" + std::to_string(unitID));
 	return getUnit(0,0);
 }
 
@@ -350,7 +366,7 @@ Unit & GameState::getUnitByID(const IDType & player, const IDType & unitID)
 		}
 	}
 
-	System::FatalError("GameState Error: getUnitByID() Unit not found");
+	System::FatalError("GameState Error: getUnitByID() Unit not found, player:" + std::to_string(player) + " id:" + std::to_string(unitID));
 	return getUnit(0,0);
 }
 
@@ -410,7 +426,7 @@ const Unit & GameState::getClosestOurUnit(const IDType & player, const IDType & 
 	return getUnit(player, minUnitInd);
 }
 
-const Unit & GameState::getClosestEnemyUnit(const IDType & player, const IDType & unitIndex)
+const Unit & GameState::getClosestEnemyUnit(const IDType & player, const IDType & unitIndex, bool checkCloaked)
 {
 	const IDType enemyPlayer(getEnemy(player));
 	const Unit & myUnit(getUnit(player,unitIndex));
@@ -424,6 +440,24 @@ const Unit & GameState::getClosestEnemyUnit(const IDType & player, const IDType 
 	for (IDType u(0); u<_numUnits[enemyPlayer]; ++u)
 	{
         Unit & enemyUnit(getUnit(enemyPlayer, u));
+		if (checkCloaked&& enemyUnit.type().hasPermanentCloak())
+		{
+			bool invisible = true;
+			for (IDType detectorIndex(0); detectorIndex < _numUnits[player]; ++detectorIndex)
+			{
+				// unit reference
+				const Unit & detector(getUnit(player, detectorIndex));
+				if (detector.type().isDetector() && detector.canSeeTarget(enemyUnit, _currentTime))
+				{
+					invisible = false;
+					break;
+				}
+			}
+			if (invisible)
+			{
+				continue;
+			}
+		}
         PositionType distSq = myUnit.getDistanceSqToUnit(enemyUnit, _currentTime);
 
 		if ((distSq < minDist))// || ((distSq == minDist) && (enemyUnit.ID() < minUnitID)))
@@ -990,6 +1024,27 @@ void GameState::print(int indent) const
 	fprintf(stderr, "\n\n");
 }
 
+std::string GameState::toString() const
+{
+
+	std::stringstream ss;
+
+	ss << calculateHash(0) << "\n";
+	ss << "Time: " << _currentTime << std::endl;
+
+	for (IDType p(0); p<Constants::Num_Players; ++p)
+	{
+		for (UnitCountType u(0); u<_numUnits[p]; ++u)
+		{
+			const Unit & unit(getUnit(p, u));
+
+			ss << "  P" << (int)unit.player() << " " << unit.currentHP() << " (" << unit.x() << ", " << unit.y() << ") " << unit.name() << std::endl;
+		}
+	}
+	ss << std::endl;
+
+	return ss.str();
+}
 void GameState::write(const std::string & filename) const
 {
     std::ofstream fout (filename.c_str(), std::ios::out | std::ios::binary); 

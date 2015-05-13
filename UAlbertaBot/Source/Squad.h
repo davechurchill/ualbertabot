@@ -10,6 +10,7 @@
 #include "StrategyManager.h"
 #include "CombatSimulation.h"
 
+
 namespace UAlbertaBot
 {
 class ZealotManager;
@@ -52,6 +53,9 @@ class Squad
     static int          lastRetreatSwitch;
     static bool         lastRetreatSwitchVal;
 
+protected:
+	void				addUnit(BWAPI::UnitInterface *u);
+	bool				removeUnit(BWAPI::UnitInterface *u);
 public:
 
 

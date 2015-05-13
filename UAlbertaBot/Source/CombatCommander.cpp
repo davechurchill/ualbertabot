@@ -123,15 +123,18 @@ void CombatCommander::assignScoutDefenseSquads()
             // get our worker unit that is mining that is closest to it
             BWAPI::UnitInterface* workerDefender    = WorkerManager::Instance().getClosestMineralWorkerTo(enemyWorker);
 
-            // grab it from the worker manager
-            WorkerManager::Instance().setCombatWorker(workerDefender);
-            
-            // put it into a unit vector
-            std::vector<BWAPI::UnitInterface *> workerDefenseForce;
-            workerDefenseForce.push_back(workerDefender);
+			if (workerDefender)//only if we found a mineral worker
+			{
+				// grab it from the worker manager
+				WorkerManager::Instance().setCombatWorker(workerDefender);
 
-            // make a squad using the worker to defend
-            squadData.addSquad(Squad(workerDefenseForce, SquadOrder(SquadOrder::Defend, regionCenter, 1000, "Get That Scout!")));
+				// put it into a unit vector
+				std::vector<BWAPI::UnitInterface *> workerDefenseForce;
+				workerDefenseForce.push_back(workerDefender);
+
+				// make a squad using the worker to defend
+				squadData.addSquad(Squad(workerDefenseForce, SquadOrder(SquadOrder::Defend, regionCenter, 1000, "Get That Scout!")));
+			}
 			return;
         }
 	}
@@ -317,6 +320,10 @@ BWAPI::UnitInterface* CombatCommander::findClosestDefender(std::set<BWAPI::UnitI
 	{
 		for (BWAPI::UnitInterface* unit : units)
 		{
+			if (!unit)
+			{
+				continue;
+			}
 			double dist = unit->getDistance(enemyUnit);
 			if (!closestUnit || dist < minDistance) 
 			{

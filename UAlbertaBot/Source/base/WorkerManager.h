@@ -69,5 +69,6 @@ public:
 
 	static WorkerManager &		Instance();
 
+	const WorkerData &			getData() const;//returns a copy of the WorkerData
 };
 }
