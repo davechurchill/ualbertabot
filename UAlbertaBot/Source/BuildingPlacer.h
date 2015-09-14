@@ -3,7 +3,7 @@
 #include "Common.h"
 #include "BuildingData.h"
 #include "MetaType.h"
-#include "../InformationManager.h"
+#include "InformationManager.h"
 
 namespace UAlbertaBot
 {

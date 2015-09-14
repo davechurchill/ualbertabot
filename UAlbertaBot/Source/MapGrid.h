@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Common.h>
-#include "micromanagement/MicroManager.h"
+#include "MicroManager.h"
 
 namespace UAlbertaBot
 {

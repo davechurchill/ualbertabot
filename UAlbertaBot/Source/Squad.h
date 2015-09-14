@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Common.h"
-#include "micromanagement/MeleeManager.h"
-#include "micromanagement/RangedManager.h"
-#include "micromanagement/DetectorManager.h"
-#include "micromanagement/TransportManager.h"
+#include "MeleeManager.h"
+#include "RangedManager.h"
+#include "DetectorManager.h"
+#include "TransportManager.h"
 #include "SquadOrder.h"
 #include "DistanceMap.hpp"
 #include "StrategyManager.h"

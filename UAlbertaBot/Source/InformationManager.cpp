@@ -1,6 +1,5 @@
 #include "Common.h"
 #include "InformationManager.h"
-#include "CombatPredictor.h"
 
 using namespace UAlbertaBot;
 
@@ -37,8 +36,6 @@ void InformationManager::updateUnitInfo()
 	for (BWAPI::UnitInterface * unit : BWAPI::Broodwar->enemy()->getUnits())
 	{
 		updateUnit(unit);
-		if(Options::Modules::USING_COMBAT_PREDICTOR)
-			CombatPredictor::Instance().observedHPs[unit->getID()] = unit->getHitPoints() + unit->getShields();
 	}
 
 	// update enemy unit information
@@ -398,25 +395,6 @@ BWAPI::UnitInterface* InformationManager::getClosestUnitToTarget(BWAPI::UnitType
 
 bool InformationManager::isCombatUnit(BWAPI::UnitType type) const
 {
-	if (Options::Modules::USING_COMBAT_PREDICTOR)
-	{
-		if (type == BWAPI::UnitTypes::Terran_SCV) //coz it can repair bunkers
-			return true;
-
-		// no workers or buildings allowed
-		if (type.isWorker() &&  type != BWAPI::UnitTypes::Terran_SCV)
-		{
-			return false;
-		}
-
-		if (type.canAttack() || type == BWAPI::UnitTypes::Terran_Medic || type == BWAPI::UnitTypes::Terran_Bunker)
-		{
-			return true;
-		}
-
-	}
-	
-
 	if (type == BWAPI::UnitTypes::Zerg_Lurker/* || type == BWAPI::UnitTypes::Protoss_Dark_Templar*/)
 	{
 		return false;
@@ -452,49 +430,17 @@ void InformationManager::getNearbyForce(std::vector<UnitInfo> & unitInfo, BWAPI:
 				range = ui.type.groundWeapon().maxRange() + 40;
 			}
 
-			if (Options::Modules::USING_COMBAT_PREDICTOR)
-			{
-				if (ui.type == BWAPI::UnitTypes::Terran_Bunker)
-				{
-					range = 160 + 40; //marines = 128, bunker = +32
-					hasBunker = true;
-				}
-			}
-
-
 			// if it can attack into the radius we care about
 			if (ui.lastPosition.getDistance(p) <= (radius + range))
 			{
 				// add it to the vector
 				unitInfo.push_back(ui);
 			}
-			else if (ui.type == BWAPI::UnitTypes::Terran_SCV && Options::Modules::USING_COMBAT_PREDICTOR)
-			{
-				if (ui.lastPosition.getDistance(p) <= 200)
-				{
-					unitInfo.push_back(ui);
-				}
-			}
 		}
 		else if (ui.type.isDetector() && ui.lastPosition.getDistance(p) <= (radius + 250))
 			// add it to the vector
 			unitInfo.push_back(ui);
 
-	}
-
-	if (Options::Modules::USING_COMBAT_PREDICTOR)
-	{
-		if (!hasBunker)
-		{
-			//delete all SCVs
-			for (int i = 0; i < unitInfo.size();)
-			{
-				if (unitInfo[i].type == BWAPI::UnitTypes::Terran_SCV)
-					unitInfo.erase(unitInfo.begin() + i);
-				else
-					i++;
-			}
-		}
 	}
 }
 

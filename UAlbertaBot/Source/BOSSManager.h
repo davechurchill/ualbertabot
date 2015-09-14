@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Common.h"
-#include "base/WorkerManager.h"
+#include "WorkerManager.h"
 #include "../../BOSS/source/BOSS.h"
 #include "StrategyManager.h"
 #include <memory>
@@ -29,8 +29,6 @@ class BOSSManager
 	
     // functions
 	BOSS::DFBB_BuildOrderSearchResults		search(const std::vector<MetaPair> & goalUnits);
-
-
 
 	void						            loadOpeningBook();
 

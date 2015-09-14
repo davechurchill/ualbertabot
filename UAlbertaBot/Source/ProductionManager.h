@@ -4,7 +4,7 @@
 #include "BuildOrderQueue.h"
 #include "BuildingManager.h"
 #include "StrategyManager.h"
-#include "../BOSSManager.h"
+#include "BOSSManager.h"
 
 namespace UAlbertaBot
 {

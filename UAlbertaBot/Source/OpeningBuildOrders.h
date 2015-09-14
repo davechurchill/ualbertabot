@@ -2,7 +2,7 @@
 
 #include "Common.h"
 #include "BWAPI.h"
-#include "base/MetaType.h"
+#include "MetaType.h"
 
 namespace UAlbertaBot
 {

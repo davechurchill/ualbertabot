@@ -1,6 +1,5 @@
 #include "Common.h"
 #include "GameCommander.h"
-#include "HLManager.h"
 
 using namespace UAlbertaBot;
 
@@ -30,13 +29,6 @@ void GameCommander::update()
 	MapTools::Instance().update();
 	timerManager.stopTimer(TimerManager::MapTools);
 
-	timerManager.startTimer(TimerManager::HLSearch);
-	if (Options::Modules::USING_HIGH_LEVEL_SEARCH){
-		//	HLManager::Instance().update(combatUnits, scoutUnits, workerUnits);
-		//	HLManager::Instance().update();
-	}
-	timerManager.stopTimer(TimerManager::HLSearch);
-
 	timerManager.startTimer(TimerManager::Search);
 	BOSSManager::Instance().update(35 - timerManager.getTotalElapsed());
 	timerManager.stopTimer(TimerManager::Search);
@@ -60,10 +52,6 @@ void GameCommander::update()
 	{
 		combatCommander.update(combatUnits);
 	}
-	//else if (Options::Modules::USING_HIGH_LEVEL_SEARCH)
-	//{
-	//	hlCombatCommander.update(combatUnits);
-	//}
 	timerManager.stopTimer(TimerManager::Combat);
 
 	timerManager.startTimer(TimerManager::Scout);

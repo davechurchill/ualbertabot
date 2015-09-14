@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Common.h"
-#include "../MapGrid.h"
-#include "../SquadOrder.h"
-#include "../MapTools.h"
-#include "../InformationManager.h"
+#include "MapGrid.h"
+#include "SquadOrder.h"
+#include "MapTools.h"
+#include "InformationManager.h"
 
 namespace UAlbertaBot
 {

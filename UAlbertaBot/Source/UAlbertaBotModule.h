@@ -7,7 +7,6 @@
 #include "Logger.h"
 #include "MapTools.h"
 #include "HardCodedInfo.h"
-#include "EnhancedInterface.hpp"
 #include "UnitCommandManager.h"
 #include "SparCraftManager.h"
 
@@ -19,7 +18,6 @@ namespace UAlbertaBot
 class UAlbertaBotModule : public BWAPI::AIModule
 {
 	GameCommander			gameCommander;
-	EnhancedInterface		eui;
     SparCraftManager        sparcraftManager;
 
 public:

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Common.h"
-#include "micromanagement/MicroManager.h"
-#include "micromanagement/MicroUtil.h"
+#include "MicroManager.h"
+#include "MicroUtil.h"
 #include "InformationManager.h"
 
 namespace UAlbertaBot

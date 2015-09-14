@@ -2,13 +2,12 @@
 
 #include "Common.h"
 #include "BWTA.h"
-#include "base/BuildOrderQueue.h"
+#include "BuildOrderQueue.h"
 #include "InformationManager.h"
-#include "base/WorkerManager.h"
+#include "WorkerManager.h"
 #include <sys/stat.h>
 #include <cstdlib>
 #include "OpeningBuildOrders.h"
-#include "HLUnitData.h"
 
 namespace UAlbertaBot
 {
@@ -22,13 +21,15 @@ class StrategyManager
 	StrategyManager();
 	~StrategyManager() {}
 
+   /* std::vector<std::string>	protossOpeningBook;
+	std::vector<std::string>	terranOpeningBook;
+	std::vector<std::string>	zergOpeningBook;*/
+
 	std::string					readDir;
 	std::string					writeDir;
 	std::vector<IntPair>		results;
 	std::vector<int>			usableStrategies;
 	int							currentStrategy;
-	std::unordered_map<int ,std::unordered_map<int, std::unordered_map<short, short> > > strategyChoices;//race->strategy->choicepoint->option
-	static std::unordered_map<int, std::unordered_map<int, std::unordered_map<short, short> > > defaultStrategyChoices;
 
 	BWAPI::Race					selfRace;
 	BWAPI::Race					enemyRace;
@@ -45,63 +46,27 @@ class StrategyManager
 	
 	// protoss strategy
 	const	bool				expandProtossZealotRush() const;
-	static bool					expandProtossZealotRush(
-		const HLUnitData &selfUnitData,
-		const WorkerData &selfWorkerData,
-		int frame,
-		int frameAdjust = 0,
-		int zealotAdjust = 0);
+	const	std::string			getProtossZealotRushOpeningBook() const;
 	const	MetaPairVector		getProtossZealotRushBuildOrderGoal() const;
-	static	MetaPairVector		getProtossZealotRushBuildOrderGoal(
-		const HLUnitData &selfUnitData,
-		const HLUnitData &enemyUnitData,
-		const WorkerData &selfWorkerData,
-		int frame);
 
+	const	bool				expandProtossDarkTemplar() const;
+	const	std::string			getProtossDarkTemplarOpeningBook() const;
 	const	MetaPairVector		getProtossDarkTemplarBuildOrderGoal() const;
-	static	MetaPairVector		getProtossDarkTemplarBuildOrderGoal(
-		const HLUnitData &selfUnitData,
-		const HLUnitData &enemyUnitData,
-		const WorkerData &selfWorkerData,
-		int frame);
 
+	const	bool				expandProtossDragoons() const;
+	const	std::string			getProtossDragoonsOpeningBook() const;
 	const	MetaPairVector		getProtossDragoonsBuildOrderGoal() const;
-	static 	MetaPairVector		getProtossDragoonsBuildOrderGoal(
-		const HLUnitData &selfUnitData,
-		const HLUnitData &enemyUnitData,
-		const WorkerData &selfWorkerData,
-		int frame);
-
-	const	MetaPairVector		getProtossHighLevelSearchBuildOrderGoal() const;
-	static	MetaPairVector		getProtossHighLevelSearchBuildOrderGoal(
-		const HLUnitData &selfUnitData,
-		const HLUnitData &enemyUnitData,
-		const WorkerData &selfWorkerData,
-		int frame,
-		const std::unordered_map<short, short> &choices,
-		bool useDefaultChoicesIfNeeded);
 
 	const	MetaPairVector		getTerranBuildOrderGoal() const;
-	static 	MetaPairVector		getTerranBuildOrderGoal(
-		const HLUnitData &selfUnitData,
-		const HLUnitData &enemyUnitData,
-		const WorkerData &selfWorkerData,
-		int frame); 
-	
 	const	MetaPairVector		getZergBuildOrderGoal() const;
-	static 	MetaPairVector		getZergBuildOrderGoal(
-		const HLUnitData &selfUnitData,
-		const HLUnitData &enemyUnitData,
-		const WorkerData &selfWorkerData,
-		int frame);
 
-	//const	MetaPairVector		getProtossOpeningBook() const;
-	//const	MetaPairVector		getTerranOpeningBook() const;
-	//const	MetaPairVector		getZergOpeningBook() const;
+	const	MetaPairVector		getProtossOpeningBook() const;
+	const	MetaPairVector		getTerranOpeningBook() const;
+	const	MetaPairVector		getZergOpeningBook() const;
 
 public:
 
-	enum { ProtossZealotRush=0, ProtossDarkTemplar=1, ProtossDragoons=2, ProtossHighLevelSearch=3, NumProtossStrategies=4 };
+	enum { ProtossZealotRush=0, ProtossDarkTemplar=1, ProtossDragoons=2, NumProtossStrategies=3 };
 	enum { TerranMarineRush=0, NumTerranStrategies=1 };
 	enum { ZergZerglingRush=0, NumZergStrategies=1 };
 
@@ -114,24 +79,9 @@ public:
 	const	int				    defendWithWorkers();
 	const	bool				rushDetected();
 
-	const	int					getCurrentStrategy() const;
-	static int					getNumStrategies(BWAPI::Race race);
-	void						setCurrentStrategy(int newStrategy, const std::unordered_map<short, short> &choices);//for high level search to set the strategy
+	const	int					getCurrentStrategy();
+
 	const	MetaPairVector		getBuildOrderGoal();
 	const	std::vector<MetaType>	getOpeningBookBuildOrder() const;
-
-	static std::vector<MetaType>	getOpeningBookBuildOrder(int strategy, BWAPI::Race race);
-	static MetaPairVector		getBuildOrderGoal(
-		const HLUnitData &selfUnitData,
-		const HLUnitData &enemyUnitData,
-		const WorkerData &selfWorkerData,
-		int frame,
-		int strategy,
-		BWAPI::Race race,
-		const std::unordered_map<short, short> &choices);
-};
-struct ChoicePoint{
-	short _point, _options;
-	ChoicePoint(short point, short options) :_point(point), _options(options){};
 };
 }

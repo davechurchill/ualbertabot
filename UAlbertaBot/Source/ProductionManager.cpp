@@ -1,5 +1,4 @@
 #include "ProductionManager.h"
-#include "HLManager.h"
 
 using namespace UAlbertaBot;
 
@@ -86,10 +85,7 @@ void ProductionManager::performBuildOrderSearch()
         if (!BOSSManager::Instance().isSearchInProgress())
         {
             BWAPI::Broodwar->printf("Starting a new search!");
-			if (Options::Modules::USING_HIGH_LEVEL_SEARCH)
-			{
-				HLManager::Instance().update();
-			}
+
 			BOSSManager::Instance().startNewSearch(StrategyManager::Instance().getBuildOrderGoal());
         }
     }

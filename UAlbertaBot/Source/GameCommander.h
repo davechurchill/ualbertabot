@@ -4,12 +4,11 @@
 #include "CombatCommander.h"
 #include "InformationManager.h"
 #include "MapGrid.h"
-#include "base/WorkerManager.h"
-#include "base/ProductionManager.h"
-#include "base/BuildingManager.h"
+#include "WorkerManager.h"
+#include "ProductionManager.h"
+#include "BuildingManager.h"
 #include "ScoutManager.h"
 #include "StrategyManager.h"
-#include "HLCombatCommander.h"
 
 namespace UAlbertaBot
 {
@@ -24,7 +23,7 @@ class TimerManager
 
 public:
 
-	enum Type { All, Worker, Production, Building, Combat, Scout, InformationManager, MapGrid, MapTools, HLSearch, Search, NumTypes };
+	enum Type { All, Worker, Production, Building, Combat, Scout, InformationManager, MapGrid, MapTools, Search, NumTypes };
 
 
 	TimerManager() : timers(std::vector<BOSS::Timer>(NumTypes)), barWidth(40)
@@ -38,7 +37,6 @@ public:
 		timerNames.push_back("UnitInfo");
 		timerNames.push_back("MapGrid");
 		timerNames.push_back("MapTools");
-		timerNames.push_back("HLSearch");
 		timerNames.push_back("Search");
 	}
 
@@ -100,7 +98,6 @@ public:
 class GameCommander 
 {
 	CombatCommander		combatCommander;
-	HLCombatCommander	hlCombatCommander;
 
 	ScoutManager		scoutManager;
 	TimerManager		timerManager;
