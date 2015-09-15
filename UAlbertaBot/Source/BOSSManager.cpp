@@ -160,9 +160,9 @@ std::vector<MetaType> BOSSManager::GetMetaVector(const BOSS::BuildOrder & buildO
 }
 
 
-std::vector<MetaType> BOSSManager::getBuildOrder()
+BuildOrder BOSSManager::getBuildOrder()
 {
-    return GetMetaVector(_previousBuildOrder);
+    return BuildOrder(BWAPI::Broodwar->self()->getRace(), GetMetaVector(_previousBuildOrder));
 }
 
 BOSS::ActionType BOSSManager::GetActionType(const MetaType & t)
@@ -170,15 +170,15 @@ BOSS::ActionType BOSSManager::GetActionType(const MetaType & t)
 	// set the appropriate type
 	if (t.isUnit())
 	{
-		return BOSS::ActionType(t.unitType);
+		return BOSS::ActionType(t.getUnitType());
 	}
 	else if (t.isUpgrade())
 	{
-		return BOSS::ActionType(t.upgradeType);
+		return BOSS::ActionType(t.getUpgradeType());
 	} 
 	else if (t.isTech())
 	{
-		return BOSS::ActionType(t.techType);
+		return BOSS::ActionType(t.getTechType());
 	}
 	else
 	{

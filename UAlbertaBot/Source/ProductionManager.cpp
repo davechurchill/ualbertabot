@@ -20,7 +20,7 @@ ProductionManager::ProductionManager()
 	}
 }
 
-void ProductionManager::setBuildOrder(const std::vector<MetaType> & buildOrder)
+void ProductionManager::setBuildOrder(const BuildOrder & buildOrder)
 {
 	_runningOpeningBook = false;
 	// clear the current build order
@@ -43,9 +43,9 @@ void ProductionManager::performBuildOrderSearch(const std::vector<MetaPair> & go
 	//std::vector<MetaType> buildOrder = BOSSManager::GetOptimizedNaiveBuildOrder(goal);
 	//setBuildOrder(buildOrder);
 
-	std::vector<MetaType> buildOrder = BOSSManager::Instance().getBuildOrder();
+	BuildOrder buildOrder = BOSSManager::Instance().getBuildOrder();
 
-	if (!buildOrder.empty())
+	if (buildOrder.size() > 0)
 	{
 		BWAPI::Broodwar->printf("PM: Build order found!");
 		setBuildOrder(buildOrder);
@@ -68,12 +68,9 @@ void ProductionManager::performBuildOrderSearch()
         return;
     }
 
-    //std::vector<MetaType> buildOrder = BOSSManager::GetOptimizedNaiveBuildOrder(goal);
-    //setBuildOrder(buildOrder);
+	BuildOrder buildOrder = BOSSManager::Instance().getBuildOrder();
 
-	std::vector<MetaType> buildOrder = BOSSManager::Instance().getBuildOrder();
-
-    if (!buildOrder.empty())
+    if (buildOrder.size() > 0)
     {
         BWAPI::Broodwar->printf("PM: Build order found!");
 	    setBuildOrder(buildOrder);
@@ -101,7 +98,8 @@ void ProductionManager::update()
 	// check the queue for stuff we can build
 	manageBuildOrderQueue();
 
-	if ((queue.size() == 0) && Options::Modules::USING_BUILD_ORDER_DEMO)
+    // build order demo only
+	if (Options::Modules::USING_BUILD_ORDER_DEMO && (queue.size() == 0))
 	{
 		performBuildOrderSearch(searchGoal);
 	}
@@ -111,8 +109,6 @@ void ProductionManager::update()
 	{
 		BWAPI::Broodwar->drawTextScreen(150, 10, "Nothing left to build, new search!");
 		performBuildOrderSearch();
-
-
 	}
 
 	//// detect if there's a build order deadlock once per second
@@ -196,10 +192,10 @@ void ProductionManager::manageBuildOrderQueue()
 		}
 
 		// if the next item in the list is a building and we can't yet make it
-        if (currentItem.metaType.isBuilding() && !(producer && canMake) && !currentItem.metaType.unitType.isAddon())
+        if (currentItem.metaType.isBuilding() && !(producer && canMake) && !currentItem.metaType.getUnitType().isAddon())
 		{
 			// construct a temporary building object
-			Building b(currentItem.metaType.unitType, BWAPI::Broodwar->self()->getStartLocation());
+			Building b(currentItem.metaType.getUnitType(), BWAPI::Broodwar->self()->getStartLocation());
 
 			// set the producer as the closest worker, but do not set its job yet
 			producer = WorkerManager::Instance().getBuilder(b, false);
@@ -258,7 +254,7 @@ BWAPI::UnitInterface* ProductionManager::getProducer(MetaType t, BWAPI::Position
         if (!unit->isPowered())                                 { continue; }
 
         // if the type is an addon, some special cases
-        if (t.unitType.isAddon())
+        if (t.getUnitType().isAddon())
         {
             // if the unit already has an addon, it can't make one
             if (unit->getAddon() != NULL)
@@ -276,10 +272,10 @@ BWAPI::UnitInterface* ProductionManager::getProducer(MetaType t, BWAPI::Position
             bool isBlocked = false;
 
             // if the unit doesn't have space to build an addon, it can't make one
-            BWAPI::TilePosition addonPosition(unit->getTilePosition().x + unit->getType().tileWidth(), unit->getTilePosition().y + unit->getType().tileHeight() - t.unitType.tileHeight());
+            BWAPI::TilePosition addonPosition(unit->getTilePosition().x + unit->getType().tileWidth(), unit->getTilePosition().y + unit->getType().tileHeight() - t.getUnitType().tileHeight());
             BWAPI::Broodwar->drawBoxMap(addonPosition.x*32, addonPosition.y*32, addonPosition.x*32 + 64, addonPosition.y*32 + 64, BWAPI::Colors::Red);
             
-            for (int i=0; i<unit->getType().tileWidth() + t.unitType.tileWidth(); ++i)
+            for (int i=0; i<unit->getType().tileWidth() + t.getUnitType().tileWidth(); ++i)
             {
                 for (int j=0; j<unit->getType().tileHeight(); ++j)
                 {
@@ -310,7 +306,7 @@ BWAPI::UnitInterface* ProductionManager::getProducer(MetaType t, BWAPI::Position
         
         // if the type requires an addon and the producer doesn't have one
         typedef std::pair<BWAPI::UnitType, int> ReqPair;
-        for (const ReqPair & pair : t.unitType.requiredUnits())
+        for (const ReqPair & pair : t.getUnitType().requiredUnits())
         {
             BWAPI::UnitType requiredType = pair.first;
             if (requiredType.isAddon())
@@ -369,44 +365,44 @@ void ProductionManager::createMetaType(BWAPI::UnitInterface* producer, MetaType 
     }
 
     // if we're dealing with a building
-    if (t.isUnit() && t.unitType.isBuilding() 
-        && t.unitType != BWAPI::UnitTypes::Zerg_Lair 
-        && t.unitType != BWAPI::UnitTypes::Zerg_Hive
-        && t.unitType != BWAPI::UnitTypes::Zerg_Greater_Spire
-        && !t.unitType.isAddon())
+    if (t.isUnit() && t.getUnitType().isBuilding() 
+        && t.getUnitType() != BWAPI::UnitTypes::Zerg_Lair 
+        && t.getUnitType() != BWAPI::UnitTypes::Zerg_Hive
+        && t.getUnitType() != BWAPI::UnitTypes::Zerg_Greater_Spire
+        && !t.getUnitType().isAddon())
     {
         // send the building task to the building manager
-        BuildingManager::Instance().addBuildingTask(t.unitType, BWAPI::Broodwar->self()->getStartLocation());
+        BuildingManager::Instance().addBuildingTask(t.getUnitType(), BWAPI::Broodwar->self()->getStartLocation());
     }
-    else if (t.unitType.isAddon())
+    else if (t.getUnitType().isAddon())
     {
         BWAPI::Broodwar->printf("Building Addon");
         //BWAPI::TilePosition addonPosition(producer->getTilePosition().x + producer->getType().tileWidth(), producer->getTilePosition().y + producer->getType().tileHeight() - t.unitType.tileHeight());
-        producer->buildAddon(t.unitType);
+        producer->buildAddon(t.getUnitType());
     }
     // if we're dealing with a non-building unit
     else if (t.isUnit()) 
     {
         // if the race is zerg, morph the unit
-        if (t.unitType.getRace() == BWAPI::Races::Zerg) 
+        if (t.getUnitType().getRace() == BWAPI::Races::Zerg) 
         {
-            producer->morph(t.unitType);
+            producer->morph(t.getUnitType());
         // if not, train the unit
         } 
         else 
         {
-            producer->train(t.unitType);
+            producer->train(t.getUnitType());
         }
     }
     // if we're dealing with a tech research
     else if (t.isTech())
     {
-        producer->research(t.techType);
+        producer->research(t.getTechType());
     }
     else if (t.isUpgrade())
     {
         //Logger::Instance().log("Produce Upgrade: " + t.getName() + "\n");
-        producer->upgrade(t.upgradeType);
+        producer->upgrade(t.getUpgradeType());
     }
     else
     {	
@@ -423,15 +419,15 @@ bool ProductionManager::canMakeNow(BWAPI::UnitInterface* producer, MetaType t)
 	{
 		if (t.isUnit())
 		{
-			canMake = BWAPI::Broodwar->canMake(t.unitType, producer);
+			canMake = BWAPI::Broodwar->canMake(t.getUnitType(), producer);
 		}
 		else if (t.isTech())
 		{
-			canMake = BWAPI::Broodwar->canResearch(t.techType, producer);
+			canMake = BWAPI::Broodwar->canResearch(t.getTechType(), producer);
 		}
 		else if (t.isUpgrade())
 		{
-			canMake = BWAPI::Broodwar->canUpgrade(t.upgradeType, producer);
+			canMake = BWAPI::Broodwar->canUpgrade(t.getUpgradeType(), producer);
 		}
 		else
 		{	

@@ -6,7 +6,6 @@ MetaVector OpeningBuildOrders::ProtossZealotRush()
 {
     MetaVector build;
     
-    // 0 0 0 0 1 0 3 3 0 0 4 1 4 4 0 4 4 0 1 4 3 0 1 0 4 0 4 4 4 4 1 0 4 4 4
     build.push_back(BWAPI::UnitTypes::Protoss_Probe);
     build.push_back(BWAPI::UnitTypes::Protoss_Probe);
     build.push_back(BWAPI::UnitTypes::Protoss_Probe);
@@ -51,7 +50,6 @@ MetaVector OpeningBuildOrders::ProtossDarkTemplarRush()
 {
     MetaVector build;
     
-    // 0 0 0 0 1 0 3 0 7 0 5 0 12 0 13 3 22 22 1 22 22 0 1 0
     build.push_back(BWAPI::UnitTypes::Protoss_Probe);
     build.push_back(BWAPI::UnitTypes::Protoss_Probe);
     build.push_back(BWAPI::UnitTypes::Protoss_Probe);
@@ -84,7 +82,6 @@ MetaVector OpeningBuildOrders::ProtossDragoonRush()
 {
     MetaVector build;
     
-    // 0 0 0 0 1 0 0 3 0 7 0 0 5 0 0 3 8 6 1 6 6 0 3 1 0 6 6 6
     build.push_back(BWAPI::UnitTypes::Protoss_Probe);
     build.push_back(BWAPI::UnitTypes::Protoss_Probe);
     build.push_back(BWAPI::UnitTypes::Protoss_Probe);
@@ -118,30 +115,10 @@ MetaVector OpeningBuildOrders::ProtossDragoonRush()
     return build;
 }
 
-MetaVector OpeningBuildOrders::ProtossHighLevelSearch()
-{
-	MetaVector build;
-
-	build.push_back(BWAPI::UnitTypes::Protoss_Probe);
-	build.push_back(BWAPI::UnitTypes::Protoss_Probe);
-	build.push_back(BWAPI::UnitTypes::Protoss_Probe);
-	build.push_back(BWAPI::UnitTypes::Protoss_Probe);
-	build.push_back(BWAPI::UnitTypes::Protoss_Pylon);
-	build.push_back(BWAPI::UnitTypes::Protoss_Probe);
-	build.push_back(BWAPI::UnitTypes::Protoss_Gateway);
-	build.push_back(BWAPI::UnitTypes::Protoss_Gateway);
-	build.push_back(BWAPI::UnitTypes::Protoss_Probe);
-	build.push_back(BWAPI::UnitTypes::Protoss_Probe);
-
-
-	return build;
-}
-
 MetaVector OpeningBuildOrders::TerranMarineRush()
 {
     MetaVector build;
     
-    // 0 0 0 0 1 0 0 3 0 7 0 0 5 0 0 3 8 6 1 6 6 0 3 1 0 6 6 6
     build.push_back(BWAPI::UnitTypes::Terran_SCV);
     build.push_back(BWAPI::UnitTypes::Terran_SCV);
     build.push_back(BWAPI::UnitTypes::Terran_SCV);

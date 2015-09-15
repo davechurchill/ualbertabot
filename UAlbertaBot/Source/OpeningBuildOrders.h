@@ -14,7 +14,6 @@ namespace OpeningBuildOrders
     MetaVector ProtossZealotRush();
     MetaVector ProtossDarkTemplarRush();
     MetaVector ProtossDragoonRush();
-	MetaVector ProtossHighLevelSearch();
     MetaVector TerranMarineRush();
     MetaVector ZergLairRush();
 };

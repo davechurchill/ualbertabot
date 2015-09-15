@@ -44,7 +44,7 @@ public:
 	void						update(double timeLimit);
     void                        reset();
 
-    std::vector<MetaType>       getBuildOrder();
+    BuildOrder                  getBuildOrder();
     bool                        isSearchInProgress();
 
     void                        startNewSearch(const std::vector<MetaPair> & goalUnits);
@@ -52,13 +52,13 @@ public:
 	void						drawSearchInformation(int x, int y);
 
     
-	static BOSS::BuildOrderSearchGoal      GetGoal(const std::vector<MetaPair> & goalUnits);	
-    static std::vector<MetaType>				GetMetaVector(const BOSS::BuildOrder & buildOrder);
-	static BOSS::ActionType						GetActionType(const MetaType & t);
-	static MetaType					            GetMetaType(const BOSS::ActionType & a);
+	static BOSS::BuildOrderSearchGoal       GetGoal(const std::vector<MetaPair> & goalUnits);	
+    static std::vector<MetaType>			GetMetaVector(const BOSS::BuildOrder & buildOrder);
+	static BOSS::ActionType					GetActionType(const MetaType & t);
+	static MetaType					        GetMetaType(const BOSS::ActionType & a);
 
-    static std::vector<MetaType>                GetNaiveBuildOrder(const std::vector<MetaPair> & goalUnits);
-    static std::vector<MetaType>                GetOptimizedNaiveBuildOrder(const std::vector<MetaPair> & goalUnits);
+    static std::vector<MetaType>            GetNaiveBuildOrder(const std::vector<MetaPair> & goalUnits);
+    static std::vector<MetaType>            GetOptimizedNaiveBuildOrder(const std::vector<MetaPair> & goalUnits);
 };
 
 }

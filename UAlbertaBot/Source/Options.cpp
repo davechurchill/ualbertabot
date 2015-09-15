@@ -3,6 +3,11 @@
 
 namespace Options
 {
+    namespace Strategy
+    {
+        std::string StrategyName = "Protoss_ZealotRush";
+        BWAPI::Race StrategyRace = BWAPI::Races::Protoss;
+    }
 
 	namespace Modules							    // toggle various modules of UAlbertaBot, must be const
 	{
@@ -16,69 +21,24 @@ namespace Options
 		
         // extra things, don't enable unless you know what they are
 		bool USING_BUILD_ORDER_DEMO		= false;
-
-
-		void checkOptions()							// checks to see if options are set in a sane manner
-		{
-			if (USING_GAMECOMMANDER)
-			{
-				assert(!USING_ENHANCED_INTERFACE);
-				assert(!USING_MICRO_SEARCH);
-			}
-		}
 	}
-    
-    namespace BotModes
+
+    namespace BotInfo
     {
-        int CURRENT_BOT_MODE = BotModes::AIIDE_TOURNAMENT;
-
-        void SetBotMode(int mode)
-        {
-            switch(mode)
-            {
-                case BotModes::AIIDE_TOURNAMENT:
-                {
-                    Modules::USING_GAMECOMMANDER		= true;	
-				    Modules::USING_SCOUTMANAGER			= true;	
-				    Modules::USING_COMBATCOMMANDER		= true;
-		            Modules::USING_MACRO_SEARCH			= true;	
-		            Modules::USING_STRATEGY_IO			= false;
-                    Modules::USING_UNIT_COMMAND_MGR		= false; 
-
-                    Modules::USING_BUILD_ORDER_DEMO		= false;
-                    break;
-                }
-                case BotModes::CIG_TOURNAMENT:
-                {
-                    Modules::USING_GAMECOMMANDER		= true;	
-				    Modules::USING_SCOUTMANAGER			= true;	
-				    Modules::USING_COMBATCOMMANDER		= true;
-		            Modules::USING_MACRO_SEARCH			= true;	
-		            Modules::USING_STRATEGY_IO			= false;
-                    Modules::USING_UNIT_COMMAND_MGR		= false; 
-
-                    Modules::USING_BUILD_ORDER_DEMO		= false;
-                    break;
-                }
-                case BotModes::BUILD_ORDER_DEMO:
-                {
-                    Modules::USING_GAMECOMMANDER		= true;	
-				    Modules::USING_SCOUTMANAGER			= true;	
-				    Modules::USING_COMBATCOMMANDER		= true;
-		            Modules::USING_MACRO_SEARCH			= true;	
-		            Modules::USING_STRATEGY_IO			= false;
-                    Modules::USING_UNIT_COMMAND_MGR		= true; 
-		
-				    Modules::USING_BUILD_ORDER_DEMO		= true;
-                }
-                default:
-                {
-                    UAB_ASSERT(false, "Unknown bot mode: %d", mode);
-                }
-            }
-        }
+        std::string BotName = "UAlbertaBot";
+        std::string Authors = "Dave Churchill";
+        BWAPI::Race BotRace = BWAPI::Races::Protoss;
+        bool PrintInfoOnStart = false;
     }
 
+    namespace BWAPIOptions
+    {
+        int SetLocalSpeed = 42;
+        int SetFrameSkip = 0;
+        bool EnableUserInput = true;
+        bool EnableCompleteMapInformation = false;
+    }
+    
 	namespace Tournament						// settings for the AIIDE tournament
 	{
 		extern const int GAME_END_FRAME			= 86400;	
@@ -92,7 +52,10 @@ namespace Options
 	namespace Debug								// debugging options
 	{
 		bool DRAW_UALBERTABOT_DEBUG				= true;	// draws debug information for UAlbertaBot
+        bool PRINT_MODULE_TIMEOUT				= true;	// draws debug information for UAlbertaBot
 		bool DRAW_DEBUG_INTERFACE				= false;	    // draws debug information for EnhancedUI
+
+        std::string ErrorLogFilename            = "UAB_ErrorLog.txt";
 
 		BWAPI::Color COLOR_LINE_TARGET			= BWAPI::Colors::White;
 		BWAPI::Color COLOR_LINE_MINERAL			= BWAPI::Colors::Cyan;

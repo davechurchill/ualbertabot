@@ -1,0 +1,63 @@
+{
+    "Bot Info" :
+    {
+        "BotName" : "UAlbertaBot",
+        "Authors" : "David Churchill",
+        "Race"    : "Protoss",
+        "PrintInfoOnStart" : true
+    },
+        
+    "BWAPI Options" : 
+    {
+        "SetLocalSpeed"   : 5,
+        "SetFrameSkip"    : 0,
+        "EnableUserInput" : true,
+        "EnableCompleteMapInformation" : false
+    },
+    
+    "Micro Options" :
+    {
+        "WorkerDefense" : true,
+        "WorkerDefensePerUnit" : 2,
+        
+        "InCombatRadius" : 1000,
+        "RegroupRadius" : 300,
+        "UnitNearEnemyRadius" : 600
+    },
+
+    "Debug Options" :
+    {
+        "ErrorLogFilename"      : "d:/ualbertabot/UAlbertaBot/UAB_ErrorLog.txt",
+        "DrawDebugInformation"  : true,
+        "PrintModuleTimeout"    : true
+    },
+    
+    "Module Options" :
+    {
+        "UseGameCommander"      : true,
+        "UseScoutManager"       : true,
+        "UseCombatCommander"    : true,
+        "UseBuildOrderSearch"   : true,
+        "UseStrategyIO"         : false,
+        "UseUnitCommandManager" : false
+    },
+    
+    "Tool Options" :
+    {
+        "MapGridSize" : 320
+    },
+    
+    "Strategy Options"  :
+    {
+        "StrategyName" : "Protoss_DragoonRush",
+        
+        "Strategies" :
+        {
+            "Protoss_ZealotRush"    : { "Race" : "Protoss", "OpeningBuildOrder" : ["Probe", "Probe", "Probe", "Probe", "Pylon", "Probe", "Gateway", "Gateway", "Probe", "Probe", "Zealot", "Pylon", "Zealot", "Zealot",  "Probe", "Zealot", "Zealot", "Probe", "Pylon", "Zealot", "Gateway", "Probe", "Pylon", "Probe", "Zealot", "Probe", "Zealot", "Zealot", "Zealot", "Zealot", "Pylon", "Probe", "Zealot", "Zealot", "Zealot" ]},
+            "Protoss_DragoonRush"   : { "Race" : "Protoss", "OpeningBuildOrder" : ["Probe", "Probe", "Probe", "Probe", "Pylon", "Probe", "Probe", "Gateway", "Probe", "Assimilator", "Probe", "Probe", "Cybernetics_Core", "Probe", "Probe", "Gateway", "Singularity_Charge", "Dragoon", "Gateway", "Pylon", "Dragoon", "Dragoon", "Probe", "Gateway", "Pylon", "Probe", "Dragoon", "Dragoon", "Dragoon" ]},
+            "Protoss_DTRush"        : { "Race" : "Protoss", "OpeningBuildOrder" : ["Probe", "Probe", "Probe", "Probe", "Pylon", "Probe", "Gateway", "Probe", "Assimilator", "Probe", "Cybernetics_Core", "Probe", "Citadel_of_Adun", "Probe", "Templar_Archives", "Gateway", "Dark_Templar", "Dark_Templar", "Pylon", "Dark_Templar", "Dark_Templar", "Probe", "Pylon", "Probe" ]},
+            "Terran_MarineRush"     : { "Race" : "Terran",  "OpeningBuildOrder" : ["SCV", "SCV", "SCV", "SCV", "Supply_Depot", "SCV", "SCV", "Barracks", "Refinery", "SCV", "SCV", "SCV", "SCV", "Factory", "Factory", "Machine_Shop", "Machine_Shop" ]},
+            "Zerg_ZerglingRush"     : { "Race" : "Zerg",    "OpeningBuildOrder" : ["Drone", "Drone", "Drone", "Drone", "Overlord", "Drone", "Drone", "Drone", "Hatchery", "Spawning_Pool", "Extractor", "Drone", "Drone", "Drone", "Drone", "Overlord", "Lair" ] }
+        }
+    }
+}

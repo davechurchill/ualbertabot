@@ -10,8 +10,6 @@
 #include <ctime>
 #include <iomanip>
 
-extern char UAB_LOGFILE[100];
-
 #define UAB_BREAK
 
 #define UAB_ASSERT_ALL
@@ -24,6 +22,15 @@ extern char UAB_LOGFILE[100];
             { \
                 UAlbertaBot::Assert::ReportFailure(#cond, __FILE__, __LINE__, (msg), ##__VA_ARGS__); \
                 UAB_BREAK \
+            } \
+        } while(0)
+
+    #define UAB_ASSERT_WARNING(cond, msg, ...) \
+        do \
+        { \
+            if (!(cond)) \
+            { \
+                UAlbertaBot::Assert::ReportFailure(#cond, __FILE__, __LINE__, (msg), ##__VA_ARGS__); \
             } \
         } while(0)
 #else

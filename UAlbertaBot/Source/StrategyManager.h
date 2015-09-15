@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 #include <cstdlib>
 #include "OpeningBuildOrders.h"
+#include "BuildOrder.h"
 
 namespace UAlbertaBot
 {
@@ -21,22 +22,13 @@ class StrategyManager
 	StrategyManager();
 	~StrategyManager() {}
 
-   /* std::vector<std::string>	protossOpeningBook;
-	std::vector<std::string>	terranOpeningBook;
-	std::vector<std::string>	zergOpeningBook;*/
-
-	std::string					readDir;
-	std::string					writeDir;
-	std::vector<IntPair>		results;
-	std::vector<int>			usableStrategies;
-	int							currentStrategy;
-
-	BWAPI::Race					selfRace;
-	BWAPI::Race					enemyRace;
+	BWAPI::Race					        _selfRace;
+	BWAPI::Race					        _enemyRace;
+    std::map<std::string, BuildOrder>   _openingBuildOrders;
+    BuildOrder                          _emptyBuildOrder;
 
 	bool						firstAttackSent;
 
-	void	addStrategies();
 	void	setStrategy();
 	void	readResults();
 	void	writeResults();
@@ -44,7 +36,7 @@ class StrategyManager
 	const	int					getScore(BWAPI::PlayerInterface * player) const;
 	const	double				getUCBValue(const size_t & strategy) const;
 	
-	// protoss strategy
+	// strategy functions, add your own here
 	const	bool				expandProtossZealotRush() const;
 	const	std::string			getProtossZealotRushOpeningBook() const;
 	const	MetaPairVector		getProtossZealotRushBuildOrderGoal() const;
@@ -66,22 +58,23 @@ class StrategyManager
 
 public:
 
-	enum { ProtossZealotRush=0, ProtossDarkTemplar=1, ProtossDragoons=2, NumProtossStrategies=3 };
-	enum { TerranMarineRush=0, NumTerranStrategies=1 };
-	enum { ZergZerglingRush=0, NumZergStrategies=1 };
+	//enum { ProtossZealotRush=0, ProtossDarkTemplar=1, ProtossDragoons=2, NumProtossStrategies=3 };
+	//enum { TerranMarineRush=0, NumTerranStrategies=1 };
+	//enum { ZergZerglingRush=0, NumZergStrategies=1 };
 
-	static	StrategyManager &	Instance();
+	static	StrategyManager &	    Instance();
 
-			void				onEnd(const bool isWinner);
+			void				    onEnd(const bool isWinner);
+            void                    addOpeningBuildOrder(const std::string & name, BuildOrder & buildOrder);
 	
-	const	bool				regroup(int numInRadius);
-	const	bool				doAttack(const std::set<BWAPI::UnitInterface*> & freeUnits);
-	const	int				    defendWithWorkers();
-	const	bool				rushDetected();
+	const	bool				    regroup(int numInRadius);
+	const	bool				    doAttack(const std::set<BWAPI::UnitInterface*> & freeUnits);
+	const	int				        defendWithWorkers();
+	const	bool				    rushDetected();
 
-	const	int					getCurrentStrategy();
+	const	int					    getCurrentStrategy();
 
-	const	MetaPairVector		getBuildOrderGoal();
-	const	std::vector<MetaType>	getOpeningBookBuildOrder() const;
+	const	MetaPairVector		    getBuildOrderGoal();
+	const	BuildOrder &            getOpeningBookBuildOrder() const;
 };
 }

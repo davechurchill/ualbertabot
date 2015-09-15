@@ -14,23 +14,28 @@ namespace Options
 		extern bool USING_MACRO_SEARCH;				// toggle use of Build Order Search, currently no backup
 		extern bool USING_STRATEGY_IO;				// toggle the use of file io for strategy
 		extern bool USING_BUILD_ORDER_DEMO;			
-
-		void checkOptions();						// checks to see if options are set in a sane manner
 	}
-
-    namespace BotModes
+    
+    namespace BotInfo
     {
-        enum 
-        {  
-            AIIDE_TOURNAMENT,       // full bot for AIIDE tournament
-            CIG_TOURNAMENT,       // full bot for AIIDE tournament
-			BUILD_ORDER_DEMO,
-            NUM_MODES
-        };
+        extern std::string BotName;
+        extern std::string Authors;
+        extern BWAPI::Race BotRace;
+        extern bool PrintInfoOnStart;
+    }
 
-        extern int CURRENT_BOT_MODE;
+    namespace Strategy
+    {
+        extern BWAPI::Race StrategyRace;
+        extern std::string StrategyName;
+    }
 
-        void SetBotMode(int mode);
+    namespace BWAPIOptions
+    {
+        extern int SetLocalSpeed;
+        extern int SetFrameSkip;
+        extern bool EnableUserInput;
+        extern bool EnableCompleteMapInformation;
     }
 
 	namespace Tournament
@@ -46,7 +51,10 @@ namespace Options
 	namespace Debug
 	{
 		extern bool DRAW_UALBERTABOT_DEBUG;				// draws debug information for UAlbertaBot
+        extern bool PRINT_MODULE_TIMEOUT;				// draws debug information for UAlbertaBot
 		extern bool DRAW_DEBUG_INTERFACE;				// draws debug information for EnhancedUI
+
+        extern std::string ErrorLogFilename;
 
 		extern BWAPI::Color COLOR_LINE_TARGET;
 		extern BWAPI::Color COLOR_LINE_MINERAL;

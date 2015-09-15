@@ -1,8 +1,7 @@
 #include "UABAssert.h"
+#include "Options.h"
 
 using namespace UAlbertaBot;
-
-char UAB_LOGFILE[100] { "ualbertabot_error_log.txt" };
 
 namespace UAlbertaBot
 {
@@ -44,8 +43,9 @@ namespace Assert
         
         lastErrorMessage = messageBuffer;
 
-        std::cerr << ss.str();  
-        Logger::LogAppendToFile(UAB_LOGFILE, ss.str());
+        std::cerr << ss.str();
+        BWAPI::Broodwar->printf("%s", ss.str().c_str());
+        Logger::LogAppendToFile(Options::Debug::ErrorLogFilename, ss.str());
     }
 }
 }

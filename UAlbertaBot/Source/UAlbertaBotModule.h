@@ -8,17 +8,16 @@
 #include "MapTools.h"
 #include "HardCodedInfo.h"
 #include "UnitCommandManager.h"
-#include "SparCraftManager.h"
-
 #include "Options.h"
+
+#include "rapidjson\document.h"
 
 namespace UAlbertaBot
 {
 
 class UAlbertaBotModule : public BWAPI::AIModule
 {
-	GameCommander			gameCommander;
-    SparCraftManager        sparcraftManager;
+	GameCommander gameCommander;
 
 public:
 
@@ -33,6 +32,9 @@ public:
 	void	onUnitShow(BWAPI::UnitInterface* unit);
 	void	onUnitHide(BWAPI::UnitInterface* unit);
 	void	onUnitRenegade(BWAPI::UnitInterface* unit);
+
+    void    parseConfigFile(const std::string & filename);
+    BWAPI::Race getRace(const std::string & raceName);
 };
 
 }

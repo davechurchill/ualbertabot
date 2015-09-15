@@ -13,26 +13,26 @@ bool BuildOrderGoalManager::isCompleted(const BuildOrderGoal & bog) const
 	// for each item in the goal
 	for (const BuildOrderGoalItem & bogi : bog.getGoal())
 	{
-		if (bogi.metaType().type == MetaType::Unit)
+		if (bogi.metaType().type() == MetaTypes::Unit)
 		{
 			// if we do not have that many of the unit type, return false
-			if (BWAPI::Broodwar->self()->allUnitCount(bogi.metaType().unitType) < bogi.num())
+			if (BWAPI::Broodwar->self()->allUnitCount(bogi.metaType().getUnitType()) < bogi.num())
 			{
 				return false;
 			}
 		}
 		// if we have not researched that tech, return false
-		else if (bogi.metaType().type == MetaType::Tech)
+		else if (bogi.metaType().type() == MetaTypes::Tech)
 		{
-			if (!BWAPI::Broodwar->self()->hasResearched(bogi.metaType().techType))
+			if (!BWAPI::Broodwar->self()->hasResearched(bogi.metaType().getTechType()))
 			{
 				return false;
 			}
 		}
 		// if we have not upgraded to that level, return false
-		else if (bogi.metaType().type == MetaType::Upgrade)
+		else if (bogi.metaType().type() == MetaTypes::Upgrade)
 		{
-			if (BWAPI::Broodwar->self()->getUpgradeLevel(bogi.metaType().upgradeType) < bogi.num())
+			if (BWAPI::Broodwar->self()->getUpgradeLevel(bogi.metaType().getUpgradeType()) < bogi.num())
 			{
 				return false;
 			}

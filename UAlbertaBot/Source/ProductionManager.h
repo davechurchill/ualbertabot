@@ -5,6 +5,7 @@
 #include "BuildingManager.h"
 #include "StrategyManager.h"
 #include "BOSSManager.h"
+#include "BuildOrder.h"
 
 namespace UAlbertaBot
 {
@@ -42,8 +43,8 @@ class ProductionManager
 	bool						rushDetected;
 
 	BWAPI::TilePosition			predictedTilePosition;
-    BWAPI::UnitInterface*               getClosestUnitToPosition(std::set<BWAPI::UnitInterface*> & units, BWAPI::Position closestTo);
-	BWAPI::UnitInterface*				selectUnitOfType(BWAPI::UnitType type, BWAPI::Position closestTo = BWAPI::Position(0,0));
+    BWAPI::UnitInterface*       getClosestUnitToPosition(std::set<BWAPI::UnitInterface*> & units, BWAPI::Position closestTo);
+	BWAPI::UnitInterface*		selectUnitOfType(BWAPI::UnitType type, BWAPI::Position closestTo = BWAPI::Position(0,0));
 	BuildOrderQueue				queue;
 
 	bool						contains(std::vector<BWAPI::UnitInterface *> & units, BWAPI::UnitInterface* unit);
@@ -52,7 +53,7 @@ class ProductionManager
 	bool						canMake(BWAPI::UnitType type);
 	bool						hasNumCompletedUnitType(BWAPI::UnitType type, int num);
 	bool						meetsReservedResources(MetaType type);
-	void						setBuildOrder(const std::vector<MetaType> & buildOrder);
+	void						setBuildOrder(const BuildOrder & buildOrder);
 	void						createMetaType(BWAPI::UnitInterface* producer, MetaType type);
 	void						manageBuildOrderQueue();
 	void						performCommand(BWAPI::UnitCommandType t);
@@ -78,7 +79,7 @@ public:
 	const BuildOrderQueue&		getBuildQueue() const { return queue; };
 	void						purgeQueue() { queue.clearAll(); };
 
-    BWAPI::UnitInterface*               getProducer(MetaType t, BWAPI::Position closestTo = BWAPI::Positions::None);
+    BWAPI::UnitInterface*       getProducer(MetaType t, BWAPI::Position closestTo = BWAPI::Positions::None);
 
 	void						performBuildOrderSearch(const std::vector<MetaPair> & goal);
 	void						performBuildOrderSearch();

@@ -494,7 +494,7 @@ BWAPI::UnitInterface* BuildingManager::getAddonProducer(MetaType t)
         if (!unit->isPowered())                                { continue; }
 
         // if the type is an addon, some special cases
-        if (t.unitType.isAddon())
+        if (t.getUnitType().isAddon())
         {
             // if the unit already has an addon, it can't make one
             if (unit->getAddon() != NULL)
@@ -528,7 +528,7 @@ BWAPI::UnitInterface* BuildingManager::getAddonProducer(MetaType t)
         
         // if the type requires an addon and the producer doesn't have one
         typedef std::pair<BWAPI::UnitType, int> ReqPair;
-        for (const ReqPair & pair : t.unitType.requiredUnits())
+        for (const ReqPair & pair : t.getUnitType().requiredUnits())
         {
             BWAPI::UnitType requiredType = pair.first;
             if (requiredType.isAddon())

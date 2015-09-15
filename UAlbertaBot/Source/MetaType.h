@@ -4,79 +4,48 @@
 
 namespace UAlbertaBot
 {
-struct MetaType 
+
+namespace MetaTypes
 {
-	enum type_enum {Unit, Tech, Upgrade, Command, Default};
-	type_enum type;
+    enum {Unit, Tech, Upgrade, Command, Default};
+}
 
-	BWAPI::UnitCommandType commandType;
-	BWAPI::UnitType unitType;
-	BWAPI::TechType techType;
-	BWAPI::UpgradeType upgradeType;
+class MetaType 
+{
+	size_t                  _type;
+    BWAPI::Race             _race;
 
-	MetaType () : type(MetaType::Default) {}
-	MetaType (BWAPI::UnitType t) :        unitType(t),    type(MetaType::Unit) {}
-	MetaType (BWAPI::TechType t) :        techType(t),    type(MetaType::Tech) {}
-	MetaType (BWAPI::UpgradeType t) :     upgradeType(t), type(MetaType::Upgrade) {}
-	MetaType (BWAPI::UnitCommandType t) : commandType(t), type(MetaType::Command) {}
+	BWAPI::UnitType         _unitType;
+	BWAPI::TechType         _techType;
+	BWAPI::UpgradeType      _upgradeType;
 
-	bool isUnit()		const { return type == Unit; }
-	bool isTech()		const { return type == Tech; }
-	bool isUpgrade()	const { return type == Upgrade; }
-	bool isCommand()	const { return type == Command; }
-	bool isBuilding()	const { return type == Unit && unitType.isBuilding(); }
-	bool isRefinery()	const { return isBuilding() && unitType.isRefinery(); }
+public:
 
-	int supplyRequired()
-	{
-		if (isUnit())
-		{
-			return unitType.supplyRequired();
-		}
-		else
-		{
-			return 0;
-		}
-	}
+	MetaType ();
+    MetaType (const std::string & name);
+	MetaType (BWAPI::UnitType t);
+	MetaType (BWAPI::TechType t);
+	MetaType (BWAPI::UpgradeType t);
 
-	int mineralPrice() const
-	{
-		return isUnit() ? unitType.mineralPrice() : (isTech() ? techType.mineralPrice() : upgradeType.mineralPrice());
-	}
+	bool    isUnit()		const;
+	bool    isTech()		const;
+	bool    isUpgrade()	    const;
+	bool    isCommand()	    const;
+	bool    isBuilding()	const;
+	bool    isRefinery()	const;
+    
+    const size_t & type() const;
+    const BWAPI::Race & getRace() const;
 
-	int gasPrice() const
-	{
-		return isUnit() ? unitType.gasPrice() : (isTech() ? techType.gasPrice() : upgradeType.gasPrice());
-	}
+    const BWAPI::UnitType & getUnitType() const;
+    const BWAPI::TechType & getTechType() const;
+    const BWAPI::UpgradeType & getUpgradeType() const;
 
-	BWAPI::UnitType whatBuilds() const
-	{
-		return isUnit() ? unitType.whatBuilds().first : (isTech() ? techType.whatResearches() : upgradeType.whatUpgrades());
-	}
+	int     supplyRequired();
+	int     mineralPrice()  const;
+	int     gasPrice()      const;
 
-	std::string getName() const
-	{
-		if (isUnit())
-		{
-			return unitType.getName();
-		}
-		else if (isTech())
-		{
-			return techType.getName();
-		}
-		else if (isUpgrade())
-		{
-			return upgradeType.getName();
-		}
-		else if (isCommand())
-		{
-			return commandType.getName();
-		}
-		else
-		{
-			UAB_ASSERT(false, "MetaType not found");
-			return "LOL";	
-		}
-	}
+	BWAPI::UnitType whatBuilds() const;
+	std::string getName() const;
 };
 }

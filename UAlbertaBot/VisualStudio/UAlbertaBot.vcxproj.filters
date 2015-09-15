@@ -90,9 +90,6 @@
     <ClCompile Include="..\Source\UABAssert.cpp">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Logger.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\SparCraftManager.cpp">
       <Filter>sparcraft</Filter>
     </ClCompile>
@@ -144,6 +141,15 @@
     <ClCompile Include="..\Source\BOSSManager.cpp">
       <Filter>game\macro\buildorders</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\BuildOrder.cpp">
+      <Filter>game\macro\buildorders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MetaType.cpp">
+      <Filter>game\macro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Logger.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\CombatCommander.h">
@@ -191,13 +197,7 @@
     <ClInclude Include="..\Source\Common.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Options.h">
-      <Filter>common</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\UABAssert.h">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Logger.h">
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\SparCraftManager.h">
@@ -253,6 +253,18 @@
     </ClInclude>
     <ClInclude Include="..\Source\BOSSManager.h">
       <Filter>game\macro\buildorders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\BuildOrder.h">
+      <Filter>game\macro\buildorders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\MetaType.h">
+      <Filter>game\macro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Logger.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Options.h">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
