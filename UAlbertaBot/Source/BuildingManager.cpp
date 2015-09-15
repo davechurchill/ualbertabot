@@ -146,17 +146,14 @@ BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
 	}
 
     // set the building padding specifically
-	int distance = b.type == BWAPI::UnitTypes::Protoss_Photon_Cannon ? 0 : 1;
+	int distance = b.type == BWAPI::UnitTypes::Protoss_Photon_Cannon ? 0 : Config::Macro::BuildingSpacing;
     if (b.type == BWAPI::UnitTypes::Protoss_Pylon && (numPylons < 3))
     {
-        distance = 3;
+        distance = Config::Macro::PylonSpacing;
     }
 
-	// whether or not we want the distance to be horizontal only
-    bool horizontalOnly = b.type == BWAPI::UnitTypes::Protoss_Citadel_of_Adun ? true : false;
-
 	// get a position within our region
-	return BuildingPlacer::Instance().getBuildLocationNear(b, distance, horizontalOnly);
+	return BuildingPlacer::Instance().getBuildLocationNear(b, distance, false);
 }
 
 // STEP 3: ISSUE CONSTRUCTION ORDERS TO ASSIGN BUILDINGS AS NEEDED

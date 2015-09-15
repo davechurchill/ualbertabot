@@ -88,6 +88,12 @@ namespace Config
 		extern int MICRO_SEARCH_MIN_TIMER;
 	}
 
+    namespace Macro
+    {
+        extern int BuildingSpacing;
+        extern int PylonSpacing;
+    }
+
 	namespace Tools
 	{
 		extern int MAP_GRID_SIZE;

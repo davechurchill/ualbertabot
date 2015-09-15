@@ -57,7 +57,7 @@ std::string FileUtils::ReadFile(const std::string & filename)
     }
     else
     {
-        BWAPI::Broodwar->printf("Could not open file: %s", filename.c_str());
+        UAB_ASSERT_WARNING(false, "Could not open file: %s", filename.c_str());
     }
 
     return ss.str();

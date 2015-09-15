@@ -215,7 +215,7 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
     // iterate through the list until we've found a suitable location
     for (size_t i(0); i < closestToBuilding.size(); ++i)
     {
-        if (canBuildHereWithSpace(closestToBuilding[i], b, 0, horizontalOnly))
+        if (canBuildHereWithSpace(closestToBuilding[i], b, buildDist, horizontalOnly))
         {
             double ms = t.getElapsedTimeInMilliSec();
             //BWAPI::Broodwar->printf("Building Placer Took %d iterations, lasting %lf ms @ %lf iterations/ms, %lf setup ms", i, ms, (i / ms), ms1);

@@ -9,7 +9,7 @@
         
     "BWAPI" : 
     {
-        "SetLocalSpeed"   : 0,
+        "SetLocalSpeed"   : 5,
         "SetFrameSkip"    : 0,
         "EnableUserInput" : true,
         "EnableCompleteMapInformation" : false
@@ -23,6 +23,12 @@
         "InCombatRadius" : 1000,
         "RegroupRadius" : 300,
         "UnitNearEnemyRadius" : 600
+    },
+    
+    "Macro" :
+    {
+        "BuildingSpacing" : 1,
+        "PylongSpacing"   : 3
     },
 
     "Debug" :
@@ -38,6 +44,7 @@
         "DrawModuleTimers"          : true,
         "DrawEnemyUnitInfo"         : true,
         "DrawUnitTargetInfo"        : true,
+        "PrintBuildOrderSearchInfo" : false,
         "DrawBWTAInfo"              : false,
         "DrawMapGrid"               : false,
         "DrawSquadInfo"             : false,

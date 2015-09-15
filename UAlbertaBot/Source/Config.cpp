@@ -84,6 +84,12 @@ namespace Config
 		int MICRO_SEARCH_MIN_TIMER				= 0;		// minimum amount of time to allot to micro search (ms)
 	}
 
+    namespace Macro
+    {
+        int BuildingSpacing                     = 1;
+        int PylonSpacing                        = 3;
+    }
+
 	namespace Tools								// options for various tools
 	{
 		extern int MAP_GRID_SIZE				= 320;		// size of grid spacing in MapGrid

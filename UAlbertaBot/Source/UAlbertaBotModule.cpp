@@ -111,6 +111,14 @@ void UAlbertaBotModule::parseConfigFile(const std::string & filename)
         JSONTools::ReadInt("UnitNearEnemyRadius", micro, Config::Micro::UNIT_NEAR_ENEMY_RADIUS);
     }
 
+    // Parse the Macro Options
+    /*if (doc.HasMember("Macro") && doc["Macro"].IsObject())
+    {
+        const rapidjson::Value & macro = doc["Macro"];
+        JSONTools::ReadInt("BuildingSpacing", macro, Config::Macro::BuildingSpacing);
+        JSONTools::ReadInt("PylongSpacing", macro, Config::Macro::PylonSpacing);
+    }*/
+
     // Parse the Debug Options
     if (doc.HasMember("Debug") && doc["Debug"].IsObject())
     {
