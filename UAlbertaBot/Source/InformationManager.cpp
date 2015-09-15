@@ -232,16 +232,20 @@ BWTA::BaseLocation * InformationManager::getMainBaseLocation(BWAPI::PlayerInterf
 	return mainBaseLocations[getIndex(player)];
 }
 
-void InformationManager::drawUnitInformation(int x, int y) {
-	
+void InformationManager::drawUnitInformation(int x, int y) 
+{
+	if (!Config::Debug::DrawEnemyUnitInfo)
+    {
+        return;
+    }
+
 	std::string prefix = "\x04";
 
-	if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(x, y-10, "\x03Lost:\x04 S \x1f%d \x07%d\x04 E \x1f%d \x07%d ", 
-		selfUnitData.getMineralsLost(), selfUnitData.getGasLost(), enemyUnitData.getMineralsLost(), enemyUnitData.getGasLost());
-	if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(x, y, "\x04 Enemy Unit Information: %s", BWAPI::Broodwar->enemy()->getRace().getName().c_str());
-	if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(x, y+20, "\x04UNIT NAME");
-	if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(x+140, y+20, "\x04#");
-	if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(x+160, y+20, "\x04X");
+	BWAPI::Broodwar->drawTextScreen(x, y-10, "\x03Lost:\x04 S \x1f%d \x07%d\x04 E \x1f%d \x07%d ", selfUnitData.getMineralsLost(), selfUnitData.getGasLost(), enemyUnitData.getMineralsLost(), enemyUnitData.getGasLost());
+	BWAPI::Broodwar->drawTextScreen(x, y, "\x04Enemy Unit Information: %s", BWAPI::Broodwar->enemy()->getName().c_str());
+	BWAPI::Broodwar->drawTextScreen(x, y+20, "\x04UNIT NAME");
+	BWAPI::Broodwar->drawTextScreen(x+140, y+20, "\x04#");
+	BWAPI::Broodwar->drawTextScreen(x+160, y+20, "\x04X");
 
 	int yspace = 0;
 
@@ -259,14 +263,20 @@ void InformationManager::drawUnitInformation(int x, int y) {
 			else if (t.isBuilding())	{ prefix = "\x03"; }
 			else						{ prefix = "\x04"; }
 
-			if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(x, y+40+((yspace)*10), "%s%s", prefix.c_str(), t.getName().c_str());
-			if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(x+140, y+40+((yspace)*10), "%s%d", prefix.c_str(), numUnits);
-			if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(x+160, y+40+((yspace++)*10), "%s%d", prefix.c_str(), numDeadUnits);
+			BWAPI::Broodwar->drawTextScreen(x, y+40+((yspace)*10), "%s%s", prefix.c_str(), t.getName().c_str());
+			BWAPI::Broodwar->drawTextScreen(x+140, y+40+((yspace)*10), "%s%d", prefix.c_str(), numUnits);
+			BWAPI::Broodwar->drawTextScreen(x+160, y+40+((yspace++)*10), "%s%d", prefix.c_str(), numDeadUnits);
 		}
 	}
 }
 
-void InformationManager::drawMapInformation(){//for now it's just BWTA information.
+void InformationManager::drawMapInformation()
+{
+    if (!Config::Debug::DrawBWTAInfo)
+    {
+        return;
+    }
+
 	//we will iterate through all the base locations, and draw their outlines.
 	for (std::set<BWTA::BaseLocation*>::const_iterator i = BWTA::getBaseLocations().begin(); i != BWTA::getBaseLocations().end(); i++)
 	{
@@ -446,7 +456,7 @@ void InformationManager::getNearbyForce(std::vector<UnitInfo> & unitInfo, BWAPI:
 
 bool InformationManager::nearbyForceHasCloaked(BWAPI::Position p, BWAPI::PlayerInterface * player, int radius) 
 {
-	if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawCircleMap(p.x, p.y, radius, BWAPI::Colors::Red);
+	if (Config::Debug::DrawEnemyUnitInfo) BWAPI::Broodwar->drawCircleMap(p.x, p.y, radius, BWAPI::Colors::Red);
 
 	FOR_EACH_UIMAP_CONST(iter, getUnitData(player).getUnits())
 	{

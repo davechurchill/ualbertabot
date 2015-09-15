@@ -7,15 +7,15 @@
         "PrintInfoOnStart" : true
     },
         
-    "BWAPI Options" : 
+    "BWAPI" : 
     {
-        "SetLocalSpeed"   : 5,
+        "SetLocalSpeed"   : 0,
         "SetFrameSkip"    : 0,
         "EnableUserInput" : true,
         "EnableCompleteMapInformation" : false
     },
     
-    "Micro Options" :
+    "Micro" :
     {
         "WorkerDefense" : true,
         "WorkerDefensePerUnit" : 2,
@@ -25,14 +25,31 @@
         "UnitNearEnemyRadius" : 600
     },
 
-    "Debug Options" :
+    "Debug" :
     {
-        "ErrorLogFilename"      : "d:/ualbertabot/UAlbertaBot/UAB_ErrorLog.txt",
-        "DrawDebugInformation"  : true,
-        "PrintModuleTimeout"    : true
+        "ErrorLogFilename"          : "d:/ualbertabot/UAlbertaBot/UAB_ErrorLog.txt",
+        
+        "PrintModuleTimeout"        : true,
+        "PrintBuildOrderSearchInfo" : false,
+        "DrawResourceInfo"          : true,
+        "DrawBuildOrderInfo"        : true,
+        "DrawProductionInfo"        : true,
+        "DrawCombatSimInfo"         : true,
+        "DrawModuleTimers"          : true,
+        "DrawEnemyUnitInfo"         : true,
+        "DrawUnitTargetInfo"        : true,
+        "DrawBWTAInfo"              : false,
+        "DrawMapGrid"               : false,
+        "DrawSquadInfo"             : false,
+        "DrawWorkerInfo"            : false,
+        "DrawMouseCursorInfo"       : false,
+        "DrawBuildingInfo"          : false,
+        "DrawReservedBuildingTiles" : false,
+        
+        "AllDebugOff"               : false
     },
     
-    "Module Options" :
+    "Modules" :
     {
         "UseGameCommander"      : true,
         "UseScoutManager"       : true,
@@ -42,14 +59,16 @@
         "UseUnitCommandManager" : false
     },
     
-    "Tool Options" :
+    "Tools" :
     {
         "MapGridSize" : 320
     },
     
-    "Strategy Options"  :
+    "Strategy" :
     {
-        "StrategyName" : "Protoss_DragoonRush",
+        "StrategyName" : "Protoss_ZealotRush",
+        "ReadDirectory" : "bwapi-data/read/",
+        "WriteDirectory" : "bwapi-data/write/",
         
         "Strategies" :
         {

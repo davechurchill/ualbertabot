@@ -89,11 +89,11 @@ void ScoutManager::moveScouts()
 			else
 			{
 				BWAPI::Position fleeTo = calcFleePosition(groundThreats, NULL);
-				if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawCircleMap(fleeTo.x, fleeTo.y, 10, BWAPI::Colors::Red);
+				if (Config::Debug::DrawUnitTargetInfo) BWAPI::Broodwar->drawCircleMap(fleeTo.x, fleeTo.y, 10, BWAPI::Colors::Red);
 
 				for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->getUnitsInRadius(fleeTo, 10))
 				{
-					if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawCircleMap(unit->getPosition().x, unit->getPosition().y, 5, BWAPI::Colors::Cyan, true);
+					if (Config::Debug::DrawUnitTargetInfo) BWAPI::Broodwar->drawCircleMap(unit->getPosition().x, unit->getPosition().y, 5, BWAPI::Colors::Cyan, true);
 				}
 
 				smartMove(workerScout, fleeTo);
@@ -173,11 +173,11 @@ BWAPI::Position ScoutManager::calcFleePosition(const std::vector<GroundThreat> &
 		// the position we will attempt to go to
 		BWAPI::Position test(workerScout->getPosition() + newFleeVector * 24);
 
-		// draw the debug vector
-		//if (drawDebugVectors) 
-		//{
-			if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawLineMap(workerScout->getPosition().x, workerScout->getPosition().y, test.x, test.y, BWAPI::Colors::Cyan);
-		//}
+	    if (Config::Debug::DrawUnitTargetInfo)
+        {
+            BWAPI::Broodwar->drawLineMap(workerScout->getPosition().x, workerScout->getPosition().y, test.x, test.y, BWAPI::Colors::Cyan);
+        }
+		
 
 		// if the position is able to be walked on, break out of the loop
 		if (isValidFleePosition(test))
@@ -198,7 +198,10 @@ BWAPI::Position ScoutManager::calcFleePosition(const std::vector<GroundThreat> &
 	BWAPI::Position fleeTo(workerScout->getPosition() + newFleeVector * 24);
 	
 	
-	if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawLineMap(workerScout->getPosition().x, workerScout->getPosition().y, fleeTo.x, fleeTo.y, BWAPI::Colors::Orange);
+	if (Config::Debug::DrawUnitTargetInfo)
+    {
+        BWAPI::Broodwar->drawLineMap(workerScout->getPosition().x, workerScout->getPosition().y, fleeTo.x, fleeTo.y, BWAPI::Colors::Orange);
+    }
 	
 
 	return fleeTo;
@@ -401,7 +404,10 @@ bool ScoutManager::immediateThreat()
 		if (unit->getType().isWorker() && unit->isAttacking())
 		{
 			enemyAttackingWorkers.push_back(unit);
-			if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawCircleMap(unit->getPosition().x, unit->getPosition().y, 5, BWAPI::Colors::Yellow);
+			if (Config::Debug::DrawUnitTargetInfo)
+            {
+                BWAPI::Broodwar->drawCircleMap(unit->getPosition().x, unit->getPosition().y, 5, BWAPI::Colors::Yellow);
+            }
 		}
 	}
 	

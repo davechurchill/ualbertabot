@@ -13,7 +13,7 @@ ProductionManager::ProductionManager()
 {
 	populateTypeCharMap();
 
-	if (!Options::Modules::USING_BUILD_ORDER_DEMO)
+	if (!Config::Modules::USING_BUILD_ORDER_DEMO)
 	{
         setBuildOrder(StrategyManager::Instance().getOpeningBookBuildOrder());
 		_runningOpeningBook = true;
@@ -35,7 +35,7 @@ void ProductionManager::setBuildOrder(const BuildOrder & buildOrder)
 }
 void ProductionManager::performBuildOrderSearch(const std::vector<MetaPair> & goal)
 {
-	if (!Options::Modules::USING_MACRO_SEARCH || goal.empty())
+	if (!Config::Modules::USING_MACRO_SEARCH || goal.empty())
 	{
 		return;
 	}
@@ -47,7 +47,6 @@ void ProductionManager::performBuildOrderSearch(const std::vector<MetaPair> & go
 
 	if (buildOrder.size() > 0)
 	{
-		BWAPI::Broodwar->printf("PM: Build order found!");
 		setBuildOrder(buildOrder);
 		BOSSManager::Instance().reset();
 		searchGoal = std::vector<MetaPair>();
@@ -56,14 +55,17 @@ void ProductionManager::performBuildOrderSearch(const std::vector<MetaPair> & go
 	{
 		if (!BOSSManager::Instance().isSearchInProgress())
 		{
-			BWAPI::Broodwar->printf("Starting a new search!");
+            if (Config::Debug::PrintBuildOrderSearchInfo)
+            {
+			    BWAPI::Broodwar->printf("Starting a new build order search!");
+            }
 			BOSSManager::Instance().startNewSearch(goal);
 		}
 	}
 }
 void ProductionManager::performBuildOrderSearch()
 {	
-    if (!Options::Modules::USING_MACRO_SEARCH)
+    if (!Config::Modules::USING_MACRO_SEARCH)
     {
         return;
     }
@@ -72,7 +74,6 @@ void ProductionManager::performBuildOrderSearch()
 
     if (buildOrder.size() > 0)
     {
-        BWAPI::Broodwar->printf("PM: Build order found!");
 	    setBuildOrder(buildOrder);
         BOSSManager::Instance().reset();
         searchGoal = std::vector<MetaPair>();
@@ -81,7 +82,10 @@ void ProductionManager::performBuildOrderSearch()
     {
         if (!BOSSManager::Instance().isSearchInProgress())
         {
-            BWAPI::Broodwar->printf("Starting a new search!");
+            if (Config::Debug::PrintBuildOrderSearchInfo)
+            {
+			    BWAPI::Broodwar->printf("Starting a new build order search!");
+            }
 
 			BOSSManager::Instance().startNewSearch(StrategyManager::Instance().getBuildOrderGoal());
         }
@@ -99,22 +103,28 @@ void ProductionManager::update()
 	manageBuildOrderQueue();
 
     // build order demo only
-	if (Options::Modules::USING_BUILD_ORDER_DEMO && (queue.size() == 0))
+	if (Config::Modules::USING_BUILD_ORDER_DEMO && (queue.size() == 0))
 	{
 		performBuildOrderSearch(searchGoal);
 	}
 
 	// if nothing is currently building, get a new goal from the strategy manager
-	if ((queue.size() == 0) && (BWAPI::Broodwar->getFrameCount() > 10) && !Options::Modules::USING_BUILD_ORDER_DEMO)
+	if ((queue.size() == 0) && (BWAPI::Broodwar->getFrameCount() > 10) && !Config::Modules::USING_BUILD_ORDER_DEMO)
 	{
-		BWAPI::Broodwar->drawTextScreen(150, 10, "Nothing left to build, new search!");
+        if (Config::Debug::PrintBuildOrderSearchInfo)
+        {
+		    BWAPI::Broodwar->drawTextScreen(150, 10, "Nothing left to build, new search!");
+        }
 		performBuildOrderSearch();
 	}
 
 	//// detect if there's a build order deadlock once per second
 	if ((BWAPI::Broodwar->getFrameCount() % 24 == 0) && detectBuildOrderDeadlock())
 	{
-		BWAPI::Broodwar->printf("Supply deadlock detected, building pylon!");
+        if (Config::Debug::PrintBuildOrderSearchInfo)
+        {
+		    BWAPI::Broodwar->printf("Supply deadlock detected, building pylon!");
+        }
 		queue.queueAsHighestPriority(MetaType(BWAPI::Broodwar->self()->getRace().getSupplyProvider()), true);
 	}
 
@@ -132,12 +142,15 @@ void ProductionManager::update()
 			queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Protoss_Forge), true);
 		}
 
-		BWAPI::Broodwar->printf("Enemy Cloaked Unit Detected!");
+        if (Config::Debug::PrintBuildOrderSearchInfo)
+        {
+		    BWAPI::Broodwar->printf("Enemy Cloaked Unit Detected!");
+        }
 		enemyCloakedDetected = true;
 	}
     
     drawProductionInformation(10, 30);
-//	if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(447, 17, "\x07 %d", BuildingManager::Instance().getReservedMinerals());
+//	if (Config::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(447, 17, "\x07 %d", BuildingManager::Instance().getReservedMinerals());
 }
 
 // on unit destroy
@@ -149,12 +162,15 @@ void ProductionManager::onUnitDestroy(BWAPI::UnitInterface* unit)
 		return;
 	}
 		
-	if (Options::Modules::USING_MACRO_SEARCH)
+	if (Config::Modules::USING_MACRO_SEARCH)
 	{
 		// if it's a worker or a building, we need to re-search for the current goal
 		if ((unit->getType().isWorker() && !WorkerManager::Instance().isWorkerScout(unit)) || unit->getType().isBuilding())
 		{
-			BWAPI::Broodwar->printf("Critical unit died, re-searching build order");
+            if (Config::Debug::PrintBuildOrderSearchInfo)
+            {
+			    BWAPI::Broodwar->printf("Critical unit died, re-searching build order");
+            }
 
 			if (unit->getType() != BWAPI::UnitTypes::Zerg_Drone)
 			{
@@ -376,7 +392,6 @@ void ProductionManager::createMetaType(BWAPI::UnitInterface* producer, MetaType 
     }
     else if (t.getUnitType().isAddon())
     {
-        BWAPI::Broodwar->printf("Building Addon");
         //BWAPI::TilePosition addonPosition(producer->getTilePosition().x + producer->getType().tileWidth(), producer->getTilePosition().y + producer->getType().tileHeight() - t.unitType.tileHeight());
         producer->buildAddon(t.getUnitType());
     }
@@ -488,7 +503,7 @@ void ProductionManager::predictWorkerMovement(const Building & b)
 	int x2 = x1 + (b.type.tileWidth()) * 32;
 	int y1 = predictedTilePosition.y * 32;
 	int y2 = y1 + (b.type.tileHeight()) * 32;
-	if (Options::Debug::DRAW_UALBERTABOT_DEBUG) 
+	if (Config::Debug::DrawWorkerInfo) 
     {
         BWAPI::Broodwar->drawBoxMap(x1, y1, x2, y2, BWAPI::Colors::Blue, false);
     }
@@ -639,6 +654,11 @@ void ProductionManager::populateTypeCharMap()
 
 void ProductionManager::drawProductionInformation(int x, int y)
 {
+    if (!Config::Debug::DrawProductionInfo)
+    {
+        return;
+    }
+
 	// fill prod with each unit which is under construction
 	std::vector<BWAPI::UnitInterface*> prod;
 	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits())
@@ -654,8 +674,8 @@ void ProductionManager::drawProductionInformation(int x, int y)
 	// sort it based on the time it was started
 	std::sort(prod.begin(), prod.end(), CompareWhenStarted());
 
-	if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(x, y, "\x04 Build Order Info:");
-	if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(x, y+20, "\x04UNIT NAME");
+	BWAPI::Broodwar->drawTextScreen(x, y, "\x04 Build Order Info:");
+	BWAPI::Broodwar->drawTextScreen(x, y+20, "\x04UNIT NAME");
 
 	size_t reps = prod.size() < 10 ? prod.size() : 10;
 
@@ -671,8 +691,8 @@ void ProductionManager::drawProductionInformation(int x, int y)
 
 		BWAPI::UnitType t = prod[i]->getType();
 
-		if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(x, yy, "%s%s", prefix.c_str(), t.getName().c_str());
-		if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(x+150, yy, "%s%6d", prefix.c_str(), prod[i]->getRemainingBuildTime());
+		BWAPI::Broodwar->drawTextScreen(x, yy, "%s%s", prefix.c_str(), t.getName().c_str());
+		BWAPI::Broodwar->drawTextScreen(x+150, yy, "%s%6d", prefix.c_str(), prod[i]->getRemainingBuildTime());
 	}
 
 	queue.drawQueueInformation(x, yy+10);

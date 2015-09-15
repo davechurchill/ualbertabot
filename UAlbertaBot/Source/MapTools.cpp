@@ -76,11 +76,6 @@ void MapTools::resetFringe()
 	std::fill(fringe.begin(), fringe.end(), 0);
 }
 
-void MapTools::update()
-{
-	
-}
-
 int MapTools::getGroundDistance(BWAPI::Position origin, BWAPI::Position destination)
 {
 	// if we haven't yet computed the distance map to the destination
@@ -123,6 +118,7 @@ void MapTools::search(DistanceMap & dmap, const int sR, const int sC)
 	int fringeSize(1);
 	int fringeIndex(0);
 	fringe[0] = getIndex(sR,sC);
+    dmap.addSorted(getTilePosition(fringe[0]));
 	
 	// temporary variables used in search loop
 	int currentIndex, nextIndex;
@@ -145,6 +141,7 @@ void MapTools::search(DistanceMap & dmap, const int sR, const int sC)
 			// set the distance based on distance to current cell
 			dmap.setDistance(nextIndex, newDist);
 			dmap.setMoveTo(nextIndex, 'D');
+            dmap.addSorted(getTilePosition(nextIndex));
 				
 			// put it in the fringe
 			fringe[fringeSize++] = nextIndex;				
@@ -157,6 +154,7 @@ void MapTools::search(DistanceMap & dmap, const int sR, const int sC)
 			// set the distance based on distance to current cell
 			dmap.setDistance(nextIndex, newDist);
 			dmap.setMoveTo(nextIndex, 'U');
+            dmap.addSorted(getTilePosition(nextIndex));
 
 			// put it in the fringe
 			fringe[fringeSize++] = nextIndex;
@@ -169,6 +167,7 @@ void MapTools::search(DistanceMap & dmap, const int sR, const int sC)
 			// set the distance based on distance to current cell
 			dmap.setDistance(nextIndex, newDist);
 			dmap.setMoveTo(nextIndex, 'R');
+            dmap.addSorted(getTilePosition(nextIndex));
 
 			// put it in the fringe
 			fringe[fringeSize++] = nextIndex;
@@ -181,11 +180,25 @@ void MapTools::search(DistanceMap & dmap, const int sR, const int sC)
 			// set the distance based on distance to current cell
 			dmap.setDistance(nextIndex, newDist);
 			dmap.setMoveTo(nextIndex, 'L');
+            dmap.addSorted(getTilePosition(nextIndex));
 
 			// put it in the fringe
 			fringe[fringeSize++] = nextIndex;
 		}
 	}
+}
+
+const std::vector<BWAPI::TilePosition> & MapTools::getClosestTilesTo(BWAPI::Position pos)
+{
+    // make sure the distance map is calculated with pos as a destination
+    int a = getGroundDistance(BWAPI::Position(0,0), pos);
+
+    return allMaps[pos].getSortedTiles();
+}
+
+BWAPI::TilePosition MapTools::getTilePosition(int index)
+{
+    return BWAPI::TilePosition(index % cols, index / cols);
 }
 
 std::vector<BWAPI::UnitInterface *> MapTools::getUnitsOfTypeNear(BWAPI::Position & nearTo, int groundDistance, BWAPI::UnitType type)
@@ -210,8 +223,6 @@ BWAPI::TilePosition MapTools::getNextExpansion()
 {
 	return getNextExpansion(BWAPI::Broodwar->self());
 }
-
-
 
 BWAPI::TilePosition MapTools::getNextExpansion(BWAPI::Player player)
 {

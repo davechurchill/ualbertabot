@@ -193,7 +193,7 @@ void UnitCommandManager::smartAttackUnit(BWAPI::UnitInterface* attacker, BWAPI::
 
 	attacker->attack(target);
 
-	if (Options::Debug::DRAW_UALBERTABOT_DEBUG) 
+	if (Config::Debug::DrawUnitTargetInfo) 
 	{
 		BWAPI::Broodwar->drawLineMap(attacker->getPosition().x+3, attacker->getPosition().y+3, target->getPosition().x+3, target->getPosition().y+3, BWAPI::Colors::Red );
 	}
@@ -210,7 +210,7 @@ void UnitCommandManager::smartMove(BWAPI::UnitInterface* attacker, BWAPI::Positi
 	
 	attacker->move(targetPosition);
 
-	if (Options::Debug::DRAW_UALBERTABOT_DEBUG) 
+	if (Config::Debug::DrawUnitTargetInfo) 
 	{
 		BWAPI::Broodwar->drawLineMap(attacker->getPosition().x, attacker->getPosition().y, targetPosition.x, targetPosition.y, BWAPI::Colors::Orange);
 	}

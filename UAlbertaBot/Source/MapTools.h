@@ -46,6 +46,12 @@ class MapTools
 	
 	// reset the fringe
 	void resetFringe();
+
+	// computes walk distance from Position P to all other points on the map
+	void computeDistance(DistanceMap & dmap, const BWAPI::Position p);
+
+    BWAPI::TilePosition getTilePosition(int index);
+
 	
 public:
 
@@ -54,21 +60,16 @@ public:
 	BWAPI::TilePosition getNextExpansion();
 	BWAPI::TilePosition getNextExpansion(BWAPI::Player player);
 
-	void update();
-	void drawMyRegion();
-	void computeConnectedRegions();
-
-	// computes walk distance from Position P to all other points on the map
-	void computeDistance(DistanceMap & dmap, const BWAPI::Position p);
-
 	// does the dynamic programming search
 	void search(DistanceMap & dmap, const int sR, const int sC);
-	
+
 	// computes connectivity for the map
 	void fill(const int index, const int region);
 
 	// get the ground distance between (from, to)
 	int getGroundDistance(BWAPI::Position from, BWAPI::Position to);
+
+    const std::vector<BWAPI::TilePosition> & getClosestTilesTo(BWAPI::Position pos);
 
 	// get distance to various bases
 	int	getEnemyBaseDistance(BWAPI::Position p);

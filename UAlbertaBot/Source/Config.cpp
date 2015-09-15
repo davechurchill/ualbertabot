@@ -1,7 +1,7 @@
-#include "Options.h"
+#include "Config.h"
 #include "UABAssert.h"
 
-namespace Options
+namespace Config
 {
     namespace Strategy
     {
@@ -39,21 +39,30 @@ namespace Options
         bool EnableCompleteMapInformation = false;
     }
     
-	namespace Tournament						// settings for the AIIDE tournament
+	namespace Tournament						
 	{
 		extern const int GAME_END_FRAME			= 86400;	
 	}
-
-	namespace FileIO							// settings for file read/write
+    
+	namespace Debug								
 	{
-		extern const char * FILE_SETTINGS		= "file_settings.txt";
-	}
-
-	namespace Debug								// debugging options
-	{
-		bool DRAW_UALBERTABOT_DEBUG				= true;	// draws debug information for UAlbertaBot
-        bool PRINT_MODULE_TIMEOUT				= true;	// draws debug information for UAlbertaBot
-		bool DRAW_DEBUG_INTERFACE				= false;	    // draws debug information for EnhancedUI
+        bool PrintModuleTimeout             = true;	
+        bool PrintBuildOrderSearchInfo      = true;
+        bool DrawResourceInfo               = false;
+        bool DrawBuildOrderInfo             = false;
+        bool DrawProductionInfo             = false;
+        bool DrawWorkerInfo                 = false;
+        bool DrawModuleTimers               = false;
+        bool DrawReservedBuildingTiles      = false;
+        bool DrawCombatSimulationInfo       = false;
+        bool DrawBuildingInfo               = false;
+        bool DrawMouseCursorInfo            = false;
+        bool DrawEnemyUnitInfo              = false;
+        bool DrawBWTAInfo                   = false;
+        bool DrawMapGrid                    = false;
+        bool DrawUnitTargetInfo             = false;
+        bool DrawSquadInfo                  = false;
+        bool AllDebugOff                    = false;
 
         std::string ErrorLogFilename            = "UAB_ErrorLog.txt";
 

@@ -10,7 +10,7 @@ StrategyManager::StrategyManager()
 	, _enemyRace(BWAPI::Broodwar->enemy()->getRace())
     , _emptyBuildOrder(BWAPI::Broodwar->self()->getRace())
 {
-	if (Options::Modules::USING_STRATEGY_IO)
+	if (Config::Modules::USING_STRATEGY_IO)
 	{
 		//readResults();
 	}
@@ -31,7 +31,7 @@ const int StrategyManager::getScore(BWAPI::PlayerInterface * player) const
 
 const BuildOrder & StrategyManager::getOpeningBookBuildOrder() const
 {
-    auto buildOrderIt = _openingBuildOrders.find(Options::Strategy::StrategyName);
+    auto buildOrderIt = _openingBuildOrders.find(Config::Strategy::StrategyName);
 
     // look for the build order in the build order map
 	if (buildOrderIt != std::end(_openingBuildOrders))
@@ -40,7 +40,7 @@ const BuildOrder & StrategyManager::getOpeningBookBuildOrder() const
     }
     else
     {
-        UAB_ASSERT_WARNING(false, "Strategy not found: %s, returning empty initial build order", Options::Strategy::StrategyName.c_str());
+        UAB_ASSERT_WARNING(false, "Strategy not found: %s, returning empty initial build order", Config::Strategy::StrategyName.c_str());
         return _emptyBuildOrder;
     }
 }
@@ -49,7 +49,7 @@ const BuildOrder & StrategyManager::getOpeningBookBuildOrder() const
 // this function can only be called if we have no fighters to defend with
 const int StrategyManager::defendWithWorkers()
 {
-	if (!Options::Micro::WORKER_DEFENSE)
+	if (!Config::Micro::WORKER_DEFENSE)
 	{
 		return false;
 	}
@@ -158,29 +158,29 @@ void StrategyManager::addOpeningBuildOrder(const std::string & name, BuildOrder 
 
 const MetaPairVector StrategyManager::getBuildOrderGoal()
 {
-    if (Options::Strategy::StrategyName == "Protoss_ZealotRush")
+    if (Config::Strategy::StrategyName == "Protoss_ZealotRush")
     {
         return getProtossZealotRushBuildOrderGoal();
     }
-    else if (Options::Strategy::StrategyName == "Protoss_DTRush")
+    else if (Config::Strategy::StrategyName == "Protoss_DTRush")
 	{
 		return getProtossDarkTemplarBuildOrderGoal();
 	}
-	else if (Options::Strategy::StrategyName == "Protoss_DragoonRush")
+	else if (Config::Strategy::StrategyName == "Protoss_DragoonRush")
 	{
 		return getProtossDragoonsBuildOrderGoal();
 	}
-    else if (Options::Strategy::StrategyName == "Terran_MarineRush")
+    else if (Config::Strategy::StrategyName == "Terran_MarineRush")
 	{
 		return getTerranBuildOrderGoal();
 	}
-    else if (Options::Strategy::StrategyName == "Zerg_ZerglingRush")
+    else if (Config::Strategy::StrategyName == "Zerg_ZerglingRush")
 	{
 		return getZergBuildOrderGoal();
 	}
     else
     {
-        UAB_ASSERT_WARNING(false, "No build order goal found for current strategy: %s", Options::Strategy::StrategyName.c_str());
+        UAB_ASSERT_WARNING(false, "No build order goal found for current strategy: %s", Config::Strategy::StrategyName.c_str());
     }
 
     return MetaPairVector();

@@ -17,7 +17,7 @@ BuildingManager::BuildingManager()
 void BuildingManager::update() 
 {
 	// Step through building logic, issue orders, manage data as necessary
-	//drawBuildingInformation(340, 50);
+	drawBuildingInformation(340, 50);
 	
 	// check to see if assigned workers have died en route or while constructing
 	validateWorkersAndBuildings();	
@@ -38,8 +38,7 @@ void BuildingManager::update()
 	checkForCompletedBuildings();
 
 	// draw some debug information
-	//BuildingPlacer::Instance().drawReservedTiles();
-
+	BuildingPlacer::Instance().drawReservedTiles();
 }
 
 // checks all relevant data structures to see if the given type is being built
@@ -128,83 +127,36 @@ BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
 {
 	int numPylons = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Pylon);
 
+    if (b.type.requiresPsi() && numPylons == 0)
+    {
+        return BWAPI::TilePositions::None;
+    }
+
 	if (b.type.isRefinery())
 	{
 		return BuildingPlacer::Instance().getRefineryPosition();
 	}
 
-	// special case for early pylons
-	if (b.type == BWAPI::UnitTypes::Protoss_Pylon && (numPylons < 3))
+    if (b.type.isResourceDepot())
 	{
-        // try to get a spot for this building in our starting region
-		BWAPI::TilePosition posInRegion = BuildingPlacer::Instance().getBuildLocationNear(b, 4, true);
-		
-        // if didn't find a place in our region
-        if (posInRegion == BWAPI::TilePositions::None)
-        {
-			// otherwise find a place not in our region
-			return BuildingPlacer::Instance().getBuildLocationNear(b, 4, false);
+		// get the location 
+		BWAPI::TilePosition tile = MapTools::Instance().getNextExpansion();
 
-        }
-		//timed out
-		else if (posInRegion == BWAPI::TilePositions::Invalid)
-		{
-			return BWAPI::TilePositions::None;
-		}
-        else
-        {
-			// use it
-			return posInRegion;
-        }
-	}
-	// every other type of building
-	else
-	{
-		// if it is a protoss building and we have no pylons, quick check
-		if (b.type.requiresPsi() && (numPylons == 0))
-		{
-            
-		}
-		// if the unit is a resource depot
-		else if (b.type.isResourceDepot())
-		{
-			// get the location 
-			BWAPI::TilePosition tile = MapTools::Instance().getNextExpansion();
-
-			return tile;
-		}
-		// any other building
-		else
-		{
-			// set the building padding specifically
-			int distance = b.type == BWAPI::UnitTypes::Protoss_Photon_Cannon ? 0 : 1;
-
-			// whether or not we want the distance to be horizontal only
-            bool horizontalOnly = b.type == BWAPI::UnitTypes::Protoss_Citadel_of_Adun ? true : false;
-
-			// get a position within our region
-			BWAPI::TilePosition posInRegion = BuildingPlacer::Instance().getBuildLocationNear(b, distance, true,  horizontalOnly);
-
-            // if we didn't find a place in our region
-            if (posInRegion == BWAPI::TilePositions::None)
-            {
-				// just find a position somewhere
-				return BuildingPlacer::Instance().getBuildLocationNear(b, distance, false, horizontalOnly);
-            }
-			//timed out
-			else if (posInRegion == BWAPI::TilePositions::Invalid)
-			{
-				return BWAPI::TilePositions::None;
-			}
-            else
-            {
-				// use it
-				return posInRegion;
-            }
-		}
+		return tile;
 	}
 
-	return BWAPI::TilePositions::None;
+    // set the building padding specifically
+	int distance = b.type == BWAPI::UnitTypes::Protoss_Photon_Cannon ? 0 : 1;
+    if (b.type == BWAPI::UnitTypes::Protoss_Pylon && (numPylons < 3))
+    {
+        distance = 3;
+    }
+
+	// whether or not we want the distance to be horizontal only
+    bool horizontalOnly = b.type == BWAPI::UnitTypes::Protoss_Citadel_of_Adun ? true : false;
+
+	// get a position within our region
+	return BuildingPlacer::Instance().getBuildLocationNear(b, distance, horizontalOnly);
 }
 
 // STEP 3: ISSUE CONSTRUCTION ORDERS TO ASSIGN BUILDINGS AS NEEDED
@@ -426,14 +378,19 @@ int BuildingManager::getReservedGas() {
 
 void BuildingManager::drawBuildingInformation(int x, int y) 
 {
+    if (!Config::Debug::DrawBuildingInfo)
+    {
+        return;
+    }
+
 	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits())
 	{
-		if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextMap(unit->getPosition().x, unit->getPosition().y+5, "\x07%d", unit->getID()); 
+		BWAPI::Broodwar->drawTextMap(unit->getPosition().x, unit->getPosition().y+5, "\x07%d", unit->getID()); 
 	}
 
-	if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(x, y, "\x04 Building Information:");
-	if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(x, y+20, "\x04 Name");
-	if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(x+150, y+20, "\x04 State");
+	BWAPI::Broodwar->drawTextScreen(x, y, "\x04 Building Information:");
+	BWAPI::Broodwar->drawTextScreen(x, y+20, "\x04 Name");
+	BWAPI::Broodwar->drawTextScreen(x+150, y+20, "\x04 State");
 
 	int yspace = 0;
 
@@ -442,8 +399,8 @@ void BuildingManager::drawBuildingInformation(int x, int y)
     {
 		Building & b = buildingData.getNextBuilding(ConstructionData::Unassigned);
 
-		if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(x, y+40+((yspace)*10), "\x03 %s", b.type.getName().c_str());
-		if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(x+150, y+40+((yspace++)*10), "\x03 Need %c", getBuildingWorkerCode(b));
+		BWAPI::Broodwar->drawTextScreen(x, y+40+((yspace)*10), "\x03 %s", b.type.getName().c_str());
+		BWAPI::Broodwar->drawTextScreen(x+150, y+40+((yspace++)*10), "\x03 Need %c", getBuildingWorkerCode(b));
 	}
 
 	buildingData.begin(ConstructionData::Assigned);
@@ -451,16 +408,16 @@ void BuildingManager::drawBuildingInformation(int x, int y)
     {
 		Building & b = buildingData.getNextBuilding(ConstructionData::Assigned);
 
-		if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(x, y+40+((yspace)*10), "\x03 %s %d", b.type.getName().c_str(), b.builderUnit->getID());
-		if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(x+150, y+40+((yspace++)*10), "\x03 A %c (%d,%d)", getBuildingWorkerCode(b), b.finalPosition.x, b.finalPosition.y);
+		BWAPI::Broodwar->drawTextScreen(x, y+40+((yspace)*10), "\x03 %s %d", b.type.getName().c_str(), b.builderUnit->getID());
+		BWAPI::Broodwar->drawTextScreen(x+150, y+40+((yspace++)*10), "\x03 A %c (%d,%d)", getBuildingWorkerCode(b), b.finalPosition.x, b.finalPosition.y);
 
 		int x1 = b.finalPosition.x*32;
 		int y1 = b.finalPosition.y*32;
 		int x2 = (b.finalPosition.x + b.type.tileWidth())*32;
 		int y2 = (b.finalPosition.y + b.type.tileHeight())*32;
 
-		if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawLineMap(b.builderUnit->getPosition().x, b.builderUnit->getPosition().y, (x1+x2)/2, (y1+y2)/2, BWAPI::Colors::Orange);
-		if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawBoxMap(x1, y1, x2, y2, BWAPI::Colors::Red, false);
+		BWAPI::Broodwar->drawLineMap(b.builderUnit->getPosition().x, b.builderUnit->getPosition().y, (x1+x2)/2, (y1+y2)/2, BWAPI::Colors::Orange);
+		BWAPI::Broodwar->drawBoxMap(x1, y1, x2, y2, BWAPI::Colors::Red, false);
 	}
 
 	buildingData.begin(ConstructionData::UnderConstruction);
@@ -468,8 +425,8 @@ void BuildingManager::drawBuildingInformation(int x, int y)
     {
 		Building & b = buildingData.getNextBuilding(ConstructionData::UnderConstruction);
 
-		if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(x, y+40+((yspace)*10), "\x03 %s %d", b.type.getName().c_str(), b.buildingUnit->getID());
-		if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(x+150, y+40+((yspace++)*10), "\x03 Const %c", getBuildingWorkerCode(b));
+		BWAPI::Broodwar->drawTextScreen(x, y+40+((yspace)*10), "\x03 %s %d", b.type.getName().c_str(), b.buildingUnit->getID());
+		BWAPI::Broodwar->drawTextScreen(x+150, y+40+((yspace++)*10), "\x03 Const %c", getBuildingWorkerCode(b));
 	}
 }
 

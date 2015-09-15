@@ -26,7 +26,7 @@ void GameCommander::update()
 	timerManager.stopTimer(TimerManager::MapGrid);
 
 	timerManager.startTimer(TimerManager::MapTools);
-	MapTools::Instance().update();
+	//MapTools::Instance().update();
 	timerManager.stopTimer(TimerManager::MapTools);
 
 	timerManager.startTimer(TimerManager::Search);
@@ -48,14 +48,14 @@ void GameCommander::update()
 
 	// combat and scouting managers
 	timerManager.startTimer(TimerManager::Combat);
-	if (Options::Modules::USING_COMBATCOMMANDER)
+	if (Config::Modules::USING_COMBATCOMMANDER)
 	{
 		combatCommander.update(combatUnits);
 	}
 	timerManager.stopTimer(TimerManager::Combat);
 
 	timerManager.startTimer(TimerManager::Scout);
-	if (Options::Modules::USING_SCOUTMANAGER)
+	if (Config::Modules::USING_SCOUTMANAGER)
 	{
 		scoutManager.update(scoutUnits);
 	}
@@ -71,15 +71,15 @@ void GameCommander::drawDebugInterface()
 	timerManager.displayTimers(490, 225);
 	
 	BOSSManager::Instance().drawSearchInformation(10, 240);
-	//BuildingManager::Instance().drawBuildingInformation(200,50);
+	BuildingManager::Instance().drawBuildingInformation(200,50);
 	ProductionManager::Instance().drawProductionInformation(10, 30);
-	//InformationManager::Instance().drawUnitInformation(425,30);
+	InformationManager::Instance().drawUnitInformation(425,30);
 	InformationManager::Instance().drawMapInformation();
 
 	combatCommander.drawSquadInformation(200, 30);
 
 	// draw position of mouse cursor
-	if (Options::Debug::DRAW_UALBERTABOT_DEBUG)
+	if (Config::Debug::DrawMouseCursorInfo)
 	{
 		BWAPI::Broodwar->drawTextScreen(20, 20, "Frame: %7d\nTime: %4dm %3ds", BWAPI::Broodwar->getFrameCount(), BWAPI::Broodwar->getFrameCount()/(24*60), (BWAPI::Broodwar->getFrameCount()/24)%60);
 		int mouseX = BWAPI::Broodwar->getMousePosition().x + BWAPI::Broodwar->getScreenPosition().x;

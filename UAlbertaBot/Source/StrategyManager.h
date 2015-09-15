@@ -5,9 +5,6 @@
 #include "BuildOrderQueue.h"
 #include "InformationManager.h"
 #include "WorkerManager.h"
-#include <sys/stat.h>
-#include <cstdlib>
-#include "OpeningBuildOrders.h"
 #include "BuildOrder.h"
 
 namespace UAlbertaBot
@@ -57,11 +54,7 @@ class StrategyManager
 	const	MetaPairVector		getZergOpeningBook() const;
 
 public:
-
-	//enum { ProtossZealotRush=0, ProtossDarkTemplar=1, ProtossDragoons=2, NumProtossStrategies=3 };
-	//enum { TerranMarineRush=0, NumTerranStrategies=1 };
-	//enum { ZergZerglingRush=0, NumZergStrategies=1 };
-
+    
 	static	StrategyManager &	    Instance();
 
 			void				    onEnd(const bool isWinner);

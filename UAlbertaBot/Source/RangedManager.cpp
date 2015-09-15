@@ -49,10 +49,10 @@ void RangedManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & tar
 			}
 		}
 
-		if (Options::Debug::DRAW_UALBERTABOT_DEBUG) 
+		if (Config::Debug::DrawUnitTargetInfo) 
 		{
 			BWAPI::Broodwar->drawLineMap(rangedUnit->getPosition().x, rangedUnit->getPosition().y, 
-				rangedUnit->getTargetPosition().x, rangedUnit->getTargetPosition().y, Options::Debug::COLOR_LINE_TARGET);
+				rangedUnit->getTargetPosition().x, rangedUnit->getTargetPosition().y, Config::Debug::COLOR_LINE_TARGET);
 		}
 	}
 }

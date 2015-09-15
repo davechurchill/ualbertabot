@@ -12,6 +12,7 @@
 
 #include "Common.h"
 #include "UAlbertaBotModule.h"
+#include "JSONTools.h"
 
 using namespace UAlbertaBot;
 
@@ -25,24 +26,35 @@ void UAlbertaBotModule::onStart()
     BOSS::init();
 
     // Parse the bot's configuration file if it has one
+    // change this file path to where your config file is
     parseConfigFile("D:/ualbertabot/UAlbertaBot/UAlbertaBot_Config.txt");
 
     // Set our BWAPI options here    
-	BWAPI::Broodwar->setLocalSpeed(Options::BWAPIOptions::SetLocalSpeed);
-	BWAPI::Broodwar->setFrameSkip(Options::BWAPIOptions::SetFrameSkip);
+	BWAPI::Broodwar->setLocalSpeed(Config::BWAPIOptions::SetLocalSpeed);
+	BWAPI::Broodwar->setFrameSkip(Config::BWAPIOptions::SetFrameSkip);
     
-    if (Options::BWAPIOptions::EnableCompleteMapInformation)
+    if (Config::BWAPIOptions::EnableCompleteMapInformation)
     {
         BWAPI::Broodwar->enableFlag(BWAPI::Flag::CompleteMapInformation);
     }
 
-    if (Options::BWAPIOptions::EnableUserInput)
+    if (Config::BWAPIOptions::EnableUserInput)
     {
         BWAPI::Broodwar->enableFlag(BWAPI::Flag::UserInput);
     }
+
+    if (Config::BotInfo::PrintInfoOnStart)
+    {
+        BWAPI::Broodwar->printf("Hello! I am %s, written by %s", Config::BotInfo::BotName.c_str(), Config::BotInfo::Authors.c_str());
+    }
+
+    BWAPI::TilePosition starttp = BWAPI::Broodwar->self()->getStartLocation();
+    BWAPI::Position start(starttp);
+
+    const std::vector<BWAPI::TilePosition> & closest = MapTools::Instance().getClosestTilesTo(start);
 	
     // Call BWTA to read and analyze the current map
-    if (Options::Modules::USING_GAMECOMMANDER)
+    if (Config::Modules::USING_GAMECOMMANDER)
 	{
 		BWTA::readMap();
 		BWTA::analyze();
@@ -72,66 +84,105 @@ void UAlbertaBotModule::parseConfigFile(const std::string & filename)
     if (doc.HasMember("Bot Info") && doc["Bot Info"].IsObject())
     {
         const rapidjson::Value & info = doc["Bot Info"];
-        if (info.HasMember("BotName") && info["BotName"].IsString()) { Options::BotInfo::BotName = info["BotName"].GetString(); }
-        if (info.HasMember("Authors") && info["Authors"].IsString()) { Options::BotInfo::Authors = info["Authors"].GetString(); }
-        if (info.HasMember("Race") && info["Race"].IsString()) { Options::BotInfo::BotRace = getRace(info["Race"].GetString()); }
-        if (info.HasMember("PrintInfoOnStart") && info["PrintInfoOnStart"].IsBool()) { Options::BotInfo::PrintInfoOnStart = info["PrintInfoOnStart"].GetBool(); }
+        JSONTools::ReadString("BotName", info, Config::BotInfo::BotName);
+        JSONTools::ReadString("Authors", info, Config::BotInfo::Authors);
+        JSONTools::ReadBool("PrintInfoOnStart", info, Config::BotInfo::PrintInfoOnStart);
+        if (info.HasMember("Race") && info["Race"].IsString()) { Config::BotInfo::BotRace = getRace(info["Race"].GetString()); }
     }
 
     // Parse the BWAPI Options
-    if (doc.HasMember("BWAPI Options") && doc["BWAPI Options"].IsObject())
+    if (doc.HasMember("BWAPI") && doc["BWAPI"].IsObject())
     {
-        const rapidjson::Value & bwapi = doc["BWAPI Options"];
-        if (bwapi.HasMember("SetLocalSpeed") && bwapi["SetLocalSpeed"].IsInt()) { Options::BWAPIOptions::SetLocalSpeed = bwapi["SetLocalSpeed"].GetInt(); }
-        if (bwapi.HasMember("SetFrameSkip") && bwapi["SetFrameSkip"].IsInt()) { Options::BWAPIOptions::SetFrameSkip = bwapi["SetFrameSkip"].GetInt(); }
-        if (bwapi.HasMember("EnableUserInput") && bwapi["EnableUserInput"].IsBool()) { Options::BWAPIOptions::EnableUserInput = bwapi["EnableUserInput"].GetBool(); }
-        if (bwapi.HasMember("EnableCompleteMapInformation") && bwapi["EnableCompleteMapInformation"].IsBool()) { Options::BWAPIOptions::EnableCompleteMapInformation = bwapi["EnableCompleteMapInformation"].GetBool(); }
+        const rapidjson::Value & bwapi = doc["BWAPI"];
+        JSONTools::ReadInt("SetLocalSpeed", bwapi, Config::BWAPIOptions::SetLocalSpeed);
+        JSONTools::ReadInt("SetFrameSkip", bwapi, Config::BWAPIOptions::SetFrameSkip);
+        JSONTools::ReadBool("EnableUserInput", bwapi, Config::BWAPIOptions::EnableUserInput);
+        JSONTools::ReadBool("EnableCompleteMapInformation", bwapi, Config::BWAPIOptions::EnableCompleteMapInformation);
     }
 
     // Parse the Micro Options
-    if (doc.HasMember("Micro Options") && doc["Micro Options"].IsObject())
+    if (doc.HasMember("Micro") && doc["Micro"].IsObject())
     {
-        const rapidjson::Value & micro = doc["Micro Options"];
-        if (micro.HasMember("WorkerDefense") && micro["WorkerDefense"].IsBool()) { Options::Micro::WORKER_DEFENSE = micro["WorkerDefense"].GetBool(); }
-        if (micro.HasMember("WorkerDefensePerUnit") && micro["WorkerDefensePerUnit"].IsInt()) { Options::Micro::WORKER_DEFENSE_PER_UNIT = micro["WorkerDefensePerUnit"].GetInt(); }
-        if (micro.HasMember("InCombatRadius") && micro["InCombatRadius"].IsInt()) { Options::Micro::COMBAT_RADIUS = micro["InCombatRadius"].GetInt(); }
-        if (micro.HasMember("RegroupRadius") && micro["RegroupRadius"].IsInt()) { Options::Micro::COMBAT_REGROUP_RADIUS = micro["RegroupRadius"].GetInt(); }
-        if (micro.HasMember("UnitNearEnemyRadius") && micro["UnitNearEnemyRadius"].IsInt()) { Options::Micro::UNIT_NEAR_ENEMY_RADIUS = micro["UnitNearEnemyRadius"].GetInt(); }
+        const rapidjson::Value & micro = doc["Micro"];
+        JSONTools::ReadBool("WorkerDefense", micro, Config::Micro::WORKER_DEFENSE);
+        JSONTools::ReadInt("WorkerDefensePerUnit", micro, Config::Micro::WORKER_DEFENSE_PER_UNIT);
+        JSONTools::ReadInt("InCombatRadius", micro, Config::Micro::COMBAT_RADIUS);
+        JSONTools::ReadInt("RegroupRadius", micro, Config::Micro::COMBAT_REGROUP_RADIUS);
+        JSONTools::ReadInt("UnitNearEnemyRadius", micro, Config::Micro::UNIT_NEAR_ENEMY_RADIUS);
     }
 
     // Parse the Debug Options
-    if (doc.HasMember("Debug Options") && doc["Debug Options"].IsObject())
+    if (doc.HasMember("Debug") && doc["Debug"].IsObject())
     {
-        const rapidjson::Value & debug = doc["Debug Options"];
-        if (debug.HasMember("DrawDebugInformation") && debug["DrawDebugInformation"].IsBool()) { Options::Debug::DRAW_DEBUG_INTERFACE = debug["DrawDebugInformation"].GetBool(); }
-        if (debug.HasMember("PrintModuleTimeout") && debug["PrintModuleTimeout"].IsBool()) { Options::Debug::PRINT_MODULE_TIMEOUT = debug["PrintModuleTimeout"].GetBool(); }
-        if (debug.HasMember("ErrorLogFilename") && debug["ErrorLogFilename"].IsString()) { Options::Debug::ErrorLogFilename = debug["ErrorLogFilename"].GetString(); }
+        const rapidjson::Value & debug = doc["Debug"];
+        JSONTools::ReadString("ErrorLogFilename", debug, Config::Debug::ErrorLogFilename);
+        JSONTools::ReadBool("PrintModuleTimeout", debug, Config::Debug::PrintModuleTimeout);
+        JSONTools::ReadBool("PrintBuildOrderSearchInfo", debug, Config::Debug::PrintBuildOrderSearchInfo);
+        JSONTools::ReadBool("DrawResourceInfo", debug, Config::Debug::DrawResourceInfo);
+        JSONTools::ReadBool("DrawWorkerInfo", debug, Config::Debug::DrawWorkerInfo);
+        JSONTools::ReadBool("DrawBuildOrderInfo", debug, Config::Debug::DrawBuildOrderInfo);
+        JSONTools::ReadBool("DrawProductionInfo", debug, Config::Debug::DrawProductionInfo);
+        JSONTools::ReadBool("DrawSquadInfo", debug, Config::Debug::DrawSquadInfo);
+        JSONTools::ReadBool("DrawCombatSimInfo", debug, Config::Debug::DrawCombatSimulationInfo);
+        JSONTools::ReadBool("DrawBuildingInfo", debug, Config::Debug::DrawBuildingInfo);
+        JSONTools::ReadBool("DrawModuleTimers", debug, Config::Debug::DrawModuleTimers);
+        JSONTools::ReadBool("DrawMouseCursorInfo", debug, Config::Debug::DrawMouseCursorInfo);
+        JSONTools::ReadBool("DrawEnemyUnitInfo", debug, Config::Debug::DrawEnemyUnitInfo);
+        JSONTools::ReadBool("DrawBWTAInfo", debug, Config::Debug::DrawBWTAInfo);
+        JSONTools::ReadBool("DrawMapGrid", debug, Config::Debug::DrawMapGrid);
+        JSONTools::ReadBool("DrawUnitTargetInfo", debug, Config::Debug::DrawUnitTargetInfo);
+        JSONTools::ReadBool("DrawReservedBuildingTiles", debug, Config::Debug::DrawReservedBuildingTiles);
+
+        JSONTools::ReadBool("AllDebugOff", debug, Config::Debug::AllDebugOff);
+
+        if (Config::Debug::AllDebugOff)
+        {
+            Config::Debug::PrintModuleTimeout             = false;	
+            Config::Debug::PrintBuildOrderSearchInfo      = false;
+            Config::Debug::DrawResourceInfo               = false;
+            Config::Debug::DrawBuildOrderInfo             = false;
+            Config::Debug::DrawProductionInfo             = false;
+            Config::Debug::DrawWorkerInfo                 = false;
+            Config::Debug::DrawModuleTimers               = false;
+            Config::Debug::DrawReservedBuildingTiles      = false;
+            Config::Debug::DrawCombatSimulationInfo       = false;
+            Config::Debug::DrawBuildingInfo               = false;
+            Config::Debug::DrawMouseCursorInfo            = false;
+            Config::Debug::DrawEnemyUnitInfo              = false;
+            Config::Debug::DrawBWTAInfo                   = false;
+            Config::Debug::DrawMapGrid                    = false;
+            Config::Debug::DrawUnitTargetInfo             = false;
+            Config::Debug::DrawSquadInfo                  = false;
+        }
     }
 
     // Parse the Module Options
-    if (doc.HasMember("Module Options") && doc["Module Options"].IsObject())
+    if (doc.HasMember("Modules") && doc["Modules"].IsObject())
     {
-        const rapidjson::Value & module = doc["Module Options"];
-        if (module.HasMember("UseGameCommander") && module["UseGameCommander"].IsBool()) { Options::Modules::USING_GAMECOMMANDER = module["UseGameCommander"].GetBool(); }
-        if (module.HasMember("UseScoutManager") && module["UseScoutManager"].IsBool()) { Options::Modules::USING_SCOUTMANAGER = module["UseScoutManager"].GetBool(); }
-        if (module.HasMember("UseCombatCommander") && module["UseCombatCommander"].IsBool()) { Options::Modules::USING_COMBATCOMMANDER = module["UseCombatCommander"].GetBool(); }
-        if (module.HasMember("UseBuildOrderSearch") && module["UseBuildOrderSearch"].IsBool()) { Options::Modules::USING_MACRO_SEARCH = module["UseBuildOrderSearch"].GetBool(); }
-        if (module.HasMember("UseStrategyIO") && module["UseStrategyIO"].IsBool()) { Options::Modules::USING_STRATEGY_IO = module["UseStrategyIO"].GetBool(); }
-        if (module.HasMember("UseUnitCommandManager") && module["UseUnitCommandManager"].IsBool()) { Options::Modules::USING_UNIT_COMMAND_MGR = module["UseUnitCommandManager"].GetBool(); }
+        const rapidjson::Value & module = doc["Modules"];
+
+        JSONTools::ReadBool("UseGameCommander", module, Config::Modules::USING_GAMECOMMANDER);
+        JSONTools::ReadBool("UseScoutManager", module, Config::Modules::USING_SCOUTMANAGER);
+        JSONTools::ReadBool("UseCombatCommander", module, Config::Modules::USING_COMBATCOMMANDER);
+        JSONTools::ReadBool("UseBuildOrderSearch", module, Config::Modules::USING_MACRO_SEARCH);
+        JSONTools::ReadBool("UseStrategyIO", module, Config::Modules::USING_STRATEGY_IO);
+        JSONTools::ReadBool("UseUnitCommandManager", module, Config::Modules::USING_UNIT_COMMAND_MGR);
     }
 
     // Parse the Tool Options
-    if (doc.HasMember("Tool Options") && doc["Tool Options"].IsObject())
+    if (doc.HasMember("Tools") && doc["Tools"].IsObject())
     {
-        const rapidjson::Value & tool = doc["Tool Options"];
-        if (tool.HasMember("MapGridSize") && tool["MapGridSize"].IsInt()) { Options::Tools::MAP_GRID_SIZE = tool["MapGridSize"].GetInt(); }
+        const rapidjson::Value & tool = doc["Tools"];
+
+        JSONTools::ReadInt("MapGridSize", tool, Config::Tools::MAP_GRID_SIZE);
     }
 
     // Parse the Strategy Options
-    if (doc.HasMember("Strategy Options") && doc["Strategy Options"].IsObject())
+    if (doc.HasMember("Strategy") && doc["Strategy"].IsObject())
     {
-        const rapidjson::Value & strategy = doc["Strategy Options"];
-        if (strategy.HasMember("StrategyName") && strategy["StrategyName"].IsString()) { Options::Strategy::StrategyName = strategy["StrategyName"].GetString(); }
+        const rapidjson::Value & strategy = doc["Strategy"];
+        JSONTools::ReadString("StrategyName", strategy, Config::Strategy::StrategyName);
+        BWAPI::Broodwar->printf("Using Strategy: %s", Config::Strategy::StrategyName.c_str());
 
         // Parse all the Strategies
         if (strategy.HasMember("Strategies") && strategy["Strategies"].IsObject())
@@ -185,7 +236,7 @@ void UAlbertaBotModule::parseConfigFile(const std::string & filename)
 
 void UAlbertaBotModule::onEnd(bool isWinner) 
 {
-	if (Options::Modules::USING_GAMECOMMANDER)
+	if (Config::Modules::USING_GAMECOMMANDER)
 	{
 		StrategyManager::Instance().onEnd(isWinner);
         
@@ -195,12 +246,12 @@ void UAlbertaBotModule::onEnd(bool isWinner)
 
 void UAlbertaBotModule::onFrame()
 {
-	if (Options::Modules::USING_UNIT_COMMAND_MGR)
+	if (Config::Modules::USING_UNIT_COMMAND_MGR)
 	{
 		UnitCommandManager::Instance().update();
 	}
 
-	if (Options::Modules::USING_GAMECOMMANDER) 
+	if (Config::Modules::USING_GAMECOMMANDER) 
 	{ 
 		gameCommander.update(); 
 	}
@@ -208,17 +259,17 @@ void UAlbertaBotModule::onFrame()
 
 void UAlbertaBotModule::onUnitDestroy(BWAPI::UnitInterface* unit)
 {
-	if (Options::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitDestroy(unit); }
+	if (Config::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitDestroy(unit); }
 }
 
 void UAlbertaBotModule::onUnitMorph(BWAPI::UnitInterface* unit)
 {
-	if (Options::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitMorph(unit); }
+	if (Config::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitMorph(unit); }
 }
 
 void UAlbertaBotModule::onSendText(std::string text) 
 { 
-	if (Options::Modules::USING_BUILD_ORDER_DEMO)
+	if (Config::Modules::USING_BUILD_ORDER_DEMO)
 	{
 		std::stringstream type;
 		std::stringstream numUnitType;
@@ -275,27 +326,27 @@ void UAlbertaBotModule::onSendText(std::string text)
 
 void UAlbertaBotModule::onUnitCreate(BWAPI::UnitInterface* unit)
 { 
-	if (Options::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitCreate(unit); }
+	if (Config::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitCreate(unit); }
 }
 
 void UAlbertaBotModule::onUnitComplete(BWAPI::UnitInterface* unit)
 {
-	if (Options::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitComplete(unit); }
+	if (Config::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitComplete(unit); }
 }
 
 void UAlbertaBotModule::onUnitShow(BWAPI::UnitInterface* unit)
 { 
-	if (Options::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitShow(unit); }
+	if (Config::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitShow(unit); }
 }
 
 void UAlbertaBotModule::onUnitHide(BWAPI::UnitInterface* unit)
 { 
-	if (Options::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitHide(unit); }
+	if (Config::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitHide(unit); }
 }
 
 void UAlbertaBotModule::onUnitRenegade(BWAPI::UnitInterface* unit)
 { 
-	if (Options::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitRenegade(unit); }
+	if (Config::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitRenegade(unit); }
 }
 
 BWAPI::Race UAlbertaBotModule::getRace(const std::string & raceName)

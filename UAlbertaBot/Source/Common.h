@@ -20,7 +20,7 @@
 #include <BWTA.h>
 #include "Logger.h"
 
-#include "Options.h"
+#include "Config.h"
 #include "UABAssert.h"
 
 BWAPI::AIModule * __NewAIModule();

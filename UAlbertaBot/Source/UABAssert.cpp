@@ -1,5 +1,5 @@
 #include "UABAssert.h"
-#include "Options.h"
+#include "Config.h"
 
 using namespace UAlbertaBot;
 
@@ -45,7 +45,7 @@ namespace Assert
 
         std::cerr << ss.str();
         BWAPI::Broodwar->printf("%s", ss.str().c_str());
-        Logger::LogAppendToFile(Options::Debug::ErrorLogFilename, ss.str());
+        Logger::LogAppendToFile(Config::Debug::ErrorLogFilename, ss.str());
     }
 }
 }

@@ -14,6 +14,7 @@ class DistanceMap
 
 	std::vector<int>	dist;
 	std::vector<char>	moveTo;
+    std::vector<BWAPI::TilePosition>    sorted;
 
 	int getIndex(const int row, const int col) const
 	{
@@ -47,16 +48,23 @@ public:
 		this->rows = rows;
 		this->cols = cols;
 		dist = std::vector<int>(rows * cols, -1);
+        sorted.clear();
 		moveTo = std::vector<char>(rows * cols, 'X');
 		startRow = -1;
 		startCol = -1;
 	}
+
+    const std::vector<BWAPI::TilePosition> & getSortedTiles() const
+    {
+        return sorted;
+    }
 
 	// reset the distance map
 	void reset()
 	{
 		std::fill(dist.begin(), dist.end(), -1);
 		std::fill(moveTo.begin(), moveTo.end(), 'X');
+        sorted.clear();
 		startRow = -1;
 		startCol = -1;
 	}
@@ -65,6 +73,11 @@ public:
 	{
 		return dist[getIndex(p)] != -1;
 	}
+
+    void addSorted(const BWAPI::TilePosition & tp)
+    {
+        sorted.push_back(tp);
+    }
 
 	// given a position, get the position we should move to to minimize distance
 	BWAPI::Position getMoveTo(const BWAPI::Position p, const int lookAhead = 1) const

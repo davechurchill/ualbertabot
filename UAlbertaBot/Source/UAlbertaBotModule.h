@@ -8,7 +8,7 @@
 #include "MapTools.h"
 #include "HardCodedInfo.h"
 #include "UnitCommandManager.h"
-#include "Options.h"
+#include "Config.h"
 
 #include "rapidjson\document.h"
 

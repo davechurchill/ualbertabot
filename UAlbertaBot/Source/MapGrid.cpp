@@ -5,7 +5,7 @@ using namespace UAlbertaBot;
 
 MapGrid & MapGrid::Instance() 
 {
-	static MapGrid instance(BWAPI::Broodwar->mapWidth()*32, BWAPI::Broodwar->mapHeight()*32, Options::Tools::MAP_GRID_SIZE);
+	static MapGrid instance(BWAPI::Broodwar->mapWidth()*32, BWAPI::Broodwar->mapHeight()*32, Config::Tools::MAP_GRID_SIZE);
 	return instance;
 }
 
@@ -130,26 +130,30 @@ void MapGrid::clearGrid() {
 // populate the grid with units
 void MapGrid::update() 
 {
-	for (int i=0; i<cols; i++) 
-	{
-		if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawLineMap(i*cellSize, 0, i*cellSize, mapHeight, BWAPI::Colors::Blue);
-	}
+    if (Config::Debug::DrawMapGrid) 
+    {
+	    for (int i=0; i<cols; i++) 
+	    {
+	        BWAPI::Broodwar->drawLineMap(i*cellSize, 0, i*cellSize, mapHeight, BWAPI::Colors::Blue);
+	    }
 
-	for (int j=0; j<rows; j++) 
-	{
-		if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawLineMap(0, j*cellSize, mapWidth, j*cellSize, BWAPI::Colors::Blue);
-	}
+	    for (int j=0; j<rows; j++) 
+	    {
+		    BWAPI::Broodwar->drawLineMap(0, j*cellSize, mapWidth, j*cellSize, BWAPI::Colors::Blue);
+	    }
 
-	for (int r=0; r < rows; ++r)
-	{
-		for (int c=0; c < cols; ++c)
-		{
-			GridCell & cell = getCellByIndex(r,c);
+	    for (int r=0; r < rows; ++r)
+	    {
+		    for (int c=0; c < cols; ++c)
+		    {
+			    GridCell & cell = getCellByIndex(r,c);
 			
-			if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextMap(cell.center.x, cell.center.y, "Last Seen %d", cell.timeLastVisited);
-			if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextMap(cell.center.x, cell.center.y+10, "Row/Col (%d, %d)", r, c);
-		}
-	}
+			    BWAPI::Broodwar->drawTextMap(cell.center.x, cell.center.y, "Last Seen %d", cell.timeLastVisited);
+			    BWAPI::Broodwar->drawTextMap(cell.center.x, cell.center.y+10, "Row/Col (%d, %d)", r, c);
+		    }
+	    }
+
+    }
 
 	// clear the grid
 	clearGrid();

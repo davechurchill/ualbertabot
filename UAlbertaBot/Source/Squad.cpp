@@ -21,7 +21,7 @@ void Squad::update()
 
 	
 	// draw some debug info
-	if (Options::Debug::DRAW_UALBERTABOT_DEBUG && order.type == SquadOrder::Attack) 
+	if (Config::Debug::DrawSquadInfo && order.type == SquadOrder::Attack) 
 	{
 		BWAPI::Broodwar->drawTextScreen(200, 330, "%s", regroupStatus.c_str());
 
@@ -99,11 +99,11 @@ void Squad::setNearEnemyUnits()
 		nearEnemy[unit] = unitNearEnemy(unit);
 		if (nearEnemy[unit])
 		{
-			if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawBoxMap(x-left, y - top, x + right, y + bottom, Options::Debug::COLOR_UNIT_NEAR_ENEMY);
+			if (Config::Debug::DrawSquadInfo) BWAPI::Broodwar->drawBoxMap(x-left, y - top, x + right, y + bottom, Config::Debug::COLOR_UNIT_NEAR_ENEMY);
 		}
 		else
 		{
-			if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawBoxMap(x-left, y - top, x + right, y + bottom, Options::Debug::COLOR_UNIT_NOTNEAR_ENEMY);
+			if (Config::Debug::DrawSquadInfo) BWAPI::Broodwar->drawBoxMap(x-left, y - top, x + right, y + bottom, Config::Debug::COLOR_UNIT_NOTNEAR_ENEMY);
 		}
 	}
 }
@@ -175,19 +175,19 @@ bool Squad::needsToRegroup()
 	CombatSimulation sim;
 
 	// special case with zealots vs. zerglings. combat simulation favours zerglings due to no unit collisions, check to see if we have 1/3 zealots
-	if (sim.checkZealotVsZergling(unitClosest->getPosition(), Options::Micro::COMBAT_REGROUP_RADIUS + InformationManager::Instance().lastFrameRegroup * 300))
+	if (sim.checkZealotVsZergling(unitClosest->getPosition(), Config::Micro::COMBAT_REGROUP_RADIUS + InformationManager::Instance().lastFrameRegroup * 300))
 	{
 		regroupStatus = std::string("\x04 Attack - Zealot vs. Zergling - 1/3 condition met!");
 		return false;
 	}
 
-	sim.setCombatUnits(unitClosest->getPosition(), Options::Micro::COMBAT_REGROUP_RADIUS + InformationManager::Instance().lastFrameRegroup * 300);
+	sim.setCombatUnits(unitClosest->getPosition(), Config::Micro::COMBAT_REGROUP_RADIUS + InformationManager::Instance().lastFrameRegroup * 300);
 	SPARCRAFTscore = sim.simulateCombat();
 
 	score = SPARCRAFTscore;
 
 	// if we are DT rushing and we haven't lost a DT yet, no retreat!
-	if (Options::Strategy::StrategyName == "Protoss_DTRush" &&
+	if (Config::Strategy::StrategyName == "Protoss_DTRush" &&
 		(BWAPI::Broodwar->self()->deadUnitCount(BWAPI::UnitTypes::Protoss_Dark_Templar) == 0))
 	{
 		regroupStatus = std::string("\x04 DARK TEMPLAR HOOOOO!");
@@ -247,7 +247,7 @@ BWAPI::Position Squad::calcCenter()
 {
     if (units.empty())
     {
-        if (Options::Debug::DRAW_UALBERTABOT_DEBUG)
+        if (Config::Debug::DrawSquadInfo)
         {
             BWAPI::Broodwar->printf("Squad::calcCenter() called on empty squad");
         }

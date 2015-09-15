@@ -3,7 +3,7 @@
 #include "BWAPI.h"
 #include <cassert>
 
-namespace Options
+namespace Config
 {
 	namespace Modules
 	{
@@ -50,9 +50,23 @@ namespace Options
 
 	namespace Debug
 	{
-		extern bool DRAW_UALBERTABOT_DEBUG;				// draws debug information for UAlbertaBot
-        extern bool PRINT_MODULE_TIMEOUT;				// draws debug information for UAlbertaBot
-		extern bool DRAW_DEBUG_INTERFACE;				// draws debug information for EnhancedUI
+        extern bool PrintModuleTimeout;				
+        extern bool PrintBuildOrderSearchInfo;
+        extern bool DrawResourceInfo;
+        extern bool DrawBuildOrderInfo;
+        extern bool DrawProductionInfo;
+        extern bool DrawWorkerInfo;
+        extern bool DrawModuleTimers;
+        extern bool DrawReservedBuildingTiles;
+        extern bool DrawCombatSimulationInfo;
+        extern bool DrawBuildingInfo;
+        extern bool DrawMouseCursorInfo;
+        extern bool DrawEnemyUnitInfo;
+        extern bool DrawBWTAInfo;
+        extern bool DrawMapGrid;
+        extern bool DrawUnitTargetInfo;
+        extern bool DrawSquadInfo;
+        extern bool AllDebugOff;
 
         extern std::string ErrorLogFilename;
 

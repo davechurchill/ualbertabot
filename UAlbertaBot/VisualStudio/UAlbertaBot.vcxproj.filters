@@ -16,9 +16,6 @@
     <Filter Include="game\util">
       <UniqueIdentifier>{222db7e1-f821-4383-986a-83267e040564}</UniqueIdentifier>
     </Filter>
-    <Filter Include="game\util\info">
-      <UniqueIdentifier>{7fad2841-a4f8-4485-9dbd-6395e59ef2a3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="game\util\map">
       <UniqueIdentifier>{8ac87511-27d4-42ea-8402-6491d9206435}</UniqueIdentifier>
     </Filter>
@@ -54,15 +51,6 @@
     <ClCompile Include="..\Source\MapTools.cpp">
       <Filter>game\util\map</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\InformationManager.cpp">
-      <Filter>game\util\info</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\UnitData.cpp">
-      <Filter>game\util\info</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\StrategyManager.cpp">
-      <Filter>game\util\info</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\GameCommander.cpp">
       <Filter>game</Filter>
     </ClCompile>
@@ -75,16 +63,7 @@
     <ClCompile Include="..\Source\CombatSimulation.cpp">
       <Filter>game\combat</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\UnitCommandManager.cpp">
-      <Filter>game\util\info</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\UnitCommandData.cpp">
-      <Filter>game\util\info</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\Common.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Options.cpp">
       <Filter>common</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\UABAssert.cpp">
@@ -129,9 +108,6 @@
     <ClCompile Include="..\source\TransportManager.cpp">
       <Filter>game\combat\micro</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\OpeningBuildOrders.cpp">
-      <Filter>game\macro\buildorders</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\BuildOrderGoalManager.cpp">
       <Filter>game\macro\buildorders</Filter>
     </ClCompile>
@@ -150,6 +126,30 @@
     <ClCompile Include="..\Source\Logger.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\TimerManager.cpp">
+      <Filter>game\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\InformationManager.cpp">
+      <Filter>game\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\StrategyManager.cpp">
+      <Filter>game\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\UnitCommandData.cpp">
+      <Filter>game\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\UnitCommandManager.cpp">
+      <Filter>game\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\UnitData.cpp">
+      <Filter>game\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\JSONTools.cpp">
+      <Filter>game\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Config.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\CombatCommander.h">
@@ -163,15 +163,6 @@
     </ClInclude>
     <ClInclude Include="..\Source\MapGrid.h">
       <Filter>game\util\map</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\InformationManager.h">
-      <Filter>game\util\info</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\UnitData.h">
-      <Filter>game\util\info</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\StrategyManager.h">
-      <Filter>game\util\info</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\GameCommander.h">
       <Filter>game</Filter>
@@ -187,12 +178,6 @@
     </ClInclude>
     <ClInclude Include="..\Source\DistanceMap.hpp">
       <Filter>game\util\map</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\UnitCommandManager.h">
-      <Filter>game\util\info</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\UnitCommandData.h">
-      <Filter>game\util\info</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Common.h">
       <Filter>common</Filter>
@@ -242,9 +227,6 @@
     <ClInclude Include="..\source\ScoutManager.h">
       <Filter>game\combat\micro</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\OpeningBuildOrders.h">
-      <Filter>game\macro\buildorders</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\BuildOrderGoalManager.h">
       <Filter>game\macro\buildorders</Filter>
     </ClInclude>
@@ -263,7 +245,28 @@
     <ClInclude Include="..\Source\Logger.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Options.h">
+    <ClInclude Include="..\source\TimerManager.h">
+      <Filter>game\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\InformationManager.h">
+      <Filter>game\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\StrategyManager.h">
+      <Filter>game\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\UnitCommandData.h">
+      <Filter>game\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\UnitCommandManager.h">
+      <Filter>game\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\UnitData.h">
+      <Filter>game\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\JSONTools.h">
+      <Filter>game\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Config.h">
       <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>

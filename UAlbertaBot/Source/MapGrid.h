@@ -20,8 +20,8 @@ public:
 };
 
 
-class MapGrid {
-
+class MapGrid 
+{
 	MapGrid();
 	MapGrid(int mapWidth, int mapHeight, int cellSize);
 

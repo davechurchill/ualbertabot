@@ -11,7 +11,7 @@ BWAPI::Position MicroManager::calcCenter() const
 {
     if (units.empty())
     {
-        if (Options::Debug::DRAW_UALBERTABOT_DEBUG)
+        if (Config::Debug::DrawSquadInfo)
         {
             BWAPI::Broodwar->printf("Squad::calcCenter() called on empty squad");
         }
@@ -181,7 +181,7 @@ void MicroManager::smartAttackUnit(BWAPI::UnitInterface* attacker, BWAPI::UnitIn
 	// if nothing prevents it, attack the target
 	attacker->attack(target);
 
-	if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawLineMap(	attacker->getPosition().x, attacker->getPosition().y,
+	if (Config::Debug::DrawUnitTargetInfo) BWAPI::Broodwar->drawLineMap(	attacker->getPosition().x, attacker->getPosition().y,
 									target->getPosition().x, target->getPosition().y,
 									BWAPI::Colors::Red );
 
@@ -209,7 +209,7 @@ void MicroManager::smartAttackMove(BWAPI::UnitInterface* attacker, BWAPI::Positi
 	// if nothing prevents it, attack the target
 	attacker->attack(targetPosition);
 
-	if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawLineMap(	attacker->getPosition().x, attacker->getPosition().y,
+	if (Config::Debug::DrawUnitTargetInfo) BWAPI::Broodwar->drawLineMap(	attacker->getPosition().x, attacker->getPosition().y,
 									targetPosition.x, targetPosition.y,
 									BWAPI::Colors::Orange );
 }
@@ -247,7 +247,7 @@ void MicroManager::smartMove(BWAPI::UnitInterface* attacker, BWAPI::Position tar
 	// if nothing prevents it, attack the target
 	attacker->move(targetPosition);
 
-	if (Options::Debug::DRAW_UALBERTABOT_DEBUG) 
+	if (Config::Debug::DrawUnitTargetInfo) 
 	{
 		BWAPI::Broodwar->drawLineMap(attacker->getPosition().x, attacker->getPosition().y,
 									 targetPosition.x, targetPosition.y, BWAPI::Colors::Orange);
@@ -283,6 +283,6 @@ void MicroManager::drawOrderText() {
 
 	for (BWAPI::UnitInterface* unit : units) 
     {
-		if (Options::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextMap(unit->getPosition().x, unit->getPosition().y, "%s", order.getStatus().c_str());
+		if (Config::Debug::DrawUnitTargetInfo) BWAPI::Broodwar->drawTextMap(unit->getPosition().x, unit->getPosition().y, "%s", order.getStatus().c_str());
 	}
 }
