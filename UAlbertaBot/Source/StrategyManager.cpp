@@ -12,7 +12,7 @@ StrategyManager::StrategyManager()
 {
 	if (Config::Modules::UsingStrategyIO)
 	{
-		//readResults();
+		readResults();
 	}
 }
 
@@ -387,7 +387,90 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
 	return (const std::vector<MetaPair>)goal;
 }
 
+void StrategyManager::readResults()
+{
+    if (!Config::Modules::UsingStrategyIO)
+    {
+        return;
+    }
+
+    std::string enemyName = BWAPI::Broodwar->enemy()->getName();
+    std::replace(enemyName.begin(), enemyName.end(), ' ', '_');
+
+    std::string enemyResultsFile = Config::Strategy::ReadDir + enemyName + ".txt";
+    
+    std::string strategyName;
+    int wins = 0;
+    int losses = 0;
+
+    FILE *file = fopen ( enemyResultsFile.c_str(), "r" );
+    if ( file != NULL )
+    {
+        char line [ 4096 ]; /* or other suitable maximum line size */
+        while ( fgets ( line, sizeof line, file ) != NULL ) /* read a line */
+        {
+            std::stringstream ss(line);
+
+            ss >> strategyName;
+            ss >> wins;
+            ss >> losses;
+
+            BWAPI::Broodwar->printf("Results Found: %s %d %d", strategyName.c_str(), wins, losses);
+
+            _results[strategyName] = std::pair<int, int>(wins, losses);
+        }
+
+        fclose ( file );
+    }
+    else
+    {
+        BWAPI::Broodwar->printf("No results file found: %s", enemyResultsFile.c_str());
+    }
+
+    // if we haven't seen the current strategy yet in the results file, add it
+    if (_results.find(Config::Strategy::StrategyName) == _results.end())
+    {
+        _results[Config::Strategy::StrategyName] = std::pair<int, int>(0, 0);
+    }
+}
+
+void StrategyManager::writeResults()
+{
+    if (!Config::Modules::UsingStrategyIO)
+    {
+        return;
+    }
+
+    std::string enemyName = BWAPI::Broodwar->enemy()->getName();
+    std::replace(enemyName.begin(), enemyName.end(), ' ', '_');
+
+    std::string enemyResultsFile = Config::Strategy::WriteDir + enemyName + ".txt";
+
+    std::stringstream ss;
+
+    for (auto & kv : _results)
+    {
+        ss << kv.first << " " << kv.second.first << " " << kv.second.second << "\n";
+    }
+
+    Logger::LogOverwriteToFile(enemyResultsFile, ss.str());
+}
+
 void StrategyManager::onEnd(const bool isWinner)
 {
+    if (!Config::Modules::UsingStrategyIO)
+    {
+        return;
+    }
 
+    if (isWinner)
+    {
+        _results[Config::Strategy::StrategyName].first++;
+    }
+    else
+    {
+        _results[Config::Strategy::StrategyName].second++;
+    }
+
+    writeResults();
 }

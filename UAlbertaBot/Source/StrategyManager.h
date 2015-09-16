@@ -24,6 +24,8 @@ class StrategyManager
     std::map<std::string, BuildOrder>   _openingBuildOrders;
     BuildOrder                          _emptyBuildOrder;
 
+    std::map<std::string, std::pair<int, int>> _results;
+
 	bool						firstAttackSent;
 
 	void	setStrategy();

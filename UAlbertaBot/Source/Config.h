@@ -29,6 +29,8 @@ namespace Config
     {
         extern BWAPI::Race StrategyRace;
         extern std::string StrategyName;
+        extern std::string ReadDir;
+        extern std::string WriteDir;
     }
 
     namespace BWAPIOptions

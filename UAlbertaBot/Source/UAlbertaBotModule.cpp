@@ -146,6 +146,7 @@ void UAlbertaBotModule::parseConfigFile(const std::string & filename)
         {
             Config::Debug::PrintModuleTimeout             = false;	
             Config::Debug::PrintBuildOrderSearchInfo      = false;
+            Config::Debug::DrawUnitHealthBars             = false;
             Config::Debug::DrawResourceInfo               = false;
             Config::Debug::DrawProductionInfo             = false;
             Config::Debug::DrawWorkerInfo                 = false;
@@ -190,6 +191,9 @@ void UAlbertaBotModule::parseConfigFile(const std::string & filename)
         const rapidjson::Value & strategy = doc["Strategy"];
         JSONTools::ReadString("StrategyName", strategy, Config::Strategy::StrategyName);
         BWAPI::Broodwar->printf("Using Strategy: %s", Config::Strategy::StrategyName.c_str());
+
+        JSONTools::ReadString("ReadDirectory", strategy, Config::Strategy::ReadDir);
+        JSONTools::ReadString("WriteDirectory", strategy, Config::Strategy::WriteDir);
 
         // Parse all the Strategies
         if (strategy.HasMember("Strategies") && strategy["Strategies"].IsObject())

@@ -4,12 +4,12 @@
         "BotName" : "UAlbertaBot",
         "Authors" : "David Churchill",
         "Race"    : "Protoss",
-        "PrintInfoOnStart" : true
+        "PrintInfoOnStart" : false
     },
         
     "BWAPI" : 
     {
-        "SetLocalSpeed"   : 20,
+        "SetLocalSpeed"   : 10,
         "SetFrameSkip"    : 0,
         "EnableUserInput" : true,
         "EnableCompleteMapInformation" : false

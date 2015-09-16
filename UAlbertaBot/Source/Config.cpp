@@ -5,8 +5,10 @@ namespace Config
 {
     namespace Strategy
     {
-        std::string StrategyName = "Protoss_ZealotRush";
-        BWAPI::Race StrategyRace = BWAPI::Races::Protoss;
+        std::string StrategyName            = "Protoss_ZealotRush";
+        BWAPI::Race StrategyRace            = BWAPI::Races::Protoss;
+        std::string ReadDir                 = "bwapi-data/read/";
+        std::string WriteDir                = "bwapi-data/write/";
     }
 
     namespace Modules							    
