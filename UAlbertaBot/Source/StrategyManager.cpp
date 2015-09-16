@@ -10,7 +10,7 @@ StrategyManager::StrategyManager()
 	, _enemyRace(BWAPI::Broodwar->enemy()->getRace())
     , _emptyBuildOrder(BWAPI::Broodwar->self()->getRace())
 {
-	if (Config::Modules::USING_STRATEGY_IO)
+	if (Config::Modules::UsingStrategyIO)
 	{
 		//readResults();
 	}
@@ -49,7 +49,7 @@ const BuildOrder & StrategyManager::getOpeningBookBuildOrder() const
 // this function can only be called if we have no fighters to defend with
 const int StrategyManager::defendWithWorkers()
 {
-	if (!Config::Micro::WORKER_DEFENSE)
+	if (!Config::Micro::WorkerDefense)
 	{
 		return false;
 	}

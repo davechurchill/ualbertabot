@@ -99,11 +99,11 @@ void Squad::setNearEnemyUnits()
 		nearEnemy[unit] = unitNearEnemy(unit);
 		if (nearEnemy[unit])
 		{
-			if (Config::Debug::DrawSquadInfo) BWAPI::Broodwar->drawBoxMap(x-left, y - top, x + right, y + bottom, Config::Debug::COLOR_UNIT_NEAR_ENEMY);
+			if (Config::Debug::DrawSquadInfo) BWAPI::Broodwar->drawBoxMap(x-left, y - top, x + right, y + bottom, Config::Debug::ColorUnitNearEnemy);
 		}
 		else
 		{
-			if (Config::Debug::DrawSquadInfo) BWAPI::Broodwar->drawBoxMap(x-left, y - top, x + right, y + bottom, Config::Debug::COLOR_UNIT_NOTNEAR_ENEMY);
+			if (Config::Debug::DrawSquadInfo) BWAPI::Broodwar->drawBoxMap(x-left, y - top, x + right, y + bottom, Config::Debug::ColorUnitNotNearEnemy);
 		}
 	}
 }
@@ -175,13 +175,13 @@ bool Squad::needsToRegroup()
 	CombatSimulation sim;
 
 	// special case with zealots vs. zerglings. combat simulation favours zerglings due to no unit collisions, check to see if we have 1/3 zealots
-	if (sim.checkZealotVsZergling(unitClosest->getPosition(), Config::Micro::COMBAT_REGROUP_RADIUS + InformationManager::Instance().lastFrameRegroup * 300))
+	if (sim.checkZealotVsZergling(unitClosest->getPosition(), Config::Micro::CombatRegroupRadius + InformationManager::Instance().lastFrameRegroup * 300))
 	{
 		regroupStatus = std::string("\x04 Attack - Zealot vs. Zergling - 1/3 condition met!");
 		return false;
 	}
 
-	sim.setCombatUnits(unitClosest->getPosition(), Config::Micro::COMBAT_REGROUP_RADIUS + InformationManager::Instance().lastFrameRegroup * 300);
+	sim.setCombatUnits(unitClosest->getPosition(), Config::Micro::CombatRegroupRadius + InformationManager::Instance().lastFrameRegroup * 300);
 	SPARCRAFTscore = sim.simulateCombat();
 
 	score = SPARCRAFTscore;

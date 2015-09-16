@@ -52,7 +52,7 @@ void MeleeManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & targ
 		if (Config::Debug::DrawUnitTargetInfo)
 		{
 			BWAPI::Broodwar->drawLineMap(meleeUnit->getPosition().x, meleeUnit->getPosition().y, 
-			meleeUnit->getTargetPosition().x, meleeUnit->getTargetPosition().y, Config::Debug::COLOR_LINE_TARGET);
+			meleeUnit->getTargetPosition().x, meleeUnit->getTargetPosition().y, Config::Debug::ColorLineTarget);
 		}
 	}
 }

@@ -48,14 +48,14 @@ void GameCommander::update()
 
 	// combat and scouting managers
 	timerManager.startTimer(TimerManager::Combat);
-	if (Config::Modules::USING_COMBATCOMMANDER)
+	if (Config::Modules::UsingCombatCommander)
 	{
 		combatCommander.update(combatUnits);
 	}
 	timerManager.stopTimer(TimerManager::Combat);
 
 	timerManager.startTimer(TimerManager::Scout);
-	if (Config::Modules::USING_SCOUTMANAGER)
+	if (Config::Modules::UsingScoutManager)
 	{
 		scoutManager.update(scoutUnits);
 	}

@@ -13,7 +13,7 @@ ProductionManager::ProductionManager()
 {
 	populateTypeCharMap();
 
-	if (!Config::Modules::USING_BUILD_ORDER_DEMO)
+	if (!Config::Modules::UsingBuildOrderDemo)
 	{
         setBuildOrder(StrategyManager::Instance().getOpeningBookBuildOrder());
 		_runningOpeningBook = true;
@@ -35,7 +35,7 @@ void ProductionManager::setBuildOrder(const BuildOrder & buildOrder)
 }
 void ProductionManager::performBuildOrderSearch(const std::vector<MetaPair> & goal)
 {
-	if (!Config::Modules::USING_MACRO_SEARCH || goal.empty())
+	if (!Config::Modules::UsingBuildOrderSearch || goal.empty())
 	{
 		return;
 	}
@@ -65,7 +65,7 @@ void ProductionManager::performBuildOrderSearch(const std::vector<MetaPair> & go
 }
 void ProductionManager::performBuildOrderSearch()
 {	
-    if (!Config::Modules::USING_MACRO_SEARCH)
+    if (!Config::Modules::UsingBuildOrderSearch)
     {
         return;
     }
@@ -103,13 +103,13 @@ void ProductionManager::update()
 	manageBuildOrderQueue();
 
     // build order demo only
-	if (Config::Modules::USING_BUILD_ORDER_DEMO && (queue.size() == 0))
+	if (Config::Modules::UsingBuildOrderDemo && (queue.size() == 0))
 	{
 		performBuildOrderSearch(searchGoal);
 	}
 
 	// if nothing is currently building, get a new goal from the strategy manager
-	if ((queue.size() == 0) && (BWAPI::Broodwar->getFrameCount() > 10) && !Config::Modules::USING_BUILD_ORDER_DEMO)
+	if ((queue.size() == 0) && (BWAPI::Broodwar->getFrameCount() > 10) && !Config::Modules::UsingBuildOrderDemo)
 	{
         if (Config::Debug::PrintBuildOrderSearchInfo)
         {
@@ -162,7 +162,7 @@ void ProductionManager::onUnitDestroy(BWAPI::UnitInterface* unit)
 		return;
 	}
 		
-	if (Config::Modules::USING_MACRO_SEARCH)
+	if (Config::Modules::UsingBuildOrderSearch)
 	{
 		// if it's a worker or a building, we need to re-search for the current goal
 		if ((unit->getType().isWorker() && !WorkerManager::Instance().isWorkerScout(unit)) || unit->getType().isBuilding())

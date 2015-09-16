@@ -7,13 +7,13 @@ namespace Config
 {
 	namespace Modules
 	{
-		extern bool USING_GAMECOMMANDER;			// toggle GameCommander, effectively UAlbertaBot
-		extern bool USING_SCOUTMANAGER;
-		extern bool USING_COMBATCOMMANDER;
-		extern bool USING_UNIT_COMMAND_MGR;
-		extern bool USING_MACRO_SEARCH;				// toggle use of Build Order Search, currently no backup
-		extern bool USING_STRATEGY_IO;				// toggle the use of file io for strategy
-		extern bool USING_BUILD_ORDER_DEMO;			
+		extern bool UsingGameCommander;			// toggle GameCommander, effectively UAlbertaBot
+		extern bool UsingScoutManager;
+		extern bool UsingCombatCommander;
+		extern bool UsingUnitCommandManager;
+		extern bool UsingBuildOrderSearch;				// toggle use of Build Order Search, currently no backup
+		extern bool UsingStrategyIO;				// toggle the use of file io for strategy
+		extern bool UsingBuildOrderDemo;			
 	}
     
     namespace BotInfo
@@ -40,7 +40,7 @@ namespace Config
 
 	namespace Tournament
 	{
-		extern const int GAME_END_FRAME;	
+		extern int GameEndFrame;	
 	}
 
 	namespace FileIO
@@ -70,22 +70,20 @@ namespace Config
 
         extern std::string ErrorLogFilename;
 
-		extern BWAPI::Color COLOR_LINE_TARGET;
-		extern BWAPI::Color COLOR_LINE_MINERAL;
-		extern BWAPI::Color COLOR_UNIT_NEAR_ENEMY;
-		extern BWAPI::Color COLOR_UNIT_NOTNEAR_ENEMY;
+		extern BWAPI::Color ColorLineTarget;
+		extern BWAPI::Color ColorLineMineral;
+		extern BWAPI::Color ColorUnitNearEnemy;
+		extern BWAPI::Color ColorUnitNotNearEnemy;
 	}
 
 	namespace Micro
 	{
-		extern bool WORKER_DEFENSE;
-		extern int  WORKER_DEFENSE_PER_UNIT;
+		extern bool WorkerDefense;
+		extern int  WorkerDefensePerUnit;
 
-		extern int COMBAT_RADIUS;						// radius of combat to consider units for Micro Search
-		extern int COMBAT_REGROUP_RADIUS;				// radius of units around frontmost unit we consider in regroup calculation
-		extern int UNIT_NEAR_ENEMY_RADIUS;				// radius to consider a unit 'near' to an enemy unit
-		extern int MICRO_SEARCH_MAX_TIMER;
-		extern int MICRO_SEARCH_MIN_TIMER;
+		extern int CombatRadius;						// radius of combat to consider units for Micro Search
+		extern int CombatRegroupRadius;				// radius of units around frontmost unit we consider in regroup calculation
+		extern int UnitNearEnemyRadius;				// radius to consider a unit 'near' to an enemy unit
 	}
 
     namespace Macro

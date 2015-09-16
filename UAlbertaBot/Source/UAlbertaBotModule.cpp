@@ -25,8 +25,8 @@ void UAlbertaBotModule::onStart()
     // Initialize BOSS, the Build Order Search System
     BOSS::init();
 
-    // Parse the bot's configuration file if it has one
-    // change this file path to where your config file is
+    // Parse the bot's configuration file if it has one, change this file path to where your config file is
+    // Any relative path name will be relative to Starcraft installation folder
     parseConfigFile("D:/ualbertabot/UAlbertaBot/UAlbertaBot_Config.txt");
 
     // Set our BWAPI options here    
@@ -48,13 +48,8 @@ void UAlbertaBotModule::onStart()
         BWAPI::Broodwar->printf("Hello! I am %s, written by %s", Config::BotInfo::BotName.c_str(), Config::BotInfo::Authors.c_str());
     }
 
-    BWAPI::TilePosition starttp = BWAPI::Broodwar->self()->getStartLocation();
-    BWAPI::Position start(starttp);
-
-    const std::vector<BWAPI::TilePosition> & closest = MapTools::Instance().getClosestTilesTo(start);
-	
     // Call BWTA to read and analyze the current map
-    if (Config::Modules::USING_GAMECOMMANDER)
+    if (Config::Modules::UsingGameCommander)
 	{
 		BWTA::readMap();
 		BWTA::analyze();
@@ -104,20 +99,20 @@ void UAlbertaBotModule::parseConfigFile(const std::string & filename)
     if (doc.HasMember("Micro") && doc["Micro"].IsObject())
     {
         const rapidjson::Value & micro = doc["Micro"];
-        JSONTools::ReadBool("WorkerDefense", micro, Config::Micro::WORKER_DEFENSE);
-        JSONTools::ReadInt("WorkerDefensePerUnit", micro, Config::Micro::WORKER_DEFENSE_PER_UNIT);
-        JSONTools::ReadInt("InCombatRadius", micro, Config::Micro::COMBAT_RADIUS);
-        JSONTools::ReadInt("RegroupRadius", micro, Config::Micro::COMBAT_REGROUP_RADIUS);
-        JSONTools::ReadInt("UnitNearEnemyRadius", micro, Config::Micro::UNIT_NEAR_ENEMY_RADIUS);
+        JSONTools::ReadBool("WorkerDefense", micro, Config::Micro::WorkerDefense);
+        JSONTools::ReadInt("WorkerDefensePerUnit", micro, Config::Micro::WorkerDefensePerUnit);
+        JSONTools::ReadInt("InCombatRadius", micro, Config::Micro::CombatRadius);
+        JSONTools::ReadInt("RegroupRadius", micro, Config::Micro::CombatRegroupRadius);
+        JSONTools::ReadInt("UnitNearEnemyRadius", micro, Config::Micro::UnitNearEnemyRadius);
     }
 
     // Parse the Macro Options
-    /*if (doc.HasMember("Macro") && doc["Macro"].IsObject())
+    if (doc.HasMember("Macro") && doc["Macro"].IsObject())
     {
         const rapidjson::Value & macro = doc["Macro"];
         JSONTools::ReadInt("BuildingSpacing", macro, Config::Macro::BuildingSpacing);
         JSONTools::ReadInt("PylongSpacing", macro, Config::Macro::PylonSpacing);
-    }*/
+    }
 
     // Parse the Debug Options
     if (doc.HasMember("Debug") && doc["Debug"].IsObject())
@@ -169,12 +164,12 @@ void UAlbertaBotModule::parseConfigFile(const std::string & filename)
     {
         const rapidjson::Value & module = doc["Modules"];
 
-        JSONTools::ReadBool("UseGameCommander", module, Config::Modules::USING_GAMECOMMANDER);
-        JSONTools::ReadBool("UseScoutManager", module, Config::Modules::USING_SCOUTMANAGER);
-        JSONTools::ReadBool("UseCombatCommander", module, Config::Modules::USING_COMBATCOMMANDER);
-        JSONTools::ReadBool("UseBuildOrderSearch", module, Config::Modules::USING_MACRO_SEARCH);
-        JSONTools::ReadBool("UseStrategyIO", module, Config::Modules::USING_STRATEGY_IO);
-        JSONTools::ReadBool("UseUnitCommandManager", module, Config::Modules::USING_UNIT_COMMAND_MGR);
+        JSONTools::ReadBool("UseGameCommander", module, Config::Modules::UsingGameCommander);
+        JSONTools::ReadBool("UseScoutManager", module, Config::Modules::UsingScoutManager);
+        JSONTools::ReadBool("UseCombatCommander", module, Config::Modules::UsingCombatCommander);
+        JSONTools::ReadBool("UseBuildOrderSearch", module, Config::Modules::UsingBuildOrderSearch);
+        JSONTools::ReadBool("UseStrategyIO", module, Config::Modules::UsingStrategyIO);
+        JSONTools::ReadBool("UseUnitCommandManager", module, Config::Modules::UsingUnitCommandManager);
     }
 
     // Parse the Tool Options
@@ -244,7 +239,7 @@ void UAlbertaBotModule::parseConfigFile(const std::string & filename)
 
 void UAlbertaBotModule::onEnd(bool isWinner) 
 {
-	if (Config::Modules::USING_GAMECOMMANDER)
+	if (Config::Modules::UsingGameCommander)
 	{
 		StrategyManager::Instance().onEnd(isWinner);
         
@@ -254,12 +249,12 @@ void UAlbertaBotModule::onEnd(bool isWinner)
 
 void UAlbertaBotModule::onFrame()
 {
-	if (Config::Modules::USING_UNIT_COMMAND_MGR)
+	if (Config::Modules::UsingUnitCommandManager)
 	{
 		UnitCommandManager::Instance().update();
 	}
 
-	if (Config::Modules::USING_GAMECOMMANDER) 
+	if (Config::Modules::UsingGameCommander) 
 	{ 
 		gameCommander.update(); 
 	}
@@ -267,17 +262,17 @@ void UAlbertaBotModule::onFrame()
 
 void UAlbertaBotModule::onUnitDestroy(BWAPI::UnitInterface* unit)
 {
-	if (Config::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitDestroy(unit); }
+	if (Config::Modules::UsingGameCommander) { gameCommander.onUnitDestroy(unit); }
 }
 
 void UAlbertaBotModule::onUnitMorph(BWAPI::UnitInterface* unit)
 {
-	if (Config::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitMorph(unit); }
+	if (Config::Modules::UsingGameCommander) { gameCommander.onUnitMorph(unit); }
 }
 
 void UAlbertaBotModule::onSendText(std::string text) 
 { 
-	if (Config::Modules::USING_BUILD_ORDER_DEMO)
+	if (Config::Modules::UsingBuildOrderDemo)
 	{
 		std::stringstream type;
 		std::stringstream numUnitType;
@@ -334,27 +329,27 @@ void UAlbertaBotModule::onSendText(std::string text)
 
 void UAlbertaBotModule::onUnitCreate(BWAPI::UnitInterface* unit)
 { 
-	if (Config::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitCreate(unit); }
+	if (Config::Modules::UsingGameCommander) { gameCommander.onUnitCreate(unit); }
 }
 
 void UAlbertaBotModule::onUnitComplete(BWAPI::UnitInterface* unit)
 {
-	if (Config::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitComplete(unit); }
+	if (Config::Modules::UsingGameCommander) { gameCommander.onUnitComplete(unit); }
 }
 
 void UAlbertaBotModule::onUnitShow(BWAPI::UnitInterface* unit)
 { 
-	if (Config::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitShow(unit); }
+	if (Config::Modules::UsingGameCommander) { gameCommander.onUnitShow(unit); }
 }
 
 void UAlbertaBotModule::onUnitHide(BWAPI::UnitInterface* unit)
 { 
-	if (Config::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitHide(unit); }
+	if (Config::Modules::UsingGameCommander) { gameCommander.onUnitHide(unit); }
 }
 
 void UAlbertaBotModule::onUnitRenegade(BWAPI::UnitInterface* unit)
 { 
-	if (Config::Modules::USING_GAMECOMMANDER) { gameCommander.onUnitRenegade(unit); }
+	if (Config::Modules::UsingGameCommander) { gameCommander.onUnitRenegade(unit); }
 }
 
 BWAPI::Race UAlbertaBotModule::getRace(const std::string & raceName)

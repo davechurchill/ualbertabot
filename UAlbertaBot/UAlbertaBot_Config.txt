@@ -17,6 +17,8 @@
     
     "Micro" :
     {
+        "UseSparcraftSimulation" : true,
+    
         "WorkerDefense" : true,
         "WorkerDefensePerUnit" : 2,
         

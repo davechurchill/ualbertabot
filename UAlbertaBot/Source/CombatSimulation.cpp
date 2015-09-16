@@ -19,8 +19,8 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
 	std::vector<BWAPI::UnitInterface*> ourCombatUnits;
 	std::vector<UnitInfo> enemyCombatUnits;
 
-	MapGrid::Instance().GetUnits(ourCombatUnits,   center, Config::Micro::COMBAT_REGROUP_RADIUS, true, false);
-	InformationManager::Instance().getNearbyForce(enemyCombatUnits, center, BWAPI::Broodwar->enemy(), Config::Micro::COMBAT_REGROUP_RADIUS);
+	MapGrid::Instance().GetUnits(ourCombatUnits,   center, Config::Micro::CombatRegroupRadius, true, false);
+	InformationManager::Instance().getNearbyForce(enemyCombatUnits, center, BWAPI::Broodwar->enemy(), Config::Micro::CombatRegroupRadius);
 
 	for (BWAPI::UnitInterface* unit : ourCombatUnits)
 	{
@@ -70,8 +70,8 @@ bool CombatSimulation::checkZealotVsZergling(const BWAPI::Position & center, con
 	std::vector<BWAPI::UnitInterface*> ourCombatUnits;
 	std::vector<UnitInfo> enemyCombatUnits;
 
-	MapGrid::Instance().GetUnits(ourCombatUnits,   center, Config::Micro::COMBAT_REGROUP_RADIUS, true, false);
-	InformationManager::Instance().getNearbyForce(enemyCombatUnits, center, BWAPI::Broodwar->enemy(), Config::Micro::COMBAT_REGROUP_RADIUS);
+	MapGrid::Instance().GetUnits(ourCombatUnits,   center, Config::Micro::CombatRegroupRadius, true, false);
+	InformationManager::Instance().getNearbyForce(enemyCombatUnits, center, BWAPI::Broodwar->enemy(), Config::Micro::CombatRegroupRadius);
 
     int numZealots = 0;
 	for (BWAPI::UnitInterface* unit : ourCombatUnits)
