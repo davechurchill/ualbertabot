@@ -239,6 +239,8 @@ void InformationManager::drawExtendedInterface()
         return;
     }
 
+    int verticalOffset = -10;
+
     // draw enemy units
     FOR_EACH_UIMAP_CONST(iter, getUnitData(BWAPI::Broodwar->enemy()).getUnits())
 	{
@@ -270,8 +272,8 @@ void InformationManager::drawExtendedInterface()
             if (hpRatio < 0.33) hpColor = BWAPI::Colors::Red;
 
             int ratioRight = left + (int)((right-left) * hpRatio);
-            int hpTop = top;
-            int hpBottom = top + 4;
+            int hpTop = top + verticalOffset;
+            int hpBottom = top + 4 + verticalOffset;
 
             BWAPI::Broodwar->drawBoxMap(BWAPI::Position(left, hpTop), BWAPI::Position(right, hpBottom), BWAPI::Colors::Grey, true);
             BWAPI::Broodwar->drawBoxMap(BWAPI::Position(left, hpTop), BWAPI::Position(ratioRight, hpBottom), hpColor, true);
@@ -290,8 +292,8 @@ void InformationManager::drawExtendedInterface()
             double shieldRatio = (double)shields / (double)type.maxShields();
         
             int ratioRight = left + (int)((right-left) * shieldRatio);
-            int hpTop = top - 3;
-            int hpBottom = top + 1;
+            int hpTop = top - 3 + verticalOffset;
+            int hpBottom = top + 1 + verticalOffset;
 
             BWAPI::Broodwar->drawBoxMap(BWAPI::Position(left, hpTop), BWAPI::Position(right, hpBottom), BWAPI::Colors::Grey, true);
             BWAPI::Broodwar->drawBoxMap(BWAPI::Position(left, hpTop), BWAPI::Position(ratioRight, hpBottom), BWAPI::Colors::Blue, true);
@@ -333,8 +335,8 @@ void InformationManager::drawExtendedInterface()
             if (hpRatio < 0.33) hpColor = BWAPI::Colors::Red;
 
             int ratioRight = left + (int)((right-left) * hpRatio);
-            int hpTop = top;
-            int hpBottom = top + 4;
+            int hpTop = top + verticalOffset;
+            int hpBottom = top + 4 + verticalOffset;
 
             BWAPI::Broodwar->drawBoxMap(BWAPI::Position(left, hpTop), BWAPI::Position(right, hpBottom), BWAPI::Colors::Grey, true);
             BWAPI::Broodwar->drawBoxMap(BWAPI::Position(left, hpTop), BWAPI::Position(ratioRight, hpBottom), hpColor, true);
@@ -353,8 +355,8 @@ void InformationManager::drawExtendedInterface()
             double shieldRatio = (double)unit->getShields() / (double)unit->getType().maxShields();
         
             int ratioRight = left + (int)((right-left) * shieldRatio);
-            int hpTop = top - 3;
-            int hpBottom = top + 1;
+            int hpTop = top - 3 + verticalOffset;
+            int hpBottom = top + 1 + verticalOffset;
 
             BWAPI::Broodwar->drawBoxMap(BWAPI::Position(left, hpTop), BWAPI::Position(right, hpBottom), BWAPI::Colors::Grey, true);
             BWAPI::Broodwar->drawBoxMap(BWAPI::Position(left, hpTop), BWAPI::Position(ratioRight, hpBottom), BWAPI::Colors::Blue, true);
@@ -374,8 +376,8 @@ void InformationManager::drawExtendedInterface()
             double mineralRatio = (double)unit->getResources() / (double)unit->getInitialResources();
         
             int ratioRight = left + (int)((right-left) * mineralRatio);
-            int hpTop = top;
-            int hpBottom = top + 4;
+            int hpTop = top + verticalOffset;
+            int hpBottom = top + 4 + verticalOffset;
 
             BWAPI::Broodwar->drawBoxMap(BWAPI::Position(left, hpTop), BWAPI::Position(right, hpBottom), BWAPI::Colors::Grey, true);
             BWAPI::Broodwar->drawBoxMap(BWAPI::Position(left, hpTop), BWAPI::Position(ratioRight, hpBottom), BWAPI::Colors::Cyan, true);

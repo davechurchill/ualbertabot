@@ -96,6 +96,8 @@ void ScoutManager::moveScouts()
 					if (Config::Debug::DrawUnitTargetInfo) BWAPI::Broodwar->drawCircleMap(unit->getPosition().x, unit->getPosition().y, 5, BWAPI::Colors::Cyan, true);
 				}
 
+                fleeTo = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
+
 				smartMove(workerScout, fleeTo);
 			}
 		}

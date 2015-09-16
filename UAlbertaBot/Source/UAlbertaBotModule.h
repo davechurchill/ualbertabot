@@ -17,7 +17,11 @@ namespace UAlbertaBot
 
 class UAlbertaBotModule : public BWAPI::AIModule
 {
-	GameCommander gameCommander;
+	GameCommander               _gameCommander;
+
+    int                         _cameraLastMoved;
+    int                         _unitFollowFrames;
+    BWAPI::UnitInterface *      _observerFollowingUnit;
 
 public:
 
@@ -34,6 +38,8 @@ public:
 	void	onUnitRenegade(BWAPI::UnitInterface* unit);
 
     void    parseConfigFile(const std::string & filename);
+    void    oberverMoveCamera();
+
     BWAPI::Race getRace(const std::string & raceName);
 };
 

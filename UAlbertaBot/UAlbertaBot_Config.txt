@@ -9,7 +9,7 @@
         
     "BWAPI" : 
     {
-        "SetLocalSpeed"   : 10,
+        "SetLocalSpeed"   : 20,
         "SetFrameSkip"    : 0,
         "EnableUserInput" : true,
         "EnableCompleteMapInformation" : false
@@ -64,6 +64,7 @@
         "UseScoutManager"       : true,
         "UseCombatCommander"    : true,
         "UseBuildOrderSearch"   : true,
+        "UseAutoObserver"       : true,
         "UseStrategyIO"         : false,
         "UseUnitCommandManager" : false
     },

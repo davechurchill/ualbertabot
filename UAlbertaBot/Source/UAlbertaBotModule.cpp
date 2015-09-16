@@ -54,6 +54,10 @@ void UAlbertaBotModule::onStart()
 		BWTA::readMap();
 		BWTA::analyze();
 	}
+
+    _unitFollowFrames = 0;
+    _cameraLastMoved = 0;
+    _observerFollowingUnit = NULL;
 }
 
 void UAlbertaBotModule::parseConfigFile(const std::string & filename)
@@ -169,6 +173,7 @@ void UAlbertaBotModule::parseConfigFile(const std::string & filename)
         JSONTools::ReadBool("UseBuildOrderSearch", module, Config::Modules::UsingBuildOrderSearch);
         JSONTools::ReadBool("UseStrategyIO", module, Config::Modules::UsingStrategyIO);
         JSONTools::ReadBool("UseUnitCommandManager", module, Config::Modules::UsingUnitCommandManager);
+        JSONTools::ReadBool("UseAutoObserver", module, Config::Modules::UsingAutoObserver);
     }
 
     // Parse the Tool Options
@@ -255,18 +260,23 @@ void UAlbertaBotModule::onFrame()
 
 	if (Config::Modules::UsingGameCommander) 
 	{ 
-		gameCommander.update(); 
+		_gameCommander.update(); 
 	}
+
+    if (Config::Modules::UsingAutoObserver)
+    {
+        oberverMoveCamera();
+    }
 }
 
 void UAlbertaBotModule::onUnitDestroy(BWAPI::UnitInterface* unit)
 {
-	if (Config::Modules::UsingGameCommander) { gameCommander.onUnitDestroy(unit); }
+	if (Config::Modules::UsingGameCommander) { _gameCommander.onUnitDestroy(unit); }
 }
 
 void UAlbertaBotModule::onUnitMorph(BWAPI::UnitInterface* unit)
 {
-	if (Config::Modules::UsingGameCommander) { gameCommander.onUnitMorph(unit); }
+	if (Config::Modules::UsingGameCommander) { _gameCommander.onUnitMorph(unit); }
 }
 
 void UAlbertaBotModule::onSendText(std::string text) 
@@ -328,27 +338,27 @@ void UAlbertaBotModule::onSendText(std::string text)
 
 void UAlbertaBotModule::onUnitCreate(BWAPI::UnitInterface* unit)
 { 
-	if (Config::Modules::UsingGameCommander) { gameCommander.onUnitCreate(unit); }
+	if (Config::Modules::UsingGameCommander) { _gameCommander.onUnitCreate(unit); }
 }
 
 void UAlbertaBotModule::onUnitComplete(BWAPI::UnitInterface* unit)
 {
-	if (Config::Modules::UsingGameCommander) { gameCommander.onUnitComplete(unit); }
+	if (Config::Modules::UsingGameCommander) { _gameCommander.onUnitComplete(unit); }
 }
 
 void UAlbertaBotModule::onUnitShow(BWAPI::UnitInterface* unit)
 { 
-	if (Config::Modules::UsingGameCommander) { gameCommander.onUnitShow(unit); }
+	if (Config::Modules::UsingGameCommander) { _gameCommander.onUnitShow(unit); }
 }
 
 void UAlbertaBotModule::onUnitHide(BWAPI::UnitInterface* unit)
 { 
-	if (Config::Modules::UsingGameCommander) { gameCommander.onUnitHide(unit); }
+	if (Config::Modules::UsingGameCommander) { _gameCommander.onUnitHide(unit); }
 }
 
 void UAlbertaBotModule::onUnitRenegade(BWAPI::UnitInterface* unit)
 { 
-	if (Config::Modules::UsingGameCommander) { gameCommander.onUnitRenegade(unit); }
+	if (Config::Modules::UsingGameCommander) { _gameCommander.onUnitRenegade(unit); }
 }
 
 BWAPI::Race UAlbertaBotModule::getRace(const std::string & raceName)
@@ -375,4 +385,59 @@ BWAPI::Race UAlbertaBotModule::getRace(const std::string & raceName)
 
     UAB_ASSERT_WARNING(false, "Race not found: %s", raceName.c_str());
     return BWAPI::Races::None;
+}
+
+void UAlbertaBotModule::oberverMoveCamera()
+{
+    bool pickUnitToFollow = !_observerFollowingUnit || !_observerFollowingUnit->exists() || (BWAPI::Broodwar->getFrameCount() - _cameraLastMoved > _unitFollowFrames);
+
+    if (pickUnitToFollow)
+    {
+	    for (BWAPI::UnitInterface * unit : BWAPI::Broodwar->self()->getUnits())
+	    {
+		    if (unit->isUnderAttack() || unit->isAttacking())
+		    {
+			    _cameraLastMoved = BWAPI::Broodwar->getFrameCount();
+                _unitFollowFrames = 3;
+                _observerFollowingUnit = unit;
+                pickUnitToFollow = false;
+                break;
+		    }
+        }
+    }
+
+    if (pickUnitToFollow)
+    {
+	    for (BWAPI::UnitInterface * unit : BWAPI::Broodwar->self()->getUnits())
+	    {
+		    if (unit->isBeingConstructed() && (unit->getRemainingBuildTime() < 12))
+		    {
+			    _cameraLastMoved = BWAPI::Broodwar->getFrameCount();
+                _unitFollowFrames = 24;
+                _observerFollowingUnit = unit;
+                pickUnitToFollow = false;
+                break;
+		    }
+        }
+    }
+
+    if (pickUnitToFollow)
+    {
+	    for (BWAPI::UnitInterface * unit : BWAPI::Broodwar->self()->getUnits())
+	    {
+		    if (WorkerManager::Instance().isWorkerScout(unit))
+		    {
+			    _cameraLastMoved = BWAPI::Broodwar->getFrameCount();
+                _unitFollowFrames = 3;
+                _observerFollowingUnit = unit;
+                pickUnitToFollow = false;
+                break;
+		    }
+        }
+    }
+
+    if (_observerFollowingUnit && _observerFollowingUnit->exists())
+    {
+        BWAPI::Broodwar->setScreenPosition(_observerFollowingUnit->getPosition() - BWAPI::Position(320, 180));
+    }
 }

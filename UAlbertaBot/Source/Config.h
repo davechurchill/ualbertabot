@@ -11,7 +11,8 @@ namespace Config
         extern bool UsingScoutManager;
         extern bool UsingCombatCommander;
         extern bool UsingUnitCommandManager;
-        extern bool UsingBuildOrderSearch;      
+        extern bool UsingBuildOrderSearch;  
+        extern bool UsingAutoObserver;
         extern bool UsingStrategyIO;            
         extern bool UsingBuildOrderDemo;			
     }
