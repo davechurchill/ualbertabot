@@ -48,9 +48,9 @@ namespace Config
     {
         bool PrintModuleTimeout             = true;	
         bool PrintBuildOrderSearchInfo      = true;
+        bool DrawUnitHealthBars             = true;
+        bool DrawProductionInfo             = true;
         bool DrawResourceInfo               = false;
-        bool DrawBuildOrderInfo             = false;
-        bool DrawProductionInfo             = false;
         bool DrawWorkerInfo                 = false;
         bool DrawModuleTimers               = false;
         bool DrawReservedBuildingTiles      = false;

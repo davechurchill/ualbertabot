@@ -47,8 +47,8 @@ namespace Config
     {
         extern bool PrintModuleTimeout;				
         extern bool PrintBuildOrderSearchInfo;
+        extern bool DrawUnitHealthBars;
         extern bool DrawResourceInfo;
-        extern bool DrawBuildOrderInfo;
         extern bool DrawProductionInfo;
         extern bool DrawWorkerInfo;
         extern bool DrawModuleTimers;

@@ -38,7 +38,11 @@ void Squad::update()
 		InformationManager::Instance().lastFrameRegroup = 1;
 
 		const BWAPI::Position regroupPosition(calcRegroupPosition());
-		BWAPI::Broodwar->drawTextScreen(200, 150, "REGROUP");
+
+        if (Config::Debug::DrawCombatSimulationInfo)
+        {
+		    BWAPI::Broodwar->drawTextScreen(200, 150, "REGROUP");
+        }
 
 		BWAPI::Broodwar->drawCircleMap(regroupPosition.x, regroupPosition.y, 30, BWAPI::Colors::Purple, true);
 

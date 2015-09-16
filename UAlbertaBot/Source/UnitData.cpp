@@ -28,7 +28,8 @@ void UnitData::updateUnit(BWAPI::UnitInterface* unit)
 		UnitInfo & ui = unitMap.find(unit)->second;
 
 		ui.lastPosition = unit->getPosition();
-		ui.lastHealth = unit->getHitPoints() + unit->getShields();
+		ui.lastHealth = unit->getHitPoints();
+        ui.lastShields= unit->getShields();
 		ui.unitID = unit->getID();
 		ui.type = unit->getType();
 		if (!ui.completed&&unit->isCompleted()){

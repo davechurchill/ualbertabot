@@ -221,10 +221,6 @@ void MicroManager::smartMove(BWAPI::UnitInterface* attacker, BWAPI::Position tar
 	// if we have issued a command to this unit already this frame, ignore this one
 	if (attacker->getLastCommandFrame() >= BWAPI::Broodwar->getFrameCount() || attacker->isAttackFrame())
 	{
-		if (attacker->isSelected())
-		{
-			BWAPI::Broodwar->printf("Attack Frame");
-		}
 		return;
 	}
 
@@ -237,10 +233,6 @@ void MicroManager::smartMove(BWAPI::UnitInterface* attacker, BWAPI::Position tar
 		&& (BWAPI::Broodwar->getFrameCount() - attacker->getLastCommandFrame() < 5)
 		&& attacker->isMoving())
 	{
-		if (attacker->isSelected())
-		{
-			BWAPI::Broodwar->printf("Previous Command Frame=%d Pos=(%d, %d)", attacker->getLastCommandFrame(), currentCommand.getTargetPosition().x, currentCommand.getTargetPosition().y);
-		}
 		return;
 	}
 

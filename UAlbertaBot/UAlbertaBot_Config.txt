@@ -9,7 +9,7 @@
         
     "BWAPI" : 
     {
-        "SetLocalSpeed"   : 5,
+        "SetLocalSpeed"   : 10,
         "SetFrameSkip"    : 0,
         "EnableUserInput" : true,
         "EnableCompleteMapInformation" : false
@@ -37,15 +37,15 @@
     {
         "ErrorLogFilename"          : "d:/ualbertabot/UAlbertaBot/UAB_ErrorLog.txt",
         
-        "PrintModuleTimeout"        : true,
+        "PrintModuleTimeout"        : false,
         "PrintBuildOrderSearchInfo" : false,
-        "DrawResourceInfo"          : true,
-        "DrawBuildOrderInfo"        : true,
+        "DrawUnitHealthBars"        : true,
         "DrawProductionInfo"        : true,
-        "DrawCombatSimInfo"         : true,
-        "DrawModuleTimers"          : true,
-        "DrawEnemyUnitInfo"         : true,
-        "DrawUnitTargetInfo"        : true,
+        "DrawEnemyUnitInfo"         : false,
+        "DrawModuleTimers"          : false,
+        "DrawResourceInfo"          : false,
+        "DrawCombatSimInfo"         : false,
+        "DrawUnitTargetInfo"        : false,
         "PrintBuildOrderSearchInfo" : false,
         "DrawBWTAInfo"              : false,
         "DrawMapGrid"               : false,

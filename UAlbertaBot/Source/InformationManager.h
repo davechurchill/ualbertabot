@@ -87,6 +87,7 @@ public:
 	bool						enemyHasCloakedUnits();
 	bool						enemyHasDetector();
 
+    void						drawExtendedInterface();
 	void						drawUnitInformation(int x, int y);
 	void						drawMapInformation();
 	SparCraft::Map *			getMap() { return &map; }

@@ -121,9 +121,9 @@ void UAlbertaBotModule::parseConfigFile(const std::string & filename)
         JSONTools::ReadString("ErrorLogFilename", debug, Config::Debug::ErrorLogFilename);
         JSONTools::ReadBool("PrintModuleTimeout", debug, Config::Debug::PrintModuleTimeout);
         JSONTools::ReadBool("PrintBuildOrderSearchInfo", debug, Config::Debug::PrintBuildOrderSearchInfo);
+        JSONTools::ReadBool("DrawUnitHealthBars", debug, Config::Debug::DrawUnitHealthBars);
         JSONTools::ReadBool("DrawResourceInfo", debug, Config::Debug::DrawResourceInfo);
         JSONTools::ReadBool("DrawWorkerInfo", debug, Config::Debug::DrawWorkerInfo);
-        JSONTools::ReadBool("DrawBuildOrderInfo", debug, Config::Debug::DrawBuildOrderInfo);
         JSONTools::ReadBool("DrawProductionInfo", debug, Config::Debug::DrawProductionInfo);
         JSONTools::ReadBool("DrawSquadInfo", debug, Config::Debug::DrawSquadInfo);
         JSONTools::ReadBool("DrawCombatSimInfo", debug, Config::Debug::DrawCombatSimulationInfo);
@@ -143,7 +143,6 @@ void UAlbertaBotModule::parseConfigFile(const std::string & filename)
             Config::Debug::PrintModuleTimeout             = false;	
             Config::Debug::PrintBuildOrderSearchInfo      = false;
             Config::Debug::DrawResourceInfo               = false;
-            Config::Debug::DrawBuildOrderInfo             = false;
             Config::Debug::DrawProductionInfo             = false;
             Config::Debug::DrawWorkerInfo                 = false;
             Config::Debug::DrawModuleTimers               = false;

@@ -154,23 +154,46 @@ void BuildOrderQueue::drawQueueInformation(int x, int y)
 {
 	//x = x + 25;
 
-    if (!Config::Debug::DrawBuildOrderInfo)
+    if (!Config::Debug::DrawProductionInfo)
     {
         return;
     }
 	
 	std::string prefix = "\x04";
 
-	//if (Config::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(x, y, "\x04Priority Queue Information:");
-	//if (Config::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(x, y+20, "\x04UNIT NAME");
-
-	size_t reps = queue.size() < 10 ? queue.size() : 10;
+	size_t reps = queue.size() < 12 ? queue.size() : 12;
 
 	// for each unit in the queue
 	for (size_t i(0); i<reps; i++) {
 
 		prefix = "\x04";
 
-		BWAPI::Broodwar->drawTextScreen(x, y+(i*10), "%s%s", prefix.c_str(), queue[queue.size() - 1 - i].metaType.getName().c_str());
+        const MetaType & type = queue[queue.size() - 1 - i].metaType;
+
+        if (type.isUnit())
+        {
+            if (type.getUnitType().isWorker())
+            {
+                prefix = "\x1F";
+            }
+            else if (type.getUnitType().supplyProvided() > 0)
+            {
+                prefix = "\x03";
+            }
+            else if (type.getUnitType().isRefinery())
+            {
+                prefix = "\x1E";
+            }
+            else if (type.isBuilding())
+            {
+                prefix = "\x11";
+            }
+            else if (type.getUnitType().groundWeapon() != BWAPI::WeaponTypes::None || type.getUnitType().airWeapon() != BWAPI::WeaponTypes::None)
+            {
+                prefix = "\x06";
+            }
+        }
+
+		BWAPI::Broodwar->drawTextScreen(x, y+(i*10), " %s%s", prefix.c_str(), type.getName().c_str());
 	}
 }

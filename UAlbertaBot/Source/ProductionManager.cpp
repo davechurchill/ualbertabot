@@ -675,11 +675,11 @@ void ProductionManager::drawProductionInformation(int x, int y)
 	std::sort(prod.begin(), prod.end(), CompareWhenStarted());
 
 	BWAPI::Broodwar->drawTextScreen(x, y, "\x04 Build Order Info:");
-	BWAPI::Broodwar->drawTextScreen(x, y+20, "\x04UNIT NAME");
+	BWAPI::Broodwar->drawTextScreen(x, y+20, "\x04 UNIT NAME");
 
 	size_t reps = prod.size() < 10 ? prod.size() : 10;
 
-	y += 40;
+	y += 30;
 	int yy = y;
 
 	// for each unit in the queue
@@ -691,7 +691,7 @@ void ProductionManager::drawProductionInformation(int x, int y)
 
 		BWAPI::UnitType t = prod[i]->getType();
 
-		BWAPI::Broodwar->drawTextScreen(x, yy, "%s%s", prefix.c_str(), t.getName().c_str());
+		BWAPI::Broodwar->drawTextScreen(x, yy, " %s%s", prefix.c_str(), t.getName().c_str());
 		BWAPI::Broodwar->drawTextScreen(x+150, yy, "%s%6d", prefix.c_str(), prod[i]->getRemainingBuildTime());
 	}
 
