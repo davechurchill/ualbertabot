@@ -12,11 +12,11 @@ namespace Config
     namespace Modules							    
     {
         // the default tournament bot modules
-        bool UsingGameCommander             = true;	    // toggle GameCommander, effectively UAlbertaBot
+        bool UsingGameCommander             = true;     // toggle GameCommander, effectively UAlbertaBot
         bool UsingScoutManager              = true;
         bool UsingCombatCommander           = true;
-        bool UsingBuildOrderSearch          = true;	    // toggle use of Build Order Search, currently no backup
-        bool UsingStrategyIO                = false;	// toggle the use of file io for strategy
+        bool UsingBuildOrderSearch          = true;     // toggle use of Build Order Search, currently no backup
+        bool UsingStrategyIO                = false;    // toggle the use of file io for strategy
         bool UsingUnitCommandManager        = false;    // handles all unit commands
 		
         // extra things, don't enable unless you know what they are
@@ -40,9 +40,9 @@ namespace Config
     }
     
     namespace Tournament						
-	{
+    {
         int GameEndFrame                    = 86400;	
-	}
+    }
     
     namespace Debug								
     {
@@ -74,12 +74,12 @@ namespace Config
 
     namespace Micro								
     {
-        bool WorkerDefense                  = true;		// whether or not we defend with workers when combat units die
-        int WorkerDefensePerUnit            = 2;		// how many workers to assign to each unit attacking us
+        bool WorkerDefense                  = true;     // whether or not we defend with workers when combat units die
+        int WorkerDefensePerUnit            = 2;        // how many workers to assign to each unit attacking us
 		
-        int CombatRadius                    = 1000;		// radius of combat to consider units for Micro Search
-        int CombatRegroupRadius             = 300;		// radius of units around frontmost unit we consider in regroup calculation
-        int UnitNearEnemyRadius             = 600;		// radius to consider a unit 'near' to an enemy unit
+        int CombatRadius                    = 1000;     // radius of combat to consider units for Micro Search
+        int CombatRegroupRadius             = 300;      // radius of units around frontmost unit we consider in regroup calculation
+        int UnitNearEnemyRadius             = 600;      // radius to consider a unit 'near' to an enemy unit
     }
 
     namespace Macro
@@ -90,6 +90,6 @@ namespace Config
 
     namespace Tools								
     {
-        extern int MAP_GRID_SIZE            = 320;		// size of grid spacing in MapGrid
+        extern int MAP_GRID_SIZE            = 320;      // size of grid spacing in MapGrid
     }
 }

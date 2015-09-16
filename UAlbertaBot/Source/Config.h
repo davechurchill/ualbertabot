@@ -7,12 +7,12 @@ namespace Config
 {
     namespace Modules
     {
-        extern bool UsingGameCommander;			// toggle GameCommander, effectively UAlbertaBot
+        extern bool UsingGameCommander;			
         extern bool UsingScoutManager;
         extern bool UsingCombatCommander;
         extern bool UsingUnitCommandManager;
-        extern bool UsingBuildOrderSearch;				// toggle use of Build Order Search, currently no backup
-        extern bool UsingStrategyIO;				// toggle the use of file io for strategy
+        extern bool UsingBuildOrderSearch;      
+        extern bool UsingStrategyIO;            
         extern bool UsingBuildOrderDemo;			
     }
     
@@ -76,9 +76,9 @@ namespace Config
         extern bool WorkerDefense;
         extern int  WorkerDefensePerUnit;
 
-        extern int CombatRadius;						// radius of combat to consider units for Micro Search
-        extern int CombatRegroupRadius;				// radius of units around frontmost unit we consider in regroup calculation
-        extern int UnitNearEnemyRadius;				// radius to consider a unit 'near' to an enemy unit
+        extern int CombatRadius;                
+        extern int CombatRegroupRadius;         
+        extern int UnitNearEnemyRadius;         
     }
 
     namespace Macro
