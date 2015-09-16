@@ -10,7 +10,7 @@ namespace Config
     }
 
     namespace Modules							    
-	{
+    {
         // the default tournament bot modules
         bool UsingGameCommander             = true;	    // toggle GameCommander, effectively UAlbertaBot
         bool UsingScoutManager              = true;
@@ -21,7 +21,7 @@ namespace Config
 		
         // extra things, don't enable unless you know what they are
         bool UsingBuildOrderDemo            = false;
-	}
+    }
 
     namespace BotInfo
     {
@@ -45,7 +45,7 @@ namespace Config
 	}
     
     namespace Debug								
-	{
+    {
         bool PrintModuleTimeout             = true;	
         bool PrintBuildOrderSearchInfo      = true;
         bool DrawResourceInfo               = false;
@@ -70,17 +70,17 @@ namespace Config
         BWAPI::Color ColorLineMineral       = BWAPI::Colors::Cyan;
         BWAPI::Color ColorUnitNearEnemy     = BWAPI::Colors::Red;
         BWAPI::Color ColorUnitNotNearEnemy  = BWAPI::Colors::Green;
-	}
+    }
 
     namespace Micro								
-	{
-		bool WorkerDefense                  = true;		// whether or not we defend with workers when combat units die
-		int WorkerDefensePerUnit            = 2;		// how many workers to assign to each unit attacking us
+    {
+        bool WorkerDefense                  = true;		// whether or not we defend with workers when combat units die
+        int WorkerDefensePerUnit            = 2;		// how many workers to assign to each unit attacking us
 		
-		int CombatRadius                    = 1000;		// radius of combat to consider units for Micro Search
-		int CombatRegroupRadius             = 300;		// radius of units around frontmost unit we consider in regroup calculation
-		int UnitNearEnemyRadius             = 600;		// radius to consider a unit 'near' to an enemy unit
-	}
+        int CombatRadius                    = 1000;		// radius of combat to consider units for Micro Search
+        int CombatRegroupRadius             = 300;		// radius of units around frontmost unit we consider in regroup calculation
+        int UnitNearEnemyRadius             = 600;		// radius to consider a unit 'near' to an enemy unit
+    }
 
     namespace Macro
     {
@@ -89,7 +89,7 @@ namespace Config
     }
 
     namespace Tools								
-	{
-		extern int MAP_GRID_SIZE            = 320;		// size of grid spacing in MapGrid
-	}
+    {
+        extern int MAP_GRID_SIZE            = 320;		// size of grid spacing in MapGrid
+    }
 }

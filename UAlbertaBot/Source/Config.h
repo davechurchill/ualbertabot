@@ -5,16 +5,16 @@
 
 namespace Config
 {
-	namespace Modules
-	{
-		extern bool UsingGameCommander;			// toggle GameCommander, effectively UAlbertaBot
-		extern bool UsingScoutManager;
-		extern bool UsingCombatCommander;
-		extern bool UsingUnitCommandManager;
-		extern bool UsingBuildOrderSearch;				// toggle use of Build Order Search, currently no backup
-		extern bool UsingStrategyIO;				// toggle the use of file io for strategy
-		extern bool UsingBuildOrderDemo;			
-	}
+    namespace Modules
+    {
+        extern bool UsingGameCommander;			// toggle GameCommander, effectively UAlbertaBot
+        extern bool UsingScoutManager;
+        extern bool UsingCombatCommander;
+        extern bool UsingUnitCommandManager;
+        extern bool UsingBuildOrderSearch;				// toggle use of Build Order Search, currently no backup
+        extern bool UsingStrategyIO;				// toggle the use of file io for strategy
+        extern bool UsingBuildOrderDemo;			
+    }
     
     namespace BotInfo
     {
@@ -38,18 +38,13 @@ namespace Config
         extern bool EnableCompleteMapInformation;
     }
 
-	namespace Tournament
-	{
-		extern int GameEndFrame;	
-	}
+    namespace Tournament
+    {
+        extern int GameEndFrame;	
+    }
 
-	namespace FileIO
-	{
-		extern const char * FILE_SETTINGS;				
-	}
-
-	namespace Debug
-	{
+    namespace Debug
+    {
         extern bool PrintModuleTimeout;				
         extern bool PrintBuildOrderSearchInfo;
         extern bool DrawResourceInfo;
@@ -70,21 +65,21 @@ namespace Config
 
         extern std::string ErrorLogFilename;
 
-		extern BWAPI::Color ColorLineTarget;
-		extern BWAPI::Color ColorLineMineral;
-		extern BWAPI::Color ColorUnitNearEnemy;
-		extern BWAPI::Color ColorUnitNotNearEnemy;
-	}
+        extern BWAPI::Color ColorLineTarget;
+        extern BWAPI::Color ColorLineMineral;
+        extern BWAPI::Color ColorUnitNearEnemy;
+        extern BWAPI::Color ColorUnitNotNearEnemy;
+    }
 
-	namespace Micro
-	{
-		extern bool WorkerDefense;
-		extern int  WorkerDefensePerUnit;
+    namespace Micro
+    {
+        extern bool WorkerDefense;
+        extern int  WorkerDefensePerUnit;
 
-		extern int CombatRadius;						// radius of combat to consider units for Micro Search
-		extern int CombatRegroupRadius;				// radius of units around frontmost unit we consider in regroup calculation
-		extern int UnitNearEnemyRadius;				// radius to consider a unit 'near' to an enemy unit
-	}
+        extern int CombatRadius;						// radius of combat to consider units for Micro Search
+        extern int CombatRegroupRadius;				// radius of units around frontmost unit we consider in regroup calculation
+        extern int UnitNearEnemyRadius;				// radius to consider a unit 'near' to an enemy unit
+    }
 
     namespace Macro
     {
@@ -92,8 +87,8 @@ namespace Config
         extern int PylonSpacing;
     }
 
-	namespace Tools
-	{
-		extern int MAP_GRID_SIZE;
-	}
+    namespace Tools
+    {
+        extern int MAP_GRID_SIZE;
+    }
 }
