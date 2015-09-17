@@ -9,7 +9,7 @@
         
     "BWAPI" : 
     {
-        "SetLocalSpeed"   : 20,
+        "SetLocalSpeed"   : 10,
         "SetFrameSkip"    : 0,
         "EnableUserInput" : true,
         "EnableCompleteMapInformation" : false
@@ -30,7 +30,7 @@
     "Macro" :
     {
         "BuildingSpacing" : 1,
-        "PylongSpacing"   : 3
+        "PylonSpacing"   : 3
     },
 
     "Debug" :
@@ -65,7 +65,7 @@
         "UseCombatCommander"    : true,
         "UseBuildOrderSearch"   : true,
         "UseAutoObserver"       : true,
-        "UseStrategyIO"         : true,
+        "UseStrategyIO"         : false,
         "UseUnitCommandManager" : false
     },
     
@@ -77,7 +77,7 @@
     "Strategy" :
     {
         "StrategyName" : "Protoss_ZealotRush",
-        "ReadDirectory" : "bwapi-data/write/",
+        "ReadDirectory" : "bwapi-data/read/",
         "WriteDirectory" : "bwapi-data/write/",
         
         "Strategies" :

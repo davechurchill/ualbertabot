@@ -150,6 +150,9 @@
     <ClCompile Include="..\Source\Config.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\AutoObserver.cpp">
+      <Filter>game\util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\CombatCommander.h">
@@ -268,6 +271,9 @@
     </ClInclude>
     <ClInclude Include="..\Source\Config.h">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\AutoObserver.h">
+      <Filter>game\util</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

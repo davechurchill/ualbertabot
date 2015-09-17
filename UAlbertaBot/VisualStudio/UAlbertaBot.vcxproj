@@ -114,6 +114,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Source\AutoObserver.cpp" />
     <ClCompile Include="..\Source\BOSSManager.cpp" />
     <ClCompile Include="..\source\BuildingData.cpp" />
     <ClCompile Include="..\source\BuildingManager.cpp" />
@@ -154,6 +155,7 @@
     <ClCompile Include="..\source\WorkerManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Source\AutoObserver.h" />
     <ClInclude Include="..\Source\BOSSManager.h" />
     <ClInclude Include="..\source\BuildingData.h" />
     <ClInclude Include="..\source\BuildingManager.h" />
