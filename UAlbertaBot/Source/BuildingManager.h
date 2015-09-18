@@ -22,13 +22,7 @@ class BuildingManager {
 	int							reservedGas;					// gas reserved for planned buildings
 	int							buildingSpace;					// how much space we want between buildings
 
-	std::vector<BWAPI::UnitInterface*>	builders;						// workers which have been assigned to buildings
-	std::vector<Building>		buildingsNeedingBuilders;		// buildings which do not yet have builders assigned
-	std::vector<Building>		buildingsAssigned;				// buildings which have workers but not yet under construction
-	std::vector<Building>		buildingsUnderConstruction;		// buildings which are under construction
-	std::vector<BWAPI::UnitInterface*>	buildingUnitsConstructing;		// units which have been recently detected as started construction
-
-    BWAPI::UnitInterface*               getAddonProducer(MetaType t);
+    BWAPI::UnitInterface*       getAddonProducer(MetaType t);
 
 	// functions
 	bool						isEvolvedBuilding(BWAPI::UnitType type);
@@ -66,5 +60,7 @@ public:
 	bool						isBeingBuilt(BWAPI::UnitType type);
 	
 	void						drawBuildingInformation(int x, int y);
+
+    std::vector<BWAPI::UnitType> buildingsQueued();
 };
 }

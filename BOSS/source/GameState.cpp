@@ -15,7 +15,7 @@ GameState::GameState(const RaceID r)
 }
 
 #ifdef _MSC_VER
-GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self)
+GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self, const std::vector<BWAPI::UnitType> & buildingsQueued)
     : _race                 (Races::GetRaceID(self->getRace()))
     , _currentFrame         (game->getFrameCount())
     , _lastActionFrame      (0)
@@ -33,9 +33,22 @@ GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self)
     _units.setGasWorkers(gasWorkerCount);
     _units.setBuildingWorkers(buildingWorkerCount);
 
+    // add buildings queued like they had just been started
+    for (const BWAPI::UnitType & type : buildingsQueued)
+    {
+        _units.addActionInProgress(ActionType(type), game->getFrameCount() + type.buildTime(), false);
+    }
+
 	// add each unit we have to the current state
 	for (BWAPI::UnitInterface * unit : self->getUnits())
 	{
+        if (unit->getType() == BWAPI::UnitTypes::Zerg_Egg)
+        {
+            
+            _units.addActionInProgress(ActionType(unit->getBuildType()), game->getFrameCount() + unit->getRemainingTrainTime(), false);
+            continue;
+        }
+
 		if (unit->getType() == BWAPI::UnitTypes::Zerg_Larva)
 		{
 			++larvaCount;
@@ -47,6 +60,21 @@ GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self)
 			continue;
 		}
         
+        if (unit->getType().isWorker())
+        {
+            const BWAPI::UnitCommand & command = unit->getLastCommand();
+
+            if (command.getType() == BWAPI::UnitCommandTypes::Build)
+            {
+                int a = 6;
+            }
+
+            if (command.getType() == BWAPI::UnitCommandTypes::Morph)
+            {
+                int a = 6;
+            }
+        }
+
         const ActionType actionType(unit->getType());
 
 		// if the unit is completed
@@ -59,10 +87,28 @@ GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self)
 				FrameCountType  trainTime = unit->getRemainingTrainTime() + unit->getRemainingResearchTime() + unit->getRemainingUpgradeTime();
                 ActionType      constructing;
                 ActionType      addon;
+                std::string     unitName = unit->getType().getName();
+                int             numLarva = unit->getLarva().size();
+                bool            isHatchery = unit->getType().isResourceDepot() && unit->getType().getRace() == BWAPI::Races::Zerg;
 
-                if (unit->getRemainingTrainTime() > 0)
+                // if this is a hatchery subtract the training time which is just larva production time
+                if (isHatchery)
                 {
-                    constructing = ActionType(*unit->getTrainingQueue().begin());
+                    trainTime -= unit->getRemainingTrainTime();
+                }
+
+                if (unit->getAddon() && unit->getAddon()->isBeingConstructed())
+                {
+                    constructing = ActionType(unit->getAddon()->getType());
+                } 
+                else if (!isHatchery && unit->getRemainingTrainTime() > 0)
+                {
+                    int remaining = unit->getRemainingTrainTime();
+                    auto & queue = unit->getTrainingQueue();
+
+                    auto & first = queue.begin();
+                    BWAPI::UnitType typeTraining = *first;
+                    constructing = ActionType(typeTraining);
                 }
 				else if (unit->getRemainingResearchTime() > 0)
 				{
@@ -88,7 +134,7 @@ GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self)
                     }
                 }
 
-                _units.addCompletedBuilding(actionType, trainTime, constructing, addon);
+                _units.addCompletedBuilding(actionType, trainTime, constructing, addon, numLarva);
 			}
             else
             {
@@ -130,6 +176,8 @@ GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self)
 		    _units.addCompletedAction(ActionType(type));
 		}
 	}
+
+    Logger::LogAppendToFile(BOSS_LOGFILE, toString());
 }
 #endif
 

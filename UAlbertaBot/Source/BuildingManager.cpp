@@ -501,3 +501,24 @@ BWAPI::UnitInterface* BuildingManager::getAddonProducer(MetaType t)
 
     return NULL;
 }
+
+std::vector<BWAPI::UnitType> BuildingManager::buildingsQueued()
+{
+    std::vector<BWAPI::UnitType> buildingsQueued;
+
+    buildingData.begin(ConstructionData::Unassigned);
+	while (buildingData.hasNextBuilding(ConstructionData::Unassigned)) 
+    {
+		Building & b = buildingData.getNextBuilding(ConstructionData::Unassigned);
+        buildingsQueued.push_back(b.type);
+    }
+
+    buildingData.begin(ConstructionData::Assigned);
+	while (buildingData.hasNextBuilding(ConstructionData::Assigned)) 
+    {
+		Building & b = buildingData.getNextBuilding(ConstructionData::Assigned);
+        buildingsQueued.push_back(b.type);
+    }
+
+    return buildingsQueued;
+}

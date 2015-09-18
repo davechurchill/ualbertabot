@@ -346,10 +346,10 @@ const ActionID ActionTypeData::GetNumActionTypes(const RaceID race)
 
 const ActionTypeData & ActionTypeData::GetActionTypeData(const RaceID raceID, const ActionID & id)
 {
+    BOSS_ASSERT(raceID < Races::NUM_RACES, "Race ID invalid: %d %d", (int)raceID, (int)id);
+
     return allActionTypeDataVec[raceID][id];
 }
-
-
 
 ActionID ActionTypeData::GetActionID(const BWAPI::UnitType & type) 
 {

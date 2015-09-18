@@ -25,6 +25,8 @@
 
 BWAPI::AIModule * __NewAIModule();
 
+#define UALBERTABOT_PROJECT
+
 struct double2
 {
 	double x,y;

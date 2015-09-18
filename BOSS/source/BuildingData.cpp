@@ -103,9 +103,13 @@ void BuildingStatus::fastForward(const FrameCountType frames)
 {
     // if we fastforward more than the current time remaining, we will complete the action
     bool willComplete = _timeRemaining <= frames;
+    int timeWasRemaining = _timeRemaining;
+    const std::string & name = _type.getName();
 
     if ((_timeRemaining > 0) && willComplete)
     {
+        BOSS_ASSERT(_isConstructing != ActionTypes::None, "We can't be building a unit without a type");
+
         _timeRemaining = 0;
 
         // if it's building an addon, add it

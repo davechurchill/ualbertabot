@@ -34,18 +34,26 @@ void BOSSManager::update(double timeLimit)
     {
         double realTimeLimit = timeLimit < 0 ? 5 : timeLimit;
         _smartSearch->setTimeLimit((int)realTimeLimit);
-		try{
+		try
+        {
 			_smartSearch->search();
 		}
-		catch (const BOSS::Assert::BOSSException &){
-			BWAPI::Broodwar->printf("Previous search didn't find a solution, resorting to Naive Build Order");
+		catch (const BOSS::Assert::BOSSException & exception)
+        {
+            UAB_ASSERT_WARNING(false, "BOSS SmartSearch Exception: %s", exception.what());
+			BWAPI::Broodwar->drawTextScreen(0, 0, "Previous search didn't find a solution, resorting to Naive Build Order");
 
 			BOSS::NaiveBuildOrderSearch nbos(_smartSearch->getParameters().initialState, _smartSearch->getParameters().goal);
-			try{
+			try
+            {
 				_previousBuildOrder = nbos.solve();
 				return;
 			}
-			catch (const BOSS::Assert::BOSSException &){
+			catch (const BOSS::Assert::BOSSException & exception)
+            {
+                UAB_ASSERT_WARNING(false, "BOSS Naive Search Exception: %s", exception.what());
+
+                BWAPI::Broodwar->drawTextScreen(0, 10, "Naive build order search failed");
 				BWAPI::Broodwar->printf("No legal BuildOrder found, returning empty Build Order");
 				_previousBuildOrder = BOSS::BuildOrder();
 				return;
@@ -72,15 +80,17 @@ void BOSSManager::update(double timeLimit)
 
                 BOSS::NaiveBuildOrderSearch nbos(_smartSearch->getParameters().initialState, _smartSearch->getParameters().goal);
 
-				try{
+				try
+                {
 					_previousBuildOrder = nbos.solve();
 					return;
 				}
-				catch (const BOSS::Assert::BOSSException &)
+				catch (const BOSS::Assert::BOSSException & exception)
                 {
+                    UAB_ASSERT_WARNING(false, "BOSS Timeout Naive Search Exception: %s", exception.what());
                     if (Config::Debug::PrintBuildOrderSearchInfo)
                     {
-					    BWAPI::Broodwar->printf("No legal BuildOrder found, returning empty Build Order");
+					    BWAPI::Broodwar->drawTextScreen(0, 20, "No legal BuildOrder found, returning empty Build Order");
                     }
 					_previousBuildOrder = BOSS::BuildOrder();
 					return;
@@ -95,7 +105,9 @@ void BOSSManager::startNewSearch(const std::vector<MetaPair> & goalUnits)
 {
     // convert from UAlbertaBot's meta goal type to BOSS ActionType goal
     BOSS::BuildOrderSearchGoal goal = GetGoal(goalUnits);
-    BOSS::GameState initialState(BWAPI::Broodwar, BWAPI::Broodwar->self());
+    BOSS::GameState initialState(BWAPI::Broodwar, BWAPI::Broodwar->self(), BuildingManager::Instance().buildingsQueued());
+
+    Logger::LogAppendToFile(Config::Debug::ErrorLogFilename, initialState.toString());
 
     _smartSearch = SearchPtr(new BOSS::DFBB_BuildOrderSmartSearch(initialState.getRace()));
     _smartSearch->setGoal(GetGoal(goalUnits));
@@ -225,7 +237,7 @@ void BOSSManager::drawSearchInformation(int x, int y)
 
 std::vector<MetaType> BOSSManager::GetNaiveBuildOrder(const std::vector<MetaPair> & goalUnits)
 {
-    BOSS::GameState                     initialState(BWAPI::Broodwar, BWAPI::Broodwar->self());
+    BOSS::GameState                     initialState(BWAPI::Broodwar, BWAPI::Broodwar->self(), BuildingManager::Instance().buildingsQueued());
     BOSS::BuildOrderSearchGoal          goal = GetGoal(goalUnits);
 
     BOSS::NaiveBuildOrderSearch         nbos(initialState, goal);
@@ -236,7 +248,7 @@ std::vector<MetaType> BOSSManager::GetNaiveBuildOrder(const std::vector<MetaPair
 	
 std::vector<MetaType> BOSSManager::GetOptimizedNaiveBuildOrder(const std::vector<MetaPair> & goalUnits)
 {
-    BOSS::GameState                     initialState(BWAPI::Broodwar, BWAPI::Broodwar->self());
+    BOSS::GameState                     initialState(BWAPI::Broodwar, BWAPI::Broodwar->self(), BuildingManager::Instance().buildingsQueued());
     BOSS::BuildOrderSearchGoal          goal = GetGoal(goalUnits);
 
     BOSS::BuildOrder                    buildOrder = BOSS::Tools::GetOptimizedNaiveBuildOrder(initialState, goal);
