@@ -76,6 +76,8 @@ namespace Config
 
     namespace Micro
     {
+        extern bool UseSparcraftSimulation;
+
         extern bool WorkerDefense;
         extern int  WorkerDefensePerUnit;
 

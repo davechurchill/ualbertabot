@@ -24,6 +24,11 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
 
 	for (BWAPI::UnitInterface* unit : ourCombatUnits)
 	{
+        if (unit->getType().isWorker())
+        {
+            continue;
+        }
+
         if (InformationManager::Instance().isCombatUnit(unit->getType()) && SparCraft::System::isSupportedUnitType(unit->getType()))
 		{
             try
@@ -40,6 +45,11 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
 
 	for (UnitInfo & ui : enemyCombatUnits)
 	{
+        if (ui.type.isWorker())
+        {
+            continue;
+        }
+
         if (!ui.type.isFlyer() && SparCraft::System::isSupportedUnitType(ui.type) && ui.completed)
 		{
             try
@@ -162,6 +172,18 @@ SparCraft::ScoreType CombatSimulation::simulateCombat()
 
         if (Config::Debug::DrawCombatSimulationInfo)
         {
+            std::stringstream ss1;
+            ss1 << "Initial State:\n";
+            ss1 << s1.toStringCompact() << "\n\n";
+
+            std::stringstream ss2;
+
+            ss2 << "Predicted Outcome: " << eval << "\n";
+            ss2 << g.getState().toStringCompact() << "\n";
+
+            BWAPI::Broodwar->drawTextScreen(150,200,"%s", ss1.str().c_str());
+            BWAPI::Broodwar->drawTextScreen(300,200,"%s", ss2.str().c_str());
+
 	        BWAPI::Broodwar->drawTextScreen(240, 280, "Combat Sim : %d", eval);
         }
         

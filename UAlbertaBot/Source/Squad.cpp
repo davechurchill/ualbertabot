@@ -163,7 +163,6 @@ bool Squad::needsToRegroup()
 		return false;
 	}
 
-
 	BWAPI::UnitInterface* unitClosest = unitClosestToEnemy();
 
 	if (!unitClosest)
@@ -173,22 +172,12 @@ bool Squad::needsToRegroup()
 	}
 
     SparCraft::ScoreType score = 0;
-	int SPARCRAFTscore = 0;
 
 	//do the SparCraft Simulation!
 	CombatSimulation sim;
-
-	// special case with zealots vs. zerglings. combat simulation favours zerglings due to no unit collisions, check to see if we have 1/3 zealots
-	if (sim.checkZealotVsZergling(unitClosest->getPosition(), Config::Micro::CombatRegroupRadius + InformationManager::Instance().lastFrameRegroup * 300))
-	{
-		regroupStatus = std::string("\x04 Attack - Zealot vs. Zergling - 1/3 condition met!");
-		return false;
-	}
-
+    
 	sim.setCombatUnits(unitClosest->getPosition(), Config::Micro::CombatRegroupRadius + InformationManager::Instance().lastFrameRegroup * 300);
-	SPARCRAFTscore = sim.simulateCombat();
-
-	score = SPARCRAFTscore;
+	score = sim.simulateCombat();
 
 	// if we are DT rushing and we haven't lost a DT yet, no retreat!
 	if (Config::Strategy::StrategyName == "Protoss_DTRush" &&
@@ -197,7 +186,6 @@ bool Squad::needsToRegroup()
 		regroupStatus = std::string("\x04 DARK TEMPLAR HOOOOO!");
 		return false;
 	}
-
 
     bool retreat = score < 0;
     int switchTime = 100;

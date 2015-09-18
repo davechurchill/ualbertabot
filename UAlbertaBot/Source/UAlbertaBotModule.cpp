@@ -99,6 +99,7 @@ void UAlbertaBotModule::parseConfigFile(const std::string & filename)
     if (doc.HasMember("Micro") && doc["Micro"].IsObject())
     {
         const rapidjson::Value & micro = doc["Micro"];
+        JSONTools::ReadBool("UseSparcraftSimulation", micro, Config::Micro::UseSparcraftSimulation);
         JSONTools::ReadBool("WorkerDefense", micro, Config::Micro::WorkerDefense);
         JSONTools::ReadInt("WorkerDefensePerUnit", micro, Config::Micro::WorkerDefensePerUnit);
         JSONTools::ReadInt("InCombatRadius", micro, Config::Micro::CombatRadius);

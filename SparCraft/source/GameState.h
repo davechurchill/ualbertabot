@@ -116,6 +116,7 @@ public:
     // state i/o functions
     void                    print(int indent = 0) const;
 	std::string             toString() const;
+    std::string             toStringCompact() const;
     void                    write(const std::string & filename)                                     const;
     void                    read(const std::string & filename);
 };

@@ -77,6 +77,7 @@ namespace Config
 
     namespace Micro								
     {
+        bool UseSparcraftSimulation         = true;
         bool WorkerDefense                  = true;     // whether or not we defend with workers when combat units die
         int WorkerDefensePerUnit            = 2;        // how many workers to assign to each unit attacking us
 		
