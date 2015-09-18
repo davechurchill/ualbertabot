@@ -16,12 +16,17 @@ typedef std::shared_ptr<BOSS::DFBB_BuildOrderSmartSearch> SearchPtr;
 class BOSSManager
 {
     int                                     _previousSearchStartFrame;
+    int                                     _savedSearchStartFrame;
     int                                     _previousSearchFinishFrame;
     bool                                    _searchInProgress;
+    double                                  _totalPreviousSearchTime;
+    std::vector<MetaPair>                   _previousGoalUnits;
+    std::string                             _previousStatus;
 
     SearchPtr                               _smartSearch;
 
     BOSS::DFBB_BuildOrderSearchResults      _previousSearchResults;
+    BOSS::DFBB_BuildOrderSearchResults      _savedSearchResults;
     BOSS::BuildOrder                        _previousBuildOrder;
 
 	BOSS::GameState				            getCurrentState();

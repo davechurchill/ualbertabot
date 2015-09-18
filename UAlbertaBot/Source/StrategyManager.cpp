@@ -174,7 +174,7 @@ const MetaPairVector StrategyManager::getBuildOrderGoal()
 	{
 		return getTerranBuildOrderGoal();
 	}
-    else if (Config::Strategy::StrategyName == "Zerg_ZerglingRush")
+    else if (Config::Strategy::StrategyName == "Zerg_ZerglingRush" || Config::Strategy::StrategyName == "Zerg_3HatchMuta")
 	{
 		return getZergBuildOrderGoal();
 	}
@@ -366,7 +366,7 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 	int medicsWanted = numMedics + 2;
 	int wraithsWanted = numWraith + 4;
 
-	goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Marine,	marinesWanted));
+	goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Wraith, wraithsWanted));
 
 	return (const std::vector<MetaPair>)goal;
 }
@@ -383,7 +383,7 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
 	int mutasWanted = numMutas + 6;
 	int hydrasWanted = numHydras + 6;
 
-	goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Zergling, zerglings + 8));
+	goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Mutalisk, numMutas + 6));
 
 	return (const std::vector<MetaPair>)goal;
 }

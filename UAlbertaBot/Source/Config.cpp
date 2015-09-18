@@ -50,7 +50,7 @@ namespace Config
     namespace Debug								
     {
         bool PrintModuleTimeout             = true;	
-        bool PrintBuildOrderSearchInfo      = true;
+        bool DrawBuildOrderSearchInfo       = true;
         bool DrawUnitHealthBars             = true;
         bool DrawProductionInfo             = true;
         bool DrawResourceInfo               = false;

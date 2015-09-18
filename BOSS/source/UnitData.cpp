@@ -66,7 +66,7 @@ void UnitData::addCompletedAction(const ActionType & action, bool wasBuilt)
     const static ActionType Lair = ActionTypes::GetActionType("Zerg_Lair");
     const static ActionType Hive = ActionTypes::GetActionType("Zerg_Hive");
 
-    _numUnits[action.ID()] += action.numProduced();
+    _numUnits[action.ID()] += wasBuilt ? action.numProduced() : 1;
 
     if (wasBuilt)
     {

@@ -139,7 +139,7 @@ GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self, c
             else
             {
                 // add the unit to the state
-			    _units.addCompletedAction(actionType);
+			    _units.addCompletedAction(actionType, false);
 
                 _units.setCurrentSupply(_units.getCurrentSupply() + actionType.supplyRequired());
             }

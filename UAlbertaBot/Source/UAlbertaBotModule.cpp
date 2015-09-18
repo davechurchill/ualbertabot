@@ -121,7 +121,7 @@ void UAlbertaBotModule::parseConfigFile(const std::string & filename)
         const rapidjson::Value & debug = doc["Debug"];
         JSONTools::ReadString("ErrorLogFilename", debug, Config::Debug::ErrorLogFilename);
         JSONTools::ReadBool("PrintModuleTimeout", debug, Config::Debug::PrintModuleTimeout);
-        JSONTools::ReadBool("PrintBuildOrderSearchInfo", debug, Config::Debug::PrintBuildOrderSearchInfo);
+        JSONTools::ReadBool("DrawBuildOrderSearchInfo", debug, Config::Debug::DrawBuildOrderSearchInfo);
         JSONTools::ReadBool("DrawUnitHealthBars", debug, Config::Debug::DrawUnitHealthBars);
         JSONTools::ReadBool("DrawResourceInfo", debug, Config::Debug::DrawResourceInfo);
         JSONTools::ReadBool("DrawWorkerInfo", debug, Config::Debug::DrawWorkerInfo);
@@ -142,7 +142,7 @@ void UAlbertaBotModule::parseConfigFile(const std::string & filename)
         if (Config::Debug::AllDebugOff)
         {
             Config::Debug::PrintModuleTimeout             = false;	
-            Config::Debug::PrintBuildOrderSearchInfo      = false;
+            Config::Debug::DrawBuildOrderSearchInfo       = false;
             Config::Debug::DrawUnitHealthBars             = false;
             Config::Debug::DrawResourceInfo               = false;
             Config::Debug::DrawProductionInfo             = false;

@@ -43,7 +43,7 @@ void ProductionManager::performBuildOrderSearch(const std::vector<MetaPair> & go
 	//std::vector<MetaType> buildOrder = BOSSManager::GetOptimizedNaiveBuildOrder(goal);
 	//setBuildOrder(buildOrder);
 
-	BuildOrder buildOrder = BOSSManager::Instance().getBuildOrder();
+	BuildOrder & buildOrder = BOSSManager::Instance().getBuildOrder();
 
 	if (buildOrder.size() > 0)
 	{
@@ -55,7 +55,7 @@ void ProductionManager::performBuildOrderSearch(const std::vector<MetaPair> & go
 	{
 		if (!BOSSManager::Instance().isSearchInProgress())
 		{
-            if (Config::Debug::PrintBuildOrderSearchInfo)
+            if (Config::Debug::DrawBuildOrderSearchInfo)
             {
 			    BWAPI::Broodwar->printf("Starting a new build order search!");
             }
@@ -70,7 +70,7 @@ void ProductionManager::performBuildOrderSearch()
         return;
     }
 
-	BuildOrder buildOrder = BOSSManager::Instance().getBuildOrder();
+	BuildOrder & buildOrder = BOSSManager::Instance().getBuildOrder();
 
     if (buildOrder.size() > 0)
     {
@@ -82,7 +82,7 @@ void ProductionManager::performBuildOrderSearch()
     {
         if (!BOSSManager::Instance().isSearchInProgress())
         {
-            if (Config::Debug::PrintBuildOrderSearchInfo)
+            if (Config::Debug::DrawBuildOrderSearchInfo)
             {
 			    BWAPI::Broodwar->printf("Starting a new build order search!");
             }
@@ -111,7 +111,7 @@ void ProductionManager::update()
 	// if nothing is currently building, get a new goal from the strategy manager
 	if ((queue.size() == 0) && (BWAPI::Broodwar->getFrameCount() > 10) && !Config::Modules::UsingBuildOrderDemo)
 	{
-        if (Config::Debug::PrintBuildOrderSearchInfo)
+        if (Config::Debug::DrawBuildOrderSearchInfo)
         {
 		    BWAPI::Broodwar->drawTextScreen(150, 10, "Nothing left to build, new search!");
         }
@@ -121,15 +121,15 @@ void ProductionManager::update()
 	//// detect if there's a build order deadlock once per second
 	if ((BWAPI::Broodwar->getFrameCount() % 24 == 0) && detectBuildOrderDeadlock())
 	{
-        if (Config::Debug::PrintBuildOrderSearchInfo)
+        if (Config::Debug::DrawBuildOrderSearchInfo)
         {
-		    BWAPI::Broodwar->printf("Supply deadlock detected, building pylon!");
+		    BWAPI::Broodwar->printf("Supply deadlock detected, building supply!");
         }
 		queue.queueAsHighestPriority(MetaType(BWAPI::Broodwar->self()->getRace().getSupplyProvider()), true);
 	}
 
 	// if they have cloaked units get a new goal asap
-	if (!enemyCloakedDetected && InformationManager::Instance().enemyHasCloakedUnits())
+	if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Protoss && !enemyCloakedDetected && InformationManager::Instance().enemyHasCloakedUnits())
 	{
 		if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Photon_Cannon) < 2)
 		{
@@ -142,7 +142,7 @@ void ProductionManager::update()
 			queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Protoss_Forge), true);
 		}
 
-        if (Config::Debug::PrintBuildOrderSearchInfo)
+        if (Config::Debug::DrawBuildOrderSearchInfo)
         {
 		    BWAPI::Broodwar->printf("Enemy Cloaked Unit Detected!");
         }
@@ -167,7 +167,7 @@ void ProductionManager::onUnitDestroy(BWAPI::UnitInterface* unit)
 		// if it's a worker or a building, we need to re-search for the current goal
 		if ((unit->getType().isWorker() && !WorkerManager::Instance().isWorkerScout(unit)) || unit->getType().isBuilding())
 		{
-            if (Config::Debug::PrintBuildOrderSearchInfo)
+            if (Config::Debug::DrawBuildOrderSearchInfo)
             {
 			    BWAPI::Broodwar->printf("Critical unit died, re-searching build order");
             }
@@ -465,6 +465,18 @@ bool ProductionManager::detectBuildOrderDeadlock()
 	bool supplyInProgress =		BuildingManager::Instance().isBeingBuilt(BWAPI::Broodwar->self()->getRace().getCenter()) || 
 								BuildingManager::Instance().isBeingBuilt(BWAPI::Broodwar->self()->getRace().getSupplyProvider());
 
+    for (BWAPI::UnitInterface * unit : BWAPI::Broodwar->self()->getUnits())
+    {
+        if (unit->getType() == BWAPI::UnitTypes::Zerg_Egg)
+        {
+            if (unit->getBuildType() == BWAPI::UnitTypes::Zerg_Overlord)
+            {
+                supplyInProgress = true;
+                break;
+            }
+        }
+    }
+
 	// does the current item being built require more supply
     
 	int supplyCost			= queue.getHighestPriorityItem().metaType.supplyRequired();
@@ -690,6 +702,10 @@ void ProductionManager::drawProductionInformation(int x, int y)
 		yy += 10;
 
 		BWAPI::UnitType t = prod[i]->getType();
+        if (t == BWAPI::UnitTypes::Zerg_Egg)
+        {
+            t = prod[i]->getBuildType();
+        }
 
 		BWAPI::Broodwar->drawTextScreen(x, yy, " %s%s", prefix.c_str(), t.getName().c_str());
 		BWAPI::Broodwar->drawTextScreen(x+150, yy, "%s%6d", prefix.c_str(), prod[i]->getRemainingBuildTime());

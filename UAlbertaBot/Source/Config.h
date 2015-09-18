@@ -49,7 +49,7 @@ namespace Config
     namespace Debug
     {
         extern bool PrintModuleTimeout;				
-        extern bool PrintBuildOrderSearchInfo;
+        extern bool DrawBuildOrderSearchInfo;
         extern bool DrawUnitHealthBars;
         extern bool DrawResourceInfo;
         extern bool DrawProductionInfo;
