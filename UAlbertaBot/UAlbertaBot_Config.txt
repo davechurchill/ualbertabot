@@ -3,13 +3,12 @@
     {
         "BotName" : "UAlbertaBot",
         "Authors" : "David Churchill",
-        "Race"    : "Protoss",
         "PrintInfoOnStart" : false
     },
         
     "BWAPI" : 
     {
-        "SetLocalSpeed"   : 10,
+        "SetLocalSpeed"   : 0,
         "SetFrameSkip"    : 0,
         "EnableUserInput" : true,
         "EnableCompleteMapInformation" : false
@@ -38,7 +37,7 @@
         "ErrorLogFilename"          : "d:/ualbertabot/UAlbertaBot/UAB_ErrorLog.txt",
         
         "PrintModuleTimeout"        : false,
-        "PrintBuildOrderSearchInfo" : false,
+        "DrawBuildOrderSearchInfo"  : false,
         "DrawUnitHealthBars"        : true,
         "DrawProductionInfo"        : true,
         "DrawEnemyUnitInfo"         : false,
@@ -65,7 +64,7 @@
         "UseCombatCommander"    : true,
         "UseBuildOrderSearch"   : true,
         "UseAutoObserver"       : true,
-        "UseStrategyIO"         : false,
+        "UseStrategyIO"         : true,
         "UseUnitCommandManager" : false
     },
     
@@ -76,17 +75,21 @@
     
     "Strategy" :
     {
-        "StrategyName" : "Protoss_ZealotRush",
-        "ReadDirectory" : "bwapi-data/read/",
-        "WriteDirectory" : "bwapi-data/write/",
+        "ProtossStrategyName"   : "Protoss_ZealotRush",
+        "TerranStrategyName"    : "Terran_MarineRush",
+        "ZergStrategyName"      : "Zerg_3HatchMuta",
+        
+        "ReadDirectory"         : "bwapi-data/write/",
+        "WriteDirectory"        : "bwapi-data/write/",
         
         "Strategies" :
         {
             "Protoss_ZealotRush"    : { "Race" : "Protoss", "OpeningBuildOrder" : ["Probe", "Probe", "Probe", "Probe", "Pylon", "Probe", "Gateway", "Gateway", "Probe", "Probe", "Zealot", "Pylon", "Zealot", "Zealot",  "Probe", "Zealot", "Zealot", "Probe", "Pylon", "Zealot", "Gateway", "Probe", "Pylon", "Probe", "Zealot", "Probe", "Zealot", "Zealot", "Zealot", "Zealot", "Pylon", "Probe", "Zealot", "Zealot", "Zealot" ]},
             "Protoss_DragoonRush"   : { "Race" : "Protoss", "OpeningBuildOrder" : ["Probe", "Probe", "Probe", "Probe", "Pylon", "Probe", "Probe", "Gateway", "Probe", "Assimilator", "Probe", "Probe", "Cybernetics_Core", "Probe", "Probe", "Gateway", "Singularity_Charge", "Dragoon", "Gateway", "Pylon", "Dragoon", "Dragoon", "Probe", "Gateway", "Pylon", "Probe", "Dragoon", "Dragoon", "Dragoon" ]},
             "Protoss_DTRush"        : { "Race" : "Protoss", "OpeningBuildOrder" : ["Probe", "Probe", "Probe", "Probe", "Pylon", "Probe", "Gateway", "Probe", "Assimilator", "Probe", "Cybernetics_Core", "Probe", "Citadel_of_Adun", "Probe", "Templar_Archives", "Gateway", "Dark_Templar", "Dark_Templar", "Pylon", "Dark_Templar", "Dark_Templar", "Probe", "Pylon", "Probe" ]},
-            "Terran_MarineRush"     : { "Race" : "Terran",  "OpeningBuildOrder" : ["SCV", "SCV", "SCV", "SCV", "Supply_Depot", "SCV", "SCV", "Barracks", "Refinery", "SCV", "SCV", "SCV", "SCV", "Factory", "Factory", "Machine_Shop", "Machine_Shop" ]},
-            "Zerg_ZerglingRush"     : { "Race" : "Zerg",    "OpeningBuildOrder" : ["Drone", "Drone", "Drone", "Drone", "Overlord", "Drone", "Drone", "Drone", "Hatchery", "Spawning_Pool", "Extractor", "Drone", "Drone", "Drone", "Drone", "Overlord", "Lair" ] }
+            "Terran_MarineRush"     : { "Race" : "Terran",  "OpeningBuildOrder" : ["SCV", "SCV", "SCV", "SCV", "SCV", "Supply_Depot", "SCV"]},
+            "Zerg_ZerglingRush"     : { "Race" : "Zerg",    "OpeningBuildOrder" : ["Drone", "Drone", "Drone", "Drone", "Overlord", "Spawning Pool"] },
+            "Zerg_3HatchMuta"       : { "Race" : "Zerg",    "OpeningBuildOrder" : ["Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Overlord", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Hatchery", "Zerg_Spawning_Pool", "Zerg_Drone", "Zerg_Drone", "Zerg_Hatchery", "Zerg_Extractor", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Overlord", "Zerg_Lair", "Zerg_Extractor", "Zerg_Drone", "Zerg_Drone", "Zerg_Zergling", "Zerg_Zergling", "Zerg_Zergling", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Overlord", "Zerg_Drone", "Zerg_Overlord", "Zerg_Drone", "Zerg_Overlord", "Zerg_Spire", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk"]}
         }
     }
 }
