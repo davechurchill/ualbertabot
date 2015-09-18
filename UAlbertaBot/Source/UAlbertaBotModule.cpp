@@ -82,7 +82,6 @@ void UAlbertaBotModule::parseConfigFile(const std::string & filename)
         JSONTools::ReadString("BotName", info, Config::BotInfo::BotName);
         JSONTools::ReadString("Authors", info, Config::BotInfo::Authors);
         JSONTools::ReadBool("PrintInfoOnStart", info, Config::BotInfo::PrintInfoOnStart);
-        if (info.HasMember("Race") && info["Race"].IsString()) { Config::BotInfo::BotRace = getRace(info["Race"].GetString()); }
     }
 
     // Parse the BWAPI Options
@@ -186,8 +185,26 @@ void UAlbertaBotModule::parseConfigFile(const std::string & filename)
     if (doc.HasMember("Strategy") && doc["Strategy"].IsObject())
     {
         const rapidjson::Value & strategy = doc["Strategy"];
-        JSONTools::ReadString("StrategyName", strategy, Config::Strategy::StrategyName);
-        BWAPI::Broodwar->printf("Using Strategy: %s", Config::Strategy::StrategyName.c_str());
+        JSONTools::ReadString("ProtossStrategyName", strategy, Config::Strategy::ProtossStrategyName);
+        JSONTools::ReadString("TerranStrategyName", strategy, Config::Strategy::TerranStrategyName);
+        JSONTools::ReadString("ZergStrategyName", strategy, Config::Strategy::ZergStrategyName);
+
+        BWAPI::Race race = BWAPI::Broodwar->self()->getRace();
+
+        if (race == BWAPI::Races::Protoss)
+        {
+            Config::Strategy::StrategyName = Config::Strategy::ProtossStrategyName;
+        }
+        else if (race == BWAPI::Races::Terran)
+        {
+            Config::Strategy::StrategyName = Config::Strategy::TerranStrategyName;
+        }
+        else if (race == BWAPI::Races::Zerg)
+        {
+            Config::Strategy::StrategyName = Config::Strategy::ZergStrategyName;
+        }
+
+        BWAPI::Broodwar->printf("Race is %s, using Strategy: %s", BWAPI::Broodwar->self()->getRace().getName().c_str(), Config::Strategy::StrategyName.c_str());
 
         JSONTools::ReadString("ReadDirectory", strategy, Config::Strategy::ReadDir);
         JSONTools::ReadString("WriteDirectory", strategy, Config::Strategy::WriteDir);

@@ -5,8 +5,10 @@ namespace Config
 {
     namespace Strategy
     {
+        std::string ProtossStrategyName     = "Protoss_ZealotRush";
+        std::string TerranStrategyName      = "Terran_MarineRush";
+        std::string ZergStrategyName        = "Zerg_3HatchMuta";
         std::string StrategyName            = "Protoss_ZealotRush";
-        BWAPI::Race StrategyRace            = BWAPI::Races::Protoss;
         std::string ReadDir                 = "bwapi-data/read/";
         std::string WriteDir                = "bwapi-data/write/";
     }
@@ -30,7 +32,6 @@ namespace Config
     {
         std::string BotName                 = "UAlbertaBot";
         std::string Authors                 = "Dave Churchill";
-        BWAPI::Race BotRace                 = BWAPI::Races::Protoss;
         bool PrintInfoOnStart               = false;
     }
 

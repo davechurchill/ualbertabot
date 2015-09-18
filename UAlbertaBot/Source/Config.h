@@ -21,13 +21,14 @@ namespace Config
     {
         extern std::string BotName;
         extern std::string Authors;
-        extern BWAPI::Race BotRace;
         extern bool PrintInfoOnStart;
     }
 
     namespace Strategy
     {
-        extern BWAPI::Race StrategyRace;
+        extern std::string ProtossStrategyName;
+        extern std::string TerranStrategyName;
+        extern std::string ZergStrategyName;
         extern std::string StrategyName;
         extern std::string ReadDir;
         extern std::string WriteDir;

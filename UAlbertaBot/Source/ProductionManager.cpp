@@ -57,7 +57,7 @@ void ProductionManager::performBuildOrderSearch(const std::vector<MetaPair> & go
 		{
             if (Config::Debug::DrawBuildOrderSearchInfo)
             {
-			    BWAPI::Broodwar->printf("Starting a new build order search!");
+			    //BWAPI::Broodwar->printf("Starting a new build order search!");
             }
 			BOSSManager::Instance().startNewSearch(goal);
 		}
@@ -84,7 +84,7 @@ void ProductionManager::performBuildOrderSearch()
         {
             if (Config::Debug::DrawBuildOrderSearchInfo)
             {
-			    BWAPI::Broodwar->printf("Starting a new build order search!");
+			    //BWAPI::Broodwar->printf("Starting a new build order search!");
             }
 
 			BOSSManager::Instance().startNewSearch(StrategyManager::Instance().getBuildOrderGoal());
@@ -167,13 +167,12 @@ void ProductionManager::onUnitDestroy(BWAPI::UnitInterface* unit)
 		// if it's a worker or a building, we need to re-search for the current goal
 		if ((unit->getType().isWorker() && !WorkerManager::Instance().isWorkerScout(unit)) || unit->getType().isBuilding())
 		{
-            if (Config::Debug::DrawBuildOrderSearchInfo)
-            {
-			    BWAPI::Broodwar->printf("Critical unit died, re-searching build order");
-            }
-
 			if (unit->getType() != BWAPI::UnitTypes::Zerg_Drone)
 			{
+                if (Config::Debug::DrawBuildOrderSearchInfo)
+                {
+			        BWAPI::Broodwar->printf("Critical unit died, re-searching build order");
+                }
 				performBuildOrderSearch(StrategyManager::Instance().getBuildOrderGoal());
 			}
 		}
