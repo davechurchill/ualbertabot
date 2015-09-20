@@ -5,8 +5,6 @@
 
 namespace UAlbertaBot
 {
-class MicroManager;
-
 class RangedManager : public MicroManager
 {
 public:

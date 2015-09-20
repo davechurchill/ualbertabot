@@ -34,10 +34,6 @@ public:
 	void	onUnitShow(BWAPI::UnitInterface* unit);
 	void	onUnitHide(BWAPI::UnitInterface* unit);
 	void	onUnitRenegade(BWAPI::UnitInterface* unit);
-
-    void    parseConfigFile(const std::string & filename);
-
-    BWAPI::Race getRace(const std::string & raceName);
 };
 
 }

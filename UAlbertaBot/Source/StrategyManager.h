@@ -37,23 +37,17 @@ class StrategyManager
 	
 	// strategy functions, add your own here
 	const	bool				expandProtossZealotRush() const;
-	const	std::string			getProtossZealotRushOpeningBook() const;
 	const	MetaPairVector		getProtossZealotRushBuildOrderGoal() const;
+    const	MetaPairVector		getProtossZealotDropBuildOrderGoal() const;
 
 	const	bool				expandProtossDarkTemplar() const;
-	const	std::string			getProtossDarkTemplarOpeningBook() const;
 	const	MetaPairVector		getProtossDarkTemplarBuildOrderGoal() const;
 
 	const	bool				expandProtossDragoons() const;
-	const	std::string			getProtossDragoonsOpeningBook() const;
 	const	MetaPairVector		getProtossDragoonsBuildOrderGoal() const;
 
 	const	MetaPairVector		getTerranBuildOrderGoal() const;
 	const	MetaPairVector		getZergBuildOrderGoal() const;
-
-	const	MetaPairVector		getProtossOpeningBook() const;
-	const	MetaPairVector		getTerranOpeningBook() const;
-	const	MetaPairVector		getZergOpeningBook() const;
 
 public:
     

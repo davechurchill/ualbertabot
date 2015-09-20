@@ -11,6 +11,7 @@ namespace Config
         std::string StrategyName            = "Protoss_ZealotRush";
         std::string ReadDir                 = "bwapi-data/read/";
         std::string WriteDir                = "bwapi-data/write/";
+        bool GasStealWithScout              = false;
     }
 
     namespace Modules							    
@@ -54,6 +55,7 @@ namespace Config
         bool DrawBuildOrderSearchInfo       = true;
         bool DrawUnitHealthBars             = true;
         bool DrawProductionInfo             = true;
+        bool DrawScoutInfo                  = false;
         bool DrawResourceInfo               = false;
         bool DrawWorkerInfo                 = false;
         bool DrawModuleTimers               = false;

@@ -44,7 +44,7 @@ void RangedManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & tar
 				if (rangedUnit->getDistance(order.position) > 100)
 				{
 					// move to it
-					smartAttackMove(rangedUnit, order.position);
+					SmartAttackMove(rangedUnit, order.position);
 				}
 			}
 		}
@@ -70,7 +70,7 @@ void RangedManager::kiteTarget(BWAPI::UnitInterface* rangedUnit, BWAPI::UnitInte
 	if (range <= target->getType().groundWeapon().maxRange())
 	{
 		// if we can't kite it, there's no point
-		smartAttackUnit(rangedUnit, target);
+		SmartAttackUnit(rangedUnit, target);
 		return;
 	}
 
@@ -104,12 +104,12 @@ void RangedManager::kiteTarget(BWAPI::UnitInterface* rangedUnit, BWAPI::UnitInte
 		BWAPI::Broodwar->drawLineMap(rangedUnit->getPosition().x, rangedUnit->getPosition().y, 
 			fleePosition.x, fleePosition.y, BWAPI::Colors::Cyan);
 
-		smartMove(rangedUnit, fleePosition);
+		SmartMove(rangedUnit, fleePosition);
 	}
 	// otherwise shoot
 	else
 	{
-		smartAttackUnit(rangedUnit, target);
+		SmartAttackUnit(rangedUnit, target);
 	}
 }
 

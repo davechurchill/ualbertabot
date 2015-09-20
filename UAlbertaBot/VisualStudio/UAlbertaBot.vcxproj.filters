@@ -34,6 +34,9 @@
     <Filter Include="game\macro\buildorders">
       <UniqueIdentifier>{0984e4fa-2fbf-40e9-8c0d-304344df9718}</UniqueIdentifier>
     </Filter>
+    <Filter Include="util">
+      <UniqueIdentifier>{59599488-4576-44ab-8522-7d65a6425e15}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\CombatCommander.cpp">
@@ -144,14 +147,20 @@
     <ClCompile Include="..\Source\UnitData.cpp">
       <Filter>game\util</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\JSONTools.cpp">
-      <Filter>game\util</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\Config.cpp">
       <Filter>common</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\AutoObserver.cpp">
-      <Filter>game\util</Filter>
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\JSONTools.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\ParseUtils.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\MicroUtil.cpp">
+      <Filter>game\combat\micro</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -266,14 +275,20 @@
     <ClInclude Include="..\Source\UnitData.h">
       <Filter>game\util</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\JSONTools.h">
-      <Filter>game\util</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\Config.h">
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\AutoObserver.h">
-      <Filter>game\util</Filter>
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\JSONTools.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\ParseUtils.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\MicroUtil.h">
+      <Filter>game\combat\micro</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

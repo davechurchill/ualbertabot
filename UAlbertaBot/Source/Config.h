@@ -32,6 +32,7 @@ namespace Config
         extern std::string StrategyName;
         extern std::string ReadDir;
         extern std::string WriteDir;
+        extern bool GasStealWithScout;
     }
 
     namespace BWAPIOptions
@@ -54,6 +55,7 @@ namespace Config
         extern bool DrawUnitHealthBars;
         extern bool DrawResourceInfo;
         extern bool DrawProductionInfo;
+        extern bool DrawScoutInfo;
         extern bool DrawWorkerInfo;
         extern bool DrawModuleTimers;
         extern bool DrawReservedBuildingTiles;

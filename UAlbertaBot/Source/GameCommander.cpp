@@ -3,7 +3,9 @@
 
 using namespace UAlbertaBot;
 
-GameCommander::GameCommander() : numWorkerScouts(0), currentScout(NULL)
+GameCommander::GameCommander() 
+    : workerScoutSet(false)
+    , currentScout(NULL)
 {
 
 }
@@ -122,17 +124,12 @@ void GameCommander::setValidUnits()
 	}
 }
 
-// selects which units will be scouting
-// currently only selects the worker scout after first pylon built
-// this does NOT take that worker away from worker manager, but it still works
-// TODO: take this worker away from worker manager in a clever way
 void GameCommander::setScoutUnits()
 {
-	// if we have just built our first suply provider, set the worker to a scout
-	if (numWorkerScouts == 0)
-	{
-		// get the first supply provider we come across in our units, this should be the first one we make
-		BWAPI::UnitInterface* supplyProvider = getFirstSupplyProvider();
+    // if we haven't set our first worker scout, try and do it
+    if (!workerScoutSet)
+    {
+        BWAPI::UnitInterface* supplyProvider = getFirstSupplyProvider();
 
 		// if it exists
 		if (supplyProvider)
@@ -143,13 +140,23 @@ void GameCommander::setScoutUnits()
 			// if we find a worker (which we should) add it to the scout vector
 			if (workerScout)
 			{
-				numWorkerScouts++;
+				workerScoutSet = true;
 				scoutUnits.insert(workerScout);
 				assignedUnits.insert(workerScout);
 				WorkerManager::Instance().setScoutWorker(workerScout);
 			}
 		}
-	}
+    }
+    else
+    {
+        // we have previously set a worker scout, so go through our units to find him and if he exists put him in the scout squad
+        BWAPI::UnitInterface * workerScout = WorkerManager::Instance().getWorkerScout();
+
+        if (workerScout)
+        {
+            scoutUnits.insert(workerScout);
+        }
+    }
 }
 
 // sets combat units to be passed to CombatCommander

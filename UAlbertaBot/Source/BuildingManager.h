@@ -47,7 +47,7 @@ public:
 	void						update();
 	void						onUnitMorph(BWAPI::UnitInterface* unit);
 	void						onUnitDestroy(BWAPI::UnitInterface* unit);
-	void						addBuildingTask(BWAPI::UnitType type, BWAPI::TilePosition desiredLocation);
+	void						addBuildingTask(BWAPI::UnitType type, BWAPI::TilePosition desiredLocation, bool isGasSteal);
 	BWAPI::TilePosition			getBuildingLocation(const Building & b);
 
 	int							getReservedMinerals();

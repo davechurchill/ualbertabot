@@ -44,7 +44,7 @@ class GameCommander
 	std::set<BWAPI::UnitInterface*> assignedUnits;
 
 	BWAPI::UnitInterface* currentScout;
-	int numWorkerScouts;
+	bool workerScoutSet;
 
 	const bool isAssigned(BWAPI::UnitInterface* unit) const;
 

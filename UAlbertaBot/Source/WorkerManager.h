@@ -21,6 +21,8 @@ class WorkerManager {
 
 	WorkerManager();
 
+    bool    isGasStealRefinery(BWAPI::UnitInterface * unit);
+
 public:
 
 	void						update();
@@ -50,12 +52,13 @@ public:
 	bool						isFree(BWAPI::UnitInterface* worker);
 	bool						isBuilder(BWAPI::UnitInterface* worker);
 
-	BWAPI::UnitInterface*				getBuilder(Building & b, bool setJobAsBuilder = true);
-	BWAPI::UnitInterface*				getMoveWorker(BWAPI::Position p);
-	BWAPI::UnitInterface*				getClosestDepot(BWAPI::UnitInterface* worker);
-	BWAPI::UnitInterface*				getGasWorker(BWAPI::UnitInterface* refinery);
-	BWAPI::UnitInterface*				getClosestEnemyUnit(BWAPI::UnitInterface* worker);
-    BWAPI::UnitInterface*               getClosestMineralWorkerTo(BWAPI::UnitInterface* enemyUnit);
+	BWAPI::UnitInterface*		getBuilder(Building & b, bool setJobAsBuilder = true);
+	BWAPI::UnitInterface*		getMoveWorker(BWAPI::Position p);
+	BWAPI::UnitInterface*		getClosestDepot(BWAPI::UnitInterface* worker);
+	BWAPI::UnitInterface*		getGasWorker(BWAPI::UnitInterface* refinery);
+	BWAPI::UnitInterface*		getClosestEnemyUnit(BWAPI::UnitInterface* worker);
+    BWAPI::UnitInterface*       getClosestMineralWorkerTo(BWAPI::UnitInterface* enemyUnit);
+    BWAPI::UnitInterface*       getWorkerScout();
 
     void                        setBuildingWorker(BWAPI::UnitInterface* worker, Building & b);
     void                        setRepairWorker(BWAPI::UnitInterface* worker, BWAPI::UnitInterface* unitToRepair);

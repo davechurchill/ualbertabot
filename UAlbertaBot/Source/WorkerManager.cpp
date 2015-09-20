@@ -85,7 +85,7 @@ void WorkerManager::handleGasWorkers()
 	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits())
 	{
 		// if that unit is a refinery
-		if (unit->getType().isRefinery() && unit->isCompleted())
+		if (unit->getType().isRefinery() && unit->isCompleted() && !isGasStealRefinery(unit))
 		{
 			// get the number of workers currently assigned to it
 			int numAssigned = workerData.getNumAssignedWorkers(unit);
@@ -102,6 +102,30 @@ void WorkerManager::handleGasWorkers()
 		}
 	}
 
+}
+
+bool WorkerManager::isGasStealRefinery(BWAPI::UnitInterface * unit)
+{
+    BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
+    if (!enemyBaseLocation)
+    {
+        return false;
+    }
+    
+    if (enemyBaseLocation->getGeysers().empty())
+    {
+        return false;
+    }
+    
+	for (BWAPI::UnitInterface* u : enemyBaseLocation->getGeysers())
+	{
+        if (unit->getTilePosition() == u->getTilePosition())
+        {
+            return true;
+        }
+	}
+
+    return false;
 }
 
 void WorkerManager::handleIdleWorkers() 
@@ -232,6 +256,26 @@ BWAPI::UnitInterface* WorkerManager::getClosestMineralWorkerTo(BWAPI::UnitInterf
     return closestMineralWorker;
 }
 
+BWAPI::UnitInterface* WorkerManager::getWorkerScout()
+{
+    // for each of our workers
+	for (BWAPI::UnitInterface* worker : workerData.getWorkers())
+	{
+        UAB_ASSERT(worker != NULL, "Worker was null");
+		if (!worker)
+		{
+			continue;
+		}
+		// if it is a move worker
+        if (workerData.getWorkerJob(worker) == WorkerData::Scout) 
+		{
+			return worker;
+		}
+	}
+
+    return NULL;
+}
+
 void WorkerManager::handleMoveWorkers() 
 {
 	// for each of our workers
@@ -354,6 +398,16 @@ BWAPI::UnitInterface* WorkerManager::getBuilder(Building & b, bool setJobAsBuild
 	for (BWAPI::UnitInterface* unit : workerData.getWorkers())
 	{
         UAB_ASSERT(unit != NULL, "Unit was null");
+
+        // gas steal building uses scout worker
+        if (b.isGasSteal && (workerData.getWorkerJob(unit) == WorkerData::Scout))
+        {
+            if (setJobAsBuilder)
+            {
+                workerData.setWorkerJob(unit, WorkerData::Build, b.type);
+            }
+            return unit;
+        }
 
 		// mining worker check
 		if (unit->isCompleted() && (workerData.getWorkerJob(unit) == WorkerData::Minerals))

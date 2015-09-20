@@ -95,13 +95,13 @@ void BuildOrderQueue::queueItem(BuildOrderItem b)
 	lowestPriority  = (b.priority < lowestPriority)  ? b.priority : lowestPriority;
 }
 
-void BuildOrderQueue::queueAsHighestPriority(MetaType m, bool blocking) 
+void BuildOrderQueue::queueAsHighestPriority(MetaType m, bool blocking, bool gasSteal) 
 {
 	// the new priority will be higher
 	int newPriority = highestPriority + defaultPrioritySpacing;
 
 	// queue the item
-	queueItem(BuildOrderItem(m, newPriority, blocking));
+	queueItem(BuildOrderItem(m, newPriority, blocking, gasSteal));
 }
 
 void BuildOrderQueue::queueAsLowestPriority(MetaType m, bool blocking) 

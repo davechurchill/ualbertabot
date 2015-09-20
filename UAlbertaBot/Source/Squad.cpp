@@ -16,20 +16,29 @@ void Squad::update()
 	// update all necessary unit information within this squad
 	updateUnits();
 
-	// determine whether or not we should regroup
-	const bool needToRegroup(needsToRegroup());
+    int numInSquadClose = 0;
+    
+	BWAPI::UnitInterface* unitClosest = unitClosestToEnemy();
+    if (unitClosest)
+    {
+        for (BWAPI::UnitInterface * unit : units)
+        {
+            if (unit->getDistance(unitClosest) < 150)
+            {
+                numInSquadClose++;
+            }
+        }
+    }
 
-	
+	// determine whether or not we should regroup
+	bool needToRegroup = needsToRegroup();
+    
 	// draw some debug info
 	if (Config::Debug::DrawSquadInfo && order.type == SquadOrder::Attack) 
 	{
 		BWAPI::Broodwar->drawTextScreen(200, 330, "%s", regroupStatus.c_str());
 
 		BWAPI::UnitInterface* closest = unitClosestToEnemy();
-		if (closest && (BWAPI::Broodwar->getFrameCount() % 24 == 0))
-		{
-			//BWAPI::Broodwar->setScreenPosition(closest->getPosition().x - 320, closest->getPosition().y - 200);
-		}
 	}
 
 	// if we do need to regroup, do it
@@ -37,7 +46,7 @@ void Squad::update()
 	{
 		InformationManager::Instance().lastFrameRegroup = 1;
 
-		const BWAPI::Position regroupPosition(calcRegroupPosition());
+		BWAPI::Position regroupPosition = calcRegroupPosition();
 
         if (Config::Debug::DrawCombatSimulationInfo)
         {
@@ -45,6 +54,12 @@ void Squad::update()
         }
 
 		BWAPI::Broodwar->drawCircleMap(regroupPosition.x, regroupPosition.y, 30, BWAPI::Colors::Purple, true);
+
+        BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
+        if (enemyBaseLocation && runBy)
+        {
+            regroupPosition = enemyBaseLocation->getPosition();
+        }
 
 		meleeManager.regroup(regroupPosition);
 		rangedManager.regroup(regroupPosition);
@@ -156,6 +171,11 @@ void Squad::addUnitsToMicroManagers()
 // calculates whether or not to regroup
 bool Squad::needsToRegroup()
 {
+    if (!Config::Micro::UseSparcraftSimulation)
+    {
+        return false;
+    }
+
 	// if we are not attacking, never regroup
 	if (units.empty() || (order.type != SquadOrder::Attack))
 	{
@@ -163,7 +183,8 @@ bool Squad::needsToRegroup()
 		return false;
 	}
 
-	BWAPI::UnitInterface* unitClosest = unitClosestToEnemy();
+
+    BWAPI::UnitInterface* unitClosest = unitClosestToEnemy();
 
 	if (!unitClosest)
 	{
@@ -194,7 +215,7 @@ bool Squad::needsToRegroup()
     // we should not attack unless 5 seconds have passed since a retreat
     if (retreat != lastRetreatSwitchVal)
     {
-        if (retreat == false && (BWAPI::Broodwar->getFrameCount() - lastRetreatSwitch < switchTime))
+        if ((BWAPI::Broodwar->getFrameCount() - lastRetreatSwitch < switchTime))
         {
             waiting = true;
             retreat = lastRetreatSwitchVal;
@@ -258,7 +279,7 @@ BWAPI::Position Squad::calcRegroupPosition()
 {
 	BWAPI::Position regroup(0,0);
 
-	int minDist(100000);
+	int minDist = 100000;
 
 	for (BWAPI::UnitInterface* unit : units)
 	{

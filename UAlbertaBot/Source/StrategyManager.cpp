@@ -162,6 +162,10 @@ const MetaPairVector StrategyManager::getBuildOrderGoal()
     {
         return getProtossZealotRushBuildOrderGoal();
     }
+    if (Config::Strategy::StrategyName == "Protoss_ZealotDrop")
+    {
+        return getProtossZealotDropBuildOrderGoal();
+    }
     else if (Config::Strategy::StrategyName == "Protoss_DTRush")
 	{
 		return getProtossDarkTemplarBuildOrderGoal();
@@ -170,7 +174,7 @@ const MetaPairVector StrategyManager::getBuildOrderGoal()
 	{
 		return getProtossDragoonsBuildOrderGoal();
 	}
-    else if (Config::Strategy::StrategyName == "Terran_MarineRush")
+    else if (Config::Strategy::StrategyName == "Terran_MarineRush" || Config::Strategy::StrategyName == "Terran_VultureRush")
 	{
 		return getTerranBuildOrderGoal();
 	}
@@ -252,6 +256,7 @@ const MetaPairVector StrategyManager::getProtossDarkTemplarBuildOrderGoal() cons
 	int darkTemplarWanted = 0;
 	int dragoonsWanted = numDragoons + 6;
 
+
 	if (InformationManager::Instance().enemyHasCloakedUnits())
 	{
 		
@@ -306,6 +311,8 @@ const MetaPairVector StrategyManager::getProtossZealotRushBuildOrderGoal() const
 	int numNexusAll =			BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Nexus);
 	int numCyber =				BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Cybernetics_Core);
 	int numCannon =				BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Photon_Cannon);
+    int numScout =				BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Corsair);
+    int numReaver =				BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Reaver);
 
 	int zealotsWanted = numZealots + 8;
 	int dragoonsWanted = numDragoons;
@@ -353,22 +360,52 @@ const MetaPairVector StrategyManager::getProtossZealotRushBuildOrderGoal() const
 	return goal;
 }
 
+const MetaPairVector StrategyManager::getProtossZealotDropBuildOrderGoal() const
+{
+	// the goal to return
+	MetaPairVector goal;
+
+	int numZealots =			BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Zealot);
+	int numDragoons =			BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Dragoon);
+	int numProbes =				BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Probe);
+	int numNexusCompleted =		BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Nexus);
+	int numNexusAll =			BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Nexus);
+	int numCyber =				BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Cybernetics_Core);
+	int numCannon =				BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Photon_Cannon);
+    int numScout =				BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Corsair);
+    int numReaver =				BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Reaver);
+
+	goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Scout, numScout + 4));
+
+	return goal;
+}
+
 const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 {
 	// the goal to return
 	std::vector<MetaPair> goal;
 
-	int numMarines =			BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Marine);
-	int numMedics =				BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Medic);
-	int numWraith =				BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Wraith);
+    int numMarines =        BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Marine);
+	int numMedics =         BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Medic);
+	int numWraith =         BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Wraith);
+    int numVultures =       BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Vulture);
 
-	int marinesWanted = numMarines + 12;
-	int medicsWanted = numMedics + 2;
-	int wraithsWanted = numWraith + 4;
+    if (Config::Strategy::StrategyName == "Terran_MarineRush")
+    {
+	    int marinesWanted = numMarines + 12;
+	    int medicsWanted = numMedics + 2;
+	    int wraithsWanted = numWraith + 4;
 
-	goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Marine, marinesWanted));
+	    goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Marine, marinesWanted));
+    }
+    else if (Config::Strategy::StrategyName == "Terran_VultureRush")
+    {
+        int vulturesWanted = numVultures + 8;
 
-	return (const std::vector<MetaPair>)goal;
+        goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Vulture, vulturesWanted));
+    }
+
+	return goal;
 }
 
 const MetaPairVector StrategyManager::getZergBuildOrderGoal() const

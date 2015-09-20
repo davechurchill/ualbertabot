@@ -15,10 +15,7 @@ BuildingManager::BuildingManager()
 
 // gets called every frame from GameCommander
 void BuildingManager::update() 
-{
-	// Step through building logic, issue orders, manage data as necessary
-	drawBuildingInformation(340, 50);
-	
+{	
 	// check to see if assigned workers have died en route or while constructing
 	validateWorkersAndBuildings();	
 
@@ -126,6 +123,19 @@ void BuildingManager::assignWorkersToUnassignedBuildings()
 BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
 {
 	int numPylons = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Pylon);
+
+    if (b.isGasSteal)
+    {
+        BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
+        UAB_ASSERT(enemyBaseLocation, "Should have enemy base location before attempting gas steal");
+        UAB_ASSERT(enemyBaseLocation->getGeysers().size() > 0, "Should have spotted an enemy geyser");
+
+	    for (BWAPI::UnitInterface* unit : enemyBaseLocation->getGeysers())
+	    {
+            BWAPI::TilePosition tp(unit->getInitialTilePosition()); 
+		    return tp;
+	    }
+    }
 
     if (b.type.requiresPsi() && numPylons == 0)
     {
@@ -325,7 +335,7 @@ bool BuildingManager::isEvolvedBuilding(BWAPI::UnitType type) {
 }
 
 // add a new building to be constructed
-void BuildingManager::addBuildingTask(BWAPI::UnitType type, BWAPI::TilePosition desiredLocation) {
+void BuildingManager::addBuildingTask(BWAPI::UnitType type, BWAPI::TilePosition desiredLocation, bool isGasSteal) {
 
 	if (debugMode) { BWAPI::Broodwar->printf("Issuing addBuildingTask: %s", type.getName().c_str()); }
 
@@ -335,8 +345,11 @@ void BuildingManager::addBuildingTask(BWAPI::UnitType type, BWAPI::TilePosition 
 	reservedMinerals += type.mineralPrice();
 	reservedGas	     += type.gasPrice();
 
+    Building b(type, desiredLocation);
+    b.isGasSteal = isGasSteal;
+
 	// set it up to receive a worker
-	buildingData.addBuilding(ConstructionData::Unassigned, Building(type, desiredLocation));
+	buildingData.addBuilding(ConstructionData::Unassigned, b);
 }
 
 bool BuildingManager::isBuildingPositionExplored(const Building & b) const

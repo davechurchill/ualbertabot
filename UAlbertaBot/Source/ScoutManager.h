@@ -7,27 +7,23 @@
 
 namespace UAlbertaBot
 {
-class ScoutManager {
-
+class ScoutManager 
+{
 	BWAPI::UnitInterface*	workerScout;
-	int				numWorkerScouts;
-
-	bool			immediateThreat();
-
+    std::string             scoutStatus;
+    std::string             gasStealStatus;
+	int				        numWorkerScouts;
+	bool			        scoutUnderAttack;
+    bool                    didGasSteal;
+	
+	bool                    enemyWorkerInRadius();
+    bool			        immediateThreat();
+    void                    gasSteal();
+	BWAPI::UnitInterface*	getEnemyGeyser();
 	BWAPI::UnitInterface*	closestEnemyWorker();
 
-	bool			scoutUnderAttack;
-	
-	void smartMove(BWAPI::UnitInterface* attacker, BWAPI::Position targetPosition);
-	void smartAttack(BWAPI::UnitInterface* attacker, BWAPI::UnitInterface* target);
-	bool enemyWorkerInRadius();
-
-	BWAPI::Position		calcFleePosition(const std::vector<GroundThreat> & threats, BWAPI::UnitInterface* target);
-	bool				isValidFleePosition(BWAPI::Position pos);
-	void				fillGroundThreats(std::vector<GroundThreat> & threats, BWAPI::Position target);
-	double2				getFleeVector(const std::vector<GroundThreat> & threats);
-	BWAPI::UnitInterface*		getEnemyGeyser();
-
+	void moveScouts();
+    void drawScoutInformation(int x, int y);
 
 public:
 
@@ -35,7 +31,6 @@ public:
 	~ScoutManager() {};
 
 	void update(const std::set<BWAPI::UnitInterface*> & scoutUnits);
-	void moveScouts();
 
 	void onSendText(std::string text);
 	void onUnitShow(BWAPI::UnitInterface* unit);

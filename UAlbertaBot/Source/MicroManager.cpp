@@ -32,9 +32,9 @@ void MicroManager::execute(const SquadOrder & inputOrder)
 	// Nothing to do if we have no units
 	if(units.empty() || !(inputOrder.type == SquadOrder::Attack || inputOrder.type == SquadOrder::Defend))
 	{
-		//BWAPI::Broodwar->printf("Gots no units, fix shit up (%d)", order.type);
 		return;
 	}
+
 	order = inputOrder;
 	drawOrderText();
 
@@ -110,11 +110,11 @@ void MicroManager::regroup(const BWAPI::Position & regroupPosition) const
 		{
 			// regroup it
 			BWAPI::Broodwar->drawCircleMap(unit->getPosition().x, unit->getPosition().y, 20, BWAPI::Colors::Yellow);
-			smartMove(unit, regroupPosition);
+			SmartMove(unit, regroupPosition);
 		}
 		else
 		{
-			smartAttackMove(unit, unit->getPosition());
+			SmartAttackMove(unit, unit->getPosition());
 		}
 	}
 }
@@ -159,7 +159,7 @@ bool MicroManager::checkPositionWalkable(BWAPI::Position pos) {
 	return true;
 }
 
-void MicroManager::smartAttackUnit(BWAPI::UnitInterface* attacker, BWAPI::UnitInterface* target) const
+void MicroManager::SmartAttackUnit(BWAPI::UnitInterface* attacker, BWAPI::UnitInterface* target)
 {
 	assert(attacker && target);
 
@@ -187,7 +187,7 @@ void MicroManager::smartAttackUnit(BWAPI::UnitInterface* attacker, BWAPI::UnitIn
 
 }
 
-void MicroManager::smartAttackMove(BWAPI::UnitInterface* attacker, BWAPI::Position targetPosition) const
+void MicroManager::SmartAttackMove(BWAPI::UnitInterface* attacker, BWAPI::Position targetPosition)
 {
 	assert(attacker);
 
@@ -214,7 +214,7 @@ void MicroManager::smartAttackMove(BWAPI::UnitInterface* attacker, BWAPI::Positi
 									BWAPI::Colors::Orange );
 }
 
-void MicroManager::smartMove(BWAPI::UnitInterface* attacker, BWAPI::Position targetPosition) const
+void MicroManager::SmartMove(BWAPI::UnitInterface* attacker, BWAPI::Position targetPosition)
 {
 	assert(attacker);
 

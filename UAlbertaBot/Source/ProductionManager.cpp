@@ -211,6 +211,7 @@ void ProductionManager::manageBuildOrderQueue()
 		{
 			// construct a temporary building object
 			Building b(currentItem.metaType.getUnitType(), BWAPI::Broodwar->self()->getStartLocation());
+            b.isGasSteal = currentItem.isGasSteal;
 
 			// set the producer as the closest worker, but do not set its job yet
 			producer = WorkerManager::Instance().getBuilder(b, false);
@@ -223,7 +224,7 @@ void ProductionManager::manageBuildOrderQueue()
 		if (producer && canMake) 
 		{
 			// create it
-			createMetaType(producer, currentItem.metaType);
+			create(producer, currentItem);
 			assignedWorkerForThisBuilding = false;
 			haveLocationForThisBuilding = false;
 
@@ -372,12 +373,14 @@ BWAPI::UnitInterface* ProductionManager::getClosestUnitToPosition(std::set<BWAPI
 }
 
 // this function will check to see if all preconditions are met and then create a unit
-void ProductionManager::createMetaType(BWAPI::UnitInterface* producer, MetaType t) 
+void ProductionManager::create(BWAPI::UnitInterface* producer, BuildOrderItem & item) 
 {
     if (!producer)
     {
         return;
     }
+
+    MetaType t = item.metaType;
 
     // if we're dealing with a building
     if (t.isUnit() && t.getUnitType().isBuilding() 
@@ -387,7 +390,7 @@ void ProductionManager::createMetaType(BWAPI::UnitInterface* producer, MetaType 
         && !t.getUnitType().isAddon())
     {
         // send the building task to the building manager
-        BuildingManager::Instance().addBuildingTask(t.getUnitType(), BWAPI::Broodwar->self()->getStartLocation());
+        BuildingManager::Instance().addBuildingTask(t.getUnitType(), BWAPI::Broodwar->self()->getStartLocation(), item.isGasSteal);
     }
     else if (t.getUnitType().isAddon())
     {
@@ -494,6 +497,11 @@ bool ProductionManager::detectBuildOrderDeadlock()
 // This function is here as it needs to access prodction manager's reserved resources info
 void ProductionManager::predictWorkerMovement(const Building & b)
 {
+    if (b.isGasSteal)
+    {
+        return;
+    }
+
 	// get a possible building location for the building
 	if (!haveLocationForThisBuilding)
 	{
@@ -502,7 +510,7 @@ void ProductionManager::predictWorkerMovement(const Building & b)
 
 	if (predictedTilePosition != BWAPI::TilePositions::None)
 	{
-		haveLocationForThisBuilding		= true;
+		haveLocationForThisBuilding = true;
 	}
 	else
 	{
@@ -722,4 +730,9 @@ ProductionManager & ProductionManager::Instance()
 void ProductionManager::onGameEnd()
 {
 
+}
+
+void ProductionManager::queueGasSteal()
+{
+    queue.queueAsHighestPriority(MetaType(BWAPI::Broodwar->self()->getRace().getRefinery()), true, true);
 }

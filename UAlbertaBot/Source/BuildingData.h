@@ -15,6 +15,7 @@ public:
 	BWAPI::UnitInterface* buildingUnit;
 	BWAPI::UnitInterface* builderUnit;
 	int lastOrderFrame;
+    bool isGasSteal;
 	bool buildCommandGiven;
 	bool underConstruction;
 
@@ -28,6 +29,7 @@ public:
         , lastOrderFrame(0)
         , buildCommandGiven(false)
         , underConstruction(false) 
+        , isGasSteal(false)
     {} 
 
 	// constructor we use most often
@@ -41,6 +43,7 @@ public:
         , lastOrderFrame(0)
         , buildCommandGiven(false)
         , underConstruction(false) 
+        , isGasSteal(false)
     {}
 
 	// equals operator

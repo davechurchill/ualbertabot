@@ -137,6 +137,8 @@
     <ClCompile Include="..\source\MetaType.cpp" />
     <ClCompile Include="..\source\MicroManager.cpp" />
     <ClCompile Include="..\Source\Config.cpp" />
+    <ClCompile Include="..\Source\MicroUtil.cpp" />
+    <ClCompile Include="..\Source\ParseUtils.cpp" />
     <ClCompile Include="..\source\ProductionManager.cpp" />
     <ClCompile Include="..\source\RangedManager.cpp" />
     <ClCompile Include="..\source\ScoutManager.cpp" />
@@ -178,6 +180,8 @@
     <ClInclude Include="..\source\MetaType.h" />
     <ClInclude Include="..\source\MicroManager.h" />
     <ClInclude Include="..\Source\Config.h" />
+    <ClInclude Include="..\Source\MicroUtil.h" />
+    <ClInclude Include="..\Source\ParseUtils.h" />
     <ClInclude Include="..\source\ProductionManager.h" />
     <ClInclude Include="..\source\RangedManager.h" />
     <ClInclude Include="..\source\ScoutManager.h" />

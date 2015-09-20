@@ -38,7 +38,8 @@ class ProductionManager
 
 	bool						assignedWorkerForThisBuilding;
 	bool						haveLocationForThisBuilding;
-	int							reservedMinerals, reservedGas;
+	int							reservedMinerals;
+    int                         reservedGas;
 	bool						enemyCloakedDetected;
 	bool						rushDetected;
 
@@ -54,7 +55,7 @@ class ProductionManager
 	bool						hasNumCompletedUnitType(BWAPI::UnitType type, int num);
 	bool						meetsReservedResources(MetaType type);
 	void						setBuildOrder(const BuildOrder & buildOrder);
-	void						createMetaType(BWAPI::UnitInterface* producer, MetaType type);
+	void						create(BWAPI::UnitInterface* producer, BuildOrderItem & item);
 	void						manageBuildOrderQueue();
 	void						performCommand(BWAPI::UnitCommandType t);
 	bool						canMakeNow(BWAPI::UnitInterface* producer, MetaType t);
@@ -85,5 +86,7 @@ public:
 	void						performBuildOrderSearch();
 	void						drawProductionInformation(int x, int y);
 	void						setSearchGoal(MetaPairVector & goal);
+
+    void                        queueGasSteal();
 };
 }

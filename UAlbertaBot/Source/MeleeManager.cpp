@@ -35,7 +35,7 @@ void MeleeManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & targ
 				// find the best target for this meleeUnit
 				BWAPI::UnitInterface* target = getTarget(meleeUnit, meleeUnitTargets);
 				// attack it
-				smartAttackUnit(meleeUnit, target);
+				SmartAttackUnit(meleeUnit, target);
 			}
 			// if there are no targets
 			else
@@ -44,7 +44,7 @@ void MeleeManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & targ
 				if (meleeUnit->getDistance(order.position) > 100)
 				{
 					// move to it
-					smartMove(meleeUnit, order.position);
+					SmartMove(meleeUnit, order.position);
 				}
 			}
 		}
@@ -115,7 +115,7 @@ int MeleeManager::getAttackPriority(BWAPI::UnitInterface* unit)
 		return 5;
 	}
 	// next is special buildings
-	else if (type == BWAPI::UnitTypes::Protoss_Pylon || type == BWAPI::UnitTypes::Zerg_Spire)
+	else if (type == BWAPI::UnitTypes::Protoss_Pylon)
 	{
 		return 5;
 	}
