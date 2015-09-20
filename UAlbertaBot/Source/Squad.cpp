@@ -55,12 +55,6 @@ void Squad::update()
 
 		BWAPI::Broodwar->drawCircleMap(regroupPosition.x, regroupPosition.y, 30, BWAPI::Colors::Purple, true);
 
-        BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
-        if (enemyBaseLocation && runBy)
-        {
-            regroupPosition = enemyBaseLocation->getPosition();
-        }
-
 		meleeManager.regroup(regroupPosition);
 		rangedManager.regroup(regroupPosition);
 	}
@@ -215,7 +209,7 @@ bool Squad::needsToRegroup()
     // we should not attack unless 5 seconds have passed since a retreat
     if (retreat != lastRetreatSwitchVal)
     {
-        if ((BWAPI::Broodwar->getFrameCount() - lastRetreatSwitch < switchTime))
+        if (!retreat && (BWAPI::Broodwar->getFrameCount() - lastRetreatSwitch < switchTime))
         {
             waiting = true;
             retreat = lastRetreatSwitchVal;
