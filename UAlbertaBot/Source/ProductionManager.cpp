@@ -148,9 +148,6 @@ void ProductionManager::update()
         }
 		enemyCloakedDetected = true;
 	}
-    
-    drawProductionInformation(10, 30);
-//	if (Config::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextScreen(447, 17, "\x07 %d", BuildingManager::Instance().getReservedMinerals());
 }
 
 // on unit destroy
@@ -694,6 +691,7 @@ void ProductionManager::drawProductionInformation(int x, int y)
 	std::sort(prod.begin(), prod.end(), CompareWhenStarted());
 
 	BWAPI::Broodwar->drawTextScreen(x, y, "\x04 Build Order Info:");
+    BWAPI::Broodwar->drawTextScreen(x-30, y+20, "\x04 TIME");
 	BWAPI::Broodwar->drawTextScreen(x, y+20, "\x04 UNIT NAME");
 
 	size_t reps = prod.size() < 10 ? prod.size() : 10;
@@ -715,7 +713,7 @@ void ProductionManager::drawProductionInformation(int x, int y)
         }
 
 		BWAPI::Broodwar->drawTextScreen(x, yy, " %s%s", prefix.c_str(), t.getName().c_str());
-		BWAPI::Broodwar->drawTextScreen(x+150, yy, "%s%6d", prefix.c_str(), prod[i]->getRemainingBuildTime());
+		BWAPI::Broodwar->drawTextScreen(x - 35, yy, "%s%6d", prefix.c_str(), prod[i]->getRemainingBuildTime());
 	}
 
 	queue.drawQueueInformation(x, yy+10);

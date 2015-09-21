@@ -8,21 +8,27 @@ namespace UAlbertaBot
 {
 class ScoutManager 
 {
-	BWAPI::UnitInterface*	workerScout;
-    std::string             scoutStatus;
-    std::string             gasStealStatus;
-	int				        numWorkerScouts;
-	bool			        scoutUnderAttack;
-    bool                    didGasSteal;
-	
-	bool                    enemyWorkerInRadius();
-    bool			        immediateThreat();
-    void                    gasSteal();
-	BWAPI::UnitInterface*	getEnemyGeyser();
-	BWAPI::UnitInterface*	closestEnemyWorker();
+	BWAPI::UnitInterface*	        _workerScout;
+    std::string                     _scoutStatus;
+    std::string                     _gasStealStatus;
+	int				                _numWorkerScouts;
+	bool			                _scoutUnderAttack;
+    bool                            _didGasSteal;
+    int                             _currentRegionVertexIndex;
+    int                             _previousScoutHP;
+	std::vector<BWAPI::Position>    _enemyRegionVertices;
 
-	void moveScouts();
-    void drawScoutInformation(int x, int y);
+	bool                            enemyWorkerInRadius();
+    bool			                immediateThreat();
+    void                            gasSteal();
+    int                             getClosestVertexIndex(BWAPI::UnitInterface * unit);
+    BWAPI::Position                 getFleePosition();
+	BWAPI::UnitInterface*	        getEnemyGeyser();
+	BWAPI::UnitInterface*	        closestEnemyWorker();
+    void                            followPerimeter();
+	void                            moveScouts();
+    void                            drawScoutInformation(int x, int y);
+    void                            calculateEnemyRegionVertices();
 
 public:
 

@@ -338,9 +338,9 @@ void BuildingPlacer::drawReservedTiles()
 	}
 
     const std::vector<BWAPI::TilePosition> & closestToBuilding = MapTools::Instance().getClosestTilesTo(BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation()));
-    Building b(BWAPI::UnitTypes::Protoss_Pylon, BWAPI::Broodwar->self()->getStartLocation());
+    Building b(BWAPI::UnitTypes::Terran_Barracks, BWAPI::Broodwar->self()->getStartLocation());
 
-    for (size_t i(0); i < 400; ++i)
+    for (size_t i(0); i < 2000; ++i)
     {
         int x = closestToBuilding[i].x;
         int y = closestToBuilding[i].y;
