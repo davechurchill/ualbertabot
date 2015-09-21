@@ -34,7 +34,7 @@
 
     "Debug" :
     {
-        "ErrorLogFilename"          : "d:/ualbertabot/UAlbertaBot/UAB_ErrorLog.txt",
+        "ErrorLogFilename"          : "bwapi-data/AI/UAlbertaBot_ErrorLog.txt",
         
         "PrintModuleTimeout"        : false,
         "DrawBuildOrderSearchInfo"  : false,
@@ -63,9 +63,8 @@
         "UseScoutManager"       : true,
         "UseCombatCommander"    : true,
         "UseBuildOrderSearch"   : true,
-        "UseAutoObserver"       : false,
         "UseStrategyIO"         : true,
-        "UseUnitCommandManager" : false
+        "UseAutoObserver"       : false
     },
     
     "Tools" :
