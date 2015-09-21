@@ -2,7 +2,6 @@
 
 #include "Common.h"
 #include "MicroManager.h"
-#include "MicroUtil.h"
 #include "InformationManager.h"
 
 namespace UAlbertaBot

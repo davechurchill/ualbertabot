@@ -73,11 +73,13 @@ void GameCommander::drawDebugInterface()
 	timerManager.displayTimers(490, 225);
 	
     InformationManager::Instance().drawExtendedInterface();
+	InformationManager::Instance().drawUnitInformation(425,30);
+	InformationManager::Instance().drawMapInformation();
 	BOSSManager::Instance().drawSearchInformation(10, 200);
 	BuildingManager::Instance().drawBuildingInformation(200,50);
 	ProductionManager::Instance().drawProductionInformation(10, 30);
-	InformationManager::Instance().drawUnitInformation(425,30);
-	InformationManager::Instance().drawMapInformation();
+
+    //Micro::drawAPM(2,2);
 
 	combatCommander.drawSquadInformation(200, 30);
 

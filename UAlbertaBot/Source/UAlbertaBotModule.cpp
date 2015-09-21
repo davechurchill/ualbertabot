@@ -28,7 +28,7 @@ void UAlbertaBotModule::onStart()
 
     // Parse the bot's configuration file if it has one, change this file path to where your config file is
     // Any relative path name will be relative to Starcraft installation folder
-    ParseUtils::ParseConfigFile("D:/ualbertabot/UAlbertaBot/UAlbertaBot_Config.txt");
+    ParseUtils::ParseConfigFile("bwapi-data/AI/UAlbertaBot_Config.txt");
 
     // Set our BWAPI options here    
 	BWAPI::Broodwar->setLocalSpeed(Config::BWAPIOptions::SetLocalSpeed);
@@ -69,11 +69,6 @@ void UAlbertaBotModule::onEnd(bool isWinner)
 
 void UAlbertaBotModule::onFrame()
 {
-	if (Config::Modules::UsingUnitCommandManager)
-	{
-		UnitCommandManager::Instance().update();
-	}
-
 	if (Config::Modules::UsingGameCommander) 
 	{ 
 		_gameCommander.update(); 

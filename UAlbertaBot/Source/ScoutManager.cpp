@@ -94,14 +94,14 @@ void ScoutManager::moveScouts()
 				// if there is a worker nearby, harass it
 				if (!Config::Strategy::GasStealWithScout && closestWorker && (workerScout->getDistance(closestWorker) < 800))
 				{
-					MicroManager::SmartAttackUnit(workerScout, closestWorker);
+					Micro::SmartAttackUnit(workerScout, closestWorker);
 				}
 				// otherwise keep moving to the enemy region
 				else
 				{
                     scoutStatus = "Exploring enemy Region";
 					// move to the enemy region
-					MicroManager::SmartMove(workerScout, enemyBaseLocation->getPosition());
+					Micro::SmartMove(workerScout, enemyBaseLocation->getPosition());
 					BWAPI::Broodwar->drawLineMap(workerScout->getPosition().x, workerScout->getPosition().y, 
 						enemyBaseLocation->getPosition().x, enemyBaseLocation->getPosition().y,
 						BWAPI::Colors::Yellow);
@@ -114,7 +114,7 @@ void ScoutManager::moveScouts()
                 scoutStatus = "Under attack inside, fleeing";
                 BWAPI::Position fleeTo = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
 
-				MicroManager::SmartMove(workerScout, fleeTo);
+				Micro::SmartMove(workerScout, fleeTo);
 			}
 		}
 		// if the scout is not in the enemy region
@@ -122,14 +122,14 @@ void ScoutManager::moveScouts()
 		{
             scoutStatus = "Under attack outisde, going home";
 
-			MicroManager::SmartMove(workerScout, BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation()));
+			Micro::SmartMove(workerScout, BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation()));
 		}
 		else
 		{
             scoutStatus = "Enemy region known, going there";
 
 			// move to the enemy region
-			MicroManager::SmartMove(workerScout, enemyBaseLocation->getPosition());	
+			Micro::SmartMove(workerScout, enemyBaseLocation->getPosition());	
 		}
 		
 	}
@@ -145,7 +145,7 @@ void ScoutManager::moveScouts()
 			if (!BWAPI::Broodwar->isExplored(startLocation->getTilePosition())) 
 			{
 				// assign a zergling to go scout it
-				MicroManager::SmartMove(workerScout, BWAPI::Position(startLocation->getTilePosition()));			
+				Micro::SmartMove(workerScout, BWAPI::Position(startLocation->getTilePosition()));			
 				return;
 			}
 		}
@@ -191,7 +191,7 @@ void ScoutManager::gasSteal()
     {
         ProductionManager::Instance().queueGasSteal();
         didGasSteal = true;
-        MicroManager::SmartMove(workerScout, enemyGeyser->getPosition());
+        Micro::SmartMove(workerScout, enemyGeyser->getPosition());
         gasStealStatus = "Did Gas Steal";
     }
 }

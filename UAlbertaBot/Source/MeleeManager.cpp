@@ -35,7 +35,7 @@ void MeleeManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & targ
 				// find the best target for this meleeUnit
 				BWAPI::UnitInterface* target = getTarget(meleeUnit, meleeUnitTargets);
 				// attack it
-				SmartAttackUnit(meleeUnit, target);
+				Micro::SmartAttackUnit(meleeUnit, target);
 			}
 			// if there are no targets
 			else
@@ -44,7 +44,7 @@ void MeleeManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & targ
 				if (meleeUnit->getDistance(order.position) > 100)
 				{
 					// move to it
-					SmartMove(meleeUnit, order.position);
+					Micro::SmartMove(meleeUnit, order.position);
 				}
 			}
 		}

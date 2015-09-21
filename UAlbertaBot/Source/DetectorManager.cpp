@@ -42,7 +42,7 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & t
 		// if we need to regroup, move the detectorUnit to that location
 		if (!detectorUnitInBattle && unitClosestToEnemy && unitClosestToEnemy->getPosition().isValid())
 		{
-			SmartMove(detectorUnit, unitClosestToEnemy->getPosition());
+			Micro::SmartMove(detectorUnit, unitClosestToEnemy->getPosition());
 			detectorUnitInBattle = true;
 		}
 		// otherwise there is no battle or no closest to enemy so we don't want our detectorUnit to die
@@ -50,7 +50,7 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & t
 		else
 		{
 			BWAPI::Position explorePosition = MapGrid::Instance().getLeastExplored();
-			SmartMove(detectorUnit, explorePosition);
+			Micro::SmartMove(detectorUnit, explorePosition);
 		}
 	}
 }

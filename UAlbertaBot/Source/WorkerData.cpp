@@ -1,4 +1,5 @@
 #include "WorkerData.h"
+#include "Micro.h"
 
 using namespace UAlbertaBot;
 
@@ -107,7 +108,7 @@ void WorkerData::setWorkerJob(BWAPI::UnitInterface* unit, enum WorkerJob job, BW
         addToMineralPatch(mineralToMine, 1);
 
 		// right click the mineral to start mining
-		unit->rightClick(mineralToMine);
+		Micro::SmartRightClick(unit, mineralToMine);
 	}
 	else if (job == Gas)
 	{
@@ -118,7 +119,7 @@ void WorkerData::setWorkerJob(BWAPI::UnitInterface* unit, enum WorkerJob job, BW
 		workerRefineryMap[unit] = jobUnit;
 
 		// right click the refinery to start harvesting
-		unit->rightClick(jobUnit);
+		Micro::SmartRightClick(unit, jobUnit);
 	}
     else if (job == Repair)
     {
@@ -131,7 +132,7 @@ void WorkerData::setWorkerJob(BWAPI::UnitInterface* unit, enum WorkerJob job, BW
         // start repairing 
         if (!unit->isRepairing())
         {
-            unit->repair(jobUnit);
+            Micro::SmartRepair(unit, jobUnit);
         }
     }
 	else if (job == Scout)

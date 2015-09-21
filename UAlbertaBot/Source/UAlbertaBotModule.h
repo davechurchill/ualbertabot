@@ -7,7 +7,6 @@
 #include "Logger.h"
 #include "MapTools.h"
 #include "HardCodedInfo.h"
-#include "UnitCommandManager.h"
 #include "Config.h"
 #include "AutoObserver.h"
 

@@ -1,5 +1,6 @@
 #include "Common.h"
 #include "WorkerManager.h"
+#include "Micro.h"
 
 using namespace UAlbertaBot;
 
@@ -176,7 +177,7 @@ void WorkerManager::handleCombatWorkers()
 
 			if (target)
 			{
-				smartAttackUnit(worker, target);
+				Micro::SmartAttackUnit(worker, target);
 			}
 		}
 	}
@@ -288,7 +289,7 @@ void WorkerManager::handleMoveWorkers()
 		{
 			WorkerMoveData data = workerData.getWorkerMoveData(worker);
 			
-			worker->move(data.position);
+			Micro::SmartMove(worker, data.position);
 		}
 	}
 }
@@ -652,30 +653,6 @@ void WorkerManager::onUnitDestroy(BWAPI::UnitInterface* unit)
 
 		rebalanceWorkers();
 	}
-}
-
-void WorkerManager::smartAttackUnit(BWAPI::UnitInterface* attacker, BWAPI::UnitInterface* target)
-{
-    UAB_ASSERT(attacker != NULL, "Attacker was null");
-    UAB_ASSERT(target != NULL, "Target was null");
-
-	// if we have issued a command to this unit already this frame, ignore this one
-	if (attacker->getLastCommandFrame() >= BWAPI::Broodwar->getFrameCount() || attacker->isAttackFrame())
-	{
-		return;
-	}
-
-	// get the unit's current command
-	BWAPI::UnitCommand currentCommand(attacker->getLastCommand());
-
-	// if we've already told this unit to attack this target, ignore this command
-	if (currentCommand.getType() == BWAPI::UnitCommandTypes::Attack_Unit &&	currentCommand.getTarget() == target)
-	{
-		return;
-	}
-
-	// if nothing prevents it, attack the target
-	attacker->attack(target);
 }
 
 void WorkerManager::drawResourceDebugInfo() 

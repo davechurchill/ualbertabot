@@ -25,9 +25,6 @@
     <Filter Include="common">
       <UniqueIdentifier>{849d54bf-a76a-4425-8399-099fbe0360c4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="sparcraft">
-      <UniqueIdentifier>{6b8863f5-e2f1-4ee3-ad58-f8c6bf761cc6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="game\combat\squad">
       <UniqueIdentifier>{32554737-6cf9-47c8-87c9-6db0b6ffcc51}</UniqueIdentifier>
     </Filter>
@@ -71,9 +68,6 @@
     </ClCompile>
     <ClCompile Include="..\Source\UABAssert.cpp">
       <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\SparCraftManager.cpp">
-      <Filter>sparcraft</Filter>
     </ClCompile>
     <ClCompile Include="..\source\BuildingData.cpp">
       <Filter>game\macro</Filter>
@@ -138,12 +132,6 @@
     <ClCompile Include="..\Source\StrategyManager.cpp">
       <Filter>game\util</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\UnitCommandData.cpp">
-      <Filter>game\util</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\UnitCommandManager.cpp">
-      <Filter>game\util</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\UnitData.cpp">
       <Filter>game\util</Filter>
     </ClCompile>
@@ -159,7 +147,7 @@
     <ClCompile Include="..\Source\ParseUtils.cpp">
       <Filter>util</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\MicroUtil.cpp">
+    <ClCompile Include="..\Source\Micro.cpp">
       <Filter>game\combat\micro</Filter>
     </ClCompile>
   </ItemGroup>
@@ -196,9 +184,6 @@
     </ClInclude>
     <ClInclude Include="..\Source\UABAssert.h">
       <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\SparCraftManager.h">
-      <Filter>sparcraft</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\CombatSimulation.h">
       <Filter>game\combat</Filter>
@@ -266,12 +251,6 @@
     <ClInclude Include="..\Source\StrategyManager.h">
       <Filter>game\util</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\UnitCommandData.h">
-      <Filter>game\util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\UnitCommandManager.h">
-      <Filter>game\util</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\UnitData.h">
       <Filter>game\util</Filter>
     </ClInclude>
@@ -287,7 +266,7 @@
     <ClInclude Include="..\Source\ParseUtils.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\MicroUtil.h">
+    <ClInclude Include="..\Source\Micro.h">
       <Filter>game\combat\micro</Filter>
     </ClInclude>
   </ItemGroup>

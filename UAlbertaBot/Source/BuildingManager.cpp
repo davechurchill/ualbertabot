@@ -1,5 +1,6 @@
 #include "Common.h"
 #include "BuildingManager.h"
+#include "Micro.h"
 
 using namespace UAlbertaBot;
 
@@ -182,7 +183,7 @@ void BuildingManager::constructAssignedBuildings()
 			// if we haven't explored the build position, go there
 			if (!isBuildingPositionExplored(b))
 			{
-				b.builderUnit->move(BWAPI::Position(b.finalPosition));
+				Micro::SmartMove(b.builderUnit, BWAPI::Position(b.finalPosition));
 				//BWAPI::Broodwar->printf("Can't see build position, walking there");
 			}
 			// if this is not the first time we've sent this guy to build this

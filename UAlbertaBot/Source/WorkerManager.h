@@ -65,7 +65,6 @@ public:
     void                        stopRepairing(BWAPI::UnitInterface* worker);
 	void						setMoveWorker(int m, int g, BWAPI::Position p);
 	void						setCombatWorker(BWAPI::UnitInterface* worker);
-	void						smartAttackUnit(BWAPI::UnitInterface* attacker, BWAPI::UnitInterface* target);
 
 	bool						willHaveResources(int mineralsRequired, int gasRequired, double distance);
 	void						rebalanceWorkers();

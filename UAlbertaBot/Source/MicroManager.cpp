@@ -110,11 +110,11 @@ void MicroManager::regroup(const BWAPI::Position & regroupPosition) const
 		{
 			// regroup it
 			BWAPI::Broodwar->drawCircleMap(unit->getPosition().x, unit->getPosition().y, 20, BWAPI::Colors::Yellow);
-			SmartMove(unit, regroupPosition);
+			Micro::SmartMove(unit, regroupPosition);
 		}
 		else
 		{
-			SmartAttackMove(unit, unit->getPosition());
+			Micro::SmartAttackMove(unit, unit->getPosition());
 		}
 	}
 }
@@ -157,93 +157,6 @@ bool MicroManager::checkPositionWalkable(BWAPI::Position pos) {
 
 	// otherwise it's okay
 	return true;
-}
-
-void MicroManager::SmartAttackUnit(BWAPI::UnitInterface* attacker, BWAPI::UnitInterface* target)
-{
-	assert(attacker && target);
-
-	// if we have issued a command to this unit already this frame, ignore this one
-	if (attacker->getLastCommandFrame() >= BWAPI::Broodwar->getFrameCount() || attacker->isAttackFrame())
-	{
-		return;
-	}
-
-	// get the unit's current command
-	BWAPI::UnitCommand currentCommand(attacker->getLastCommand());
-
-	// if we've already told this unit to attack this target, ignore this command
-	if (currentCommand.getType() == BWAPI::UnitCommandTypes::Attack_Unit &&	currentCommand.getTarget() == target)
-	{
-		return;
-	}
-
-	// if nothing prevents it, attack the target
-	attacker->attack(target);
-
-	if (Config::Debug::DrawUnitTargetInfo) BWAPI::Broodwar->drawLineMap(	attacker->getPosition().x, attacker->getPosition().y,
-									target->getPosition().x, target->getPosition().y,
-									BWAPI::Colors::Red );
-
-}
-
-void MicroManager::SmartAttackMove(BWAPI::UnitInterface* attacker, BWAPI::Position targetPosition)
-{
-	assert(attacker);
-
-	// if we have issued a command to this unit already this frame, ignore this one
-	if (attacker->getLastCommandFrame() >= BWAPI::Broodwar->getFrameCount() || attacker->isAttackFrame())
-	{
-		return;
-	}
-
-	// get the unit's current command
-	BWAPI::UnitCommand currentCommand(attacker->getLastCommand());
-
-	// if we've already told this unit to attack this target, ignore this command
-	if (currentCommand.getType() == BWAPI::UnitCommandTypes::Attack_Move &&	currentCommand.getTargetPosition() == targetPosition)
-	{
-		return;
-	}
-
-	// if nothing prevents it, attack the target
-	attacker->attack(targetPosition);
-
-	if (Config::Debug::DrawUnitTargetInfo) BWAPI::Broodwar->drawLineMap(	attacker->getPosition().x, attacker->getPosition().y,
-									targetPosition.x, targetPosition.y,
-									BWAPI::Colors::Orange );
-}
-
-void MicroManager::SmartMove(BWAPI::UnitInterface* attacker, BWAPI::Position targetPosition)
-{
-	assert(attacker);
-
-	// if we have issued a command to this unit already this frame, ignore this one
-	if (attacker->getLastCommandFrame() >= BWAPI::Broodwar->getFrameCount() || attacker->isAttackFrame())
-	{
-		return;
-	}
-
-	// get the unit's current command
-	BWAPI::UnitCommand currentCommand(attacker->getLastCommand());
-
-	// if we've already told this unit to attack this target, ignore this command
-	if (   (currentCommand.getType() == BWAPI::UnitCommandTypes::Move)
-		&& (currentCommand.getTargetPosition() == targetPosition) 
-		&& (BWAPI::Broodwar->getFrameCount() - attacker->getLastCommandFrame() < 5)
-		&& attacker->isMoving())
-	{
-		return;
-	}
-
-	// if nothing prevents it, attack the target
-	attacker->move(targetPosition);
-
-	if (Config::Debug::DrawUnitTargetInfo) 
-	{
-		BWAPI::Broodwar->drawLineMap(attacker->getPosition().x, attacker->getPosition().y,
-									 targetPosition.x, targetPosition.y, BWAPI::Colors::Orange);
-	}
 }
 
 void MicroManager::trainSubUnits(BWAPI::UnitInterface* unit) const

@@ -5,6 +5,7 @@
 #include "SquadOrder.h"
 #include "MapTools.h"
 #include "InformationManager.h"
+#include "Micro.h"
 
 namespace UAlbertaBot
 {
@@ -48,8 +49,5 @@ public:
 	void				execute(const SquadOrder & order);
 	void				regroup(const BWAPI::Position & regroupPosition) const;
 
-    static void	        SmartAttackUnit(BWAPI::UnitInterface* attacker, BWAPI::UnitInterface* target);
-	static void	        SmartAttackMove(BWAPI::UnitInterface* attacker, BWAPI::Position targetPosition);
-	static void         SmartMove(BWAPI::UnitInterface* attacker, BWAPI::Position targetPosition);
 };
 }

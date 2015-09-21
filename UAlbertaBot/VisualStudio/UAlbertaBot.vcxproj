@@ -137,12 +137,11 @@
     <ClCompile Include="..\source\MetaType.cpp" />
     <ClCompile Include="..\source\MicroManager.cpp" />
     <ClCompile Include="..\Source\Config.cpp" />
-    <ClCompile Include="..\Source\MicroUtil.cpp" />
+    <ClCompile Include="..\Source\Micro.cpp" />
     <ClCompile Include="..\Source\ParseUtils.cpp" />
     <ClCompile Include="..\source\ProductionManager.cpp" />
     <ClCompile Include="..\source\RangedManager.cpp" />
     <ClCompile Include="..\source\ScoutManager.cpp" />
-    <ClCompile Include="..\Source\SparCraftManager.cpp" />
     <ClCompile Include="..\Source\Squad.cpp" />
     <ClCompile Include="..\Source\SquadData.cpp" />
     <ClCompile Include="..\Source\StrategyManager.cpp" />
@@ -150,8 +149,6 @@
     <ClCompile Include="..\source\TransportManager.cpp" />
     <ClCompile Include="..\Source\UABAssert.cpp" />
     <ClCompile Include="..\Source\UAlbertaBotModule.cpp" />
-    <ClCompile Include="..\Source\UnitCommandData.cpp" />
-    <ClCompile Include="..\Source\UnitCommandManager.cpp" />
     <ClCompile Include="..\Source\UnitData.cpp" />
     <ClCompile Include="..\source\WorkerData.cpp" />
     <ClCompile Include="..\source\WorkerManager.cpp" />
@@ -180,12 +177,11 @@
     <ClInclude Include="..\source\MetaType.h" />
     <ClInclude Include="..\source\MicroManager.h" />
     <ClInclude Include="..\Source\Config.h" />
-    <ClInclude Include="..\Source\MicroUtil.h" />
+    <ClInclude Include="..\Source\Micro.h" />
     <ClInclude Include="..\Source\ParseUtils.h" />
     <ClInclude Include="..\source\ProductionManager.h" />
     <ClInclude Include="..\source\RangedManager.h" />
     <ClInclude Include="..\source\ScoutManager.h" />
-    <ClInclude Include="..\Source\SparCraftManager.h" />
     <ClInclude Include="..\Source\Squad.h" />
     <ClInclude Include="..\Source\SquadData.h" />
     <ClInclude Include="..\Source\SquadOrder.h" />
@@ -194,8 +190,6 @@
     <ClInclude Include="..\source\TransportManager.h" />
     <ClInclude Include="..\Source\UABAssert.h" />
     <ClInclude Include="..\Source\UAlbertaBotModule.h" />
-    <ClInclude Include="..\Source\UnitCommandData.h" />
-    <ClInclude Include="..\Source\UnitCommandManager.h" />
     <ClInclude Include="..\Source\UnitData.h" />
     <ClInclude Include="..\source\WorkerData.h" />
     <ClInclude Include="..\source\WorkerManager.h" />
