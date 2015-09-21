@@ -78,7 +78,8 @@
         "TerranStrategyName"    : "Terran_MarineRush",
         "ZergStrategyName"      : "Zerg_3HatchMuta",
         
-        "GasStealWithScout"     : false,
+        "ScoutGasSteal"         : false,
+        "ScoutHarassEnemy"      : true,
         
         "ReadDirectory"         : "bwapi-data/read/",
         "WriteDirectory"        : "bwapi-data/write/",

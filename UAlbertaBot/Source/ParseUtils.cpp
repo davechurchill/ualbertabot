@@ -137,7 +137,8 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
     {
         const rapidjson::Value & strategy = doc["Strategy"];
 
-        JSONTools::ReadBool("GasStealWithScout", strategy, Config::Strategy::GasStealWithScout);
+        JSONTools::ReadBool("ScoutGasSteal", strategy, Config::Strategy::GasStealWithScout);
+        JSONTools::ReadBool("ScoutHarassEnemy", strategy, Config::Strategy::ScoutHarassEnemy);
         JSONTools::ReadString("ProtossStrategyName", strategy, Config::Strategy::ProtossStrategyName);
         JSONTools::ReadString("TerranStrategyName", strategy, Config::Strategy::TerranStrategyName);
         JSONTools::ReadString("ZergStrategyName", strategy, Config::Strategy::ZergStrategyName);

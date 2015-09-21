@@ -33,6 +33,7 @@ namespace Config
         extern std::string ReadDir;
         extern std::string WriteDir;
         extern bool GasStealWithScout;
+        extern bool ScoutHarassEnemy;
     }
 
     namespace BWAPIOptions

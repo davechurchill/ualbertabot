@@ -105,17 +105,18 @@ void ScoutManager::moveScouts()
 			// if the worker scout is not under attack
 			if (!_scoutUnderAttack)
 			{
-                _scoutStatus = "Harass enemy worker";
 
 				// if there is a worker nearby, harass it
-				if (!Config::Strategy::GasStealWithScout && closestWorker && (_workerScout->getDistance(closestWorker) < 800))
+				if (Config::Strategy::ScoutHarassEnemy && !Config::Strategy::GasStealWithScout && closestWorker && (_workerScout->getDistance(closestWorker) < 800))
 				{
+                    _scoutStatus = "Harass enemy worker";
                     _currentRegionVertexIndex = -1;
 					Micro::SmartAttackUnit(_workerScout, closestWorker);
 				}
 				// otherwise keep moving to the enemy region
 				else
 				{
+                    _scoutStatus = "Following perimeter";
                     followPerimeter();  
                 }
 				
@@ -467,7 +468,7 @@ void ScoutManager::calculateEnemyRegionVertices()
     }
 
     // let's close loops on a threshold, eliminating death grooves
-    int distanceThreshold = 150;
+    int distanceThreshold = 100;
 
     while (true)
     {
@@ -502,18 +503,12 @@ void ScoutManager::calculateEnemyRegionVertices()
             }
         }
         
-        // stop when we have no other chains within the threshold
-        if (maxFarthest < 6)
+        // stop when we have no long chains within the threshold
+        if (maxFarthest < 4)
         {
             break;
         }
 
-        if (maxFarthest == 1)
-        {
-            int a =6;
-        }
-
-        BWAPI::Broodwar->printf("Longest: %d %d %d", maxFarthest, maxFarthestStart, maxFarthestEnd);
         double dist = sortedVertices[maxFarthestStart].getDistance(sortedVertices[maxFarthestEnd]);
 
         std::vector<BWAPI::Position> temp;

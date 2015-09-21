@@ -12,6 +12,7 @@ namespace Config
         std::string ReadDir                 = "bwapi-data/read/";
         std::string WriteDir                = "bwapi-data/write/";
         bool GasStealWithScout              = false;
+        bool ScoutHarassEnemy               = true;
     }
 
     namespace Modules							    

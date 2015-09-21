@@ -52,8 +52,8 @@ void Micro::SmartAttackUnit(BWAPI::UnitInterface* attacker, BWAPI::UnitInterface
 
 void Micro::SmartAttackMove(BWAPI::UnitInterface* attacker, const BWAPI::Position & targetPosition)
 {
-    UAB_ASSERT(attacker, "SmartAttackMove: Attacker not valid");
-    UAB_ASSERT(targetPosition.isValid(), "SmartAttackMove: targetPosition not valid");
+    //UAB_ASSERT(attacker, "SmartAttackMove: Attacker not valid");
+    //UAB_ASSERT(targetPosition.isValid(), "SmartAttackMove: targetPosition not valid");
 
     if (!attacker || !targetPosition.isValid())
     {
@@ -89,8 +89,8 @@ void Micro::SmartAttackMove(BWAPI::UnitInterface* attacker, const BWAPI::Positio
 
 void Micro::SmartMove(BWAPI::UnitInterface* attacker, const BWAPI::Position & targetPosition)
 {
-    UAB_ASSERT(attacker, "SmartAttackMove: Attacker not valid");
-    UAB_ASSERT(targetPosition.isValid(), "SmartAttackMove: targetPosition not valid");
+    //UAB_ASSERT(attacker, "SmartAttackMove: Attacker not valid");
+    //UAB_ASSERT(targetPosition.isValid(), "SmartAttackMove: targetPosition not valid");
 
     if (!attacker || !targetPosition.isValid())
     {
