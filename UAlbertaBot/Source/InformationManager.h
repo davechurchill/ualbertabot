@@ -40,9 +40,6 @@ class InformationManager {
 
 public:
 
-	bool goForIt;
-	int lastFrameRegroup;
-
 	// yay for singletons!
 	static InformationManager &			Instance();
 

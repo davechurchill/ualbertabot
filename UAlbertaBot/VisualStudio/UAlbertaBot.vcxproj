@@ -150,6 +150,7 @@
     <ClCompile Include="..\Source\UABAssert.cpp" />
     <ClCompile Include="..\Source\UAlbertaBotModule.cpp" />
     <ClCompile Include="..\Source\UnitData.cpp" />
+    <ClCompile Include="..\Source\UnitUtil.cpp" />
     <ClCompile Include="..\source\WorkerData.cpp" />
     <ClCompile Include="..\source\WorkerManager.cpp" />
   </ItemGroup>
@@ -191,6 +192,7 @@
     <ClInclude Include="..\Source\UABAssert.h" />
     <ClInclude Include="..\Source\UAlbertaBotModule.h" />
     <ClInclude Include="..\Source\UnitData.h" />
+    <ClInclude Include="..\Source\UnitUtil.h" />
     <ClInclude Include="..\source\WorkerData.h" />
     <ClInclude Include="..\source\WorkerManager.h" />
   </ItemGroup>

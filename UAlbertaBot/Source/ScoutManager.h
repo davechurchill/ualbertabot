@@ -35,7 +35,9 @@ public:
 	ScoutManager();
 	~ScoutManager() {};
 
-	void update(const std::set<BWAPI::UnitInterface*> & scoutUnits);
+	void update();
+
+    void setWorkerScout(BWAPI::UnitInterface * unit);
 
 	void onSendText(std::string text);
 	void onUnitShow(BWAPI::UnitInterface* unit);

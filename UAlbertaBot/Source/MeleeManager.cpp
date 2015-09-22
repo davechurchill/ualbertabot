@@ -27,8 +27,8 @@ void MeleeManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & targ
 	for (BWAPI::UnitInterface* meleeUnit : meleeUnits)
 	{
 		// if the order is to attack or defend
-		if (order.type == order.Attack || order.type == order.Defend) {
-
+		if (order.getType() == SquadOrderTypes::Attack || order.getType() == SquadOrderTypes::Defend) 
+        {
 			// if there are targets
 			if (!meleeUnitTargets.empty())
 			{
@@ -41,10 +41,10 @@ void MeleeManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & targ
 			else
 			{
 				// if we're not near the order position
-				if (meleeUnit->getDistance(order.position) > 100)
+				if (meleeUnit->getDistance(order.getPosition()) > 100)
 				{
 					// move to it
-					Micro::SmartMove(meleeUnit, order.position);
+					Micro::SmartMove(meleeUnit, order.getPosition());
 				}
 			}
 		}
@@ -95,7 +95,11 @@ int MeleeManager::getAttackPriority(BWAPI::UnitInterface* unit)
 	BWAPI::UnitType type = unit->getType();
 
 	// highest priority is something that can attack us or aid in combat
-	if (type == BWAPI::UnitTypes::Terran_Medic || 
+    if (type ==  BWAPI::UnitTypes::Terran_Bunker)
+    {
+        return 11;
+    }
+    else if (type == BWAPI::UnitTypes::Terran_Medic || 
 		(type.groundWeapon() != BWAPI::WeaponTypes::None && !type.isWorker()) || 
 		type ==  BWAPI::UnitTypes::Terran_Bunker ||
 		type == BWAPI::UnitTypes::Protoss_High_Templar ||
@@ -107,6 +111,11 @@ int MeleeManager::getAttackPriority(BWAPI::UnitInterface* unit)
 	// next priority is worker
 	else if (type.isWorker()) 
 	{
+        if (unit->isRepairing())
+        {
+            //return 20;
+        }
+
 		return 9;
 	}
     // next is special buildings

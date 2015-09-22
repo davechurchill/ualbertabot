@@ -15,22 +15,8 @@ ScoutManager::ScoutManager()
 {
 }
 
-void ScoutManager::update(const std::set<BWAPI::UnitInterface*> & scoutUnits)
+void ScoutManager::update()
 {
-	if (scoutUnits.size() == 1)
-	{
-		BWAPI::UnitInterface* scoutUnit = *scoutUnits.begin();
-
-		if (scoutUnit->getType().isWorker())
-		{
-			if (scoutUnit != _workerScout)
-			{
-				_numWorkerScouts++;
-				_workerScout = scoutUnit;
-			}
-		}
-	}
-
     // calculate enemy region vertices if we haven't yet
     if (_enemyRegionVertices.empty())
     {
@@ -39,6 +25,11 @@ void ScoutManager::update(const std::set<BWAPI::UnitInterface*> & scoutUnits)
 
 	moveScouts();
     drawScoutInformation(200, 320);
+}
+
+void ScoutManager::setWorkerScout(BWAPI::UnitInterface * unit)
+{
+    _workerScout = unit;
 }
 
 void ScoutManager::drawScoutInformation(int x, int y)
@@ -438,6 +429,7 @@ void ScoutManager::calculateEnemyRegionVertices()
             unsortedVertices.insert(BWAPI::Position(tp) + BWAPI::Position(16, 16));
         }
     }
+
 
     std::vector<BWAPI::Position> sortedVertices;
     BWAPI::Position current = *unsortedVertices.begin();

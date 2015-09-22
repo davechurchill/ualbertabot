@@ -9,8 +9,8 @@
 
 namespace UAlbertaBot
 {
-class BuildingManager {
-
+class BuildingManager 
+{
 	BuildingManager();
 
 	ConstructionData			buildingData;

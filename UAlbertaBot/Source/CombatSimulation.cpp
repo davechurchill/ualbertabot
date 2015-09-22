@@ -19,7 +19,7 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
 	std::vector<BWAPI::UnitInterface*> ourCombatUnits;
 	std::vector<UnitInfo> enemyCombatUnits;
 
-	MapGrid::Instance().GetUnits(ourCombatUnits,   center, Config::Micro::CombatRegroupRadius, true, false);
+	MapGrid::Instance().GetUnits(ourCombatUnits, center, Config::Micro::CombatRegroupRadius, true, false);
 	InformationManager::Instance().getNearbyForce(enemyCombatUnits, center, BWAPI::Broodwar->enemy(), Config::Micro::CombatRegroupRadius);
 
 	for (BWAPI::UnitInterface* unit : ourCombatUnits)
@@ -48,6 +48,15 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
         if (ui.type.isWorker())
         {
             continue;
+        }
+
+        
+        if (ui.type == BWAPI::UnitTypes::Terran_Bunker)
+        {
+            for (size_t i(0); i < 3; ++i)
+            {
+                s.addUnit(BWAPI::UnitTypes::Terran_Marine, getSparCraftPlayerID(ui.player), SparCraft::Position(ui.lastPosition));
+            }
         }
 
         if (!ui.type.isFlyer() && SparCraft::System::isSupportedUnitType(ui.type) && ui.completed)

@@ -150,6 +150,9 @@
     <ClCompile Include="..\Source\Micro.cpp">
       <Filter>game\combat\micro</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\UnitUtil.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\CombatCommander.h">
@@ -268,6 +271,9 @@
     </ClInclude>
     <ClInclude Include="..\Source\Micro.h">
       <Filter>game\combat\micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\UnitUtil.h">
+      <Filter>util</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

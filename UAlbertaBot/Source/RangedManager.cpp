@@ -26,7 +26,7 @@ void RangedManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & tar
 		//trainSubUnits(rangedUnit);
 
 		// if the order is to attack or defend
-		if (order.type == order.Attack || order.type == order.Defend) {
+		if (order.getType() == SquadOrderTypes::Attack || order.getType() == SquadOrderTypes::Defend) {
 
 			// if there are targets
 			if (!rangedUnitTargets.empty())
@@ -41,10 +41,10 @@ void RangedManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & tar
 			else
 			{
 				// if we're not near the order position
-				if (rangedUnit->getDistance(order.position) > 100)
+				if (rangedUnit->getDistance(order.getPosition()) > 100)
 				{
 					// move to it
-					Micro::SmartAttackMove(rangedUnit, order.position);
+					Micro::SmartAttackMove(rangedUnit, order.getPosition());
 				}
 			}
 		}

@@ -31,22 +31,19 @@ public:
 
 class GameCommander 
 {
-	CombatCommander		combatCommander;
+	CombatCommander		    _combatCommander;
 
-	ScoutManager		scoutManager;
-	TimerManager		timerManager;
+	ScoutManager		    _scoutManager;
+	TimerManager		    _timerManager;
+    
+	BWAPI::Unitset          _validUnits;
+	BWAPI::Unitset          _combatUnits;
+	BWAPI::Unitset          _scoutUnits;
 
-	std::set<BWAPI::UnitInterface*> combatUnits;
-	std::set<BWAPI::UnitInterface*> scoutUnits;
-	std::set<BWAPI::UnitInterface*> workerUnits;
+    bool                    _initialScoutSet;
 
-	std::set<BWAPI::UnitInterface*>	validUnits;
-	std::set<BWAPI::UnitInterface*> assignedUnits;
-
-	BWAPI::UnitInterface* currentScout;
-	bool workerScoutSet;
-
-	const bool isAssigned(BWAPI::UnitInterface* unit) const;
+    void                    assignUnit(BWAPI::UnitInterface * unit, BWAPI::Unitset & set);
+	bool                    isAssigned(BWAPI::UnitInterface* unit) const;
 
 public:
 
@@ -55,16 +52,12 @@ public:
 
 	void update();
 
-	void populateUnitVectors();
+	void handleUnitAssignments();
 	void setValidUnits();
 	void setScoutUnits();
-	void setWorkerUnits();
 	void setCombatUnits();
 
 	void drawDebugInterface();
-
-	bool isValidUnit(BWAPI::UnitInterface* unit);
-	bool isCombatUnit(BWAPI::UnitInterface* unit) const;
 
 	BWAPI::UnitInterface* getFirstSupplyProvider();
 	BWAPI::UnitInterface* getClosestUnitToTarget(BWAPI::UnitType type, BWAPI::Position target);

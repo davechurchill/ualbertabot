@@ -139,9 +139,9 @@ typedef UIMap::const_iterator ConstUIMapIter;
 #define FOR_EACH_UIMAP(ITER, MAP) for (UIMapIter ITER(MAP.begin()); ITER != MAP.end(); ITER++)
 #define FOR_EACH_UIMAP_CONST(ITER, MAP) for (ConstUIMapIter ITER(MAP.begin()); ITER != MAP.end(); ITER++)
 
-class UnitData {
-
-	std::map<BWAPI::UnitInterface*, UnitInfo>		unitMap;
+class UnitData 
+{
+	std::map<BWAPI::UnitInterface*, UnitInfo> unitMap;
 
 	const bool badUnitInfo(const UnitInfo & ui) const;
 

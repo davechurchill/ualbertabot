@@ -1,76 +1,75 @@
 #include "Common.h"
 #include "GameCommander.h"
+#include "UnitUtil.h"
 
 using namespace UAlbertaBot;
 
 GameCommander::GameCommander() 
-    : workerScoutSet(false)
-    , currentScout(NULL)
+    : _initialScoutSet(false)
 {
 
 }
 
 void GameCommander::update()
 {
-	timerManager.startTimer(TimerManager::All);
-
+	_timerManager.startTimer(TimerManager::All);
 
 	// populate the unit vectors we will pass into various managers
-	populateUnitVectors();
+	handleUnitAssignments();
 
 	// utility managers
-	timerManager.startTimer(TimerManager::InformationManager);
+	_timerManager.startTimer(TimerManager::InformationManager);
 	InformationManager::Instance().update();
-	timerManager.stopTimer(TimerManager::InformationManager);
+	_timerManager.stopTimer(TimerManager::InformationManager);
 
-	timerManager.startTimer(TimerManager::MapGrid);
+	_timerManager.startTimer(TimerManager::MapGrid);
 	MapGrid::Instance().update();
-	timerManager.stopTimer(TimerManager::MapGrid);
+	_timerManager.stopTimer(TimerManager::MapGrid);
 
-	timerManager.startTimer(TimerManager::MapTools);
+	_timerManager.startTimer(TimerManager::MapTools);
 	//MapTools::Instance().update();
-	timerManager.stopTimer(TimerManager::MapTools);
+	_timerManager.stopTimer(TimerManager::MapTools);
 
-	timerManager.startTimer(TimerManager::Search);
-	BOSSManager::Instance().update(35 - timerManager.getTotalElapsed());
-	timerManager.stopTimer(TimerManager::Search);
+	_timerManager.startTimer(TimerManager::Search);
+	BOSSManager::Instance().update(35 - _timerManager.getTotalElapsed());
+	_timerManager.stopTimer(TimerManager::Search);
 
 	// economy and base managers
-	timerManager.startTimer(TimerManager::Worker);
+	_timerManager.startTimer(TimerManager::Worker);
 	WorkerManager::Instance().update();
-	timerManager.stopTimer(TimerManager::Worker);
+	_timerManager.stopTimer(TimerManager::Worker);
 
-	timerManager.startTimer(TimerManager::Production);
+	_timerManager.startTimer(TimerManager::Production);
 	ProductionManager::Instance().update();
-	timerManager.stopTimer(TimerManager::Production);
+	_timerManager.stopTimer(TimerManager::Production);
 
-	timerManager.startTimer(TimerManager::Building);
+	_timerManager.startTimer(TimerManager::Building);
 	BuildingManager::Instance().update();
-	timerManager.stopTimer(TimerManager::Building);
+	_timerManager.stopTimer(TimerManager::Building);
 
 	// combat and scouting managers
-	timerManager.startTimer(TimerManager::Combat);
+	_timerManager.startTimer(TimerManager::Combat);
 	if (Config::Modules::UsingCombatCommander)
 	{
-		combatCommander.update(combatUnits);
+		_combatCommander.update(_combatUnits);
 	}
-	timerManager.stopTimer(TimerManager::Combat);
+	_timerManager.stopTimer(TimerManager::Combat);
 
-	timerManager.startTimer(TimerManager::Scout);
+	_timerManager.startTimer(TimerManager::Scout);
 	if (Config::Modules::UsingScoutManager)
 	{
-		scoutManager.update(scoutUnits);
+		_scoutManager.update();
 	}
-	timerManager.stopTimer(TimerManager::Scout);
+	_timerManager.stopTimer(TimerManager::Scout);
 		
-	timerManager.stopTimer(TimerManager::All);
+	_timerManager.stopTimer(TimerManager::All);
 
 	drawDebugInterface();
 }
 
 void GameCommander::drawDebugInterface()
 {
-	timerManager.displayTimers(490, 225);
+	_timerManager.displayTimers(490, 225);
 	
     InformationManager::Instance().drawExtendedInterface();
 	InformationManager::Instance().drawUnitInformation(425,30);
@@ -81,7 +80,7 @@ void GameCommander::drawDebugInterface()
 
     //Micro::drawAPM(2,2);
 
-	combatCommander.drawSquadInformation(200, 30);
+	_combatCommander.drawSquadInformation(200, 30);
 
 	// draw position of mouse cursor
 	if (Config::Debug::DrawMouseCursorInfo)
@@ -94,42 +93,41 @@ void GameCommander::drawDebugInterface()
 }
 
 // assigns units to various managers
-void GameCommander::populateUnitVectors()
+void GameCommander::handleUnitAssignments()
 {
+	_validUnits.clear();
+    _combatUnits.clear();
+
 	// filter our units for those which are valid and usable
 	setValidUnits();
 
 	// set each type of unit
 	setScoutUnits();
 	setCombatUnits();
-	setWorkerUnits();
 }
 
-const bool GameCommander::isAssigned(BWAPI::UnitInterface* unit) const
+bool GameCommander::isAssigned(BWAPI::UnitInterface* unit) const
 {
-	return assignedUnits.find(unit) != assignedUnits.end();
+	return _combatUnits.contains(unit) || _scoutUnits.contains(unit);
 }
 
 // validates units as usable for distribution to various managers
 void GameCommander::setValidUnits()
 {
-	validUnits.clear();
-	assignedUnits.clear();
-
 	// make sure the unit is completed and alive and usable
 	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits())
 	{
-		if (isValidUnit(unit))
+		if (UnitUtil::IsValidUnit(unit))
 		{	
-			validUnits.insert(unit);
+			_validUnits.insert(unit);
 		}
 	}
 }
 
 void GameCommander::setScoutUnits()
 {
-    // if we haven't set our first worker scout, try and do it
-    if (!workerScoutSet)
+    // if we haven't set a scout unit, do it
+    if (_scoutUnits.empty() && !_initialScoutSet)
     {
         BWAPI::UnitInterface* supplyProvider = getFirstSupplyProvider();
 
@@ -139,89 +137,28 @@ void GameCommander::setScoutUnits()
 			// grab the closest worker to the supply provider to send to scout
 			BWAPI::UnitInterface* workerScout = getClosestWorkerToTarget(supplyProvider->getPosition());
 
-			// if we find a worker (which we should) add it to the scout vector
+			// if we find a worker (which we should) add it to the scout units
 			if (workerScout)
 			{
-				workerScoutSet = true;
-				scoutUnits.insert(workerScout);
-				assignedUnits.insert(workerScout);
+                _scoutManager.setWorkerScout(workerScout);
+				assignUnit(workerScout, _scoutUnits);
 				WorkerManager::Instance().setScoutWorker(workerScout);
+                _initialScoutSet = true;
 			}
 		}
-    }
-    else
-    {
-        // we have previously set a worker scout, so go through our units to find him and if he exists put him in the scout squad
-        BWAPI::UnitInterface * workerScout = WorkerManager::Instance().getWorkerScout();
-
-        if (workerScout)
-        {
-            scoutUnits.insert(workerScout);
-        }
     }
 }
 
 // sets combat units to be passed to CombatCommander
 void GameCommander::setCombatUnits()
 {
-	combatUnits.clear();
-
-	for (BWAPI::UnitInterface* unit : validUnits)
+	for (BWAPI::UnitInterface* unit : _validUnits)
 	{
-		if (!isAssigned(unit) && isCombatUnit(unit))		
+		if (!isAssigned(unit) && UnitUtil::IsCombatUnit(unit) || unit->getType().isWorker())		
 		{	
-			combatUnits.insert(unit);
-			assignedUnits.insert(unit);
+			assignUnit(unit, _combatUnits);
 		}
 	}
-
-	// emergency situation, enemy is in our base and we have no combat units
-	// add our workers to the combat force
-    int workersToDefend = StrategyManager::Instance().defendWithWorkers();
-	if (combatUnits.empty() && (workersToDefend > 0))
-	{
-		for (BWAPI::UnitInterface* unit : validUnits)
-		{
-			// if it's a worker
-			if (!isAssigned(unit) && unit->getType().isWorker())			
-			{	
-				// only assign it to combat if it's not building something
-				if (!WorkerManager::Instance().isBuilder(unit))
-				{
-					combatUnits.insert(unit);
-					assignedUnits.insert(unit);
-                    workersToDefend--;
-				}
-
-                if (workersToDefend <= 0)
-                {
-                    break;
-                }
-			}
-		}
-	}
-}
-
-bool GameCommander::isCombatUnit(BWAPI::UnitInterface* unit) const
-{
-	UAB_ASSERT(unit != NULL, "Unit was null");
-
-	// no workers or buildings allowed
-	if (unit && unit->getType().isWorker() || unit->getType().isBuilding())
-	{
-		return false;
-	}
-
-	// check for various types of combat units
-	if (unit->getType().canAttack() || 
-		unit->getType() == BWAPI::UnitTypes::Terran_Medic ||
-		unit->getType() == BWAPI::UnitTypes::Protoss_High_Templar ||
-		unit->getType() == BWAPI::UnitTypes::Protoss_Observer)
-	{
-		return true;
-	}
-		
-	return false;
 }
 
 BWAPI::UnitInterface* GameCommander::getFirstSupplyProvider()
@@ -251,43 +188,6 @@ BWAPI::UnitInterface* GameCommander::getFirstSupplyProvider()
 	}
 
 	return supplyProvider;
-}
-
-void GameCommander::setWorkerUnits()
-{
-	workerUnits.clear();
-
-	for (BWAPI::UnitInterface* unit : validUnits)
-	{
-		if (!isAssigned(unit) && unit->getType().isWorker())			
-		{	
-			workerUnits.insert(unit);
-			assignedUnits.insert(unit);
-		}
-	}
-
-}
-
-bool GameCommander::isValidUnit(BWAPI::UnitInterface* unit)
-{
-	if (!unit)
-	{
-		return false;
-	}
-
-	if (unit->isCompleted() 
-		&& unit->getHitPoints() > 0 
-		&& unit->exists() 
-		&& unit->getType() != BWAPI::UnitTypes::Unknown 
-		&& unit->getPosition().x != BWAPI::Positions::Unknown.x 
-		&& unit->getPosition().y != BWAPI::Positions::Unknown.y) 
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
 }
 
 void GameCommander::onUnitShow(BWAPI::UnitInterface* unit)			
@@ -334,7 +234,7 @@ BWAPI::UnitInterface* GameCommander::getClosestUnitToTarget(BWAPI::UnitType type
 	BWAPI::UnitInterface* closestUnit = NULL;
 	double closestDist = 100000;
 
-	for (BWAPI::UnitInterface* unit : validUnits)
+	for (BWAPI::UnitInterface* unit : _validUnits)
 	{
 		if (unit->getType() == type)
 		{
@@ -355,7 +255,7 @@ BWAPI::UnitInterface* GameCommander::getClosestWorkerToTarget(BWAPI::Position ta
 	BWAPI::UnitInterface* closestUnit = NULL;
 	double closestDist = 100000;
 
-	for (BWAPI::UnitInterface* unit : validUnits)
+	for (BWAPI::UnitInterface* unit : _validUnits)
 	{
 		if (!isAssigned(unit) && unit->getType().isWorker() && WorkerManager::Instance().isFree(unit))
 		{
@@ -369,4 +269,12 @@ BWAPI::UnitInterface* GameCommander::getClosestWorkerToTarget(BWAPI::Position ta
 	}
 
 	return closestUnit;
+}
+
+void GameCommander::assignUnit(BWAPI::UnitInterface * unit, BWAPI::Unitset & set)
+{
+    if (_scoutUnits.contains(unit)) { _scoutUnits.erase(unit); }
+    else if (_combatUnits.contains(unit)) { _combatUnits.erase(unit); }
+
+    set.insert(unit);
 }

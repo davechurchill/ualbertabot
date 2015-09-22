@@ -8,9 +8,7 @@ using namespace UAlbertaBot;
 
 // constructor
 InformationManager::InformationManager() 
-	: goForIt(false)
-	, map(BWAPI::Broodwar)
-	, lastFrameRegroup(false)
+	: map(BWAPI::Broodwar)
 {
 	initializeRegionInformation();
 }
@@ -575,7 +573,8 @@ bool InformationManager::isCombatUnit(BWAPI::UnitType type) const
 	// check for various types of combat units
 	if (type.canAttack() || 
 		type == BWAPI::UnitTypes::Terran_Medic || 
-		type == BWAPI::UnitTypes::Protoss_Observer)
+		type == BWAPI::UnitTypes::Protoss_Observer ||
+        type == BWAPI::UnitTypes::Terran_Bunker)
 	{
 		return true;
 	}

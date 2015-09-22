@@ -30,7 +30,7 @@ BWAPI::Position MicroManager::calcCenter() const
 void MicroManager::execute(const SquadOrder & inputOrder)
 {
 	// Nothing to do if we have no units
-	if(units.empty() || !(inputOrder.type == SquadOrder::Attack || inputOrder.type == SquadOrder::Defend))
+	if (units.empty() || !(inputOrder.getType() == SquadOrderTypes::Attack || inputOrder.getType() == SquadOrderTypes::Defend))
 	{
 		return;
 	}
@@ -42,14 +42,14 @@ void MicroManager::execute(const SquadOrder & inputOrder)
 	std::vector<BWAPI::UnitInterface *> nearbyEnemies;
 
 	// if the order is to defend, we only care about units in the radius of the defense
-	if (order.type == order.Defend)
+	if (order.getType() == SquadOrderTypes::Defend)
 	{
-		MapGrid::Instance().GetUnits(nearbyEnemies, order.position, 800, false, true);
+		MapGrid::Instance().GetUnits(nearbyEnemies, order.getPosition(), 800, false, true);
 	
 	} // otherwise we want to see everything on the way
-	else if (order.type == order.Attack) 
+	else if (order.getType() == SquadOrderTypes::Attack) 
 	{
-		MapGrid::Instance().GetUnits(nearbyEnemies, order.position, 800, false, true);
+		MapGrid::Instance().GetUnits(nearbyEnemies, order.getPosition(), 800, false, true);
 		for (BWAPI::UnitInterface* unit : units) 
 		{
 			BWAPI::UnitInterface* u = unit;
@@ -60,7 +60,7 @@ void MicroManager::execute(const SquadOrder & inputOrder)
 
 	// the following block of code attacks all units on the way to the order position
 	// we want to do this if the order is attack, defend, or harass
-	if (order.type == order.Attack || order.type == order.Defend) 
+	if (order.getType() == SquadOrderTypes::Attack || order.getType() == SquadOrderTypes::Defend) 
 	{
         // if this is a worker defense force
         if (units.size() == 1 && units[0]->getType().isWorker())
