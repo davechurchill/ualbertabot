@@ -176,5 +176,11 @@ bool SquadData::canAssignUnitToSquad(BWAPI::UnitInterface * unit, const Squad & 
 
 Squad & SquadData::getSquad(const std::string & squadName)
 {
+    UAB_ASSERT_WARNING(squadExists(squadName), "Trying to access squad that doesn't exist: %s", squadName);
+    if (!squadExists(squadName))
+    {
+        int a = 10;
+    }
+
     return _squads[squadName];
 }

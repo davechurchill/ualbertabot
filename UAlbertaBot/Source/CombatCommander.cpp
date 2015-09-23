@@ -25,10 +25,6 @@ void CombatCommander::initializeSquads()
 
     BWAPI::Position ourBasePosition = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
 
-    // the main defense squad which will defend our base if enemies are int it
-    SquadOrder defendBase(SquadOrderTypes::Defend, ourBasePosition, 500, "Defend the base");
-    _squadData.addSquad("BaseDefense", Squad("BaseDefense", defendBase, BaseDefensePriority));
-
     // the scout defense squad will handle chasing the enemy worker scout
     SquadOrder enemyScoutDefense(SquadOrderTypes::Defend, ourBasePosition, 500, "Get the scout");
     _squadData.addSquad("ScoutDefense", Squad("ScoutDefense", enemyScoutDefense, ScoutDefensePriority));
@@ -210,6 +206,11 @@ void CombatCommander::updateDefenseSquads()
         std::stringstream squadName;
         squadName << "Base Defense " << regionCenter.x << " " << regionCenter.y; 
         
+        if (enemyUnitsInRegion.empty())
+        {
+            return;
+        }
+
         if (!enemyUnitsInRegion.empty() && !_squadData.squadExists(squadName.str()))
         {
             _squadData.addSquad(squadName.str(), Squad(squadName.str(), SquadOrder(SquadOrderTypes::Defend, regionCenter, 800, "Defend Region!"), BaseDefensePriority));

@@ -45,7 +45,7 @@ namespace Assert
 
         std::cerr << ss.str();
         BWAPI::Broodwar->printf("%s", ss.str().c_str());
-        Logger::LogAppendToFile(Config::Debug::ErrorLogFilename, ss.str());
+        //Logger::LogAppendToFile(Config::Debug::ErrorLogFilename, ss.str());
     }
 }
 }

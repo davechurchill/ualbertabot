@@ -18,7 +18,6 @@ class Squad
     std::string         _name;
 	BWAPI::Unitset      _units;
 	std::string         _regroupStatus;
-	bool                _squadObserverNear(BWAPI::Position p);
     int                 _lastRetreatSwitch;
     bool                _lastRetreatSwitchVal;
     size_t              _priority;
@@ -34,7 +33,7 @@ class Squad
     
 	BWAPI::UnitInterface*		getRegroupUnit();
 	BWAPI::UnitInterface*		unitClosestToEnemy();
-
+    
 	void                        updateUnits();
 	void                        addUnitsToMicroManagers();
 	void                        setNearEnemyUnits();

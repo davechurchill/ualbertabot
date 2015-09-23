@@ -6,8 +6,9 @@ Squad::Squad()
     : _lastRetreatSwitch(0)
     , _lastRetreatSwitchVal(false)
     , _priority(0)
+    , _name("Default")
 {
-    
+    int a = 10;
 }
 
 Squad::Squad(const std::string & name, SquadOrder order, size_t priority) 

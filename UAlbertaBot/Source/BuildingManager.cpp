@@ -211,8 +211,6 @@ void BuildingManager::constructAssignedBuildings()
 			}
 			else
 			{
-				if (debugMode) { BWAPI::Broodwar->printf("Issuing Build Command To %s", b.type.getName().c_str()); }
-
 				// issue the build order!
 				b.builderUnit->build(b.type, b.finalPosition);
 
