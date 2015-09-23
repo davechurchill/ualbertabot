@@ -164,9 +164,22 @@ void CombatCommander::updateDefenseSquads()
         return; 
     }
     
+    BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
+    BWTA::Region * enemyRegion = NULL;
+    if (enemyBaseLocation)
+    {
+        enemyRegion = BWTA::getRegion(enemyBaseLocation->getPosition());
+    }
+
 	// for each of our occupied regions
 	for (BWTA::Region * myRegion : InformationManager::Instance().getOccupiedRegions(BWAPI::Broodwar->self()))
 	{
+        // don't defend inside the enemy region, this will end badly when we are stealing gas
+        if (myRegion == enemyRegion)
+        {
+            continue;
+        }
+
 		BWAPI::Position regionCenter = myRegion->getCenter();
 		if (!regionCenter.isValid())
 		{
