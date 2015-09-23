@@ -4,9 +4,9 @@ using namespace UAlbertaBot;
 
 DetectorManager::DetectorManager() : unitClosestToEnemy(NULL) { }
 
-void DetectorManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & targets) 
+void DetectorManager::executeMicro(const BWAPI::Unitset & targets) 
 {
-	const std::vector<BWAPI::UnitInterface *> & detectorUnits = getUnits();
+	const BWAPI::Unitset & detectorUnits = getUnits();
 
 	if (detectorUnits.empty())
 	{
@@ -19,7 +19,7 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & t
 	}
 
 	cloakedUnitMap.clear();
-	std::vector<BWAPI::UnitInterface *> cloakedUnits;
+	BWAPI::Unitset cloakedUnits;
 
 	// figure out targets
 	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->enemy()->getUnits())
@@ -29,7 +29,7 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & t
 			unit->getType() == BWAPI::UnitTypes::Protoss_Dark_Templar ||
 			unit->getType() == BWAPI::UnitTypes::Terran_Wraith) 
 		{
-			cloakedUnits.push_back(unit);
+			cloakedUnits.insert(unit);
 			cloakedUnitMap[unit] = false;
 		}
 	}
@@ -56,7 +56,7 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & t
 }
 
 
-BWAPI::UnitInterface* DetectorManager::closestCloakedUnit(const std::vector<BWAPI::UnitInterface *> & cloakedUnits, BWAPI::UnitInterface* detectorUnit)
+BWAPI::UnitInterface* DetectorManager::closestCloakedUnit(const BWAPI::Unitset & cloakedUnits, BWAPI::UnitInterface* detectorUnit)
 {
 	BWAPI::UnitInterface* closestCloaked = NULL;
 	double closestDist = 100000;

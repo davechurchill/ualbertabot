@@ -2,20 +2,22 @@
 
 using namespace UAlbertaBot;
 
-RangedManager::RangedManager() { }
+RangedManager::RangedManager() 
+{ 
+}
 
-void RangedManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & targets) 
+void RangedManager::executeMicro(const BWAPI::Unitset & targets) 
 {
-	const std::vector<BWAPI::UnitInterface *> & rangedUnits = getUnits();
+	const BWAPI::Unitset & rangedUnits = getUnits();
 
 	// figure out targets
-	std::vector<BWAPI::UnitInterface *> rangedUnitTargets;
-	for (size_t i(0); i<targets.size(); i++) 
+	BWAPI::Unitset rangedUnitTargets;
+	for (BWAPI::UnitInterface * target : targets) 
 	{
 		// conditions for targeting
-		if (targets[i]->isVisible()) 
+		if (target->isVisible()) 
 		{
-			rangedUnitTargets.push_back(targets[i]);
+			rangedUnitTargets.insert(target);
 		}
 	}
 
@@ -114,7 +116,7 @@ void RangedManager::kiteTarget(BWAPI::UnitInterface* rangedUnit, BWAPI::UnitInte
 }
 
 // get a target for the zealot to attack
-BWAPI::UnitInterface* RangedManager::getTarget(BWAPI::UnitInterface* rangedUnit, std::vector<BWAPI::UnitInterface *> & targets)
+BWAPI::UnitInterface* RangedManager::getTarget(BWAPI::UnitInterface* rangedUnit, const BWAPI::Unitset & targets)
 {
 	int range(rangedUnit->getType().groundWeapon().maxRange());
 

@@ -304,12 +304,12 @@ bool ScoutManager::enemyWorkerInRadius()
 
 bool ScoutManager::immediateThreat()
 {
-	std::vector<BWAPI::UnitInterface *> enemyAttackingWorkers;
+	BWAPI::Unitset enemyAttackingWorkers;
 	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->enemy()->getUnits())
 	{
 		if (unit->getType().isWorker() && unit->isAttacking())
 		{
-			enemyAttackingWorkers.push_back(unit);
+			enemyAttackingWorkers.insert(unit);
 		}
 	}
 	

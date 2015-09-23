@@ -23,29 +23,28 @@ struct GroundThreat
 
 class MicroManager
 {
-	std::vector<BWAPI::UnitInterface *>			units;
-	int					lastRegroupPerformed;
+	BWAPI::Unitset  _units;
 
 protected:
 	
 	SquadOrder			order;
 
-	virtual void        executeMicro(const std::vector<BWAPI::UnitInterface *> & targets) = 0;
+	virtual void        executeMicro(const BWAPI::Unitset & targets) = 0;
 	bool                checkPositionWalkable(BWAPI::Position pos);
-	bool                drawDebugVectors;
 	void                drawOrderText();
 	bool                unitNearEnemy(BWAPI::UnitInterface* unit);
 	bool                unitNearChokepoint(BWAPI::UnitInterface* unit) const;
 	void                trainSubUnits(BWAPI::UnitInterface* unit) const;
+    
 
 public:
-						MicroManager() : drawDebugVectors(true), lastRegroupPerformed(0) {}
+						MicroManager();
     virtual				~MicroManager(){}
 
-	const std::vector<BWAPI::UnitInterface *> &	getUnits() const { return units; }
+	const BWAPI::Unitset & getUnits() const;
 	BWAPI::Position     calcCenter() const;
 
-	void				setUnits(const std::vector<BWAPI::UnitInterface *> & u);
+	void				setUnits(const BWAPI::Unitset & u);
 	void				execute(const SquadOrder & order);
 	void				regroup(const BWAPI::Position & regroupPosition) const;
 

@@ -2,24 +2,27 @@
 
 using namespace UAlbertaBot;
 
-MeleeManager::MeleeManager() { }
+MeleeManager::MeleeManager() 
+{ 
 
-void MeleeManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & targets) 
+}
+
+void MeleeManager::executeMicro(const BWAPI::Unitset & targets) 
 {
-	const std::vector<BWAPI::UnitInterface *> & meleeUnits = getUnits();
+	const BWAPI::Unitset & meleeUnits = getUnits();
 
 	// figure out targets
-	std::vector<BWAPI::UnitInterface *> meleeUnitTargets;
-	for (size_t i(0); i<targets.size(); i++) 
+	BWAPI::Unitset meleeUnitTargets;
+	for (BWAPI::UnitInterface * target : targets) 
 	{
 		// conditions for targeting
-		if (!(targets[i]->getType().isFlyer()) && 
-			!(targets[i]->isLifted()) &&
-			!(targets[i]->getType() == BWAPI::UnitTypes::Zerg_Larva) && 
-			!(targets[i]->getType() == BWAPI::UnitTypes::Zerg_Egg) &&
-			targets[i]->isVisible()) 
+		if (!(target->getType().isFlyer()) && 
+			!(target->isLifted()) &&
+			!(target->getType() == BWAPI::UnitTypes::Zerg_Larva) && 
+			!(target->getType() == BWAPI::UnitTypes::Zerg_Egg) &&
+			target->isVisible()) 
 		{
-			meleeUnitTargets.push_back(targets[i]);
+			meleeUnitTargets.insert(target);
 		}
 	}
 
@@ -34,6 +37,7 @@ void MeleeManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & targ
 			{
 				// find the best target for this meleeUnit
 				BWAPI::UnitInterface* target = getTarget(meleeUnit, meleeUnitTargets);
+
 				// attack it
 				Micro::SmartAttackUnit(meleeUnit, target);
 			}
@@ -58,7 +62,7 @@ void MeleeManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & targ
 }
 
 // get a target for the meleeUnit to attack
-BWAPI::UnitInterface* MeleeManager::getTarget(BWAPI::UnitInterface* meleeUnit, std::vector<BWAPI::UnitInterface *> & targets)
+BWAPI::UnitInterface* MeleeManager::getTarget(BWAPI::UnitInterface* meleeUnit, const BWAPI::Unitset & targets)
 {
 	int highPriority(0);
 	int closestDist(100000);
@@ -144,7 +148,7 @@ int MeleeManager::getAttackPriority(BWAPI::UnitInterface* unit)
 	}
 }
 
-BWAPI::UnitInterface* MeleeManager::closestMeleeUnit(BWAPI::UnitInterface* target, std::set<BWAPI::UnitInterface*> & meleeUnitsToAssign)
+BWAPI::UnitInterface* MeleeManager::closestMeleeUnit(BWAPI::UnitInterface* target, const BWAPI::Unitset & meleeUnitsToAssign)
 {
 	double minDistance = 0;
 	BWAPI::UnitInterface* closest = NULL;

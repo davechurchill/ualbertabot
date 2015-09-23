@@ -163,7 +163,7 @@ void MapGrid::update()
 	// add our units to the appropriate cell
 	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits()) 
 	{
-		getCell(unit).ourUnits.push_back(unit);
+		getCell(unit).ourUnits.insert(unit);
 		getCell(unit).timeLastVisited = BWAPI::Broodwar->getFrameCount();
 	}
 
@@ -172,13 +172,13 @@ void MapGrid::update()
 	{
 		if (unit->getHitPoints() > 0) 
 		{
-			getCell(unit).oppUnits.push_back(unit);
+			getCell(unit).oppUnits.insert(unit);
 			getCell(unit).timeLastOpponentSeen = BWAPI::Broodwar->getFrameCount();
 		}
 	}
 }
 
-void MapGrid::GetUnits(std::vector<BWAPI::UnitInterface *> & units, BWAPI::Position center, int radius, bool ourUnits, bool oppUnits)
+void MapGrid::GetUnits(BWAPI::Unitset & units, BWAPI::Position center, int radius, bool ourUnits, bool oppUnits)
 {
 	const int x0(std::max( (center.x - radius) / cellSize, 0));
 	const int x1(std::min( (center.x + radius) / cellSize, cols-1));
@@ -200,9 +200,9 @@ void MapGrid::GetUnits(std::vector<BWAPI::UnitInterface *> & units, BWAPI::Posit
 					BWAPI::Position d(unit->getPosition() - center);
 					if(d.x * d.x + d.y * d.y <= radiusSq)
 					{
-						if (!contains(units, unit)) 
+						if (!units.contains(unit)) 
 						{
-							units.push_back(unit);
+							units.insert(unit);
 						}
 					}
 				}
@@ -214,26 +214,13 @@ void MapGrid::GetUnits(std::vector<BWAPI::UnitInterface *> & units, BWAPI::Posit
 					BWAPI::Position d(unit->getPosition() - center);
 					if(d.x * d.x + d.y * d.y <= radiusSq)
 					{
-						if (!contains(units, unit)) 
+						if (!units.contains(unit))
 						{ 
-							units.push_back(unit); 
+							units.insert(unit); 
 						}
 					}
 				}
 			}
 		}
 	}
-}
-
-bool MapGrid::contains(std::vector<BWAPI::UnitInterface *> & units, BWAPI::UnitInterface* unit) 
-{
-	for (size_t i(0); i<units.size(); ++i) 
-	{
-		if (units[i] == unit) 
-		{
-			return true;
-		}
-	}
-
-	return false;
 }

@@ -16,7 +16,7 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
 
 	BWAPI::Broodwar->drawCircleMap(center.x, center.y, 10, BWAPI::Colors::Red, true);
 
-	std::vector<BWAPI::UnitInterface*> ourCombatUnits;
+	BWAPI::Unitset ourCombatUnits;
 	std::vector<UnitInfo> enemyCombatUnits;
 
 	MapGrid::Instance().GetUnits(ourCombatUnits, center, Config::Micro::CombatRegroupRadius, true, false);
@@ -86,7 +86,7 @@ bool CombatSimulation::checkZealotVsZergling(const BWAPI::Position & center, con
 
 	BWAPI::Broodwar->drawCircleMap(center.x, center.y, 10, BWAPI::Colors::Red, true);
 
-	std::vector<BWAPI::UnitInterface*> ourCombatUnits;
+	BWAPI::Unitset ourCombatUnits;
 	std::vector<UnitInfo> enemyCombatUnits;
 
 	MapGrid::Instance().GetUnits(ourCombatUnits,   center, Config::Micro::CombatRegroupRadius, true, false);

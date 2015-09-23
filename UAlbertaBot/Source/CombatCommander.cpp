@@ -138,7 +138,7 @@ void CombatCommander::updateScoutDefenseSquad()
             if (_squadData.canAssignUnitToSquad(workerDefender, scoutDefenseSquad))
             {
 			    WorkerManager::Instance().setCombatWorker(workerDefender);
-                scoutDefenseSquad.addUnit(workerDefender);
+                _squadData.assignUnitToSquad(workerDefender, scoutDefenseSquad);
             }
 		}
     }
@@ -206,14 +206,22 @@ void CombatCommander::updateDefenseSquads()
         std::stringstream squadName;
         squadName << "Base Defense " << regionCenter.x << " " << regionCenter.y; 
         
+        // if there's nothing in this region to worry about
         if (enemyUnitsInRegion.empty())
         {
+            // if a defense squad for this region exists, remove it
+            if (_squadData.squadExists(squadName.str()))
+            {
+                _squadData.removeSquad(squadName.str());
+            }
+            
+            // and return, nothing to defend here
             return;
         }
 
         if (!enemyUnitsInRegion.empty() && !_squadData.squadExists(squadName.str()))
         {
-            _squadData.addSquad(squadName.str(), Squad(squadName.str(), SquadOrder(SquadOrderTypes::Defend, regionCenter, 800, "Defend Region!"), BaseDefensePriority));
+            _squadData.addSquad(squadName.str(), Squad(squadName.str(), SquadOrder(SquadOrderTypes::Defend, regionCenter, 1000, "Defend Region!"), BaseDefensePriority));
         }
 
         Squad & defenseSquad = _squadData.getSquad(squadName.str());
@@ -268,7 +276,7 @@ void CombatCommander::updateDefenseSquadUnits(Squad & defenseSquad, const size_t
         if (defenderToAdd)
         {
             _squadData.assignUnitToSquad(defenderToAdd, defenseSquad);
-            ++flyingDefendersAdded;
+            ++groundDefendersAdded;
         }
         // otherwise we'll never find another one so break out of this loop
         else
@@ -328,7 +336,7 @@ BWAPI::Position CombatCommander::getMainAttackLocation()
         BWAPI::Position enemyBasePosition = enemyBaseLocation->getPosition();
 
         // get all known enemy units in the area
-        std::vector<BWAPI::UnitInterface *> enemyUnitsInArea;
+        BWAPI::Unitset enemyUnitsInArea;
 		MapGrid::Instance().GetUnits(enemyUnitsInArea, enemyBasePosition, 800, false, true);
 
         if (!BWAPI::Broodwar->isExplored(BWAPI::TilePosition(enemyBasePosition)) || !enemyUnitsInArea.empty())

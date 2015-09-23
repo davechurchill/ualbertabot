@@ -254,7 +254,7 @@ BWAPI::UnitInterface* ProductionManager::getProducer(MetaType t, BWAPI::Position
     BWAPI::UnitType producerType = t.whatBuilds();
 
     // make a set of all candidate producers
-    std::set<BWAPI::UnitInterface*> candidateProducers;
+    BWAPI::Unitset candidateProducers;
     for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits())
     {
         UAB_ASSERT(unit != NULL, "Unit was null");
@@ -338,7 +338,7 @@ BWAPI::UnitInterface* ProductionManager::getProducer(MetaType t, BWAPI::Position
     return getClosestUnitToPosition(candidateProducers, closestTo);
 }
 
-BWAPI::UnitInterface* ProductionManager::getClosestUnitToPosition(std::set<BWAPI::UnitInterface*> & units, BWAPI::Position closestTo)
+BWAPI::UnitInterface* ProductionManager::getClosestUnitToPosition(const BWAPI::Unitset & units, BWAPI::Position closestTo)
 {
     if (units.size() == 0)
     {
@@ -676,7 +676,7 @@ void ProductionManager::drawProductionInformation(int x, int y)
     }
 
 	// fill prod with each unit which is under construction
-	std::vector<BWAPI::UnitInterface*> prod;
+	std::vector<BWAPI::UnitInterface *> prod;
 	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits())
 	{
         UAB_ASSERT(unit != NULL, "Unit was null");
@@ -700,20 +700,20 @@ void ProductionManager::drawProductionInformation(int x, int y)
 	int yy = y;
 
 	// for each unit in the queue
-	for (size_t i(0); i<reps; i++) 
+	for (BWAPI::UnitInterface * unit : prod) 
     {
 		std::string prefix = "\x07";
 
 		yy += 10;
 
-		BWAPI::UnitType t = prod[i]->getType();
+		BWAPI::UnitType t = unit->getType();
         if (t == BWAPI::UnitTypes::Zerg_Egg)
         {
-            t = prod[i]->getBuildType();
+            t = unit->getBuildType();
         }
 
 		BWAPI::Broodwar->drawTextScreen(x, yy, " %s%s", prefix.c_str(), t.getName().c_str());
-		BWAPI::Broodwar->drawTextScreen(x - 35, yy, "%s%6d", prefix.c_str(), prod[i]->getRemainingBuildTime());
+		BWAPI::Broodwar->drawTextScreen(x - 35, yy, "%s%6d", prefix.c_str(), unit->getRemainingBuildTime());
 	}
 
 	queue.drawQueueInformation(x, yy+10);

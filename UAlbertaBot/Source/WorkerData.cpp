@@ -292,10 +292,10 @@ bool WorkerData::depotIsFull(BWAPI::UnitInterface* depot)
 	}
 }
 
-std::vector<BWAPI::UnitInterface*> WorkerData::getMineralPatchesNearDepot(BWAPI::UnitInterface* depot)
+BWAPI::Unitset WorkerData::getMineralPatchesNearDepot(BWAPI::UnitInterface* depot)
 {
     // if there are minerals near the depot, add them to the set
-    std::vector<BWAPI::UnitInterface*> mineralsNearDepot;
+    BWAPI::Unitset mineralsNearDepot;
 
     int radius = 300;
 
@@ -303,7 +303,7 @@ std::vector<BWAPI::UnitInterface*> WorkerData::getMineralPatchesNearDepot(BWAPI:
 	{
 		if ((unit->getType() == BWAPI::UnitTypes::Resource_Mineral_Field) && unit->getDistance(depot) < radius)
 		{
-            mineralsNearDepot.push_back(unit);
+            mineralsNearDepot.insert(unit);
 		}
 	}
 
@@ -314,7 +314,7 @@ std::vector<BWAPI::UnitInterface*> WorkerData::getMineralPatchesNearDepot(BWAPI:
 	    {
 		    if ((unit->getType() == BWAPI::UnitTypes::Resource_Mineral_Field))
 		    {
-                mineralsNearDepot.push_back(unit);
+                mineralsNearDepot.insert(unit);
 		    }
 	    }
     }
@@ -381,7 +381,7 @@ BWAPI::UnitInterface* WorkerData::getMineralToMine(BWAPI::UnitInterface* worker)
 
 	if (depot)
 	{
-        std::vector<BWAPI::UnitInterface*> mineralPatches = getMineralPatchesNearDepot(depot);
+        BWAPI::Unitset mineralPatches = getMineralPatchesNearDepot(depot);
 
 		for (BWAPI::UnitInterface* mineral : mineralPatches)
 		{
@@ -555,12 +555,10 @@ void WorkerData::drawDepotDebugInfo()
 		if (Config::Debug::DrawWorkerInfo) BWAPI::Broodwar->drawBoxMap(x-2, y-1, x+75, y+14, BWAPI::Colors::Black, true);
 		if (Config::Debug::DrawWorkerInfo) BWAPI::Broodwar->drawTextMap(x, y, "\x04 Workers: %d", getNumAssignedWorkers(depot));
 
-        std::vector<BWAPI::UnitInterface*> minerals = getMineralPatchesNearDepot(depot);
+        BWAPI::Unitset minerals = getMineralPatchesNearDepot(depot);
 
-        for (size_t m(0); m<minerals.size(); ++m)
+        for (BWAPI::UnitInterface * mineral : minerals)
         {
-            BWAPI::UnitInterface* mineral = minerals[m];
-
             int x = mineral->getPosition().x;
 		    int y = mineral->getPosition().y;
 

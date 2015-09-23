@@ -201,20 +201,17 @@ BWAPI::TilePosition MapTools::getTilePosition(int index)
     return BWAPI::TilePosition(index % cols, index / cols);
 }
 
-std::vector<BWAPI::UnitInterface *> MapTools::getUnitsOfTypeNear(BWAPI::Position & nearTo, int groundDistance, BWAPI::UnitType type)
+BWAPI::Unitset MapTools::getUnitsOfTypeNear(BWAPI::Position & nearTo, int groundDistance, BWAPI::UnitType type)
 {
-    std::vector<BWAPI::UnitInterface *> unitsNear;
+    BWAPI::Unitset unitsNear;
 
-    auto it =   std::copy_if
-                ( 
-                    BWAPI::Broodwar->getAllUnits().begin(), 
-                    BWAPI::Broodwar->getAllUnits().end(), 
-                    unitsNear.begin(), 
-                    [this, &type, &nearTo, &groundDistance](BWAPI::Unit unit)
-                    { 
-                        return (unit->getType() == type) && (getGroundDistance(unit->getPosition(), nearTo) < groundDistance ); 
-                    } 
-                );
+    for (BWAPI::UnitInterface * unit : BWAPI::Broodwar->getAllUnits())
+    {
+        if ((unit->getType() == type) && (getGroundDistance(unit->getPosition(), nearTo) < groundDistance ))
+        {
+            unitsNear.insert(unit);
+        }
+    }
 
     return unitsNear;
 }

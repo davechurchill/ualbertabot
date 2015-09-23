@@ -129,10 +129,10 @@ void Squad::setNearEnemyUnits()
 
 void Squad::addUnitsToMicroManagers()
 {
-	std::vector<BWAPI::UnitInterface *> meleeUnits;
-	std::vector<BWAPI::UnitInterface *> rangedUnits;
-	std::vector<BWAPI::UnitInterface *> detectorUnits;
-	std::vector<BWAPI::UnitInterface *> transportUnits;
+	BWAPI::Unitset meleeUnits;
+	BWAPI::Unitset rangedUnits;
+	BWAPI::Unitset detectorUnits;
+	BWAPI::Unitset transportUnits;
 
 	// add _units to micro managers
 	for (BWAPI::UnitInterface* unit : _units)
@@ -142,22 +142,22 @@ void Squad::addUnitsToMicroManagers()
 			// select dector _units
 			if (unit->getType().isDetector() && !unit->getType().isBuilding())
 			{
-				detectorUnits.push_back(unit);
+				detectorUnits.insert(unit);
 			}
 			// select transport _units
 			else if (unit->getType() == BWAPI::UnitTypes::Protoss_Shuttle || unit->getType() == BWAPI::UnitTypes::Terran_Dropship)
 			{
-				transportUnits.push_back(unit);
+				transportUnits.insert(unit);
 			}
 			// select ranged _units
 			else if ((unit->getType().groundWeapon().maxRange() > 32) || (unit->getType() == BWAPI::UnitTypes::Protoss_Reaver))
 			{
-				rangedUnits.push_back(unit);
+				rangedUnits.insert(unit);
 			}
 			// select melee _units
 			else if (unit->getType().groundWeapon().maxRange() <= 32)
 			{
-				meleeUnits.push_back(unit);
+				meleeUnits.insert(unit);
 			}
 		}
 	}
@@ -259,7 +259,7 @@ bool Squad::unitNearEnemy(BWAPI::UnitInterface* unit)
 {
 	assert(unit);
 
-	std::vector<BWAPI::UnitInterface *> enemyNear;
+	BWAPI::Unitset enemyNear;
 
 	MapGrid::Instance().GetUnits(enemyNear, unit->getPosition(), 400, false, true);
 

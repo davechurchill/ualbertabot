@@ -32,14 +32,14 @@ bool BuildingPlacer::isInResourceBox(int x, int y) const
 void BuildingPlacer::computeResourceBox()
 {
 	BWAPI::Position start(BWAPI::Broodwar->self()->getStartLocation());
-	std::vector<BWAPI::UnitInterface*> unitsAroundNexus;
+	BWAPI::Unitset unitsAroundNexus;
 
 	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->getAllUnits())
 	{
 		// if the units are less than 400 away add them if they are resources
 		if (unit->getDistance(start) < 400 && unit->getType().isResourceContainer())
 		{
-			unitsAroundNexus.push_back(unit);
+			unitsAroundNexus.insert(unit);
 		}
 	}
 

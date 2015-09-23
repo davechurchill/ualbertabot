@@ -44,11 +44,11 @@ class ProductionManager
 	bool						rushDetected;
 
 	BWAPI::TilePosition			predictedTilePosition;
-    BWAPI::UnitInterface*       getClosestUnitToPosition(std::set<BWAPI::UnitInterface*> & units, BWAPI::Position closestTo);
+    BWAPI::UnitInterface*       getClosestUnitToPosition(const BWAPI::Unitset & units, BWAPI::Position closestTo);
 	BWAPI::UnitInterface*		selectUnitOfType(BWAPI::UnitType type, BWAPI::Position closestTo = BWAPI::Position(0,0));
 	BuildOrderQueue				queue;
 
-	bool						contains(std::vector<BWAPI::UnitInterface *> & units, BWAPI::UnitInterface* unit);
+	bool						contains(BWAPI::Unitset & units, BWAPI::UnitInterface* unit);
 	void						populateTypeCharMap();
 	bool						hasResources(BWAPI::UnitType type);
 	bool						canMake(BWAPI::UnitType type);

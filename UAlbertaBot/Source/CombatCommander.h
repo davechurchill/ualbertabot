@@ -19,7 +19,7 @@ class CombatCommander
 	void            updateAttackSquads();
 	void            updateIdleSquad();
 	bool            isSquadUpdateFrame();
-	int             getNumType(std::vector<BWAPI::UnitInterface *> & units, BWAPI::UnitType type);
+	int             getNumType(BWAPI::Unitset & units, BWAPI::UnitType type);
 
 	BWAPI::UnitInterface*   findClosestDefender(const Squad & defenseSquad, BWAPI::Position pos, bool flyingDefender);
     BWAPI::UnitInterface *  findClosestWorkerToTarget(BWAPI::Unitset & unitsToAssign, BWAPI::UnitInterface * target);

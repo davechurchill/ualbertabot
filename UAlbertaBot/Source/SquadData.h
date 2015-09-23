@@ -25,7 +25,6 @@ public:
 	void            drawSquadInformation(int x, int y);
 
     void            update();
-    void            setSquad(const std::vector<BWAPI::UnitInterface *> & units, const SquadOrder & order);
     void            setRegroup();
 
     bool            squadExists(const std::string & squadName);
