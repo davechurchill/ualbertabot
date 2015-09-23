@@ -30,7 +30,7 @@ void Squad::update()
 	// draw some debug info
 	if (Config::Debug::DrawSquadInfo && _order.getType() == SquadOrderTypes::Attack) 
 	{
-		BWAPI::Broodwar->drawTextScreen(200, 330, "%s", _regroupStatus.c_str());
+		BWAPI::Broodwar->drawTextScreen(200, 340, "%s", _regroupStatus.c_str());
 
 		BWAPI::UnitInterface* closest = unitClosestToEnemy();
 	}

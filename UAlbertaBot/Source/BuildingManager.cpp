@@ -248,8 +248,6 @@ void BuildingManager::checkForStartedConstruction()
 				reservedMinerals -= buildingStarted->getType().mineralPrice();
 				reservedGas      -= buildingStarted->getType().gasPrice();
 
-				if (debugMode) { BWAPI::Broodwar->printf("Construction Started: %s", b.type.getName().c_str()); }
-
 				// flag it as started and set the buildingUnit
 				b.underConstruction = true;
 				b.buildingUnit = buildingStarted;
@@ -307,12 +305,18 @@ void BuildingManager::checkForCompletedBuildings()
 		// if the unit has completed
 		if (b.buildingUnit->isCompleted()) 
 		{
-			if (debugMode) { BWAPI::Broodwar->printf("Construction Completed: %s", b.type.getName().c_str()); }
-
 			// if we are terran, give the worker back to worker manager
 			if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran)
 			{
-				WorkerManager::Instance().finishedWithWorker(b.builderUnit);
+				if (b.isGasSteal)
+                {
+                    ScoutManager::Instance().setWorkerScout(b.builderUnit);
+                }
+                // otherwise tell the worker manager we're finished with this unit
+                else
+                {
+                    WorkerManager::Instance().finishedWithWorker(b.builderUnit);
+                }
 			}
 
 			// remove this unit from the under construction vector
@@ -345,10 +349,8 @@ bool BuildingManager::isEvolvedBuilding(BWAPI::UnitType type) {
 }
 
 // add a new building to be constructed
-void BuildingManager::addBuildingTask(BWAPI::UnitType type, BWAPI::TilePosition desiredLocation, bool isGasSteal) {
-
-	if (debugMode) { BWAPI::Broodwar->printf("Issuing addBuildingTask: %s", type.getName().c_str()); }
-
+void BuildingManager::addBuildingTask(BWAPI::UnitType type, BWAPI::TilePosition desiredLocation, bool isGasSteal) 
+{
 	totalBuildTasks++;
 
 	// reserve the resources for this building

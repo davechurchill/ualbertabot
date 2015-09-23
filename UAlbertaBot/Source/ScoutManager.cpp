@@ -83,12 +83,19 @@ void ScoutManager::moveScouts()
 
     int scoutDistanceThreshold = 30;
 
+    if (_workerScout->isCarryingGas())
+    {
+        BWAPI::Broodwar->drawCircleMap(_workerScout->getPosition(), 10, BWAPI::Colors::Purple, true);
+    }
+
     // if we initiated a gas steal and the worker isn't idle, 
-    if (!_gasStealFinished && _didGasSteal && !_workerScout->isIdle())
+    bool finishedConstructingGasSteal = _workerScout->isIdle() || _workerScout->isCarryingGas();
+    if (!_gasStealFinished && _didGasSteal && !finishedConstructingGasSteal)
     {
         return;
     }
-    else if (_didGasSteal && _workerScout->isIdle())
+    // check to see if the gas steal is completed
+    else if (_didGasSteal && finishedConstructingGasSteal)
     {
         _gasStealFinished = true;
     }
