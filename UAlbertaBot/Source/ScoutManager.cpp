@@ -10,13 +10,25 @@ ScoutManager::ScoutManager()
     , _gasStealStatus("None")
     , _scoutStatus("None")
     , _didGasSteal(false)
+    , _gasStealFinished(false)
     , _currentRegionVertexIndex(-1)
     , _previousScoutHP(0)
 {
 }
 
+ScoutManager & ScoutManager::Instance() 
+{
+	static ScoutManager instance;
+	return instance;
+}
+
 void ScoutManager::update()
 {
+    if (!Config::Modules::UsingScoutManager)
+    {
+        return;
+    }
+
     // calculate enemy region vertices if we haven't yet
     if (_enemyRegionVertices.empty())
     {
@@ -29,7 +41,14 @@ void ScoutManager::update()
 
 void ScoutManager::setWorkerScout(BWAPI::UnitInterface * unit)
 {
+    // if we have a previous worker scout, release it back to the worker manager
+    if (_workerScout)
+    {
+        WorkerManager::Instance().finishedWithWorker(_workerScout);
+    }
+
     _workerScout = unit;
+    WorkerManager::Instance().setScoutWorker(_workerScout);
 }
 
 void ScoutManager::drawScoutInformation(int x, int y)
@@ -64,9 +83,14 @@ void ScoutManager::moveScouts()
 
     int scoutDistanceThreshold = 30;
 
-    if (_didGasSteal)
+    // if we initiated a gas steal and the worker isn't idle, 
+    if (!_gasStealFinished && _didGasSteal && !_workerScout->isIdle())
     {
         return;
+    }
+    else if (_didGasSteal && _workerScout->isIdle())
+    {
+        _gasStealFinished = true;
     }
     
 	// if we know where the enemy region is and where our scout is
@@ -96,9 +120,8 @@ void ScoutManager::moveScouts()
 			// if the worker scout is not under attack
 			if (!_scoutUnderAttack)
 			{
-
 				// if there is a worker nearby, harass it
-				if (Config::Strategy::ScoutHarassEnemy && !Config::Strategy::GasStealWithScout && closestWorker && (_workerScout->getDistance(closestWorker) < 800))
+				if (Config::Strategy::ScoutHarassEnemy && (!Config::Strategy::GasStealWithScout || _gasStealFinished) && closestWorker && (_workerScout->getDistance(closestWorker) < 800))
 				{
                     _scoutStatus = "Harass enemy worker";
                     _currentRegionVertexIndex = -1;
@@ -280,10 +303,6 @@ bool ScoutManager::immediateThreat()
 		if (unit->getType().isWorker() && unit->isAttacking())
 		{
 			enemyAttackingWorkers.push_back(unit);
-			if (Config::Debug::DrawUnitTargetInfo)
-            {
-                BWAPI::Broodwar->drawCircleMap(unit->getPosition().x, unit->getPosition().y, 5, BWAPI::Colors::Yellow);
-            }
 		}
 	}
 	

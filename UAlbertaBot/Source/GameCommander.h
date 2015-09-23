@@ -32,8 +32,6 @@ public:
 class GameCommander 
 {
 	CombatCommander		    _combatCommander;
-
-	ScoutManager		    _scoutManager;
 	TimerManager		    _timerManager;
     
 	BWAPI::Unitset          _validUnits;

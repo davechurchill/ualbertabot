@@ -49,17 +49,11 @@ void GameCommander::update()
 
 	// combat and scouting managers
 	_timerManager.startTimer(TimerManager::Combat);
-	if (Config::Modules::UsingCombatCommander)
-	{
-		_combatCommander.update(_combatUnits);
-	}
+	_combatCommander.update(_combatUnits);
 	_timerManager.stopTimer(TimerManager::Combat);
 
 	_timerManager.startTimer(TimerManager::Scout);
-	if (Config::Modules::UsingScoutManager)
-	{
-		_scoutManager.update();
-	}
+    ScoutManager::Instance().update();
 	_timerManager.stopTimer(TimerManager::Scout);
 		
 	_timerManager.stopTimer(TimerManager::All);
@@ -140,9 +134,8 @@ void GameCommander::setScoutUnits()
 			// if we find a worker (which we should) add it to the scout units
 			if (workerScout)
 			{
-                _scoutManager.setWorkerScout(workerScout);
+                ScoutManager::Instance().setWorkerScout(workerScout);
 				assignUnit(workerScout, _scoutUnits);
-				WorkerManager::Instance().setScoutWorker(workerScout);
                 _initialScoutSet = true;
 			}
 		}

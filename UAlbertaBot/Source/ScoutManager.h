@@ -14,6 +14,7 @@ class ScoutManager
 	int				                _numWorkerScouts;
 	bool			                _scoutUnderAttack;
     bool                            _didGasSteal;
+    bool                            _gasStealFinished;
     int                             _currentRegionVertexIndex;
     int                             _previousScoutHP;
 	std::vector<BWAPI::Position>    _enemyRegionVertices;
@@ -30,10 +31,11 @@ class ScoutManager
     void                            drawScoutInformation(int x, int y);
     void                            calculateEnemyRegionVertices();
 
+	ScoutManager();
+
 public:
 
-	ScoutManager();
-	~ScoutManager() {};
+    static ScoutManager & Instance();
 
 	void update();
 

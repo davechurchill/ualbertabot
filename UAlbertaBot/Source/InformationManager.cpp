@@ -6,14 +6,12 @@ using namespace UAlbertaBot;
 #define SELF_INDEX 0
 #define ENEMY_INDEX 1
 
-// constructor
 InformationManager::InformationManager() 
 	: map(BWAPI::Broodwar)
 {
 	initializeRegionInformation();
 }
 
-// get an instance of this
 InformationManager & InformationManager::Instance() 
 {
 	static InformationManager instance;

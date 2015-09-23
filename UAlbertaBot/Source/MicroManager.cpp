@@ -109,7 +109,6 @@ void MicroManager::regroup(const BWAPI::Position & regroupPosition) const
 		if (unit->getDistance(regroupPosition) > 100)
 		{
 			// regroup it
-			BWAPI::Broodwar->drawCircleMap(unit->getPosition().x, unit->getPosition().y, 20, BWAPI::Colors::Yellow);
 			Micro::SmartMove(unit, regroupPosition);
 		}
 		else

@@ -1,6 +1,7 @@
 #include "Common.h"
 #include "BuildingManager.h"
 #include "Micro.h"
+#include "ScoutManager.h"
 
 using namespace UAlbertaBot;
 
@@ -184,13 +185,11 @@ void BuildingManager::constructAssignedBuildings()
 			if (!isBuildingPositionExplored(b))
 			{
 				Micro::SmartMove(b.builderUnit, BWAPI::Position(b.finalPosition));
-				//BWAPI::Broodwar->printf("Can't see build position, walking there");
 			}
 			// if this is not the first time we've sent this guy to build this
 			// it must be the case that something was in the way of building
 			else if (b.buildCommandGiven) 
 			{
-				//BWAPI::Broodwar->printf("A builder got stuck");
 				// tell worker manager the unit we had is not needed now, since we might not be able
 				// to get a valid location soon enough
 				WorkerManager::Instance().finishedWithWorker(b.builderUnit);
@@ -263,7 +262,17 @@ void BuildingManager::checkForStartedConstruction()
 				} 
                 else if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Protoss) 
                 {
-					WorkerManager::Instance().finishedWithWorker(b.builderUnit);
+                    // if this was the gas steal unit then it's the scout worker so give it back to the scout manager
+                    if (b.isGasSteal)
+                    {
+                        ScoutManager::Instance().setWorkerScout(b.builderUnit);
+                    }
+                    // otherwise tell the worker manager we're finished with this unit
+                    else
+                    {
+                        WorkerManager::Instance().finishedWithWorker(b.builderUnit);
+                    }
+					
 					b.builderUnit = NULL;
 				}
 
