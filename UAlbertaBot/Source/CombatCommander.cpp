@@ -200,6 +200,16 @@ void CombatCommander::updateDefenseSquads()
             }
         }
 
+        // we can ignore the first enemy worker in our region since we assume it is a scout
+        for (BWAPI::UnitInterface * unit : enemyUnitsInRegion)
+        {
+            if (unit->getType().isWorker())
+            {
+                enemyUnitsInRegion.erase(unit);
+                return;
+            }
+        }
+
         int numEnemyFlyingInRegion = std::count_if(enemyUnitsInRegion.begin(), enemyUnitsInRegion.end(), [](BWAPI::UnitInterface * u) { return u->isFlying(); });
         int numEnemyGroundInRegion = std::count_if(enemyUnitsInRegion.begin(), enemyUnitsInRegion.end(), [](BWAPI::UnitInterface * u) { return !u->isFlying(); });
 
@@ -212,25 +222,37 @@ void CombatCommander::updateDefenseSquads()
             // if a defense squad for this region exists, remove it
             if (_squadData.squadExists(squadName.str()))
             {
-                _squadData.removeSquad(squadName.str());
+                _squadData.getSquad(squadName.str()).clear();
             }
             
             // and return, nothing to defend here
             return;
         }
-
-        if (!enemyUnitsInRegion.empty() && !_squadData.squadExists(squadName.str()))
+        else 
         {
-            _squadData.addSquad(squadName.str(), Squad(squadName.str(), SquadOrder(SquadOrderTypes::Defend, regionCenter, 1000, "Defend Region!"), BaseDefensePriority));
+            // if we don't have a squad assigned to this region already, create one
+            if (!_squadData.squadExists(squadName.str()))
+            {
+                SquadOrder defendRegion(SquadOrderTypes::Defend, regionCenter, 1000, "Defend Region!");
+                _squadData.addSquad(squadName.str(), Squad(squadName.str(), defendRegion, BaseDefensePriority));
+            }
         }
 
-        Squad & defenseSquad = _squadData.getSquad(squadName.str());
+        // assign units to the squad
+        if (_squadData.squadExists(squadName.str()))
+        {
+            Squad & defenseSquad = _squadData.getSquad(squadName.str());
 
-        // figure out how many units we need on defense
-	    int flyingDefendersNeeded = numDefendersPerEnemyUnit * numEnemyFlyingInRegion;
-	    int groundDefensersNeeded = numDefendersPerEnemyUnit * numEnemyGroundInRegion;
+            // figure out how many units we need on defense
+	        int flyingDefendersNeeded = numDefendersPerEnemyUnit * numEnemyFlyingInRegion;
+	        int groundDefensersNeeded = numDefendersPerEnemyUnit * numEnemyGroundInRegion;
 
-        updateDefenseSquadUnits(defenseSquad, flyingDefendersNeeded, groundDefensersNeeded);
+            updateDefenseSquadUnits(defenseSquad, flyingDefendersNeeded, groundDefensersNeeded);
+        }
+        else
+        {
+            UAB_ASSERT_WARNING(false, "Squad should have existed: %s", squadName.str().c_str());
+        }
 	}
 }
 

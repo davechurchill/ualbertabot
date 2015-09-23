@@ -20,6 +20,11 @@ Squad::Squad(const std::string & name, SquadOrder order, size_t priority)
 {
 }
 
+Squad::~Squad()
+{
+    clear();
+}
+
 void Squad::update()
 {
 	// update all necessary unit information within this squad
@@ -252,6 +257,14 @@ bool Squad::containsUnit(BWAPI::UnitInterface * u) const
 
 void Squad::clear()
 {
+    for (BWAPI::UnitInterface * unit : getUnits())
+    {
+        if (unit->getType().isWorker())
+        {
+            WorkerManager::Instance().finishedWithWorker(unit);
+        }
+    }
+
     _units.clear();
 }
 

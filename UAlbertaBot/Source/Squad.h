@@ -47,6 +47,7 @@ public:
 
 	Squad(const std::string & name, SquadOrder order, size_t priority);
 	Squad();
+    ~Squad();
 
 	void                update();
 	void                setSquadOrder(const SquadOrder & so);
