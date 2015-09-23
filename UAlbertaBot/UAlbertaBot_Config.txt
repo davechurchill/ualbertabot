@@ -35,6 +35,7 @@
     "Debug" :
     {
         "ErrorLogFilename"          : "bwapi-data/AI/UAlbertaBot_ErrorLog.txt",
+        "LogAssertToErrorFile"      : false,
         
         "PrintModuleTimeout"        : false,
         "DrawBuildOrderSearchInfo"  : false,

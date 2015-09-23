@@ -69,6 +69,7 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
     {
         const rapidjson::Value & debug = doc["Debug"];
         JSONTools::ReadString("ErrorLogFilename", debug, Config::Debug::ErrorLogFilename);
+        JSONTools::ReadBool("LogAssertToErrorFile", debug, Config::Debug::LogAssertToErrorFile);
         JSONTools::ReadBool("PrintModuleTimeout", debug, Config::Debug::PrintModuleTimeout);
         JSONTools::ReadBool("DrawBuildOrderSearchInfo", debug, Config::Debug::DrawBuildOrderSearchInfo);
         JSONTools::ReadBool("DrawUnitHealthBars", debug, Config::Debug::DrawUnitHealthBars);

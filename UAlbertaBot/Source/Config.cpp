@@ -72,6 +72,7 @@ namespace Config
         bool AllDebugOff                    = false;
 
         std::string ErrorLogFilename        = "UAB_ErrorLog.txt";
+        bool LogAssertToErrorFile           = false;
 
         BWAPI::Color ColorLineTarget        = BWAPI::Colors::White;
         BWAPI::Color ColorLineMineral       = BWAPI::Colors::Cyan;
