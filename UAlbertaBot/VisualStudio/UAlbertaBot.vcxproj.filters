@@ -153,9 +153,6 @@
     <ClCompile Include="..\Source\UnitUtil.cpp">
       <Filter>util</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\MutaManager.cpp">
-      <Filter>game\combat\micro</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\CombatCommander.h">
@@ -277,9 +274,6 @@
     </ClInclude>
     <ClInclude Include="..\Source\UnitUtil.h">
       <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\MutaManager.h">
-      <Filter>game\combat\micro</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
