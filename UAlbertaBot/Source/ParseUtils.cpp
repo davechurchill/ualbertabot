@@ -40,8 +40,8 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
         const rapidjson::Value & bwapi = doc["BWAPI"];
         JSONTools::ReadInt("SetLocalSpeed", bwapi, Config::BWAPIOptions::SetLocalSpeed);
         JSONTools::ReadInt("SetFrameSkip", bwapi, Config::BWAPIOptions::SetFrameSkip);
-        JSONTools::ReadBool("EnableUserInput", bwapi, Config::BWAPIOptions::EnableUserInput);
-        JSONTools::ReadBool("EnableCompleteMapInformation", bwapi, Config::BWAPIOptions::EnableCompleteMapInformation);
+        JSONTools::ReadBool("UserInput", bwapi, Config::BWAPIOptions::EnableUserInput);
+        JSONTools::ReadBool("CompleteMapInformation", bwapi, Config::BWAPIOptions::EnableCompleteMapInformation);
     }
 
     // Parse the Micro Options
@@ -49,11 +49,25 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
     {
         const rapidjson::Value & micro = doc["Micro"];
         JSONTools::ReadBool("UseSparcraftSimulation", micro, Config::Micro::UseSparcraftSimulation);
-        JSONTools::ReadBool("WorkerDefense", micro, Config::Micro::WorkerDefense);
-        JSONTools::ReadInt("WorkerDefensePerUnit", micro, Config::Micro::WorkerDefensePerUnit);
+        JSONTools::ReadBool("KiteWithRangedUnits", micro, Config::Micro::KiteWithRangedUnits);
+        JSONTools::ReadBool("WorkersInDefenseSquad", micro, Config::Micro::WorkersInDefenseSquad);
         JSONTools::ReadInt("InCombatRadius", micro, Config::Micro::CombatRadius);
         JSONTools::ReadInt("RegroupRadius", micro, Config::Micro::CombatRegroupRadius);
         JSONTools::ReadInt("UnitNearEnemyRadius", micro, Config::Micro::UnitNearEnemyRadius);
+
+        if (micro.HasMember("KiteLongerRangedUnits") && micro["KiteLongerRangedUnits"].IsArray())
+        {
+            const rapidjson::Value & kite = micro["KiteLongerRangedUnits"];
+
+            for (size_t i(0); i < kite.Size(); ++i)
+            {
+                if (kite[i].IsString())
+                {
+                    MetaType type(kite[i].GetString());
+                    Config::Micro::KiteLongerRangedUnits.insert(type.getUnitType());
+                }
+            }
+        }
     }
 
     // Parse the Macro Options
@@ -62,6 +76,7 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
         const rapidjson::Value & macro = doc["Macro"];
         JSONTools::ReadInt("BuildingSpacing", macro, Config::Macro::BuildingSpacing);
         JSONTools::ReadInt("PylongSpacing", macro, Config::Macro::PylonSpacing);
+        JSONTools::ReadInt("WorkersPerRefinery", macro, Config::Macro::WorkersPerRefinery);
     }
 
     // Parse the Debug Options
@@ -87,28 +102,7 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
         JSONTools::ReadBool("DrawMapGrid", debug, Config::Debug::DrawMapGrid);
         JSONTools::ReadBool("DrawUnitTargetInfo", debug, Config::Debug::DrawUnitTargetInfo);
         JSONTools::ReadBool("DrawReservedBuildingTiles", debug, Config::Debug::DrawReservedBuildingTiles);
-
-        JSONTools::ReadBool("AllDebugOff", debug, Config::Debug::AllDebugOff);
-
-        if (Config::Debug::AllDebugOff)
-        {
-            Config::Debug::PrintModuleTimeout             = false;	
-            Config::Debug::DrawBuildOrderSearchInfo       = false;
-            Config::Debug::DrawUnitHealthBars             = false;
-            Config::Debug::DrawResourceInfo               = false;
-            Config::Debug::DrawProductionInfo             = false;
-            Config::Debug::DrawWorkerInfo                 = false;
-            Config::Debug::DrawModuleTimers               = false;
-            Config::Debug::DrawReservedBuildingTiles      = false;
-            Config::Debug::DrawCombatSimulationInfo       = false;
-            Config::Debug::DrawBuildingInfo               = false;
-            Config::Debug::DrawMouseCursorInfo            = false;
-            Config::Debug::DrawEnemyUnitInfo              = false;
-            Config::Debug::DrawBWTAInfo                   = false;
-            Config::Debug::DrawMapGrid                    = false;
-            Config::Debug::DrawUnitTargetInfo             = false;
-            Config::Debug::DrawSquadInfo                  = false;
-        }
+        JSONTools::ReadBool("DrawBOSSStateInfo", debug, Config::Debug::DrawBOSSStateInfo); 
     }
 
     // Parse the Module Options
@@ -236,13 +230,12 @@ void ParseUtils::ParseTextCommand(const std::string & commandString)
         // BWAPI options
         if (variableName == "setlocalspeed") { Config::BWAPIOptions::SetLocalSpeed = GetIntFromString(val); BWAPI::Broodwar->setLocalSpeed(Config::BWAPIOptions::SetLocalSpeed); }
         else if (variableName == "setframeskip") { Config::BWAPIOptions::SetFrameSkip = GetIntFromString(val); BWAPI::Broodwar->setFrameSkip(Config::BWAPIOptions::SetFrameSkip); }
-        else if (variableName == "enableuserinput") { Config::BWAPIOptions::EnableUserInput = GetBoolFromString(val); if (Config::BWAPIOptions::EnableUserInput) BWAPI::Broodwar->enableFlag(BWAPI::Flag::UserInput); }
-        else if (variableName == "enablecompletemapinformation") { Config::BWAPIOptions::EnableCompleteMapInformation = GetBoolFromString(val); if (Config::BWAPIOptions::EnableCompleteMapInformation) BWAPI::Broodwar->enableFlag(BWAPI::Flag::UserInput); }
+        else if (variableName == "userinput") { Config::BWAPIOptions::EnableUserInput = GetBoolFromString(val); if (Config::BWAPIOptions::EnableUserInput) BWAPI::Broodwar->enableFlag(BWAPI::Flag::UserInput); }
+        else if (variableName == "completemapinformation") { Config::BWAPIOptions::EnableCompleteMapInformation = GetBoolFromString(val); if (Config::BWAPIOptions::EnableCompleteMapInformation) BWAPI::Broodwar->enableFlag(BWAPI::Flag::UserInput); }
         
         // Micro Options
         else if (variableName == "usesparcraftsimulation") { Config::Micro::UseSparcraftSimulation = GetBoolFromString(val); }
-        else if (variableName == "workerdefense") { Config::Micro::WorkerDefense = GetBoolFromString(val); }
-        else if (variableName == "workerdefenseperunit") { Config::Micro::WorkerDefensePerUnit = GetIntFromString(val); }
+        else if (variableName == "workersindefensesquad") { Config::Micro::WorkersInDefenseSquad = GetBoolFromString(val); }
         else if (variableName == "incombatradius") { Config::Micro::CombatRadius = GetIntFromString(val); }
         else if (variableName == "regroupradius") { Config::Micro::CombatRegroupRadius = GetIntFromString(val); }
         else if (variableName == "unitnearenemyradius") { Config::Micro::UnitNearEnemyRadius = GetIntFromString(val); }

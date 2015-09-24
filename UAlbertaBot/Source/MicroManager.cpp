@@ -21,7 +21,6 @@ BWAPI::Position MicroManager::calcCenter() const
         }
         return BWAPI::Position(0,0);
     }
-	assert(!units.empty());
 
 	BWAPI::Position accum(0,0);
 	for (BWAPI::UnitInterface* unit : _units)

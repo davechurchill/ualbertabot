@@ -68,7 +68,7 @@ public:
     void                    setCurrentSupply(const UnitCountType & supply);
     void                    setBuildingWorker();
     void                    releaseBuildingWorker();
-    void                    addCompletedBuilding(const ActionType & action, const FrameCountType timeUntilFree, const ActionType & constructing, const ActionType & addon, const int numLarva = 1);
+    void                    addCompletedBuilding(const ActionType & action, const FrameCountType timeUntilFree, const ActionType & constructing, const ActionType & addon, int numLarva);
     void                    addCompletedAction(const ActionType & action, bool wasBuilt = true);
 	void                    removeCompletedAction(const ActionType & action);
     void                    addActionInProgress(const ActionType & action, const FrameCountType & completionFrame, bool queueAction = true);

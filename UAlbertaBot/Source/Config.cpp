@@ -52,8 +52,8 @@ namespace Config
     
     namespace Debug								
     {
-        bool PrintModuleTimeout             = true;	
-        bool DrawBuildOrderSearchInfo       = true;
+        bool PrintModuleTimeout             = false;	
+        bool DrawBuildOrderSearchInfo       = false;
         bool DrawUnitHealthBars             = true;
         bool DrawProductionInfo             = true;
         bool DrawScoutInfo                  = false;
@@ -69,7 +69,7 @@ namespace Config
         bool DrawMapGrid                    = false;
         bool DrawUnitTargetInfo             = false;
         bool DrawSquadInfo                  = false;
-        bool AllDebugOff                    = false;
+        bool DrawBOSSStateInfo              = false;
 
         std::string ErrorLogFilename        = "UAB_ErrorLog.txt";
         bool LogAssertToErrorFile           = false;
@@ -83,8 +83,10 @@ namespace Config
     namespace Micro								
     {
         bool UseSparcraftSimulation         = true;
-        bool WorkerDefense                  = true;     // whether or not we defend with workers when combat units die
-        int WorkerDefensePerUnit            = 2;        // how many workers to assign to each unit attacking us
+        bool KiteWithRangedUnits            = true;
+        std::set<BWAPI::UnitType> KiteLongerRangedUnits;
+
+        bool WorkersInDefenseSquad          = false; 
 		
         int CombatRadius                    = 1000;     // radius of combat to consider units for Micro Search
         int CombatRegroupRadius             = 300;      // radius of units around frontmost unit we consider in regroup calculation
@@ -93,6 +95,7 @@ namespace Config
 
     namespace Macro
     {
+        int WorkersPerRefinery              = 3;
         int BuildingSpacing                 = 1;
         int PylonSpacing                    = 3;
     }

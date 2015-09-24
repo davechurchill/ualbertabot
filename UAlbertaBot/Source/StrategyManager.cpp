@@ -49,11 +49,6 @@ const BuildOrder & StrategyManager::getOpeningBookBuildOrder() const
 // this function can only be called if we have no fighters to defend with
 const int StrategyManager::defendWithWorkers()
 {
-	if (!Config::Micro::WorkerDefense)
-	{
-		return false;
-	}
-
 	// our home nexus position
 	BWAPI::Position homePosition = BWTA::getStartLocation(BWAPI::Broodwar->self())->getPosition();;
 
@@ -178,13 +173,13 @@ const MetaPairVector StrategyManager::getBuildOrderGoal()
 	{
 		return getTerranBuildOrderGoal();
 	}
-    else if (Config::Strategy::StrategyName == "Zerg_ZerglingRush" || Config::Strategy::StrategyName == "Zerg_3HatchMuta")
+    else if (Config::Strategy::StrategyName == "Zerg_ZerglingRush" || Config::Strategy::StrategyName == "Zerg_3HatchMuta" || Config::Strategy::StrategyName == "Zerg_2HatchMuta")
 	{
 		return getZergBuildOrderGoal();
 	}
     else
     {
-        UAB_ASSERT_WARNING(false, "No build order goal found for current strategy: %s", Config::Strategy::StrategyName.c_str());
+        BWAPI::Broodwar->drawTextScreen(BWAPI::Position(0,0), "No build order goal found for current strategy: %s", Config::Strategy::StrategyName.c_str());
     }
 
     return MetaPairVector();
@@ -413,9 +408,10 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
 	// the goal to return
 	std::vector<MetaPair> goal;
 	
-	int numMutas  =				BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Zerg_Mutalisk);
-    int zerglings  =	    	BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Zerg_Zergling);
-	int numHydras  =			BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Zerg_Hydralisk);
+	int numMutas  =     BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Zerg_Mutalisk);
+    int numDrones  =    BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Zerg_Drone);
+    int zerglings  =    BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Zerg_Zergling);
+	int numHydras  =    BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Zerg_Hydralisk);
 
 	int mutasWanted = numMutas + 6;
 	int hydrasWanted = numHydras + 6;

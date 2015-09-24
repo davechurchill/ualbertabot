@@ -1,4 +1,5 @@
 #include "Micro.h"
+#include "UnitUtil.h"
 
 using namespace UAlbertaBot;
 
@@ -196,4 +197,119 @@ void Micro::SmartRepair(BWAPI::UnitInterface * unit, BWAPI::UnitInterface * targ
         BWAPI::Broodwar->drawCircleMap(target->getPosition(), dotRadius, BWAPI::Colors::Cyan, true);
         BWAPI::Broodwar->drawLineMap(unit->getPosition(), target->getPosition(), BWAPI::Colors::Cyan);
     }
+}
+
+
+void Micro::SmartKiteTarget(BWAPI::UnitInterface* rangedUnit, BWAPI::UnitInterface* target)
+{
+	double range(rangedUnit->getType().groundWeapon().maxRange());
+	if (rangedUnit->getType() == BWAPI::UnitTypes::Protoss_Dragoon && BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Singularity_Charge))
+	{
+		range = 6*32;
+	}
+
+	// determine whether the target can be kited
+    bool kiteLonger = Config::Micro::KiteLongerRangedUnits.find(rangedUnit->getType()) != Config::Micro::KiteLongerRangedUnits.end();
+	if (!kiteLonger && (range <= target->getType().groundWeapon().maxRange()))
+	{
+		// if we can't kite it, there's no point
+		Micro::SmartAttackUnit(rangedUnit, target);
+		return;
+	}
+
+	bool    kite(true);
+	double  dist(rangedUnit->getDistance(target));
+	double  speed(rangedUnit->getType().topSpeed());
+
+    
+    // if the unit can't attack back don't kite
+    if ((rangedUnit->isFlying() && !UnitUtil::CanAttackAir(target)) || (!rangedUnit->isFlying() && !UnitUtil::CanAttackGround(target)))
+    {
+        //kite = false;
+    }
+
+	double timeToEnter = std::max(0.0,(dist - range) / speed);
+	if ((timeToEnter >= rangedUnit->getGroundWeaponCooldown()))
+	{
+		kite = false;
+	}
+
+	if (target->getType().isBuilding() && target->getType() != BWAPI::UnitTypes::Terran_Bunker)
+	{
+		kite = false;
+	}
+
+	// if we can't shoot, run away
+	if (kite)
+	{
+		BWAPI::Position fleePosition(rangedUnit->getPosition() - target->getPosition() + rangedUnit->getPosition());
+		//BWAPI::Broodwar->drawLineMap(rangedUnit->getPosition(), fleePosition, BWAPI::Colors::Cyan);
+		Micro::SmartMove(rangedUnit, fleePosition);
+	}
+	// otherwise shoot
+	else
+	{
+		Micro::SmartAttackUnit(rangedUnit, target);
+	}
+}
+
+
+void Micro::MutaDanceTarget(BWAPI::UnitInterface* muta, BWAPI::UnitInterface* target)
+{
+    const int cooldown                  = muta->getType().groundWeapon().damageCooldown();
+    const int latency                   = BWAPI::Broodwar->getLatency();
+    const double speed                  = muta->getType().topSpeed();
+    const double range                  = muta->getType().groundWeapon().maxRange();
+    const double distanceToTarget       = muta->getDistance(target);
+	const double distanceToFiringRange  = std::max(distanceToTarget - range,0.0);
+	const double timeToEnterFiringRange = distanceToFiringRange / speed;
+	const int framesToAttack            = static_cast<int>(timeToEnterFiringRange) + 2*latency;
+
+	// How many frames are left before we can attack?
+	const int currentCooldown = muta->isStartingAttack() ? cooldown : muta->getGroundWeaponCooldown();
+
+	BWAPI::Position fleeVector = GetKiteVector(target, muta);
+	BWAPI::Position moveToPosition(muta->getPosition() + fleeVector);
+
+	// If we can attack by the time we reach our firing range
+	if(currentCooldown <= framesToAttack)
+	{
+		// Move towards and attack the target
+		muta->attack(target);
+	}
+	else // Otherwise we cannot attack and should temporarily back off
+	{
+		// Determine direction to flee
+		// Determine point to flee to
+		if (moveToPosition.isValid()) 
+		{
+			muta->rightClick(moveToPosition);
+		}
+	}
+}
+
+BWAPI::Position Micro::GetKiteVector(BWAPI::UnitInterface * unit, BWAPI::UnitInterface * target)
+{
+    BWAPI::Position fleeVec(target->getPosition() - unit->getPosition());
+    double fleeAngle = atan2(fleeVec.y, fleeVec.x);
+    fleeVec = BWAPI::Position(64 * cos(fleeAngle), 64 * sin(fleeAngle));
+    return fleeVec;
+}
+
+const double PI = 3.14159265;
+void Micro::Rotate(double &x, double &y, double angle)
+{
+	angle = angle*PI/180.0;
+	x = (x * cos(angle)) - (y * sin(angle));
+	y = (y * cos(angle)) + (x * sin(angle));
+}
+
+void Micro::Normalize(double &x, double &y)
+{
+	double length = sqrt((x * x) + (y * y));
+	if (length != 0)
+	{
+		x = (x / length);
+		y = (y / length);
+	}
 }

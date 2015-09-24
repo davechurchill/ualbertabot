@@ -5,7 +5,6 @@
 using namespace UAlbertaBot;
 
 WorkerManager::WorkerManager() 
-    : workersPerRefinery(3) 
 {
     previousClosestWorker = NULL;
 }
@@ -92,7 +91,7 @@ void WorkerManager::handleGasWorkers()
 			int numAssigned = workerData.getNumAssignedWorkers(unit);
 
 			// if it's less than we want it to be, fill 'er up
-			for (int i=0; i<(workersPerRefinery-numAssigned); ++i)
+			for (int i=0; i<(Config::Macro::WorkersPerRefinery-numAssigned); ++i)
 			{
 				BWAPI::UnitInterface* gasWorker = getGasWorker(unit);
 				if (gasWorker)

@@ -33,5 +33,6 @@ public:
     Squad *         getUnitSquad(BWAPI::UnitInterface * unit);
 
     Squad &         getSquad(const std::string & squadName);
+    const std::map<std::string, Squad> & getSquads() const;
 };
 }

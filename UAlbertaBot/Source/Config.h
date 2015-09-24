@@ -68,7 +68,7 @@ namespace Config
         extern bool DrawMapGrid;
         extern bool DrawUnitTargetInfo;
         extern bool DrawSquadInfo;
-        extern bool AllDebugOff;
+        extern bool DrawBOSSStateInfo;
 
         extern std::string ErrorLogFilename;
         extern bool LogAssertToErrorFile;
@@ -82,9 +82,10 @@ namespace Config
     namespace Micro
     {
         extern bool UseSparcraftSimulation;
+        extern bool KiteWithRangedUnits;
+        extern std::set<BWAPI::UnitType> KiteLongerRangedUnits;
 
-        extern bool WorkerDefense;
-        extern int  WorkerDefensePerUnit;
+        extern bool WorkersInDefenseSquad;
 
         extern int CombatRadius;                
         extern int CombatRegroupRadius;         
@@ -93,6 +94,7 @@ namespace Config
 
     namespace Macro
     {
+        extern int WorkersPerRefinery;
         extern int BuildingSpacing;
         extern int PylonSpacing;
     }

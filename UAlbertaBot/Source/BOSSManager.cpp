@@ -54,7 +54,7 @@ void BOSSManager::drawSearchInformation(int x, int y)
     }
 
     // draw the background
-    int width = 120;
+    int width = 150;
     int height = 100;
     BWAPI::Broodwar->drawBoxScreen(BWAPI::Position(x,y), BWAPI::Position(x+width, y+height), BWAPI::Colors::Black, true);
 
@@ -75,6 +75,19 @@ void BOSSManager::drawSearchInformation(int x, int y)
     
     BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x, y+15), "Time (ms): %.3lf", _totalPreviousSearchTime);
     BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x, y+25), "BO Size: %d", (int)_savedSearchResults.buildOrder.size());
+
+    
+}
+
+void BOSSManager::drawStateInformation(int x, int y) 
+{
+	if (!Config::Debug::DrawBOSSStateInfo)
+    {
+        return;
+    }
+
+    BOSS::GameState currentState(BWAPI::Broodwar, BWAPI::Broodwar->self(), BuildingManager::Instance().buildingsQueued());
+    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x+100, y), "\x04%s", currentState.toString().c_str());
 }
 
 // tell the search to keep going for however long we have this frame

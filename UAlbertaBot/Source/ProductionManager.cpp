@@ -57,7 +57,7 @@ void ProductionManager::performBuildOrderSearch(const std::vector<MetaPair> & go
 		{
             if (Config::Debug::DrawBuildOrderSearchInfo)
             {
-			    //BWAPI::Broodwar->printf("Starting a new build order search!");
+			    BWAPI::Broodwar->printf("Starting a new build order search!");
             }
 			BOSSManager::Instance().startNewSearch(goal);
 		}

@@ -55,6 +55,11 @@ void SquadData::removeSquad(const std::string & squadName)
     _squads.erase(squadName);
 }
 
+const std::map<std::string, Squad> & SquadData::getSquads() const
+{
+    return _squads;
+}
+
 bool SquadData::squadExists(const std::string & squadName)
 {
     return _squads.find(squadName) != _squads.end();

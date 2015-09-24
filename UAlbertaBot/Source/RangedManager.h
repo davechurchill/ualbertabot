@@ -18,7 +18,5 @@ public:
 
 	int getAttackPriority(BWAPI::UnitInterface* rangedUnit, BWAPI::UnitInterface* target);
 	BWAPI::UnitInterface* getTarget(BWAPI::UnitInterface* rangedUnit, const BWAPI::Unitset & targets);
-
-	void kiteTarget(BWAPI::UnitInterface* rangedUnit, BWAPI::UnitInterface* target);
 };
 }

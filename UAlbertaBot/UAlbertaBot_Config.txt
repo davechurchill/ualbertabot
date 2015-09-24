@@ -1,35 +1,35 @@
 {
     "Bot Info" :
     {
-        "BotName" : "UAlbertaBot",
-        "Authors" : "David Churchill",
-        "PrintInfoOnStart" : false
+        "BotName"                   : "UAlbertaBot",
+        "Authors"                   : "David Churchill",
+        "PrintInfoOnStart"          : false
     },
         
     "BWAPI" : 
     {
-        "SetLocalSpeed"   : 10,
-        "SetFrameSkip"    : 0,
-        "EnableUserInput" : true,
-        "EnableCompleteMapInformation" : false
+        "SetLocalSpeed"             : 10,
+        "SetFrameSkip"              : 0,
+        "UserInput"                 : true,
+        "CompleteMapInformation"    : false
     },
     
     "Micro" :
     {
-        "UseSparcraftSimulation" : true,
-    
-        "WorkerDefense" : true,
-        "WorkerDefensePerUnit" : 2,
-        
-        "InCombatRadius" : 1000,
-        "RegroupRadius" : 300,
-        "UnitNearEnemyRadius" : 600
+        "UseSparcraftSimulation"    : true,
+        "KiteWithRangedUnits"       : true,
+        "KiteLongerRangedUnits"     : ["Mutalisk"],
+        "WorkersInDefenseSquad"     : false,
+        "InCombatRadius"            : 1000,
+        "RegroupRadius"             : 300,
+        "UnitNearEnemyRadius"       : 600
     },
     
     "Macro" :
     {
-        "BuildingSpacing" : 1,
-        "PylonSpacing"   : 3
+        "WorkersPerRefinery"        : 3,
+        "BuildingSpacing"           : 1,
+        "PylonSpacing"              : 3
     },
 
     "Debug" :
@@ -54,36 +54,37 @@
         "DrawMouseCursorInfo"       : false,
         "DrawBuildingInfo"          : false,
         "DrawReservedBuildingTiles" : false,
+        "DrawBOSSStateInfo"         : false,
         
         "AllDebugOff"               : false
     },
     
     "Modules" :
     {
-        "UseGameCommander"      : true,
-        "UseScoutManager"       : true,
-        "UseCombatCommander"    : true,
-        "UseBuildOrderSearch"   : true,
-        "UseStrategyIO"         : true,
-        "UseAutoObserver"       : false
+        "UseGameCommander"          : true,
+        "UseScoutManager"           : true,
+        "UseCombatCommander"        : true,
+        "UseBuildOrderSearch"       : true,
+        "UseStrategyIO"             : true,
+        "UseAutoObserver"           : false
     },
     
     "Tools" :
     {
-        "MapGridSize" : 320
+        "MapGridSize"               : 320
     },
     
     "Strategy" :
     {
-        "ProtossStrategyName"   : "Protoss_ZealotRush",
-        "TerranStrategyName"    : "Terran_MarineRush",
-        "ZergStrategyName"      : "Zerg_3HatchMuta",
+        "ProtossStrategyName"       : "Protoss_ZealotRush",
+        "TerranStrategyName"        : "Terran_MarineRush",
+        "ZergStrategyName"          : "Zerg_3HatchMuta",
         
-        "ScoutGasSteal"         : false,
-        "ScoutHarassEnemy"      : true,
+        "ScoutGasSteal"             : false,
+        "ScoutHarassEnemy"          : true,
         
-        "ReadDirectory"         : "bwapi-data/read/",
-        "WriteDirectory"        : "bwapi-data/write/",
+        "ReadDirectory"             : "bwapi-data/read/",
+        "WriteDirectory"            : "bwapi-data/write/",
         
         "Strategies" :
         {

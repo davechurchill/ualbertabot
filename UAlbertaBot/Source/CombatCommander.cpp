@@ -254,6 +254,34 @@ void CombatCommander::updateDefenseSquads()
             UAB_ASSERT_WARNING(false, "Squad should have existed: %s", squadName.str().c_str());
         }
 	}
+
+    // for each of our defense squads, if there aren't any enemy units near the position, remove the squad
+    std::set<std::string> uselessDefenseSquads;
+    for (const auto & kv : _squadData.getSquads())
+    {
+        const Squad & squad = kv.second;
+        const SquadOrder & order = squad.getSquadOrder();
+
+        if (order.getType() != SquadOrderTypes::Defend)
+        {
+            continue;
+        }
+
+        bool enemyUnitInRange = false;
+        for (BWAPI::UnitInterface * unit : BWAPI::Broodwar->enemy()->getUnits())
+        {
+            if (unit->getPosition().getDistance(order.getPosition()) < order.getRadius())
+            {
+                enemyUnitInRange = true;
+                break;
+            }
+        }
+
+        if (!enemyUnitInRange)
+        {
+            _squadData.getSquad(squad.getName()).clear();
+        }
+    }
 }
 
 void CombatCommander::updateDefenseSquadUnits(Squad & defenseSquad, const size_t & flyingDefendersNeeded, const size_t & groundDefendersNeeded)
@@ -321,6 +349,12 @@ BWAPI::UnitInterface * CombatCommander::findClosestDefender(const Squad & defens
         }
 
         if (!_squadData.canAssignUnitToSquad(unit, defenseSquad))
+        {
+            continue;
+        }
+
+
+        if (!Config::Micro::WorkersInDefenseSquad && unit->getType().isWorker())
         {
             continue;
         }

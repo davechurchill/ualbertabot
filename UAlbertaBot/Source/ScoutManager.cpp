@@ -496,7 +496,7 @@ void ScoutManager::calculateEnemyRegionVertices()
         int maxFarthestEnd = 0;
 
         // for each starting vertex
-        for (int i(0); i < sortedVertices.size(); ++i)
+        for (int i(0); i < (int)sortedVertices.size(); ++i)
         {
             int farthest = 0;
             int farthestIndex = 0;

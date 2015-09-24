@@ -8,20 +8,16 @@ namespace UAlbertaBot
 {
 class Building;
 
-class WorkerManager {
-
-	//static WorkerManager *		instance;
-
-	WorkerData					workerData;
-    BWAPI::UnitInterface*               previousClosestWorker;
-
-	int							workersPerRefinery;
+class WorkerManager 
+{
+	WorkerData                  workerData;
+    BWAPI::UnitInterface*       previousClosestWorker;
 
 	void						setMineralWorker(BWAPI::UnitInterface* unit);
 
 	WorkerManager();
 
-    bool    isGasStealRefinery(BWAPI::UnitInterface * unit);
+    bool                        isGasStealRefinery(BWAPI::UnitInterface * unit);
 
 public:
 

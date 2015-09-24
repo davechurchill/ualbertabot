@@ -55,6 +55,7 @@ public:
     void                        startNewSearch(const std::vector<MetaPair> & goalUnits);
     
 	void						drawSearchInformation(int x, int y);
+    void						drawStateInformation(int x, int y);
 
     
 	static BOSS::BuildOrderSearchGoal       GetGoal(const std::vector<MetaPair> & goalUnits);	

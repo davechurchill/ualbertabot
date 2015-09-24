@@ -18,9 +18,10 @@ void RangedManager::executeMicro(const BWAPI::Unitset & targets)
 		if (target->isVisible()) 
 		{
 			rangedUnitTargets.insert(target);
+            BWAPI::Broodwar->drawCircleMap(target->getPosition(), 8, BWAPI::Colors::Red);
 		}
 	}
-
+    
 	// for each zealot
 	for (BWAPI::UnitInterface* rangedUnit : rangedUnits)
 	{
@@ -28,16 +29,35 @@ void RangedManager::executeMicro(const BWAPI::Unitset & targets)
 		//trainSubUnits(rangedUnit);
 
 		// if the order is to attack or defend
-		if (order.getType() == SquadOrderTypes::Attack || order.getType() == SquadOrderTypes::Defend) {
-
+		if (order.getType() == SquadOrderTypes::Attack || order.getType() == SquadOrderTypes::Defend) 
+        {
 			// if there are targets
 			if (!rangedUnitTargets.empty())
 			{
 				// find the best target for this zealot
 				BWAPI::UnitInterface* target = getTarget(rangedUnit, rangedUnitTargets);
+                
+                if (target && Config::Debug::DrawUnitTargetInfo) 
+	            {
+		            BWAPI::Broodwar->drawLineMap(rangedUnit->getPosition(), rangedUnit->getTargetPosition(), BWAPI::Colors::Purple);
+	            }
 
 				// attack it
-				kiteTarget(rangedUnit, target);
+                if (Config::Micro::KiteWithRangedUnits)
+                {
+                    if (rangedUnit->getType() == BWAPI::UnitTypes::Zerg_Mutalisk)
+                    {
+				        Micro::MutaDanceTarget(rangedUnit, target);
+                    }
+                    else
+                    {
+                        Micro::SmartKiteTarget(rangedUnit, target);
+                    }
+                }
+                else
+                {
+                    Micro::SmartAttackUnit(rangedUnit, target);
+                }
 			}
 			// if there are no targets
 			else
@@ -51,67 +71,7 @@ void RangedManager::executeMicro(const BWAPI::Unitset & targets)
 			}
 		}
 
-		if (Config::Debug::DrawUnitTargetInfo) 
-		{
-			BWAPI::Broodwar->drawLineMap(rangedUnit->getPosition().x, rangedUnit->getPosition().y, 
-				rangedUnit->getTargetPosition().x, rangedUnit->getTargetPosition().y, Config::Debug::ColorLineTarget);
-		}
-	}
-}
-
-void RangedManager::kiteTarget(BWAPI::UnitInterface* rangedUnit, BWAPI::UnitInterface* target)
-{
-	
-	double range(rangedUnit->getType().groundWeapon().maxRange());
-	if (rangedUnit->getType() == BWAPI::UnitTypes::Protoss_Dragoon && BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Singularity_Charge))
-	{
-		range = 6*32;
-	}
-
-	// determine whether the target can be kited
-	if (range <= target->getType().groundWeapon().maxRange())
-	{
-		// if we can't kite it, there's no point
-		Micro::SmartAttackUnit(rangedUnit, target);
-		return;
-	}
-
-	double		minDist(64);
-	bool		kite(true);
-	double		dist(rangedUnit->getDistance(target));
-	double		speed(rangedUnit->getType().topSpeed());
-
-	double	timeToEnter = std::max(0.0,(dist - range) / speed);
-	if ((timeToEnter >= rangedUnit->getGroundWeaponCooldown()) && (dist >= minDist))
-	{
-		kite = false;
-	}
-
-	if (target->getType().isBuilding() && target->getType() != BWAPI::UnitTypes::Terran_Bunker)
-	{
-		kite = false;
-	}
-
-	if (rangedUnit->isSelected())
-	{
-		BWAPI::Broodwar->drawCircleMap(rangedUnit->getPosition().x, rangedUnit->getPosition().y, 
-			(int)range, BWAPI::Colors::Cyan);
-	}
-
-	// if we can't shoot, run away
-	if (kite)
-	{
-		BWAPI::Position fleePosition(rangedUnit->getPosition() - target->getPosition() + rangedUnit->getPosition());
-
-		BWAPI::Broodwar->drawLineMap(rangedUnit->getPosition().x, rangedUnit->getPosition().y, 
-			fleePosition.x, fleePosition.y, BWAPI::Colors::Cyan);
-
-		Micro::SmartMove(rangedUnit, fleePosition);
-	}
-	// otherwise shoot
-	else
-	{
-		Micro::SmartAttackUnit(rangedUnit, target);
+		
 	}
 }
 
@@ -120,70 +80,116 @@ BWAPI::UnitInterface* RangedManager::getTarget(BWAPI::UnitInterface* rangedUnit,
 {
 	int range(rangedUnit->getType().groundWeapon().maxRange());
 
-	int highestInRangePriority(0);
-	int highestNotInRangePriority(0);
-	int lowestInRangeHitPoints(10000);
-	int lowestNotInRangeDistance(10000);
+    int bestPriorityDistance = 1000000;
+    int bestPriority = 0;
+    int bestPriorityHP = 100000;
 
-	BWAPI::UnitInterface* inRangeTarget = NULL;
-	BWAPI::UnitInterface* notInRangeTarget = NULL;
+	BWAPI::UnitInterface * bestTarget = NULL;
+   
 
-	for (BWAPI::UnitInterface* unit : targets)
-	{
-		int priority = getAttackPriority(rangedUnit, unit);
-		int distance = rangedUnit->getDistance(unit);
+    if (rangedUnit->isFlying())
+    {
+	    for (BWAPI::UnitInterface* unit : targets)
+	    {
+		    int priority = getAttackPriority(rangedUnit, unit);
+		    int distance = rangedUnit->getDistance(unit);
+            int hp = unit->getHitPoints() + unit->getShields();
 
-		// if the unit is in range, update the target with the lowest hp
-		if (rangedUnit->getDistance(unit) <= range)
-		{
-			if (priority > highestInRangePriority ||
-				(priority == highestInRangePriority && unit->getHitPoints() < lowestInRangeHitPoints))
-			{
-				lowestInRangeHitPoints = unit->getHitPoints();
-				highestInRangePriority = priority;
-				inRangeTarget = unit;
-			}
-		}
-		// otherwise it isn't in range so see if it's closest
-		else
-		{
-			if (priority > highestNotInRangePriority ||
-				(priority == highestNotInRangePriority && distance < lowestNotInRangeDistance))
-			{
-				lowestNotInRangeDistance = distance;
-				highestNotInRangePriority = priority;
-				notInRangeTarget = unit;
-			}
-		}
-	}
+            bool newBest = !bestTarget;
+            if (priority > bestPriority)
+            {
+                newBest = true;
+            }
+            else if (priority == bestPriority)
+            {
+                if (hp < bestPriorityHP)
+                {
+                    newBest = true;
+                }
+                else if (hp == bestPriority && distance < bestPriorityDistance)
+                {
+                    newBest = true;
+                }
+            }
+
+            if (newBest)
+            {
+                bestTarget = unit;
+                bestPriorityDistance = distance;
+                bestPriority = priority;
+                bestPriorityHP = hp;
+            }
+	    }
+    }
+    else
+    {
+        for (BWAPI::UnitInterface* unit : targets)
+	    {
+		    int priority = getAttackPriority(rangedUnit, unit);
+		    int distance = rangedUnit->getDistance(unit);
+            int hp = unit->getHitPoints() + unit->getShields();
+
+            if (!bestTarget || (priority > bestPriority) || (priority == bestPriority && distance < bestPriorityDistance))
+            {
+                bestTarget = unit;
+                bestPriorityDistance = distance;
+                bestPriority = priority;
+                bestPriorityHP = hp;
+            }
+	    }
+    }
 
 	// if there is a highest priority unit in range, attack it first
-	return (highestInRangePriority >= highestNotInRangePriority) ? inRangeTarget : notInRangeTarget;
+	return bestTarget;
 }
 
 	// get the attack priority of a type in relation to a zergling
 int RangedManager::getAttackPriority(BWAPI::UnitInterface* rangedUnit, BWAPI::UnitInterface* target) 
 {
-	BWAPI::UnitType rangedUnitType = rangedUnit->getType();
+	BWAPI::UnitType rangedType = rangedUnit->getType();
 	BWAPI::UnitType targetType = target->getType();
 
-	bool canAttackUs = rangedUnitType.isFlyer() ? targetType.airWeapon() != BWAPI::WeaponTypes::None : targetType.groundWeapon() != BWAPI::WeaponTypes::None;
-
-	
+	bool canAttackUs = rangedType.isFlyer() ? targetType.airWeapon() != BWAPI::WeaponTypes::None : targetType.groundWeapon() != BWAPI::WeaponTypes::None;
 
 	// highest priority is something that can attack us or aid in combat
-	if (targetType == BWAPI::UnitTypes::Terran_Medic || canAttackUs ||
-		targetType ==  BWAPI::UnitTypes::Terran_Bunker) 
+    if (targetType ==  BWAPI::UnitTypes::Terran_Bunker || canAttackUs)
+    {
+        return 11;
+    }
+    else if (targetType == BWAPI::UnitTypes::Terran_Medic ||  
+		targetType ==  BWAPI::UnitTypes::Terran_Bunker ||
+		targetType == BWAPI::UnitTypes::Protoss_High_Templar ||
+		targetType == BWAPI::UnitTypes::Protoss_Reaver ||
+		(targetType.isWorker() && unitNearChokepoint(target))) 
 	{
-		return 3;
+		return 10;
 	} 
 	// next priority is worker
 	else if (targetType.isWorker()) 
 	{
-		return 2;
-	} 
+		return 9;
+	}
+    // next is special buildings
+	else if (targetType == BWAPI::UnitTypes::Zerg_Spawning_Pool)
+	{
+		return 5;
+	}
+	// next is special buildings
+	else if (targetType == BWAPI::UnitTypes::Protoss_Pylon)
+	{
+		return 5;
+	}
+	// next is buildings that cost gas
+	else if (targetType.gasPrice() > 0)
+	{
+		return 4;
+	}
+	else if (targetType.mineralPrice() > 0)
+	{
+		return 3;
+	}
 	// then everything else
-	else 
+	else
 	{
 		return 1;
 	}
