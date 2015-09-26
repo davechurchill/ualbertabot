@@ -49,7 +49,7 @@ void RangedManager::executeMicro(const BWAPI::Unitset & targets)
 				// attack it
                 if (Config::Micro::KiteWithRangedUnits)
                 {
-                    if (rangedUnit->getType() == BWAPI::UnitTypes::Zerg_Mutalisk)
+                    if (rangedUnit->getType() == BWAPI::UnitTypes::Zerg_Mutalisk || rangedUnit->getType() == BWAPI::UnitTypes::Terran_Vulture)
                     {
 				        Micro::MutaDanceTarget(rangedUnit, target);
                     }

@@ -88,12 +88,30 @@ GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self, c
                 // if it's a non-hatchery currently training something, add it
                 else if (!isHatchery && unit->getRemainingTrainTime() > 0)
                 {
-                    int remaining = unit->getRemainingTrainTime();
-                    auto & queue = unit->getTrainingQueue();
+                    // find the unit we have that has the same construction time remaining
+                    // this is an awful hack but there seems to be no alternative
+                    bool set = false;
+                    for (auto & u : self->getUnits())
+                    {
+                        if (u->getRemainingBuildTime() > 0 && u->getPosition().getDistance(unit->getPosition()) < 16)
+                        {
+                            constructing = ActionType(u->getType());
+                            set = true;
+                            break;
+                        }
+                    }
 
-                    auto & first = queue.begin();
-                    BWAPI::UnitType typeTraining = *first;
-                    constructing = ActionType(typeTraining);
+                    // if we can't find the unit it's training, check the training queue
+                    if (!set && unit->getTrainingQueue().size() > 0)
+                    {
+                        constructing = ActionType(*unit->getTrainingQueue().begin());
+                        set = true;
+                    }
+
+                    if (!set)
+                    {
+                        BWAPI::Broodwar->printf("Couldn't find training unit for %s %s %d", unit->getType().getName().c_str(), unit->getBuildType().getName().c_str(), unit->getTrainingQueue().size());
+                    }
                 }
                 // if it's researching something, add it
 				else if (unit->getRemainingResearchTime() > 0)
@@ -134,7 +152,7 @@ GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self, c
             }
 		}
         // the unit is currently under construction
-		else if (unit->isBeingConstructed() && !unit->getType().isAddon())
+		else if ((unit->getRemainingBuildTime() > 0) && !unit->getType().isAddon())
 		{
             // special case of a zerg building morphing into its upgrade
             if (actionType.isBuilding() && actionType.isMorphed())
@@ -148,7 +166,6 @@ GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self, c
 		}
 	}
 
-    // TODO: set correct number of larva from state
     for (const BWAPI::UpgradeType & type : BWAPI::UpgradeTypes::allUpgradeTypes())
 	{
         if (!ActionTypes::TypeExists(type))
@@ -320,9 +337,11 @@ std::vector<ActionType> GameState::doAction(const ActionType & action)
     FrameCountType workerReadyTime = whenWorkerReady(action);
     FrameCountType ffTime = whenCanPerform(action);
 
+    const std::string & name = action.getName();
+
     BOSS_ASSERT(ffTime >= 0 && ffTime < 1000000, "FFTime is very strange: %d", ffTime);
 
-    auto actionsFinished=fastForward(ffTime);
+    auto actionsFinished = fastForward(ffTime);
 
     _actionsPerformed[_actionsPerformed.size()-1].actionQueuedFrame = _currentFrame;
     _actionsPerformed[_actionsPerformed.size()-1].gasWhenQueued = _gas;
@@ -348,11 +367,6 @@ std::vector<ActionType> GameState::doAction(const ActionType & action)
     {
         if (action.isBuilding() && !action.isAddon())
         {
-            if (getNumMineralWorkers() == 0)
-            {
-                std::cout << toString() << std::endl;
-            }
-
             BOSS_ASSERT(getNumMineralWorkers() > 0, "Don't have any mineral workers to assign");
             _units.setBuildingWorker();
         }
@@ -445,6 +459,8 @@ std::vector<ActionType> GameState::fastForward(const FrameCountType toFrame)
 // returns the time at which all resources to perform an action will be available
 const FrameCountType GameState::whenCanPerform(const ActionType & action) const
 {
+    const std::string & name = action.getName();
+
     // the resource times we care about
     FrameCountType mineralTime  (_currentFrame); 	// minerals
     FrameCountType gasTime      (_currentFrame); 	// gas

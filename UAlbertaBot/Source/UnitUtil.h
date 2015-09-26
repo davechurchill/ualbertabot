@@ -13,6 +13,7 @@ namespace UnitUtil
     bool CanAttackGround(BWAPI::Unit unit);
     bool IsGroundTarget(BWAPI::Unit unit);
     bool IsAirTarget(BWAPI::Unit unit);
+    BWAPI::Unit GetTrainee(BWAPI::Unit unit);
 
     template <typename ValueFunction>
     BWAPI::Unit GetMinUnit(const BWAPI::Unitset & units, const ValueFunction & fn)

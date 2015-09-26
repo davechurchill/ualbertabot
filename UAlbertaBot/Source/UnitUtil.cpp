@@ -59,3 +59,28 @@ bool UnitUtil::CanAttackGround(BWAPI::Unit unit)
 {
     return unit->getType().groundWeapon() != BWAPI::WeaponTypes::None;
 }
+
+BWAPI::Unit GetTrainee(BWAPI::Unit trainer)
+{
+    if (trainer->getRemainingTrainTime() == 0)    
+    {
+        return nullptr;
+    }
+
+    for (const auto & u : trainer->getPlayer()->getUnits())
+    {
+        if (u->getRemainingBuildTime() == 0)
+        {
+            continue;
+        }
+
+        const BWAPI::Position & uPos = u->getPosition();
+
+        if ((uPos.x > trainer->getLeft()) && (uPos.x < trainer->getRight()) && (uPos.y < trainer->getBottom()) && (uPos.y > trainer->getTop()))
+        {
+            return u;
+        }
+    }
+
+    return nullptr;
+}

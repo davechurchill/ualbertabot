@@ -87,7 +87,9 @@ void BOSSManager::drawStateInformation(int x, int y)
     }
 
     BOSS::GameState currentState(BWAPI::Broodwar, BWAPI::Broodwar->self(), BuildingManager::Instance().buildingsQueued());
-    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x+100, y), "\x04%s", currentState.toString().c_str());
+    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x-100, y+30), "\x04%s", currentState.getBuildingData().toString().c_str());
+    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x+150, y), "\x04%s", currentState.toString().c_str());
+    
 }
 
 // tell the search to keep going for however long we have this frame
@@ -130,6 +132,9 @@ void BOSSManager::update(double timeLimit)
                 BWAPI::Broodwar->drawTextScreen(0, 10, "Naive build order search failed");
 				BWAPI::Broodwar->printf("No legal BuildOrder found, returning empty Build Order");
 				_previousBuildOrder = BOSS::BuildOrder();
+
+                // both searches failed so don't try to search from the same state anymore
+                _searchInProgress = false;
 				return;
 			}
 		}

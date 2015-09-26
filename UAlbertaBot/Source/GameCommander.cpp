@@ -71,7 +71,7 @@ void GameCommander::drawDebugInterface()
 	BuildingManager::Instance().drawBuildingInformation(200,50);
 	ProductionManager::Instance().drawProductionInformation(30, 30);
 	BOSSManager::Instance().drawSearchInformation(10, 200);
-    BOSSManager::Instance().drawStateInformation(325, 0);
+    BOSSManager::Instance().drawStateInformation(250, 0);
 
     //Micro::drawAPM(2,2);
 
