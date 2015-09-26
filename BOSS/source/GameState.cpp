@@ -67,7 +67,7 @@ GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self, c
 		if (unit->isCompleted())
 		{
 			// if it is a building that is not an addon
-			if (unit->getType().isBuilding() && !unit->getType().isAddon())
+			if (unit->getType().isBuilding())
 			{
                 // add the building data accordingly
 				FrameCountType  trainTime = unit->getRemainingTrainTime() + unit->getRemainingResearchTime() + unit->getRemainingUpgradeTime();
@@ -101,16 +101,24 @@ GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self, c
                         }
                     }
 
-                    // if we can't find the unit it's training, check the training queue
-                    if (!set && unit->getTrainingQueue().size() > 0)
+                    // check to see if the last order issued was a trianing order and grab the unit type from that
+                    if (!set && unit->getLastCommand().getType() == BWAPI::UnitCommandTypes::Train)
                     {
-                        constructing = ActionType(*unit->getTrainingQueue().begin());
-                        set = true;
+                        BWAPI::UnitType trainType = unit->getLastCommand().getUnitType();
+
+                        if (BWAPI::Broodwar->getFrameCount() - unit->getLastCommandFrame() < 2*BWAPI::Broodwar->getLatencyFrames())
+                        {
+                            constructing = ActionType(trainType);
+                            set = true;
+                        }
                     }
 
                     if (!set)
                     {
-                        BWAPI::Broodwar->printf("Couldn't find training unit for %s %s %d", unit->getType().getName().c_str(), unit->getBuildType().getName().c_str(), unit->getTrainingQueue().size());
+                        // if we couldn't find the unit type that this unit is training 
+                        // then we have to treat it as if it doesn't exist otherwise BOSS will act strangely
+                        trainTime = 0;
+                        BWAPI::Broodwar->printf("Couldn't find training unit for %s %s %d %d", unit->getType().getName().c_str(), unit->getBuildType().getName().c_str(), unit->getTrainingQueue().size(), unit->getRemainingTrainTime());
                     }
                 }
                 // if it's researching something, add it
@@ -126,8 +134,8 @@ GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self, c
 					_units.addActionInProgress(constructing, game->getFrameCount() + unit->getRemainingUpgradeTime(), false);
 				}
 
-                // TODO: special case for Zerg_Hatchery
-                if (unit->getAddon() != NULL)
+                // add addons
+                if (unit->getAddon() != nullptr)
                 {
                     if (unit->getAddon()->isConstructing())
                     {
