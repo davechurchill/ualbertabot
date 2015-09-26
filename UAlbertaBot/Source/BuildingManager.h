@@ -22,7 +22,7 @@ class BuildingManager
 	int							reservedGas;					// gas reserved for planned buildings
 	int							buildingSpace;					// how much space we want between buildings
 
-    BWAPI::UnitInterface*       getAddonProducer(MetaType t);
+    BWAPI::Unit       getAddonProducer(MetaType t);
 
 	// functions
 	bool						isEvolvedBuilding(BWAPI::UnitType type);
@@ -37,7 +37,7 @@ class BuildingManager
 	void						checkForCompletedBuildings();			// STEP 6
 
 	// functions for performing tedious vector tasks
-	void						removeBuildingFromVector(BWAPI::UnitInterface* buildingUnit, std::vector<Building> & vec);
+	void						removeBuildingFromVector(BWAPI::Unit buildingUnit, std::vector<Building> & vec);
 	void						removeBuildingFromVector(Building & b, std::vector<Building> & vec);
 
 	char						getBuildingWorkerCode(const Building & b) const;
@@ -45,8 +45,8 @@ class BuildingManager
 public:
 
 	void						update();
-	void						onUnitMorph(BWAPI::UnitInterface* unit);
-	void						onUnitDestroy(BWAPI::UnitInterface* unit);
+	void						onUnitMorph(BWAPI::Unit unit);
+	void						onUnitDestroy(BWAPI::Unit unit);
 	void						addBuildingTask(BWAPI::UnitType type, BWAPI::TilePosition desiredLocation, bool isGasSteal);
 	BWAPI::TilePosition			getBuildingLocation(const Building & b);
 

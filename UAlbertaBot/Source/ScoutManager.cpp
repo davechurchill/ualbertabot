@@ -4,7 +4,7 @@
 using namespace UAlbertaBot;
 
 ScoutManager::ScoutManager() 
-    : _workerScout(NULL)
+    : _workerScout(nullptr)
     , _numWorkerScouts(0)
     , _scoutUnderAttack(false)
     , _gasStealStatus("None")
@@ -39,7 +39,7 @@ void ScoutManager::update()
     drawScoutInformation(200, 320);
 }
 
-void ScoutManager::setWorkerScout(BWAPI::UnitInterface * unit)
+void ScoutManager::setWorkerScout(BWAPI::Unit unit)
 {
     // if we have a previous worker scout, release it back to the worker manager
     if (_workerScout)
@@ -122,7 +122,7 @@ void ScoutManager::moveScouts()
 		if (scoutInRangeOfenemy)
 		{
 			// get the closest enemy worker
-			BWAPI::UnitInterface* closestWorker = closestEnemyWorker();
+			BWAPI::Unit closestWorker = closestEnemyWorker();
 
 			// if the worker scout is not under attack
 			if (!_scoutUnderAttack)
@@ -226,7 +226,7 @@ void ScoutManager::gasSteal()
 
     int scoutDistanceToEnemy = MapTools::Instance().getGroundDistance(_workerScout->getPosition(), enemyBaseLocation->getPosition());
     
-    BWAPI::UnitInterface * enemyGeyser = getEnemyGeyser();
+    BWAPI::Unit enemyGeyser = getEnemyGeyser();
     if (!enemyGeyser)
     {
         _gasStealStatus = "No enemy geyser found";
@@ -242,15 +242,15 @@ void ScoutManager::gasSteal()
     }
 }
 
-BWAPI::UnitInterface* ScoutManager::closestEnemyWorker()
+BWAPI::Unit ScoutManager::closestEnemyWorker()
 {
-	BWAPI::UnitInterface* enemyWorker = NULL;
+	BWAPI::Unit enemyWorker = nullptr;
 	double maxDist = 0;
 
 	
-	BWAPI::UnitInterface* geyser = getEnemyGeyser();
+	BWAPI::Unit geyser = getEnemyGeyser();
 	
-	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->enemy()->getUnits())
+	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
 	{
 		if (unit->getType().isWorker() && unit->isConstructing())
 		{
@@ -259,7 +259,7 @@ BWAPI::UnitInterface* ScoutManager::closestEnemyWorker()
 	}
 
 	// for each enemy worker
-	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->enemy()->getUnits())
+	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
 	{
 		if (unit->getType().isWorker())
 		{
@@ -276,12 +276,12 @@ BWAPI::UnitInterface* ScoutManager::closestEnemyWorker()
 	return enemyWorker;
 }
 
-BWAPI::UnitInterface* ScoutManager::getEnemyGeyser()
+BWAPI::Unit ScoutManager::getEnemyGeyser()
 {
-	BWAPI::UnitInterface* geyser = NULL;
+	BWAPI::Unit geyser = nullptr;
 	BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
 
-	for (BWAPI::UnitInterface* unit : enemyBaseLocation->getGeysers())
+	for (auto & unit : enemyBaseLocation->getGeysers())
 	{
 		geyser = unit;
 	}
@@ -291,7 +291,7 @@ BWAPI::UnitInterface* ScoutManager::getEnemyGeyser()
 
 bool ScoutManager::enemyWorkerInRadius()
 {
-	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->enemy()->getUnits())
+	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
 	{
 		if (unit->getType().isWorker() && (unit->getDistance(_workerScout) < 300))
 		{
@@ -305,7 +305,7 @@ bool ScoutManager::enemyWorkerInRadius()
 bool ScoutManager::immediateThreat()
 {
 	BWAPI::Unitset enemyAttackingWorkers;
-	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->enemy()->getUnits())
+	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
 	{
 		if (unit->getType().isWorker() && unit->isAttacking())
 		{
@@ -318,7 +318,7 @@ bool ScoutManager::immediateThreat()
 		return true;
 	}
 
-	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->enemy()->getUnits())
+	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
 	{
 		double dist = unit->getDistance(_workerScout);
 		double range = unit->getType().groundWeapon().maxRange();
@@ -332,7 +332,7 @@ bool ScoutManager::immediateThreat()
 	return false;
 }
 
-int ScoutManager::getClosestVertexIndex(BWAPI::UnitInterface * unit)
+int ScoutManager::getClosestVertexIndex(BWAPI::Unit unit)
 {
     int closestIndex = -1;
     double closestDistance = 10000000;

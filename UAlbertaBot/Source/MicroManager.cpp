@@ -23,7 +23,7 @@ BWAPI::Position MicroManager::calcCenter() const
     }
 
 	BWAPI::Position accum(0,0);
-	for (BWAPI::UnitInterface* unit : _units)
+	for (auto & unit : _units)
 	{
 		accum += unit->getPosition();
 	}
@@ -53,9 +53,9 @@ void MicroManager::execute(const SquadOrder & inputOrder)
 	else if (order.getType() == SquadOrderTypes::Attack) 
 	{
 		MapGrid::Instance().GetUnits(nearbyEnemies, order.getPosition(), order.getRadius(), false, true);
-		for (BWAPI::UnitInterface* unit : _units) 
+		for (auto & unit : _units) 
 		{
-			BWAPI::UnitInterface* u = unit;
+			BWAPI::Unit u = unit;
 			BWAPI::UnitType t = u->getType();
 			MapGrid::Instance().GetUnits(nearbyEnemies, unit->getPosition(), order.getRadius(), false, true);
 		}
@@ -84,7 +84,7 @@ void MicroManager::execute(const SquadOrder & inputOrder)
                  // if this is the an attack squad
                 BWAPI::Unitset workersRemoved;
 
-                for (BWAPI::UnitInterface* enemyUnit : nearbyEnemies) 
+                for (auto & enemyUnit : nearbyEnemies) 
 		        {
                     // if its not a worker add it to the targets
 			        if (!enemyUnit->getType().isWorker())
@@ -120,7 +120,7 @@ const BWAPI::Unitset & MicroManager::getUnits() const
 void MicroManager::regroup(const BWAPI::Position & regroupPosition) const
 {
 	// for each of the units we have
-	for (BWAPI::UnitInterface* unit : _units)
+	for (auto & unit : _units)
 	{
 		// if the unit is outside the regroup area
 		if (unit->getDistance(regroupPosition) > 100)
@@ -135,7 +135,7 @@ void MicroManager::regroup(const BWAPI::Position & regroupPosition) const
 	}
 }
 
-bool MicroManager::unitNearEnemy(BWAPI::UnitInterface* unit)
+bool MicroManager::unitNearEnemy(BWAPI::Unit unit)
 {
 	assert(unit);
 
@@ -162,7 +162,7 @@ bool MicroManager::checkPositionWalkable(BWAPI::Position pos)
 	if (!good) return false;
 	
 	// for each of those units, if it's a building or an attacking enemy unit we don't want to go there
-	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->getUnitsOnTile(x/32, y/32)) 
+	for (auto & unit : BWAPI::Broodwar->getUnitsOnTile(x/32, y/32)) 
 	{
 		if	(unit->getType().isBuilding() || unit->getType().isResourceContainer() || 
 			(unit->getPlayer() != BWAPI::Broodwar->self() && unit->getType().groundWeapon() != BWAPI::WeaponTypes::None)) 
@@ -175,7 +175,7 @@ bool MicroManager::checkPositionWalkable(BWAPI::Position pos)
 	return true;
 }
 
-void MicroManager::trainSubUnits(BWAPI::UnitInterface* unit) const
+void MicroManager::trainSubUnits(BWAPI::Unit unit) const
 {
 	if (unit->getType() == BWAPI::UnitTypes::Protoss_Reaver)
 	{
@@ -187,7 +187,7 @@ void MicroManager::trainSubUnits(BWAPI::UnitInterface* unit) const
 	}
 }
 
-bool MicroManager::unitNearChokepoint(BWAPI::UnitInterface* unit) const
+bool MicroManager::unitNearChokepoint(BWAPI::Unit unit) const
 {
 	for (BWTA::Chokepoint * choke : BWTA::getChokepoints())
 	{
@@ -202,7 +202,7 @@ bool MicroManager::unitNearChokepoint(BWAPI::UnitInterface* unit) const
 
 void MicroManager::drawOrderText() 
 {
-	for (BWAPI::UnitInterface* unit : _units) 
+	for (auto & unit : _units) 
     {
 		if (Config::Debug::DrawUnitTargetInfo) BWAPI::Broodwar->drawTextMap(unit->getPosition().x, unit->getPosition().y, "%s", order.getStatus().c_str());
 	}

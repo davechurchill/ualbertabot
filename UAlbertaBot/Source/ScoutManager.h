@@ -8,7 +8,7 @@ namespace UAlbertaBot
 {
 class ScoutManager 
 {
-	BWAPI::UnitInterface*	        _workerScout;
+	BWAPI::Unit	        _workerScout;
     std::string                     _scoutStatus;
     std::string                     _gasStealStatus;
 	int				                _numWorkerScouts;
@@ -22,10 +22,10 @@ class ScoutManager
 	bool                            enemyWorkerInRadius();
     bool			                immediateThreat();
     void                            gasSteal();
-    int                             getClosestVertexIndex(BWAPI::UnitInterface * unit);
+    int                             getClosestVertexIndex(BWAPI::Unit unit);
     BWAPI::Position                 getFleePosition();
-	BWAPI::UnitInterface*	        getEnemyGeyser();
-	BWAPI::UnitInterface*	        closestEnemyWorker();
+	BWAPI::Unit	        getEnemyGeyser();
+	BWAPI::Unit	        closestEnemyWorker();
     void                            followPerimeter();
 	void                            moveScouts();
     void                            drawScoutInformation(int x, int y);
@@ -39,14 +39,14 @@ public:
 
 	void update();
 
-    void setWorkerScout(BWAPI::UnitInterface * unit);
+    void setWorkerScout(BWAPI::Unit unit);
 
 	void onSendText(std::string text);
-	void onUnitShow(BWAPI::UnitInterface* unit);
-	void onUnitHide(BWAPI::UnitInterface* unit);
-	void onUnitCreate(BWAPI::UnitInterface* unit);
-	void onUnitRenegade(BWAPI::UnitInterface* unit);
-	void onUnitDestroy(BWAPI::UnitInterface* unit);
-	void onUnitMorph(BWAPI::UnitInterface* unit);
+	void onUnitShow(BWAPI::Unit unit);
+	void onUnitHide(BWAPI::Unit unit);
+	void onUnitCreate(BWAPI::Unit unit);
+	void onUnitRenegade(BWAPI::Unit unit);
+	void onUnitDestroy(BWAPI::Unit unit);
+	void onUnitMorph(BWAPI::Unit unit);
 };
 }

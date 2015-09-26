@@ -19,10 +19,10 @@ class UnitToAssign
 {
 public:
 
-	BWAPI::UnitInterface* unit;
+	BWAPI::Unit unit;
 	bool isAssigned;
 
-	UnitToAssign(BWAPI::UnitInterface* u)
+	UnitToAssign(BWAPI::Unit u)
 	{
 		unit = u;
 		isAssigned = false;
@@ -40,8 +40,8 @@ class GameCommander
 
     bool                    _initialScoutSet;
 
-    void                    assignUnit(BWAPI::UnitInterface * unit, BWAPI::Unitset & set);
-	bool                    isAssigned(BWAPI::UnitInterface* unit) const;
+    void                    assignUnit(BWAPI::Unit unit, BWAPI::Unitset & set);
+	bool                    isAssigned(BWAPI::Unit unit) const;
 
 public:
 
@@ -57,17 +57,17 @@ public:
 
 	void drawDebugInterface();
 
-	BWAPI::UnitInterface* getFirstSupplyProvider();
-	BWAPI::UnitInterface* getClosestUnitToTarget(BWAPI::UnitType type, BWAPI::Position target);
-	BWAPI::UnitInterface* getClosestWorkerToTarget(BWAPI::Position target);
+	BWAPI::Unit getFirstSupplyProvider();
+	BWAPI::Unit getClosestUnitToTarget(BWAPI::UnitType type, BWAPI::Position target);
+	BWAPI::Unit getClosestWorkerToTarget(BWAPI::Position target);
 
-	void onUnitShow(BWAPI::UnitInterface* unit);
-	void onUnitHide(BWAPI::UnitInterface* unit);
-	void onUnitCreate(BWAPI::UnitInterface* unit);
-	void onUnitComplete(BWAPI::UnitInterface* unit);
-	void onUnitRenegade(BWAPI::UnitInterface* unit);
-	void onUnitDestroy(BWAPI::UnitInterface* unit);
-	void onUnitMorph(BWAPI::UnitInterface* unit);
+	void onUnitShow(BWAPI::Unit unit);
+	void onUnitHide(BWAPI::Unit unit);
+	void onUnitCreate(BWAPI::Unit unit);
+	void onUnitComplete(BWAPI::Unit unit);
+	void onUnitRenegade(BWAPI::Unit unit);
+	void onUnitDestroy(BWAPI::Unit unit);
+	void onUnitMorph(BWAPI::Unit unit);
 };
 
 }

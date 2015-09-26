@@ -151,7 +151,7 @@ void ProductionManager::update()
 }
 
 // on unit destroy
-void ProductionManager::onUnitDestroy(BWAPI::UnitInterface* unit)
+void ProductionManager::onUnitDestroy(BWAPI::Unit unit)
 {
 	// we don't care if it's not our unit
 	if (!unit || unit->getPlayer() != BWAPI::Broodwar->self())
@@ -191,7 +191,7 @@ void ProductionManager::manageBuildOrderQueue()
 	while (!queue.isEmpty()) 
 	{
 		// this is the unit which can produce the currentItem
-        BWAPI::UnitInterface* producer = getProducer(currentItem.metaType);
+        BWAPI::Unit producer = getProducer(currentItem.metaType);
 
 		// check to see if we can make it right now
 		bool canMake = canMakeNow(producer, currentItem.metaType);
@@ -248,16 +248,16 @@ void ProductionManager::manageBuildOrderQueue()
 	}
 }
 
-BWAPI::UnitInterface* ProductionManager::getProducer(MetaType t, BWAPI::Position closestTo)
+BWAPI::Unit ProductionManager::getProducer(MetaType t, BWAPI::Position closestTo)
 {
     // get the type of unit that builds this
     BWAPI::UnitType producerType = t.whatBuilds();
 
     // make a set of all candidate producers
     BWAPI::Unitset candidateProducers;
-    for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits())
+    for (auto & unit : BWAPI::Broodwar->self()->getUnits())
     {
-        UAB_ASSERT(unit != NULL, "Unit was null");
+        UAB_ASSERT(unit != nullptr, "Unit was null");
 
         // reasons a unit can not train the desired type
         if (unit->getType() != producerType)                    { continue; }
@@ -270,7 +270,7 @@ BWAPI::UnitInterface* ProductionManager::getProducer(MetaType t, BWAPI::Position
         if (t.getUnitType().isAddon())
         {
             // if the unit already has an addon, it can't make one
-            if (unit->getAddon() != NULL)
+            if (unit->getAddon() != nullptr)
             {
                 continue;
             }
@@ -338,11 +338,11 @@ BWAPI::UnitInterface* ProductionManager::getProducer(MetaType t, BWAPI::Position
     return getClosestUnitToPosition(candidateProducers, closestTo);
 }
 
-BWAPI::UnitInterface* ProductionManager::getClosestUnitToPosition(const BWAPI::Unitset & units, BWAPI::Position closestTo)
+BWAPI::Unit ProductionManager::getClosestUnitToPosition(const BWAPI::Unitset & units, BWAPI::Position closestTo)
 {
     if (units.size() == 0)
     {
-        return NULL;
+        return nullptr;
     }
 
     // if we don't care where the unit is return the first one we have
@@ -351,12 +351,12 @@ BWAPI::UnitInterface* ProductionManager::getClosestUnitToPosition(const BWAPI::U
         return *(units.begin());
     }
 
-    BWAPI::UnitInterface* closestUnit = NULL;
+    BWAPI::Unit closestUnit = nullptr;
     double minDist(1000000);
 
-	for (BWAPI::UnitInterface* unit : units) 
+	for (auto & unit : units) 
     {
-        UAB_ASSERT(unit != NULL, "Unit was null");
+        UAB_ASSERT(unit != nullptr, "Unit was null");
 
 		double distance = unit->getDistance(closestTo);
 		if (!closestUnit || distance < minDist) 
@@ -370,7 +370,7 @@ BWAPI::UnitInterface* ProductionManager::getClosestUnitToPosition(const BWAPI::U
 }
 
 // this function will check to see if all preconditions are met and then create a unit
-void ProductionManager::create(BWAPI::UnitInterface* producer, BuildOrderItem & item) 
+void ProductionManager::create(BWAPI::Unit producer, BuildOrderItem & item) 
 {
     if (!producer)
     {
@@ -424,9 +424,9 @@ void ProductionManager::create(BWAPI::UnitInterface* producer, BuildOrderItem & 
     }
 }
 
-bool ProductionManager::canMakeNow(BWAPI::UnitInterface* producer, MetaType t)
+bool ProductionManager::canMakeNow(BWAPI::Unit producer, MetaType t)
 {
-    //UAB_ASSERT(producer != NULL, "Producer was null");
+    //UAB_ASSERT(producer != nullptr, "Producer was null");
 
 	bool canMake = meetsReservedResources(t);
 	if (canMake)
@@ -464,7 +464,7 @@ bool ProductionManager::detectBuildOrderDeadlock()
 	bool supplyInProgress =		BuildingManager::Instance().isBeingBuilt(BWAPI::Broodwar->self()->getRace().getCenter()) || 
 								BuildingManager::Instance().isBeingBuilt(BWAPI::Broodwar->self()->getRace().getSupplyProvider());
 
-    for (BWAPI::UnitInterface * unit : BWAPI::Broodwar->self()->getUnits())
+    for (auto & unit : BWAPI::Broodwar->self()->getUnits())
     {
         if (unit->getType() == BWAPI::UnitTypes::Zerg_Egg)
         {
@@ -532,7 +532,7 @@ void ProductionManager::predictWorkerMovement(const Building & b)
 	int gasRequired						= std::max(0, b.type.gasPrice() - getFreeGas());
 
 	// get a candidate worker to move to this location
-	BWAPI::UnitInterface* moveWorker			= WorkerManager::Instance().getMoveWorker(walkToPosition);
+	BWAPI::Unit moveWorker			= WorkerManager::Instance().getMoveWorker(walkToPosition);
 
 	// Conditions under which to move the worker: 
 	//		- there's a valid worker to move
@@ -555,8 +555,8 @@ void ProductionManager::performCommand(BWAPI::UnitCommandType t)
 	// if it is a cancel construction, it is probably the extractor trick
 	if (t == BWAPI::UnitCommandTypes::Cancel_Construction)
 	{
-		BWAPI::UnitInterface* extractor = NULL;
-		for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits())
+		BWAPI::Unit extractor = nullptr;
+		for (auto & unit : BWAPI::Broodwar->self()->getUnits())
 		{
 			if (unit->getType() == BWAPI::UnitTypes::Zerg_Extractor)
 			{
@@ -590,22 +590,22 @@ bool ProductionManager::meetsReservedResources(MetaType type)
 
 
 // selects a unit of a given type
-BWAPI::UnitInterface* ProductionManager::selectUnitOfType(BWAPI::UnitType type, BWAPI::Position closestTo) 
+BWAPI::Unit ProductionManager::selectUnitOfType(BWAPI::UnitType type, BWAPI::Position closestTo) 
 {
-	// if we have none of the unit type, return NULL right away
+	// if we have none of the unit type, return nullptr right away
 	if (BWAPI::Broodwar->self()->completedUnitCount(type) == 0) 
 	{
-		return NULL;
+		return nullptr;
 	}
 
-	BWAPI::UnitInterface* unit = NULL;
+	BWAPI::Unit unit = nullptr;
 
 	// if we are concerned about the position of the unit, that takes priority
     if (closestTo != BWAPI::Positions::None) 
     {
 		double minDist(1000000);
 
-		for (BWAPI::UnitInterface* u : BWAPI::Broodwar->self()->getUnits()) 
+		for (auto & u : BWAPI::Broodwar->self()->getUnits()) 
         {
 			if (u->getType() == type) 
             {
@@ -622,9 +622,9 @@ BWAPI::UnitInterface* ProductionManager::selectUnitOfType(BWAPI::UnitType type, 
 	} 
     else if (type.isBuilding()) 
     {
-		for (BWAPI::UnitInterface* u : BWAPI::Broodwar->self()->getUnits()) 
+		for (auto & u : BWAPI::Broodwar->self()->getUnits()) 
         {
-            UAB_ASSERT(u != NULL, "Unit was null");
+            UAB_ASSERT(u != nullptr, "Unit was null");
 
 			if (u->getType() == type && u->isCompleted() && !u->isTraining() && !u->isLifted() &&u->isPowered()) {
 
@@ -635,9 +635,9 @@ BWAPI::UnitInterface* ProductionManager::selectUnitOfType(BWAPI::UnitType type, 
 	} 
     else 
     {
-		for (BWAPI::UnitInterface* u : BWAPI::Broodwar->self()->getUnits()) 
+		for (auto & u : BWAPI::Broodwar->self()->getUnits()) 
 		{
-            UAB_ASSERT(u != NULL, "Unit was null");
+            UAB_ASSERT(u != nullptr, "Unit was null");
 
 			if (u->getType() == type && u->isCompleted() && u->getHitPoints() > 0 && !u->isLifted() &&u->isPowered()) 
 			{
@@ -647,7 +647,7 @@ BWAPI::UnitInterface* ProductionManager::selectUnitOfType(BWAPI::UnitType type, 
 	}
 
 	// return what we've found so far
-	return NULL;
+	return nullptr;
 }
 
 void ProductionManager::populateTypeCharMap()
@@ -676,10 +676,10 @@ void ProductionManager::drawProductionInformation(int x, int y)
     }
 
 	// fill prod with each unit which is under construction
-	std::vector<BWAPI::UnitInterface *> prod;
-	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits())
+	std::vector<BWAPI::Unit> prod;
+	for (auto & unit : BWAPI::Broodwar->self()->getUnits())
 	{
-        UAB_ASSERT(unit != NULL, "Unit was null");
+        UAB_ASSERT(unit != nullptr, "Unit was null");
 
 		if (unit->isBeingConstructed())
 		{
@@ -700,7 +700,7 @@ void ProductionManager::drawProductionInformation(int x, int y)
 	int yy = y;
 
 	// for each unit in the queue
-	for (BWAPI::UnitInterface * unit : prod) 
+	for (auto & unit : prod) 
     {
 		std::string prefix = "\x07";
 

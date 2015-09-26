@@ -11,13 +11,13 @@ namespace UAlbertaBot
 {
 struct AirThreat
 {
-	BWAPI::UnitInterface*	unit;
+	BWAPI::Unit	unit;
 	double			weight;
 };
 
 struct GroundThreat
 {
-	BWAPI::UnitInterface*	unit;
+	BWAPI::Unit	unit;
 	double			weight;
 };
 
@@ -32,9 +32,9 @@ protected:
 	virtual void        executeMicro(const BWAPI::Unitset & targets) = 0;
 	bool                checkPositionWalkable(BWAPI::Position pos);
 	void                drawOrderText();
-	bool                unitNearEnemy(BWAPI::UnitInterface* unit);
-	bool                unitNearChokepoint(BWAPI::UnitInterface* unit) const;
-	void                trainSubUnits(BWAPI::UnitInterface* unit) const;
+	bool                unitNearEnemy(BWAPI::Unit unit);
+	bool                unitNearChokepoint(BWAPI::Unit unit) const;
+	void                trainSubUnits(BWAPI::Unit unit) const;
     
 
 public:

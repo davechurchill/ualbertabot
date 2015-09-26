@@ -16,9 +16,9 @@ public:
 	~MeleeManager() {}
 	void executeMicro(const BWAPI::Unitset & targets);
 
-	BWAPI::UnitInterface* chooseTarget(BWAPI::UnitInterface* meleeUnit, const BWAPI::Unitset & targets, std::map<BWAPI::UnitInterface*, int> & numTargeting);
-	BWAPI::UnitInterface* closestMeleeUnit(BWAPI::UnitInterface* target, const BWAPI::Unitset & meleeUnitToAssign);
-	int getAttackPriority(BWAPI::UnitInterface* unit);
-	BWAPI::UnitInterface* getTarget(BWAPI::UnitInterface* meleeUnit, const BWAPI::Unitset & targets);
+	BWAPI::Unit chooseTarget(BWAPI::Unit meleeUnit, const BWAPI::Unitset & targets, std::map<BWAPI::Unit, int> & numTargeting);
+	BWAPI::Unit closestMeleeUnit(BWAPI::Unit target, const BWAPI::Unitset & meleeUnitToAssign);
+	int getAttackPriority(BWAPI::Unit unit);
+	BWAPI::Unit getTarget(BWAPI::Unit meleeUnit, const BWAPI::Unitset & targets);
 };
 }

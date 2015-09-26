@@ -31,7 +31,7 @@ public:
 	SparCraft::ScoreType simulateCombat();
 
 	const SparCraft::Unit			getSparCraftUnit(const UnitInfo & ui) const;
-    const SparCraft::Unit			getSparCraftUnit(BWAPI::UnitInterface* unit) const;
+    const SparCraft::Unit			getSparCraftUnit(BWAPI::Unit unit) const;
 	const SparCraft::GameState &	getSparCraftState() const;
 
 	const SparCraft::IDType getSparCraftPlayerID(BWAPI::PlayerInterface * player) const;

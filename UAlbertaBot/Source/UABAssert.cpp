@@ -24,7 +24,7 @@ namespace Assert
     void ReportFailure(const char * condition, const char * file, int line, const char * msg, ...)
     {
         char messageBuffer[1024] = "";
-        if (msg != NULL)
+        if (msg != nullptr)
         {
             va_list args;
             va_start(args, msg);

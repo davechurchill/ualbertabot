@@ -46,10 +46,10 @@ std::string FileUtils::ReadFile(const std::string & filename)
     std::stringstream ss;
 
     FILE *file = fopen ( filename.c_str(), "r" );
-    if ( file != NULL )
+    if ( file != nullptr )
     {
         char line [ 4096 ]; /* or other suitable maximum line size */
-        while ( fgets ( line, sizeof line, file ) != NULL ) /* read a line */
+        while ( fgets ( line, sizeof line, file ) != nullptr ) /* read a line */
         {
             ss << line;
         }

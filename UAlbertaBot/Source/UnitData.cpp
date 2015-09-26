@@ -18,7 +18,7 @@ UnitData::UnitData()
 	numCompletedUnits= std::vector<int>(maxTypeID + 1, 0);
 }
 
-void UnitData::updateUnit(BWAPI::UnitInterface* unit)
+void UnitData::updateUnit(BWAPI::Unit unit)
 {
 	if (!unit) { return; }
 	
@@ -51,7 +51,7 @@ void UnitData::updateUnit(BWAPI::UnitInterface* unit)
 	}
 }
 
-void UnitData::removeUnit(BWAPI::UnitInterface* unit)
+void UnitData::removeUnit(BWAPI::Unit unit)
 {
 	if (!unit) { return; }
 

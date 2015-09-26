@@ -14,7 +14,7 @@ void Micro::drawAPM(int x, int y)
     BWAPI::Broodwar->drawTextScreen(x, y, "%d %d", bwapiAPM, myAPM);
 }
 
-void Micro::SmartAttackUnit(BWAPI::UnitInterface* attacker, BWAPI::UnitInterface* target)
+void Micro::SmartAttackUnit(BWAPI::Unit attacker, BWAPI::Unit target)
 {
     UAB_ASSERT(attacker, "SmartAttackUnit: Attacker not valid");
     UAB_ASSERT(target, "SmartAttackUnit: Target not valid");
@@ -51,7 +51,7 @@ void Micro::SmartAttackUnit(BWAPI::UnitInterface* attacker, BWAPI::UnitInterface
     }
 }
 
-void Micro::SmartAttackMove(BWAPI::UnitInterface* attacker, const BWAPI::Position & targetPosition)
+void Micro::SmartAttackMove(BWAPI::Unit attacker, const BWAPI::Position & targetPosition)
 {
     //UAB_ASSERT(attacker, "SmartAttackMove: Attacker not valid");
     //UAB_ASSERT(targetPosition.isValid(), "SmartAttackMove: targetPosition not valid");
@@ -88,7 +88,7 @@ void Micro::SmartAttackMove(BWAPI::UnitInterface* attacker, const BWAPI::Positio
     }
 }
 
-void Micro::SmartMove(BWAPI::UnitInterface* attacker, const BWAPI::Position & targetPosition)
+void Micro::SmartMove(BWAPI::Unit attacker, const BWAPI::Position & targetPosition)
 {
     //UAB_ASSERT(attacker, "SmartAttackMove: Attacker not valid");
     //UAB_ASSERT(targetPosition.isValid(), "SmartAttackMove: targetPosition not valid");
@@ -125,7 +125,7 @@ void Micro::SmartMove(BWAPI::UnitInterface* attacker, const BWAPI::Position & ta
     }
 }
 
-void Micro::SmartRightClick(BWAPI::UnitInterface * unit, BWAPI::UnitInterface * target)
+void Micro::SmartRightClick(BWAPI::Unit unit, BWAPI::Unit target)
 {
     UAB_ASSERT(unit, "SmartRightClick: Unit not valid");
     UAB_ASSERT(target, "SmartRightClick: Target not valid");
@@ -162,7 +162,7 @@ void Micro::SmartRightClick(BWAPI::UnitInterface * unit, BWAPI::UnitInterface * 
     }
 }
 
-void Micro::SmartRepair(BWAPI::UnitInterface * unit, BWAPI::UnitInterface * target)
+void Micro::SmartRepair(BWAPI::Unit unit, BWAPI::Unit target)
 {
     UAB_ASSERT(unit, "SmartRightClick: Unit not valid");
     UAB_ASSERT(target, "SmartRightClick: Target not valid");
@@ -200,7 +200,7 @@ void Micro::SmartRepair(BWAPI::UnitInterface * unit, BWAPI::UnitInterface * targ
 }
 
 
-void Micro::SmartKiteTarget(BWAPI::UnitInterface* rangedUnit, BWAPI::UnitInterface* target)
+void Micro::SmartKiteTarget(BWAPI::Unit rangedUnit, BWAPI::Unit target)
 {
 	double range(rangedUnit->getType().groundWeapon().maxRange());
 	if (rangedUnit->getType() == BWAPI::UnitTypes::Protoss_Dragoon && BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Singularity_Charge))
@@ -254,7 +254,7 @@ void Micro::SmartKiteTarget(BWAPI::UnitInterface* rangedUnit, BWAPI::UnitInterfa
 }
 
 
-void Micro::MutaDanceTarget(BWAPI::UnitInterface* muta, BWAPI::UnitInterface* target)
+void Micro::MutaDanceTarget(BWAPI::Unit muta, BWAPI::Unit target)
 {
     const int cooldown                  = muta->getType().groundWeapon().damageCooldown();
     const int latency                   = BWAPI::Broodwar->getLatency();
@@ -288,11 +288,11 @@ void Micro::MutaDanceTarget(BWAPI::UnitInterface* muta, BWAPI::UnitInterface* ta
 	}
 }
 
-BWAPI::Position Micro::GetKiteVector(BWAPI::UnitInterface * unit, BWAPI::UnitInterface * target)
+BWAPI::Position Micro::GetKiteVector(BWAPI::Unit unit, BWAPI::Unit target)
 {
     BWAPI::Position fleeVec(target->getPosition() - unit->getPosition());
     double fleeAngle = atan2(fleeVec.y, fleeVec.x);
-    fleeVec = BWAPI::Position(64 * cos(fleeAngle), 64 * sin(fleeAngle));
+    fleeVec = BWAPI::Position(static_cast<int>(64 * cos(fleeAngle)), static_cast<int>(64 * sin(fleeAngle)));
     return fleeVec;
 }
 

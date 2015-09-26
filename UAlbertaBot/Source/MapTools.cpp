@@ -204,8 +204,8 @@ BWAPI::TilePosition MapTools::getTilePosition(int index)
 BWAPI::Unitset MapTools::getUnitsOfTypeNear(BWAPI::Position & nearTo, int groundDistance, BWAPI::UnitType type)
 {
     BWAPI::Unitset unitsNear;
-
-    for (BWAPI::UnitInterface * unit : BWAPI::Broodwar->getAllUnits())
+    
+    for (auto & unit : BWAPI::Broodwar->getAllUnits())
     {
         if ((unit->getType() == type) && (getGroundDistance(unit->getPosition(), nearTo) < groundDistance ))
         {
@@ -223,7 +223,7 @@ BWAPI::TilePosition MapTools::getNextExpansion()
 
 BWAPI::TilePosition MapTools::getNextExpansion(BWAPI::Player player)
 {
-	BWTA::BaseLocation * closestBase = NULL;
+	BWTA::BaseLocation * closestBase = nullptr;
 	double minDistance = 100000;
 
 	BWAPI::TilePosition homeTile = player->getStartLocation();
@@ -261,7 +261,7 @@ BWAPI::TilePosition MapTools::getNextExpansion(BWAPI::Player player)
 			bool buildingInTheWay = false;
 
 			// for each unit in the rectangle where we want to build it
-			for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->getUnitsInRectangle(x1, y1, x2, y2))
+			for (auto & unit : BWAPI::Broodwar->getUnitsInRectangle(x1, y1, x2, y2))
 			{
 				// if the unit is a building, we can't build here
 				if (unit->getType().isBuilding())

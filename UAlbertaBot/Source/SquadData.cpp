@@ -22,7 +22,7 @@ void SquadData::clearSquadData()
 
         const BWAPI::Unitset & units = squad.getUnits();
 
-        for (BWAPI::UnitInterface * unit : units)
+        for (auto & unit : units)
         {
             if (unit->getType().isWorker())
             {
@@ -44,7 +44,7 @@ void SquadData::removeSquad(const std::string & squadName)
         return;
     }
 
-    for (BWAPI::UnitInterface * unit : squadPtr->second.getUnits())
+    for (auto & unit : squadPtr->second.getUnits())
     {
         if (unit->getType().isWorker())
         {
@@ -106,7 +106,7 @@ void SquadData::drawSquadInformation(int x, int y)
 		BWAPI::Broodwar->drawCircleMap(order.getPosition(), 10, BWAPI::Colors::Green, true);
         BWAPI::Broodwar->drawTextMap(order.getPosition() + BWAPI::Position(0, 12), "%s", squad.getName().c_str());
 
-        for (const BWAPI::UnitInterface * unit : units)
+        for (const BWAPI::Unit unit : units)
         {
             BWAPI::Broodwar->drawTextMap(unit->getPosition() + BWAPI::Position(0, 10), "%s", squad.getName().c_str());
         }
@@ -119,7 +119,7 @@ void SquadData::verifySquadUniqueMembership()
 
     for (const auto & kv : _squads)
     {
-        for (BWAPI::UnitInterface * unit : kv.second.getUnits())
+        for (auto & unit : kv.second.getUnits())
         {
             if (assigned.contains(unit))
             {
@@ -131,12 +131,12 @@ void SquadData::verifySquadUniqueMembership()
     }
 }
 
-bool SquadData::unitIsInSquad(BWAPI::UnitInterface * unit) const
+bool SquadData::unitIsInSquad(BWAPI::Unit unit) const
 {
-    return getUnitSquad(unit) != NULL;
+    return getUnitSquad(unit) != nullptr;
 }
 
-const Squad * SquadData::getUnitSquad(BWAPI::UnitInterface * unit) const
+const Squad * SquadData::getUnitSquad(BWAPI::Unit unit) const
 {
     for (const auto & kv : _squads)
     {
@@ -146,10 +146,10 @@ const Squad * SquadData::getUnitSquad(BWAPI::UnitInterface * unit) const
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
-Squad * SquadData::getUnitSquad(BWAPI::UnitInterface * unit)
+Squad * SquadData::getUnitSquad(BWAPI::Unit unit)
 {
     for (auto & kv : _squads)
     {
@@ -159,10 +159,10 @@ Squad * SquadData::getUnitSquad(BWAPI::UnitInterface * unit)
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
-void SquadData::assignUnitToSquad(BWAPI::UnitInterface * unit, Squad & squad)
+void SquadData::assignUnitToSquad(BWAPI::Unit unit, Squad & squad)
 {
     UAB_ASSERT_WARNING(canAssignUnitToSquad(unit, squad), "We shouldn't be re-assigning this unit!");
 
@@ -176,7 +176,7 @@ void SquadData::assignUnitToSquad(BWAPI::UnitInterface * unit, Squad & squad)
     squad.addUnit(unit);
 }
 
-bool SquadData::canAssignUnitToSquad(BWAPI::UnitInterface * unit, const Squad & squad) const
+bool SquadData::canAssignUnitToSquad(BWAPI::Unit unit, const Squad & squad) const
 {
     const Squad * unitSquad = getUnitSquad(unit);
 

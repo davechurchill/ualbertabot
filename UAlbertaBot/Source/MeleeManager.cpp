@@ -13,7 +13,7 @@ void MeleeManager::executeMicro(const BWAPI::Unitset & targets)
 
 	// figure out targets
 	BWAPI::Unitset meleeUnitTargets;
-	for (BWAPI::UnitInterface * target : targets) 
+	for (auto & target : targets) 
 	{
 		// conditions for targeting
 		if (!(target->getType().isFlyer()) && 
@@ -27,7 +27,7 @@ void MeleeManager::executeMicro(const BWAPI::Unitset & targets)
 	}
 
 	// for each meleeUnit
-	for (BWAPI::UnitInterface* meleeUnit : meleeUnits)
+	for (auto & meleeUnit : meleeUnits)
 	{
 		// if the order is to attack or defend
 		if (order.getType() == SquadOrderTypes::Attack || order.getType() == SquadOrderTypes::Defend) 
@@ -36,7 +36,7 @@ void MeleeManager::executeMicro(const BWAPI::Unitset & targets)
 			if (!meleeUnitTargets.empty())
 			{
 				// find the best target for this meleeUnit
-				BWAPI::UnitInterface* target = getTarget(meleeUnit, meleeUnitTargets);
+				BWAPI::Unit target = getTarget(meleeUnit, meleeUnitTargets);
 
 				// attack it
 				Micro::SmartAttackUnit(meleeUnit, target);
@@ -62,14 +62,14 @@ void MeleeManager::executeMicro(const BWAPI::Unitset & targets)
 }
 
 // get a target for the meleeUnit to attack
-BWAPI::UnitInterface* MeleeManager::getTarget(BWAPI::UnitInterface* meleeUnit, const BWAPI::Unitset & targets)
+BWAPI::Unit MeleeManager::getTarget(BWAPI::Unit meleeUnit, const BWAPI::Unitset & targets)
 {
 	int highPriority(0);
 	int closestDist(100000);
-	BWAPI::UnitInterface* closestTarget = NULL;
+	BWAPI::Unit closestTarget = nullptr;
 
 	// for each target possiblity
-	for (BWAPI::UnitInterface* unit : targets)
+	for (auto & unit : targets)
 	{
 		int priority = getAttackPriority(unit);
 		if (meleeUnit->getType() == BWAPI::UnitTypes::Protoss_Dark_Templar && unit->getType().isWorker())
@@ -94,7 +94,7 @@ BWAPI::UnitInterface* MeleeManager::getTarget(BWAPI::UnitInterface* meleeUnit, c
 }
 
 	// get the attack priority of a type in relation to a zergling
-int MeleeManager::getAttackPriority(BWAPI::UnitInterface* unit) 
+int MeleeManager::getAttackPriority(BWAPI::Unit unit) 
 {
 	BWAPI::UnitType type = unit->getType();
 
@@ -148,12 +148,12 @@ int MeleeManager::getAttackPriority(BWAPI::UnitInterface* unit)
 	}
 }
 
-BWAPI::UnitInterface* MeleeManager::closestMeleeUnit(BWAPI::UnitInterface* target, const BWAPI::Unitset & meleeUnitsToAssign)
+BWAPI::Unit MeleeManager::closestMeleeUnit(BWAPI::Unit target, const BWAPI::Unitset & meleeUnitsToAssign)
 {
 	double minDistance = 0;
-	BWAPI::UnitInterface* closest = NULL;
+	BWAPI::Unit closest = nullptr;
 
-	for (BWAPI::UnitInterface* meleeUnit : meleeUnitsToAssign)
+	for (auto & meleeUnit : meleeUnitsToAssign)
 	{
 		double distance = meleeUnit->getDistance(target);
 		if (!closest || distance < minDistance)

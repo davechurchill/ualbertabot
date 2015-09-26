@@ -58,7 +58,7 @@ void BuildingManager::validateWorkersAndBuildings()
 	{
 		Building & b = buildingData.getNextBuilding(ConstructionData::UnderConstruction);
 
-		if (b.buildingUnit == NULL || !b.buildingUnit->getType().isBuilding() || b.buildingUnit->getHitPoints() <= 0)
+		if (b.buildingUnit == nullptr || !b.buildingUnit->getType().isBuilding() || b.buildingUnit->getHitPoints() <= 0)
 		{
 			buildingData.removeCurrentBuilding(ConstructionData::UnderConstruction);
 			break;
@@ -84,7 +84,7 @@ void BuildingManager::assignWorkersToUnassignedBuildings()
 		}
 
         // grab a worker unit from WorkerManager which is closest to this final position
-		BWAPI::UnitInterface* workerToAssign = WorkerManager::Instance().getBuilder(b);
+		BWAPI::Unit workerToAssign = WorkerManager::Instance().getBuilder(b);
         
 		// if the worker exists
 		if (workerToAssign) 
@@ -132,7 +132,7 @@ BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
         UAB_ASSERT(enemyBaseLocation, "Should have enemy base location before attempting gas steal");
         UAB_ASSERT(enemyBaseLocation->getGeysers().size() > 0, "Should have spotted an enemy geyser");
 
-	    for (BWAPI::UnitInterface* unit : enemyBaseLocation->getGeysers())
+	    for (auto & unit : enemyBaseLocation->getGeysers())
 	    {
             BWAPI::TilePosition tp(unit->getInitialTilePosition()); 
 		    return tp;
@@ -198,7 +198,7 @@ void BuildingManager::constructAssignedBuildings()
 				BuildingPlacer::Instance().freeTiles(b.finalPosition, b.type.tileWidth(), b.type.tileHeight());
 
 				// nullify its current builder unit
-				b.builderUnit = NULL;
+				b.builderUnit = nullptr;
 
 				// reset the build command given flag
 				b.buildCommandGiven = false;
@@ -225,7 +225,7 @@ void BuildingManager::constructAssignedBuildings()
 void BuildingManager::checkForStartedConstruction() 
 {
 	// for each building unit which is being constructed
-	for (BWAPI::UnitInterface* buildingStarted : BWAPI::Broodwar->self()->getUnits())
+	for (auto & buildingStarted : BWAPI::Broodwar->self()->getUnits())
     {
 		// filter out units which aren't buildings under construction
 		if (!(buildingStarted->getType().isBuilding() && buildingStarted->isBeingConstructed()))
@@ -250,10 +250,10 @@ void BuildingManager::checkForStartedConstruction()
 				b.underConstruction = true;
 				b.buildingUnit = buildingStarted;
 
-				// if we are zerg, the buildingUnit now becomes NULL since it's destroyed
+				// if we are zerg, the buildingUnit now becomes nullptr since it's destroyed
 				if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Zerg) 
                 {
-					b.builderUnit = NULL;
+					b.builderUnit = nullptr;
 				// if we are protoss, give the worker back to worker manager
 				} 
                 else if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Protoss) 
@@ -269,7 +269,7 @@ void BuildingManager::checkForStartedConstruction()
                         WorkerManager::Instance().finishedWithWorker(b.builderUnit);
                     }
 					
-					b.builderUnit = NULL;
+					b.builderUnit = nullptr;
 				}
 
 				// put it in the under construction vector
@@ -384,7 +384,7 @@ bool BuildingManager::isBuildingPositionExplored(const Building & b) const
 
 char BuildingManager::getBuildingWorkerCode(const Building & b) const
 {
-	if (b.builderUnit == NULL)	return 'X';
+	if (b.builderUnit == nullptr)	return 'X';
 	else						return 'W';
 }
 
@@ -403,7 +403,7 @@ void BuildingManager::drawBuildingInformation(int x, int y)
         return;
     }
 
-	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits())
+	for (auto & unit : BWAPI::Broodwar->self()->getUnits())
 	{
 		BWAPI::Broodwar->drawTextMap(unit->getPosition().x, unit->getPosition().y+5, "\x07%d", unit->getID()); 
 	}
@@ -456,12 +456,12 @@ BuildingManager & BuildingManager::Instance()
 	return instance;
 }
 
-BWAPI::UnitInterface* BuildingManager::getAddonProducer(MetaType t)
+BWAPI::Unit BuildingManager::getAddonProducer(MetaType t)
 {
     // get the type of unit that builds this
     BWAPI::UnitType producerType = t.whatBuilds();
 
-    for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits())
+    for (auto & unit : BWAPI::Broodwar->self()->getUnits())
     {
         // reasons a unit can not train the desired type
         if (unit->getType() != producerType)                    { continue; }
@@ -474,7 +474,7 @@ BWAPI::UnitInterface* BuildingManager::getAddonProducer(MetaType t)
         if (t.getUnitType().isAddon())
         {
             // if the unit already has an addon, it can't make one
-            if (unit->getAddon() != NULL)
+            if (unit->getAddon() != nullptr)
             {
                 continue;
             }
@@ -522,7 +522,7 @@ BWAPI::UnitInterface* BuildingManager::getAddonProducer(MetaType t)
         return unit;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 std::vector<BWAPI::UnitType> BuildingManager::buildingsQueued()

@@ -57,7 +57,7 @@ public:
             void                    addOpeningBuildOrder(const std::string & name, BuildOrder & buildOrder);
 	
 	const	bool				    regroup(int numInRadius);
-	const	bool				    doAttack(const std::set<BWAPI::UnitInterface*> & freeUnits);
+	const	bool				    doAttack(const std::set<BWAPI::Unit> & freeUnits);
 	const	int				        defendWithWorkers();
 	const	bool				    rushDetected();
 

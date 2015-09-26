@@ -54,9 +54,7 @@
         "DrawMouseCursorInfo"       : false,
         "DrawBuildingInfo"          : false,
         "DrawReservedBuildingTiles" : false,
-        "DrawBOSSStateInfo"         : false,
-        
-        "AllDebugOff"               : false
+        "DrawBOSSStateInfo"         : false
     },
     
     "Modules" :

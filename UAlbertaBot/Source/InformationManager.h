@@ -29,14 +29,14 @@ class InformationManager {
 
 	int									getIndex(BWAPI::PlayerInterface * player);
 
-	void								updateUnit(BWAPI::UnitInterface* unit);
+	void								updateUnit(BWAPI::Unit unit);
 	void								initializeRegionInformation();
 	void								initializeBaseInfoVector();
 	void								updateUnitInfo();
 	void								updateBaseInfo();
 	void								updateBaseLocationInfo();
 	void								updateOccupiedRegions(BWTA::Region * region, BWAPI::PlayerInterface * player);
-	bool								isValidUnit(BWAPI::UnitInterface* unit);
+	bool								isValidUnit(BWAPI::Unit unit);
 
 public:
 
@@ -47,13 +47,13 @@ public:
 	void								onStart();
 
 	// event driven stuff
-	void					onUnitShow(BWAPI::UnitInterface* unit)			{ updateUnit(unit); }
-	void					onUnitHide(BWAPI::UnitInterface* unit)			{ updateUnit(unit); }
-	void					onUnitCreate(BWAPI::UnitInterface* unit)		{ updateUnit(unit); }
-	void					onUnitComplete(BWAPI::UnitInterface* unit)		{ updateUnit(unit); }
-	void					onUnitMorph(BWAPI::UnitInterface* unit)			{ updateUnit(unit); }
-	void					onUnitRenegade(BWAPI::UnitInterface* unit)		{ updateUnit(unit); }
-	void					onUnitDestroy(BWAPI::UnitInterface* unit);
+	void					onUnitShow(BWAPI::Unit unit)			{ updateUnit(unit); }
+	void					onUnitHide(BWAPI::Unit unit)			{ updateUnit(unit); }
+	void					onUnitCreate(BWAPI::Unit unit)		{ updateUnit(unit); }
+	void					onUnitComplete(BWAPI::Unit unit)		{ updateUnit(unit); }
+	void					onUnitMorph(BWAPI::Unit unit)			{ updateUnit(unit); }
+	void					onUnitRenegade(BWAPI::Unit unit)		{ updateUnit(unit); }
+	void					onUnitDestroy(BWAPI::Unit unit);
 
 	bool					positionInRangeOfEnemyDetector(BWAPI::Position p);
 	bool					enemyFlyerThreat();
@@ -76,7 +76,7 @@ public:
 	UnitInfoVector &			getKnownUnitInfo(BWAPI::UnitType type, BWAPI::PlayerInterface * player);
 	const UIMap &				getUnitInfo(BWAPI::PlayerInterface * player) const;
 
-	BWAPI::UnitInterface*				getClosestUnitToTarget(BWAPI::UnitType type, BWAPI::Position target);
+	BWAPI::Unit				getClosestUnitToTarget(BWAPI::UnitType type, BWAPI::Position target);
 
 	std::set<BWTA::Region *> &	getOccupiedRegions(BWAPI::PlayerInterface * player);
 	BWTA::BaseLocation *		getMainBaseLocation(BWAPI::PlayerInterface * player);
@@ -90,6 +90,6 @@ public:
 	SparCraft::Map *			getMap() { return &map; }
 
 	const UnitData &					getUnitData(BWAPI::PlayerInterface * player) const;
-	const UnitData &					getUnitData(BWAPI::UnitInterface* unit) const;
+	const UnitData &					getUnitData(BWAPI::Unit unit) const;
 };
 }

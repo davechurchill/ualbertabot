@@ -29,13 +29,13 @@ void InformationManager::update()
 void InformationManager::updateUnitInfo() 
 {
 	// update enemy unit information
-	for (BWAPI::UnitInterface * unit : BWAPI::Broodwar->enemy()->getUnits())
+	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
 	{
 		updateUnit(unit);
 	}
 
 	// update enemy unit information
-	for (BWAPI::UnitInterface * unit : BWAPI::Broodwar->self()->getUnits())
+	for (auto & unit : BWAPI::Broodwar->self()->getUnits())
 	{
 		updateUnit(unit);
 	}
@@ -72,7 +72,7 @@ void InformationManager::updateBaseLocationInfo()
 		bool baseFound = false;
 
 		// an undexplored base location holder
-		BWTA::BaseLocation * unexplored = NULL;
+		BWTA::BaseLocation * unexplored = nullptr;
 
 		for (BWTA::BaseLocation * startLocation : BWTA::getStartLocations()) 
 		{
@@ -143,7 +143,7 @@ void InformationManager::updateBaseLocationInfo()
 
 void InformationManager::updateOccupiedRegions(BWTA::Region * region, BWAPI::PlayerInterface * player) 
 {
-	// if the region is valid (flying buildings may be in NULL regions)
+	// if the region is valid (flying buildings may be in nullptr regions)
 	if (region)
 	{
 		// add it to the list of occupied regions
@@ -188,7 +188,7 @@ int InformationManager::numEnemyUnitsInRegion(BWTA::Region * region)
 	}
 
 	int unitsInRegion(0);
-	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->enemy()->getUnits()) 
+	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits()) 
 	{
 		if (unit->isVisible() && BWTA::getRegion(BWAPI::TilePosition(unit->getPosition())) == region) 
 		{
@@ -207,7 +207,7 @@ const UIMap & InformationManager::getUnitInfo(BWAPI::PlayerInterface * player) c
 int InformationManager::numEnemyFlyingUnitsInRegion(BWTA::Region * region) 
 {
 	int unitsInRegion(0);
-	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->enemy()->getUnits()) 
+	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits()) 
 	{
 		if (unit->isVisible() && BWTA::getRegion(BWAPI::TilePosition(unit->getPosition())) == region && unit->getType().isFlyer()) 
 		{
@@ -306,7 +306,7 @@ void InformationManager::drawExtendedInterface()
     }
 
     // draw neutral units and our units
-    for (BWAPI::UnitInterface * unit : BWAPI::Broodwar->getAllUnits())
+    for (auto & unit : BWAPI::Broodwar->getAllUnits())
     {
         if (unit->getPlayer() == BWAPI::Broodwar->enemy())
         {
@@ -489,7 +489,7 @@ void InformationManager::drawMapInformation()
 
 void InformationManager::onStart() {}
 
-void InformationManager::updateUnit(BWAPI::UnitInterface* unit)
+void InformationManager::updateUnit(BWAPI::Unit unit)
 {
 	if (unit->getPlayer() == BWAPI::Broodwar->enemy())
 	{
@@ -502,7 +502,7 @@ void InformationManager::updateUnit(BWAPI::UnitInterface* unit)
 }
 
 // is the unit valid?
-bool InformationManager::isValidUnit(BWAPI::UnitInterface* unit) 
+bool InformationManager::isValidUnit(BWAPI::Unit unit) 
 {
 	// we only care about our units and enemy units
 	if (unit->getPlayer() != BWAPI::Broodwar->self() && unit->getPlayer() != BWAPI::Broodwar->enemy()) 
@@ -527,7 +527,7 @@ bool InformationManager::isValidUnit(BWAPI::UnitInterface* unit)
 	return true;
 }
 
-void InformationManager::onUnitDestroy(BWAPI::UnitInterface* unit) 
+void InformationManager::onUnitDestroy(BWAPI::Unit unit) 
 { 
 	// erase the unit
 	if (unit->getPlayer() == BWAPI::Broodwar->enemy())
@@ -540,12 +540,12 @@ void InformationManager::onUnitDestroy(BWAPI::UnitInterface* unit)
 	}
 }
 
-BWAPI::UnitInterface* InformationManager::getClosestUnitToTarget(BWAPI::UnitType type, BWAPI::Position target)
+BWAPI::Unit InformationManager::getClosestUnitToTarget(BWAPI::UnitType type, BWAPI::Position target)
 {
-	BWAPI::UnitInterface* closestUnit = NULL;
+	BWAPI::Unit closestUnit = nullptr;
 	double closestDist = 100000;
 
-	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits())
+	for (auto & unit : BWAPI::Broodwar->self()->getUnits())
 	{
 		if (unit->getType() == type)
 		{
@@ -661,7 +661,7 @@ const UnitData & InformationManager::getUnitData(BWAPI::PlayerInterface * player
 	return (player == BWAPI::Broodwar->self()) ? selfUnitData : enemyUnitData;
 }
 
-const UnitData & InformationManager::getUnitData(BWAPI::UnitInterface* unit) const
+const UnitData & InformationManager::getUnitData(BWAPI::Unit unit) const
 {
 	return getUnitData(unit->getPlayer());
 }

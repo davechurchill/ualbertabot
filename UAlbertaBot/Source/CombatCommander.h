@@ -21,8 +21,8 @@ class CombatCommander
 	bool            isSquadUpdateFrame();
 	int             getNumType(BWAPI::Unitset & units, BWAPI::UnitType type);
 
-	BWAPI::UnitInterface*   findClosestDefender(const Squad & defenseSquad, BWAPI::Position pos, bool flyingDefender);
-    BWAPI::UnitInterface *  findClosestWorkerToTarget(BWAPI::Unitset & unitsToAssign, BWAPI::UnitInterface * target);
+	BWAPI::Unit   findClosestDefender(const Squad & defenseSquad, BWAPI::Position pos, bool flyingDefender);
+    BWAPI::Unit  findClosestWorkerToTarget(BWAPI::Unitset & unitsToAssign, BWAPI::Unit target);
 
 	BWAPI::Position         getDefendLocation();
     BWAPI::Position         getMainAttackLocation();

@@ -1,9 +1,20 @@
 #include "RangedManager.h"
+#include "UnitUtil.h"
 
 using namespace UAlbertaBot;
 
 RangedManager::RangedManager() 
 { 
+}
+
+void testCopyIf()
+{
+    std::set<BWAPI::Unit> vUnits;
+    BWAPI::Unitset setUnits;
+
+    const BWAPI::Unitset & allUnits = BWAPI::Broodwar->getAllUnits();
+    
+    std::copy_if(allUnits.begin(), allUnits.end(), std::inserter(setUnits, setUnits.end()), UnitUtil::IsCombatUnit);
 }
 
 void RangedManager::executeMicro(const BWAPI::Unitset & targets) 
@@ -12,18 +23,11 @@ void RangedManager::executeMicro(const BWAPI::Unitset & targets)
 
 	// figure out targets
 	BWAPI::Unitset rangedUnitTargets;
-	for (BWAPI::UnitInterface * target : targets) 
-	{
-		// conditions for targeting
-		if (target->isVisible()) 
-		{
-			rangedUnitTargets.insert(target);
-            BWAPI::Broodwar->drawCircleMap(target->getPosition(), 8, BWAPI::Colors::Red);
-		}
-	}
-    
+    std::copy_if(targets.begin(), targets.end(), std::inserter(rangedUnitTargets, rangedUnitTargets.end()), 
+                 [](BWAPI::Unit u){ return u->isVisible(); });
+        
 	// for each zealot
-	for (BWAPI::UnitInterface* rangedUnit : rangedUnits)
+	for (auto & rangedUnit : rangedUnits)
 	{
 		// train sub units such as scarabs or interceptors
 		//trainSubUnits(rangedUnit);
@@ -35,7 +39,7 @@ void RangedManager::executeMicro(const BWAPI::Unitset & targets)
 			if (!rangedUnitTargets.empty())
 			{
 				// find the best target for this zealot
-				BWAPI::UnitInterface* target = getTarget(rangedUnit, rangedUnitTargets);
+				BWAPI::Unit target = getTarget(rangedUnit, rangedUnitTargets);
                 
                 if (target && Config::Debug::DrawUnitTargetInfo) 
 	            {
@@ -76,20 +80,19 @@ void RangedManager::executeMicro(const BWAPI::Unitset & targets)
 }
 
 // get a target for the zealot to attack
-BWAPI::UnitInterface* RangedManager::getTarget(BWAPI::UnitInterface* rangedUnit, const BWAPI::Unitset & targets)
+BWAPI::Unit RangedManager::getTarget(BWAPI::Unit rangedUnit, const BWAPI::Unitset & targets)
 {
-	int range(rangedUnit->getType().groundWeapon().maxRange());
+	int range = rangedUnit->getType().groundWeapon().maxRange();
 
     int bestPriorityDistance = 1000000;
     int bestPriority = 0;
     int bestPriorityHP = 100000;
 
-	BWAPI::UnitInterface * bestTarget = NULL;
+	BWAPI::Unit bestTarget = nullptr;
    
-
     if (rangedUnit->isFlying())
     {
-	    for (BWAPI::UnitInterface* unit : targets)
+	    for (auto & unit : targets)
 	    {
 		    int priority = getAttackPriority(rangedUnit, unit);
 		    int distance = rangedUnit->getDistance(unit);
@@ -123,7 +126,7 @@ BWAPI::UnitInterface* RangedManager::getTarget(BWAPI::UnitInterface* rangedUnit,
     }
     else
     {
-        for (BWAPI::UnitInterface* unit : targets)
+        for (auto & unit : targets)
 	    {
 		    int priority = getAttackPriority(rangedUnit, unit);
 		    int distance = rangedUnit->getDistance(unit);
@@ -144,7 +147,7 @@ BWAPI::UnitInterface* RangedManager::getTarget(BWAPI::UnitInterface* rangedUnit,
 }
 
 	// get the attack priority of a type in relation to a zergling
-int RangedManager::getAttackPriority(BWAPI::UnitInterface* rangedUnit, BWAPI::UnitInterface* target) 
+int RangedManager::getAttackPriority(BWAPI::Unit rangedUnit, BWAPI::Unit target) 
 {
 	BWAPI::UnitType rangedType = rangedUnit->getType();
 	BWAPI::UnitType targetType = target->getType();
@@ -195,12 +198,12 @@ int RangedManager::getAttackPriority(BWAPI::UnitInterface* rangedUnit, BWAPI::Un
 	}
 }
 
-BWAPI::UnitInterface* RangedManager::closestrangedUnit(BWAPI::UnitInterface* target, std::set<BWAPI::UnitInterface*> & rangedUnitsToAssign)
+BWAPI::Unit RangedManager::closestrangedUnit(BWAPI::Unit target, std::set<BWAPI::Unit> & rangedUnitsToAssign)
 {
 	double minDistance = 0;
-	BWAPI::UnitInterface* closest = NULL;
+	BWAPI::Unit closest = nullptr;
 
-	for (BWAPI::UnitInterface* rangedUnit : rangedUnitsToAssign)
+	for (auto & rangedUnit : rangedUnitsToAssign)
 	{
 		double distance = rangedUnit->getDistance(target);
 		if (!closest || distance < minDistance)

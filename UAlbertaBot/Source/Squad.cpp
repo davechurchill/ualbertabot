@@ -38,7 +38,7 @@ void Squad::update()
 	{
 		BWAPI::Broodwar->drawTextScreen(200, 340, "%s", _regroupStatus.c_str());
 
-		BWAPI::UnitInterface* closest = unitClosestToEnemy();
+		BWAPI::Unit closest = unitClosestToEnemy();
 	}
 
 	// if we do need to regroup, do it
@@ -93,7 +93,7 @@ void Squad::setAllUnits()
 {
 	// clean up the _units vector just in case one of them died
 	BWAPI::Unitset goodUnits;
-	for (BWAPI::UnitInterface* unit : _units)
+	for (auto & unit : _units)
 	{
 		if( unit->isCompleted() && 
 			unit->getHitPoints() > 0 && 
@@ -110,7 +110,7 @@ void Squad::setAllUnits()
 void Squad::setNearEnemyUnits()
 {
 	_nearEnemy.clear();
-	for (BWAPI::UnitInterface* unit : _units)
+	for (auto & unit : _units)
 	{
 		int x = unit->getPosition().x;
 		int y = unit->getPosition().y;
@@ -140,7 +140,7 @@ void Squad::addUnitsToMicroManagers()
 	BWAPI::Unitset transportUnits;
 
 	// add _units to micro managers
-	for (BWAPI::UnitInterface* unit : _units)
+	for (auto & unit : _units)
 	{
 		if(unit->isCompleted() && unit->getHitPoints() > 0 && unit->exists())
 		{
@@ -189,7 +189,7 @@ bool Squad::needsToRegroup()
 	}
 
 
-    BWAPI::UnitInterface* unitClosest = unitClosestToEnemy();
+    BWAPI::Unit unitClosest = unitClosestToEnemy();
 
 	if (!unitClosest)
 	{
@@ -250,14 +250,14 @@ void Squad::setSquadOrder(const SquadOrder & so)
 	_order = so;
 }
 
-bool Squad::containsUnit(BWAPI::UnitInterface * u) const
+bool Squad::containsUnit(BWAPI::Unit u) const
 {
     return _units.contains(u);
 }
 
 void Squad::clear()
 {
-    for (BWAPI::UnitInterface * unit : getUnits())
+    for (auto & unit : getUnits())
     {
         if (unit->getType().isWorker())
         {
@@ -268,7 +268,7 @@ void Squad::clear()
     _units.clear();
 }
 
-bool Squad::unitNearEnemy(BWAPI::UnitInterface* unit)
+bool Squad::unitNearEnemy(BWAPI::Unit unit)
 {
 	assert(unit);
 
@@ -291,7 +291,7 @@ BWAPI::Position Squad::calcCenter()
     }
 
 	BWAPI::Position accum(0,0);
-	for (BWAPI::UnitInterface* unit : _units)
+	for (auto & unit : _units)
 	{
 		accum += unit->getPosition();
 	}
@@ -304,7 +304,7 @@ BWAPI::Position Squad::calcRegroupPosition()
 
 	int minDist = 100000;
 
-	for (BWAPI::UnitInterface* unit : _units)
+	for (auto & unit : _units)
 	{
 		if (!_nearEnemy[unit])
 		{
@@ -327,12 +327,12 @@ BWAPI::Position Squad::calcRegroupPosition()
 	}
 }
 
-BWAPI::UnitInterface* Squad::unitClosestToEnemy()
+BWAPI::Unit Squad::unitClosestToEnemy()
 {
-	BWAPI::UnitInterface* closest = NULL;
+	BWAPI::Unit closest = nullptr;
 	int closestDist = 100000;
 
-	for (BWAPI::UnitInterface* unit : _units)
+	for (auto & unit : _units)
 	{
 		if (unit->getType() == BWAPI::UnitTypes::Protoss_Observer)
 		{
@@ -351,7 +351,7 @@ BWAPI::UnitInterface* Squad::unitClosestToEnemy()
 
 	if (!closest)
 	{
-		for (BWAPI::UnitInterface* unit : _units)
+		for (auto & unit : _units)
 		{
 			if (unit->getType() == BWAPI::UnitTypes::Protoss_Observer)
 			{
@@ -376,7 +376,7 @@ int Squad::squadUnitsNear(BWAPI::Position p)
 {
 	int numUnits = 0;
 
-	for (BWAPI::UnitInterface* unit : _units)
+	for (auto & unit : _units)
 	{
 		if (unit->getDistance(p) < 600)
 		{
@@ -397,12 +397,12 @@ const SquadOrder & Squad::getSquadOrder()	const
 	return _order; 
 }
 
-void Squad::addUnit(BWAPI::UnitInterface *u)
+void Squad::addUnit(BWAPI::Unit u)
 {
 	_units.insert(u);
 }
 
-void Squad::removeUnit(BWAPI::UnitInterface *u)
+void Squad::removeUnit(BWAPI::Unit u)
 {
     _units.erase(u);
 }

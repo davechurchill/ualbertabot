@@ -2,9 +2,9 @@
 
 using namespace UAlbertaBot;
 
-bool UnitUtil::IsCombatUnit(BWAPI::UnitInterface * unit)
+bool UnitUtil::IsCombatUnit(BWAPI::Unit unit)
 {
-    UAB_ASSERT(unit != NULL, "Unit was null");
+    UAB_ASSERT(unit != nullptr, "Unit was null");
     if (!unit)
     {
         return false;
@@ -28,7 +28,7 @@ bool UnitUtil::IsCombatUnit(BWAPI::UnitInterface * unit)
     return false;
 }
 
-bool UnitUtil::IsValidUnit(BWAPI::UnitInterface * unit)
+bool UnitUtil::IsValidUnit(BWAPI::Unit unit)
 {
     if (!unit)
     {
@@ -50,12 +50,12 @@ bool UnitUtil::IsValidUnit(BWAPI::UnitInterface * unit)
     }
 }
 
-bool UnitUtil::CanAttackAir(BWAPI::UnitInterface * unit)
+bool UnitUtil::CanAttackAir(BWAPI::Unit unit)
 {
     return unit->getType().airWeapon() != BWAPI::WeaponTypes::None;
 }
 
-bool UnitUtil::CanAttackGround(BWAPI::UnitInterface * unit)
+bool UnitUtil::CanAttackGround(BWAPI::Unit unit)
 {
     return unit->getType().groundWeapon() != BWAPI::WeaponTypes::None;
 }

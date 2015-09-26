@@ -22,7 +22,7 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
 	MapGrid::Instance().GetUnits(ourCombatUnits, center, Config::Micro::CombatRegroupRadius, true, false);
 	InformationManager::Instance().getNearbyForce(enemyCombatUnits, center, BWAPI::Broodwar->enemy(), Config::Micro::CombatRegroupRadius);
 
-	for (BWAPI::UnitInterface* unit : ourCombatUnits)
+	for (auto & unit : ourCombatUnits)
 	{
         if (unit->getType().isWorker())
         {
@@ -93,7 +93,7 @@ bool CombatSimulation::checkZealotVsZergling(const BWAPI::Position & center, con
 	InformationManager::Instance().getNearbyForce(enemyCombatUnits, center, BWAPI::Broodwar->enemy(), Config::Micro::CombatRegroupRadius);
 
     int numZealots = 0;
-	for (BWAPI::UnitInterface* unit : ourCombatUnits)
+	for (auto & unit : ourCombatUnits)
 	{
         if (InformationManager::Instance().isCombatUnit(unit->getType()) && SparCraft::System::isSupportedUnitType(unit->getType()))
 		{
@@ -130,7 +130,7 @@ bool CombatSimulation::checkZealotVsZergling(const BWAPI::Position & center, con
 }
 
 // Gets a SparCraft unit from a BWAPI::Unit, used for our own units since we have all their info
-const SparCraft::Unit CombatSimulation::getSparCraftUnit(BWAPI::UnitInterface* unit) const
+const SparCraft::Unit CombatSimulation::getSparCraftUnit(BWAPI::Unit unit) const
 {
     return SparCraft::Unit( unit->getType(),
                             SparCraft::Position(unit->getPosition()), 

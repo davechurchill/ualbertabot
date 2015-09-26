@@ -2,7 +2,7 @@
 
 using namespace UAlbertaBot;
 
-DetectorManager::DetectorManager() : unitClosestToEnemy(NULL) { }
+DetectorManager::DetectorManager() : unitClosestToEnemy(nullptr) { }
 
 void DetectorManager::executeMicro(const BWAPI::Unitset & targets) 
 {
@@ -22,7 +22,7 @@ void DetectorManager::executeMicro(const BWAPI::Unitset & targets)
 	BWAPI::Unitset cloakedUnits;
 
 	// figure out targets
-	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->enemy()->getUnits())
+	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
 	{
 		// conditions for targeting
 		if (unit->getType() == BWAPI::UnitTypes::Zerg_Lurker ||
@@ -37,7 +37,7 @@ void DetectorManager::executeMicro(const BWAPI::Unitset & targets)
 	bool detectorUnitInBattle = false;
 
 	// for each detectorUnit
-	for (BWAPI::UnitInterface* detectorUnit : detectorUnits)
+	for (auto & detectorUnit : detectorUnits)
 	{
 		// if we need to regroup, move the detectorUnit to that location
 		if (!detectorUnitInBattle && unitClosestToEnemy && unitClosestToEnemy->getPosition().isValid())
@@ -56,12 +56,12 @@ void DetectorManager::executeMicro(const BWAPI::Unitset & targets)
 }
 
 
-BWAPI::UnitInterface* DetectorManager::closestCloakedUnit(const BWAPI::Unitset & cloakedUnits, BWAPI::UnitInterface* detectorUnit)
+BWAPI::Unit DetectorManager::closestCloakedUnit(const BWAPI::Unitset & cloakedUnits, BWAPI::Unit detectorUnit)
 {
-	BWAPI::UnitInterface* closestCloaked = NULL;
+	BWAPI::Unit closestCloaked = nullptr;
 	double closestDist = 100000;
 
-	for (BWAPI::UnitInterface* unit : cloakedUnits)
+	for (auto & unit : cloakedUnits)
 	{
 		// if we haven't already assigned an detectorUnit to this cloaked unit
 		if (!cloakedUnitMap[unit])

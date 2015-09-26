@@ -14,7 +14,7 @@ struct UnitInfo
 	int					lastHealth;
     int                 lastShields;
     BWAPI::PlayerInterface *      player;
-	BWAPI::UnitInterface *		    unit;
+	BWAPI::Unit		    unit;
 	BWAPI::Position		lastPosition;
 	BWAPI::UnitType		type;
     bool                completed;
@@ -43,8 +43,8 @@ struct UnitInfo
 	UnitInfo()
 		: unitID(0)
 		, lastHealth(0)
-        , player(NULL)
-		, unit(NULL)
+        , player(nullptr)
+		, unit(nullptr)
 		, lastPosition(BWAPI::Positions::None)
 		, type(BWAPI::UnitTypes::None)
         , completed(false)
@@ -52,7 +52,7 @@ struct UnitInfo
 
 	}
 
-	UnitInfo(int id, BWAPI::UnitInterface* u, BWAPI::Position last, BWAPI::UnitType t) 
+	UnitInfo(int id, BWAPI::Unit u, BWAPI::Position last, BWAPI::UnitType t) 
         : unitID(id)
         , lastHealth(u->getHitPoints() + u->getShields())
         , player(u->getPlayer())
@@ -64,7 +64,7 @@ struct UnitInfo
 		
 	}
 
-	UnitInfo(BWAPI::UnitInterface* u)
+	UnitInfo(BWAPI::Unit u)
 		: unitID(u->getID())
 		, lastHealth(u->getHitPoints() + u->getShields())
 		, player(u->getPlayer())
@@ -80,7 +80,7 @@ struct UnitInfo
 		: unitID(id)
 		, lastHealth(t.maxHitPoints() + t.maxShields())
 		, player(player)
-		, unit(NULL)
+		, unit(nullptr)
 		, lastPosition(last)
 		, type(t)
 		, completed(completed)
@@ -88,7 +88,7 @@ struct UnitInfo
 
 	}
 
-	const bool operator == (BWAPI::UnitInterface* unit) const
+	const bool operator == (BWAPI::Unit unit) const
 	{
 		return unitID == unit->getID();
 	}
@@ -133,7 +133,7 @@ struct UnitInfo
 };
 
 typedef std::vector<UnitInfo> UnitInfoVector;
-typedef std::map<BWAPI::UnitInterface*, UnitInfo> UIMap;
+typedef std::map<BWAPI::Unit, UnitInfo> UIMap;
 typedef UIMap::iterator UIMapIter;
 typedef UIMap::const_iterator ConstUIMapIter;
 #define FOR_EACH_UIMAP(ITER, MAP) for (UIMapIter ITER(MAP.begin()); ITER != MAP.end(); ITER++)
@@ -141,7 +141,7 @@ typedef UIMap::const_iterator ConstUIMapIter;
 
 class UnitData 
 {
-	std::map<BWAPI::UnitInterface*, UnitInfo> unitMap;
+	std::map<BWAPI::Unit, UnitInfo> unitMap;
 
 	const bool badUnitInfo(const UnitInfo & ui) const;
 
@@ -157,8 +157,8 @@ public:
 	UnitData();
 	~UnitData() {}
 
-	void	updateUnit(BWAPI::UnitInterface* unit);
-	void	removeUnit(BWAPI::UnitInterface* unit);
+	void	updateUnit(BWAPI::Unit unit);
+	void	removeUnit(BWAPI::Unit unit);
 	void	removeBadUnits();
 
 	void	getCloakedUnits(std::set<UnitInfo> & v)				const;
@@ -173,6 +173,6 @@ public:
 	int		getNumUnits(BWAPI::UnitType t)						const	{ return numUnits[t.getID()]; }
 	int		getNumCompletedUnits(BWAPI::UnitType t)				const	{ return numCompletedUnits[t.getID()]; }
 	int		getNumDeadUnits(BWAPI::UnitType t)					const	{ return numDeadUnits[t.getID()]; }
-	const	std::map<BWAPI::UnitInterface*, UnitInfo> & getUnits()		const	{ return unitMap; }
+	const	std::map<BWAPI::Unit, UnitInfo> & getUnits()		const	{ return unitMap; }
 };
 }

@@ -34,7 +34,7 @@ void BuildingPlacer::computeResourceBox()
 	BWAPI::Position start(BWAPI::Broodwar->self()->getStartLocation());
 	BWAPI::Unitset unitsAroundNexus;
 
-	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->getAllUnits())
+	for (auto & unit : BWAPI::Broodwar->getAllUnits())
 	{
 		// if the units are less than 400 away add them if they are resources
 		if (unit->getDistance(start) < 400 && unit->getType().isResourceContainer())
@@ -43,7 +43,7 @@ void BuildingPlacer::computeResourceBox()
 		}
 	}
 
-	for (BWAPI::UnitInterface* unit : unitsAroundNexus)
+	for (auto & unit : unitsAroundNexus)
 	{
 		int x = unit->getPosition().x;
 		int y = unit->getPosition().y;
@@ -102,7 +102,7 @@ bool BuildingPlacer::tileBlocksAddon(BWAPI::TilePosition position) const
     
     for (int i=0; i<=2; ++i)
     {
-        for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->getUnitsOnTile(position.x - i, position.y))
+        for (auto & unit : BWAPI::Broodwar->getUnitsOnTile(position.x - i, position.y))
         {
             if ( unit->getType() == BWAPI::UnitTypes::Terran_Command_Center ||
 		        unit->getType() == BWAPI::UnitTypes::Terran_Factory || 
@@ -282,9 +282,9 @@ bool BuildingPlacer::buildable(const Building & b, int x, int y) const
         return false;
     }
 
-    for (BWAPI::UnitInterface * unit : BWAPI::Broodwar->getUnitsOnTile(x, y))
+    for (auto & unit : BWAPI::Broodwar->getUnitsOnTile(x, y))
     {
-        if ((b.builderUnit != NULL) && (unit != b.builderUnit))
+        if ((b.builderUnit != nullptr) && (unit != b.builderUnit))
         {
             return false;
         }
@@ -385,13 +385,13 @@ int BuildingPlacer::getBuildDistance() const
 BWAPI::TilePosition BuildingPlacer::getRefineryPosition()
 {
 	// for each of our units
-	for (BWAPI::UnitInterface* depot : BWAPI::Broodwar->self()->getUnits())
+	for (auto & depot : BWAPI::Broodwar->self()->getUnits())
 	{
 		// if it's a resource depot
 		if (depot->getType().isResourceDepot())
 		{
 			// for all units around it
-			for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->getAllUnits())
+			for (auto & unit : BWAPI::Broodwar->getAllUnits())
 			{
 				// if it's a geyser around it
 				if (unit->getType() == BWAPI::UnitTypes::Resource_Vespene_Geyser && unit->getDistance(depot) < 300)

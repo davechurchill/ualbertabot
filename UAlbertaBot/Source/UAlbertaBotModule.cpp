@@ -14,6 +14,7 @@
 #include "UAlbertaBotModule.h"
 #include "JSONTools.h"
 #include "ParseUtils.h"
+#include "UnitUtil.h"
 
 using namespace UAlbertaBot;
 
@@ -80,12 +81,12 @@ void UAlbertaBotModule::onFrame()
     }
 }
 
-void UAlbertaBotModule::onUnitDestroy(BWAPI::UnitInterface* unit)
+void UAlbertaBotModule::onUnitDestroy(BWAPI::Unit unit)
 {
 	if (Config::Modules::UsingGameCommander) { _gameCommander.onUnitDestroy(unit); }
 }
 
-void UAlbertaBotModule::onUnitMorph(BWAPI::UnitInterface* unit)
+void UAlbertaBotModule::onUnitMorph(BWAPI::Unit unit)
 {
 	if (Config::Modules::UsingGameCommander) { _gameCommander.onUnitMorph(unit); }
 }
@@ -95,28 +96,27 @@ void UAlbertaBotModule::onSendText(std::string text)
 	ParseUtils::ParseTextCommand(text);
 }
 
-void UAlbertaBotModule::onUnitCreate(BWAPI::UnitInterface* unit)
+void UAlbertaBotModule::onUnitCreate(BWAPI::Unit unit)
 { 
 	if (Config::Modules::UsingGameCommander) { _gameCommander.onUnitCreate(unit); }
 }
 
-void UAlbertaBotModule::onUnitComplete(BWAPI::UnitInterface* unit)
+void UAlbertaBotModule::onUnitComplete(BWAPI::Unit unit)
 {
 	if (Config::Modules::UsingGameCommander) { _gameCommander.onUnitComplete(unit); }
 }
 
-void UAlbertaBotModule::onUnitShow(BWAPI::UnitInterface* unit)
+void UAlbertaBotModule::onUnitShow(BWAPI::Unit unit)
 { 
 	if (Config::Modules::UsingGameCommander) { _gameCommander.onUnitShow(unit); }
 }
 
-void UAlbertaBotModule::onUnitHide(BWAPI::UnitInterface* unit)
+void UAlbertaBotModule::onUnitHide(BWAPI::Unit unit)
 { 
 	if (Config::Modules::UsingGameCommander) { _gameCommander.onUnitHide(unit); }
 }
 
-void UAlbertaBotModule::onUnitRenegade(BWAPI::UnitInterface* unit)
+void UAlbertaBotModule::onUnitRenegade(BWAPI::Unit unit)
 { 
 	if (Config::Modules::UsingGameCommander) { _gameCommander.onUnitRenegade(unit); }
 }
-

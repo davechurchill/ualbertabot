@@ -59,7 +59,7 @@ const int StrategyManager::defendWithWorkers()
 	int defenseRadius = 300;
 
 	// fill the set with the types of units we're concerned about
-	for (BWAPI::UnitInterface * unit : BWAPI::Broodwar->enemy()->getUnits())
+	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
 	{
 		// if it's a zergling or a worker we want to defend
 		if (unit->getType() == BWAPI::UnitTypes::Zerg_Zergling)
@@ -77,7 +77,7 @@ const int StrategyManager::defendWithWorkers()
 
 // called by combat commander to determine whether or not to send an attack force
 // freeUnits are the units available to do this attack
-const bool StrategyManager::doAttack(const std::set<BWAPI::UnitInterface*> & freeUnits)
+const bool StrategyManager::doAttack(const std::set<BWAPI::Unit> & freeUnits)
 {
 	int ourForceSize = (int)freeUnits.size();
 
@@ -438,10 +438,10 @@ void StrategyManager::readResults()
     int losses = 0;
 
     FILE *file = fopen ( enemyResultsFile.c_str(), "r" );
-    if ( file != NULL )
+    if ( file != nullptr )
     {
         char line [ 4096 ]; /* or other suitable maximum line size */
-        while ( fgets ( line, sizeof line, file ) != NULL ) /* read a line */
+        while ( fgets ( line, sizeof line, file ) != nullptr ) /* read a line */
         {
             std::stringstream ss(line);
 

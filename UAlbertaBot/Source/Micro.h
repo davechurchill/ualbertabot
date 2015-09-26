@@ -7,14 +7,14 @@ namespace UAlbertaBot
 {
 namespace Micro
 {      
-    void SmartAttackUnit(BWAPI::UnitInterface * attacker, BWAPI::UnitInterface* target);
-    void SmartAttackMove(BWAPI::UnitInterface * attacker, const BWAPI::Position & targetPosition);
-    void SmartMove(BWAPI::UnitInterface * attacker, const BWAPI::Position & targetPosition);
-    void SmartRightClick(BWAPI::UnitInterface * unit, BWAPI::UnitInterface * target);
-    void SmartRepair(BWAPI::UnitInterface * unit, BWAPI::UnitInterface * target);
-    void SmartKiteTarget(BWAPI::UnitInterface* rangedUnit, BWAPI::UnitInterface* target);
-    void MutaDanceTarget(BWAPI::UnitInterface* muta, BWAPI::UnitInterface* target);
-    BWAPI::Position GetKiteVector(BWAPI::UnitInterface * unit, BWAPI::UnitInterface * target);
+    void SmartAttackUnit(BWAPI::Unit attacker, BWAPI::Unit target);
+    void SmartAttackMove(BWAPI::Unit attacker, const BWAPI::Position & targetPosition);
+    void SmartMove(BWAPI::Unit attacker, const BWAPI::Position & targetPosition);
+    void SmartRightClick(BWAPI::Unit unit, BWAPI::Unit target);
+    void SmartRepair(BWAPI::Unit unit, BWAPI::Unit target);
+    void SmartKiteTarget(BWAPI::Unit rangedUnit, BWAPI::Unit target);
+    void MutaDanceTarget(BWAPI::Unit muta, BWAPI::Unit target);
+    BWAPI::Position GetKiteVector(BWAPI::Unit unit, BWAPI::Unit target);
 
     void Rotate(double &x, double &y, double angle);
     void Normalize(double &x, double &y);

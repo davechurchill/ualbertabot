@@ -12,8 +12,8 @@ public:
 	BWAPI::TilePosition finalPosition;
 	BWAPI::Position position;
 	BWAPI::UnitType type;
-	BWAPI::UnitInterface* buildingUnit;
-	BWAPI::UnitInterface* builderUnit;
+	BWAPI::Unit buildingUnit;
+	BWAPI::Unit builderUnit;
 	int lastOrderFrame;
     bool isGasSteal;
 	bool buildCommandGiven;
@@ -24,8 +24,8 @@ public:
         , finalPosition(BWAPI::TilePositions::None)
         , position(0,0)
         , type(BWAPI::UnitTypes::Unknown)
-        , buildingUnit(NULL)
-        , builderUnit(NULL)
+        , buildingUnit(nullptr)
+        , builderUnit(nullptr)
         , lastOrderFrame(0)
         , buildCommandGiven(false)
         , underConstruction(false) 
@@ -38,8 +38,8 @@ public:
         , finalPosition(0,0)
         , position(0,0)
         , type(t)
-        , buildingUnit(NULL)
-        , builderUnit(NULL)
+        , buildingUnit(nullptr)
+        , builderUnit(nullptr)
         , lastOrderFrame(0)
         , buildCommandGiven(false)
         , underConstruction(false) 
@@ -65,7 +65,7 @@ private:
 	std::vector< size_t >						buildingIndex;
 	std::vector< std::vector<Building> >		buildings;			// buildings which do not yet have builders assigned
 
-	std::set<BWAPI::UnitInterface*>		buildingUnitsConstructing;		// units which have been recently detected as started construction
+	std::set<BWAPI::Unit>		buildingUnitsConstructing;		// units which have been recently detected as started construction
 
 public:
 

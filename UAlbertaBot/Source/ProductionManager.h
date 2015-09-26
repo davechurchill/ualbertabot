@@ -19,7 +19,7 @@ public:
 	CompareWhenStarted() {}
 
 	// the sorting operator
-	bool operator() (BWAPI::UnitInterface* u1, BWAPI::UnitInterface* u2) 
+	bool operator() (BWAPI::Unit u1, BWAPI::Unit u2) 
 	{
 		int startedU1 = BWAPI::Broodwar->getFrameCount() - (u1->getType().buildTime() - u1->getRemainingBuildTime());
 		int startedU2 = BWAPI::Broodwar->getFrameCount() - (u2->getType().buildTime() - u2->getRemainingBuildTime());
@@ -44,21 +44,21 @@ class ProductionManager
 	bool						rushDetected;
 
 	BWAPI::TilePosition			predictedTilePosition;
-    BWAPI::UnitInterface*       getClosestUnitToPosition(const BWAPI::Unitset & units, BWAPI::Position closestTo);
-	BWAPI::UnitInterface*		selectUnitOfType(BWAPI::UnitType type, BWAPI::Position closestTo = BWAPI::Position(0,0));
+    BWAPI::Unit       getClosestUnitToPosition(const BWAPI::Unitset & units, BWAPI::Position closestTo);
+	BWAPI::Unit		selectUnitOfType(BWAPI::UnitType type, BWAPI::Position closestTo = BWAPI::Position(0,0));
 	BuildOrderQueue				queue;
 
-	bool						contains(BWAPI::Unitset & units, BWAPI::UnitInterface* unit);
+	bool						contains(BWAPI::Unitset & units, BWAPI::Unit unit);
 	void						populateTypeCharMap();
 	bool						hasResources(BWAPI::UnitType type);
 	bool						canMake(BWAPI::UnitType type);
 	bool						hasNumCompletedUnitType(BWAPI::UnitType type, int num);
 	bool						meetsReservedResources(MetaType type);
 	void						setBuildOrder(const BuildOrder & buildOrder);
-	void						create(BWAPI::UnitInterface* producer, BuildOrderItem & item);
+	void						create(BWAPI::Unit producer, BuildOrderItem & item);
 	void						manageBuildOrderQueue();
 	void						performCommand(BWAPI::UnitCommandType t);
-	bool						canMakeNow(BWAPI::UnitInterface* producer, MetaType t);
+	bool						canMakeNow(BWAPI::Unit producer, MetaType t);
 	void						predictWorkerMovement(const Building & b);
 
 	bool						detectBuildOrderDeadlock();
@@ -74,13 +74,13 @@ public:
 	void						update();
 
 	void						onGameEnd();
-	void						onUnitMorph(BWAPI::UnitInterface* unit);
-	void						onUnitDestroy(BWAPI::UnitInterface* unit);
+	void						onUnitMorph(BWAPI::Unit unit);
+	void						onUnitDestroy(BWAPI::Unit unit);
 	bool						runningOpeningBook() const { return _runningOpeningBook; };
 	const BuildOrderQueue&		getBuildQueue() const { return queue; };
 	void						purgeQueue() { queue.clearAll(); };
 
-    BWAPI::UnitInterface*       getProducer(MetaType t, BWAPI::Position closestTo = BWAPI::Positions::None);
+    BWAPI::Unit       getProducer(MetaType t, BWAPI::Position closestTo = BWAPI::Positions::None);
 
 	void						performBuildOrderSearch(const std::vector<MetaPair> & goal);
 	void						performBuildOrderSearch();

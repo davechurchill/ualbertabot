@@ -161,14 +161,14 @@ void MapGrid::update()
 	//BWAPI::Broodwar->printf("MapGrid info: WH(%d, %d)  CS(%d)  RC(%d, %d)  C(%d)", mapWidth, mapHeight, cellSize, rows, cols, cells.size());
 
 	// add our units to the appropriate cell
-	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits()) 
+	for (auto & unit : BWAPI::Broodwar->self()->getUnits()) 
 	{
 		getCell(unit).ourUnits.insert(unit);
 		getCell(unit).timeLastVisited = BWAPI::Broodwar->getFrameCount();
 	}
 
 	// add enemy units to the appropriate cell
-	for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->enemy()->getUnits()) 
+	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits()) 
 	{
 		if (unit->getHitPoints() > 0) 
 		{
@@ -195,7 +195,7 @@ void MapGrid::GetUnits(BWAPI::Unitset & units, BWAPI::Position center, int radiu
 			GridCell & cell(getCellByIndex(row,col));
 			if(ourUnits)
 			{
-				for (BWAPI::UnitInterface* unit : cell.ourUnits)
+				for (auto & unit : cell.ourUnits)
 				{
 					BWAPI::Position d(unit->getPosition() - center);
 					if(d.x * d.x + d.y * d.y <= radiusSq)
@@ -209,7 +209,7 @@ void MapGrid::GetUnits(BWAPI::Unitset & units, BWAPI::Position center, int radiu
 			}
 			if(oppUnits)
 			{
-				for (BWAPI::UnitInterface* unit : cell.oppUnits) if (unit->getType() != BWAPI::UnitTypes::Unknown && unit->isVisible())
+				for (auto & unit : cell.oppUnits) if (unit->getType() != BWAPI::UnitTypes::Unknown && unit->isVisible())
 				{
 					BWAPI::Position d(unit->getPosition() - center);
 					if(d.x * d.x + d.y * d.y <= radiusSq)

@@ -35,62 +35,62 @@ private:
 	BWAPI::Unitset workers;
 	BWAPI::Unitset depots;
 
-	std::map<BWAPI::UnitInterface*, enum WorkerJob>         workerJobMap;
-	std::map<BWAPI::UnitInterface*, BWAPI::UnitInterface*>  workerMineralMap;
-	std::map<BWAPI::UnitInterface*, BWAPI::UnitInterface*>  workerDepotMap;
-	std::map<BWAPI::UnitInterface*, BWAPI::UnitInterface*>  workerRefineryMap;
-	std::map<BWAPI::UnitInterface*, BWAPI::UnitInterface*>  workerRepairMap;
-	std::map<BWAPI::UnitInterface*, WorkerMoveData>         workerMoveMap;
-	std::map<BWAPI::UnitInterface*, BWAPI::UnitType>        workerBuildingTypeMap;
+	std::map<BWAPI::Unit, enum WorkerJob>         workerJobMap;
+	std::map<BWAPI::Unit, BWAPI::Unit>  workerMineralMap;
+	std::map<BWAPI::Unit, BWAPI::Unit>  workerDepotMap;
+	std::map<BWAPI::Unit, BWAPI::Unit>  workerRefineryMap;
+	std::map<BWAPI::Unit, BWAPI::Unit>  workerRepairMap;
+	std::map<BWAPI::Unit, WorkerMoveData>         workerMoveMap;
+	std::map<BWAPI::Unit, BWAPI::UnitType>        workerBuildingTypeMap;
 
-	std::map<BWAPI::UnitInterface*, int>                    depotWorkerCount;
-	std::map<BWAPI::UnitInterface*, int>                    refineryWorkerCount;
+	std::map<BWAPI::Unit, int>                    depotWorkerCount;
+	std::map<BWAPI::Unit, int>                    refineryWorkerCount;
 
-    std::map<BWAPI::UnitInterface*, int>                    workersOnMineralPatch;
-    std::map<BWAPI::UnitInterface*, BWAPI::UnitInterface*>  workerMineralAssignment;
+    std::map<BWAPI::Unit, int>                    workersOnMineralPatch;
+    std::map<BWAPI::Unit, BWAPI::Unit>  workerMineralAssignment;
 
-	void clearPreviousJob(BWAPI::UnitInterface* unit);
+	void clearPreviousJob(BWAPI::Unit unit);
 
 public:
 
 	WorkerData();
 
-	void					workerDestroyed(BWAPI::UnitInterface* unit);
-	void					addDepot(BWAPI::UnitInterface* unit);
-	void					removeDepot(BWAPI::UnitInterface* unit);
-	void					addWorker(BWAPI::UnitInterface* unit);
-	void					addWorker(BWAPI::UnitInterface* unit, WorkerJob job, BWAPI::UnitInterface* jobUnit);
-	void					addWorker(BWAPI::UnitInterface* unit, WorkerJob job, BWAPI::UnitType jobUnitType);
-	void					setWorkerJob(BWAPI::UnitInterface* unit, WorkerJob job, BWAPI::UnitInterface* jobUnit);
-	void					setWorkerJob(BWAPI::UnitInterface* unit, WorkerJob job, WorkerMoveData wmd);
-	void					setWorkerJob(BWAPI::UnitInterface* unit, WorkerJob job, BWAPI::UnitType jobUnitType);
+	void					workerDestroyed(BWAPI::Unit unit);
+	void					addDepot(BWAPI::Unit unit);
+	void					removeDepot(BWAPI::Unit unit);
+	void					addWorker(BWAPI::Unit unit);
+	void					addWorker(BWAPI::Unit unit, WorkerJob job, BWAPI::Unit jobUnit);
+	void					addWorker(BWAPI::Unit unit, WorkerJob job, BWAPI::UnitType jobUnitType);
+	void					setWorkerJob(BWAPI::Unit unit, WorkerJob job, BWAPI::Unit jobUnit);
+	void					setWorkerJob(BWAPI::Unit unit, WorkerJob job, WorkerMoveData wmd);
+	void					setWorkerJob(BWAPI::Unit unit, WorkerJob job, BWAPI::UnitType jobUnitType);
 
 	int						getNumWorkers() const;
 	int						getNumMineralWorkers() const;
 	int						getNumGasWorkers() const;
 	int						getNumIdleWorkers() const;
-	char					getJobCode(BWAPI::UnitInterface* unit);
+	char					getJobCode(BWAPI::Unit unit);
 
-	void					getMineralWorkers(std::set<BWAPI::UnitInterface*> & mw);
-	void					getGasWorkers(std::set<BWAPI::UnitInterface*> & mw);
-	void					getBuildingWorkers(std::set<BWAPI::UnitInterface*> & mw);
-	void					getRepairWorkers(std::set<BWAPI::UnitInterface*> & mw);
+	void					getMineralWorkers(std::set<BWAPI::Unit> & mw);
+	void					getGasWorkers(std::set<BWAPI::Unit> & mw);
+	void					getBuildingWorkers(std::set<BWAPI::Unit> & mw);
+	void					getRepairWorkers(std::set<BWAPI::Unit> & mw);
 	
-	bool					depotIsFull(BWAPI::UnitInterface* depot);
-	int						getMineralsNearDepot(BWAPI::UnitInterface* depot);
+	bool					depotIsFull(BWAPI::Unit depot);
+	int						getMineralsNearDepot(BWAPI::Unit depot);
 
-	int						getNumAssignedWorkers(BWAPI::UnitInterface* unit);
-	BWAPI::UnitInterface*   getMineralToMine(BWAPI::UnitInterface* worker);
+	int						getNumAssignedWorkers(BWAPI::Unit unit);
+	BWAPI::Unit   getMineralToMine(BWAPI::Unit worker);
 
-	enum WorkerJob			getWorkerJob(BWAPI::UnitInterface* unit);
-	BWAPI::UnitInterface*   getWorkerResource(BWAPI::UnitInterface* unit);
-	BWAPI::UnitInterface*   getWorkerDepot(BWAPI::UnitInterface* unit);
-	BWAPI::UnitInterface*   getWorkerRepairUnit(BWAPI::UnitInterface* unit);
-	BWAPI::UnitType			getWorkerBuildingType(BWAPI::UnitInterface* unit);
-	WorkerMoveData			getWorkerMoveData(BWAPI::UnitInterface* unit);
+	enum WorkerJob			getWorkerJob(BWAPI::Unit unit);
+	BWAPI::Unit   getWorkerResource(BWAPI::Unit unit);
+	BWAPI::Unit   getWorkerDepot(BWAPI::Unit unit);
+	BWAPI::Unit   getWorkerRepairUnit(BWAPI::Unit unit);
+	BWAPI::UnitType			getWorkerBuildingType(BWAPI::Unit unit);
+	WorkerMoveData			getWorkerMoveData(BWAPI::Unit unit);
 
-    BWAPI::Unitset          getMineralPatchesNearDepot(BWAPI::UnitInterface* depot);
-    void                    addToMineralPatch(BWAPI::UnitInterface* unit, int num);
+    BWAPI::Unitset          getMineralPatchesNearDepot(BWAPI::Unit depot);
+    void                    addToMineralPatch(BWAPI::Unit unit, int num);
 	void					drawDepotDebugInfo();
 
 	const BWAPI::Unitset & getWorkers() const { return workers; }

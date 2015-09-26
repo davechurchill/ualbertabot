@@ -66,7 +66,7 @@ void CombatCommander::update(const BWAPI::Unitset & combatUnits)
 void CombatCommander::updateIdleSquad()
 {
     Squad & idleSquad = _squadData.getSquad("Idle");
-    for (BWAPI::UnitInterface * unit : _combatUnits)
+    for (auto & unit : _combatUnits)
     {
         // if it hasn't been assigned to a squad yet, put it in the low priority idle squad
         if (_squadData.canAssignUnitToSquad(unit, idleSquad))
@@ -80,7 +80,7 @@ void CombatCommander::updateAttackSquads()
 {
     Squad & mainAttackSquad = _squadData.getSquad("MainAttack");
 
-    for (BWAPI::UnitInterface * unit : _combatUnits)
+    for (auto & unit : _combatUnits)
     {
         // get every unit of a lower priority and put it into the attack squad
         if (!unit->getType().isWorker() && _squadData.canAssignUnitToSquad(unit, mainAttackSquad))
@@ -112,7 +112,7 @@ void CombatCommander::updateScoutDefenseSquad()
 
     // get all of the enemy units in this region
 	BWAPI::Unitset enemyUnitsInRegion;
-    for (BWAPI::UnitInterface * unit : BWAPI::Broodwar->enemy()->getUnits())
+    for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
     {
         if (BWTA::getRegion(BWAPI::TilePosition(unit->getPosition())) == myRegion)
         {
@@ -127,10 +127,10 @@ void CombatCommander::updateScoutDefenseSquad()
     if (scoutDefenseSquad.isEmpty() && assignScoutDefender)
     {
         // the enemy worker that is attacking us
-        BWAPI::UnitInterface * enemyWorker = *enemyUnitsInRegion.begin();
+        BWAPI::Unit enemyWorker = *enemyUnitsInRegion.begin();
 
         // get our worker unit that is mining that is closest to it
-        BWAPI::UnitInterface * workerDefender = findClosestWorkerToTarget(_combatUnits, enemyWorker);
+        BWAPI::Unit workerDefender = findClosestWorkerToTarget(_combatUnits, enemyWorker);
 
 		if (enemyWorker && workerDefender)
 		{
@@ -145,7 +145,7 @@ void CombatCommander::updateScoutDefenseSquad()
     // if our squad is not empty and we shouldn't have a worker chasing then take him out of the squad
     else if (!scoutDefenseSquad.isEmpty() && !assignScoutDefender)
     {
-        for (BWAPI::UnitInterface * unit : scoutDefenseSquad.getUnits())
+        for (auto & unit : scoutDefenseSquad.getUnits())
         {
             unit->stop();
             if (unit->getType().isWorker())
@@ -166,7 +166,7 @@ void CombatCommander::updateDefenseSquads()
     }
     
     BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
-    BWTA::Region * enemyRegion = NULL;
+    BWTA::Region * enemyRegion = nullptr;
     if (enemyBaseLocation)
     {
         enemyRegion = BWTA::getRegion(enemyBaseLocation->getPosition());
@@ -192,7 +192,7 @@ void CombatCommander::updateDefenseSquads()
 
 		// all of the enemy units in this region
 		BWAPI::Unitset enemyUnitsInRegion;
-        for (BWAPI::UnitInterface * unit : BWAPI::Broodwar->enemy()->getUnits())
+        for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
         {
             if (BWTA::getRegion(BWAPI::TilePosition(unit->getPosition())) == myRegion)
             {
@@ -201,7 +201,7 @@ void CombatCommander::updateDefenseSquads()
         }
 
         // we can ignore the first enemy worker in our region since we assume it is a scout
-        for (BWAPI::UnitInterface * unit : enemyUnitsInRegion)
+        for (auto & unit : enemyUnitsInRegion)
         {
             if (unit->getType().isWorker())
             {
@@ -210,8 +210,8 @@ void CombatCommander::updateDefenseSquads()
             }
         }
 
-        int numEnemyFlyingInRegion = std::count_if(enemyUnitsInRegion.begin(), enemyUnitsInRegion.end(), [](BWAPI::UnitInterface * u) { return u->isFlying(); });
-        int numEnemyGroundInRegion = std::count_if(enemyUnitsInRegion.begin(), enemyUnitsInRegion.end(), [](BWAPI::UnitInterface * u) { return !u->isFlying(); });
+        int numEnemyFlyingInRegion = std::count_if(enemyUnitsInRegion.begin(), enemyUnitsInRegion.end(), [](BWAPI::Unit u) { return u->isFlying(); });
+        int numEnemyGroundInRegion = std::count_if(enemyUnitsInRegion.begin(), enemyUnitsInRegion.end(), [](BWAPI::Unit u) { return !u->isFlying(); });
 
         std::stringstream squadName;
         squadName << "Base Defense " << regionCenter.x << " " << regionCenter.y; 
@@ -268,7 +268,7 @@ void CombatCommander::updateDefenseSquads()
         }
 
         bool enemyUnitInRange = false;
-        for (BWAPI::UnitInterface * unit : BWAPI::Broodwar->enemy()->getUnits())
+        for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
         {
             if (unit->getPosition().getDistance(order.getPosition()) < order.getRadius())
             {
@@ -301,7 +301,7 @@ void CombatCommander::updateDefenseSquadUnits(Squad & defenseSquad, const size_t
     size_t flyingDefendersAdded = 0;
     while (flyingDefendersNeeded > flyingDefendersInSquad + flyingDefendersAdded)
     {
-        BWAPI::UnitInterface * defenderToAdd = findClosestDefender(defenseSquad, defenseSquad.getSquadOrder().getPosition(), true);
+        BWAPI::Unit defenderToAdd = findClosestDefender(defenseSquad, defenseSquad.getSquadOrder().getPosition(), true);
 
         // if we find a valid flying defender, add it to the squad
         if (defenderToAdd)
@@ -320,7 +320,7 @@ void CombatCommander::updateDefenseSquadUnits(Squad & defenseSquad, const size_t
     size_t groundDefendersAdded = 0;
     while (groundDefendersNeeded > groundDefendersInSquad + groundDefendersAdded)
     {
-        BWAPI::UnitInterface * defenderToAdd = findClosestDefender(defenseSquad, defenseSquad.getSquadOrder().getPosition(), false);
+        BWAPI::Unit defenderToAdd = findClosestDefender(defenseSquad, defenseSquad.getSquadOrder().getPosition(), false);
 
         // if we find a valid ground defender add it
         if (defenderToAdd)
@@ -336,12 +336,12 @@ void CombatCommander::updateDefenseSquadUnits(Squad & defenseSquad, const size_t
     }
 }
 
-BWAPI::UnitInterface * CombatCommander::findClosestDefender(const Squad & defenseSquad, BWAPI::Position pos, bool flyingDefender) 
+BWAPI::Unit CombatCommander::findClosestDefender(const Squad & defenseSquad, BWAPI::Position pos, bool flyingDefender) 
 {
-	BWAPI::UnitInterface * closestDefender = NULL;
+	BWAPI::Unit closestDefender = nullptr;
 	double minDistance = 1000000;
 
-	for (BWAPI::UnitInterface* unit : _combatUnits) 
+	for (auto & unit : _combatUnits) 
 	{
 		if ((flyingDefender && !UnitUtil::CanAttackAir(unit)) || (!flyingDefender && !UnitUtil::CanAttackGround(unit)))
         {
@@ -413,7 +413,7 @@ BWAPI::Position CombatCommander::getMainAttackLocation()
     }
 
     // Third choice: Attack visible enemy units
-    for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->enemy()->getUnits())
+    for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
 	{
 		if (UnitUtil::IsValidUnit(unit) && unit->isVisible())
 		{
@@ -425,20 +425,20 @@ BWAPI::Position CombatCommander::getMainAttackLocation()
     return MapGrid::Instance().getLeastExplored();
 }
 
-BWAPI::UnitInterface * CombatCommander::findClosestWorkerToTarget(BWAPI::Unitset & unitsToAssign, BWAPI::UnitInterface * target)
+BWAPI::Unit CombatCommander::findClosestWorkerToTarget(BWAPI::Unitset & unitsToAssign, BWAPI::Unit target)
 {
-    UAB_ASSERT(target != NULL, "target was null");
+    UAB_ASSERT(target != nullptr, "target was null");
 
     if (!target)
     {
-        return NULL;
+        return nullptr;
     }
 
-    BWAPI::UnitInterface* closestMineralWorker = NULL;
+    BWAPI::Unit closestMineralWorker = nullptr;
     double closestDist = 100000;
     
     // for each of our workers
-	for (BWAPI::UnitInterface* unit : unitsToAssign)
+	for (auto & unit : unitsToAssign)
 	{
         if (!unit->getType().isWorker())
         {

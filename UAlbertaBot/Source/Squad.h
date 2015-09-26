@@ -28,18 +28,18 @@ class Squad
 	DetectorManager     _detectorManager;
 	TransportManager    _transportManager;
 
-	std::map<BWAPI::UnitInterface*, bool>	_nearEnemy;
+	std::map<BWAPI::Unit, bool>	_nearEnemy;
 
     
-	BWAPI::UnitInterface*		getRegroupUnit();
-	BWAPI::UnitInterface*		unitClosestToEnemy();
+	BWAPI::Unit		getRegroupUnit();
+	BWAPI::Unit		unitClosestToEnemy();
     
 	void                        updateUnits();
 	void                        addUnitsToMicroManagers();
 	void                        setNearEnemyUnits();
 	void                        setAllUnits();
 	
-	bool                        unitNearEnemy(BWAPI::UnitInterface* unit);
+	bool                        unitNearEnemy(BWAPI::Unit unit);
 	bool                        needsToRegroup();
 	int                         squadUnitsNear(BWAPI::Position p);
 
@@ -51,9 +51,9 @@ public:
 
 	void                update();
 	void                setSquadOrder(const SquadOrder & so);
-	void                addUnit(BWAPI::UnitInterface * u);
-	void                removeUnit(BWAPI::UnitInterface * u);
-    bool                containsUnit(BWAPI::UnitInterface * u) const;
+	void                addUnit(BWAPI::Unit u);
+	void                removeUnit(BWAPI::Unit u);
+    bool                containsUnit(BWAPI::Unit u) const;
     bool                isEmpty() const;
     void                clear();
     size_t              getPriority() const;
