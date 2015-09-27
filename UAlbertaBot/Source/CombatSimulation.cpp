@@ -53,10 +53,23 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
         
         if (ui.type == BWAPI::UnitTypes::Terran_Bunker)
         {
-            for (size_t i(0); i < 3; ++i)
+            double hpRatio = static_cast<double>(ui.lastHealth) / ui.type.maxHitPoints();
+
+            SparCraft::Unit marine( BWAPI::UnitTypes::Terran_Marine,
+                            SparCraft::Position(ui.lastPosition), 
+                            ui.unitID, 
+                            getSparCraftPlayerID(ui.player), 
+                            static_cast<int>(BWAPI::UnitTypes::Terran_Marine.maxHitPoints() * hpRatio), 
+                            0,
+		                    BWAPI::Broodwar->getFrameCount(), 
+                            BWAPI::Broodwar->getFrameCount());	
+
+            for (size_t i(0); i < 5; ++i)
             {
-                s.addUnit(BWAPI::UnitTypes::Terran_Marine, getSparCraftPlayerID(ui.player), SparCraft::Position(ui.lastPosition));
+                s.addUnit(marine);
             }
+            
+            continue;
         }
 
         if (!ui.type.isFlyer() && SparCraft::System::isSupportedUnitType(ui.type) && ui.completed)

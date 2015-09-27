@@ -74,7 +74,8 @@ void BOSSManager::drawSearchInformation(int x, int y)
     }
     
     BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x, y+15), "Time (ms): %.3lf", _totalPreviousSearchTime);
-    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x, y+25), "BO Size: %d", (int)_savedSearchResults.buildOrder.size());
+    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x, y+25), "Nodes: %d", _savedSearchResults.nodesExpanded);
+    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x, y+35), "BO Size: %d", (int)_savedSearchResults.buildOrder.size());
 
     
 }
@@ -98,9 +99,12 @@ void BOSSManager::update(double timeLimit)
     // if there's a search in progress, resume it
     if (isSearchInProgress())
     {
+        _previousStatus.clear();
+
         // give the search at least 5ms to search this frame
         double realTimeLimit = timeLimit < 0 ? 5 : timeLimit;
         _smartSearch->setTimeLimit((int)realTimeLimit);
+        bool caughtException = false;
 
 		try
         {
@@ -114,45 +118,28 @@ void BOSSManager::update(double timeLimit)
             UAB_ASSERT_WARNING(false, "BOSS SmartSearch Exception: %s", exception.what());
 			BWAPI::Broodwar->drawTextScreen(0, 0, "Previous search didn't find a solution, resorting to Naive Build Order");
             _previousStatus = "BOSSExeption";
-
-            // if the smart search threw an error, fall back on trying a naive search (less intelligent but faster)
-			BOSS::NaiveBuildOrderSearch nbos(_smartSearch->getParameters().initialState, _smartSearch->getParameters().goal);
-
-			try
-            {
-				_previousBuildOrder = nbos.solve();
-				return;
-			}
-            // if the naive build order search failed then we're screwed, return an empty build order
-			catch (const BOSS::Assert::BOSSException & exception)
-            {
-                UAB_ASSERT_WARNING(false, "BOSS Naive Search Exception: %s", exception.what());
-                _previousStatus = "NaiveSearch Exception";
-
-                BWAPI::Broodwar->drawTextScreen(0, 10, "Naive build order search failed");
-				BWAPI::Broodwar->printf("No legal BuildOrder found, returning empty Build Order");
-				_previousBuildOrder = BOSS::BuildOrder();
-
-                // both searches failed so don't try to search from the same state anymore
-                _searchInProgress = false;
-				return;
-			}
+            caughtException = true;
 		}
 
         _totalPreviousSearchTime += _smartSearch->getResults().timeElapsed;
 
         // after the search finishes for this frame, check to see if we have a solution or if we hit the overall time limit
-        if ((BWAPI::Broodwar->getFrameCount() > (_previousSearchStartFrame + SEARCH_FRAME_LIMIT)) || _smartSearch->getResults().solved)
+        bool searchTimeOut = (BWAPI::Broodwar->getFrameCount() > (_previousSearchStartFrame + Config::Macro::BOSSFrameLimit));
+        bool previousSearchComplete = searchTimeOut || _smartSearch->getResults().solved || caughtException;
+        if (previousSearchComplete)
         {
-            bool solved = _smartSearch->getResults().solved;
+            bool solved = _smartSearch->getResults().solved && _smartSearch->getResults().solutionFound;
 
             // if we've found a solution, let us know
             if (_smartSearch->getResults().solved && Config::Debug::DrawBuildOrderSearchInfo)
             {
-                //BWAPI::Broodwar->printf("Build order SOLVED in %d nodes", (int)_smartSearch->getResults().nodesExpanded);
+                BWAPI::Broodwar->printf("Build order SOLVED in %d nodes", (int)_smartSearch->getResults().nodesExpanded);
             }
 
-            _previousStatus = "BOSS Solved";
+            if (solved)
+            {
+                _previousStatus = "BOSS Solved";
+            }
 
             // re-set all the search information to get read for the next search
             _searchInProgress = false;
@@ -163,32 +150,55 @@ void BOSSManager::update(double timeLimit)
 
             if (solved && _previousBuildOrder.size() == 0)
             {
-                _previousStatus = "Trivial Solve";
+                _previousStatus = "BOSS Trivial Solve";
             }
 
             // if our search resulted in a build order of size 0 then something failed
             if (!solved && _previousBuildOrder.size() == 0)
             {
+                // log the debug information since this shouldn't happen if everything goes to plan
+                std::stringstream ss;
+                ss << _smartSearch->getParameters().toString() << "\n";
+                ss << "searchTimeOut: " << (searchTimeOut ? "true" : "false") << "\n";
+                ss << "caughtException: " << (caughtException ? "true" : "false") << "\n";
+                ss << "_smartSearch->getResults().solved: " << (_smartSearch->getResults().solved ? "true" : "false") << "\n";
+                ss << "nodes: " << _savedSearchResults.nodesExpanded << "\n";
+                ss << "time: " << _savedSearchResults.timeElapsed << "\n";
+                Logger::LogOverwriteToFile("c:/uaberror.txt", ss.str());
+                
+
                 if (Config::Debug::DrawBuildOrderSearchInfo)
                 {
-                    BWAPI::Broodwar->printf("Previous search didn't find a solution, resorting to Naive Build Order");
+                    BWAPI::Broodwar->printf("DFBB search didn't find a solution, resorting to Naive Build Order");
                 }
 
-                _previousStatus = "No Solution Found";
+                _previousStatus = "No BOSS Solution ";
 
                 // so try another naive build order search as a last resort
                 BOSS::NaiveBuildOrderSearch nbos(_smartSearch->getParameters().initialState, _smartSearch->getParameters().goal);
 
 				try
                 {
+                    if (searchTimeOut)
+                    {
+                        _previousStatus = "BOSS Timeout";
+                    }
+
+                    if (caughtException)
+                    {
+                        _previousStatus = "BOSS Exception";
+                    }
+
 					_previousBuildOrder = nbos.solve();
+                    _previousStatus += " - Naive Solution";
+
 					return;
 				}
                 // and if that search doesn't work then we're out of luck, no build orders forus
 				catch (const BOSS::Assert::BOSSException & exception)
                 {
                     UAB_ASSERT_WARNING(false, "BOSS Timeout Naive Search Exception: %s", exception.what());
-                    _previousStatus = "2nd Naive Exception";
+                    _previousStatus = " - Naive Exception";
                     if (Config::Debug::DrawBuildOrderSearchInfo)
                     {
 					    BWAPI::Broodwar->drawTextScreen(0, 20, "No legal BuildOrder found, returning empty Build Order");
@@ -199,6 +209,13 @@ void BOSSManager::update(double timeLimit)
             }
         }
     }
+}
+
+void BOSSManager::logBadSearch()
+{
+    std::string s = _smartSearch->getParameters().toString();
+
+    Logger::LogOverwriteToFile("c:/uaberror.txt", s);
 }
 
 BOSS::BuildOrderSearchGoal BOSSManager::GetGoal(const std::vector<MetaPair> & goalUnits)
@@ -313,27 +330,3 @@ MetaType BOSSManager::GetMetaType(const BOSS::ActionType & a)
 	
 	return MetaType();
 }
-
-
-std::vector<MetaType> BOSSManager::GetNaiveBuildOrder(const std::vector<MetaPair> & goalUnits)
-{
-    BOSS::GameState                     initialState(BWAPI::Broodwar, BWAPI::Broodwar->self(), BuildingManager::Instance().buildingsQueued());
-    BOSS::BuildOrderSearchGoal          goal = GetGoal(goalUnits);
-
-    BOSS::NaiveBuildOrderSearch         nbos(initialState, goal);
-    BOSS::BuildOrder                    buildOrder = nbos.solve();
-
-    return GetMetaVector(buildOrder);
-}
-	
-std::vector<MetaType> BOSSManager::GetOptimizedNaiveBuildOrder(const std::vector<MetaPair> & goalUnits)
-{
-    BOSS::GameState                     initialState(BWAPI::Broodwar, BWAPI::Broodwar->self(), BuildingManager::Instance().buildingsQueued());
-    BOSS::BuildOrderSearchGoal          goal = GetGoal(goalUnits);
-
-    BOSS::BuildOrder                    buildOrder = BOSS::Tools::GetOptimizedNaiveBuildOrder(initialState, goal);
-
-    return GetMetaVector(buildOrder);
-}
-	
-			

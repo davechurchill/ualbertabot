@@ -33,6 +33,6 @@ public:
 	
 	void                setGoal(const ActionType & a, const UnitCountType num);
 	void                setGoalMax(const ActionType & a, const UnitCountType num);
-	void                printGoal() const;
+	std::string         toString() const;
 };
 }

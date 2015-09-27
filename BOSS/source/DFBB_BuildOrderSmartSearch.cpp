@@ -34,8 +34,6 @@ void DFBB_BuildOrderSmartSearch::doSearch()
         _params.relevantActions             = _relevantActions;
         _params.searchTimeLimit             = _searchTimeLimit;
 
-        _params.print();
-
         //BWAPI::Broodwar->printf("Constructing new search object time limit is %lf", _params.searchTimeLimit);
         _stackSearch = DFBB_BuildOrderStackSearch(_params);
         _stackSearch.search();
@@ -45,8 +43,8 @@ void DFBB_BuildOrderSmartSearch::doSearch()
 
     if (_results.solved && !_results.solutionFound)
     {
-        std::cout << "No solution found better than naive, using naive build order" << std::endl;
-        _results.buildOrder = Tools::GetOptimizedNaiveBuildOrder(_params.initialState, _params.goal);
+        //std::cout << "No solution found better than naive, using naive build order" << std::endl;
+        //_results.buildOrder = Tools::GetOptimizedNaiveBuildOrder(_params.initialState, _params.goal);
     }
 }
 
@@ -314,6 +312,5 @@ const DFBB_BuildOrderSearchParameters & DFBB_BuildOrderSmartSearch::getParameter
 void DFBB_BuildOrderSmartSearch::print()
 {
     //initialState.printData();
-    _goal.printGoal();
     printf("\n\n");
 }

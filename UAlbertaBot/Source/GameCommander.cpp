@@ -69,9 +69,11 @@ void GameCommander::drawDebugInterface()
 	InformationManager::Instance().drawUnitInformation(425,30);
 	InformationManager::Instance().drawMapInformation();
 	BuildingManager::Instance().drawBuildingInformation(200,50);
+	BuildingPlacer::Instance().drawReservedTiles();
 	ProductionManager::Instance().drawProductionInformation(30, 30);
-	BOSSManager::Instance().drawSearchInformation(10, 200);
+	BOSSManager::Instance().drawSearchInformation(0, 0);
     BOSSManager::Instance().drawStateInformation(250, 0);
+    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(200,0), "%s", BWAPI::Broodwar->mapName().c_str());
 
     //Micro::drawAPM(2,2);
 

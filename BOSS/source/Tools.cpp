@@ -6,15 +6,15 @@ using namespace BOSS;
 
 #include "JSONTools.h"
 
-BuildOrder Tools::GetOptimizedNaiveBuildOrder(const GameState & state, const BuildOrderSearchGoal & goal)
+BuildOrder Tools::GetOptimizedNaiveBuildOrderOld(const GameState & state, const BuildOrderSearchGoal & goal)
 {
-    BuildOrder bestBuildOrder = GetNaiveBuildOrderAddWorkers(state, goal, 4);
+    BuildOrder bestBuildOrder = GetNaiveBuildOrderAddWorkersOld(state, goal, 4);
     FrameCountType minCompletionTime = bestBuildOrder.getCompletionTime(state);
     UnitCountType bestNumWorkers = bestBuildOrder.getTypeCount(ActionTypes::GetWorker(state.getRace()));
 
     for (UnitCountType numWorkers(8); numWorkers < 27; ++numWorkers)
     {
-        BuildOrder buildOrder = Tools::GetNaiveBuildOrderAddWorkers(state, goal, numWorkers);
+        BuildOrder buildOrder = Tools::GetNaiveBuildOrderAddWorkersOld(state, goal, numWorkers);
         FrameCountType completionTime = buildOrder.getCompletionTime(state);
         UnitCountType workers = buildOrder.getTypeCount(ActionTypes::GetWorker(state.getRace()));
         
@@ -53,7 +53,7 @@ BuildOrder Tools::GetOptimizedNaiveBuildOrder(const GameState & state, const Bui
     return bestBuildOrder;
 }
 
-BuildOrder Tools::GetNaiveBuildOrderAddWorkers(const GameState & state, const BuildOrderSearchGoal & goal, UnitCountType maxWorkers)
+BuildOrder Tools::GetNaiveBuildOrderAddWorkersOld(const GameState & state, const BuildOrderSearchGoal & goal, UnitCountType maxWorkers)
 {
     PrerequisiteSet wanted;
     int minWorkers = 8;

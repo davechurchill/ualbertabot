@@ -35,9 +35,6 @@ void BuildingManager::update()
 
 	// check to see if any buildings have completed and update data structures
 	checkForCompletedBuildings();
-
-	// draw some debug information
-	BuildingPlacer::Instance().drawReservedTiles();
 }
 
 // checks all relevant data structures to see if the given type is being built

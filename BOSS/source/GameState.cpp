@@ -110,6 +110,9 @@ GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self, c
                         {
                             constructing = ActionType(trainType);
                             set = true;
+
+                            // we now need to add this to units in progress, since it won't be detected below as an actual unit in progress
+                            _units.addActionInProgress(trainType, game->getFrameCount() + trainType.buildTime(), false);
                         }
                     }
 
@@ -199,8 +202,6 @@ GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self, c
 		    _units.addCompletedAction(ActionType(type));
 		}
 	}
-
-    Logger::LogAppendToFile(BOSS_LOGFILE, toString());
 }
 #endif
 
@@ -1041,14 +1042,14 @@ const std::string GameState::toString() const
         ss << "\t" << hd.numLarva() << " Larva\n";
     }
 
-    /*
+    
     ss << "\nLegal Actions:\n";
     ActionSet legalActions;
     getAllLegalActions(legalActions);
     for (UnitCountType a(0); a<legalActions.size(); ++a)
     {
         ss << "\t" << legalActions[a].getName() << "\n";
-    }*/
+    }
 
 	ss << "\nResources:\n";
 	ss << "\t" << _minerals / Constants::RESOURCE_SCALE << "\tMinerals\n";

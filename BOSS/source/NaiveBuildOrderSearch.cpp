@@ -10,6 +10,28 @@ NaiveBuildOrderSearch::NaiveBuildOrderSearch(const GameState & state, const Buil
 
 }
 
+bool NaiveBuildOrderSearch::checkUnsolvable()
+{
+    const ActionType & worker = ActionTypes::GetWorker(_state.getRace());
+    const ActionType & supply = ActionTypes::GetSupplyProvider(_state.getRace());
+    const ActionType & depot = ActionTypes::GetResourceDepot(_state.getRace());
+
+    UnitCountType mineralWorkers = _state.getUnitData().getNumMineralWorkers();
+    UnitCountType numDepot = _state.getUnitData().getNumTotal(depot);
+
+    if (mineralWorkers == 0 || numDepot == 0)
+    {
+        return true;
+    }
+
+    if (!_state.isLegal(worker) && !_state.isLegal(supply))
+    {
+        return true;
+    }
+
+    return false;
+}
+
 const BuildOrder & NaiveBuildOrderSearch::solve()
 {
     if (_naiveSolved)
@@ -17,8 +39,15 @@ const BuildOrder & NaiveBuildOrderSearch::solve()
         return _buildOrder;
     }
 
+    if (checkUnsolvable())
+    {
+        bool temp = checkUnsolvable();
+        _buildOrder = BuildOrder();
+        return _buildOrder;
+    }
+
     PrerequisiteSet wanted;
-    int minWorkers = 12;
+    int minWorkers = 6;
 
     const ActionType & worker = ActionTypes::GetWorker(_state.getRace());
 

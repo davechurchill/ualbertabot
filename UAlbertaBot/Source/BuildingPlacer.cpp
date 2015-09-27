@@ -37,7 +37,7 @@ void BuildingPlacer::computeResourceBox()
 	for (auto & unit : BWAPI::Broodwar->getAllUnits())
 	{
 		// if the units are less than 400 away add them if they are resources
-		if (unit->getDistance(start) < 400 && unit->getType().isResourceContainer())
+		if (unit->getDistance(start) < 400 && unit->getType().isMineralField())
 		{
 			unitsAroundNexus.insert(unit);
 		}
@@ -340,7 +340,7 @@ void BuildingPlacer::drawReservedTiles()
     const std::vector<BWAPI::TilePosition> & closestToBuilding = MapTools::Instance().getClosestTilesTo(BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation()));
     Building b(BWAPI::UnitTypes::Terran_Barracks, BWAPI::Broodwar->self()->getStartLocation());
 
-    for (size_t i(0); i < 2000; ++i)
+    for (size_t i(0); i < 0; ++i)
     {
         int x = closestToBuilding[i].x;
         int y = closestToBuilding[i].y;

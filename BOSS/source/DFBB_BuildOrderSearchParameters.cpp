@@ -53,23 +53,27 @@ const UnitCountType & DFBB_BuildOrderSearchParameters::getRepetitionThreshold(co
     return repetitionThresholds[a.ID()]; 
 }
 
-void DFBB_BuildOrderSearchParameters::print()
-{
-    printf("\n\nSearch Parameter Information\n\n");
 
-    printf("%s", useRepetitions ?                    "\tUSE      Repetitions\n" : "");
-    printf("%s", useIncreasingRepetitions ?          "\tUSE      Increasing Repetitions\n" : "");
-    printf("%s", useLandmarkLowerBoundHeuristic ?    "\tUSE      Landmark Lower Bound\n" : "");
-    printf("%s", useResourceLowerBoundHeuristic ?    "\tUSE      Resource Lower Bound\n" : "");
-    printf("%s", useAlwaysMakeWorkers ?              "\tUSE      Always Make Workers\n" : "");
-    printf("%s", useSupplyBounding ?                 "\tUSE      Supply Bounding\n" : "");
-    printf("\n");
+
+std::string DFBB_BuildOrderSearchParameters::toString() const
+{
+    std::stringstream ss;
+
+    ss << "\n\nSearch Parameter Information\n\n";
+
+    ss << (useRepetitions ?                    "\tUSE      Repetitions\n" : "");
+    ss << (useIncreasingRepetitions ?          "\tUSE      Increasing Repetitions\n" : "");
+    ss << (useLandmarkLowerBoundHeuristic ?    "\tUSE      Landmark Lower Bound\n" : "");
+    ss << (useResourceLowerBoundHeuristic ?    "\tUSE      Resource Lower Bound\n" : "");
+    ss << (useAlwaysMakeWorkers ?              "\tUSE      Always Make Workers\n" : "");
+    ss << (useSupplyBounding ?                 "\tUSE      Supply Bounding\n" : "");
+    ss << ("\n");
 
     for (ActionID a(0); a < repetitionValues.size(); ++a)
     {
         if (repetitionValues[a] != 1)
         {
-            printf("\tREP %7d %s\n", repetitionValues[a], ActionTypes::GetActionType(race, a).getName().c_str());
+            ss << "\tREP " << repetitionValues[a] << " " << ActionTypes::GetActionType(race, a).getName() << "\n";
         }
     }
 
@@ -77,9 +81,19 @@ void DFBB_BuildOrderSearchParameters::print()
     {
         if (repetitionThresholds[a] != 0)
         {
-            printf("\tTHR %7d %s\n", repetitionThresholds[a], ActionTypes::GetActionType(race, a).getName().c_str());
+            ss << "\tTHR " << repetitionThresholds[a] << " " << ActionTypes::GetActionType(race, a).getName() << "\n";
         }
     }
 
-    printf("\n\n");
+    ss << "\n\n" << goal.toString();
+    ss << "\n\n" << initialState.toString();
+
+    for (size_t i(0); i < relevantActions.size(); ++i)
+    {
+        ss << "Relevant:   " << relevantActions[i].getName() << "\n";
+    }
+
+    ss << "\n\n" << initialState.getUnitData().getBuildingData().toString();
+
+    return ss.str();
 }

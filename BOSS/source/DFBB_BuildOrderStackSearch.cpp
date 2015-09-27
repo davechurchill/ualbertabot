@@ -164,11 +164,11 @@ UnitCountType DFBB_BuildOrderStackSearch::getRepetitions(const GameState & state
     // make sure we don't repeat to more than we need for this unit type
     if (_params.goal.getGoal(a))
     {
-        repeat = std::min(repeat, _params.goal.getGoal(a) - state.getUnitData().getNumTotal(a));
+        //repeat = std::min(repeat, _params.goal.getGoal(a) - state.getUnitData().getNumTotal(a));
     }
     else if (_params.goal.getGoalMax(a))
     {
-        repeat = std::min(repeat, _params.goal.getGoalMax(a) - state.getUnitData().getNumTotal(a));
+        //repeat = std::min(repeat, _params.goal.getGoalMax(a) - state.getUnitData().getNumTotal(a));
     }
     
     return repeat;
@@ -238,6 +238,7 @@ SEARCH_BEGIN:
         }
 
         REPETITIONS = getRepetitions(STATE, ACTION_TYPE);
+        BOSS_ASSERT(REPETITIONS > 0, "Can't have zero repetitions!");
                 
         // do the action as many times as legal to to 'repeat'
         CHILD_STATE = STATE;

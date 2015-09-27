@@ -107,7 +107,7 @@ public:
     const UnitCountType & getMaxActions(const ActionType & a);
 	const UnitCountType & getRepetitionThreshold(const ActionType & a);
 	
-	void print();
+	std::string toString() const;
 };
 
 }

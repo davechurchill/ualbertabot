@@ -27,6 +27,7 @@
     
     "Macro" :
     {
+        "BOSSFrameLimit"            : 160,
         "WorkersPerRefinery"        : 3,
         "BuildingSpacing"           : 1,
         "PylonSpacing"              : 3

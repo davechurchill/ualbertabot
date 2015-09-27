@@ -74,6 +74,7 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
     if (doc.HasMember("Macro") && doc["Macro"].IsObject())
     {
         const rapidjson::Value & macro = doc["Macro"];
+        JSONTools::ReadInt("BOSSFrameLimit", macro, Config::Macro::BOSSFrameLimit);
         JSONTools::ReadInt("BuildingSpacing", macro, Config::Macro::BuildingSpacing);
         JSONTools::ReadInt("PylongSpacing", macro, Config::Macro::PylonSpacing);
         JSONTools::ReadInt("WorkersPerRefinery", macro, Config::Macro::WorkersPerRefinery);

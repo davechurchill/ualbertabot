@@ -389,7 +389,7 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 
     if (Config::Strategy::StrategyName == "Terran_MarineRush")
     {
-	    goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Marine, numMarines + 12));
+	    goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Marine, numMarines + 13));
     }
     else if (Config::Strategy::StrategyName == "Terran_VultureRush")
     {

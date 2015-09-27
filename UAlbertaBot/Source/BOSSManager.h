@@ -8,9 +8,7 @@
 
 namespace UAlbertaBot
 {
-
-#define SEARCH_FRAME_LIMIT 240
-
+    
 typedef std::shared_ptr<BOSS::DFBB_BuildOrderSmartSearch> SearchPtr;
 
 class BOSSManager
@@ -40,6 +38,8 @@ class BOSSManager
 	std::vector<std::vector<MetaType>>      openingBook;
     const BOSS::RaceID                      getRace() const;
 
+    void                                    logBadSearch();
+
 	BOSSManager();
 
 public:
@@ -62,9 +62,6 @@ public:
     static std::vector<MetaType>			GetMetaVector(const BOSS::BuildOrder & buildOrder);
 	static BOSS::ActionType					GetActionType(const MetaType & t);
 	static MetaType					        GetMetaType(const BOSS::ActionType & a);
-
-    static std::vector<MetaType>            GetNaiveBuildOrder(const std::vector<MetaPair> & goalUnits);
-    static std::vector<MetaType>            GetOptimizedNaiveBuildOrder(const std::vector<MetaPair> & goalUnits);
 };
 
 }

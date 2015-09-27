@@ -94,6 +94,7 @@ namespace Config
 
     namespace Macro
     {
+        extern int BOSSFrameLimit;
         extern int WorkersPerRefinery;
         extern int BuildingSpacing;
         extern int PylonSpacing;
