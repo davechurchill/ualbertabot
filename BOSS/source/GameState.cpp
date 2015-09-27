@@ -244,6 +244,7 @@ void GameState::getAllLegalActions(ActionSet & actions) const
 
 bool GameState::isLegal(const ActionType & action) const
 {
+    const size_t mineralWorkers  = getNumMineralWorkers();
     const size_t numRefineries  = _units.getNumTotal(ActionTypes::GetRefinery(getRace()));
     const size_t numDepots      = _units.getNumTotal(ActionTypes::GetResourceDepot(getRace()));
     const size_t refineriesInProgress = _units.getNumInProgress(ActionTypes::GetRefinery(getRace()));
