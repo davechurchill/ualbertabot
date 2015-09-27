@@ -92,8 +92,6 @@ void RangedManager::executeMicro(const BWAPI::Unitset & targets)
 				}
 			}
 		}
-
-		
 	}
 }
 
@@ -126,6 +124,7 @@ BWAPI::Unit RangedManager::getTarget(BWAPI::Unit rangedUnit, const BWAPI::Unitse
         double LTD              = UnitUtil::CalculateLTD(target, rangedUnit);
         int priority            = getAttackPriority(rangedUnit, target);
         bool targetIsThreat     = LTD > 0;
+        BWAPI::Broodwar->drawTextMap(target->getPosition(), "%d", priority);
 
         //// calculate the highest threat in range of our attack
         //if (targetIsThreat && targetsInRange.contains(target))
@@ -161,17 +160,34 @@ int RangedManager::getAttackPriority(BWAPI::Unit rangedUnit, BWAPI::Unit target)
 	BWAPI::UnitType rangedType = rangedUnit->getType();
 	BWAPI::UnitType targetType = target->getType();
 
-	bool canAttackUs = rangedType.isFlyer() ? targetType.airWeapon() != BWAPI::WeaponTypes::None : targetType.groundWeapon() != BWAPI::WeaponTypes::None;
+	bool isThreat = rangedType.isFlyer() ? targetType.airWeapon() != BWAPI::WeaponTypes::None : targetType.groundWeapon() != BWAPI::WeaponTypes::None;
+
+    if (target->getType().isWorker())
+    {
+        isThreat = false;
+    }
+
+    // if the target is building something near our base something is fishy
+    BWAPI::Position ourBasePosition = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
+    if (target->getType().isWorker() && (target->isConstructing() || target->isRepairing()) && target->getDistance(ourBasePosition) < 1200)
+    {
+        return 100;
+    }
+
+    if (target->getType().isBuilding() && (target->isCompleted() || target->isBeingConstructed()) && target->getDistance(ourBasePosition) < 1200)
+    {
+        return 90;
+    }
 
 	// highest priority is something that can attack us or aid in combat
-    if (targetType ==  BWAPI::UnitTypes::Terran_Bunker || canAttackUs)
+    if (targetType ==  BWAPI::UnitTypes::Terran_Bunker || isThreat)
     {
         return 11;
     }
 	// next priority is worker
 	else if (targetType.isWorker()) 
 	{
-		return 9;
+  		return 9;
 	}
     // next is special buildings
 	else if (targetType == BWAPI::UnitTypes::Zerg_Spawning_Pool)

@@ -31,7 +31,7 @@ BWAPI::Position MapGrid::getNaturalExpansion()
 BWAPI::Position MapGrid::getLeastExplored() 
 {
 	int minSeen = 1000000;
-	double minSeenDist = 100000;
+	double minSeenDist = 0;
 	int leastRow(0), leastCol(0);
 
 	for (int r=0; r<rows; ++r)
@@ -49,7 +49,8 @@ BWAPI::Position MapGrid::getLeastExplored()
 
 			BWAPI::Position home(BWAPI::Broodwar->self()->getStartLocation());
 			double dist = home.getDistance(getCellByIndex(r, c).center);
-			if ((getCellByIndex(r, c).timeLastVisited < minSeen) || ((getCellByIndex(r, c).timeLastVisited == minSeen) && (dist < minSeenDist)))
+            int lastVisited = getCellByIndex(r, c).timeLastVisited;
+			if (lastVisited < minSeen || ((lastVisited == minSeen) && (dist > minSeenDist)))
 			{
 				leastRow = r;
 				leastCol = c;
