@@ -29,6 +29,8 @@ void MeleeManager::executeMicro(const BWAPI::Unitset & targets)
 	// for each meleeUnit
 	for (auto & meleeUnit : meleeUnits)
 	{
+        BWAPI::Broodwar->drawCircleMap(meleeUnit->getPosition(), meleeUnit->getType().groundWeapon().maxRange(), BWAPI::Colors::White, false);
+
 		// if the order is to attack or defend
 		if (order.getType() == SquadOrderTypes::Attack || order.getType() == SquadOrderTypes::Defend) 
         {
@@ -37,6 +39,7 @@ void MeleeManager::executeMicro(const BWAPI::Unitset & targets)
 			{
 				// find the best target for this meleeUnit
 				BWAPI::Unit target = getTarget(meleeUnit, meleeUnitTargets);
+
 
 				// attack it
 				Micro::SmartAttackUnit(meleeUnit, target);
@@ -64,21 +67,14 @@ void MeleeManager::executeMicro(const BWAPI::Unitset & targets)
 // get a target for the meleeUnit to attack
 BWAPI::Unit MeleeManager::getTarget(BWAPI::Unit meleeUnit, const BWAPI::Unitset & targets)
 {
-	int highPriority(0);
-	int closestDist(100000);
+	int highPriority = 0;
+	double closestDist = std::numeric_limits<double>::infinity();
 	BWAPI::Unit closestTarget = nullptr;
 
 	// for each target possiblity
 	for (auto & unit : targets)
 	{
-		int priority = getAttackPriority(unit);
-		if (meleeUnit->getType() == BWAPI::UnitTypes::Protoss_Dark_Templar && unit->getType().isWorker())
-		{
-			priority = 11;
-		}
-
-		if (Config::Debug::DrawUnitTargetInfo) BWAPI::Broodwar->drawTextMap(unit->getPosition().x, unit->getPosition().y, "%d", priority);
-
+		int priority = getAttackPriority(meleeUnit, unit);
 		int distance = meleeUnit->getDistance(unit);
 
 		// if it's a higher priority, or it's closer, set it
@@ -94,9 +90,14 @@ BWAPI::Unit MeleeManager::getTarget(BWAPI::Unit meleeUnit, const BWAPI::Unitset 
 }
 
 	// get the attack priority of a type in relation to a zergling
-int MeleeManager::getAttackPriority(BWAPI::Unit unit) 
+int MeleeManager::getAttackPriority(BWAPI::Unit attacker, BWAPI::Unit unit) 
 {
 	BWAPI::UnitType type = unit->getType();
+
+	if (attacker->getType() == BWAPI::UnitTypes::Protoss_Dark_Templar && unit->getType().isWorker())
+	{
+		return 12;
+	}
 
 	// highest priority is something that can attack us or aid in combat
     if (type ==  BWAPI::UnitTypes::Terran_Bunker)

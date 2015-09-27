@@ -1,4 +1,5 @@
 #include "Squad.h"
+#include "UnitUtil.h"
 
 using namespace UAlbertaBot;
 
@@ -188,7 +189,6 @@ bool Squad::needsToRegroup()
 		return false;
 	}
 
-
     BWAPI::Unit unitClosest = unitClosestToEnemy();
 
 	if (!unitClosest)
@@ -196,6 +196,38 @@ bool Squad::needsToRegroup()
 		_regroupStatus = std::string("\x04 No closest unit");
 		return false;
 	}
+
+    // if none of our units are in attack range of any enemy units, don't retreat
+    std::vector<UnitInfo> enemyCombatUnits;
+    const auto & enemyUnitInfo = InformationManager::Instance().getUnitInfo(BWAPI::Broodwar->enemy());
+
+    bool anyInRange = false;
+    for (const auto & eui : enemyUnitInfo)
+    {
+        bool inRange = false;
+        for (const auto & u : _units)
+        {
+            int range = UnitUtil::GetAttackRange(eui.second.type, u->getType());
+
+            if (range + 128 >= eui.second.lastPosition.getDistance(u->getPosition()))
+            {
+                inRange = true;
+                break;
+            }
+        }
+
+        if (inRange)
+        {
+            anyInRange = true;
+            break;
+        }
+    }
+
+    if (!anyInRange)
+    {
+        return false;
+    }
+
 
     SparCraft::ScoreType score = 0;
 

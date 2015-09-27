@@ -67,7 +67,7 @@ void UnitData::removeUnit(BWAPI::Unit unit)
 void UnitData::removeBadUnits()
 {
 	// for each unit in the map
-	for (UIMapIter iter(unitMap.begin()); iter != unitMap.end();)
+	for (auto iter(unitMap.begin()); iter != unitMap.end();)
 	{
 		// if it is bad
 		if (badUnitInfo(iter->second))
@@ -103,9 +103,9 @@ const bool UnitData::badUnitInfo(const UnitInfo & ui) const
 
 void UnitData::getCloakedUnits(std::set<UnitInfo> & v) const 
 {
-	FOR_EACH_UIMAP_CONST(iter, unitMap)
+	for (const auto & kv : unitMap)
 	{
-		const UnitInfo & ui(iter->second);
+		const UnitInfo & ui(kv.second);
 
 		if (ui.canCloak())
 		{
@@ -116,9 +116,9 @@ void UnitData::getCloakedUnits(std::set<UnitInfo> & v) const
 
 void UnitData::getDetectorUnits(std::set<UnitInfo> & v) const 
 {
-	FOR_EACH_UIMAP_CONST(iter, unitMap)
+	for (const auto & kv : unitMap)
 	{
-		const UnitInfo & ui(iter->second);
+		const UnitInfo & ui(kv.second);
 
 		if (ui.isDetector())
 		{
@@ -129,9 +129,9 @@ void UnitData::getDetectorUnits(std::set<UnitInfo> & v) const
 
 void UnitData::getFlyingUnits(std::set<UnitInfo> & v) const 
 {
-	FOR_EACH_UIMAP_CONST(iter, unitMap)
+	for (const auto & kv : unitMap)
 	{
-		const UnitInfo & ui(iter->second);
+		const UnitInfo & ui(kv.second);
 
 		if (ui.isFlyer())
 		{
@@ -147,9 +147,9 @@ bool UnitData::hasCloakedUnits() const
 		return true;
 	}
 
-	FOR_EACH_UIMAP_CONST(iter, unitMap)
+	for (const auto & kv : unitMap)
 	{
-		const UnitInfo & ui(iter->second);
+		const UnitInfo & ui(kv.second);
 
 		if (ui.canCloak())
 		{
@@ -163,9 +163,9 @@ bool UnitData::hasCloakedUnits() const
 int UnitData::numCloakedUnits()	const
 {
 	int count = 0;
-	FOR_EACH_UIMAP_CONST(iter, unitMap)
+	for (const auto & kv : unitMap)
 	{
-		const UnitInfo & ui(iter->second);
+		const UnitInfo & ui(kv.second);
 
 		if (ui.canCloak())
 		{
@@ -178,9 +178,9 @@ int UnitData::numCloakedUnits()	const
 
 bool UnitData::hasDetectorUnits() const 
 { 
-	FOR_EACH_UIMAP_CONST(iter, unitMap)
+	for (const auto & kv : unitMap)
 	{
-		const UnitInfo & ui(iter->second);
+		const UnitInfo & ui(kv.second);
 
 		if (ui.isDetector())
 		{

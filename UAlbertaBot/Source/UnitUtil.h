@@ -13,56 +13,16 @@ namespace UnitUtil
     bool CanAttackGround(BWAPI::Unit unit);
     bool IsGroundTarget(BWAPI::Unit unit);
     bool IsAirTarget(BWAPI::Unit unit);
-    BWAPI::Unit GetTrainee(BWAPI::Unit unit);
+    bool CanAttack(BWAPI::Unit attacker, BWAPI::Unit target);
+    bool CanAttack(BWAPI::UnitType attacker, BWAPI::UnitType target);
+    double CalculateLTD(BWAPI::Unit attacker, BWAPI::Unit target);
+    int GetAttackRange(BWAPI::Unit attacker, BWAPI::Unit target);
+    int GetAttackRange(BWAPI::UnitType attacker, BWAPI::UnitType target);
 
-    template <typename ValueFunction>
-    BWAPI::Unit GetMinUnit(const BWAPI::Unitset & units, const ValueFunction & fn)
-    {
-        if (units.empty())
-        {
-            return nullptr;
-        }
-        
-        auto it = units.begin();
-        BWAPI::Unit minUnit = *it;
-        auto min = fn(minUnit);
+    BWAPI::WeaponType GetWeapon(BWAPI::Unit attacker, BWAPI::Unit target);
+    BWAPI::WeaponType GetWeapon(BWAPI::UnitType attacker, BWAPI::UnitType target);
 
-        for (; it != units.end(); ++it)
-        {
-            auto val = fn(*it);
-            if (val < min)
-            {
-                min = val;
-                minUnit = *it;
-            }
-        }
-
-        return minUnit;
-    }
-    
-    template <typename ValueFunction>
-    BWAPI::Unit GetManUnit(const BWAPI::Unitset & units, const ValueFunction & fn)
-    {
-        if (units.empty())
-        {
-            return nullptr;
-        }
-        
-        auto it = units.begin();
-        BWAPI::Unit maxUnit = *it;
-        auto max = fn(minUnit);
-
-        for (; it != units.end(); ++it)
-        {
-            auto val = fn(*it);
-            if (val > min)
-            {
-                max = val;
-                maxUnit = *it;
-            }
-        }
-
-        return maxUnit;
-    }
+    double GetDistanceBetweenTwoRectangles(Rect & rect1, Rect & rect2);
+    Rect GetRect(BWAPI::Unit unit);
 };
 }

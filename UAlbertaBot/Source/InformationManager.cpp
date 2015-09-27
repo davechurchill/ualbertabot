@@ -113,9 +113,9 @@ void InformationManager::updateBaseLocationInfo()
 	}
 
 	// for each enemy unit we know about
-	FOR_EACH_UIMAP_CONST(iter, enemyUnitData.getUnits())
+	for (const auto & kv : enemyUnitData.getUnits())
 	{
-		const UnitInfo & ui(iter->second);
+		const UnitInfo & ui(kv.second);
 		BWAPI::UnitType type = ui.type;
 
 		// if the unit is a building
@@ -127,9 +127,9 @@ void InformationManager::updateBaseLocationInfo()
 	}
 
 	// for each of our units
-	FOR_EACH_UIMAP_CONST(iter, selfUnitData.getUnits())
+	for (const auto & kv : selfUnitData.getUnits())
 	{
-		const UnitInfo & ui(iter->second);
+		const UnitInfo & ui(kv.second);
 		BWAPI::UnitType type = ui.type;
 
 		// if the unit is a building
@@ -164,9 +164,9 @@ bool InformationManager::isEnemyBuildingInRegion(BWTA::Region * region)
 		return false;
 	}
 
-	FOR_EACH_UIMAP_CONST(iter, enemyUnitData.getUnits())
+	for (const auto & kv : enemyUnitData.getUnits())
 	{
-		const UnitInfo & ui(iter->second);
+		const UnitInfo & ui(kv.second);
 		if (ui.type.isBuilding()) 
 		{
 			if (BWTA::getRegion(BWAPI::TilePosition(ui.lastPosition)) == region) 
@@ -238,9 +238,9 @@ void InformationManager::drawExtendedInterface()
     int verticalOffset = -10;
 
     // draw enemy units
-    FOR_EACH_UIMAP_CONST(iter, getUnitData(BWAPI::Broodwar->enemy()).getUnits())
+    for (const auto & kv : getUnitData(BWAPI::Broodwar->enemy()).getUnits())
 	{
-        const UnitInfo & ui(iter->second);
+        const UnitInfo & ui(kv.second);
 
 		BWAPI::UnitType type(ui.type);
         int hitPoints = ui.lastHealth;
@@ -584,9 +584,9 @@ void InformationManager::getNearbyForce(std::vector<UnitInfo> & unitInfo, BWAPI:
 {
 	bool hasBunker = false;
 	// for each unit we know about for that player
-	FOR_EACH_UIMAP_CONST(iter, getUnitData(player).getUnits())
+	for (const auto & kv : getUnitData(player).getUnits())
 	{
-		const UnitInfo & ui(iter->second);
+		const UnitInfo & ui(kv.second);
 
 		// if it's a combat unit we care about
 		// and it's finished! 
@@ -617,9 +617,9 @@ bool InformationManager::nearbyForceHasCloaked(BWAPI::Position p, BWAPI::PlayerI
 {
 	if (Config::Debug::DrawEnemyUnitInfo) BWAPI::Broodwar->drawCircleMap(p.x, p.y, radius, BWAPI::Colors::Red);
 
-	FOR_EACH_UIMAP_CONST(iter, getUnitData(player).getUnits())
+	for (const auto & kv : getUnitData(player).getUnits())
 	{
-		const UnitInfo & ui(iter->second);
+		const UnitInfo & ui(kv.second);
 		BWAPI::UnitType type(ui.type);
 
 		// we don't care about workers

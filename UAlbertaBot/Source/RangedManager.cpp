@@ -25,7 +25,25 @@ void RangedManager::executeMicro(const BWAPI::Unitset & targets)
 	BWAPI::Unitset rangedUnitTargets;
     std::copy_if(targets.begin(), targets.end(), std::inserter(rangedUnitTargets, rangedUnitTargets.end()), 
                  [](BWAPI::Unit u){ return u->isVisible(); });
-        
+    
+    BWAPI::Unitset targetsInRange;
+    for (auto & target : targets)
+    {
+        for (auto & unit : rangedUnits)
+        {
+            int myAttackRange       = UnitUtil::GetAttackRange(unit, target);
+            int targetAttackRange   = UnitUtil::GetAttackRange(target, unit);
+            int maxRange            = std::max(myAttackRange, targetAttackRange);
+            double distance         = unit->getDistance(target);
+            bool isInRange          = maxRange + 32 > distance;
+
+            if (isInRange)
+            {
+                targetsInRange.insert(target);
+            }
+        }
+    }
+
 	// for each zealot
 	for (auto & rangedUnit : rangedUnits)
 	{
@@ -39,7 +57,7 @@ void RangedManager::executeMicro(const BWAPI::Unitset & targets)
 			if (!rangedUnitTargets.empty())
 			{
 				// find the best target for this zealot
-				BWAPI::Unit target = getTarget(rangedUnit, rangedUnitTargets);
+				BWAPI::Unit target = getTarget(rangedUnit, rangedUnitTargets, targetsInRange);
                 
                 if (target && Config::Debug::DrawUnitTargetInfo) 
 	            {
@@ -80,70 +98,61 @@ void RangedManager::executeMicro(const BWAPI::Unitset & targets)
 }
 
 // get a target for the zealot to attack
-BWAPI::Unit RangedManager::getTarget(BWAPI::Unit rangedUnit, const BWAPI::Unitset & targets)
+BWAPI::Unit RangedManager::getTarget(BWAPI::Unit rangedUnit, const BWAPI::Unitset & targets, const BWAPI::Unitset & targetsInRange)
 {
-	int range = rangedUnit->getType().groundWeapon().maxRange();
-
-    int bestPriorityDistance = 1000000;
+	int bestPriorityDistance = 1000000;
     int bestPriority = 0;
-    int bestPriorityHP = 100000;
+    
+    double bestLTD = 0;
 
-	BWAPI::Unit bestTarget = nullptr;
-   
-    if (rangedUnit->isFlying())
+	BWAPI::Unit bestTargetThreatInRange = nullptr;
+    double bestTargetThreatInRangeLTD = 0;
+    
+    int highPriority = 0;
+	double closestDist = std::numeric_limits<double>::infinity();
+	BWAPI::Unit closestTarget = nullptr;
+
+    // check first for units that are in range of our attack that can cause damage
+    // choose the highest priority one from them at the lowest health
+    for (const auto & target : targets)
     {
-	    for (auto & unit : targets)
-	    {
-		    int priority = getAttackPriority(rangedUnit, unit);
-		    int distance = rangedUnit->getDistance(unit);
-            int hp = unit->getHitPoints() + unit->getShields();
+        // if our unit can't attack the target then skip it
+        if (!UnitUtil::CanAttack(rangedUnit, target))
+        {
+            continue;
+        }
+        
+        double distance         = rangedUnit->getDistance(target);
+        double LTD              = UnitUtil::CalculateLTD(target, rangedUnit);
+        int priority            = getAttackPriority(rangedUnit, target);
+        bool targetIsThreat     = LTD > 0;
 
-            bool newBest = !bestTarget;
-            if (priority > bestPriority)
-            {
-                newBest = true;
-            }
-            else if (priority == bestPriority)
-            {
-                if (hp < bestPriorityHP)
-                {
-                    newBest = true;
-                }
-                else if (hp == bestPriority && distance < bestPriorityDistance)
-                {
-                    newBest = true;
-                }
-            }
+        //// calculate the highest threat in range of our attack
+        //if (targetIsThreat && targetsInRange.contains(target))
+        //{
+        //    if (!bestTargetThreatInRange || (LTD > bestTargetThreatInRangeLTD))
+        //    {
+        //        bestTargetThreatInRangeLTD = LTD;
+        //        bestTargetThreatInRange = target;
+        //    }
+        //}
 
-            if (newBest)
-            {
-                bestTarget = unit;
-                bestPriorityDistance = distance;
-                bestPriority = priority;
-                bestPriorityHP = hp;
-            }
-	    }
-    }
-    else
-    {
-        for (auto & unit : targets)
-	    {
-		    int priority = getAttackPriority(rangedUnit, unit);
-		    int distance = rangedUnit->getDistance(unit);
-            int hp = unit->getHitPoints() + unit->getShields();
-
-            if (!bestTarget || (priority > bestPriority) || (priority == bestPriority && distance < bestPriorityDistance))
-            {
-                bestTarget = unit;
-                bestPriorityDistance = distance;
-                bestPriority = priority;
-                bestPriorityHP = hp;
-            }
-	    }
+        // secondary: attack highest priority non-threat target
+        // this way we don't chase after threats, we only attack them if they're a danger
+		if (!closestTarget || (priority > highPriority) || (priority == highPriority && distance < closestDist))
+		{
+			closestDist = distance;
+			highPriority = priority;
+			closestTarget = target;
+		}       
     }
 
-	// if there is a highest priority unit in range, attack it first
-	return bestTarget;
+    if (bestTargetThreatInRange)
+    {
+        return bestTargetThreatInRange;
+    }
+
+    return closestTarget;
 }
 
 	// get the attack priority of a type in relation to a zergling
@@ -159,14 +168,6 @@ int RangedManager::getAttackPriority(BWAPI::Unit rangedUnit, BWAPI::Unit target)
     {
         return 11;
     }
-    else if (targetType == BWAPI::UnitTypes::Terran_Medic ||  
-		targetType ==  BWAPI::UnitTypes::Terran_Bunker ||
-		targetType == BWAPI::UnitTypes::Protoss_High_Templar ||
-		targetType == BWAPI::UnitTypes::Protoss_Reaver ||
-		(targetType.isWorker() && unitNearChokepoint(target))) 
-	{
-		return 10;
-	} 
 	// next priority is worker
 	else if (targetType.isWorker()) 
 	{

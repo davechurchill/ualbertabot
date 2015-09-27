@@ -119,11 +119,20 @@ const BWAPI::Unitset & MicroManager::getUnits() const
 
 void MicroManager::regroup(const BWAPI::Position & regroupPosition) const
 {
+    BWAPI::Position ourBasePosition = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
+    int regroupDistanceFromBase = MapTools::Instance().getGroundDistance(regroupPosition, ourBasePosition);
+
 	// for each of the units we have
 	for (auto & unit : _units)
 	{
+        int unitDistanceFromBase = MapTools::Instance().getGroundDistance(unit->getPosition(), ourBasePosition);
+
 		// if the unit is outside the regroup area
-		if (unit->getDistance(regroupPosition) > 100)
+        if (unitDistanceFromBase > regroupDistanceFromBase)
+        {
+            Micro::SmartMove(unit, ourBasePosition);
+        }
+		else if (unit->getDistance(regroupPosition) > 100)
 		{
 			// regroup it
 			Micro::SmartMove(unit, regroupPosition);

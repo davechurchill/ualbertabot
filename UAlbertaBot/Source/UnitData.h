@@ -134,10 +134,6 @@ struct UnitInfo
 
 typedef std::vector<UnitInfo> UnitInfoVector;
 typedef std::map<BWAPI::Unit, UnitInfo> UIMap;
-typedef UIMap::iterator UIMapIter;
-typedef UIMap::const_iterator ConstUIMapIter;
-#define FOR_EACH_UIMAP(ITER, MAP) for (UIMapIter ITER(MAP.begin()); ITER != MAP.end(); ITER++)
-#define FOR_EACH_UIMAP_CONST(ITER, MAP) for (ConstUIMapIter ITER(MAP.begin()); ITER != MAP.end(); ITER++)
 
 class UnitData 
 {

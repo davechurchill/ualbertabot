@@ -18,7 +18,7 @@ public:
 
 	BWAPI::Unit chooseTarget(BWAPI::Unit meleeUnit, const BWAPI::Unitset & targets, std::map<BWAPI::Unit, int> & numTargeting);
 	BWAPI::Unit closestMeleeUnit(BWAPI::Unit target, const BWAPI::Unitset & meleeUnitToAssign);
-	int getAttackPriority(BWAPI::Unit unit);
+	int getAttackPriority(BWAPI::Unit attacker, BWAPI::Unit unit);
 	BWAPI::Unit getTarget(BWAPI::Unit meleeUnit, const BWAPI::Unitset & targets);
 };
 }

@@ -206,7 +206,7 @@ void CombatCommander::updateDefenseSquads()
             if (unit->getType().isWorker())
             {
                 enemyUnitsInRegion.erase(unit);
-                return;
+                break;
             }
         }
 
@@ -226,14 +226,14 @@ void CombatCommander::updateDefenseSquads()
             }
             
             // and return, nothing to defend here
-            return;
+            continue;
         }
         else 
         {
             // if we don't have a squad assigned to this region already, create one
             if (!_squadData.squadExists(squadName.str()))
             {
-                SquadOrder defendRegion(SquadOrderTypes::Defend, regionCenter, 1000, "Defend Region!");
+                SquadOrder defendRegion(SquadOrderTypes::Defend, regionCenter, 32 * 16, "Defend Region!");
                 _squadData.addSquad(squadName.str(), Squad(squadName.str(), defendRegion, BaseDefensePriority));
             }
         }

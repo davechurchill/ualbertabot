@@ -54,3 +54,9 @@ struct double2
 		*this = double2(x * cos(angle) - y * sin(angle), y * cos(angle) + x * sin(angle));
 	}
 };
+
+struct Rect
+{
+    int x, y;
+    int height, width;
+};
