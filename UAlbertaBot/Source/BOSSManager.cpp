@@ -138,11 +138,11 @@ void BOSSManager::update(double timeLimit)
             {
                 if (_smartSearch->getResults().solutionFound)
                 {
-                    _previousStatus = std::string("\x03") + "BOSSSolve Solution\n";
+                    _previousStatus = std::string("\x03") + "BOSS Solve Solution\n";
                 }
                 else
                 {
-                    _previousStatus = std::string("\x07") + "BOSSSolve NoSolution\n";
+                    _previousStatus = std::string("\x07") + "BOSS Solve NoSolution\n";
                 }
             }
 

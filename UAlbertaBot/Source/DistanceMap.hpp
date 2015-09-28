@@ -33,7 +33,7 @@ public:
 		, moveTo(std::vector<char>(BWAPI::Broodwar->mapWidth() * BWAPI::Broodwar->mapHeight(), 'X'))
 		, rows(BWAPI::Broodwar->mapHeight()), cols(BWAPI::Broodwar->mapWidth()), startRow(-1), startCol(-1) 
 	{
-		BWAPI::Broodwar->printf("New Distance Map With Dimensions (%d, %d)", rows, cols);
+		//BWAPI::Broodwar->printf("New Distance Map With Dimensions (%d, %d)", rows, cols);
 	}
 
 	int & operator [] (const int index)						{ return dist[index]; }
