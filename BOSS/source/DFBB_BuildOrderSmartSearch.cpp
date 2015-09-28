@@ -66,7 +66,7 @@ void DFBB_BuildOrderSmartSearch::calculateSearchSettings()
 
     // set the number of supply providers required
     _goal.setGoalMax(supplyProvider, calculateSupplyProvidersRequired());
-
+        
     // set the maximums for all goal prerequisites
     setPrerequisiteGoalMax();
 
@@ -75,6 +75,17 @@ void DFBB_BuildOrderSmartSearch::calculateSearchSettings()
 
     // set the repetitions
     setRepetitions();
+
+    int maxWorkers = 60;
+    if (_goal.getGoal(worker) > maxWorkers)
+    {
+        _goal.setGoal(worker, maxWorkers);
+    }
+
+    if (_goal.getGoalMax(worker) > maxWorkers)
+    {
+        _goal.setGoalMax(worker, maxWorkers);
+    }
 }
 
 // calculates maximum number of refineries we'll need

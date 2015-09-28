@@ -29,8 +29,6 @@ void MeleeManager::executeMicro(const BWAPI::Unitset & targets)
 	// for each meleeUnit
 	for (auto & meleeUnit : meleeUnits)
 	{
-        BWAPI::Broodwar->drawCircleMap(meleeUnit->getPosition(), meleeUnit->getType().groundWeapon().maxRange(), BWAPI::Colors::White, false);
-
 		// if the order is to attack or defend
 		if (order.getType() == SquadOrderTypes::Attack || order.getType() == SquadOrderTypes::Defend) 
         {
