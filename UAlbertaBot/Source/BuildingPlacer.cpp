@@ -37,7 +37,7 @@ void BuildingPlacer::computeResourceBox()
 	for (auto & unit : BWAPI::Broodwar->getAllUnits())
 	{
 		// if the units are less than 400 away add them if they are resources
-		if (unit->getDistance(start) < 400 && unit->getType().isMineralField())
+		if (unit->getDistance(start) < 300 && unit->getType().isMineralField())
 		{
 			unitsAroundNexus.insert(unit);
 		}

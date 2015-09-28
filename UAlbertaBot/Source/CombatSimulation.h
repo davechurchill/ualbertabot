@@ -17,16 +17,13 @@ namespace UAlbertaBot
 {
 class CombatSimulation
 {
-
 	SparCraft::GameState		state;
-	bool						hasLogged;
 
 public:
 
 	CombatSimulation();
 
 	void setCombatUnits(const BWAPI::Position & center, const int radius);
-    bool checkZealotVsZergling(const BWAPI::Position & center, const int radius);
 
 	SparCraft::ScoreType simulateCombat();
 

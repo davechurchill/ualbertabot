@@ -3,7 +3,6 @@
 using namespace UAlbertaBot;
 
 CombatSimulation::CombatSimulation()
-	: hasLogged(false)
 {
 	
 }
@@ -88,58 +87,6 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
 	s.finishedMoving();
 
 	state = s;
-}
-
-bool CombatSimulation::checkZealotVsZergling(const BWAPI::Position & center, const int radius)
-{
-    if (!BWAPI::Broodwar->enemy()->getRace() == BWAPI::Races::Zerg)
-    {
-        return false;
-    }
-
-	BWAPI::Broodwar->drawCircleMap(center.x, center.y, 10, BWAPI::Colors::Red, true);
-
-	BWAPI::Unitset ourCombatUnits;
-	std::vector<UnitInfo> enemyCombatUnits;
-
-	MapGrid::Instance().GetUnits(ourCombatUnits,   center, Config::Micro::CombatRegroupRadius, true, false);
-	InformationManager::Instance().getNearbyForce(enemyCombatUnits, center, BWAPI::Broodwar->enemy(), Config::Micro::CombatRegroupRadius);
-
-    int numZealots = 0;
-	for (auto & unit : ourCombatUnits)
-	{
-        if (InformationManager::Instance().isCombatUnit(unit->getType()) && SparCraft::System::isSupportedUnitType(unit->getType()))
-		{
-            if (unit->getType() == BWAPI::UnitTypes::Protoss_Zealot)
-            {
-                numZealots++;
-            }
-		}
-	}
-
-    bool onlyZerglings = enemyCombatUnits.empty() ? false : true;
-    int numZerglings = 0;
-	for (UnitInfo & ui : enemyCombatUnits)
-	{
-        if (!ui.type.isFlyer() && SparCraft::System::isSupportedUnitType(ui.type) && ui.completed)
-		{
-            if (ui.type == BWAPI::UnitTypes::Zerg_Zergling)
-            {
-                numZerglings++;
-            }
-            else
-            {
-                onlyZerglings = false;
-            }
-		}
-	}
-
-    if (onlyZerglings && (numZealots*3 > numZerglings))
-    {
-        return true;
-    }
-
-    return false;
 }
 
 // Gets a SparCraft unit from a BWAPI::Unit, used for our own units since we have all their info
@@ -236,32 +183,4 @@ const SparCraft::IDType CombatSimulation::getSparCraftPlayerID(BWAPI::PlayerInte
 	}
 
 	return SparCraft::Players::Player_None;
-}
-
-void CombatSimulation::logState(const SparCraft::GameState & state)
-{
-	if (hasLogged)
-	{
-		return;
-	}
-
-	std::stringstream log;
-
-	//log << "State: [EVAL=" << state.eval(0) << ", SUMSQRT=(" << state.getTotalSumDPS(0) << "," << state.getTotalSumDPS(1) << ")\n";
-
-	for (size_t p(0); p<SparCraft::Constants::Num_Players; ++p)
-	{
-		log << "Player " << p << " units:\n";
-
-		for (size_t u(0); u<state.numUnits(p); ++u)
-		{
-			const SparCraft::Unit & unit(state.getUnit(p, u));
-
-			log << "Unit " << u << ": " << unit.name() << " [HP=" << unit.currentHP() << ", X=" << unit.x() << ", Y=" << unit.y() << "]\n";
-		}
-	}
-
-	//Logger::Instance().log(log.str());
-
-	hasLogged = true;
 }

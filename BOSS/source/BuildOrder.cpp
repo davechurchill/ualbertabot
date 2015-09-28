@@ -3,6 +3,7 @@
 using namespace BOSS;
 
 BuildOrder::BuildOrder()
+    : _typeCount(128, 0)
 {
 
 }
@@ -10,12 +11,6 @@ BuildOrder::BuildOrder()
 void BuildOrder::add(const ActionType & type)
 {
     BOSS_ASSERT((_buildOrder.size() == 0) || (type.getRace() == _buildOrder.back().getRace()), "Cannot have a build order with multiple races");
-
-    // if this is the first item, set up the count vector
-    if (_buildOrder.size() == 0)
-    {
-        _typeCount = std::vector<size_t>(ActionTypes::GetAllActionTypes(type.getRace()).size(), 0);
-    }
 
     _buildOrder.push_back(type);
     _typeCount[type.ID()]++;

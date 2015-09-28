@@ -73,7 +73,7 @@ void GameCommander::drawDebugInterface()
 	ProductionManager::Instance().drawProductionInformation(30, 30);
 	BOSSManager::Instance().drawSearchInformation(0, 0);
     BOSSManager::Instance().drawStateInformation(250, 0);
-    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(200,0), "%s", BWAPI::Broodwar->mapName().c_str());
+    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(200,0), "%s %d", BWAPI::Broodwar->mapName().c_str(), BWAPI::Broodwar->getFrameCount());
 
     //Micro::drawAPM(2,2);
 

@@ -38,6 +38,11 @@ GameState::GameState()
 	_numMovements.fill(0);
     _prevHPSum.fill(0);
 
+    _units[0] = std::vector<Unit>(Constants::Max_Units, Unit());
+    _units[1] = std::vector<Unit>(Constants::Max_Units, Unit());
+    _unitIndex[0] = std::vector<int>(Constants::Max_Units, 0);
+    _unitIndex[1] = std::vector<int>(Constants::Max_Units, 0);
+
 	for (size_t u(0); u<_maxUnits; ++u)
 	{
         _unitIndex[0][u] = u;

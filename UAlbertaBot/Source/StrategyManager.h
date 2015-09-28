@@ -36,16 +36,14 @@ class StrategyManager
 	const	double				getUCBValue(const size_t & strategy) const;
 	
 	// strategy functions, add your own here
-	const	bool				expandProtossZealotRush() const;
+	const	bool				shouldExpandNow() const;
 	const	MetaPairVector		getProtossZealotRushBuildOrderGoal() const;
-    const	MetaPairVector		getProtossZealotDropBuildOrderGoal() const;
 
-	const	bool				expandProtossDarkTemplar() const;
 	const	MetaPairVector		getProtossDarkTemplarBuildOrderGoal() const;
 
-	const	bool				expandProtossDragoons() const;
 	const	MetaPairVector		getProtossDragoonsBuildOrderGoal() const;
 
+    const	MetaPairVector		getProtossBuildOrderGoal() const;
 	const	MetaPairVector		getTerranBuildOrderGoal() const;
 	const	MetaPairVector		getZergBuildOrderGoal() const;
 

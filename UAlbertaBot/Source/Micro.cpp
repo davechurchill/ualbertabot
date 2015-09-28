@@ -202,6 +202,14 @@ void Micro::SmartRepair(BWAPI::Unit unit, BWAPI::Unit target)
 
 void Micro::SmartKiteTarget(BWAPI::Unit rangedUnit, BWAPI::Unit target)
 {
+    UAB_ASSERT(rangedUnit, "SmartKiteTarget: Unit not valid");
+    UAB_ASSERT(target, "SmartKiteTarget: Target not valid");
+
+    if (!rangedUnit || !target)
+    {
+        return;
+    }
+
 	double range(rangedUnit->getType().groundWeapon().maxRange());
 	if (rangedUnit->getType() == BWAPI::UnitTypes::Protoss_Dragoon && BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Singularity_Charge))
 	{
@@ -256,6 +264,14 @@ void Micro::SmartKiteTarget(BWAPI::Unit rangedUnit, BWAPI::Unit target)
 
 void Micro::MutaDanceTarget(BWAPI::Unit muta, BWAPI::Unit target)
 {
+    UAB_ASSERT(muta, "MutaDanceTarget: Muta not valid");
+    UAB_ASSERT(target, "MutaDanceTarget: Target not valid");
+
+    if (!muta || !target)
+    {
+        return;
+    }
+
     const int cooldown                  = muta->getType().groundWeapon().damageCooldown();
     const int latency                   = BWAPI::Broodwar->getLatency();
     const double speed                  = muta->getType().topSpeed();

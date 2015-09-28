@@ -460,3 +460,33 @@ BWAPI::Unit CombatCommander::findClosestWorkerToTarget(BWAPI::Unitset & unitsToA
 
     return closestMineralWorker;
 }
+
+// when do we want to defend with our workers?
+// this function can only be called if we have no fighters to defend with
+int CombatCommander::defendWithWorkers()
+{
+	// our home nexus position
+	BWAPI::Position homePosition = BWTA::getStartLocation(BWAPI::Broodwar->self())->getPosition();;
+
+	// enemy units near our workers
+	int enemyUnitsNearWorkers = 0;
+
+	// defense radius of nexus
+	int defenseRadius = 300;
+
+	// fill the set with the types of units we're concerned about
+	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
+	{
+		// if it's a zergling or a worker we want to defend
+		if (unit->getType() == BWAPI::UnitTypes::Zerg_Zergling)
+		{
+			if (unit->getDistance(homePosition) < defenseRadius)
+			{
+				enemyUnitsNearWorkers++;
+			}
+		}
+	}
+
+	// if there are enemy units near our workers, we want to defend
+	return enemyUnitsNearWorkers;
+}
