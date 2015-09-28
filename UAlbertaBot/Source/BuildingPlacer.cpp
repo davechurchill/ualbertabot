@@ -336,26 +336,6 @@ void BuildingPlacer::drawReservedTiles()
 			}
 		}
 	}
-
-    const std::vector<BWAPI::TilePosition> & closestToBuilding = MapTools::Instance().getClosestTilesTo(BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation()));
-    Building b(BWAPI::UnitTypes::Terran_Barracks, BWAPI::Broodwar->self()->getStartLocation());
-
-    for (size_t i(0); i < 0; ++i)
-    {
-        int x = closestToBuilding[i].x;
-        int y = closestToBuilding[i].y;
-
-        if (!(reserveMap[x][y] || isInResourceBox(x,y)) && canBuildHere(closestToBuilding[i], b))
-        {
-            int x1 = x*32 + 1;
-			int y1 = y*32 + 1;
-			int x2 = (x+1)*32 - 1;
-			int y2 = (y+1)*32 - 1;
-
-            BWAPI::Broodwar->drawTextMap(x1+3, y1+2, "%d", i);
-            BWAPI::Broodwar->drawBoxMap(x1, y1, x2, y2, BWAPI::Colors::Green, false);
-        }
-    }
 }
 
 void BuildingPlacer::freeTiles(BWAPI::TilePosition position, int width, int height)

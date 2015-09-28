@@ -47,7 +47,7 @@ const BuildOrder & NaiveBuildOrderSearch::solve()
     }
 
     PrerequisiteSet wanted;
-    int minWorkers = 6;
+    int minWorkers = 0;
 
     const ActionType & worker = ActionTypes::GetWorker(_state.getRace());
 

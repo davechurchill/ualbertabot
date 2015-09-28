@@ -52,10 +52,10 @@ namespace Config
     
     namespace Debug								
     {
-        bool PrintModuleTimeout             = false;	
-        bool DrawBuildOrderSearchInfo       = false;
+        bool DrawGameInfo                   = true;
         bool DrawUnitHealthBars             = true;
         bool DrawProductionInfo             = true;
+        bool DrawBuildOrderSearchInfo       = false;
         bool DrawScoutInfo                  = false;
         bool DrawResourceInfo               = false;
         bool DrawWorkerInfo                 = false;
@@ -70,6 +70,7 @@ namespace Config
         bool DrawUnitTargetInfo             = false;
         bool DrawSquadInfo                  = false;
         bool DrawBOSSStateInfo              = false;
+        bool PrintModuleTimeout             = false;	
 
         std::string ErrorLogFilename        = "UAB_ErrorLog.txt";
         bool LogAssertToErrorFile           = false;

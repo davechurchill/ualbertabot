@@ -38,10 +38,10 @@
         "ErrorLogFilename"          : "bwapi-data/AI/UAlbertaBot_ErrorLog.txt",
         "LogAssertToErrorFile"      : false,
         
-        "PrintModuleTimeout"        : false,
-        "DrawBuildOrderSearchInfo"  : false,
+        "DrawGameInfo"              : true,
         "DrawUnitHealthBars"        : true,
         "DrawProductionInfo"        : true,
+        "DrawBuildOrderSearchInfo"  : false,
         "DrawScoutInfo"             : false,
         "DrawEnemyUnitInfo"         : false,
         "DrawModuleTimers"          : false,
@@ -55,7 +55,8 @@
         "DrawMouseCursorInfo"       : false,
         "DrawBuildingInfo"          : false,
         "DrawReservedBuildingTiles" : false,
-        "DrawBOSSStateInfo"         : false
+        "DrawBOSSStateInfo"         : false,
+        "PrintModuleTimeout"        : false
     },
     
     "Modules" :

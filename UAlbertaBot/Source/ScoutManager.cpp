@@ -224,8 +224,6 @@ void ScoutManager::gasSteal()
         return;
     }
 
-    int scoutDistanceToEnemy = MapTools::Instance().getGroundDistance(_workerScout->getPosition(), enemyBaseLocation->getPosition());
-    
     BWAPI::Unit enemyGeyser = getEnemyGeyser();
     if (!enemyGeyser)
     {

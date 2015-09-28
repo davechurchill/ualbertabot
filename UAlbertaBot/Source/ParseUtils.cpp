@@ -86,7 +86,7 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
         const rapidjson::Value & debug = doc["Debug"];
         JSONTools::ReadString("ErrorLogFilename", debug, Config::Debug::ErrorLogFilename);
         JSONTools::ReadBool("LogAssertToErrorFile", debug, Config::Debug::LogAssertToErrorFile);
-        JSONTools::ReadBool("PrintModuleTimeout", debug, Config::Debug::PrintModuleTimeout);
+        JSONTools::ReadBool("DrawGameInfo", debug, Config::Debug::DrawGameInfo);
         JSONTools::ReadBool("DrawBuildOrderSearchInfo", debug, Config::Debug::DrawBuildOrderSearchInfo);
         JSONTools::ReadBool("DrawUnitHealthBars", debug, Config::Debug::DrawUnitHealthBars);
         JSONTools::ReadBool("DrawResourceInfo", debug, Config::Debug::DrawResourceInfo);
@@ -104,6 +104,7 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
         JSONTools::ReadBool("DrawUnitTargetInfo", debug, Config::Debug::DrawUnitTargetInfo);
         JSONTools::ReadBool("DrawReservedBuildingTiles", debug, Config::Debug::DrawReservedBuildingTiles);
         JSONTools::ReadBool("DrawBOSSStateInfo", debug, Config::Debug::DrawBOSSStateInfo); 
+        JSONTools::ReadBool("PrintModuleTimeout", debug, Config::Debug::PrintModuleTimeout);
     }
 
     // Parse the Module Options
@@ -153,8 +154,6 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
         {
             Config::Strategy::StrategyName = Config::Strategy::ZergStrategyName;
         }
-
-        BWAPI::Broodwar->printf("Race is %s, using Strategy: %s", BWAPI::Broodwar->self()->getRace().getName().c_str(), Config::Strategy::StrategyName.c_str());
 
         JSONTools::ReadString("ReadDirectory", strategy, Config::Strategy::ReadDir);
         JSONTools::ReadString("WriteDirectory", strategy, Config::Strategy::WriteDir);

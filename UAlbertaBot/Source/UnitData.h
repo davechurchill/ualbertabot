@@ -13,7 +13,7 @@ struct UnitInfo
 	int					unitID;
 	int					lastHealth;
     int                 lastShields;
-    BWAPI::PlayerInterface *      player;
+    BWAPI::Player      player;
 	BWAPI::Unit		    unit;
 	BWAPI::Position		lastPosition;
 	BWAPI::UnitType		type;

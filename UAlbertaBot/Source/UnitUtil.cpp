@@ -58,6 +58,8 @@ Rect UnitUtil::GetRect(BWAPI::Unit unit)
     r.y = unit->getTop();
     r.height = unit->getBottom() - unit->getTop();
     r.width = unit->getLeft() - unit->getRight();
+
+    return r;
 }
 
 double UnitUtil::GetDistanceBetweenTwoRectangles(Rect & rect1, Rect & rect2)
@@ -141,4 +143,36 @@ int UnitUtil::GetAttackRange(BWAPI::UnitType attacker, BWAPI::UnitType target)
     }
 
     return weapon.maxRange();
+}
+
+size_t UnitUtil::GetAllUnitCount(BWAPI::UnitType type)
+{
+    size_t count = 0;
+    for (const auto & unit : BWAPI::Broodwar->self()->getUnits())
+    {
+        // trivial case: unit which exists matches the type
+        if (unit->getType() == type)
+        {
+            count++;
+        }
+
+        // case where a zerg egg contains the unit type
+        if (unit->getType() == BWAPI::UnitTypes::Zerg_Egg && unit->getBuildType() == type)
+        {
+            count += type.isTwoUnitsInOneEgg() ? 2 : 1;
+        }
+
+        // case where a building has started constructing a unit but it doesn't yet have a unit associated with it
+        if (unit->getRemainingTrainTime() > 0)
+        {
+            BWAPI::UnitType trainType = unit->getLastCommand().getUnitType();
+
+            if (trainType == type && unit->getRemainingTrainTime() == trainType.buildTime())
+            {
+                count++;
+            }
+        }
+    }
+
+    return count;
 }

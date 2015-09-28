@@ -56,6 +56,7 @@ public:
 	void setCombatUnits();
 
 	void drawDebugInterface();
+    void drawGameInformation(int x, int y);
 
 	BWAPI::Unit getFirstSupplyProvider();
 	BWAPI::Unit getClosestUnitToTarget(BWAPI::UnitType type, BWAPI::Position target);

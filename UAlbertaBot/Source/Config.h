@@ -13,8 +13,7 @@ namespace Config
         extern bool UsingUnitCommandManager;
         extern bool UsingBuildOrderSearch;  
         extern bool UsingAutoObserver;
-        extern bool UsingStrategyIO;            
-        extern bool UsingBuildOrderDemo;			
+        extern bool UsingStrategyIO;			
     }
     
     namespace BotInfo
@@ -51,7 +50,7 @@ namespace Config
 
     namespace Debug
     {
-        extern bool PrintModuleTimeout;				
+        extern bool DrawGameInfo;
         extern bool DrawBuildOrderSearchInfo;
         extern bool DrawUnitHealthBars;
         extern bool DrawResourceInfo;
@@ -69,6 +68,7 @@ namespace Config
         extern bool DrawUnitTargetInfo;
         extern bool DrawSquadInfo;
         extern bool DrawBOSSStateInfo;
+        extern bool PrintModuleTimeout;		
 
         extern std::string ErrorLogFilename;
         extern bool LogAssertToErrorFile;

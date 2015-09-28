@@ -197,13 +197,12 @@ void DFBB_BuildOrderSmartSearch::setRelevantActions()
     {
         const ActionType & actionType = ActionTypes::GetActionType(getRace(), a);
 
-        if (_goal.getGoalMax(actionType))
+        if (_goal.getGoalMax(actionType) > 0 || _goal.getGoal(actionType) > 0)
         {
             _relevantActions.add(actionType);
         }
     }
 }
-
 
 UnitCountType DFBB_BuildOrderSmartSearch::calculateSupplyProvidersRequired()
 {

@@ -11,13 +11,8 @@ ProductionManager::ProductionManager()
 	, enemyCloakedDetected(false)
 	, rushDetected(false)
 {
-	populateTypeCharMap();
-
-	if (!Config::Modules::UsingBuildOrderDemo)
-	{
-        setBuildOrder(StrategyManager::Instance().getOpeningBookBuildOrder());
-		_runningOpeningBook = true;
-	}
+    setBuildOrder(StrategyManager::Instance().getOpeningBookBuildOrder());
+	_runningOpeningBook = true;
 }
 
 void ProductionManager::setBuildOrder(const BuildOrder & buildOrder)
@@ -39,7 +34,11 @@ void ProductionManager::performBuildOrderSearch(const std::vector<MetaPair> & go
 	{
 		return;
 	}
-
+    
+    if (!canPlanBuildOrderNow())
+    {
+        return;
+    }
 	//std::vector<MetaType> buildOrder = BOSSManager::GetOptimizedNaiveBuildOrder(goal);
 	//setBuildOrder(buildOrder);
 
@@ -55,10 +54,6 @@ void ProductionManager::performBuildOrderSearch(const std::vector<MetaPair> & go
 	{
 		if (!BOSSManager::Instance().isSearchInProgress())
 		{
-            if (Config::Debug::DrawBuildOrderSearchInfo)
-            {
-			    BWAPI::Broodwar->printf("Starting a new build order search!");
-            }
 			BOSSManager::Instance().startNewSearch(goal);
 		}
 	}
@@ -66,6 +61,11 @@ void ProductionManager::performBuildOrderSearch(const std::vector<MetaPair> & go
 void ProductionManager::performBuildOrderSearch()
 {	
     if (!Config::Modules::UsingBuildOrderSearch)
+    {
+        return;
+    }
+
+    if (!canPlanBuildOrderNow())
     {
         return;
     }
@@ -82,11 +82,6 @@ void ProductionManager::performBuildOrderSearch()
     {
         if (!BOSSManager::Instance().isSearchInProgress())
         {
-            if (Config::Debug::DrawBuildOrderSearchInfo)
-            {
-			    //BWAPI::Broodwar->printf("Starting a new build order search!");
-            }
-
 			BOSSManager::Instance().startNewSearch(StrategyManager::Instance().getBuildOrderGoal());
         }
     }
@@ -101,24 +96,19 @@ void ProductionManager::update()
 {
 	// check the queue for stuff we can build
 	manageBuildOrderQueue();
-
-    // build order demo only
-	if (Config::Modules::UsingBuildOrderDemo && (queue.size() == 0))
-	{
-		performBuildOrderSearch(searchGoal);
-	}
-
+    
 	// if nothing is currently building, get a new goal from the strategy manager
-	if ((queue.size() == 0) && (BWAPI::Broodwar->getFrameCount() > 10) && !Config::Modules::UsingBuildOrderDemo)
+	if ((queue.size() == 0) && (BWAPI::Broodwar->getFrameCount() > 10))
 	{
         if (Config::Debug::DrawBuildOrderSearchInfo)
         {
 		    BWAPI::Broodwar->drawTextScreen(150, 10, "Nothing left to build, new search!");
         }
+
 		performBuildOrderSearch();
 	}
 
-	//// detect if there's a build order deadlock once per second
+	// detect if there's a build order deadlock once per second
 	if ((BWAPI::Broodwar->getFrameCount() % 24 == 0) && detectBuildOrderDeadlock())
 	{
         if (Config::Debug::DrawBuildOrderSearchInfo)
@@ -650,24 +640,6 @@ BWAPI::Unit ProductionManager::selectUnitOfType(BWAPI::UnitType type, BWAPI::Pos
 	return nullptr;
 }
 
-void ProductionManager::populateTypeCharMap()
-{
-	typeCharMap['p'] = MetaType(BWAPI::UnitTypes::Protoss_Probe);
-	typeCharMap['z'] = MetaType(BWAPI::UnitTypes::Protoss_Zealot);
-	typeCharMap['d'] = MetaType(BWAPI::UnitTypes::Protoss_Dragoon);
-	typeCharMap['t'] = MetaType(BWAPI::UnitTypes::Protoss_Dark_Templar);
-	typeCharMap['c'] = MetaType(BWAPI::UnitTypes::Protoss_Corsair);
-	typeCharMap['e'] = MetaType(BWAPI::UnitTypes::Protoss_Carrier);
-	typeCharMap['h'] = MetaType(BWAPI::UnitTypes::Protoss_High_Templar);
-	typeCharMap['n'] = MetaType(BWAPI::UnitTypes::Protoss_Photon_Cannon);
-	typeCharMap['a'] = MetaType(BWAPI::UnitTypes::Protoss_Arbiter);
-	typeCharMap['r'] = MetaType(BWAPI::UnitTypes::Protoss_Reaver);
-	typeCharMap['o'] = MetaType(BWAPI::UnitTypes::Protoss_Observer);
-	typeCharMap['s'] = MetaType(BWAPI::UnitTypes::Protoss_Scout);
-	typeCharMap['l'] = MetaType(BWAPI::UpgradeTypes::Leg_Enhancements);
-	typeCharMap['v'] = MetaType(BWAPI::UpgradeTypes::Singularity_Charge);
-}
-
 void ProductionManager::drawProductionInformation(int x, int y)
 {
     if (!Config::Debug::DrawProductionInfo)
@@ -690,7 +662,6 @@ void ProductionManager::drawProductionInformation(int x, int y)
 	// sort it based on the time it was started
 	std::sort(prod.begin(), prod.end(), CompareWhenStarted());
 
-	BWAPI::Broodwar->drawTextScreen(x, y, "\x04 Build Order Info:");
     BWAPI::Broodwar->drawTextScreen(x-30, y+20, "\x04 TIME");
 	BWAPI::Broodwar->drawTextScreen(x, y+20, "\x04 UNIT NAME");
 
@@ -733,4 +704,26 @@ void ProductionManager::onGameEnd()
 void ProductionManager::queueGasSteal()
 {
     queue.queueAsHighestPriority(MetaType(BWAPI::Broodwar->self()->getRace().getRefinery()), true, true);
+}
+
+// this will return true if any unit is on the first frame if it's training time remaining
+// this can cause issues for the build order search system so don't plan a search on these frames
+bool ProductionManager::canPlanBuildOrderNow() const
+{
+    for (const auto & unit : BWAPI::Broodwar->self()->getUnits())
+    {
+        if (unit->getRemainingTrainTime() == 0)
+        {
+            continue;       
+        }
+
+        BWAPI::UnitType trainType = unit->getLastCommand().getUnitType();
+
+        if (unit->getRemainingTrainTime() == trainType.buildTime())
+        {
+            return false;
+        }
+    }
+
+    return true;
 }

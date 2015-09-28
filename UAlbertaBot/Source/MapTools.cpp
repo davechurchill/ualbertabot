@@ -88,7 +88,7 @@ int MapTools::getGroundDistance(BWAPI::Position origin, BWAPI::Position destinat
         }
         
         // add the map and compute it
-		allMaps[destination] = DistanceMap();
+		allMaps.insert(std::pair<BWAPI::Position, DistanceMap>(destination, DistanceMap()));
 		computeDistance(allMaps[destination], destination);
 	}
 
@@ -199,21 +199,6 @@ const std::vector<BWAPI::TilePosition> & MapTools::getClosestTilesTo(BWAPI::Posi
 BWAPI::TilePosition MapTools::getTilePosition(int index)
 {
     return BWAPI::TilePosition(index % cols, index / cols);
-}
-
-BWAPI::Unitset MapTools::getUnitsOfTypeNear(BWAPI::Position & nearTo, int groundDistance, BWAPI::UnitType type)
-{
-    BWAPI::Unitset unitsNear;
-    
-    for (auto & unit : BWAPI::Broodwar->getAllUnits())
-    {
-        if ((unit->getType() == type) && (getGroundDistance(unit->getPosition(), nearTo) < groundDistance ))
-        {
-            unitsNear.insert(unit);
-        }
-    }
-
-    return unitsNear;
 }
 
 BWAPI::TilePosition MapTools::getNextExpansion()

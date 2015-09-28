@@ -1,5 +1,6 @@
 #include "Common.h"
 #include "StrategyManager.h"
+#include "UnitUtil.h"
 
 using namespace UAlbertaBot;
 
@@ -24,7 +25,7 @@ StrategyManager & StrategyManager::Instance()
 }
 
 
-const int StrategyManager::getScore(BWAPI::PlayerInterface * player) const
+const int StrategyManager::getScore(BWAPI::Player player) const
 {
 	return player->getBuildingScore() + player->getKillScore() + player->getRazingScore() + player->getUnitScore();
 }
@@ -75,11 +76,11 @@ const bool StrategyManager::shouldExpandNow() const
 		return false;
 	}
 
-	size_t numDepots    = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Command_Center)
-                        + BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Nexus)
-                        + BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Zerg_Hatchery)
-                        + BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Zerg_Lair)
-                        + BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Zerg_Hive);
+	size_t numDepots    = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Command_Center)
+                        + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Protoss_Nexus)
+                        + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hatchery)
+                        + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Lair)
+                        + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hive);
 	int frame           = BWAPI::Broodwar->getFrameCount();
     int minute          = frame / (24*60);
 
@@ -140,16 +141,16 @@ const MetaPairVector StrategyManager::getProtossBuildOrderGoal() const
 	// the goal to return
 	MetaPairVector goal;
 
-	int numZealots          = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Zealot);
-	int numDragoons         = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Dragoon);
-	int numProbes           = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Probe);
+	int numZealots          = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Protoss_Zealot);
+	int numDragoons         = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Protoss_Dragoon);
+	int numProbes           = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Protoss_Probe);
 	int numNexusCompleted   = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Nexus);
-	int numNexusAll         = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Nexus);
+	int numNexusAll         = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Protoss_Nexus);
 	int numCyber            = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Cybernetics_Core);
-	int numCannon           = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Photon_Cannon);
-    int numScout            = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Corsair);
-    int numReaver           = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Reaver);
-    int numDarkTeplar       = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Dark_Templar);
+	int numCannon           = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Protoss_Photon_Cannon);
+    int numScout            = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Protoss_Corsair);
+    int numReaver           = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Protoss_Reaver);
+    int numDarkTeplar       = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Protoss_Dark_Templar);
 
     if (Config::Strategy::StrategyName == "Protoss_ZealotRush")
     {
@@ -216,12 +217,12 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 	// the goal to return
 	std::vector<MetaPair> goal;
 
-    int numWorkers      = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_SCV);
-    int numCC           = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Command_Center);            
-    int numMarines      = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Marine);
-	int numMedics       = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Medic);
-	int numWraith       = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Wraith);
-    int numVultures     = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Vulture);
+    int numWorkers      = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_SCV);
+    int numCC           = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Command_Center);            
+    int numMarines      = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Marine);
+	int numMedics       = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Medic);
+	int numWraith       = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Wraith);
+    int numVultures     = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Vulture);
 
     if (Config::Strategy::StrategyName == "Terran_MarineRush")
     {
@@ -247,14 +248,14 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
 	// the goal to return
 	std::vector<MetaPair> goal;
 	
-    int numWorkers      = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Zerg_Drone);
-    int numCC           = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Zerg_Hatchery)
-                        + BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Zerg_Lair)
-                        + BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Zerg_Hive);
-	int numMutas        = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Zerg_Mutalisk);
-    int numDrones       = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Zerg_Drone);
-    int zerglings       = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Zerg_Zergling);
-	int numHydras       = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Zerg_Hydralisk);
+    int numWorkers      = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Drone);
+    int numCC           = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hatchery)
+                        + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Lair)
+                        + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hive);
+	int numMutas        = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Mutalisk);
+    int numDrones       = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Drone);
+    int zerglings       = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Zergling);
+	int numHydras       = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hydralisk);
 
 	int mutasWanted = numMutas + 6;
 	int hydrasWanted = numHydras + 6;
@@ -305,7 +306,7 @@ void StrategyManager::readResults()
             ss >> wins;
             ss >> losses;
 
-            BWAPI::Broodwar->printf("Results Found: %s %d %d", strategyName.c_str(), wins, losses);
+            //BWAPI::Broodwar->printf("Results Found: %s %d %d", strategyName.c_str(), wins, losses);
 
             _results[strategyName] = std::pair<int, int>(wins, losses);
         }
@@ -314,7 +315,7 @@ void StrategyManager::readResults()
     }
     else
     {
-        BWAPI::Broodwar->printf("No results file found: %s", enemyResultsFile.c_str());
+        //BWAPI::Broodwar->printf("No results file found: %s", enemyResultsFile.c_str());
     }
 
     // if we haven't seen the current strategy yet in the results file, add it

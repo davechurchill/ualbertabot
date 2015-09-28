@@ -63,30 +63,47 @@ void GameCommander::update()
 
 void GameCommander::drawDebugInterface()
 {
-	_timerManager.displayTimers(490, 225);
-	
-    InformationManager::Instance().drawExtendedInterface();
+	InformationManager::Instance().drawExtendedInterface();
 	InformationManager::Instance().drawUnitInformation(425,30);
 	InformationManager::Instance().drawMapInformation();
 	BuildingManager::Instance().drawBuildingInformation(200,50);
 	BuildingPlacer::Instance().drawReservedTiles();
-	ProductionManager::Instance().drawProductionInformation(30, 30);
-	BOSSManager::Instance().drawSearchInformation(0, 0);
+	ProductionManager::Instance().drawProductionInformation(30, 50);
+	BOSSManager::Instance().drawSearchInformation(490, 100);
     BOSSManager::Instance().drawStateInformation(250, 0);
-    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(200,0), "%s %d", BWAPI::Broodwar->mapName().c_str(), BWAPI::Broodwar->getFrameCount());
-
-    //Micro::drawAPM(2,2);
-
+    
 	_combatCommander.drawSquadInformation(200, 30);
+    _timerManager.displayTimers(490, 225);
+    drawGameInformation(4, 1);
 
 	// draw position of mouse cursor
 	if (Config::Debug::DrawMouseCursorInfo)
 	{
-		BWAPI::Broodwar->drawTextScreen(20, 20, "Frame: %7d\nTime: %4dm %3ds", BWAPI::Broodwar->getFrameCount(), BWAPI::Broodwar->getFrameCount()/(24*60), (BWAPI::Broodwar->getFrameCount()/24)%60);
 		int mouseX = BWAPI::Broodwar->getMousePosition().x + BWAPI::Broodwar->getScreenPosition().x;
 		int mouseY = BWAPI::Broodwar->getMousePosition().y + BWAPI::Broodwar->getScreenPosition().y;
 		BWAPI::Broodwar->drawTextMap(mouseX + 20, mouseY, " %d %d", mouseX, mouseY);
 	}
+}
+
+void GameCommander::drawGameInformation(int x, int y)
+{
+    BWAPI::Broodwar->drawTextScreen(x, y, "\x04Players:");
+	BWAPI::Broodwar->drawTextScreen(x+50, y, "%c%s \x04vs. %c%s", BWAPI::Broodwar->self()->getTextColor(), BWAPI::Broodwar->self()->getName().c_str(), 
+                                                                  BWAPI::Broodwar->enemy()->getTextColor(), BWAPI::Broodwar->enemy()->getName().c_str());
+	y += 12;
+		
+    BWAPI::Broodwar->drawTextScreen(x, y, "\x04Strategy:");
+	BWAPI::Broodwar->drawTextScreen(x+50, y, "\x03%s", Config::Strategy::StrategyName.c_str());
+	BWAPI::Broodwar->setTextSize();
+	y += 12;
+
+    BWAPI::Broodwar->drawTextScreen(x, y, "\x04Map:");
+	BWAPI::Broodwar->drawTextScreen(x+50, y, "\x03%s", BWAPI::Broodwar->mapFileName().c_str());
+	BWAPI::Broodwar->setTextSize();
+	y += 12;
+
+    BWAPI::Broodwar->drawTextScreen(x, y, "\x04Time:");
+    BWAPI::Broodwar->drawTextScreen(x+50, y, "\x04%d %4dm %3ds", BWAPI::Broodwar->getFrameCount(), (int)(BWAPI::Broodwar->getFrameCount()/(23.8*60)), (int)((int)(BWAPI::Broodwar->getFrameCount()/23.8)%60));
 }
 
 // assigns units to various managers

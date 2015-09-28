@@ -49,7 +49,6 @@ class ProductionManager
 	BuildOrderQueue				queue;
 
 	bool						contains(BWAPI::Unitset & units, BWAPI::Unit unit);
-	void						populateTypeCharMap();
 	bool						hasResources(BWAPI::UnitType type);
 	bool						canMake(BWAPI::UnitType type);
 	bool						hasNumCompletedUnitType(BWAPI::UnitType type, int num);
@@ -66,6 +65,8 @@ class ProductionManager
 	int							getFreeMinerals();
 	int							getFreeGas();
 	bool						_runningOpeningBook;
+    bool                        canPlanBuildOrderNow() const;
+
 public:
 
 	static ProductionManager &	Instance();

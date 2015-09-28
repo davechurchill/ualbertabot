@@ -32,7 +32,7 @@ class StrategyManager
 	void	readResults();
 	void	writeResults();
 
-	const	int					getScore(BWAPI::PlayerInterface * player) const;
+	const	int					getScore(BWAPI::Player player) const;
 	const	double				getUCBValue(const size_t & strategy) const;
 	
 	// strategy functions, add your own here

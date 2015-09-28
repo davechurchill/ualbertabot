@@ -19,6 +19,8 @@ namespace UnitUtil
     int GetAttackRange(BWAPI::Unit attacker, BWAPI::Unit target);
     int GetAttackRange(BWAPI::UnitType attacker, BWAPI::UnitType target);
 
+    size_t GetAllUnitCount(BWAPI::UnitType type);
+
     BWAPI::WeaponType GetWeapon(BWAPI::Unit attacker, BWAPI::Unit target);
     BWAPI::WeaponType GetWeapon(BWAPI::UnitType attacker, BWAPI::UnitType target);
 
