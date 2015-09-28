@@ -158,7 +158,7 @@ void ProductionManager::onUnitDestroy(BWAPI::Unit unit)
 			{
                 if (Config::Debug::DrawBuildOrderSearchInfo)
                 {
-			        BWAPI::Broodwar->printf("Critical unit died, re-searching build order");
+			        //BWAPI::Broodwar->printf("Critical unit died, re-searching build order");
                 }
 				performBuildOrderSearch(StrategyManager::Instance().getBuildOrderGoal());
 			}

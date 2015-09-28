@@ -162,11 +162,11 @@ UnitCountType DFBB_BuildOrderStackSearch::getRepetitions(const GameState & state
     // make sure we don't repeat to more than we need for this unit type
     if (_params.goal.getGoal(a))
     {
-        //repeat = std::min(repeat, _params.goal.getGoal(a) - state.getUnitData().getNumTotal(a));
+        repeat = std::min(repeat, _params.goal.getGoal(a) - state.getUnitData().getNumTotal(a));
     }
     else if (_params.goal.getGoalMax(a))
     {
-        //repeat = std::min(repeat, _params.goal.getGoalMax(a) - state.getUnitData().getNumTotal(a));
+        repeat = std::min(repeat, _params.goal.getGoalMax(a) - state.getUnitData().getNumTotal(a));
     }
     
     return repeat;

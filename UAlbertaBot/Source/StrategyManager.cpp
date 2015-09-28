@@ -103,7 +103,6 @@ const bool StrategyManager::shouldExpandNow() const
     {
         if (numDepots < (i+2) && minute > expansionTimes[i])
         {
-            BWAPI::Broodwar->printf("We should expand");
             return true;
         }
     }
