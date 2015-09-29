@@ -37,7 +37,7 @@ const BuildOrder & StrategyManager::getOpeningBookBuildOrder() const
     // look for the build order in the build order map
 	if (buildOrderIt != std::end(_openingBuildOrders))
     {
-        return (*buildOrderIt).second;
+        return (*buildOrderIt).second.buildOrder;
     }
     else
     {
@@ -110,9 +110,9 @@ const bool StrategyManager::shouldExpandNow() const
 	return false;
 }
 
-void StrategyManager::addOpeningBuildOrder(const std::string & name, BuildOrder & buildOrder)
+void StrategyManager::addStrategy(const std::string & name, Strategy & strategy)
 {
-    _openingBuildOrders[name] = buildOrder;
+    _openingBuildOrders[name] = strategy;
 }
 
 const MetaPairVector StrategyManager::getBuildOrderGoal()
@@ -161,7 +161,7 @@ const MetaPairVector StrategyManager::getProtossBuildOrderGoal() const
             goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Dragoon, numDragoons + 4));
         }
     }
-    else if (Config::Strategy::StrategyName == "Protoss_DragoontRush")
+    else if (Config::Strategy::StrategyName == "Protoss_DragoonRush")
     {
         goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Dragoon, numDragoons + 6));
     }
@@ -210,7 +210,6 @@ const MetaPairVector StrategyManager::getProtossBuildOrderGoal() const
 	return goal;
 }
 
-
 const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 {
 	// the goal to return
@@ -222,15 +221,28 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 	int numMedics       = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Medic);
 	int numWraith       = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Wraith);
     int numVultures     = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Vulture);
+    int numGoliath      = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Goliath);
+    int numTanks        = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode)
+                        + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode);
 
     if (Config::Strategy::StrategyName == "Terran_MarineRush")
     {
-	    goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Marine, numMarines + 13));
+	    goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Marine, numMarines + 8));
     }
     else if (Config::Strategy::StrategyName == "Terran_VultureRush")
     {
         goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Vulture, numVultures + 8));
         goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Spider_Mines, 1));
+    }
+    else if (Config::Strategy::StrategyName == "Terran_TankPush")
+    {
+        goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode, 6));
+        goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Goliath, numGoliath + 6));
+        goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Tank_Siege_Mode, 1));
+    }
+    else
+    {
+        BWAPI::Broodwar->printf("Warning: No build order goal for Terran Strategy: %s", Config::Strategy::StrategyName.c_str());
     }
 
     if (shouldExpandNow())

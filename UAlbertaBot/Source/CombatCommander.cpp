@@ -26,7 +26,7 @@ void CombatCommander::initializeSquads()
     BWAPI::Position ourBasePosition = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
 
     // the scout defense squad will handle chasing the enemy worker scout
-    SquadOrder enemyScoutDefense(SquadOrderTypes::Defend, ourBasePosition, 500, "Get the scout");
+    SquadOrder enemyScoutDefense(SquadOrderTypes::Defend, ourBasePosition, 900, "Get the scout");
     _squadData.addSquad("ScoutDefense", Squad("ScoutDefense", enemyScoutDefense, ScoutDefensePriority));
 
     _initialized = true;

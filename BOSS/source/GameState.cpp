@@ -61,7 +61,7 @@ GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self, c
 			continue;
 		}
 
-        const ActionType actionType(unit->getType());
+        ActionType actionType(unit->getType());
 
 		// if the unit is completed
 		if (unit->isCompleted())
@@ -155,6 +155,11 @@ GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self, c
             // otherwise it is a non-building unit
             else
             {
+                if (unit->getType() == BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode)
+                {
+                    actionType = ActionType(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode);
+                }
+
                 // add the unit to the state
 			    _units.addCompletedAction(actionType, false);
 

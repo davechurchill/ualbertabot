@@ -86,6 +86,13 @@
         "ReadDirectory"             : "bwapi-data/read/",
         "WriteDirectory"            : "bwapi-data/write/",
         
+        "UseEnemySpecificStrategy"  : true,
+        "EnemySpecificStrategy"     :
+        {
+            "BotName1"              : { "Protoss" : "Protoss_DTRush", "Terran" : "Terran_VultureRush", "Zerg" : "Zerg_ZerglingRush" },
+            "BotName2"              : { "Protoss" : "Protoss_DragoonRush", "Terran" : "Terran_MarineRush", "Zerg" : "Zerg_ZerglingRush" }
+        },
+        
         "Strategies" :
         {
             "Protoss_ZealotRush"    : { "Race" : "Protoss", "OpeningBuildOrder" : ["Probe", "Probe", "Probe", "Probe", "Pylon", "Probe", "Gateway", "Gateway", "Probe", "Probe", "Zealot", "Pylon", "Zealot", "Zealot",  "Probe", "Zealot", "Zealot", "Probe", "Pylon", "Zealot", "Gateway", "Probe", "Pylon", "Probe", "Zealot", "Probe", "Zealot", "Zealot", "Zealot", "Zealot", "Pylon", "Probe", "Zealot", "Zealot", "Zealot" ]},

@@ -9,50 +9,48 @@
 
 namespace UAlbertaBot
 {
-
-typedef std::pair<int, int> IntPair;
 typedef std::pair<MetaType, size_t> MetaPair;
 typedef std::vector<MetaPair> MetaPairVector;
+
+struct Strategy
+{
+    std::string name;
+    BWAPI::Race race;
+    BuildOrder buildOrder;
+};
 
 class StrategyManager 
 {
 	StrategyManager();
-	~StrategyManager() {}
 
 	BWAPI::Race					        _selfRace;
 	BWAPI::Race					        _enemyRace;
-    std::map<std::string, BuildOrder>   _openingBuildOrders;
+    std::map<std::string, Strategy>     _openingBuildOrders;
     BuildOrder                          _emptyBuildOrder;
 
     std::map<std::string, std::pair<int, int>> _results;
 
-	bool						firstAttackSent;
+	bool						    firstAttackSent;
 
 	void	setStrategy();
 	void	readResults();
 	void	writeResults();
 
-	const	int					getScore(BWAPI::Player player) const;
-	const	double				getUCBValue(const size_t & strategy) const;
+	const	int					    getScore(BWAPI::Player player) const;
+	const	double				    getUCBValue(const size_t & strategy) const;
 	
-	// strategy functions, add your own here
-	const	bool				shouldExpandNow() const;
-	const	MetaPairVector		getProtossZealotRushBuildOrderGoal() const;
+	const	bool				    shouldExpandNow() const;
 
-	const	MetaPairVector		getProtossDarkTemplarBuildOrderGoal() const;
-
-	const	MetaPairVector		getProtossDragoonsBuildOrderGoal() const;
-
-    const	MetaPairVector		getProtossBuildOrderGoal() const;
-	const	MetaPairVector		getTerranBuildOrderGoal() const;
-	const	MetaPairVector		getZergBuildOrderGoal() const;
+    const	MetaPairVector		    getProtossBuildOrderGoal() const;
+	const	MetaPairVector		    getTerranBuildOrderGoal() const;
+	const	MetaPairVector		    getZergBuildOrderGoal() const;
 
 public:
     
 	static	StrategyManager &	    Instance();
 
 			void				    onEnd(const bool isWinner);
-            void                    addOpeningBuildOrder(const std::string & name, BuildOrder & buildOrder);
+            void                    addStrategy(const std::string & name, Strategy & strategy);
 	
 	const	bool				    regroup(int numInRadius);
 	const	bool				    doAttack(const std::set<BWAPI::Unit> & freeUnits);

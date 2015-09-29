@@ -9,6 +9,7 @@
 #include "DistanceMap.hpp"
 #include "StrategyManager.h"
 #include "CombatSimulation.h"
+#include "TankManager.h"
 
 namespace UAlbertaBot
 {
@@ -27,6 +28,7 @@ class Squad
 	RangedManager       _rangedManager;
 	DetectorManager     _detectorManager;
 	TransportManager    _transportManager;
+    TankManager         _tankManager;
 
 	std::map<BWAPI::Unit, bool>	_nearEnemy;
 

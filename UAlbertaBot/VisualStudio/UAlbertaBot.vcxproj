@@ -145,6 +145,7 @@
     <ClCompile Include="..\Source\Squad.cpp" />
     <ClCompile Include="..\Source\SquadData.cpp" />
     <ClCompile Include="..\Source\StrategyManager.cpp" />
+    <ClCompile Include="..\Source\TankManager.cpp" />
     <ClCompile Include="..\source\TimerManager.cpp" />
     <ClCompile Include="..\source\TransportManager.cpp" />
     <ClCompile Include="..\Source\UABAssert.cpp" />
@@ -187,6 +188,7 @@
     <ClInclude Include="..\Source\SquadData.h" />
     <ClInclude Include="..\Source\SquadOrder.h" />
     <ClInclude Include="..\Source\StrategyManager.h" />
+    <ClInclude Include="..\Source\TankManager.h" />
     <ClInclude Include="..\source\TimerManager.h" />
     <ClInclude Include="..\source\TransportManager.h" />
     <ClInclude Include="..\Source\UABAssert.h" />

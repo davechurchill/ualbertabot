@@ -9,6 +9,8 @@ using namespace UAlbertaBot;
 void ParseUtils::ParseConfigFile(const std::string & filename)
 {
     rapidjson::Document doc;
+    BWAPI::Race race = BWAPI::Broodwar->self()->getRace();
+    const char * ourRace = race.getName().c_str();
 
     std::string config = FileUtils::ReadFile(filename);
 
@@ -134,29 +136,38 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
     {
         const rapidjson::Value & strategy = doc["Strategy"];
 
+        // read in the various strategic elements
         JSONTools::ReadBool("ScoutGasSteal", strategy, Config::Strategy::GasStealWithScout);
         JSONTools::ReadBool("ScoutHarassEnemy", strategy, Config::Strategy::ScoutHarassEnemy);
-        JSONTools::ReadString("ProtossStrategyName", strategy, Config::Strategy::ProtossStrategyName);
-        JSONTools::ReadString("TerranStrategyName", strategy, Config::Strategy::TerranStrategyName);
-        JSONTools::ReadString("ZergStrategyName", strategy, Config::Strategy::ZergStrategyName);
-
-        BWAPI::Race race = BWAPI::Broodwar->self()->getRace();
-
-        if (race == BWAPI::Races::Protoss)
-        {
-            Config::Strategy::StrategyName = Config::Strategy::ProtossStrategyName;
-        }
-        else if (race == BWAPI::Races::Terran)
-        {
-            Config::Strategy::StrategyName = Config::Strategy::TerranStrategyName;
-        }
-        else if (race == BWAPI::Races::Zerg)
-        {
-            Config::Strategy::StrategyName = Config::Strategy::ZergStrategyName;
-        }
-
         JSONTools::ReadString("ReadDirectory", strategy, Config::Strategy::ReadDir);
         JSONTools::ReadString("WriteDirectory", strategy, Config::Strategy::WriteDir);
+
+        // if we have set a strategy for the current race, use it
+        if (strategy.HasMember(race.c_str()) && strategy[race.c_str()].IsString())
+        {
+            Config::Strategy::StrategyName = strategy[race.c_str()].GetString();
+        }
+
+        // check if we are using an enemy specific strategy
+        JSONTools::ReadBool("UseEnemySpecificStrategy", strategy, Config::Strategy::UseEnemySpecificStrategy);
+        if (Config::Strategy::UseEnemySpecificStrategy && strategy.HasMember("EnemySpecificStrategy") && strategy["EnemySpecificStrategy"].IsObject())
+        {
+            const std::string enemyName = BWAPI::Broodwar->enemy()->getName();
+            const rapidjson::Value & specific = strategy["EnemySpecificStrategy"];
+
+            // check to see if our current enemy name is listed anywhere in the specific strategies
+            if (specific.HasMember(enemyName.c_str()) && specific[enemyName.c_str()].IsObject())
+            {
+                const rapidjson::Value & enemyStrategies = specific[enemyName.c_str()];
+
+                // if that enemy has a strategy listed for our current race, use it
+                if (enemyStrategies.HasMember(ourRace) && enemyStrategies[ourRace].IsString())
+                {
+                    Config::Strategy::StrategyName = enemyStrategies[ourRace].GetString();
+                    Config::Strategy::FoundEnemySpecificStrategy = true;
+                }
+            }
+        }
 
         // Parse all the Strategies
         if (strategy.HasMember("Strategies") && strategy["Strategies"].IsObject())
@@ -167,6 +178,7 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
                 const std::string &         name = itr->name.GetString();
                 const rapidjson::Value &    val  = itr->value;
         
+
                 BWAPI::Race strategyRace;
                 if (val.HasMember("Race") && val["Race"].IsString())
                 {
@@ -202,7 +214,8 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
                     }
                 }
 
-                StrategyManager::Instance().addOpeningBuildOrder(name, buildOrder);
+                Strategy s = {name, strategyRace, buildOrder};
+                StrategyManager::Instance().addStrategy(name, s);
             }
         }
     }

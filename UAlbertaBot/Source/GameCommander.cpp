@@ -93,7 +93,7 @@ void GameCommander::drawGameInformation(int x, int y)
 	y += 12;
 		
     BWAPI::Broodwar->drawTextScreen(x, y, "\x04Strategy:");
-	BWAPI::Broodwar->drawTextScreen(x+50, y, "\x03%s", Config::Strategy::StrategyName.c_str());
+	BWAPI::Broodwar->drawTextScreen(x+50, y, "\x03%s %s", Config::Strategy::StrategyName.c_str(), Config::Strategy::FoundEnemySpecificStrategy ? "(enemy specific)" : "");
 	BWAPI::Broodwar->setTextSize();
 	y += 12;
 

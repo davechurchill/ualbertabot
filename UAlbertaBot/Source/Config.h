@@ -25,14 +25,13 @@ namespace Config
 
     namespace Strategy
     {
-        extern std::string ProtossStrategyName;
-        extern std::string TerranStrategyName;
-        extern std::string ZergStrategyName;
         extern std::string StrategyName;
         extern std::string ReadDir;
         extern std::string WriteDir;
         extern bool GasStealWithScout;
         extern bool ScoutHarassEnemy;
+        extern bool UseEnemySpecificStrategy;
+        extern bool FoundEnemySpecificStrategy;
     }
 
     namespace BWAPIOptions

@@ -61,6 +61,7 @@ void Squad::update()
 	{
 		_meleeManager.execute(_order);
 		_rangedManager.execute(_order);
+        _tankManager.execute(_order);
 		_transportManager.execute(_order);
 
 		_detectorManager.setUnitClosestToEnemy(unitClosestToEnemy());
@@ -139,6 +140,7 @@ void Squad::addUnitsToMicroManagers()
 	BWAPI::Unitset rangedUnits;
 	BWAPI::Unitset detectorUnits;
 	BWAPI::Unitset transportUnits;
+    BWAPI::Unitset tankUnits;
 
 	// add _units to micro managers
 	for (auto & unit : _units)
@@ -146,7 +148,11 @@ void Squad::addUnitsToMicroManagers()
 		if(unit->isCompleted() && unit->getHitPoints() > 0 && unit->exists())
 		{
 			// select dector _units
-			if (unit->getType().isDetector() && !unit->getType().isBuilding())
+            if (unit->getType() == BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode || unit->getType() == BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode)
+            {
+                tankUnits.insert(unit);
+            }   
+			else if (unit->getType().isDetector() && !unit->getType().isBuilding())
 			{
 				detectorUnits.insert(unit);
 			}
@@ -172,6 +178,7 @@ void Squad::addUnitsToMicroManagers()
 	_rangedManager.setUnits(rangedUnits);
 	_detectorManager.setUnits(detectorUnits);
 	_transportManager.setUnits(detectorUnits);
+    _tankManager.setUnits(tankUnits);
 }
 
 // calculates whether or not to regroup

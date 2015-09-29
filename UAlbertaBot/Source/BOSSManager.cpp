@@ -79,14 +79,14 @@ void BOSSManager::drawSearchInformation(int x, int y)
     y += 10;
     BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x, y), "%s", _previousStatus.c_str());
 
-    /*for (size_t i(0); i < _previousGoalUnits.size(); ++i)
+    for (size_t i(0); i < _previousGoalUnits.size(); ++i)
     {
         if (_previousGoalUnits[i].second > 0)
         {
             y += 10;
             BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x,y), "%d %s", _previousGoalUnits[i].second, _previousGoalUnits[i].first.getName().c_str());
         }
-    }*/
+    }
     
     BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x, y+25), "Time (ms): %.3lf", _totalPreviousSearchTime);
     BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x, y+35), "Nodes: %d", _savedSearchResults.nodesExpanded);
