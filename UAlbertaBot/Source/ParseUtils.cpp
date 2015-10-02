@@ -214,8 +214,7 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
                     }
                 }
 
-                Strategy s = {name, strategyRace, buildOrder};
-                StrategyManager::Instance().addStrategy(name, s);
+                StrategyManager::Instance().addStrategy(name, Strategy(name, strategyRace, buildOrder));
             }
         }
     }

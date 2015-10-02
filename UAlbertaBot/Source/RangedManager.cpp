@@ -53,6 +53,12 @@ void RangedManager::executeMicro(const BWAPI::Unitset & targets)
 	            {
 		            BWAPI::Broodwar->drawLineMap(rangedUnit->getPosition(), rangedUnit->getTargetPosition(), BWAPI::Colors::Purple);
 	            }
+                
+                if (!target)
+                {
+                    Micro::SmartAttackMove(rangedUnit, order.getPosition());
+                    continue;
+                }
 
 				// attack it
                 if (Config::Micro::KiteWithRangedUnits)
@@ -167,6 +173,11 @@ int RangedManager::getAttackPriority(BWAPI::Unit rangedUnit, BWAPI::Unit target)
 	// next priority is worker
 	else if (targetType.isWorker()) 
 	{
+        if (rangedUnit->getType() == BWAPI::UnitTypes::Terran_Vulture)
+        {
+            return 11;
+        }
+
   		return 9;
 	}
     // next is special buildings

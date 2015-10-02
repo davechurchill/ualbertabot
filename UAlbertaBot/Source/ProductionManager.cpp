@@ -119,23 +119,40 @@ void ProductionManager::update()
 	}
 
 	// if they have cloaked units get a new goal asap
-	if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Protoss && !enemyCloakedDetected && InformationManager::Instance().enemyHasCloakedUnits())
+	if (!enemyCloakedDetected && InformationManager::Instance().enemyHasCloakedUnits())
 	{
-		if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Photon_Cannon) < 2)
-		{
-			queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Protoss_Photon_Cannon), true);
-			queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Protoss_Photon_Cannon), true);
-		}
+        if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Protoss)
+        {
+		    if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Photon_Cannon) < 2)
+		    {
+			    queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Protoss_Photon_Cannon), true);
+			    queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Protoss_Photon_Cannon), true);
+		    }
 
-		if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Forge) == 0)
-		{
-			queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Protoss_Forge), true);
-		}
+		    if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Forge) == 0)
+		    {
+			    queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Protoss_Forge), true);
+		    }
+        }
+        else if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran)
+        {
+            if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Missile_Turret) < 2)
+		    {
+			    queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Missile_Turret), true);
+			    queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Missile_Turret), true);
+		    }
 
+		    if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Engineering_Bay) == 0)
+		    {
+			    queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Engineering_Bay), true);
+		    }
+        }
+        
         if (Config::Debug::DrawBuildOrderSearchInfo)
         {
 		    BWAPI::Broodwar->printf("Enemy Cloaked Unit Detected!");
         }
+
 		enemyCloakedDetected = true;
 	}
 }
@@ -267,7 +284,8 @@ BWAPI::Unit ProductionManager::getProducer(MetaType t, BWAPI::Position closestTo
 
             // if we just told this unit to build an addon, then it will not be building another one
             // this deals with the frame-delay of telling a unit to build an addon and it actually starting to build
-            if (unit->getLastCommand().getType() == BWAPI::UnitCommandTypes::Build_Addon) 
+            if (unit->getLastCommand().getType() == BWAPI::UnitCommandTypes::Build_Addon 
+                && (BWAPI::Broodwar->getFrameCount() - unit->getLastCommandFrame() < 10)) 
             { 
                 continue; 
             }
@@ -451,8 +469,7 @@ bool ProductionManager::detectBuildOrderDeadlock()
 	}
 
 	// are any supply providers being built currently
-	bool supplyInProgress =		BuildingManager::Instance().isBeingBuilt(BWAPI::Broodwar->self()->getRace().getCenter()) || 
-								BuildingManager::Instance().isBeingBuilt(BWAPI::Broodwar->self()->getRace().getSupplyProvider());
+	bool supplyInProgress =	BuildingManager::Instance().isBeingBuilt(BWAPI::Broodwar->self()->getRace().getSupplyProvider());
 
     for (auto & unit : BWAPI::Broodwar->self()->getUnits())
     {

@@ -133,6 +133,7 @@
     <ClCompile Include="..\Source\Logger.cpp" />
     <ClCompile Include="..\Source\MapGrid.cpp" />
     <ClCompile Include="..\Source\MapTools.cpp" />
+    <ClCompile Include="..\Source\MedicManager.cpp" />
     <ClCompile Include="..\source\MeleeManager.cpp" />
     <ClCompile Include="..\source\MetaType.cpp" />
     <ClCompile Include="..\source\MicroManager.cpp" />
@@ -175,6 +176,7 @@
     <ClInclude Include="..\Source\Logger.h" />
     <ClInclude Include="..\Source\MapGrid.h" />
     <ClInclude Include="..\Source\MapTools.h" />
+    <ClInclude Include="..\Source\MedicManager.h" />
     <ClInclude Include="..\source\MeleeManager.h" />
     <ClInclude Include="..\source\MetaType.h" />
     <ClInclude Include="..\source\MicroManager.h" />

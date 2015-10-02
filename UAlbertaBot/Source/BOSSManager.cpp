@@ -59,6 +59,10 @@ void BOSSManager::startNewSearch(const std::vector<MetaPair> & goalUnits)
     _previousSearchStartFrame = BWAPI::Broodwar->getFrameCount();
     _totalPreviousSearchTime = 0;
     _previousGoalUnits = goalUnits;
+
+    std::stringstream ss;
+    ss << _smartSearch->getParameters().toString() << "\n";
+    Logger::LogOverwriteToFile("bwapi-data/AI/LastBOSS.txt", ss.str());
 }
 
 void BOSSManager::drawSearchInformation(int x, int y) 

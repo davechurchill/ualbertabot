@@ -148,7 +148,7 @@ void BuildOrderTester::DoRandomTests(const RaceID race, const size_t numTests)
             }
             else
             {
-                goal.printGoal();
+                std::cout << goal.toString();
                 for (size_t a(0); a < buildOrder.size(); ++a)
                 {
                     std::cout << a << " " << buildOrder[a].getName() << std::endl;
@@ -156,12 +156,12 @@ void BuildOrderTester::DoRandomTests(const RaceID race, const size_t numTests)
                 std::cout << i << "  Found build order did not meet goal" << std::endl;
                 std::cout << buildOrder.getJSONString() << std::endl;
                 std::cout << currentState.toString() << std::endl;
-                goal.printGoal();
+                std::cout << goal.toString();
             }
         }
         else
         {
-            goal.printGoal();
+            std::cout << goal.toString();
             for (size_t a(0); a < buildOrder.size(); ++a)
             {
                 std::cout << a << " " << buildOrder[a].getName() << std::endl;

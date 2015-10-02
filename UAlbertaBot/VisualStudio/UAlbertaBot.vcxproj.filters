@@ -156,6 +156,9 @@
     <ClCompile Include="..\Source\TankManager.cpp">
       <Filter>game\combat\micro</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\MedicManager.cpp">
+      <Filter>game\combat\micro</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\CombatCommander.h">
@@ -279,6 +282,9 @@
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\TankManager.h">
+      <Filter>game\combat\micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\MedicManager.h">
       <Filter>game\combat\micro</Filter>
     </ClInclude>
   </ItemGroup>

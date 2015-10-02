@@ -32,7 +32,7 @@ const char * ResetExperiment(char * paramString)
     if (params.length() == 0)
     {
         #ifndef EMSCRIPTEN
-            experiments.loadExperimentsFromFile("../asset/config/webconfig.txt");
+            experiments.loadExperimentsFromFile("../asset/config/config.txt");
         #else
             experiments.loadExperimentsFromFile("asset/config/webconfig.txt");
         #endif
@@ -83,9 +83,11 @@ int main(int argc, char *argv[])
     
     //testBuildOrderPlot();
 
-    doCombatExperiment();
-/*
-    ResetExperiment("");
+    //doCombatExperiment();
+
+    BOSS::DFBB_BuildOrderSmartSearch smartSearch(BOSS::Races::Terran);
+
+   /* ResetExperiment("");
 
     if (experiments.getVisExperiments().size() > 0)
     {
@@ -100,8 +102,8 @@ int main(int argc, char *argv[])
     }
 #else
     emscripten_set_main_loop(mainLoop,0,true);
-#endif*/
-
+#endif
+    */
     return 0;
 }
 

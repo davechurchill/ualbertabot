@@ -55,6 +55,12 @@ void UAlbertaBotModule::onStart()
 	{
 		BWTA::readMap();
 		BWTA::analyze();
+
+        if (Config::Modules::UsingStrategyIO)
+        {
+            StrategyManager::Instance().readResults();
+            StrategyManager::Instance().setLearnedStrategy();
+        }
 	}
 }
 

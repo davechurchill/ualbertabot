@@ -341,6 +341,9 @@ BWAPI::Unit CombatCommander::findClosestDefender(const Squad & defenseSquad, BWA
 	BWAPI::Unit closestDefender = nullptr;
 	double minDistance = 1000000;
 
+    int zerglingsInOurBase = numZerglingsInOurBase();
+    bool zerglingRush = zerglingsInOurBase > 0 && BWAPI::Broodwar->getFrameCount() < 5000;
+
 	for (auto & unit : _combatUnits) 
 	{
 		if ((flyingDefender && !UnitUtil::CanAttackAir(unit)) || (!flyingDefender && !UnitUtil::CanAttackGround(unit)))
@@ -354,7 +357,7 @@ BWAPI::Unit CombatCommander::findClosestDefender(const Squad & defenseSquad, BWA
         }
 
 
-        if (!Config::Micro::WorkersInDefenseSquad && unit->getType().isWorker())
+        if (unit->getType().isWorker() && !zerglingRush && !beingBuildingRushed())
         {
             continue;
         }
@@ -489,4 +492,44 @@ int CombatCommander::defendWithWorkers()
 
 	// if there are enemy units near our workers, we want to defend
 	return enemyUnitsNearWorkers;
+}
+
+int CombatCommander::numZerglingsInOurBase()
+{
+    int concernRadius = 600;
+    int zerglings = 0;
+    BWAPI::Position ourBasePosition = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
+    
+    // check to see if the enemy has zerglings as the only attackers in our base
+    for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
+    {
+        if (unit->getType() != BWAPI::UnitTypes::Zerg_Zergling)
+        {
+            continue;
+        }
+
+        if (unit->getDistance(ourBasePosition) < concernRadius)
+        {
+            zerglings++;
+        }
+    }
+
+    return zerglings;
+}
+
+bool CombatCommander::beingBuildingRushed()
+{
+    int concernRadius = 1200;
+    BWAPI::Position ourBasePosition = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
+    
+    // check to see if the enemy has zerglings as the only attackers in our base
+    for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
+    {
+        if (unit->getType().isBuilding())
+        {
+            return true;
+        }
+    }
+
+    return false;
 }

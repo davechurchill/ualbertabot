@@ -11,10 +11,7 @@ StrategyManager::StrategyManager()
 	, _enemyRace(BWAPI::Broodwar->enemy()->getRace())
     , _emptyBuildOrder(BWAPI::Broodwar->self()->getRace())
 {
-	if (Config::Modules::UsingStrategyIO)
-	{
-		readResults();
-	}
+	
 }
 
 // get an instance of this
@@ -24,7 +21,6 @@ StrategyManager & StrategyManager::Instance()
 	return instance;
 }
 
-
 const int StrategyManager::getScore(BWAPI::Player player) const
 {
 	return player->getBuildingScore() + player->getKillScore() + player->getRazingScore() + player->getUnitScore();
@@ -32,12 +28,12 @@ const int StrategyManager::getScore(BWAPI::Player player) const
 
 const BuildOrder & StrategyManager::getOpeningBookBuildOrder() const
 {
-    auto buildOrderIt = _openingBuildOrders.find(Config::Strategy::StrategyName);
+    auto buildOrderIt = _strategies.find(Config::Strategy::StrategyName);
 
     // look for the build order in the build order map
-	if (buildOrderIt != std::end(_openingBuildOrders))
+	if (buildOrderIt != std::end(_strategies))
     {
-        return (*buildOrderIt).second.buildOrder;
+        return (*buildOrderIt).second._buildOrder;
     }
     else
     {
@@ -112,7 +108,7 @@ const bool StrategyManager::shouldExpandNow() const
 
 void StrategyManager::addStrategy(const std::string & name, Strategy & strategy)
 {
-    _openingBuildOrders[name] = strategy;
+    _strategies[name] = strategy;
 }
 
 const MetaPairVector StrategyManager::getBuildOrderGoal()
@@ -224,15 +220,29 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
     int numGoliath      = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Goliath);
     int numTanks        = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode)
                         + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode);
+    int numBay          = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Engineering_Bay);
 
     if (Config::Strategy::StrategyName == "Terran_MarineRush")
+    {
+	    goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Marine, numMarines + 8));
+
+        if (numMarines > 5)
+        {
+            goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Engineering_Bay, 1));
+        }
+
+        if (numBay > 0)
+        {
+            goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::U_238_Shells, 1));
+        }
+    }
+    else if (Config::Strategy::StrategyName == "Terran_4RaxMarines")
     {
 	    goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Marine, numMarines + 8));
     }
     else if (Config::Strategy::StrategyName == "Terran_VultureRush")
     {
         goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Vulture, numVultures + 8));
-        goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Spider_Mines, 1));
     }
     else if (Config::Strategy::StrategyName == "Terran_TankPush")
     {
@@ -244,6 +254,8 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
     {
         BWAPI::Broodwar->printf("Warning: No build order goal for Terran Strategy: %s", Config::Strategy::StrategyName.c_str());
     }
+
+
 
     if (shouldExpandNow())
     {
@@ -319,7 +331,15 @@ void StrategyManager::readResults()
 
             //BWAPI::Broodwar->printf("Results Found: %s %d %d", strategyName.c_str(), wins, losses);
 
-            _results[strategyName] = std::pair<int, int>(wins, losses);
+            if (_strategies.find(strategyName) == _strategies.end())
+            {
+                //BWAPI::Broodwar->printf("Warning: Results file has unknown Strategy: %s", strategyName.c_str());
+            }
+            else
+            {
+                _strategies[strategyName]._wins = wins;
+                _strategies[strategyName]._losses = losses;
+            }
         }
 
         fclose ( file );
@@ -327,12 +347,6 @@ void StrategyManager::readResults()
     else
     {
         //BWAPI::Broodwar->printf("No results file found: %s", enemyResultsFile.c_str());
-    }
-
-    // if we haven't seen the current strategy yet in the results file, add it
-    if (_results.find(Config::Strategy::StrategyName) == _results.end())
-    {
-        _results[Config::Strategy::StrategyName] = std::pair<int, int>(0, 0);
     }
 }
 
@@ -350,9 +364,11 @@ void StrategyManager::writeResults()
 
     std::stringstream ss;
 
-    for (auto & kv : _results)
+    for (auto & kv : _strategies)
     {
-        ss << kv.first << " " << kv.second.first << " " << kv.second.second << "\n";
+        const Strategy & strategy = kv.second;
+
+        ss << strategy._name << " " << strategy._wins << " " << strategy._losses << "\n";
     }
 
     Logger::LogOverwriteToFile(enemyResultsFile, ss.str());
@@ -367,12 +383,80 @@ void StrategyManager::onEnd(const bool isWinner)
 
     if (isWinner)
     {
-        _results[Config::Strategy::StrategyName].first++;
+        _strategies[Config::Strategy::StrategyName]._wins++;
     }
     else
     {
-        _results[Config::Strategy::StrategyName].second++;
+        _strategies[Config::Strategy::StrategyName]._losses++;
     }
 
     writeResults();
+}
+
+void StrategyManager::setLearnedStrategy()
+{
+    // we are currently not using this functionality for the competition so turn it off 
+    return;
+
+    if (!Config::Modules::UsingStrategyIO)
+    {
+        return;
+    }
+
+    const std::string & strategyName = Config::Strategy::StrategyName;
+    Strategy & currentStrategy = _strategies[strategyName];
+
+    int totalGamesPlayed = 0;
+    int strategyGamesPlayed = currentStrategy._wins + currentStrategy._losses;
+    double winRate = strategyGamesPlayed > 0 ? currentStrategy._wins / static_cast<double>(strategyGamesPlayed) : 0;
+
+    // if we are using an enemy specific strategy
+    if (Config::Strategy::FoundEnemySpecificStrategy)
+    {        
+        return;
+    }
+
+    // if our win rate with the current strategy is super high don't explore at all
+    // also we're pretty confident in our base strategies so don't change if insufficient games have been played
+    if (strategyGamesPlayed < 5 || (strategyGamesPlayed > 0 && winRate > 0.49))
+    {
+        BWAPI::Broodwar->printf("Still using default strategy");
+        return;
+    }
+
+    // get the total number of games played so far with this race
+    for (auto & kv : _strategies)
+    {
+        Strategy & strategy = kv.second;
+        if (strategy._race == BWAPI::Broodwar->self()->getRace())
+        {
+            totalGamesPlayed += strategy._wins + strategy._losses;
+        }
+    }
+
+    // calculate the UCB value and store the highest
+    double C = 0.5;
+    std::string bestUCBStrategy;
+    double bestUCBStrategyVal = std::numeric_limits<double>::lowest();
+    for (auto & kv : _strategies)
+    {
+        Strategy & strategy = kv.second;
+        if (strategy._race != BWAPI::Broodwar->self()->getRace())
+        {
+            continue;
+        }
+
+        int sGamesPlayed = strategy._wins + strategy._losses;
+        double sWinRate = sGamesPlayed > 0 ? currentStrategy._wins / static_cast<double>(strategyGamesPlayed) : 0;
+        double ucbVal = C * sqrt( log( (double)totalGamesPlayed / sGamesPlayed ) );
+        double val = sWinRate + ucbVal;
+
+        if (val > bestUCBStrategyVal)
+        {
+            bestUCBStrategy = strategy._name;
+            bestUCBStrategyVal = val;
+        }
+    }
+
+    Config::Strategy::StrategyName = bestUCBStrategy;
 }
