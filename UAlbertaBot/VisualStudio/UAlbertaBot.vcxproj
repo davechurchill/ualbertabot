@@ -116,7 +116,6 @@
   <ItemGroup>
     <ClCompile Include="..\Source\AutoObserver.cpp" />
     <ClCompile Include="..\Source\BOSSManager.cpp" />
-    <ClCompile Include="..\source\BuildingData.cpp" />
     <ClCompile Include="..\source\BuildingManager.cpp" />
     <ClCompile Include="..\source\BuildingPlacer.cpp" />
     <ClCompile Include="..\source\BuildOrder.cpp" />
@@ -159,7 +158,6 @@
   <ItemGroup>
     <ClInclude Include="..\Source\AutoObserver.h" />
     <ClInclude Include="..\Source\BOSSManager.h" />
-    <ClInclude Include="..\source\BuildingData.h" />
     <ClInclude Include="..\source\BuildingManager.h" />
     <ClInclude Include="..\source\BuildingPlacer.h" />
     <ClInclude Include="..\source\BuildOrder.h" />

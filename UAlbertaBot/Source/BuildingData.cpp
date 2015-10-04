@@ -2,75 +2,48 @@
 
 using namespace UAlbertaBot;
 
-ConstructionData::ConstructionData()
+BuildingData::BuildingData()
 {
-	// set up the buildings vector
-	buildings = std::vector< std::vector<Building> > (NumBuildingStates, std::vector<Building>());
 
-	// set up the index vector
-	buildingIndex = std::vector< size_t >(NumBuildingStates, 0);
 }
 
-bool ConstructionData::hasNextBuilding(BuildingState bs)
+void BuildingData::removeBuilding(const Building & b)
 {
-	// is the current index valid
-	return buildingIndex[bs] < buildings[bs].size();
+    auto & building = std::find(_buildings.begin(), _buildings.end(), b);
+
+    if (building != _buildings.end())
+    {
+        _buildings.erase(building);
+    }
 }
 
-int ConstructionData::getNumBuildings(BuildingState bs)
+std::vector<Building> & BuildingData::getBuildings()
 {
-	return buildings[bs].size();
+    return _buildings;
 }
 
-Building & ConstructionData::getNextBuilding(BuildingState bs)
+void BuildingData::addBuilding(const Building & b)
 {
-	// assert this index is valid
-	assert(hasNextBuilding(bs));
-
-	// get the building
-	Building & returnBuilding = buildings[bs][buildingIndex[bs]];
-
-	// increment the index
-	buildingIndex[bs]++;
-
-	// return the building
-	return returnBuilding;
+    _buildings.push_back(b);
 }
 
-void ConstructionData::begin(BuildingState bs)
+bool BuildingData::isBeingBuilt(BWAPI::UnitType type)
 {
-	// set the index to 0
-	buildingIndex[bs] = 0;
+    for (auto & b : _buildings)
+    {
+        if (b.type == type)
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
-void ConstructionData::removeCurrentBuilding(BuildingState bs)
+void BuildingData::removeBuildings(const std::vector<Building> & buildings)
 {
-	// erase the element of the vector 1 before where we are now
-	buildings[bs].erase(buildings[bs].begin() + buildingIndex[bs] - 1);
-
-	// set the index back one
-	buildingIndex[bs]--;
-}
-
-void ConstructionData::addBuilding(BuildingState bs, const Building & b)
-{
-	// add the building to the vector
-	buildings[bs].push_back(b);
-}
-
-bool ConstructionData::isBeingBuilt(BWAPI::UnitType type)
-{
-	// for each building vector
-	for (std::vector<Building> & buildingVector : buildings)
-	{
-		for (Building & b : buildingVector)
-		{
-			if (b.type == type)
-			{
-				return true;
-			}
-		}
-	}
-
-	return false;
+    for (const auto & b : buildings)
+    {
+        removeBuilding(b);
+    }
 }

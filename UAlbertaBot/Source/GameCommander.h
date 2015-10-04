@@ -33,7 +33,7 @@ class GameCommander
 {
 	CombatCommander		    _combatCommander;
 	TimerManager		    _timerManager;
-    
+
 	BWAPI::Unitset          _validUnits;
 	BWAPI::Unitset          _combatUnits;
 	BWAPI::Unitset          _scoutUnits;

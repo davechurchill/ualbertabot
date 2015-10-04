@@ -69,9 +69,6 @@
     <ClCompile Include="..\Source\UABAssert.cpp">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\BuildingData.cpp">
-      <Filter>game\macro</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\BuildingManager.cpp">
       <Filter>game\macro</Filter>
     </ClCompile>
@@ -196,9 +193,6 @@
     </ClInclude>
     <ClInclude Include="..\Source\CombatSimulation.h">
       <Filter>game\combat</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\BuildingData.h">
-      <Filter>game\macro</Filter>
     </ClInclude>
     <ClInclude Include="..\source\BuildingManager.h">
       <Filter>game\macro</Filter>
