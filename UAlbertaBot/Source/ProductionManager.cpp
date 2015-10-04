@@ -660,11 +660,6 @@ ProductionManager & ProductionManager::Instance()
 	return instance;
 }
 
-void ProductionManager::onGameEnd()
-{
-
-}
-
 void ProductionManager::queueGasSteal()
 {
     _queue.queueAsHighestPriority(MetaType(BWAPI::Broodwar->self()->getRace().getRefinery()), true, true);

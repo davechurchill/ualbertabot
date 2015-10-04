@@ -176,3 +176,25 @@ size_t UnitUtil::GetAllUnitCount(BWAPI::UnitType type)
 
     return count;
 }
+
+
+BWAPI::Unit UnitUtil::GetClosestUnitTypeToTarget(BWAPI::UnitType type, BWAPI::Position target)
+{
+	BWAPI::Unit closestUnit = nullptr;
+	double closestDist = 100000;
+
+	for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+	{
+		if (unit->getType() == type)
+		{
+			double dist = unit->getDistance(target);
+			if (!closestUnit || dist < closestDist)
+			{
+				closestUnit = unit;
+				closestDist = dist;
+			}
+		}
+	}
+
+	return closestUnit;
+}

@@ -78,6 +78,14 @@ void MapTools::resetFringe()
 
 int MapTools::getGroundDistance(BWAPI::Position origin,BWAPI::Position destination)
 {
+    // if we have too many maps, reset our stored maps in case we run out of memory
+    if (_allMaps.size() > 20)
+    {
+        _allMaps.clear();
+
+        BWAPI::Broodwar->printf("Cleared stored distance map cache");
+    }
+
     // if we haven't yet computed the distance map to the destination
     if (_allMaps.find(destination) == _allMaps.end())
     {

@@ -13,42 +13,36 @@ UnitData::UnitData()
 		maxTypeID = maxTypeID > t.getID() ? maxTypeID : t.getID();
 	}
 
-	numDeadUnits	= std::vector<int>(maxTypeID + 1, 0);
-	numUnits		= std::vector<int>(maxTypeID + 1, 0);
-	numCompletedUnits= std::vector<int>(maxTypeID + 1, 0);
+	numDeadUnits	    = std::vector<int>(maxTypeID + 1, 0);
+	numUnits		    = std::vector<int>(maxTypeID + 1, 0);
 }
 
 void UnitData::updateUnit(BWAPI::Unit unit)
 {
 	if (!unit) { return; }
-	
-	// if the unit exists, update it
-	if (unitMap.find(unit) != unitMap.end())
-	{
-		UnitInfo & ui = unitMap.find(unit)->second;
 
-		ui.lastPosition = unit->getPosition();
-		ui.lastHealth = unit->getHitPoints();
-        ui.lastShields= unit->getShields();
-		ui.unitID = unit->getID();
-		ui.type = unit->getType();
-		if (!ui.completed&&unit->isCompleted()){
-			numCompletedUnits[unit->getType().getID()]++;
-		}
-        ui.completed = unit->isCompleted();
+    bool firstSeen = false;
+    auto & it = unitMap.find(unit);
+    if (it == unitMap.end())
+    {
+        firstSeen = true;
+        unitMap[unit] = UnitInfo();
+    }
+    
+	UnitInfo & ui   = unitMap[unit];
+    ui.unit         = unit;
+    ui.player       = unit->getPlayer();
+	ui.lastPosition = unit->getPosition();
+	ui.lastHealth   = unit->getHitPoints();
+    ui.lastShields  = unit->getShields();
+	ui.unitID       = unit->getID();
+	ui.type         = unit->getType();
+    ui.completed    = unit->isCompleted();
 
-		return;
-	}
-	// otherwise create it
-	else
-	{
-		// put the unit in the map
-		numUnits[unit->getType().getID()]++;
-		if (unit->isCompleted()){
-			numCompletedUnits[unit->getType().getID()]++;
-		}
-		unitMap[unit] = UnitInfo(unit->getID(), unit, unit->getPosition(), unit->getType());
-	}
+    if (firstSeen)
+    {
+        numUnits[unit->getType().getID()]++;
+    }
 }
 
 void UnitData::removeUnit(BWAPI::Unit unit)
@@ -58,7 +52,6 @@ void UnitData::removeUnit(BWAPI::Unit unit)
 	mineralsLost += unit->getType().mineralPrice();
 	gasLost += unit->getType().gasPrice();
 	numUnits[unit->getType().getID()]--;
-	numCompletedUnits[unit->getType().getID()]--;
 	numDeadUnits[unit->getType().getID()]++;
 		
 	unitMap.erase(unit);
@@ -74,7 +67,6 @@ void UnitData::removeBadUnits()
 		{
 			// remove it from the map
 			numUnits[iter->second.type.getID()]--;
-			numCompletedUnits[iter->second.type.getID()]--;
 			iter = unitMap.erase(iter);
 		}
 		else
@@ -87,13 +79,13 @@ void UnitData::removeBadUnits()
 const bool UnitData::badUnitInfo(const UnitInfo & ui) const
 {
 	// Cull away any refineries/assimilators/extractors that were destroyed and reverted to vespene geysers
-	if(ui.unit && ui.unit->getType() == BWAPI::UnitTypes::Resource_Vespene_Geyser)
-	{
+	if (ui.unit && ui.unit->getType() == BWAPI::UnitTypes::Resource_Vespene_Geyser)
+	{ 
 		return true;
 	}
 
 	// If the unit is a building and we can currently see its position and it is not there
-	if(ui.type.isBuilding() && BWAPI::Broodwar->isVisible(ui.lastPosition.x/32, ui.lastPosition.y/32) && !ui.unit->isVisible())
+	if (ui.type.isBuilding() && BWAPI::Broodwar->isVisible(ui.lastPosition.x/32, ui.lastPosition.y/32) && (ui.unit && !ui.unit->isVisible()))
 	{
 		return true;
 	}
@@ -101,92 +93,27 @@ const bool UnitData::badUnitInfo(const UnitInfo & ui) const
 	return false;
 }
 
-void UnitData::getCloakedUnits(std::set<UnitInfo> & v) const 
-{
-	for (const auto & kv : unitMap)
-	{
-		const UnitInfo & ui(kv.second);
-
-		if (ui.canCloak())
-		{
-			v.insert(ui);
-		}
-	}
-}
-
-void UnitData::getDetectorUnits(std::set<UnitInfo> & v) const 
-{
-	for (const auto & kv : unitMap)
-	{
-		const UnitInfo & ui(kv.second);
-
-		if (ui.isDetector())
-		{
-			v.insert(ui);
-		}
-	}
-}
-
-void UnitData::getFlyingUnits(std::set<UnitInfo> & v) const 
-{
-	for (const auto & kv : unitMap)
-	{
-		const UnitInfo & ui(kv.second);
-
-		if (ui.isFlyer())
-		{
-			v.insert(ui);
-		}
-	}
-}
-
-bool UnitData::hasCloakedUnits() const	
+int UnitData::getGasLost() const 
 { 
-	if (numUnits[BWAPI::UnitTypes::Protoss_Citadel_of_Adun] > 0)
-	{
-		return true;
-	}
-
-	for (const auto & kv : unitMap)
-	{
-		const UnitInfo & ui(kv.second);
-
-		if (ui.canCloak())
-		{
-			return true;
-		}
-	}
-
-	return false;
+    return gasLost; 
 }
 
-int UnitData::numCloakedUnits()	const
-{
-	int count = 0;
-	for (const auto & kv : unitMap)
-	{
-		const UnitInfo & ui(kv.second);
-
-		if (ui.canCloak())
-		{
-			count++;
-		}
-	}
-
-	return count;
-}
-
-bool UnitData::hasDetectorUnits() const 
+int UnitData::getMineralsLost() const 
 { 
-	for (const auto & kv : unitMap)
-	{
-		const UnitInfo & ui(kv.second);
+    return mineralsLost; 
+}
 
-		if (ui.isDetector())
-		{
-			return true;
-		}
-	}
+int UnitData::getNumUnits(BWAPI::UnitType t) const 
+{ 
+    return numUnits[t.getID()]; 
+}
 
-	return false;
+int UnitData::getNumDeadUnits(BWAPI::UnitType t) const 
+{ 
+    return numDeadUnits[t.getID()]; 
+}
+
+const std::map<BWAPI::Unit,UnitInfo> & UnitData::getUnits() const 
+{ 
+    return unitMap; 
 }

@@ -241,9 +241,9 @@ bool Squad::needsToRegroup()
 
     if (!anyInRange)
     {
+        _regroupStatus = std::string("\x04 No enemy units in attack range");
         return false;
     }
-
 
     SparCraft::ScoreType score = 0;
 
@@ -254,8 +254,7 @@ bool Squad::needsToRegroup()
 	score = sim.simulateCombat();
 
 	// if we are DT rushing and we haven't lost a DT yet, no retreat!
-	if (Config::Strategy::StrategyName == "Protoss_DTRush" &&
-		(BWAPI::Broodwar->self()->deadUnitCount(BWAPI::UnitTypes::Protoss_Dark_Templar) == 0))
+	if (Config::Strategy::StrategyName == "Protoss_DTRush" && (BWAPI::Broodwar->self()->deadUnitCount(BWAPI::UnitTypes::Protoss_Dark_Templar) == 0))
 	{
 		_regroupStatus = std::string("\x04 DARK TEMPLAR HOOOOO!");
 		return false;

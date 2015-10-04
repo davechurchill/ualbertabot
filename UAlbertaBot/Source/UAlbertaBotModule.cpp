@@ -69,8 +69,6 @@ void UAlbertaBotModule::onEnd(bool isWinner)
 	if (Config::Modules::UsingGameCommander)
 	{
 		StrategyManager::Instance().onEnd(isWinner);
-        
-		ProductionManager::Instance().onGameEnd();
 	}	
 }
 

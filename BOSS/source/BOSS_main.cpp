@@ -85,9 +85,7 @@ int main(int argc, char *argv[])
 
     //doCombatExperiment();
 
-    BOSS::DFBB_BuildOrderSmartSearch smartSearch(BOSS::Races::Terran);
-
-   /* ResetExperiment("");
+    ResetExperiment("");
 
     if (experiments.getVisExperiments().size() > 0)
     {
@@ -103,7 +101,7 @@ int main(int argc, char *argv[])
 #else
     emscripten_set_main_loop(mainLoop,0,true);
 #endif
-    */
+    
     return 0;
 }
 

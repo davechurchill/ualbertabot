@@ -9,21 +9,18 @@ WorkerManager::WorkerManager()
     previousClosestWorker = nullptr;
 }
 
+WorkerManager & WorkerManager::Instance() 
+{
+	static WorkerManager instance;
+	return instance;
+}
+
 void WorkerManager::update() 
 {
-	// worker bookkeeping
 	updateWorkerStatus();
-
-	// set the gas workers
 	handleGasWorkers();
-
-	// handle idle workers
 	handleIdleWorkers();
-
-	// handle move workers
 	handleMoveWorkers();
-
-	// handle combat workers
 	handleCombatWorkers();
 
 	drawResourceDebugInfo();
@@ -50,8 +47,6 @@ void WorkerManager::updateWorkerStatus()
 			(workerData.getWorkerJob(worker) != WorkerData::Move) &&
 			(workerData.getWorkerJob(worker) != WorkerData::Scout)) 
 		{
-			//printf("Worker %d set to idle", worker->getID());
-			// set its job to idle
 			workerData.setWorkerJob(worker, WorkerData::Idle, nullptr);
 		}
 
@@ -605,25 +600,19 @@ void WorkerManager::rebalanceWorkers()
 	{
         UAB_ASSERT(worker != nullptr, "Worker was null");
 
-		// we only care to rebalance mineral workers
 		if (!workerData.getWorkerJob(worker) == WorkerData::Minerals)
 		{
 			continue;
 		}
 
-		// get the depot this worker works for
 		BWAPI::Unit depot = workerData.getWorkerDepot(worker);
 
-		// if there is a depot and it's full
 		if (depot && workerData.depotIsFull(depot))
 		{
-			// set the worker to idle
 			workerData.setWorkerJob(worker, WorkerData::Idle, nullptr);
 		}
-		// if there's no depot
 		else if (!depot)
 		{
-			// set the worker to idle
 			workerData.setWorkerJob(worker, WorkerData::Idle, nullptr);
 		}
 	}
@@ -633,23 +622,18 @@ void WorkerManager::onUnitDestroy(BWAPI::Unit unit)
 {
 	UAB_ASSERT(unit != nullptr, "Unit was null");
 
-	// remove the depot if it exists
 	if (unit->getType().isResourceDepot() && unit->getPlayer() == BWAPI::Broodwar->self())
 	{
 		workerData.removeDepot(unit);
 	}
 
-	// if the unit that was destroyed is a worker
 	if (unit->getType().isWorker() && unit->getPlayer() == BWAPI::Broodwar->self()) 
 	{
-		// tell the worker data it was destroyed
 		workerData.workerDestroyed(unit);
 	}
 
 	if (unit->getType() == BWAPI::UnitTypes::Resource_Mineral_Field)
 	{
-		//BWAPI::Broodwar->printf("A mineral died, rebalancing workers");
-
 		rebalanceWorkers();
 	}
 }
@@ -737,15 +721,4 @@ int WorkerManager::getNumIdleWorkers()
 int WorkerManager::getNumGasWorkers() 
 {
 	return workerData.getNumGasWorkers();
-}
-
-WorkerManager & WorkerManager::Instance() 
-{
-	static WorkerManager instance;
-	return instance;
-}
-
-const WorkerData & WorkerManager::getData() const
-{
-	return workerData;
 }

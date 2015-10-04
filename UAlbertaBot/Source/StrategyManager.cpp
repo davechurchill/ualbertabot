@@ -6,8 +6,7 @@ using namespace UAlbertaBot;
 
 // constructor
 StrategyManager::StrategyManager() 
-	: firstAttackSent(false)
-	, _selfRace(BWAPI::Broodwar->self()->getRace())
+	: _selfRace(BWAPI::Broodwar->self()->getRace())
 	, _enemyRace(BWAPI::Broodwar->enemy()->getRace())
     , _emptyBuildOrder(BWAPI::Broodwar->self()->getRace())
 {
@@ -40,27 +39,6 @@ const BuildOrder & StrategyManager::getOpeningBookBuildOrder() const
         UAB_ASSERT_WARNING(false, "Strategy not found: %s, returning empty initial build order", Config::Strategy::StrategyName.c_str());
         return _emptyBuildOrder;
     }
-}
-
-
-
-// called by combat commander to determine whether or not to send an attack force
-// freeUnits are the units available to do this attack
-const bool StrategyManager::doAttack(const std::set<BWAPI::Unit> & freeUnits)
-{
-	int ourForceSize = (int)freeUnits.size();
-
-	int numUnitsNeededForAttack = 1;
-
-	bool doAttack  = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Dark_Templar) >= 1
-					|| ourForceSize >= numUnitsNeededForAttack;
-
-	if (doAttack)
-	{
-		firstAttackSent = true;
-	}
-
-	return doAttack || firstAttackSent;
 }
 
 const bool StrategyManager::shouldExpandNow() const

@@ -16,9 +16,9 @@ struct Strategy
 {
     std::string _name;
     BWAPI::Race _race;
-    int _wins;
-    int _losses;
-    BuildOrder _buildOrder;
+    int         _wins;
+    int         _losses;
+    BuildOrder  _buildOrder;
 
     Strategy()
         : _name("None")
@@ -44,21 +44,16 @@ class StrategyManager
 {
 	StrategyManager();
 
-	BWAPI::Race					        _selfRace;
-	BWAPI::Race					        _enemyRace;
-    std::map<std::string, Strategy>     _strategies;
-    int                                 _totalGamesPlayed;
-    const BuildOrder                    _emptyBuildOrder;
+	BWAPI::Race					    _selfRace;
+	BWAPI::Race					    _enemyRace;
+    std::map<std::string, Strategy> _strategies;
+    int                             _totalGamesPlayed;
+    const BuildOrder                _emptyBuildOrder;
 
-	bool						    firstAttackSent;
-
-	void	writeResults();
-
+	        void	                writeResults();
 	const	int					    getScore(BWAPI::Player player) const;
 	const	double				    getUCBValue(const size_t & strategy) const;
-	
 	const	bool				    shouldExpandNow() const;
-
     const	MetaPairVector		    getProtossBuildOrderGoal() const;
 	const	MetaPairVector		    getTerranBuildOrderGoal() const;
 	const	MetaPairVector		    getZergBuildOrderGoal() const;
@@ -71,14 +66,9 @@ public:
             void                    addStrategy(const std::string & name, Strategy & strategy);
             void                    setLearnedStrategy();
             void	                readResults();
-	
 	const	bool				    regroup(int numInRadius);
-	const	bool				    doAttack(const std::set<BWAPI::Unit> & freeUnits);
-	const	int				        defendWithWorkers();
 	const	bool				    rushDetected();
-
-	const	int					    getCurrentStrategy();
-
+	const	int				        defendWithWorkers();
 	const	MetaPairVector		    getBuildOrderGoal();
 	const	BuildOrder &            getOpeningBookBuildOrder() const;
 };
