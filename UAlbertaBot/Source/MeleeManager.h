@@ -20,5 +20,6 @@ public:
 	BWAPI::Unit closestMeleeUnit(BWAPI::Unit target, const BWAPI::Unitset & meleeUnitToAssign);
 	int getAttackPriority(BWAPI::Unit attacker, BWAPI::Unit unit);
 	BWAPI::Unit getTarget(BWAPI::Unit meleeUnit, const BWAPI::Unitset & targets);
+    bool meleeUnitShouldRetreat(BWAPI::Unit meleeUnit, const BWAPI::Unitset & targets);
 };
 }

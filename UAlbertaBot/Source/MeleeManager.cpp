@@ -1,4 +1,5 @@
 #include "MeleeManager.h"
+#include "UnitUtil.h"
 
 using namespace UAlbertaBot;
 
@@ -32,12 +33,18 @@ void MeleeManager::executeMicro(const BWAPI::Unitset & targets)
 		// if the order is to attack or defend
 		if (order.getType() == SquadOrderTypes::Attack || order.getType() == SquadOrderTypes::Defend) 
         {
+            // run away if we meet the retreat critereon
+            if (meleeUnitShouldRetreat(meleeUnit, targets))
+            {
+                BWAPI::Position fleeTo(BWAPI::Broodwar->self()->getStartLocation());
+
+                Micro::SmartMove(meleeUnit, fleeTo);
+            }
 			// if there are targets
-			if (!meleeUnitTargets.empty())
+			else if (!meleeUnitTargets.empty())
 			{
 				// find the best target for this meleeUnit
 				BWAPI::Unit target = getTarget(meleeUnit, meleeUnitTargets);
-
 
 				// attack it
 				Micro::SmartAttackUnit(meleeUnit, target);
@@ -163,4 +170,26 @@ BWAPI::Unit MeleeManager::closestMeleeUnit(BWAPI::Unit target, const BWAPI::Unit
 	}
 	
 	return closest;
+}
+
+bool MeleeManager::meleeUnitShouldRetreat(BWAPI::Unit meleeUnit, const BWAPI::Unitset & targets)
+{
+    // we don't want to retreat the melee unit if its shields or hit points are above the threshold set in the config file
+    // set those values to zero if you never want the unit to retreat from combat individually
+    if (meleeUnit->getShields() > Config::Micro::RetreatMeleeUnitShields || meleeUnit->getHitPoints() > Config::Micro::RetreatMeleeUnitHP)
+    {
+        return false;
+    }
+
+    // if there is a ranged enemy unit within attack range of this melee unit then we shouldn't bother retreating since it could fire and kill it anyway
+    for (auto & unit : targets)
+    {
+        int groundWeaponRange = unit->getType().groundWeapon().maxRange();
+        if (groundWeaponRange >= 64 && unit->getDistance(meleeUnit) < groundWeaponRange)
+        {
+            return false;
+        }
+    }
+
+    return true;
 }

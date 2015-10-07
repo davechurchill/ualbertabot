@@ -83,9 +83,9 @@ namespace Config
         extern bool UseSparcraftSimulation;
         extern bool KiteWithRangedUnits;
         extern std::set<BWAPI::UnitType> KiteLongerRangedUnits;
-
-        extern bool WorkersInDefenseSquad;
-
+        extern bool WorkersDefendRush;
+        extern int RetreatMeleeUnitShields;
+        extern int RetreatMeleeUnitHP;
         extern int CombatRadius;                
         extern int CombatRegroupRadius;         
         extern int UnitNearEnemyRadius;         

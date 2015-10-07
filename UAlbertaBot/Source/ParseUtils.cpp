@@ -52,7 +52,9 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
         const rapidjson::Value & micro = doc["Micro"];
         JSONTools::ReadBool("UseSparcraftSimulation", micro, Config::Micro::UseSparcraftSimulation);
         JSONTools::ReadBool("KiteWithRangedUnits", micro, Config::Micro::KiteWithRangedUnits);
-        JSONTools::ReadBool("WorkersInDefenseSquad", micro, Config::Micro::WorkersInDefenseSquad);
+        JSONTools::ReadBool("WorkersDefendRush", micro, Config::Micro::WorkersDefendRush);
+        JSONTools::ReadInt("RetreatMeleeUnitShields", micro, Config::Micro::RetreatMeleeUnitShields);
+        JSONTools::ReadInt("RetreatMeleeUnitHP", micro, Config::Micro::RetreatMeleeUnitHP);
         JSONTools::ReadInt("InCombatRadius", micro, Config::Micro::CombatRadius);
         JSONTools::ReadInt("RegroupRadius", micro, Config::Micro::CombatRegroupRadius);
         JSONTools::ReadInt("UnitNearEnemyRadius", micro, Config::Micro::UnitNearEnemyRadius);
@@ -247,7 +249,7 @@ void ParseUtils::ParseTextCommand(const std::string & commandString)
         
         // Micro Options
         else if (variableName == "usesparcraftsimulation") { Config::Micro::UseSparcraftSimulation = GetBoolFromString(val); }
-        else if (variableName == "workersindefensesquad") { Config::Micro::WorkersInDefenseSquad = GetBoolFromString(val); }
+        else if (variableName == "workersdefendrush") { Config::Micro::WorkersDefendRush = GetBoolFromString(val); }
         else if (variableName == "incombatradius") { Config::Micro::CombatRadius = GetIntFromString(val); }
         else if (variableName == "regroupradius") { Config::Micro::CombatRegroupRadius = GetIntFromString(val); }
         else if (variableName == "unitnearenemyradius") { Config::Micro::UnitNearEnemyRadius = GetIntFromString(val); }

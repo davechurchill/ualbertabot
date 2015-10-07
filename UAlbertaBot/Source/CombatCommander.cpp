@@ -409,7 +409,7 @@ void CombatCommander::updateDefenseSquadUnits(Squad & defenseSquad, const size_t
 BWAPI::Unit CombatCommander::findClosestDefender(const Squad & defenseSquad, BWAPI::Position pos, bool flyingDefender) 
 {
 	BWAPI::Unit closestDefender = nullptr;
-	double minDistance = 1000000;
+	double minDistance = std::numeric_limits<double>::max();
 
     int zerglingsInOurBase = numZerglingsInOurBase();
     bool zerglingRush = zerglingsInOurBase > 0 && BWAPI::Broodwar->getFrameCount() < 5000;
@@ -426,8 +426,8 @@ BWAPI::Unit CombatCommander::findClosestDefender(const Squad & defenseSquad, BWA
             continue;
         }
 
-
-        if (unit->getType().isWorker() && !zerglingRush && !beingBuildingRushed())
+        // add workers to the defense squad if we are being rushed very quickly
+        if (!Config::Micro::WorkersDefendRush || (unit->getType().isWorker() && !zerglingRush && !beingBuildingRushed()))
         {
             continue;
         }
@@ -442,8 +442,6 @@ BWAPI::Unit CombatCommander::findClosestDefender(const Squad & defenseSquad, BWA
 
 	return closestDefender;
 }
-
-
 
 BWAPI::Position CombatCommander::getDefendLocation()
 {
