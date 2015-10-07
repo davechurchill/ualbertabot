@@ -158,7 +158,7 @@ void ProductionManager::manageBuildOrderQueue()
 		}
 
 		// if the next item in the list is a building and we can't yet make it
-        if (currentItem.metaType.isBuilding() && !(producer && canMake) && !currentItem.metaType.getUnitType().isAddon())
+        if (currentItem.metaType.isBuilding() && !(producer && canMake) && currentItem.metaType.whatBuilds().isWorker())
 		{
 			// construct a temporary building object
 			Building b(currentItem.metaType.getUnitType(), BWAPI::Broodwar->self()->getStartLocation());
