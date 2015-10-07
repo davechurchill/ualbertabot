@@ -439,12 +439,9 @@ bool ProductionManager::detectBuildOrderDeadlock()
 	if ((supplyAvailable < supplyCost) && !supplyInProgress)
 	{
         // if we're zerg, check to see if a building is planned to be built
-        if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Zerg)
+        if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Zerg && BuildingManager::Instance().buildingsQueued().size() > 0)
         {
-            if (BuildingManager::Instance().buildingsQueued().size() > 0)   
-            {
-                return false;
-            }
+            return false;
         }
         else
         {

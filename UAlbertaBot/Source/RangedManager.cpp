@@ -136,6 +136,21 @@ int RangedManager::getAttackPriority(BWAPI::Unit rangedUnit, BWAPI::Unit target)
 	BWAPI::UnitType rangedType = rangedUnit->getType();
 	BWAPI::UnitType targetType = target->getType();
 
+    
+    if (rangedUnit->getType() == BWAPI::UnitTypes::Zerg_Scourge)
+    {
+        if (target->getType() == BWAPI::UnitTypes::Protoss_Carrier)
+        {
+            
+            return 100;
+        }
+
+        if (target->getType() == BWAPI::UnitTypes::Protoss_Corsair)
+        {
+            return 90;
+        }
+    }
+
 	bool isThreat = rangedType.isFlyer() ? targetType.airWeapon() != BWAPI::WeaponTypes::None : targetType.groundWeapon() != BWAPI::WeaponTypes::None;
 
     if (target->getType().isWorker())

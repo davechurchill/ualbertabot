@@ -16,7 +16,7 @@ namespace BOSS
 
         const size_t BUILDING_ERROR         = -2;        // building error return code
 
-        const size_t MAX_HATCHERIES         = 5;      // maximum number of hatcheries allowed
+        const size_t MAX_HATCHERIES         = 10;      // maximum number of hatcheries allowed
 
         const size_t ZERG_LARVA_TIMER       = 336;     // number of frames between zerg larva spawn
 

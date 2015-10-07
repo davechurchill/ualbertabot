@@ -99,6 +99,8 @@ int MeleeManager::getAttackPriority(BWAPI::Unit attacker, BWAPI::Unit unit)
 {
 	BWAPI::UnitType type = unit->getType();
 
+
+
 	if (attacker->getType() == BWAPI::UnitTypes::Protoss_Dark_Templar && unit->getType().isWorker())
 	{
 		return 12;
@@ -121,11 +123,6 @@ int MeleeManager::getAttackPriority(BWAPI::Unit attacker, BWAPI::Unit unit)
 	// next priority is worker
 	else if (type.isWorker()) 
 	{
-        if (unit->isRepairing())
-        {
-            //return 20;
-        }
-
 		return 9;
 	}
     // next is special buildings
@@ -174,6 +171,12 @@ BWAPI::Unit MeleeManager::closestMeleeUnit(BWAPI::Unit target, const BWAPI::Unit
 
 bool MeleeManager::meleeUnitShouldRetreat(BWAPI::Unit meleeUnit, const BWAPI::Unitset & targets)
 {
+    // terran don't regen so it doesn't make any sense to retreat
+    if (meleeUnit->getType().getRace() == BWAPI::Races::Terran)
+    {
+        return false;
+    }
+
     // we don't want to retreat the melee unit if its shields or hit points are above the threshold set in the config file
     // set those values to zero if you never want the unit to retreat from combat individually
     if (meleeUnit->getShields() > Config::Micro::RetreatMeleeUnitShields || meleeUnit->getHitPoints() > Config::Micro::RetreatMeleeUnitHP)

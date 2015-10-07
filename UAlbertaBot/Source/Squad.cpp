@@ -170,7 +170,7 @@ void Squad::addUnitsToMicroManagers()
 				transportUnits.insert(unit);
 			}
 			// select ranged _units
-			else if ((unit->getType().groundWeapon().maxRange() > 32) || (unit->getType() == BWAPI::UnitTypes::Protoss_Reaver))
+			else if ((unit->getType().groundWeapon().maxRange() > 32) || (unit->getType() == BWAPI::UnitTypes::Protoss_Reaver) || (unit->getType() == BWAPI::UnitTypes::Zerg_Scourge))
 			{
 				rangedUnits.insert(unit);
 			}
