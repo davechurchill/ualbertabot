@@ -59,13 +59,10 @@ void UnitData::removeUnit(BWAPI::Unit unit)
 
 void UnitData::removeBadUnits()
 {
-	// for each unit in the map
 	for (auto iter(unitMap.begin()); iter != unitMap.end();)
 	{
-		// if it is bad
 		if (badUnitInfo(iter->second))
 		{
-			// remove it from the map
 			numUnits[iter->second.type.getID()]--;
 			iter = unitMap.erase(iter);
 		}
@@ -78,14 +75,19 @@ void UnitData::removeBadUnits()
 
 const bool UnitData::badUnitInfo(const UnitInfo & ui) const
 {
+    if (!ui.unit)
+    {
+        return false;
+    }
+
 	// Cull away any refineries/assimilators/extractors that were destroyed and reverted to vespene geysers
-	if (ui.unit && ui.unit->getType() == BWAPI::UnitTypes::Resource_Vespene_Geyser)
+	if (ui.unit->getType() == BWAPI::UnitTypes::Resource_Vespene_Geyser)
 	{ 
 		return true;
 	}
 
 	// If the unit is a building and we can currently see its position and it is not there
-	if (ui.type.isBuilding() && BWAPI::Broodwar->isVisible(ui.lastPosition.x/32, ui.lastPosition.y/32) && (ui.unit && !ui.unit->isVisible()))
+	if (ui.type.isBuilding() && BWAPI::Broodwar->isVisible(ui.lastPosition.x/32, ui.lastPosition.y/32) && !ui.unit->isVisible())
 	{
 		return true;
 	}

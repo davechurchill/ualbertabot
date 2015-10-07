@@ -76,7 +76,6 @@ void GameCommander::drawDebugInterface()
     _timerManager.displayTimers(490, 225);
     drawGameInformation(4, 1);
 
-
 	// draw position of mouse cursor
 	if (Config::Debug::DrawMouseCursorInfo)
 	{

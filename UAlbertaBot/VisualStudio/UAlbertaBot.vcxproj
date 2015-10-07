@@ -119,7 +119,6 @@
     <ClCompile Include="..\source\BuildingManager.cpp" />
     <ClCompile Include="..\source\BuildingPlacer.cpp" />
     <ClCompile Include="..\source\BuildOrder.cpp" />
-    <ClCompile Include="..\source\BuildOrderGoalManager.cpp" />
     <ClCompile Include="..\source\BuildOrderQueue.cpp" />
     <ClCompile Include="..\Source\CombatSimulation.cpp" />
     <ClCompile Include="..\Source\CombatCommander.cpp" />
@@ -161,7 +160,6 @@
     <ClInclude Include="..\source\BuildingManager.h" />
     <ClInclude Include="..\source\BuildingPlacer.h" />
     <ClInclude Include="..\source\BuildOrder.h" />
-    <ClInclude Include="..\source\BuildOrderGoalManager.h" />
     <ClInclude Include="..\source\BuildOrderQueue.h" />
     <ClInclude Include="..\Source\CombatSimulation.h" />
     <ClInclude Include="..\Source\CombatCommander.h" />

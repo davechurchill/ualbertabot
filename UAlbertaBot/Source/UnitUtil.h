@@ -18,6 +18,7 @@ namespace UnitUtil
     double CalculateLTD(BWAPI::Unit attacker, BWAPI::Unit target);
     int GetAttackRange(BWAPI::Unit attacker, BWAPI::Unit target);
     int GetAttackRange(BWAPI::UnitType attacker, BWAPI::UnitType target);
+    int GetTransportSize(BWAPI::UnitType type);
 
     size_t GetAllUnitCount(BWAPI::UnitType type);
 

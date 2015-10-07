@@ -438,7 +438,18 @@ bool ProductionManager::detectBuildOrderDeadlock()
 	// if we don't have enough supply and none is being built, there's a deadlock
 	if ((supplyAvailable < supplyCost) && !supplyInProgress)
 	{
-		return true;
+        // if we're zerg, check to see if a building is planned to be built
+        if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Zerg)
+        {
+            if (BuildingManager::Instance().buildingsQueued().size() > 0)   
+            {
+                return false;
+            }
+        }
+        else
+        {
+		    return true;
+        }
 	}
 
 	return false;

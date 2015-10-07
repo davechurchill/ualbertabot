@@ -139,6 +139,18 @@ const MetaPairVector StrategyManager::getProtossBuildOrderGoal() const
     {
         goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Dragoon, numDragoons + 6));
     }
+    else if (Config::Strategy::StrategyName == "Protoss_Drop")
+    {
+        if (numZealots == 0)
+        {
+            goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Zealot, numZealots + 4));
+            goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Shuttle, 1));
+        }
+        else
+        {
+            goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Zealot, numZealots + 8));
+        }
+    }
     else if (Config::Strategy::StrategyName == "Protoss_DTRush")
     {
         goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Dark_Templar, numDarkTeplar + 2));

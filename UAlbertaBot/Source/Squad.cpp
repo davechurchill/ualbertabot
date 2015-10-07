@@ -37,7 +37,7 @@ void Squad::update()
 	// draw some debug info
 	if (Config::Debug::DrawSquadInfo && _order.getType() == SquadOrderTypes::Attack) 
 	{
-		BWAPI::Broodwar->drawTextScreen(200, 340, "%s", _regroupStatus.c_str());
+		BWAPI::Broodwar->drawTextScreen(200, 350, "%s", _regroupStatus.c_str());
 
 		BWAPI::Unit closest = unitClosestToEnemy();
 	}
@@ -65,7 +65,7 @@ void Squad::update()
 		_rangedManager.execute(_order);
         _tankManager.execute(_order);
         _medicManager.execute(_order);
-		_transportManager.execute(_order);
+		_transportManager.update();
 
 		_detectorManager.setUnitClosestToEnemy(unitClosestToEnemy());
 		_detectorManager.execute(_order);
@@ -185,7 +185,7 @@ void Squad::addUnitsToMicroManagers()
 	_meleeManager.setUnits(meleeUnits);
 	_rangedManager.setUnits(rangedUnits);
 	_detectorManager.setUnits(detectorUnits);
-	_transportManager.setUnits(detectorUnits);
+	_transportManager.setUnits(transportUnits);
     _tankManager.setUnits(tankUnits);
     _medicManager.setUnits(medicUnits);
 }
@@ -201,7 +201,7 @@ bool Squad::needsToRegroup()
 	// if we are not attacking, never regroup
 	if (_units.empty() || (_order.getType() != SquadOrderTypes::Attack))
 	{
-		_regroupStatus = std::string("\x04 No combat _units available");
+		_regroupStatus = std::string("\x04 No combat units available");
 		return false;
 	}
 

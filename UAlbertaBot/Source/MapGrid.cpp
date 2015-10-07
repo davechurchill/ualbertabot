@@ -154,6 +154,7 @@ void MapGrid::update()
 		    }
 	    }
 
+
     }
 
 	// clear the grid

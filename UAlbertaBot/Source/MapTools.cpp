@@ -45,16 +45,16 @@ void MapTools::setBWAPIMapData()
     {
         for (int c(0); c < _cols; ++c)
         {
-            bool clear = false;
+            bool clear = true;
 
             // check each walk tile within this TilePosition
             for (int i=0; i<4; ++i)
             {
                 for (int j=0; j<4; ++j)
                 {
-                    if (BWAPI::Broodwar->isWalkable(c*4 + i,r*4 + j))
+                    if (!BWAPI::Broodwar->isWalkable(c*4 + i,r*4 + j))
                     {
-                        clear = true;
+                        clear = false;
                         break;
                     }
 
@@ -214,6 +214,22 @@ BWAPI::TilePosition MapTools::getNextExpansion()
     return getNextExpansion(BWAPI::Broodwar->self());
 }
 
+void MapTools::drawHomeDistanceMap()
+{
+    BWAPI::Position homePosition = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
+    for (int x = 0; x < BWAPI::Broodwar->mapWidth(); ++x)
+    {
+        for (int y = 0; y < BWAPI::Broodwar->mapHeight(); ++y)
+        {
+            BWAPI::Position pos(x*32, y*32);
+
+            int dist = getGroundDistance(pos, homePosition);
+
+            BWAPI::Broodwar->drawTextMap(pos + BWAPI::Position(16,16), "%d", dist);
+        }
+    }
+}
+
 BWAPI::TilePosition MapTools::getNextExpansion(BWAPI::Player player)
 {
     BWTA::BaseLocation * closestBase = nullptr;
@@ -229,52 +245,25 @@ BWAPI::TilePosition MapTools::getNextExpansion(BWAPI::Player player)
         {
             // get the tile position of the base
             BWAPI::TilePosition tile = base->getTilePosition();
-
-            // the rectangle for this base location
-            int x1 = tile.x * 32;
-            int y1 = tile.y * 32;
-            int x2 = 0;
-            int y2 = 0;
-            switch (player->getRace().getID())
-            {
-                case BWAPI::Races::Enum::Zerg:
-                {
-                    x2 = x1 + BWAPI::UnitTypes::Zerg_Hatchery.tileWidth() * 32;
-                    y2 = y1 + BWAPI::UnitTypes::Zerg_Hatchery.tileHeight() * 32;
-                    break;
-                }
-                case BWAPI::Races::Enum::Terran:
-                {
-                    x2 = x1 + BWAPI::UnitTypes::Terran_Command_Center.tileWidth() * 32;
-                    y2 = y1 + BWAPI::UnitTypes::Terran_Command_Center.tileHeight() * 32;
-                    break;
-                }
-                case BWAPI::Races::Enum::Protoss:
-                {
-                    x2 = x1 + BWAPI::UnitTypes::Protoss_Nexus.tileWidth() * 32;
-                    y2 = y1 + BWAPI::UnitTypes::Protoss_Nexus.tileHeight() * 32;
-                    break;
-                }
-                default:
-                {
-                    UAB_ASSERT(false,"Unknown race when trying to find next base location");
-                    break;
-                }
-            }
-
             bool buildingInTheWay = false;
 
-            // for each unit in the rectangle where we want to build it
-            for (auto & unit : BWAPI::Broodwar->getUnitsInRectangle(x1,y1,x2,y2))
+            for (int x = 0; x < BWAPI::Broodwar->self()->getRace().getCenter().tileWidth(); ++x)
             {
-                // if the unit is a building, we can't build here
-                if (unit->getType().isBuilding())
+                for (int y = 0; y < BWAPI::Broodwar->self()->getRace().getCenter().tileHeight(); ++y)
                 {
-                    buildingInTheWay = true;
-                    break;
+                    BWAPI::TilePosition tp(tile.x + x, tile.y + y);
+
+                    for (auto & unit : BWAPI::Broodwar->getUnitsOnTile(tp))
+                    {
+                        if (unit->getType().isBuilding() && !unit->isFlying())
+                        {
+                            buildingInTheWay = true;
+                            break;
+                        }
+                    }
                 }
             }
-
+            
             if (buildingInTheWay)
             {
                 continue;

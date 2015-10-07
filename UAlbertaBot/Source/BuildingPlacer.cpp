@@ -354,25 +354,44 @@ void BuildingPlacer::freeTiles(BWAPI::TilePosition position, int width, int heig
 
 BWAPI::TilePosition BuildingPlacer::getRefineryPosition()
 {
-    // for each of our units
-    for (auto & depot : BWAPI::Broodwar->self()->getUnits())
+    BWAPI::TilePosition closestGeyser = BWAPI::TilePositions::None;
+    double minGeyserDistanceFromHome = std::numeric_limits<double>::max();
+    BWAPI::Position homePosition = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
+
+    // for each geyser
+    for (auto & geyser : BWAPI::Broodwar->getStaticGeysers())
     {
-        // if it's a resource depot
-        if (depot->getType().isResourceDepot())
+        if (geyser->getType() != BWAPI::UnitTypes::Resource_Vespene_Geyser)
         {
-            // for all units around it
-            for (auto & unit : BWAPI::Broodwar->getAllUnits())
+            continue;
+        }
+
+        BWAPI::Position geyserPos = geyser->getInitialPosition();
+        BWAPI::TilePosition geyserTilePos = geyser->getInitialTilePosition();
+
+        // check to see if it's next to one of our depots
+        bool nearDepot = false;
+        for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+        {
+            if (unit->getType().isResourceDepot() && unit->getDistance(geyserPos) < 300)
             {
-                // if it's a geyser around it
-                if (unit->getType() == BWAPI::UnitTypes::Resource_Vespene_Geyser && unit->getDistance(depot) < 300)
-                {
-                    return unit->getTilePosition();
-                }
+                nearDepot = true;
+            }
+        }
+
+        if (nearDepot)
+        {
+            double homeDistance = geyser->getDistance(homePosition);
+
+            if (homeDistance < minGeyserDistanceFromHome)
+            {
+                minGeyserDistanceFromHome = homeDistance;
+                closestGeyser = geyser->getInitialTilePosition();
             }
         }
     }
-
-    return BWAPI::TilePositions::None;
+    
+    return closestGeyser;
 }
 
 bool BuildingPlacer::isReserved(int x, int y) const
