@@ -162,6 +162,29 @@ void Micro::SmartRightClick(BWAPI::Unit unit, BWAPI::Unit target)
     }
 }
 
+void Micro::SmartLaySpiderMine(BWAPI::Unit unit, BWAPI::Position pos)
+{
+    if (!unit)
+    {
+        return;
+    }
+
+    if (!unit->canUseTech(BWAPI::TechTypes::Spider_Mines, pos))
+    {
+        return;
+    }
+
+    BWAPI::UnitCommand currentCommand(unit->getLastCommand());
+
+    // if we've already told this unit to move to this position, ignore this command
+    if ((currentCommand.getType() == BWAPI::UnitCommandTypes::Use_Tech_Position) && (currentCommand.getTargetPosition() == pos))
+    {
+        return;
+    }
+
+    unit->canUseTechPosition(BWAPI::TechTypes::Spider_Mines, pos);
+}
+
 void Micro::SmartRepair(BWAPI::Unit unit, BWAPI::Unit target)
 {
     UAB_ASSERT(unit, "SmartRightClick: Unit not valid");
@@ -242,7 +265,7 @@ void Micro::SmartKiteTarget(BWAPI::Unit rangedUnit, BWAPI::Unit target)
 		kite = false;
 	}
 
-	if (target->getType().isBuilding() && target->getType() != BWAPI::UnitTypes::Terran_Bunker)
+	if (target->getType().isBuilding())
 	{
 		kite = false;
 	}

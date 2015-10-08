@@ -221,11 +221,6 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
         {
             goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Engineering_Bay, 1));
         }
-
-        if (numBay > 0)
-        {
-            goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::U_238_Shells, 1));
-        }
     }
     else if (Config::Strategy::StrategyName == "Terran_4RaxMarines")
     {
@@ -234,6 +229,12 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
     else if (Config::Strategy::StrategyName == "Terran_VultureRush")
     {
         goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Vulture, numVultures + 8));
+
+        if (numVultures > 8)
+        {
+            goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Tank_Siege_Mode, 1));
+            goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode, 4));
+        }
     }
     else if (Config::Strategy::StrategyName == "Terran_TankPush")
     {
@@ -288,7 +289,8 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
     }
     else if (Config::Strategy::StrategyName == "Zerg_3HatchMuta")
     {
-        
+        goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Hydralisk, numHydras + 12));
+        goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Drone, numDrones + 4));
     }
     else if (Config::Strategy::StrategyName == "Zerg_3HatchScourge")
     {
@@ -305,7 +307,13 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
         goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Drone, numDrones + 4));
     }
 
-	return (const std::vector<MetaPair>)goal;
+    if (shouldExpandNow())
+    {
+        goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Hatchery, numCC + 1));
+        goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Drone, numWorkers + 10));
+    }
+
+	return goal;
 }
 
 void StrategyManager::readResults()

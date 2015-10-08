@@ -753,7 +753,7 @@ const FrameCountType GameState::whenMineralsReady(const ActionType & action) con
         }
         else if (actionPerformed.isRefinery())
         {
-            BOSS_ASSERT(currentMineralWorkers > 3, "Not enough mineral workers \n%s", toString().c_str());
+            BOSS_ASSERT(currentMineralWorkers > 3, "Not enough mineral workers \n");
             currentMineralWorkers -= 3; 
             currentGasWorkers += 3;
         }

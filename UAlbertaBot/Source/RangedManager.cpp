@@ -53,7 +53,12 @@ void RangedManager::executeMicro(const BWAPI::Unitset & targets)
 	            {
 		            BWAPI::Broodwar->drawLineMap(rangedUnit->getPosition(), rangedUnit->getTargetPosition(), BWAPI::Colors::Purple);
 	            }
-                
+
+                if (rangedUnit->getType() == BWAPI::UnitTypes::Terran_Vulture)
+                {
+                    Micro::SmartLaySpiderMine(rangedUnit, rangedUnit->getPosition());
+                }
+
                 if (!target)
                 {
                     Micro::SmartAttackMove(rangedUnit, order.getPosition());
@@ -179,7 +184,7 @@ int RangedManager::getAttackPriority(BWAPI::Unit rangedUnit, BWAPI::Unit target)
     {
         return 90;
     }
-
+    
 	// highest priority is something that can attack us or aid in combat
     if (targetType ==  BWAPI::UnitTypes::Terran_Bunker || isThreat)
     {
@@ -193,7 +198,7 @@ int RangedManager::getAttackPriority(BWAPI::Unit rangedUnit, BWAPI::Unit target)
             return 11;
         }
 
-  		return 9;
+  		return 11;
 	}
     // next is special buildings
 	else if (targetType == BWAPI::UnitTypes::Zerg_Spawning_Pool)

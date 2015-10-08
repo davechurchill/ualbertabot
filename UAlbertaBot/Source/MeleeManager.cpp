@@ -99,7 +99,12 @@ int MeleeManager::getAttackPriority(BWAPI::Unit attacker, BWAPI::Unit unit)
 {
 	BWAPI::UnitType type = unit->getType();
 
-
+    if (attacker->getType() == BWAPI::UnitTypes::Protoss_Dark_Templar 
+        && unit->getType() == BWAPI::UnitTypes::Terran_Missile_Turret
+        && (BWAPI::Broodwar->self()->deadUnitCount(BWAPI::UnitTypes::Protoss_Dark_Templar) == 0))
+    {
+        return 13;
+    }
 
 	if (attacker->getType() == BWAPI::UnitTypes::Protoss_Dark_Templar && unit->getType().isWorker())
 	{
