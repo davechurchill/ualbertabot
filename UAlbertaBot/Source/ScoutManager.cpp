@@ -88,15 +88,15 @@ void ScoutManager::moveScouts()
 			// if the worker scout is under attack
 			else
 			{
-				BWAPI::Position fleeTo = calcFleePosition(groundThreats, NULL);
+				/*BWAPI::Position fleeTo = calcFleePosition(groundThreats, NULL);
 				if (Config::Debug::DrawUnitTargetInfo) BWAPI::Broodwar->drawCircleMap(fleeTo.x, fleeTo.y, 10, BWAPI::Colors::Red);
 
 				for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->getUnitsInRadius(fleeTo, 10))
 				{
 					if (Config::Debug::DrawUnitTargetInfo) BWAPI::Broodwar->drawCircleMap(unit->getPosition().x, unit->getPosition().y, 5, BWAPI::Colors::Cyan, true);
-				}
+				}*/
 
-                fleeTo = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
+                BWAPI::Position fleeTo = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
 
 				smartMove(workerScout, fleeTo);
 			}
