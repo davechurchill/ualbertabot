@@ -27,20 +27,6 @@ void UAlbertaBotModule::onStart()
     // Initialize BOSS, the Build Order Search System
     BOSS::init();
 
-    // Set an initial strategy, just in case the config file isn't found
-    if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Protoss)
-    {
-        Config::Strategy::StrategyName = "Protoss_ZealotRush";
-    }
-    else if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran)
-    {
-        Config::Strategy::StrategyName = "Terran_MarineRush";
-    }
-    else if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Zerg)
-    {
-        Config::Strategy::StrategyName = "Zerg_ZerglingRush";
-    }
-
     // Parse the bot's configuration file if it has one, change this file path to where your config file is
     // Any relative path name will be relative to Starcraft installation folder
     ParseUtils::ParseConfigFile(Config::ConfigFile::ConfigFileLocation);
