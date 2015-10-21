@@ -10,7 +10,12 @@ MeleeManager::MeleeManager()
 
 void MeleeManager::executeMicro(const BWAPI::Unitset & targets) 
 {
-	const BWAPI::Unitset & meleeUnits = getUnits();
+	assignTargetsOld(targets);
+}
+
+void MeleeManager::assignTargetsOld(const BWAPI::Unitset & targets)
+{
+    const BWAPI::Unitset & meleeUnits = getUnits();
 
 	// figure out targets
 	BWAPI::Unitset meleeUnitTargets;
@@ -67,6 +72,27 @@ void MeleeManager::executeMicro(const BWAPI::Unitset & targets)
 			meleeUnit->getTargetPosition().x, meleeUnit->getTargetPosition().y, Config::Debug::ColorLineTarget);
 		}
 	}
+}
+
+std::pair<BWAPI::Unit, BWAPI::Unit> MeleeManager::findClosestUnitPair(const BWAPI::Unitset & attackers, const BWAPI::Unitset & targets)
+{
+    std::pair<BWAPI::Unit, BWAPI::Unit> closestPair(nullptr, nullptr);
+    double closestDistance = std::numeric_limits<double>::max();
+
+    for (auto & attacker : attackers)
+    {
+        BWAPI::Unit target = getTarget(attacker, targets);
+        double dist = attacker->getDistance(attacker);
+
+        if (!closestPair.first || (dist < closestDistance))
+        {
+            closestPair.first = attacker;
+            closestPair.second = target;
+            closestDistance = dist;
+        }
+    }
+
+    return closestPair;
 }
 
 // get a target for the meleeUnit to attack
@@ -200,4 +226,91 @@ bool MeleeManager::meleeUnitShouldRetreat(BWAPI::Unit meleeUnit, const BWAPI::Un
     }
 
     return true;
+}
+
+
+// still has bug in it somewhere, use Old version
+void MeleeManager::assignTargetsNew(const BWAPI::Unitset & targets)
+{
+    const BWAPI::Unitset & meleeUnits = getUnits();
+
+	// figure out targets
+	BWAPI::Unitset meleeUnitTargets;
+	for (auto & target : targets) 
+	{
+		// conditions for targeting
+		if (!(target->getType().isFlyer()) && 
+			!(target->isLifted()) &&
+			!(target->getType() == BWAPI::UnitTypes::Zerg_Larva) && 
+			!(target->getType() == BWAPI::UnitTypes::Zerg_Egg) &&
+			target->isVisible()) 
+		{
+			meleeUnitTargets.insert(target);
+		}
+	}
+
+    BWAPI::Unitset meleeUnitsToAssign(meleeUnits);
+    std::map<BWAPI::Unit, int> attackersAssigned;
+
+    for (auto & unit : meleeUnitTargets)
+    {
+        attackersAssigned[unit] = 0;
+    }
+
+    int smallThreshold = BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Zerg ? 3 : 1;
+    int bigThreshold = BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Zerg ? 12 : 3;
+
+    // keep assigning targets while we have attackers and targets remaining
+    while (!meleeUnitsToAssign.empty() && !meleeUnitTargets.empty())
+    {
+        auto attackerAssignment = findClosestUnitPair(meleeUnitsToAssign, meleeUnitTargets);
+        BWAPI::Unit & attacker = attackerAssignment.first;
+        BWAPI::Unit & target = attackerAssignment.second;
+
+        UAB_ASSERT_WARNING(attacker, "We should have chosen an attacker!");
+
+        if (!attacker)
+        {
+            break;
+        }
+
+        if (!target)
+        {
+            Micro::SmartMove(attacker, order.getPosition());
+            continue;
+        }
+
+        Micro::SmartAttackUnit(attacker, target);
+
+        // update the number of units assigned to attack the target we found
+        int & assigned = attackersAssigned[attackerAssignment.second];
+        assigned++;
+
+        // if it's a small / fast unit and there's more than 2 things attacking it already, don't assign more
+        if ((target->getType().isWorker() || target->getType() == BWAPI::UnitTypes::Zerg_Zergling) && (assigned >= smallThreshold))
+        {
+            meleeUnitTargets.erase(target);
+        }
+        // if it's a building and there's more than 10 things assigned to it already, don't assign more
+        else if (assigned > bigThreshold)
+        {
+            meleeUnitTargets.erase(target);
+        }
+
+        meleeUnitsToAssign.erase(attacker);
+    }
+
+    // if there's no targets left, attack move to the order destination
+    if (meleeUnitTargets.empty())
+    {
+        for (auto & unit : meleeUnitsToAssign)    
+        {
+			if (unit->getDistance(order.getPosition()) > 100)
+			{
+				// move to it
+				Micro::SmartMove(unit, order.getPosition());
+                BWAPI::Broodwar->drawLineMap(unit->getPosition(), order.getPosition(), BWAPI::Colors::Yellow);
+			}
+        }
+    }
 }

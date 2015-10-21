@@ -3,6 +3,13 @@
 
 namespace Config
 {
+    namespace ConfigFile
+    {
+        bool ConfigFileFound                = false;
+        bool ConfigFileParsed               = false;
+        std::string ConfigFileLocation      = "bwapi-data/AI/UAlbertaBot_Config.txt";
+    }
+
     namespace Strategy
     {
         std::string ProtossStrategyName     = "Protoss_ZealotRush";

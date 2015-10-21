@@ -5,6 +5,13 @@
 
 namespace Config
 {
+    namespace ConfigFile
+    {
+        extern bool ConfigFileFound;
+        extern bool ConfigFileParsed;
+        extern std::string ConfigFileLocation;
+    }
+
     namespace Modules
     {
         extern bool UsingGameCommander;			

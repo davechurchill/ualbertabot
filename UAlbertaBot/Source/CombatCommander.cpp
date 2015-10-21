@@ -269,6 +269,12 @@ void CombatCommander::updateDefenseSquads()
 		BWAPI::Unitset enemyUnitsInRegion;
         for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
         {
+            // if it's an overlord, don't worry about it for defense, we don't care what they see
+            if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord)
+            {
+                continue;
+            }
+
             if (BWTA::getRegion(BWAPI::TilePosition(unit->getPosition())) == myRegion)
             {
                 enemyUnitsInRegion.insert(unit);
@@ -471,9 +477,21 @@ BWAPI::Position CombatCommander::getMainAttackLocation()
         BWAPI::Unitset enemyUnitsInArea;
 		MapGrid::Instance().GetUnits(enemyUnitsInArea, enemyBasePosition, 800, false, true);
 
+        bool onlyOverlords = true;
+        for (auto & unit : enemyUnitsInArea)
+        {
+            if (unit->getType() != BWAPI::UnitTypes::Zerg_Overlord)
+            {
+                onlyOverlords = false;
+            }
+        }
+
         if (!BWAPI::Broodwar->isExplored(BWAPI::TilePosition(enemyBasePosition)) || !enemyUnitsInArea.empty())
         {
-            return enemyBaseLocation->getPosition();
+            if (!onlyOverlords)
+            {
+                return enemyBaseLocation->getPosition();
+            }
         }
     }
 
@@ -488,9 +506,14 @@ BWAPI::Position CombatCommander::getMainAttackLocation()
 		}
     }
 
-    // Third choice: Attack visible enemy units
+    // Third choice: Attack visible enemy units that aren't overlords
     for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
 	{
+        if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord)
+        {
+            continue;
+        }
+
 		if (UnitUtil::IsValidUnit(unit) && unit->isVisible())
 		{
 			return unit->getPosition();

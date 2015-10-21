@@ -16,14 +16,14 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
 
     if (config.length() == 0)
     {
-        UAB_ASSERT_WARNING(config.length() > 0, "Couldn't find any configuration options, using defaults");
         return;
     }
+
+    Config::ConfigFile::ConfigFileFound = true;
 
     bool parsingFailed = doc.Parse(config.c_str()).HasParseError();
     if (parsingFailed)
     {
-        UAB_ASSERT_WARNING(!parsingFailed, "Parsing of configuration file failed, please check that it's valid JSON format");
         return;
     }
 
@@ -220,6 +220,8 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
             }
         }
     }
+
+    Config::ConfigFile::ConfigFileParsed = true;
 }
 
 

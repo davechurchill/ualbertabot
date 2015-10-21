@@ -27,9 +27,23 @@ void UAlbertaBotModule::onStart()
     // Initialize BOSS, the Build Order Search System
     BOSS::init();
 
+    // Set an initial strategy, just in case the config file isn't found
+    if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Protoss)
+    {
+        Config::Strategy::StrategyName = "Protoss_ZealotRush";
+    }
+    else if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran)
+    {
+        Config::Strategy::StrategyName = "Terran_MarineRush";
+    }
+    else if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Zerg)
+    {
+        Config::Strategy::StrategyName = "Zerg_ZerglingRush";
+    }
+
     // Parse the bot's configuration file if it has one, change this file path to where your config file is
     // Any relative path name will be relative to Starcraft installation folder
-    ParseUtils::ParseConfigFile("bwapi-data/AI/UAlbertaBot_Config.txt");
+    ParseUtils::ParseConfigFile(Config::ConfigFile::ConfigFileLocation);
 
     // Set our BWAPI options here    
 	BWAPI::Broodwar->setLocalSpeed(Config::BWAPIOptions::SetLocalSpeed);
@@ -74,6 +88,34 @@ void UAlbertaBotModule::onEnd(bool isWinner)
 
 void UAlbertaBotModule::onFrame()
 {
+    char red = '\x08';
+    char green = '\x07';
+    char white = '\x04';
+
+    if (!Config::ConfigFile::ConfigFileFound)
+    {
+        BWAPI::Broodwar->drawBoxScreen(0,0,450,100, BWAPI::Colors::Black, true);
+        BWAPI::Broodwar->setTextSize(BWAPI::Text::Size::Huge);
+        BWAPI::Broodwar->drawTextScreen(10, 5, "%c%s Config File Not Found", red, Config::BotInfo::BotName.c_str());
+        BWAPI::Broodwar->setTextSize(BWAPI::Text::Size::Default);
+        BWAPI::Broodwar->drawTextScreen(10, 30, "%c%s will not run without its configuration file", white, Config::BotInfo::BotName.c_str());
+        BWAPI::Broodwar->drawTextScreen(10, 45, "%cCheck that the file below exists. Incomplete paths are relative to Starcraft directory", white);
+        BWAPI::Broodwar->drawTextScreen(10, 60, "%cYou can change this file location in Config::ConfigFile::ConfigFileLocation", white);
+        BWAPI::Broodwar->drawTextScreen(10, 75, "%cFile Not Found (or is empty): %c %s", white, green, Config::ConfigFile::ConfigFileLocation.c_str());
+        return;
+    }
+    else if (!Config::ConfigFile::ConfigFileParsed)
+    {
+        BWAPI::Broodwar->drawBoxScreen(0,0,450,100, BWAPI::Colors::Black, true);
+        BWAPI::Broodwar->setTextSize(BWAPI::Text::Size::Huge);
+        BWAPI::Broodwar->drawTextScreen(10, 5, "%c%s Config File Parse Error", red, Config::BotInfo::BotName.c_str());
+        BWAPI::Broodwar->setTextSize(BWAPI::Text::Size::Default);
+        BWAPI::Broodwar->drawTextScreen(10, 30, "%c%s will not run without a properly formatted configuration file", white, Config::BotInfo::BotName.c_str());
+        BWAPI::Broodwar->drawTextScreen(10, 45, "%cThe configuration file was found, but could not be parsed. Check that it is valid JSON", white);
+        BWAPI::Broodwar->drawTextScreen(10, 60, "%cFile Not Parsed: %c %s", white, green, Config::ConfigFile::ConfigFileLocation.c_str());
+        return;
+    }
+
 	if (Config::Modules::UsingGameCommander) 
 	{ 
 		_gameCommander.update(); 

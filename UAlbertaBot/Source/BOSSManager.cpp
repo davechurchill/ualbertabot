@@ -47,22 +47,25 @@ void BOSSManager::startNewSearch(const std::vector<MetaPair> & goalUnits)
     }
 
     // convert from UAlbertaBot's meta goal type to BOSS ActionType goal
-    BOSS::BuildOrderSearchGoal goal = GetGoal(goalUnits);
+    try
+    {
+        BOSS::BuildOrderSearchGoal goal = GetGoal(goalUnits);
 
-    BOSS::GameState initialState(BWAPI::Broodwar, BWAPI::Broodwar->self(), BuildingManager::Instance().buildingsQueued());
+        BOSS::GameState initialState(BWAPI::Broodwar, BWAPI::Broodwar->self(), BuildingManager::Instance().buildingsQueued());
 
-    _smartSearch = SearchPtr(new BOSS::DFBB_BuildOrderSmartSearch(initialState.getRace()));
-    _smartSearch->setGoal(GetGoal(goalUnits));
-    _smartSearch->setState(initialState);
+        _smartSearch = SearchPtr(new BOSS::DFBB_BuildOrderSmartSearch(initialState.getRace()));
+        _smartSearch->setGoal(GetGoal(goalUnits));
+        _smartSearch->setState(initialState);
 
-    _searchInProgress = true;
-    _previousSearchStartFrame = BWAPI::Broodwar->getFrameCount();
-    _totalPreviousSearchTime = 0;
-    _previousGoalUnits = goalUnits;
-
-    std::stringstream ss;
-    ss << _smartSearch->getParameters().toString() << "\n";
-    Logger::LogOverwriteToFile("bwapi-data/AI/LastBOSS.txt", ss.str());
+        _searchInProgress = true;
+        _previousSearchStartFrame = BWAPI::Broodwar->getFrameCount();
+        _totalPreviousSearchTime = 0;
+        _previousGoalUnits = goalUnits;
+    }
+    catch (const BOSS::Assert::BOSSException)
+    {
+        BWAPI::BroodwarPtr->printf("Exception in BOSS::GameState constructor, will try again next frame");
+    }
 }
 
 void BOSSManager::drawSearchInformation(int x, int y) 
