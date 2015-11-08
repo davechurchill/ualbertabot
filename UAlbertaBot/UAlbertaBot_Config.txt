@@ -9,7 +9,7 @@
         
     "BWAPI" : 
     {
-        "SetLocalSpeed"   : 20,
+        "SetLocalSpeed"   : 0,
         "SetFrameSkip"    : 0,
         "EnableUserInput" : true,
         "EnableCompleteMapInformation" : false
@@ -35,7 +35,7 @@
 
     "Debug" :
     {
-        "ErrorLogFilename"          : "d:/ualbertabot/UAlbertaBot/UAB_ErrorLog.txt",
+        "ErrorLogFilename"          : "C:/ualbertabot/UAlbertaBot/UAB_ErrorLog.txt",
         
         "PrintModuleTimeout"        : false,
         "PrintBuildOrderSearchInfo" : false,
