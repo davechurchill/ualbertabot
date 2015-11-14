@@ -1,7 +1,7 @@
 {
     "Bot Info" :
     {
-        "BotName"                   : "UAlbertaBot",
+        "BotName"                   : "Charles",
         "Authors"                   : "David Churchill",
         "PrintInfoOnStart"          : false
     },
@@ -80,7 +80,7 @@
     {
         "Protoss"                   : "Protoss_ZealotRush",
         "Terran"                    : "Terran_MarineRush",
-        "Zerg"                      : "Zerg_ZerglingRush",
+        "Zerg"                      : "Zerg_3HatchMuta",
         
         "ScoutGasSteal"             : false,
         "ScoutHarassEnemy"          : true,
