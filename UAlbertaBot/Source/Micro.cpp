@@ -184,6 +184,29 @@ void Micro::SmartLaySpiderMine(BWAPI::Unit unit, BWAPI::Position pos)
 
     unit->canUseTechPosition(BWAPI::TechTypes::Spider_Mines, pos);
 }
+void Micro::SmartBurrow(BWAPI::Unit unit, BWAPI::Position pos)
+{
+	if (!unit)
+	{
+		return;
+	}
+
+	if (!unit->canUseTech(BWAPI::TechTypes::Burrowing,pos))
+	{
+		return;
+	}
+
+	BWAPI::UnitCommand currentCommand(unit->getLastCommand());
+
+	// if we've already told this unit to move to this position, ignore this command
+	if ((currentCommand.getType() == BWAPI::UnitCommandTypes::Use_Tech_Position) && (currentCommand.getTargetPosition() == pos))
+	{
+		return;
+	}
+
+	unit->canUseTechPosition(BWAPI::TechTypes::Burrowing, pos);
+
+}
 
 void Micro::SmartRepair(BWAPI::Unit unit, BWAPI::Unit target)
 {

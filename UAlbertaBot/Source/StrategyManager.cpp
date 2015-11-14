@@ -311,6 +311,7 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
     {
         goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Hatchery, numCC + 1));
         goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Drone, numWorkers + 10));
+		
     }
 
 	return goal;
