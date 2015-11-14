@@ -119,8 +119,8 @@
       <GenerateMapFile>true</GenerateMapFile>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(SolutionDir)\..\bin\$(TargetName)$(TargetExt)" "C:\Libraries\StarCraft\bwapi-data\AI\" /s /i /y
-xcopy "$(SolutionDir)\..\Charles_config.txt" "C:\Libraries\StarCraft\bwapi-data\AI\" /s /i /y</Command>
+      <Command>xcopy "$(SolutionDir)\..\bin\$(TargetName)$(TargetExt)" "$(SC_DIR)\bwapi-data\AI\" /s /i /y
+xcopy "$(SolutionDir)\..\Charles_config.txt" "$(SC_DIR)\bwapi-data\AI\" /s /i /y</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copy to sc dir</Message>

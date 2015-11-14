@@ -32,6 +32,8 @@ class Squad
     TankManager         _tankManager;
     MedicManager        _medicManager;
 
+
+
 	std::map<BWAPI::Unit, bool>	_nearEnemy;
 
     
