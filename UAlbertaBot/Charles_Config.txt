@@ -8,7 +8,7 @@
         
     "BWAPI" : 
     {
-        "SetLocalSpeed"             : 5,
+        "SetLocalSpeed"             : 10,
         "SetFrameSkip"              : 0,
         "UserInput"                 : true,
         "CompleteMapInformation"    : false
@@ -80,7 +80,7 @@
     {
         "Protoss"                   : "Protoss_ZealotRush",
         "Terran"                    : "Terran_MarineRush",
-        "Zerg"                      : "Zerg_3HatchMuta",
+        "Zerg"                      : "Zerg_9Pool",
         
         "ScoutGasSteal"             : false,
         "ScoutHarassEnemy"          : true,
@@ -107,9 +107,9 @@
             "Terran_4RaxMarines"    : { "Race" : "Terran",  "OpeningBuildOrder" : ["Barracks", "SCV", "SCV", "Marine", "SCV", "Marine", "Supply Depot", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine"]},
             "Terran_VultureRush"    : { "Race" : "Terran",  "OpeningBuildOrder" : ["SCV", "SCV", "SCV", "SCV", "SCV", "Supply Depot", "SCV", "SCV", "Barracks", "Refinery", "SCV", "SCV", "SCV", "SCV", "Supply Depot", "Factory", "SCV", "SCV", "SCV", "Vulture", "Vulture"]},
             "Zerg_ZerglingRush"     : { "Race" : "Zerg",    "OpeningBuildOrder" : ["Drone", "Spawning Pool", "Zergling", "Zergling", "Zergling", "Zergling"] },
-            "Zerg_9Pool"            : { "Race" : "Zerg",    "OpeningBuildOrder" : ["Drone", "Drone", "Drone", "Drone", "Drone", "Spawning Pool", "Drone", "Extractor", "Overlord", "Drone", "Zergling", "Zergling", "Zergling", "Hydralisk Den", "Drone", "Drone", "Drone", "Drone"] },
+            "Zerg_9Pool"            : { "Race" : "Zerg",    "OpeningBuildOrder" : ["Drone", "Drone", "Drone", "Drone", "Drone", "Spawning Pool", "Drone", "Extractor", "Burrowing", "Overlord", "Drone", "Zergling", "Zergling", "Zergling", "Hydralisk Den", "Drone", "Drone", "Drone", "Drone"] },
             "Zerg_2HatchHydra"      : { "Race" : "Zerg",    "OpeningBuildOrder" : ["Drone", "Drone", "Drone", "Drone", "Drone", "Overlord", "Drone", "Drone", "Drone", "Hatchery", "Spawning Pool", "Drone", "Extractor", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Hydralisk Den", "Drone", "Overlord", "Drone", "Drone", "Drone", "Grooved_Spines", "Hydralisk","Hydralisk","Hydralisk","Hydralisk", "Hydralisk","Hydralisk","Hydralisk","Hydralisk", "Hydralisk","Hydralisk","Hydralisk","Hydralisk", "Hatchery", "Extractor" ] },
-            "Zerg_3HatchMuta"       : { "Race" : "Zerg",    "OpeningBuildOrder" : ["Drone", "Drone", "Drone", "Drone", "Overlord", "Drone", "Drone", "Drone", "Drone", "Hatchery", "Drone", "Drone", "Spawning_Pool", "Drone", "Drone", "Extractor", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone","Lair", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Spire", "Overlord", "Drone", "Overlord", "Hatchery", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Hatchery"]},
+            "Zerg_3HatchMuta"       : { "Race" : "Zerg",    "OpeningBuildOrder" : ["Drone", "Drone", "Drone", "Drone", "Overlord", "Drone", "Drone", "Drone", "Drone", "Hatchery", "Drone", "Drone", "Spawning_Pool", "Drone", "Drone", "Extractor", "Drone", "Drone", "Drone", "Burrowing", "Drone", "Drone", "Drone","Lair", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Spire", "Overlord", "Drone", "Overlord", "Hatchery", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Hatchery"]},
             "Zerg_3HatchScourge"    : { "Race" : "Zerg",    "OpeningBuildOrder" : ["Drone", "Drone", "Drone", "Drone", "Overlord", "Drone", "Drone", "Drone", "Drone", "Hatchery", "Drone", "Drone", "Spawning_Pool", "Drone", "Drone", "Extractor", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone","Lair", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Spire", "Overlord", "Drone", "Overlord", "Hatchery", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Hatchery", "Drone", "Extractor", "Drone", "Hatchery", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Hatchery", "Extractor", "Extractor", "Hatchery"]}
         }
     }
