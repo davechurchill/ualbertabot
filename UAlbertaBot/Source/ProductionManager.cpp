@@ -389,6 +389,23 @@ bool ProductionManager::canMakeNow(BWAPI::Unit producer, MetaType t)
 		if (t.isUnit())
 		{
 			canMake = BWAPI::Broodwar->canMake(t.getUnitType(), producer);
+			//BWAPI::Broodwar->printf("Unit Type Name = %s", t.getUnitType() == BWAPI::UnitTypes::Zerg_Lurker ? "LURKER" : "Other");
+			if (t.getUnitType() == BWAPI::UnitTypes::Zerg_Lurker) {
+				bool haveHydra = false;
+				for (auto & unit : BWAPI::Broodwar->self()->getUnits()) {
+					if (unit->getType() == BWAPI::UnitTypes::Zerg_Hydralisk) {
+						haveHydra = true;
+					}
+				}
+				if (!haveHydra) {
+					BWAPI::Broodwar->printf("Adding Hydras because we have 0 hydras");
+					_queue.queueAsHighestPriority(BWAPI::UnitTypes::Zerg_Hydralisk, true);
+					_queue.queueAsHighestPriority(BWAPI::UnitTypes::Zerg_Hydralisk, true);
+					_queue.queueAsHighestPriority(BWAPI::UnitTypes::Zerg_Hydralisk, true);
+				}
+			}
+
+			//BWAPI::Broodwar->printf("Canmake= %s", canMake ? "true" : "false");
 		}
 		else if (t.isTech())
 		{
