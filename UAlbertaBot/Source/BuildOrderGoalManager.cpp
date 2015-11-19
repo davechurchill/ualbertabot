@@ -76,6 +76,21 @@ void BuildOrderGoalManager::addGoal(const MetaType t, int num, int p)
 
 void BuildOrderGoalManager::setBuildOrderGoals()
 {
+	addGoal(MetaType(BWAPI::UnitTypes::Terran_Command_Center), 1, 1000);
+	addGoal(MetaType(BWAPI::UnitTypes::Terran_SCV), 1, 1000);
+	addGoal(MetaType(BWAPI::UnitTypes::Terran_Marine),		12,		98);	
+	addGoal(MetaType(BWAPI::UnitTypes::Terran_Command_Center),		2,		96);	
+	addGoal(MetaType(BWAPI::UnitTypes::Protoss_Barracks),	3,		94);	
+	addGoal(MetaType(BWAPI::UnitTypes::Terran_Factory),		18,		92);	
+	addGoal(MetaType(BWAPI::UnitTypes::Terran_Marine),	5,		90);
+	addGoal(MetaType(BWAPI::UnitTypes::Terran_Refinery),		19,		92);	
+	addGoal(MetaType(BWAPI::UnitTypes::Terran_Science_Facility),		28,		92);	
+	addGoal(MetaType(BWAPI::UnitTypes::Terran_Control_Tower),		29,		92);	
+	addGoal(MetaType(BWAPI::UnitTypes::Terran_Science_Vessel),	30,		99);
+	//addGoal(MetaType(BWAPI::UnitTypes::Terran_Wraith),	30,		90);
+	//addGoal(MetaType(BWAPI::UnitTypes::Terran_Medic),	30,		90);
+	
+	/*
 	addGoal(MetaType(BWAPI::UnitTypes::Protoss_Nexus), 1, 1000);	// 1	Nexus
 	addGoal(MetaType(BWAPI::UnitTypes::Protoss_Probe), 1, 1000);	// 1	Probe
 
@@ -84,7 +99,7 @@ void BuildOrderGoalManager::setBuildOrderGoals()
 	addGoal(MetaType(BWAPI::UnitTypes::Protoss_Gateway),	3,		94);	// 3	Gateway
 	addGoal(MetaType(BWAPI::UnitTypes::Protoss_Zealot),		18,		92);	// 18	Zealot
 	addGoal(MetaType(BWAPI::UnitTypes::Protoss_Gateway),	5,		90);
-
+	*/
 	// sort the goals to make things quicker for us
 	std::sort(goals.begin(), goals.end());
 }

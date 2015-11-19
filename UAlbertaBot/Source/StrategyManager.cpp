@@ -178,6 +178,10 @@ const MetaPairVector StrategyManager::getBuildOrderGoal()
 	{
 		return getZergBuildOrderGoal();
 	}
+	 else if (Config::Strategy::StrategyName == "Terran_Science_Vessel")
+	{
+		return getScienceVesselBuildOrderGoal();
+	}
     else
     {
         UAB_ASSERT_WARNING(false, "No build order goal found for current strategy: %s", Config::Strategy::StrategyName.c_str());
@@ -371,6 +375,27 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 	return (const std::vector<MetaPair>)goal;
 }
 
+const MetaPairVector StrategyManager::getScienceVesselBuildOrderGoal() const
+{
+	// the goal to return
+	std::vector<MetaPair> goal;
+
+	int numMarines =				BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Marine);
+	int numMedics =				BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Medic);
+	int numWraith =				BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Wraith);
+	int numSV =						BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Science_Vessel);
+	
+	int marinesWanted = numMarines + 12;
+	int medicsWanted = numMedics + 2;
+	int wraithsWanted = numWraith + 4;
+	int svWanted =	numSV + 1;
+	
+	goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Marine,	marinesWanted));
+	goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Science_Vessel,	svWanted));
+
+	return (const std::vector<MetaPair>)goal;
+}
+
 const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
 {
 	// the goal to return
@@ -386,6 +411,7 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
 
 	return (const std::vector<MetaPair>)goal;
 }
+
 
 void StrategyManager::readResults()
 {
