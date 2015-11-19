@@ -303,7 +303,6 @@ bool Squad::containsUnit(BWAPI::Unit u) const
 {
     return _units.contains(u);
 }
-
 void Squad::clear()
 {
     for (auto & unit : getUnits())
