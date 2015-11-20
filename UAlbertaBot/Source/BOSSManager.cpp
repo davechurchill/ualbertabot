@@ -31,8 +31,10 @@ void BOSSManager::reset()
 // start a new search for a new goal
 void BOSSManager::startNewSearch(const std::vector<MetaPair> & goalUnits)
 {
-    size_t numWorkers = UnitUtil::GetAllUnitCount(BWAPI::Broodwar->self()->getRace().getWorker());
-    size_t numDepots = UnitUtil::GetAllUnitCount(BWAPI::Broodwar->self()->getRace().getCenter());
+    size_t numWorkers   = UnitUtil::GetAllUnitCount(BWAPI::Broodwar->self()->getRace().getWorker());
+    size_t numDepots    = UnitUtil::GetAllUnitCount(BWAPI::Broodwar->self()->getRace().getCenter())
+                        + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Lair)
+                        + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hive);
 
     if (numWorkers == 0)
     {
