@@ -1,0 +1,48 @@
+
+!Assert:   false
+File:      ..\Source\StrategyManager.cpp
+Message:   No build order goal found for current strategy: Terran_Science_Vessel
+Line:      183
+Time:      2015-11-20_00:26:41
+
+!Assert:   false
+File:      ..\Source\StrategyManager.cpp
+Message:   No build order goal found for current strategy: Terran_Science_Vessel
+Line:      183
+Time:      2015-11-20_00:26:41
+
+!Assert:   false
+File:      ..\Source\StrategyManager.cpp
+Message:   No build order goal found for current strategy: Terran_Science_Vessel
+Line:      183
+Time:      2015-11-20_00:26:41
+
+!Assert:   false
+File:      ..\Source\StrategyManager.cpp
+Message:   No build order goal found for current strategy: Terran_Science_Vessel
+Line:      183
+Time:      2015-11-20_00:26:41
+
+!Assert:   false
+File:      ..\Source\StrategyManager.cpp
+Message:   No build order goal found for current strategy: Terran_Science_Vessel
+Line:      183
+Time:      2015-11-20_00:28:50
+
+!Assert:   false
+File:      ..\Source\StrategyManager.cpp
+Message:   No build order goal found for current strategy: Terran_Science_Vessel
+Line:      183
+Time:      2015-11-20_00:28:50
+
+!Assert:   false
+File:      ..\Source\StrategyManager.cpp
+Message:   No build order goal found for current strategy: Terran_Science_Vessel
+Line:      183
+Time:      2015-11-20_00:28:50
+
+!Assert:   false
+File:      ..\Source\StrategyManager.cpp
+Message:   No build order goal found for current strategy: Terran_Science_Vessel
+Line:      183
+Time:      2015-11-20_00:28:50

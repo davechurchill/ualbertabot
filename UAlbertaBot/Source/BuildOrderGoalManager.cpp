@@ -75,18 +75,17 @@ void BuildOrderGoalManager::addGoal(const MetaType t, int num, int p)
 }
 
 void BuildOrderGoalManager::setBuildOrderGoals()
-{
+{	// unnecessary function lol oops
 	addGoal(MetaType(BWAPI::UnitTypes::Terran_Command_Center), 1, 1000);
 	addGoal(MetaType(BWAPI::UnitTypes::Terran_SCV), 1, 1000);
 	addGoal(MetaType(BWAPI::UnitTypes::Terran_Marine),		12,		98);	
-	addGoal(MetaType(BWAPI::UnitTypes::Terran_Command_Center),		2,		96);	
-	addGoal(MetaType(BWAPI::UnitTypes::Protoss_Barracks),	3,		94);	
-	addGoal(MetaType(BWAPI::UnitTypes::Terran_Factory),		18,		92);	
-	addGoal(MetaType(BWAPI::UnitTypes::Terran_Marine),	5,		90);
-	addGoal(MetaType(BWAPI::UnitTypes::Terran_Refinery),		19,		92);	
-	addGoal(MetaType(BWAPI::UnitTypes::Terran_Science_Facility),		28,		92);	
-	addGoal(MetaType(BWAPI::UnitTypes::Terran_Control_Tower),		29,		92);	
-	addGoal(MetaType(BWAPI::UnitTypes::Terran_Science_Vessel),	30,		99);
+	addGoal(MetaType(BWAPI::UnitTypes::Terran_Barracks),	2,		99);	
+	addGoal(MetaType(BWAPI::UnitTypes::Terran_Factory),		1,		92);
+	addGoal(MetaType(BWAPI::UnitTypes::Terran_Starport),	 1, 91);
+	addGoal(MetaType(BWAPI::UnitTypes::Terran_Refinery),		1,		97);	
+	addGoal(MetaType(BWAPI::UnitTypes::Terran_Science_Facility),		1,		90);	
+	addGoal(MetaType(BWAPI::UnitTypes::Terran_Control_Tower),		1,		89);	
+	addGoal(MetaType(BWAPI::UnitTypes::Terran_Science_Vessel),	1,		87);
 	//addGoal(MetaType(BWAPI::UnitTypes::Terran_Wraith),	30,		90);
 	//addGoal(MetaType(BWAPI::UnitTypes::Terran_Medic),	30,		90);
 	

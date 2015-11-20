@@ -178,7 +178,7 @@ const MetaPairVector StrategyManager::getBuildOrderGoal()
 	{
 		return getZergBuildOrderGoal();
 	}
-	 else if (Config::Strategy::StrategyName == "Terran_Science_Vessel")
+	 else if (Config::Strategy::StrategyName == "Terran_ScienceVessel")
 	{
 		return getScienceVesselBuildOrderGoal();
 	}

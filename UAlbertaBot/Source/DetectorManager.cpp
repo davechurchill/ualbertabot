@@ -7,7 +7,14 @@ DetectorManager::DetectorManager() : unitClosestToEnemy(NULL) { }
 void DetectorManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & targets) 
 {
 	const std::vector<BWAPI::UnitInterface *> & detectorUnits = getUnits();
+	/*
+	TODO: check if each unit's radius contains enemy/biological/energy>0/shield>0/notirradiated depending on race
+		calculate best value through evaluation function of number of units and perhaps hp/stats
+		cast emp/irradiate on best enemy unit
+	otherwise matrix most hp attacking unit mech > bio
 
+	eraser: 2 sci ves cast irradiate on each other and fly around #unfeasible?
+	*/
 	if (detectorUnits.empty())
 	{
 		return;
@@ -77,4 +84,91 @@ BWAPI::UnitInterface* DetectorManager::closestCloakedUnit(const std::vector<BWAP
 	}
 
 	return closestCloaked;
+}
+
+// get the attack priority of a type in relation to a zergling
+int DetectorManager::getSpellPriority(BWAPI::UnitInterface* rangedUnit, BWAPI::UnitInterface* target)
+{
+	BWAPI::UnitType rangedUnitType = rangedUnit->getType();
+	BWAPI::UnitType targetType = target->getType();
+
+	bool canAttackUs = rangedUnitType.isFlyer() ? targetType.airWeapon() != BWAPI::WeaponTypes::None : targetType.groundWeapon() != BWAPI::WeaponTypes::None;
+
+	BWAPI::Race enemyRace = (BWAPI::Broodwar->enemy()->getRace());
+	if (enemyRace == BWAPI::Races::Zerg)
+	{
+
+	}
+	else if (enemyRace == BWAPI::Races::Terran)
+	{
+
+	}
+	else if (enemyRace == BWAPI::Races::Protoss)
+	{
+
+	}
+
+
+	// highest priority is something that can attack us or aid in combat
+	if (targetType == BWAPI::UnitTypes::Terran_Medic || canAttackUs ||
+		targetType == BWAPI::UnitTypes::Terran_Bunker)
+	{
+		return 3;
+	}
+	// next priority is worker
+	else if (targetType.isWorker())
+	{
+		return 2;
+	}
+	// then everything else
+	else
+	{
+		return 1;
+	}
+}
+
+// get a target for the zealot to attack
+BWAPI::UnitInterface* DetectorManager::getTarget(BWAPI::UnitInterface* rangedUnit, std::vector<BWAPI::UnitInterface *> & targets)
+{
+	int range(rangedUnit->getType().groundWeapon().maxRange());
+
+	int highestInRangePriority(0);
+	int highestNotInRangePriority(0);
+	int lowestInRangeHitPoints(10000);
+	int lowestNotInRangeDistance(10000);
+
+	BWAPI::UnitInterface* inRangeTarget = NULL;
+	BWAPI::UnitInterface* notInRangeTarget = NULL;
+
+	for (BWAPI::UnitInterface* unit : targets)
+	{
+		int priority = getSpellPriority(rangedUnit, unit);
+		int distance = rangedUnit->getDistance(unit);
+
+		// if the unit is in range, update the target with the lowest hp
+		if (rangedUnit->getDistance(unit) <= range)
+		{
+			if (priority > highestInRangePriority ||
+				(priority == highestInRangePriority && unit->getHitPoints() < lowestInRangeHitPoints))
+			{
+				lowestInRangeHitPoints = unit->getHitPoints();
+				highestInRangePriority = priority;
+				inRangeTarget = unit;
+			}
+		}
+		// otherwise it isn't in range so see if it's closest
+		else
+		{
+			if (priority > highestNotInRangePriority ||
+				(priority == highestNotInRangePriority && distance < lowestNotInRangeDistance))
+			{
+				lowestNotInRangeDistance = distance;
+				highestNotInRangePriority = priority;
+				notInRangeTarget = unit;
+			}
+		}
+	}
+
+	// if there is a highest priority unit in range, attack it first
+	return (highestInRangePriority >= highestNotInRangePriority) ? inRangeTarget : notInRangeTarget;
 }
