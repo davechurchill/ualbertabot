@@ -19,10 +19,50 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & t
 	{
 		return;
 	}
-
-	for (size_t i(0); i<targets.size(); ++i)
+	BWAPI::UnitInterface* detector = detectorUnits[0];
+	if (detector->canUseTech(BWAPI::TechTypes::Defensive_Matrix, NULL)) //Check if it's a Science Vessel
 	{
-		// do something here if there's targets
+		BWAPI::Race enemyRace = (BWAPI::Broodwar->enemy()->getRace());
+		if (enemyRace == BWAPI::Races::Zerg)
+		{
+			std::vector<BWAPI::UnitInterface *> spellUnitTargets;
+			for (size_t i(0); i<targets.size(); ++i)
+			{
+					// do something here if there's targets
+				BWAPI::Unitset myEnemies = targets[i]->getUnitsInRadius(64,!BWAPI::Filter::IsIrradiated
+					&& BWAPI::Filter::IsOrganic
+					&& BWAPI::Filter::IsVisible);
+					if (!myEnemies.empty()) {
+						if (myEnemies.size() > 3) detector->useTech(BWAPI::TechTypes::Irradiate,targets[i]);
+					}
+				}
+		}
+		else if (enemyRace == BWAPI::Races::Terran)
+		{
+			std::vector<BWAPI::UnitInterface *> spellUnitTargets;
+			for (size_t i(0); i<targets.size(); ++i)
+			{
+				// do something here if there's targets
+				BWAPI::Unitset myEnemies = targets[i]->getUnitsInRadius(64, !BWAPI::Filter::IsIrradiated
+					&& BWAPI::Filter::IsOrganic
+					&& BWAPI::Filter::IsVisible);
+				if (!myEnemies.empty()) {
+					if (myEnemies.size() > 3) detector->useTech(BWAPI::TechTypes::Irradiate, targets[i]);
+				}
+			}
+		}
+		else if (enemyRace == BWAPI::Races::Protoss)
+		{
+			std::vector<BWAPI::UnitInterface *> spellUnitTargets;
+			for (size_t i(0); i<targets.size(); ++i)
+			{
+				// do something here if there's targets
+				BWAPI::Unitset myEnemies = targets[i]->getUnitsInRadius(64, BWAPI::Filter::Shields);
+				if (!myEnemies.empty()) {
+					if (myEnemies.size() > 3) detector->useTech(BWAPI::TechTypes::EMP_Shockwave, targets[i]);
+				}
+			}
+		}
 	}
 
 	cloakedUnitMap.clear();

@@ -378,22 +378,20 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 const MetaPairVector StrategyManager::getScienceVesselBuildOrderGoal() const
 {
 	// the goal to return
-	std::vector<MetaPair> goal;
-
-	int numMarines =				BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Marine);
-	int numMedics =				BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Medic);
-	int numWraith =				BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Wraith);
-	int numSV =						BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Science_Vessel);
 	
+	// the goal to return
+	MetaPairVector goal;
+	int numMarines = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Marine);
+	int numSV = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Science_Vessel);
+
 	int marinesWanted = numMarines + 12;
-	int medicsWanted = numMedics + 2;
-	int wraithsWanted = numWraith + 4;
-	int svWanted =	numSV + 1;
-	
-	goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Marine,	marinesWanted));
-	goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Science_Vessel,	svWanted));
+	int svWanted = numSV + 1;
 
-	return (const std::vector<MetaPair>)goal;
+	goal.push_back(MetaPair(BWAPI::UnitTypes::Terran_Marine, marinesWanted));
+	goal.push_back(MetaPair(BWAPI::UnitTypes::Terran_Science_Vessel, svWanted));
+	return goal;
+
+
 }
 
 const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
