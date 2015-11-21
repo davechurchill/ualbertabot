@@ -13,7 +13,7 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & t
 		cast emp/irradiate on best enemy unit
 	otherwise matrix most hp attacking unit mech > bio
 
-	eraser: 2 sci ves cast irradiate on each other and fly around #unfeasible?
+	eraser: cast irradiate on each mech unit and move around #unfeasible?
 	*/
 	if (detectorUnits.empty())
 	{
@@ -33,7 +33,14 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & t
 					&& BWAPI::Filter::IsOrganic
 					&& BWAPI::Filter::IsVisible);
 					if (!myEnemies.empty()) {
-						if (myEnemies.size() > 3) detector->useTech(BWAPI::TechTypes::Irradiate,targets[i]);
+						if (myEnemies.size() > 3) {
+							if (detector->canUseTech(BWAPI::TechTypes::Irradiate, NULL)) detector->useTech(BWAPI::TechTypes::Irradiate, myEnemies.getClosestUnit(nullptr,128));
+							else {
+								BWAPI::Unit ally = BWAPI::Broodwar->getClosestUnit(detector->getTargetPosition(), BWAPI::Filter::IsOwned && BWAPI::Filter::IsMechanical);
+								detector->useTech(BWAPI::TechTypes::Defensive_Matrix, ally);
+							}
+							break;
+						}
 					}
 				}
 		}
@@ -47,7 +54,14 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & t
 					&& BWAPI::Filter::IsOrganic
 					&& BWAPI::Filter::IsVisible);
 				if (!myEnemies.empty()) {
-					if (myEnemies.size() > 3) detector->useTech(BWAPI::TechTypes::Irradiate, targets[i]);
+					if (myEnemies.size() > 3) { 
+						if (detector->canUseTech(BWAPI::TechTypes::Irradiate, NULL)) detector->useTech(BWAPI::TechTypes::Irradiate, myEnemies.getClosestUnit(nullptr, 128));
+						else {
+							BWAPI::Unit ally = BWAPI::Broodwar->getClosestUnit(detector->getTargetPosition(), BWAPI::Filter::IsOwned && BWAPI::Filter::IsMechanical);
+							detector->useTech(BWAPI::TechTypes::Defensive_Matrix, ally);
+						}
+						break;
+					}
 				}
 			}
 		}
@@ -57,9 +71,16 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & t
 			for (size_t i(0); i<targets.size(); ++i)
 			{
 				// do something here if there's targets
-				BWAPI::Unitset myEnemies = targets[i]->getUnitsInRadius(64, BWAPI::Filter::Shields);
+				BWAPI::Unitset myEnemies = targets[i]->getUnitsInRadius(96, BWAPI::Filter::Shields);
 				if (!myEnemies.empty()) {
-					if (myEnemies.size() > 3) detector->useTech(BWAPI::TechTypes::EMP_Shockwave, targets[i]);
+					if (myEnemies.size() > 3) {
+						if (detector->canUseTech(BWAPI::TechTypes::Irradiate, NULL)) detector->useTech(BWAPI::TechTypes::Irradiate, myEnemies.getClosestUnit(nullptr, 128));
+						else {
+							BWAPI::Unit ally = BWAPI::Broodwar->getClosestUnit(detector->getTargetPosition(), BWAPI::Filter::IsOwned && BWAPI::Filter::IsMechanical);
+							detector->useTech(BWAPI::TechTypes::Defensive_Matrix, ally);
+						}
+						break;
+					}
 				}
 			}
 		}
