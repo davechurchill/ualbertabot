@@ -69,13 +69,20 @@ void CombatCommander::update(const BWAPI::Unitset & combatUnits)
 		updateAttackSquads();
 	}
 
+
 	_squadData.update();
 }
 
 void CombatCommander::updateIdleSquad()
 {
     Squad & idleSquad = _squadData.getSquad("Idle");
-    for (auto & unit : _combatUnits)
+	int idleUnits = 0;
+	for (auto& unit : idleSquad.getUnits()) {
+		idleUnits++;
+	}
+	//BWAPI::Broodwar->printf("Idle: %d", idleUnits);
+
+	for (auto & unit : _combatUnits)
     {
         // if it hasn't been assigned to a squad yet, put it in the low priority idle squad
         if (_squadData.canAssignUnitToSquad(unit, idleSquad))
@@ -90,15 +97,27 @@ void CombatCommander::updateAttackSquads()
     Squad & mainAttackSquad = _squadData.getSquad("MainAttack");
 	//check for overlord in squad
 	bool containsoverlord = false;
+	int numUnits = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hydralisk) + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Zergling) + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Lurker);
+	//if (numUnits < 20) {
+	//	return;
+	//}
+	int attackUnits = 0;
+
 	for (auto& unit : mainAttackSquad.getUnits())
 	{
-		if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord)
-		{
-			containsoverlord = true;
-			break;
-		}
+		attackUnits++;
 
 	}
+	//for (auto& unit : mainAttackSquad.getUnits())
+	//{
+	//	if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord)
+	//	{
+	//		containsoverlord = true;
+	//		break;
+	//	}
+	//}
+	//BWAPI::Broodwar->printf("Attack Units: %d", attackUnits);
+
 
     for (auto & unit : _combatUnits)
     {
@@ -112,7 +131,7 @@ void CombatCommander::updateAttackSquads()
         {
 			if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord)
 			{
-				if (!containsoverlord)
+				/*if (!containsoverlord)
 				{
 					_squadData.assignUnitToSquad(unit, mainAttackSquad);
 					containsoverlord = true;
@@ -120,7 +139,7 @@ void CombatCommander::updateAttackSquads()
 				else
 				{
 					continue;
-				}
+				}*/
 			}
             _squadData.assignUnitToSquad(unit, mainAttackSquad);
 			
@@ -201,7 +220,7 @@ void CombatCommander::updateScoutDefenseSquad()
 
     // if the current squad has units in it then we can ignore this
     Squad & scoutDefenseSquad = _squadData.getSquad("ScoutDefense");
-  
+
     // get the region that our base is located in
     BWTA::Region * myRegion = BWTA::getRegion(BWAPI::Broodwar->self()->getStartLocation());
     if (!myRegion && myRegion->getCenter().isValid())
@@ -263,7 +282,7 @@ void CombatCommander::updateDefenseSquads()
     { 
         return; 
     }
-    
+
     BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
     BWTA::Region * enemyRegion = nullptr;
     if (enemyBaseLocation)
@@ -346,7 +365,15 @@ void CombatCommander::updateDefenseSquads()
         // assign units to the squad
         if (_squadData.squadExists(squadName.str()))
         {
+
             Squad & defenseSquad = _squadData.getSquad(squadName.str());
+			/*Squad & idleSquad = _squadData.getSquad("Idle");
+
+			for (auto & unit : idleSquad.getUnits()) {
+				if (unit->getType() == BWAPI::UnitTypes::Zerg_Lurker) {
+					_squadData.assignUnitToSquad(unit, defenseSquad);
+				}
+			}*/
 
             // figure out how many units we need on defense
 	        int flyingDefendersNeeded = numDefendersPerEnemyUnit * numEnemyFlyingInRegion;

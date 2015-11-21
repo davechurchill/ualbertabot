@@ -40,9 +40,14 @@ void RangedManager::assignTargetsOld(const BWAPI::Unitset & targets)
 		            BWAPI::Broodwar->drawLineMap(rangedUnit->getPosition(), rangedUnit->getTargetPosition(), BWAPI::Colors::Purple);
 	            }
 
+				// todo
+				if (rangedUnit->getType() == BWAPI::UnitTypes::Zerg_Lurker) {
+					//BWAPI::Broodwar->printf("Burrowing Lurker");
+					rangedUnit->burrow();
+				}
 
 				// attack it
-                if (Config::Micro::KiteWithRangedUnits)
+                else if (Config::Micro::KiteWithRangedUnits)
                 {
                     if (rangedUnit->getType() == BWAPI::UnitTypes::Zerg_Mutalisk || rangedUnit->getType() == BWAPI::UnitTypes::Terran_Vulture)
                     {
@@ -53,6 +58,7 @@ void RangedManager::assignTargetsOld(const BWAPI::Unitset & targets)
                         Micro::SmartKiteTarget(rangedUnit, target);
                     }
                 }
+				
                 else
                 {
                     Micro::SmartAttackUnit(rangedUnit, target);
@@ -61,6 +67,10 @@ void RangedManager::assignTargetsOld(const BWAPI::Unitset & targets)
 			// if there are no targets
 			else
 			{
+				if (rangedUnit->getType() == BWAPI::UnitTypes::Zerg_Lurker) {
+					//BWAPI::Broodwar->printf("Burrowing Lurker");
+					rangedUnit->unburrow();
+				}
 				// if we're not near the order position
 				if (rangedUnit->getDistance(order.getPosition()) > 100)
 				{

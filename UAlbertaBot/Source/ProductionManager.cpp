@@ -66,6 +66,7 @@ void ProductionManager::update()
         {
 		    BWAPI::Broodwar->printf("Supply deadlock detected, building supply!");
         }
+		//BWAPI::Broodwar->printf("Supply Provider : %s", MetaType(BWAPI::Broodwar->self()->getRace().getSupplyProvider().getName()));
 		_queue.queueAsHighestPriority(MetaType(BWAPI::Broodwar->self()->getRace().getSupplyProvider()), true);
 	}
 
@@ -389,7 +390,6 @@ bool ProductionManager::canMakeNow(BWAPI::Unit producer, MetaType t)
 		if (t.isUnit())
 		{
 			canMake = BWAPI::Broodwar->canMake(t.getUnitType(), producer);
-			//BWAPI::Broodwar->printf("Unit Type Name = %s", t.getUnitType() == BWAPI::UnitTypes::Zerg_Lurker ? "LURKER" : "Other");
 			if (t.getUnitType() == BWAPI::UnitTypes::Zerg_Lurker) {
 				bool haveHydra = false;
 				for (auto & unit : BWAPI::Broodwar->self()->getUnits()) {
@@ -398,7 +398,7 @@ bool ProductionManager::canMakeNow(BWAPI::Unit producer, MetaType t)
 					}
 				}
 				if (!haveHydra) {
-					BWAPI::Broodwar->printf("Adding Hydras because we have 0 hydras");
+					//BWAPI::Broodwar->printf("Adding Hydras because we have 0 hydras");
 					_queue.queueAsHighestPriority(BWAPI::UnitTypes::Zerg_Hydralisk, true);
 					_queue.queueAsHighestPriority(BWAPI::UnitTypes::Zerg_Hydralisk, true);
 					_queue.queueAsHighestPriority(BWAPI::UnitTypes::Zerg_Hydralisk, true);

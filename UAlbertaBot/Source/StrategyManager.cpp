@@ -267,12 +267,14 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
     int numCC           = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hatchery)
                         + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Lair)
                         + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hive);
+	int numExtractor = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Extractor);
+
 	int numMutas        = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Mutalisk);
     int numDrones       = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Drone);
     int zerglings       = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Zergling);
-	int numHydras = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hydralisk);
-	int numLurkers	= UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Lurker);
-	int numScourge = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Scourge);
+	int numHydras		= UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hydralisk);
+	int numLurkers		= UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Lurker);
+	int numScourge		= UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Scourge);
     int numGuardians    = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Guardian);
 
 	int mutasWanted = numMutas + 6;
@@ -285,9 +287,10 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
         goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Zergling, zerglings + 6));
     }
     else if (Config::Strategy::StrategyName == "Zerg_2HatchHydra")
-    {
-		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Hydralisk, numHydras + 8));
-		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Lurker, numLurkers + 3));
+	{
+		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Hydralisk, numHydras + 3));
+		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Zergling, zerglings + 1));
+		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Lurker, numLurkers + 1));
         goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Grooved_Spines, 1));
         goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Drone, numDrones + 4));
     }
@@ -314,8 +317,7 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
     if (shouldExpandNow())
     {
         goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Hatchery, numCC + 1));
-        goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Drone, numWorkers + 10));
-		
+		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Extractor, numExtractor + 1));
     }
 
 	return goal;

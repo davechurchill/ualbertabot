@@ -2,6 +2,8 @@
 #include "BuildingManager.h"
 #include "Micro.h"
 #include "ScoutManager.h"
+#include "UnitUtil.h"
+
 
 using namespace UAlbertaBot;
 
@@ -421,6 +423,16 @@ BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
 
     if (b.type.isResourceDepot())
     {
+
+		int numCC = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hatchery)
+			+ UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Lair)
+			+ UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hive);
+		if (numCC == 2) {
+			//auto homeBase = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->self());
+			BWAPI::Broodwar->printf("Should be making macro hatch");
+			BWAPI::TilePosition tile = BuildingPlacer::Instance().getBuildLocationNear(b, Config::Macro::BuildingSpacing, false);
+			return tile;
+		}
         // get the location 
         BWAPI::TilePosition tile = MapTools::Instance().getNextExpansion();
 
