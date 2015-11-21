@@ -31,15 +31,25 @@ void LurkerManager::assignTargetsOld(const BWAPI::Unitset & targets)
 			{
 				// find the best target for this lurker
 				BWAPI::Unit target = getTarget(LurkerUnit, LurkerUnitTargets);
-
+				/*if (!target) {
+					LurkerUnit->unburrow();
+				}*/
+				
 				if (target && Config::Debug::DrawUnitTargetInfo)
 				{
 					BWAPI::Broodwar->drawLineMap(LurkerUnit->getPosition(), LurkerUnit->getTargetPosition(), BWAPI::Colors::Purple);
 				}
 
 				// burrow and attack it
-				LurkerUnit->burrow();
-				Micro::SmartAttackUnit(LurkerUnit, target);
+				if (LurkerUnit->getDistance(target) < BWAPI::UnitTypes::Zerg_Lurker.groundWeapon().maxRange()) {
+					LurkerUnit->burrow();
+					Micro::SmartAttackUnit(LurkerUnit, target);
+				}
+				else {
+					LurkerUnit->unburrow();
+					Micro::SmartAttackMove(LurkerUnit, order.getPosition());
+				}
+				
 			}
 			// if there are no targets
 			else
@@ -49,7 +59,7 @@ void LurkerManager::assignTargetsOld(const BWAPI::Unitset & targets)
 				if (LurkerUnit->getDistance(order.getPosition()) > 100)
 				{
 					// move to it
-					Micro::SmartMove(LurkerUnit, order.getPosition());
+					Micro::SmartAttackMove(LurkerUnit, order.getPosition());
 				}
 			}
 		}
