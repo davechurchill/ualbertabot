@@ -99,6 +99,30 @@ std::pair<BWAPI::Unit, BWAPI::Unit> MeleeManager::findClosestUnitPair(const BWAP
 BWAPI::Unit MeleeManager::getTarget(BWAPI::Unit meleeUnit, const BWAPI::Unitset & targets)
 {
 	int highPriority = 0;
+	double lowest_hp = std::numeric_limits<double>::infinity();
+	BWAPI::Unit chosenTarget = nullptr;
+
+	// for each target possiblity
+	for (auto & unit : targets)
+	{
+		int priority = getAttackPriority(meleeUnit, unit);
+		int hp = unit->getHitPoints();
+
+		// if it's a higher priority, or it's closer, set it
+		if (!chosenTarget || (priority > highPriority) || (priority == highPriority && hp < lowest_hp))
+		{
+			lowest_hp = hp;
+			highPriority = priority;
+			chosenTarget = unit;
+		}
+	}
+
+	return chosenTarget;
+}
+/*
+BWAPI::Unit MeleeManager::getTarget(BWAPI::Unit meleeUnit, const BWAPI::Unitset & targets)
+{
+	int highPriority = 0;
 	double closestDist = std::numeric_limits<double>::infinity();
 	BWAPI::Unit closestTarget = nullptr;
 
@@ -118,7 +142,7 @@ BWAPI::Unit MeleeManager::getTarget(BWAPI::Unit meleeUnit, const BWAPI::Unitset 
 	}
 
 	return closestTarget;
-}
+}*/
 
 	// get the attack priority of a type in relation to a zergling
 int MeleeManager::getAttackPriority(BWAPI::Unit attacker, BWAPI::Unit unit) 

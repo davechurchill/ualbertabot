@@ -21,8 +21,8 @@ namespace UnitUtil
     int GetTransportSize(BWAPI::UnitType type);
 
     size_t GetAllUnitCount(BWAPI::UnitType type);
-
-    
+    /*NEW*/
+    BWAPI::Unit GetDangerousUnitTypeToTarget(BWAPI::UnitType type);
     BWAPI::Unit GetClosestUnitTypeToTarget(BWAPI::UnitType type, BWAPI::Position target);
     BWAPI::WeaponType GetWeapon(BWAPI::Unit attacker, BWAPI::Unit target);
     BWAPI::WeaponType GetWeapon(BWAPI::UnitType attacker, BWAPI::UnitType target);
