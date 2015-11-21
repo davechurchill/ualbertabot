@@ -95,8 +95,7 @@ void CombatCommander::updateIdleSquad()
 void CombatCommander::updateAttackSquads()
 {
     Squad & mainAttackSquad = _squadData.getSquad("MainAttack");
-	//check for overlord in squad
-	bool containsoverlord = false;
+
 	int numUnits = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hydralisk) + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Zergling) + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Lurker);
 	//if (numUnits < 20) {
 	//	return;
@@ -108,6 +107,8 @@ void CombatCommander::updateAttackSquads()
 		attackUnits++;
 
 	}
+	//check for overlord in squad
+	//bool containsoverlord = false;
 	//for (auto& unit : mainAttackSquad.getUnits())
 	//{
 	//	if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord)
@@ -127,11 +128,12 @@ void CombatCommander::updateAttackSquads()
         }
 
         // get every unit of a lower priority and put it into the attack squad
-        if (!unit->getType().isWorker() && _squadData.canAssignUnitToSquad(unit, mainAttackSquad))
-        {
-			if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord)
+		if (!unit->getType().isWorker() && (unit->getType() != BWAPI::UnitTypes::Zerg_Overlord) && _squadData.canAssignUnitToSquad(unit, mainAttackSquad))
+		{
+//        if (!unit->getType().isWorker() && _squadData.canAssignUnitToSquad(unit, mainAttackSquad))
+			/*if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord)
 			{
-				/*if (!containsoverlord)
+				if (!containsoverlord)
 				{
 					_squadData.assignUnitToSquad(unit, mainAttackSquad);
 					containsoverlord = true;
@@ -139,8 +141,8 @@ void CombatCommander::updateAttackSquads()
 				else
 				{
 					continue;
-				}*/
-			}
+				}
+			}*/
             _squadData.assignUnitToSquad(unit, mainAttackSquad);
 			
         }

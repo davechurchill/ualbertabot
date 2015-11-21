@@ -44,12 +44,12 @@ void LurkerManager::assignTargetsOld(const BWAPI::Unitset & targets)
 			// if there are no targets
 			else
 			{
-				unburrow();
+				LurkerUnit->unburrow();
 				// if we're not near the order position
 				if (LurkerUnit->getDistance(order.getPosition()) > 100)
 				{
 					// move to it
-					Micro::SmartAttackMove(LurkerUnit, order.getPosition());
+					Micro::SmartMove(LurkerUnit, order.getPosition());
 				}
 			}
 		}

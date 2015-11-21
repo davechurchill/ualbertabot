@@ -423,7 +423,6 @@ BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
 
     if (b.type.isResourceDepot())
     {
-
 		int numCC = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hatchery)
 			+ UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Lair)
 			+ UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hive);
