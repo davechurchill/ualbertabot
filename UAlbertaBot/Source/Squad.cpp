@@ -125,7 +125,7 @@ void Squad::addUnitsToMicroManagers()
 		if(unit->isCompleted() && unit->getHitPoints() > 0 && unit->exists())
 		{
 			// select dector units
-			if (unit->getType().isDetector() && !unit->getType().isBuilding())
+			if (unit->getType().isDetector() && !unit->getType().isBuilding() && unit->getType() != BWAPI::UnitTypes::Terran_Science_Vessel)
 			{
 				detectorUnits.push_back(unit);
 			}
@@ -135,7 +135,7 @@ void Squad::addUnitsToMicroManagers()
 				transportUnits.push_back(unit);
 			}
 			// select ranged units
-			else if ((unit->getType().groundWeapon().maxRange() > 32) || (unit->getType() == BWAPI::UnitTypes::Protoss_Reaver))
+			else if ((unit->getType().groundWeapon().maxRange() > 32) || (unit->getType() == BWAPI::UnitTypes::Protoss_Reaver) || unit->getType() == BWAPI::UnitTypes::Terran_Science_Vessel)
 			{
 				rangedUnits.push_back(unit);
 			}
