@@ -396,55 +396,54 @@ std::vector<BWAPI::UnitType> BuildingManager::buildingsQueued()
 
 BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
 {
-    int numPylons = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Pylon);
+	int numPylons = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Pylon);
 
-    if (b.isGasSteal)
-    {
-        BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
-        UAB_ASSERT(enemyBaseLocation,"Should have enemy base location before attempting gas steal");
-        UAB_ASSERT(enemyBaseLocation->getGeysers().size() > 0,"Should have spotted an enemy geyser");
+	if (b.isGasSteal)
+	{
+		BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
+		UAB_ASSERT(enemyBaseLocation, "Should have enemy base location before attempting gas steal");
+		UAB_ASSERT(enemyBaseLocation->getGeysers().size() > 0, "Should have spotted an enemy geyser");
 
-        for (auto & unit : enemyBaseLocation->getGeysers())
-        {
-            BWAPI::TilePosition tp(unit->getInitialTilePosition());
-            return tp;
-        }
-    }
+		for (auto & unit : enemyBaseLocation->getGeysers())
+		{
+			BWAPI::TilePosition tp(unit->getInitialTilePosition());
+			return tp;
+		}
+	}
 
-    if (b.type.requiresPsi() && numPylons == 0)
-    {
-        return BWAPI::TilePositions::None;
-    }
+	if (b.type.requiresPsi() && numPylons == 0)
+	{
+		return BWAPI::TilePositions::None;
+	}
 
-    if (b.type.isRefinery())
-    {
-        return BuildingPlacer::Instance().getRefineryPosition();
-    }
+	if (b.type.isRefinery())
+	{
+		return BuildingPlacer::Instance().getRefineryPosition();
+	}
 
-    if (b.type.isResourceDepot())
-    {
+	if (b.type.isResourceDepot())
+	{
+		// TODO: Fix hard coded 2 
 		int numCC = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hatchery)
 			+ UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Lair)
 			+ UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hive);
 		if (numCC == 2) {
-			//auto homeBase = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->self());
 			BWAPI::Broodwar->printf("Should be making macro hatch");
 			BWAPI::TilePosition tile = BuildingPlacer::Instance().getBuildLocationNear(b, Config::Macro::BuildingSpacing, false);
 			return tile;
 		}
-        // get the location 
-        BWAPI::TilePosition tile = MapTools::Instance().getNextExpansion();
+		// get the location 
+		BWAPI::TilePosition tile = MapTools::Instance().getNextExpansion();
 
-        return tile;
-    }
+		return tile;
+	}
 
-    // set the building padding specifically
-    int distance = b.type == BWAPI::UnitTypes::Protoss_Photon_Cannon ? 0 : Config::Macro::BuildingSpacing;
+	// set the building padding specifically
+	int distance = (b.type == BWAPI::UnitTypes::Protoss_Photon_Cannon || b.type == BWAPI::UnitTypes::Zerg_Creep_Colony) ? 0 : Config::Macro::BuildingSpacing;
     if (b.type == BWAPI::UnitTypes::Protoss_Pylon && (numPylons < 3))
     {
         distance = Config::Macro::PylonSpacing;
     }
-
     // get a position within our region
     return BuildingPlacer::Instance().getBuildLocationNear(b,distance,false);
 }

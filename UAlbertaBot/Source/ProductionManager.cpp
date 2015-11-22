@@ -1,4 +1,6 @@
 #include "ProductionManager.h"
+#include "MapGrid.h"
+
 
 using namespace UAlbertaBot;
 
@@ -345,8 +347,38 @@ void ProductionManager::create(BWAPI::Unit producer, BuildOrderItem & item)
         && !t.getUnitType().isAddon())
     {
         // send the building task to the building manager
-        BuildingManager::Instance().addBuildingTask(t.getUnitType(), BWAPI::Broodwar->self()->getStartLocation(), item.isGasSteal);
-    }
+		/*if (t.getUnitType() == BWAPI::UnitTypes::Zerg_Creep_Colony) {
+			auto home = BWAPI::Broodwar->self()->getStartLocation();
+			int dist = 1000;
+			BWTA::BaseLocation * nat;
+			for (BWTA::BaseLocation * base : BWTA::getBaseLocations())
+			{
+				// get nearest base to home (your natural)
+				if (!base->isStartLocation()){
+					int bx1 = base->getTilePosition().x;
+					int by1 = base->getTilePosition().y;
+
+					int xdist = (home.x - bx1)* (home.x - bx1);
+					int ydist = (home.y - by1)* (home.y - by1);
+					int totaldist = xdist + ydist;
+					if (totaldist < dist) {
+						dist = totaldist;
+						nat = base;
+					}
+				}
+			}
+			BWAPI::TilePosition natPosition = nat->getTilePosition();
+			BWAPI::Broodwar->printf("Nat position for creep colony: %d , %d", natPosition.x, natPosition.y);
+			BWAPI::Broodwar->printf("Home Position for creep colony: %d , %d", home.x, home.y);
+
+			BuildingManager::Instance().addBuildingTask(t.getUnitType(), natPosition, false);
+		}
+		else {
+			BuildingManager::Instance().addBuildingTask(t.getUnitType(), BWAPI::Broodwar->self()->getStartLocation(), item.isGasSteal);
+		}*/
+		BuildingManager::Instance().addBuildingTask(t.getUnitType(), BWAPI::Broodwar->self()->getStartLocation(), item.isGasSteal);
+
+	}
     else if (t.getUnitType().isAddon())
     {
         //BWAPI::TilePosition addonPosition(producer->getTilePosition().x + producer->getType().tileWidth(), producer->getTilePosition().y + producer->getType().tileHeight() - t.unitType.tileHeight());
