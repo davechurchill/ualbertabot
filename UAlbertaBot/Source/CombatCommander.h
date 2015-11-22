@@ -17,6 +17,7 @@ class CombatCommander
     void            updateScoutDefenseSquad();
 	void            updateDefenseSquads();
 	void            updateAttackSquads();
+    void            updateLurkerSquads();
     void            updateDropSquads();
 	void            updateIdleSquad();
 	bool            isSquadUpdateFrame();

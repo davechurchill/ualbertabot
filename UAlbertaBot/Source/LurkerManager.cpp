@@ -23,17 +23,15 @@ void LurkerManager::assignTargetsOld(const BWAPI::Unitset & targets)
 
 	for (auto & LurkerUnit : LurkerUnits)
 	{
+		/* We don't care what the order is, we just want to attack */
 		// if the order is to attack or defend
-		if (order.getType() == SquadOrderTypes::Attack || order.getType() == SquadOrderTypes::Defend)
-		{
+		//if (order.getType() == SquadOrderTypes::Attack || order.getType() == SquadOrderTypes::Defend)
+		//{
 			// if there are targets
 			if (!LurkerUnitTargets.empty())
 			{
 				// find the best target for this lurker
 				BWAPI::Unit target = getTarget(LurkerUnit, LurkerUnitTargets);
-				/*if (!target) {
-					LurkerUnit->unburrow();
-				}*/
 				
 				if (target && Config::Debug::DrawUnitTargetInfo)
 				{
@@ -47,8 +45,8 @@ void LurkerManager::assignTargetsOld(const BWAPI::Unitset & targets)
 					
 				}
 				else {
-						LurkerUnit->unburrow();
-						Micro::SmartAttackMove(LurkerUnit, order.getPosition());					
+					LurkerUnit->unburrow();
+					Micro::SmartAttackMove(LurkerUnit, order.getPosition());
 				}
 				
 			}
@@ -57,13 +55,9 @@ void LurkerManager::assignTargetsOld(const BWAPI::Unitset & targets)
 			{
 				LurkerUnit->unburrow();
 				// if we're not near the order position
-				if (LurkerUnit->getDistance(order.getPosition()) > 100)
-				{
-					// move to it
-					Micro::SmartAttackMove(LurkerUnit, order.getPosition());
-				}
+				Micro::SmartAttackMove(LurkerUnit, order.getPosition());
 			}
-		}
+		//}
 	}
 }
 
@@ -192,7 +186,7 @@ int LurkerManager::getAttackPriority(BWAPI::Unit LurkerUnit, BWAPI::Unit target)
 	// then everything else
 	else
 	{
-		return 1;
+		return 50;
 	}
 }
 

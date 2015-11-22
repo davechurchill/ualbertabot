@@ -16,6 +16,8 @@ namespace UAlbertaBot
 		BWAPI::Unit closestLurkerUnit(BWAPI::Unit target, std::set<BWAPI::Unit> & rangedUnitsToAssign);
 		std::pair<BWAPI::Unit, BWAPI::Unit> findClosestUnitPair(const BWAPI::Unitset & attackers, const BWAPI::Unitset & targets);
 
+		
+
 		int getAttackPriority(BWAPI::Unit rangedUnit, BWAPI::Unit target);
 		BWAPI::Unit getTarget(BWAPI::Unit rangedUnit, const BWAPI::Unitset & targets);
 

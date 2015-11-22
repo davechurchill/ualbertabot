@@ -19,6 +19,10 @@ void CombatCommander::initializeSquads()
 {
     SquadOrder idleOrder(SquadOrderTypes::Idle, BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation()), 100, "Chill Out");
 	_squadData.addSquad("Idle", Squad("Idle", idleOrder, IdlePriority));
+    
+    /* This is the Lurker squad. Only accepts Lurkers and is specialized to deal with them */
+    SquadOrder lurkerAttackOrder(SquadOrderTypes::Attack, getMainAttackLocation(), 800, "Lurkers Attack Enemy Base");
+	_squadData.addSquad("LurkerAttack", Squad("LurkerAttack", lurkerAttackOrder, AttackPriority));
 
     // the main attack squad that will pressure the enemy's closest base location
     SquadOrder mainAttackOrder(SquadOrderTypes::Attack, getMainAttackLocation(), 800, "Attack Enemy Base");
@@ -66,6 +70,7 @@ void CombatCommander::update(const BWAPI::Unitset & combatUnits)
         updateDropSquads();
         updateScoutDefenseSquad();
 		updateDefenseSquads();
+        updateLurkerSquads();
 		updateAttackSquads();
 	}
 
@@ -96,17 +101,17 @@ void CombatCommander::updateAttackSquads()
 {
     Squad & mainAttackSquad = _squadData.getSquad("MainAttack");
 
-	int numUnits = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hydralisk) + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Zergling) + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Lurker);
+	//int numUnits = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hydralisk) + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Zergling) + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Lurker);
 	//if (numUnits < 20) {
 	//	return;
 	//}
-	int attackUnits = 0;
+	//int attackUnits = 0;
 
-	for (auto& unit : mainAttackSquad.getUnits())
-	{
-		attackUnits++;
+	//for (auto& unit : mainAttackSquad.getUnits())
+	//{
+	//	attackUnits++;
 
-	}
+	//}
 	//check for overlord in squad
 	//bool containsoverlord = false;
 	//for (auto& unit : mainAttackSquad.getUnits())
@@ -128,7 +133,7 @@ void CombatCommander::updateAttackSquads()
         }
 
         // get every unit of a lower priority and put it into the attack squad
-		if (!unit->getType().isWorker() && (unit->getType() != BWAPI::UnitTypes::Zerg_Overlord) && _squadData.canAssignUnitToSquad(unit, mainAttackSquad))
+		if (!unit->getType().isWorker() && (unit->getType() != BWAPI::UnitTypes::Zerg_Overlord) && (unit->getType() != BWAPI::UnitTypes::Zerg_Lurker) && _squadData.canAssignUnitToSquad(unit, mainAttackSquad))
 		{
 //        if (!unit->getType().isWorker() && _squadData.canAssignUnitToSquad(unit, mainAttackSquad))
 			/*if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord)
@@ -150,6 +155,23 @@ void CombatCommander::updateAttackSquads()
 
     SquadOrder mainAttackOrder(SquadOrderTypes::Attack, getMainAttackLocation(), 800, "Attack Enemy Base");
     mainAttackSquad.setSquadOrder(mainAttackOrder);
+}
+
+/* Updates the Lurker Squad */
+void CombatCommander::updateLurkerSquads()
+{
+    Squad & lurkerAttackSquad = _squadData.getSquad("LurkerAttack");
+
+    for (auto & unit : _combatUnits)
+    {
+        if (unit->getType() == BWAPI::UnitTypes::Zerg_Lurker)
+        {
+             _squadData.assignUnitToSquad(unit, lurkerAttackSquad);
+        }
+    }
+
+    SquadOrder lurkerAttackOrder(SquadOrderTypes::Attack, getMainAttackLocation(), 800, "Lurkers Attack Enemy Base");
+    lurkerAttackSquad.setSquadOrder(lurkerAttackOrder);
 }
 
 void CombatCommander::updateDropSquads()

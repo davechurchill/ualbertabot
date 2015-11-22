@@ -56,7 +56,7 @@ void Squad::update()
 
 		_meleeManager.regroup(regroupPosition);
 		_rangedManager.regroup(regroupPosition);
-		_lurkerManager.regroup(regroupPosition);
+		//_lurkerManager.regroup(regroupPosition);
 		_tankManager.regroup(regroupPosition);
 		_medicManager.regroup(regroupPosition);
 		//_medicManager.regroup(regroupPosition);
