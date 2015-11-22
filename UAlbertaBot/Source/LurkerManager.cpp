@@ -47,7 +47,7 @@ void LurkerManager::assignTargetsOld(const BWAPI::Unitset & targets)
 				}
 				else {
 					
-					if (order.getType() == SquadOrderType::Regroup) {
+					if (order.getType() == SquadOrderTypes::Regroup) {
 						LurkerUnit->burrow();
 						Micro::SmartAttackUnit(LurkerUnit, target);
 					} else {
