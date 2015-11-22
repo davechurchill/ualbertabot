@@ -42,11 +42,10 @@ void LurkerManager::assignTargetsOld(const BWAPI::Unitset & targets)
 				if (LurkerUnit->getDistance(target) < BWAPI::UnitTypes::Zerg_Lurker.groundWeapon().maxRange()) {
 					LurkerUnit->burrow();
 					Micro::SmartAttackUnit(LurkerUnit, target);
-					
 				}
 				else {
 					LurkerUnit->unburrow();
-					Micro::SmartAttackMove(LurkerUnit, order.getPosition());
+					Micro::SmartMove(LurkerUnit, order.getPosition());
 				}
 				
 			}
@@ -55,7 +54,7 @@ void LurkerManager::assignTargetsOld(const BWAPI::Unitset & targets)
 			{
 				LurkerUnit->unburrow();
 				// if we're not near the order position
-				Micro::SmartAttackMove(LurkerUnit, order.getPosition());
+				Micro::SmartMove(LurkerUnit, order.getPosition());
 			}
 		//}
 	}

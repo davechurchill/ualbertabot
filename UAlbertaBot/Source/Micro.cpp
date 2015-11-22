@@ -33,6 +33,13 @@ void Micro::SmartAttackUnit(BWAPI::Unit attacker, BWAPI::Unit target)
     // get the unit's current command
     BWAPI::UnitCommand currentCommand(attacker->getLastCommand());
 
+    if (attacker->getType() == BWAPI::UnitTypes::Zerg_Lurker) {
+        // if nothing prevents it, attack the target
+        attacker->attack(target);
+        TotalCommands++;
+        return;
+    }
+
     // if we've already told this unit to attack this target, ignore this command
     if (currentCommand.getType() == BWAPI::UnitCommandTypes::Attack_Unit &&	currentCommand.getTarget() == target)
     {
@@ -70,12 +77,13 @@ void Micro::SmartAttackMove(BWAPI::Unit attacker, const BWAPI::Position & target
     // get the unit's current command
     BWAPI::UnitCommand currentCommand(attacker->getLastCommand());
     
-    // if lurker, move to the target
+    // if lurker, move to the target 
+    /*
     if (attacker->getType() == BWAPI::UnitTypes::Zerg_Lurker && (!attacker->isMoving())) {
         // if nothing prevents it, attack the target
         attacker->attack(targetPosition);
         TotalCommands++;
-    }
+    }*/
 
     // if we've already told this unit to attack this target, ignore this command
     if (currentCommand.getType() == BWAPI::UnitCommandTypes::Attack_Move &&	currentCommand.getTargetPosition() == targetPosition)
