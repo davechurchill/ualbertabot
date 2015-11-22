@@ -45,7 +45,7 @@ void LurkerManager::assignTargetsOld(const BWAPI::Unitset & targets)
 				}
 				else {
 					LurkerUnit->unburrow();
-					Micro::SmartMove(LurkerUnit, order.getPosition());
+					Micro::SmartMove(LurkerUnit, target->getPosition());
 				}
 				
 			}
