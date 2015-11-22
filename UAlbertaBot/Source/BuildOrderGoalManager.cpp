@@ -76,7 +76,7 @@ void BuildOrderGoalManager::addGoal(const MetaType t, int num, int p)
 
 void BuildOrderGoalManager::setBuildOrderGoals()
 {	// unnecessary function lol oops
-	addGoal(MetaType(BWAPI::UnitTypes::Terran_Command_Center), 1, 1000);
+	/*	addGoal(MetaType(BWAPI::UnitTypes::Terran_Command_Center), 1, 1000);
 	addGoal(MetaType(BWAPI::UnitTypes::Terran_SCV), 1, 1000);
 	addGoal(MetaType(BWAPI::UnitTypes::Terran_Marine),		12,		98);	
 	addGoal(MetaType(BWAPI::UnitTypes::Terran_Barracks),	2,		99);	
@@ -89,7 +89,7 @@ void BuildOrderGoalManager::setBuildOrderGoals()
 	//addGoal(MetaType(BWAPI::UnitTypes::Terran_Wraith),	30,		90);
 	//addGoal(MetaType(BWAPI::UnitTypes::Terran_Medic),	30,		90);
 	
-	/*
+
 	addGoal(MetaType(BWAPI::UnitTypes::Protoss_Nexus), 1, 1000);	// 1	Nexus
 	addGoal(MetaType(BWAPI::UnitTypes::Protoss_Probe), 1, 1000);	// 1	Probe
 

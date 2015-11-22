@@ -207,7 +207,8 @@ bool GameCommander::isCombatUnit(BWAPI::UnitInterface* unit) const
 	if (unit->getType().canAttack() || 
 		unit->getType() == BWAPI::UnitTypes::Terran_Medic ||
 		unit->getType() == BWAPI::UnitTypes::Protoss_High_Templar ||
-		unit->getType() == BWAPI::UnitTypes::Protoss_Observer)
+		unit->getType() == BWAPI::UnitTypes::Protoss_Observer ||
+		unit->getType() == BWAPI::UnitTypes::Terran_Science_Vessel)
 	{
 		return true;
 	}

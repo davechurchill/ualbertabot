@@ -384,7 +384,7 @@ const MetaPairVector StrategyManager::getScienceVesselBuildOrderGoal() const
 	int numMarines = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Marine);
 	int numSV = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Science_Vessel);
 
-	int marinesWanted = numMarines + 12;
+	int marinesWanted = numMarines + 11;
 	int svWanted = numSV + 1;
 
 	goal.push_back(MetaPair(BWAPI::UnitTypes::Terran_Marine, marinesWanted));

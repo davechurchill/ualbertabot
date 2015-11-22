@@ -36,8 +36,9 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & t
 						if (myEnemies.size() > 3) {
 							if (detector->canUseTech(BWAPI::TechTypes::Irradiate, NULL)) detector->useTech(BWAPI::TechTypes::Irradiate, myEnemies.getClosestUnit(nullptr,128));
 							else {
-								BWAPI::Unit ally = BWAPI::Broodwar->getClosestUnit(detector->getTargetPosition(), BWAPI::Filter::IsOwned && BWAPI::Filter::IsMechanical);
-								detector->useTech(BWAPI::TechTypes::Defensive_Matrix, ally);
+								BWAPI::Unit ally = BWAPI::Broodwar->getClosestUnit(detector->getTargetPosition(), BWAPI::Filter::IsOwned);
+								detector->useTech(BWAPI::TechTypes::Defensive_Matrix, ally);	BWAPI::Broodwar->printf("DETECTOR cast");
+
 							}
 							break;
 						}
@@ -57,7 +58,7 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & t
 					if (myEnemies.size() > 3) { 
 						if (detector->canUseTech(BWAPI::TechTypes::Irradiate, NULL)) detector->useTech(BWAPI::TechTypes::Irradiate, myEnemies.getClosestUnit(nullptr, 128));
 						else {
-							BWAPI::Unit ally = BWAPI::Broodwar->getClosestUnit(detector->getTargetPosition(), BWAPI::Filter::IsOwned && BWAPI::Filter::IsMechanical);
+							BWAPI::Unit ally = BWAPI::Broodwar->getClosestUnit(detector->getTargetPosition(), BWAPI::Filter::IsOwned );
 							detector->useTech(BWAPI::TechTypes::Defensive_Matrix, ally);
 						}
 						break;
@@ -76,7 +77,7 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & t
 					if (myEnemies.size() > 3) {
 						if (detector->canUseTech(BWAPI::TechTypes::Irradiate, NULL)) detector->useTech(BWAPI::TechTypes::Irradiate, myEnemies.getClosestUnit(nullptr, 128));
 						else {
-							BWAPI::Unit ally = BWAPI::Broodwar->getClosestUnit(detector->getTargetPosition(), BWAPI::Filter::IsOwned && BWAPI::Filter::IsMechanical);
+							BWAPI::Unit ally = BWAPI::Broodwar->getClosestUnit(detector->getTargetPosition(), BWAPI::Filter::IsOwned );
 							detector->useTech(BWAPI::TechTypes::Defensive_Matrix, ally);
 						}
 						break;
@@ -145,91 +146,4 @@ BWAPI::UnitInterface* DetectorManager::closestCloakedUnit(const std::vector<BWAP
 	}
 
 	return closestCloaked;
-}
-
-// get the attack priority of a type in relation to a zergling
-int DetectorManager::getSpellPriority(BWAPI::UnitInterface* rangedUnit, BWAPI::UnitInterface* target)
-{
-	BWAPI::UnitType rangedUnitType = rangedUnit->getType();
-	BWAPI::UnitType targetType = target->getType();
-
-	bool canAttackUs = rangedUnitType.isFlyer() ? targetType.airWeapon() != BWAPI::WeaponTypes::None : targetType.groundWeapon() != BWAPI::WeaponTypes::None;
-
-	BWAPI::Race enemyRace = (BWAPI::Broodwar->enemy()->getRace());
-	if (enemyRace == BWAPI::Races::Zerg)
-	{
-
-	}
-	else if (enemyRace == BWAPI::Races::Terran)
-	{
-
-	}
-	else if (enemyRace == BWAPI::Races::Protoss)
-	{
-
-	}
-
-
-	// highest priority is something that can attack us or aid in combat
-	if (targetType == BWAPI::UnitTypes::Terran_Medic || canAttackUs ||
-		targetType == BWAPI::UnitTypes::Terran_Bunker)
-	{
-		return 3;
-	}
-	// next priority is worker
-	else if (targetType.isWorker())
-	{
-		return 2;
-	}
-	// then everything else
-	else
-	{
-		return 1;
-	}
-}
-
-// get a target for the zealot to attack
-BWAPI::UnitInterface* DetectorManager::getTarget(BWAPI::UnitInterface* rangedUnit, std::vector<BWAPI::UnitInterface *> & targets)
-{
-	int range(rangedUnit->getType().groundWeapon().maxRange());
-
-	int highestInRangePriority(0);
-	int highestNotInRangePriority(0);
-	int lowestInRangeHitPoints(10000);
-	int lowestNotInRangeDistance(10000);
-
-	BWAPI::UnitInterface* inRangeTarget = NULL;
-	BWAPI::UnitInterface* notInRangeTarget = NULL;
-
-	for (BWAPI::UnitInterface* unit : targets)
-	{
-		int priority = getSpellPriority(rangedUnit, unit);
-		int distance = rangedUnit->getDistance(unit);
-
-		// if the unit is in range, update the target with the lowest hp
-		if (rangedUnit->getDistance(unit) <= range)
-		{
-			if (priority > highestInRangePriority ||
-				(priority == highestInRangePriority && unit->getHitPoints() < lowestInRangeHitPoints))
-			{
-				lowestInRangeHitPoints = unit->getHitPoints();
-				highestInRangePriority = priority;
-				inRangeTarget = unit;
-			}
-		}
-		// otherwise it isn't in range so see if it's closest
-		else
-		{
-			if (priority > highestNotInRangePriority ||
-				(priority == highestNotInRangePriority && distance < lowestNotInRangeDistance))
-			{
-				lowestNotInRangeDistance = distance;
-				highestNotInRangePriority = priority;
-				notInRangeTarget = unit;
-			}
-		}
-	}
-
-	// if there is a highest priority unit in range, attack it first
-	return (highestInRangePriority >= highestNotInRangePriority) ? inRangeTarget : notInRangeTarget;
 }
