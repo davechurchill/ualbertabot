@@ -42,15 +42,18 @@ void LurkerManager::assignTargetsOld(const BWAPI::Unitset & targets)
 
 				// burrow and attack it
 				if (LurkerUnit->getDistance(target) < BWAPI::UnitTypes::Zerg_Lurker.groundWeapon().maxRange()) {
+					BWAPI::Broodwar->printf("Burrow and Attack");
 					LurkerUnit->burrow();
 					Micro::SmartAttackUnit(LurkerUnit, target);
+					
 				}
 				else {
-					
-					if (order.getType() == SquadOrderTypes::Regroup) {
+					if (order.getPosition() == BWAPI::Broodwar->self()->getStartLocation()) {
+						BWAPI::Broodwar->printf("Squad Retreat, stay and Attack");
 						LurkerUnit->burrow();
 						Micro::SmartAttackUnit(LurkerUnit, target);
 					} else {
+						BWAPI::Broodwar->printf("Unburrow and Move");
 						LurkerUnit->unburrow();
 						Micro::SmartAttackMove(LurkerUnit, order.getPosition());
 					}
