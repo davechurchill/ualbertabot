@@ -4,6 +4,7 @@ using namespace UAlbertaBot;
 
 DetectorManager::DetectorManager() : unitClosestToEnemy(NULL) { }
 
+
 void DetectorManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & targets) 
 {
 	const std::vector<BWAPI::UnitInterface *> & detectorUnits = getUnits();
@@ -19,73 +20,41 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & t
 	{
 		return;
 	}
-	BWAPI::UnitInterface* detector = detectorUnits[0];
-	if (detector->canUseTech(BWAPI::TechTypes::Defensive_Matrix, NULL)) //Check if it's a Science Vessel
+	std::vector<BWAPI::UnitInterface *> rangedUnitTargets;
+	for (size_t i(0); i<targets.size(); i++)
 	{
-		BWAPI::Race enemyRace = (BWAPI::Broodwar->enemy()->getRace());
-		if (enemyRace == BWAPI::Races::Zerg)
+		// conditions for targeting
+		if (targets[i]->isVisible())
 		{
-			std::vector<BWAPI::UnitInterface *> spellUnitTargets;
-			for (size_t i(0); i<targets.size(); ++i)
-			{
-					// do something here if there's targets
-				BWAPI::Unitset myEnemies = targets[i]->getUnitsInRadius(64,!BWAPI::Filter::IsIrradiated
-					&& BWAPI::Filter::IsOrganic
-					&& BWAPI::Filter::IsVisible);
-					if (!myEnemies.empty()) {
-						if (myEnemies.size() > 3) {
-							if (detector->canUseTech(BWAPI::TechTypes::Irradiate, NULL)) detector->useTech(BWAPI::TechTypes::Irradiate, myEnemies.getClosestUnit(nullptr,128));
-							else {
-								BWAPI::Unit ally = BWAPI::Broodwar->getClosestUnit(detector->getTargetPosition(), BWAPI::Filter::IsOwned);
-								detector->useTech(BWAPI::TechTypes::Defensive_Matrix, ally);	BWAPI::Broodwar->printf("DETECTOR cast");
-
-							}
-							break;
-						}
-					}
-				}
-		}
-		else if (enemyRace == BWAPI::Races::Terran)
-		{
-			std::vector<BWAPI::UnitInterface *> spellUnitTargets;
-			for (size_t i(0); i<targets.size(); ++i)
-			{
-				// do something here if there's targets
-				BWAPI::Unitset myEnemies = targets[i]->getUnitsInRadius(64, !BWAPI::Filter::IsIrradiated
-					&& BWAPI::Filter::IsOrganic
-					&& BWAPI::Filter::IsVisible);
-				if (!myEnemies.empty()) {
-					if (myEnemies.size() > 3) { 
-						if (detector->canUseTech(BWAPI::TechTypes::Irradiate, NULL)) detector->useTech(BWAPI::TechTypes::Irradiate, myEnemies.getClosestUnit(nullptr, 128));
-						else {
-							BWAPI::Unit ally = BWAPI::Broodwar->getClosestUnit(detector->getTargetPosition(), BWAPI::Filter::IsOwned );
-							detector->useTech(BWAPI::TechTypes::Defensive_Matrix, ally);
-						}
-						break;
-					}
-				}
-			}
-		}
-		else if (enemyRace == BWAPI::Races::Protoss)
-		{
-			std::vector<BWAPI::UnitInterface *> spellUnitTargets;
-			for (size_t i(0); i<targets.size(); ++i)
-			{
-				// do something here if there's targets
-				BWAPI::Unitset myEnemies = targets[i]->getUnitsInRadius(96, BWAPI::Filter::Shields);
-				if (!myEnemies.empty()) {
-					if (myEnemies.size() > 3) {
-						if (detector->canUseTech(BWAPI::TechTypes::Irradiate, NULL)) detector->useTech(BWAPI::TechTypes::Irradiate, myEnemies.getClosestUnit(nullptr, 128));
-						else {
-							BWAPI::Unit ally = BWAPI::Broodwar->getClosestUnit(detector->getTargetPosition(), BWAPI::Filter::IsOwned );
-							detector->useTech(BWAPI::TechTypes::Defensive_Matrix, ally);
-						}
-						break;
-					}
-				}
-			}
+			rangedUnitTargets.push_back(targets[i]);
 		}
 	}
+	for (BWAPI::UnitInterface* rangedUnit : detectorUnits)
+	{
+			// if there are targets
+			if (!rangedUnitTargets.empty())
+			{
+				// find the best target for this sci ves
+				BWAPI::UnitInterface* target = getTarget(rangedUnit, rangedUnitTargets);
+				if (target == nullptr) continue;
+				// attack it
+				kiteTarget(rangedUnit, target);
+			}
+			// if there are no targets
+			else
+			{
+				// if we're not near the order position
+				break;
+			}
+		
+
+		if (Config::Debug::DrawUnitTargetInfo)
+		{
+			BWAPI::Broodwar->drawLineMap(rangedUnit->getPosition().x, rangedUnit->getPosition().y,
+				rangedUnit->getTargetPosition().x, rangedUnit->getTargetPosition().y, Config::Debug::ColorLineTarget);
+		}
+	}
+
 
 	cloakedUnitMap.clear();
 	std::vector<BWAPI::UnitInterface *> cloakedUnits;
@@ -112,12 +81,13 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & t
 		if (!detectorUnitInBattle && unitClosestToEnemy && unitClosestToEnemy->getPosition().isValid())
 		{
 			smartMove(detectorUnit, unitClosestToEnemy->getPosition());
-			detectorUnitInBattle = true;
+			if (detectorUnit->getType() != BWAPI::UnitTypes::Terran_Science_Vessel) detectorUnitInBattle = true;
 		}
 		// otherwise there is no battle or no closest to enemy so we don't want our detectorUnit to die
 		// send him to scout around the map
 		else
 		{
+			if (detectorUnit->getType() == BWAPI::UnitTypes::Terran_Science_Vessel) return;
 			BWAPI::Position explorePosition = MapGrid::Instance().getLeastExplored();
 			smartMove(detectorUnit, explorePosition);
 		}
@@ -147,3 +117,167 @@ BWAPI::UnitInterface* DetectorManager::closestCloakedUnit(const std::vector<BWAP
 
 	return closestCloaked;
 }
+void DetectorManager::kiteTarget(BWAPI::UnitInterface* rangedUnit, BWAPI::UnitInterface* target)
+{
+
+	double range(9*32); //irradiate
+
+	// determine whether the target can be kited
+	if (range <= target->getType().groundWeapon().maxRange())
+	{
+		// if we can't kite it, there's no point
+		spellAttackUnit(rangedUnit, target);
+		return;
+	}
+
+	double		minDist(64);
+	bool		kite(true);
+	double		dist(rangedUnit->getDistance(target));
+	double		speed(rangedUnit->getType().topSpeed());
+
+	double	timeToEnter = std::max(0.0, (dist - range) / speed);
+	if (dist >= minDist)
+	{
+		kite = false;
+	}
+
+	if (target->getType().isBuilding() && target->getType() != BWAPI::UnitTypes::Terran_Bunker)
+	{
+		kite = false;
+	}
+
+	if (rangedUnit->isSelected())
+	{
+		BWAPI::Broodwar->drawCircleMap(rangedUnit->getPosition().x, rangedUnit->getPosition().y,
+			(int)range, BWAPI::Colors::Cyan);
+	}
+
+	// if we can't shoot, run away
+	if (kite)
+	{
+		BWAPI::Position fleePosition(rangedUnit->getPosition() - target->getPosition() + rangedUnit->getPosition());
+
+		BWAPI::Broodwar->drawLineMap(rangedUnit->getPosition().x, rangedUnit->getPosition().y,
+			fleePosition.x, fleePosition.y, BWAPI::Colors::Cyan);
+
+		smartMove(rangedUnit, fleePosition);
+	}
+	// otherwise shoot
+	else
+	{
+		spellAttackUnit(rangedUnit, target);
+	}
+}
+
+// get a target for the zealot to attack
+BWAPI::UnitInterface* DetectorManager::getTarget(BWAPI::UnitInterface* rangedUnit, std::vector<BWAPI::UnitInterface *> & targets)
+{
+	int range(9*32); //Irradiate range is 9, emp is 8
+
+	int highestInRangePriority(0);
+	int highestNotInRangePriority(0);
+	int highestInRangeHitPoints(10000);
+	int lowestNotInRangeDistance(10000);
+
+	BWAPI::UnitInterface* inRangeTarget = NULL;
+	BWAPI::UnitInterface* notInRangeTarget = NULL;
+
+	for (BWAPI::UnitInterface* unit : targets)
+	{
+		int priority = getAttackPriority(rangedUnit, unit);
+		int distance = rangedUnit->getDistance(unit);
+
+		// if the unit is in range, update the target with the highest hp
+		if (rangedUnit->getDistance(unit) <= range)
+		{
+			if (priority > highestInRangePriority ||
+				(priority == highestInRangePriority && unit->getHitPoints() > highestInRangeHitPoints))
+			{
+				highestInRangeHitPoints = unit->getHitPoints();
+				highestInRangePriority = priority;
+				inRangeTarget = unit;
+			}
+		}
+		// otherwise it isn't in range so see if it's closest
+		else
+		{
+			if (priority > highestNotInRangePriority ||
+				(priority == highestNotInRangePriority && distance < lowestNotInRangeDistance))
+			{
+				lowestNotInRangeDistance = distance;
+				highestNotInRangePriority = priority;
+				notInRangeTarget = unit;
+			}
+		}
+	}
+	// No valid targets
+	if (highestInRangePriority == 1 && highestNotInRangePriority == 1) return nullptr;
+	// if there is a highest priority unit in range, attack it first
+	return (highestInRangePriority >= highestNotInRangePriority) ? inRangeTarget : notInRangeTarget;
+}
+
+// get the attack priority of a type in relation to a zergling
+int DetectorManager::getAttackPriority(BWAPI::UnitInterface* rangedUnit, BWAPI::UnitInterface* target)
+{
+	BWAPI::UnitType rangedUnitType = rangedUnit->getType();
+	BWAPI::UnitType targetType = target->getType();
+
+	//bool canAttackUs = rangedUnitType.isFlyer() ? targetType.airWeapon() != BWAPI::WeaponTypes::None : targetType.groundWeapon() != BWAPI::WeaponTypes::None;
+
+
+	// LOGIC GOES HERE
+	// highest priority is something that we can irradiate or aid in combat with energy
+	if ((targetType == BWAPI::UnitTypes::Terran_Medic||
+		targetType == BWAPI::UnitTypes::Terran_Ghost) ||
+		target->getEnergy() > 90 || 
+		target->getUnitsInRadius(64, !BWAPI::Filter::IsIrradiated
+			&& BWAPI::Filter::IsOrganic
+			&& BWAPI::Filter::IsVisible
+			&& BWAPI::Filter::IsEnemy).size() >= 2)
+	{
+		return 3;
+	}
+	// next priority is worker
+	else if (targetType.isWorker() && targetType != BWAPI::UnitTypes::Protoss_Probe)
+	{
+		return 2;
+	}
+	// then everything else
+	else
+	{
+		return 1;
+	}
+}
+
+BWAPI::UnitInterface* DetectorManager::closestrangedUnit(BWAPI::UnitInterface* target, std::set<BWAPI::UnitInterface*> & rangedUnitsToAssign)
+{
+	double minDistance = 0;
+	BWAPI::UnitInterface* closest = NULL;
+
+	for (BWAPI::UnitInterface* rangedUnit : rangedUnitsToAssign)
+	{
+		double distance = rangedUnit->getDistance(target);
+		if (!closest || distance < minDistance)
+		{
+			minDistance = distance;
+			closest = rangedUnit;
+		}
+	}
+	return closest;
+}
+
+/* Could possibly expand to only use specific spells on specific enemies eg. emp on archon, but Imma assume that
+	we'll only research EMP if we're up against protoss, irradiate against zerg, and nothing for terran
+*/
+void DetectorManager::spellAttackUnit(BWAPI::UnitInterface* detector, BWAPI::UnitInterface* target) {
+	if (detector->canUseTech(BWAPI::TechTypes::EMP_Shockwave, NULL)) detector->useTech(BWAPI::TechTypes::EMP_Shockwave, target);
+	else if (detector->canUseTech(BWAPI::TechTypes::Irradiate, NULL)) detector->useTech(BWAPI::TechTypes::Irradiate, target);
+	else { 
+		//TODO Protect strongest unit while attacking or doing something important eg && BWAPI::Filter::IsMechanical
+		auto ally = detector->getClosestUnit(BWAPI::Filter::IsVisible && BWAPI::Filter::IsAlly, 10 * 32);//max range is 10
+		if (ally == nullptr) return;
+		detector->useTech(BWAPI::TechTypes::Defensive_Matrix, ally);
+	}
+}
+
+
