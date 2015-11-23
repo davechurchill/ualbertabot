@@ -15,7 +15,8 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & t
 	otherwise matrix most hp attacking unit mech > bio
 	eraser: cast irradiate on each mech unit and move around #unfeasible?
 
-	TODO: fix movement, research irradiate 4 zerg and emp 4 toss, matrix the best unit,perhaps add more logic in attackpriority, scout maybe
+	TODO: fix movement/kiting to move with the team, research irradiate 4 zerg and emp 4 toss, 
+			matrix the best unit,perhaps add more logic in attackpriority, scout maybe
 	*/
 	if (detectorUnits.empty())
 	{
@@ -23,7 +24,6 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & t
 	}
 	if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran)
 	{
-
 		std::vector<BWAPI::UnitInterface *> detectorUnitTargets;
 		for (size_t i(0); i < targets.size(); i++)
 		{
@@ -82,18 +82,19 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & t
 	//		maybe mini scout - continously scout enemy base until air defenses are up
 
 	for (BWAPI::UnitInterface* detectorUnit : detectorUnits)
-	{
+	{	
+		if (detectorUnit->getType() == BWAPI::UnitTypes::Terran_Science_Vessel) return;
+
 		// if we need to regroup, move the detectorUnit to that location
 		if (!detectorUnitInBattle && unitClosestToEnemy && unitClosestToEnemy->getPosition().isValid())
 		{
 			smartMove(detectorUnit, unitClosestToEnemy->getPosition());
-			if (detectorUnit->getType() != BWAPI::UnitTypes::Terran_Science_Vessel) detectorUnitInBattle = true;
+			detectorUnitInBattle = true;
 		}
 		// otherwise there is no battle or no closest to enemy so we don't want our detectorUnit to die
 		// send him to scout around the map
 		else
 		{
-			if (detectorUnit->getType() == BWAPI::UnitTypes::Terran_Science_Vessel) return;
 			BWAPI::Position explorePosition = MapGrid::Instance().getLeastExplored();
 			smartMove(detectorUnit, explorePosition);
 		}
@@ -287,6 +288,7 @@ void DetectorManager::spellAttackUnit(BWAPI::UnitInterface* detector, BWAPI::Uni
 			!BWAPI::Filter::IsDefenseMatrixed, 10 * 32);//max range is 10
 		if (ally == nullptr) return;
 		detector->useTech(BWAPI::TechTypes::Defensive_Matrix, ally);
+		Logger::LogAppendToFile(Config::Debug::ErrorLogFilename, "DM'd some dude");
 	}
 }
 
