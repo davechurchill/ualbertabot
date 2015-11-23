@@ -9,12 +9,13 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & t
 {
 	const std::vector<BWAPI::UnitInterface *> & detectorUnits = getUnits();
 	/*
-	TODO: check if each unit's radius contains enemy/biological/energy>0/shield>0/notirradiated depending on race
+	check if each unit's radius contains enemy/biological/energy>0/shield>0/notirradiated depending on race
 		calculate best value through evaluation function of number of units and perhaps hp/stats
 		cast emp/irradiate on best enemy unit
 	otherwise matrix most hp attacking unit mech > bio
-
 	eraser: cast irradiate on each mech unit and move around #unfeasible?
+
+	TODO: fix movement, research irradiate 4 zerg and emp 4 toss, matrix the best unit,perhaps add more logic in attackpriority, scout maybe
 	*/
 	if (detectorUnits.empty())
 	{
@@ -77,8 +78,9 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & t
 	}
 
 	bool detectorUnitInBattle = false;
-	//TODO current sci ves do not scout, if there are multiple science vessels, send one with least hp/energy to scout
-	// for each detectorUnit
+	//TODO maybe, current sci ves do not scout, if there are multiple science vessels, send one with least hp/energy to scout map
+	//		maybe mini scout - continously scout enemy base until air defenses are up
+
 	for (BWAPI::UnitInterface* detectorUnit : detectorUnits)
 	{
 		// if we need to regroup, move the detectorUnit to that location
@@ -278,7 +280,11 @@ void DetectorManager::spellAttackUnit(BWAPI::UnitInterface* detector, BWAPI::Uni
 	else if (detector->canUseTech(BWAPI::TechTypes::Irradiate, NULL)) detector->useTech(BWAPI::TechTypes::Irradiate, target);
 	else { 
 		//TODO Protect strongest unit while attacking or doing something important eg && BWAPI::Filter::IsMechanical
-		auto ally = detector->getClosestUnit(BWAPI::Filter::IsVisible && BWAPI::Filter::IsAlly, 10 * 32);//max range is 10
+		auto ally = detector->getClosestUnit(
+			BWAPI::Filter::IsVisible &&
+			BWAPI::Filter::IsAlly &&
+			!BWAPI::Filter::IsDetector && 
+			!BWAPI::Filter::IsDefenseMatrixed, 10 * 32);//max range is 10
 		if (ally == nullptr) return;
 		detector->useTech(BWAPI::TechTypes::Defensive_Matrix, ally);
 	}
