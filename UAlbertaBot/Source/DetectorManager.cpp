@@ -48,7 +48,11 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & t
 			else
 			{
 				// if we're not near the order position
-				break;
+					// move to it
+				if (unitClosestToEnemy && unitClosestToEnemy->getPosition().isValid())
+				{
+					smartMove(detectorUnit, unitClosestToEnemy->getPosition());
+				}
 			}
 
 
@@ -76,6 +80,7 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & t
 			cloakedUnitMap[unit] = false;
 		}
 	}
+	if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran) return;
 
 	bool detectorUnitInBattle = false;
 	//TODO maybe, current sci ves do not scout, if there are multiple science vessels, send one with least hp/energy to scout map
@@ -83,8 +88,6 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & t
 
 	for (BWAPI::UnitInterface* detectorUnit : detectorUnits)
 	{	
-		if (detectorUnit->getType() == BWAPI::UnitTypes::Terran_Science_Vessel) return;
-
 		// if we need to regroup, move the detectorUnit to that location
 		if (!detectorUnitInBattle && unitClosestToEnemy && unitClosestToEnemy->getPosition().isValid())
 		{
@@ -137,7 +140,7 @@ void DetectorManager::kiteTarget(BWAPI::UnitInterface* detectorUnit, BWAPI::Unit
 		return;
 	}
 
-	double		minDist(64);
+	double		minDist(32*8);
 	bool		kite(true);
 	double		dist(detectorUnit->getDistance(target));
 	double		speed(detectorUnit->getType().topSpeed());
@@ -288,7 +291,7 @@ void DetectorManager::spellAttackUnit(BWAPI::UnitInterface* detector, BWAPI::Uni
 			!BWAPI::Filter::IsDefenseMatrixed, 10 * 32);//max range is 10
 		if (ally == nullptr) return;
 		detector->useTech(BWAPI::TechTypes::Defensive_Matrix, ally);
-		Logger::LogAppendToFile(Config::Debug::ErrorLogFilename, "DM'd some dude");
+		//Logger::LogAppendToFile(Config::Debug::ErrorLogFilename, "DM'd some dude");
 	}
 }
 

@@ -302,7 +302,7 @@ BWAPI::UnitInterface* Squad::unitClosestToEnemy()
 
 	for (BWAPI::UnitInterface* unit : units)
 	{
-		if (unit->getType() == BWAPI::UnitTypes::Protoss_Observer)
+		if (unit->getType() == BWAPI::UnitTypes::Protoss_Observer || unit->getType() == BWAPI::UnitTypes::Terran_Science_Vessel)
 		{
 			continue;
 		}
@@ -321,7 +321,7 @@ BWAPI::UnitInterface* Squad::unitClosestToEnemy()
 	{
 		for (BWAPI::UnitInterface* unit : units)
 		{
-			if (unit->getType() == BWAPI::UnitTypes::Protoss_Observer)
+			if (unit->getType() == BWAPI::UnitTypes::Protoss_Observer || unit->getType() == BWAPI::UnitTypes::Terran_Science_Vessel)
 			{
 				continue;
 			}
