@@ -45,14 +45,11 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & t
 				kiteTarget(detectorUnit, target);
 			}
 			// if there are no targets
-			else
-			{
 				// if we're not near the order position
 					// move to it
-				if (unitClosestToEnemy && unitClosestToEnemy->getPosition().isValid())
-				{
-					smartMove(detectorUnit, unitClosestToEnemy->getPosition());
-				}
+			if (unitClosestToEnemy && unitClosestToEnemy->getPosition().isValid())
+			{
+				smartMove(detectorUnit, unitClosestToEnemy->getPosition());
 			}
 
 
