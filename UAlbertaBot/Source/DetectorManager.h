@@ -26,13 +26,13 @@ public:
 
 	BWAPI::UnitInterface* closestCloakedUnit(const std::vector<BWAPI::UnitInterface *> & cloakedUnits, BWAPI::UnitInterface* detectorUnit);
 
-	BWAPI::UnitInterface* chooseTarget(BWAPI::UnitInterface* rangedUnit, const std::vector<BWAPI::UnitInterface *> & targets, std::map<BWAPI::UnitInterface*, int> & numTargeting);
-	BWAPI::UnitInterface* closestrangedUnit(BWAPI::UnitInterface* target, std::set<BWAPI::UnitInterface*> & rangedUnitsToAssign);
+	BWAPI::UnitInterface* chooseTarget(BWAPI::UnitInterface* detectorUnit, const std::vector<BWAPI::UnitInterface *> & targets, std::map<BWAPI::UnitInterface*, int> & numTargeting);
+	BWAPI::UnitInterface* closestdetectorUnit(BWAPI::UnitInterface* target, std::set<BWAPI::UnitInterface*> & detectorUnitsToAssign);
 
-	int getAttackPriority(BWAPI::UnitInterface* rangedUnit, BWAPI::UnitInterface* target);
-	BWAPI::UnitInterface* getTarget(BWAPI::UnitInterface* rangedUnit, std::vector<BWAPI::UnitInterface *> & targets);
+	int getAttackPriority(BWAPI::UnitInterface* detectorUnit, BWAPI::UnitInterface* target);
+	BWAPI::UnitInterface* getTarget(BWAPI::UnitInterface* detectorUnit, std::vector<BWAPI::UnitInterface *> & targets);
 
-	void kiteTarget(BWAPI::UnitInterface* rangedUnit, BWAPI::UnitInterface* target);
+	void kiteTarget(BWAPI::UnitInterface* detectorUnit, BWAPI::UnitInterface* target);
 	void spellAttackUnit(BWAPI::UnitInterface* detector, BWAPI::UnitInterface* target);
 };
 }

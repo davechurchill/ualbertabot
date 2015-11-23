@@ -20,25 +20,28 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & t
 	{
 		return;
 	}
-	std::vector<BWAPI::UnitInterface *> rangedUnitTargets;
-	for (size_t i(0); i<targets.size(); i++)
+	if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran)
 	{
-		// conditions for targeting
-		if (targets[i]->isVisible())
+
+		std::vector<BWAPI::UnitInterface *> detectorUnitTargets;
+		for (size_t i(0); i < targets.size(); i++)
 		{
-			rangedUnitTargets.push_back(targets[i]);
+			// conditions for targeting
+			if (targets[i]->isVisible())
+			{
+				detectorUnitTargets.push_back(targets[i]);
+			}
 		}
-	}
-	for (BWAPI::UnitInterface* rangedUnit : detectorUnits)
-	{
+		for (BWAPI::UnitInterface* detectorUnit : detectorUnits)
+		{
 			// if there are targets
-			if (!rangedUnitTargets.empty())
+			if (!detectorUnitTargets.empty())
 			{
 				// find the best target for this sci ves
-				BWAPI::UnitInterface* target = getTarget(rangedUnit, rangedUnitTargets);
+				BWAPI::UnitInterface* target = getTarget(detectorUnit, detectorUnitTargets);
 				if (target == nullptr) continue;
-				// attack it
-				kiteTarget(rangedUnit, target);
+				// attack it with magic
+				kiteTarget(detectorUnit, target);
 			}
 			// if there are no targets
 			else
@@ -46,12 +49,13 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & t
 				// if we're not near the order position
 				break;
 			}
-		
 
-		if (Config::Debug::DrawUnitTargetInfo)
-		{
-			BWAPI::Broodwar->drawLineMap(rangedUnit->getPosition().x, rangedUnit->getPosition().y,
-				rangedUnit->getTargetPosition().x, rangedUnit->getTargetPosition().y, Config::Debug::ColorLineTarget);
+
+			if (Config::Debug::DrawUnitTargetInfo)
+			{
+				BWAPI::Broodwar->drawLineMap(detectorUnit->getPosition().x, detectorUnit->getPosition().y,
+					detectorUnit->getTargetPosition().x, detectorUnit->getTargetPosition().y, Config::Debug::ColorLineTarget);
+			}
 		}
 	}
 
@@ -73,7 +77,7 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & t
 	}
 
 	bool detectorUnitInBattle = false;
-
+	//TODO current sci ves do not scout, if there are multiple science vessels, send one with least hp/energy to scout
 	// for each detectorUnit
 	for (BWAPI::UnitInterface* detectorUnit : detectorUnits)
 	{
@@ -117,7 +121,7 @@ BWAPI::UnitInterface* DetectorManager::closestCloakedUnit(const std::vector<BWAP
 
 	return closestCloaked;
 }
-void DetectorManager::kiteTarget(BWAPI::UnitInterface* rangedUnit, BWAPI::UnitInterface* target)
+void DetectorManager::kiteTarget(BWAPI::UnitInterface* detectorUnit, BWAPI::UnitInterface* target)
 {
 
 	double range(9*32); //irradiate
@@ -126,14 +130,14 @@ void DetectorManager::kiteTarget(BWAPI::UnitInterface* rangedUnit, BWAPI::UnitIn
 	if (range <= target->getType().groundWeapon().maxRange())
 	{
 		// if we can't kite it, there's no point
-		spellAttackUnit(rangedUnit, target);
+		spellAttackUnit(detectorUnit, target);
 		return;
 	}
 
 	double		minDist(64);
 	bool		kite(true);
-	double		dist(rangedUnit->getDistance(target));
-	double		speed(rangedUnit->getType().topSpeed());
+	double		dist(detectorUnit->getDistance(target));
+	double		speed(detectorUnit->getType().topSpeed());
 
 	double	timeToEnter = std::max(0.0, (dist - range) / speed);
 	if (dist >= minDist)
@@ -146,31 +150,31 @@ void DetectorManager::kiteTarget(BWAPI::UnitInterface* rangedUnit, BWAPI::UnitIn
 		kite = false;
 	}
 
-	if (rangedUnit->isSelected())
+	if (detectorUnit->isSelected())
 	{
-		BWAPI::Broodwar->drawCircleMap(rangedUnit->getPosition().x, rangedUnit->getPosition().y,
+		BWAPI::Broodwar->drawCircleMap(detectorUnit->getPosition().x, detectorUnit->getPosition().y,
 			(int)range, BWAPI::Colors::Cyan);
 	}
 
 	// if we can't shoot, run away
 	if (kite)
 	{
-		BWAPI::Position fleePosition(rangedUnit->getPosition() - target->getPosition() + rangedUnit->getPosition());
+		BWAPI::Position fleePosition(detectorUnit->getPosition() - target->getPosition() + detectorUnit->getPosition());
 
-		BWAPI::Broodwar->drawLineMap(rangedUnit->getPosition().x, rangedUnit->getPosition().y,
+		BWAPI::Broodwar->drawLineMap(detectorUnit->getPosition().x, detectorUnit->getPosition().y,
 			fleePosition.x, fleePosition.y, BWAPI::Colors::Cyan);
 
-		smartMove(rangedUnit, fleePosition);
+		smartMove(detectorUnit, fleePosition);
 	}
 	// otherwise shoot
 	else
 	{
-		spellAttackUnit(rangedUnit, target);
+		spellAttackUnit(detectorUnit, target);
 	}
 }
 
-// get a target for the zealot to attack
-BWAPI::UnitInterface* DetectorManager::getTarget(BWAPI::UnitInterface* rangedUnit, std::vector<BWAPI::UnitInterface *> & targets)
+// get a target for the detector to attack
+BWAPI::UnitInterface* DetectorManager::getTarget(BWAPI::UnitInterface* detectorUnit, std::vector<BWAPI::UnitInterface *> & targets)
 {
 	int range(9*32); //Irradiate range is 9, emp is 8
 
@@ -184,11 +188,11 @@ BWAPI::UnitInterface* DetectorManager::getTarget(BWAPI::UnitInterface* rangedUni
 
 	for (BWAPI::UnitInterface* unit : targets)
 	{
-		int priority = getAttackPriority(rangedUnit, unit);
-		int distance = rangedUnit->getDistance(unit);
+		int priority = getAttackPriority(detectorUnit, unit);
+		int distance = detectorUnit->getDistance(unit);
 
 		// if the unit is in range, update the target with the highest hp
-		if (rangedUnit->getDistance(unit) <= range)
+		if (detectorUnit->getDistance(unit) <= range)
 		{
 			if (priority > highestInRangePriority ||
 				(priority == highestInRangePriority && unit->getHitPoints() > highestInRangeHitPoints))
@@ -216,16 +220,16 @@ BWAPI::UnitInterface* DetectorManager::getTarget(BWAPI::UnitInterface* rangedUni
 	return (highestInRangePriority >= highestNotInRangePriority) ? inRangeTarget : notInRangeTarget;
 }
 
-// get the attack priority of a type in relation to a zergling
-int DetectorManager::getAttackPriority(BWAPI::UnitInterface* rangedUnit, BWAPI::UnitInterface* target)
+// get the attack priority of a type in relation to a high priority units
+int DetectorManager::getAttackPriority(BWAPI::UnitInterface* detectorUnit, BWAPI::UnitInterface* target)
 {
-	BWAPI::UnitType rangedUnitType = rangedUnit->getType();
+	BWAPI::UnitType detectorUnitType = detectorUnit->getType();
 	BWAPI::UnitType targetType = target->getType();
 
-	//bool canAttackUs = rangedUnitType.isFlyer() ? targetType.airWeapon() != BWAPI::WeaponTypes::None : targetType.groundWeapon() != BWAPI::WeaponTypes::None;
+	//bool canAttackUs = detectorUnitType.isFlyer() ? targetType.airWeapon() != BWAPI::WeaponTypes::None : targetType.groundWeapon() != BWAPI::WeaponTypes::None;
 
 
-	// LOGIC GOES HERE
+	// LOGIC GOES HERE-------------------------
 	// highest priority is something that we can irradiate or aid in combat with energy
 	if ((targetType == BWAPI::UnitTypes::Terran_Medic||
 		targetType == BWAPI::UnitTypes::Terran_Ghost) ||
@@ -249,18 +253,18 @@ int DetectorManager::getAttackPriority(BWAPI::UnitInterface* rangedUnit, BWAPI::
 	}
 }
 
-BWAPI::UnitInterface* DetectorManager::closestrangedUnit(BWAPI::UnitInterface* target, std::set<BWAPI::UnitInterface*> & rangedUnitsToAssign)
+BWAPI::UnitInterface* DetectorManager::closestdetectorUnit(BWAPI::UnitInterface* target, std::set<BWAPI::UnitInterface*> & detectorUnitsToAssign)
 {
 	double minDistance = 0;
 	BWAPI::UnitInterface* closest = NULL;
 
-	for (BWAPI::UnitInterface* rangedUnit : rangedUnitsToAssign)
+	for (BWAPI::UnitInterface* detectorUnit : detectorUnitsToAssign)
 	{
-		double distance = rangedUnit->getDistance(target);
+		double distance = detectorUnit->getDistance(target);
 		if (!closest || distance < minDistance)
 		{
 			minDistance = distance;
-			closest = rangedUnit;
+			closest = detectorUnit;
 		}
 	}
 	return closest;
