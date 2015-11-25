@@ -212,8 +212,8 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b,int 
         return BWAPI::TilePositions::None;
     }
 	if (b.type == BWAPI::UnitTypes::Zerg_Creep_Colony){
-		BWAPI::Broodwar->printf("in the getBuildLocationNear method");
-		BWAPI::Broodwar->printf("Trying to make Creep Colony near d , %d", b.desiredPosition.x, b.desiredPosition.y);
+		//BWAPI::Broodwar->printf("in the getBuildLocationNear method");
+		//BWAPI::Broodwar->printf("Trying to make Creep Colony near %d , %d", b.desiredPosition.x, b.desiredPosition.y);
 	}
 
 
