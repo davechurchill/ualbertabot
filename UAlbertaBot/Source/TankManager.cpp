@@ -25,7 +25,7 @@ void TankManager::executeMicro(const BWAPI::Unitset & targets)
 	for (auto & tank : tanks)
 	{
 		// train sub units such as scarabs or interceptors
-		//trainSubUnits(rangedUnit);
+		trainSubUnits(tank);
 
         bool tankNearChokepoint = false; 
         for (auto & choke : BWTA::getChokepoints())

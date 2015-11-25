@@ -164,9 +164,9 @@ const MetaPairVector StrategyManager::getProtossBuildOrderGoal() const
     }
 	else if (Config::Strategy::StrategyName == "ProtossTBJY")
 	{
-		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Zealot, numDragoons + 4));
+		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Zealot, numZealots + 8));
 		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Dragoon, numDragoons + 4));
-		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Zealot, numDragoons + 4));
+		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Reaver, numReaver + 4));
 		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Corsair, 2));
 		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Shuttle, 2));
 	}
