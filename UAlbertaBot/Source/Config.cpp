@@ -7,7 +7,7 @@ namespace Config
     {
         bool ConfigFileFound                = false;
         bool ConfigFileParsed               = false;
-		std::string ConfigFileLocation = "bwapi-data/AI/UalbertaBot_Config.txt";
+		std::string ConfigFileLocation = "bwapi-data/AI/Charles_Config.txt";
 	}
 
     namespace Strategy
