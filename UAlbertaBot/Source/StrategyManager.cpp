@@ -162,6 +162,14 @@ const MetaPairVector StrategyManager::getProtossBuildOrderGoal() const
             goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Dragoon, numDragoons + 4));
         }
     }
+	else if (Config::Strategy::StrategyName == "ProtossTBJY")
+	{
+		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Zealot, numDragoons + 4));
+		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Dragoon, numDragoons + 4));
+		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Zealot, numDragoons + 4));
+		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Corsair, 2));
+		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Shuttle, 2));
+	}
     else
     {
         UAB_ASSERT_WARNING(false, "Unknown Protoss Strategy Name: %s", Config::Strategy::StrategyName.c_str());
