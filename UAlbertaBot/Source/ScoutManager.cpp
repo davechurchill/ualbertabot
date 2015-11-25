@@ -217,7 +217,7 @@ void ScoutManager::gasSteal()
         return;
     }
 	// No gas steal vs zerg?
-	if (BWAPI::Broodwar->enemy()->getRace() == Races::Zerg){
+	if (BWAPI::Broodwar->enemy()->getRace() == BWAPI::Races::Zerg){
 		_gasStealStatus = "Enemy is zerg. Don't bother with gas steal.";
 		return;
 	}

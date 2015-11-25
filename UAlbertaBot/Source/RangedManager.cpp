@@ -115,34 +115,6 @@ BWAPI::Unit RangedManager::getTarget(BWAPI::Unit rangedUnit, const BWAPI::Unitse
 	}
 	return chosenTarget;
 }
-/*BWAPI::Unit RangedManager::getTarget(BWAPI::Unit rangedUnit, const BWAPI::Unitset & targets)
-{
-	int bestPriorityDistance = 1000000;
-    int bestPriority = 0;
-    
-    double bestLTD = 0;
-
-    int highPriority = 0;
-	double closestDist = std::numeric_limits<double>::infinity();
-	BWAPI::Unit closestTarget = nullptr;
-
-    for (const auto & target : targets)
-    {
-        double distance         = rangedUnit->getDistance(target);
-        double LTD              = UnitUtil::CalculateLTD(target, rangedUnit);
-        int priority            = getAttackPriority(rangedUnit, target);
-        bool targetIsThreat     = LTD > 0;
-        
-		if (!closestTarget || (priority > highPriority) || (priority == highPriority && distance < closestDist))
-		{
-			closestDist = distance;
-			highPriority = priority;
-			closestTarget = target;
-		}       
-    }
-
-    return closestTarget;
-}*/
 
 	// get the attack priority of a type in relation to a zergling
 int RangedManager::getAttackPriority(BWAPI::Unit rangedUnit, BWAPI::Unit target) 
