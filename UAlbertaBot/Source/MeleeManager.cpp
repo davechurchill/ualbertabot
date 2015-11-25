@@ -31,7 +31,7 @@ void MeleeManager::assignTargetsOld(const BWAPI::Unitset & targets)
 			meleeUnitTargets.insert(target);
 		}
 	}
-
+	blockAttack(meleeUnits,meleeUnitTargets);
 	// for each meleeUnit
 	for (auto & meleeUnit : meleeUnits)
 	{
@@ -94,7 +94,21 @@ std::pair<BWAPI::Unit, BWAPI::Unit> MeleeManager::findClosestUnitPair(const BWAP
 
     return closestPair;
 }
-
+void MeleeManager::blockAttack(const BWAPI::Unitset & protect, const BWAPI::Unitset & targets){
+	for (auto & target : targets){
+		if(target->isAttackFrame()){
+			BWAPI::Unit deadman = nullptr;
+			for(auto sacrifice : protect ){
+				if( sacrifice->getType() == BWAPI::UnitTypes::Protoss_Zealot){
+					deadman = sacrifice;
+					break;
+				}
+			}
+		BWAPI::Position location=target->getPosition();
+		deadman->move(location);
+		}
+	}
+}
 // get a target for the meleeUnit to attack
 BWAPI::Unit MeleeManager::getTarget(BWAPI::Unit meleeUnit, const BWAPI::Unitset & targets)
 {
