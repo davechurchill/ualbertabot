@@ -52,7 +52,7 @@ public:
 	void				GetUnits(BWAPI::Unitset & units, BWAPI::Position center, int radius, bool ourUnits, bool oppUnits);
 	BWAPI::Position		getLeastExplored();
 	BWAPI::Position		getNaturalExpansion();
-
+	BWAPI::Position				random();
 	GridCell & getCellByIndex(int r, int c)		{ return cells[r*cols + c]; }
 	GridCell & getCell(BWAPI::Position pos)		{ return getCellByIndex(pos.y / cellSize, pos.x / cellSize); }
 	GridCell & getCell(BWAPI::Unit unit)		{ return getCell(unit->getPosition()); }

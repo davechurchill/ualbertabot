@@ -34,7 +34,11 @@ void CombatCommander::initializeSquads()
     // the scout defense squad will handle chasing the enemy worker scout
     SquadOrder enemyScoutDefense(SquadOrderTypes::Defend, ourBasePosition, 900, "Get the scout");
     _squadData.addSquad("ScoutDefense", Squad("ScoutDefense", enemyScoutDefense, ScoutDefensePriority));
-
+	SquadOrder Detectororder(SquadOrderTypes::Attack, getMainAttackLocation(), 900, "Detector");
+	_squadData.addSquad("Detector_1", Squad("Detector_1", Detectororder, AttackPriority));
+	_squadData.addSquad("Detector_2", Squad("Detector_2", Detectororder, AttackPriority));
+	_squadData.addSquad("Detector_3", Squad("Detector_3", Detectororder, AttackPriority));
+	_squadData.addSquad("Detector_4", Squad("Detector_4", Detectororder, AttackPriority));
     // add a drop squad if we are using a drop strategy
     if (Config::Strategy::StrategyName == "Protoss_Drop")
     {
@@ -73,12 +77,76 @@ void CombatCommander::update(const BWAPI::Unitset & combatUnits)
 		updateDefenseSquads();
         updateLurkerSquads();
 		updateAttackSquads();
+		updateDetectorSquad();
 	}
 
 
 	_squadData.update();
 }
+void CombatCommander::updateDetectorSquad()
+{
+	Squad & detector_1 = _squadData.getSquad("Detector_1");
+	Squad & detector_2 = _squadData.getSquad("Detector_2");
+	Squad & detector_3 = _squadData.getSquad("Detector_3");
+	Squad & detector_4 = _squadData.getSquad("Detector_4");
+	int assign = 0;
+	for (auto & unit : _combatUnits)
+	{
+		if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord)
+		{
+			if (assign == 0)
+			{
+				if (_squadData.canAssignUnitToSquad(unit, detector_1))
+				{
+					_squadData.assignUnitToSquad(unit, detector_1);
+				}
 
+			}
+			else if (assign == 1)
+			{
+				if (_squadData.canAssignUnitToSquad(unit, detector_2))
+				{
+					_squadData.assignUnitToSquad(unit, detector_2);
+				}
+			}
+			else if (assign == 2)
+			{
+				if (_squadData.canAssignUnitToSquad(unit, detector_3))
+				{
+					_squadData.assignUnitToSquad(unit, detector_3);
+				}
+			}
+			else if (assign == 3)
+			{
+				if (_squadData.canAssignUnitToSquad(unit, detector_4))
+				{
+					_squadData.assignUnitToSquad(unit, detector_4);
+				}
+
+			}
+			else
+			{
+				assign = 0;
+			}
+
+		}
+	}
+
+	SquadOrder Detectororder(SquadOrderTypes::Attack, getRandomLocation(), 900, "Detector");
+
+	detector_1.setSquadOrder(Detectororder);
+	detector_2.setSquadOrder(Detectororder);
+	detector_3.setSquadOrder(Detectororder);
+	detector_4.setSquadOrder(Detectororder);
+
+
+
+
+
+
+
+
+}
 void CombatCommander::updateIdleSquad()
 {
     Squad & idleSquad = _squadData.getSquad("Idle");
@@ -706,4 +774,8 @@ bool CombatCommander::beingBuildingRushed()
     }
 
     return false;
+}
+BWAPI::Position CombatCommander::getRandomLocation()
+{
+	return MapGrid::Instance().getNaturalExpansion();
 }

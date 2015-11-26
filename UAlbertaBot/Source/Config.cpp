@@ -31,7 +31,7 @@ namespace Config
         bool UsingScoutManager              = true;
         bool UsingCombatCommander           = true;
         bool UsingBuildOrderSearch          = true;     // toggle use of Build Order Search, currently no backup
-        bool UsingAutoObserver              = false;
+        bool UsingAutoObserver              = true;
         bool UsingStrategyIO                = false;    // toggle the use of file io for strategy
         bool UsingUnitCommandManager        = false;    // handles all unit commands
 		

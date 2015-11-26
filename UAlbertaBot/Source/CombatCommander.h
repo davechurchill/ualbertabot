@@ -20,12 +20,14 @@ class CombatCommander
     void            updateLurkerSquads();
     void            updateDropSquads();
 	void            updateIdleSquad();
+	void			updateDetectorSquad();
 	bool            isSquadUpdateFrame();
 	int             getNumType(BWAPI::Unitset & units, BWAPI::UnitType type);
 
 	BWAPI::Unit     findClosestDefender(const Squad & defenseSquad, BWAPI::Position pos, bool flyingDefender);
     BWAPI::Unit     findClosestWorkerToTarget(BWAPI::Unitset & unitsToAssign, BWAPI::Unit target);
 
+	BWAPI::Position getRandomLocation();
 	BWAPI::Position getDefendLocation();
     BWAPI::Position getMainAttackLocation();
 
