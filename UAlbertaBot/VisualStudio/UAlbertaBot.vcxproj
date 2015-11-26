@@ -143,6 +143,7 @@ xcopy "$(SolutionDir)\..\Charles_config.txt" "$(SC_DIR)\bwapi-data\AI\" /s /i /y
     <ClCompile Include="..\Source\InformationManager.cpp" />
     <ClCompile Include="..\source\JSONTools.cpp" />
     <ClCompile Include="..\Source\Logger.cpp" />
+    <ClCompile Include="..\Source\LurkerManager.cpp" />
     <ClCompile Include="..\Source\MapGrid.cpp" />
     <ClCompile Include="..\Source\MapTools.cpp" />
     <ClCompile Include="..\Source\MedicManager.cpp" />
@@ -167,7 +168,6 @@ xcopy "$(SolutionDir)\..\Charles_config.txt" "$(SC_DIR)\bwapi-data\AI\" /s /i /y
     <ClCompile Include="..\Source\UnitUtil.cpp" />
     <ClCompile Include="..\source\WorkerData.cpp" />
     <ClCompile Include="..\source\WorkerManager.cpp" />
-    <ClCompile Include="LurkerManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\AutoObserver.h" />
@@ -185,6 +185,7 @@ xcopy "$(SolutionDir)\..\Charles_config.txt" "$(SC_DIR)\bwapi-data\AI\" /s /i /y
     <ClInclude Include="..\Source\InformationManager.h" />
     <ClInclude Include="..\source\JSONTools.h" />
     <ClInclude Include="..\Source\Logger.h" />
+    <ClInclude Include="..\Source\LurkerManager.h" />
     <ClInclude Include="..\Source\MapGrid.h" />
     <ClInclude Include="..\Source\MapTools.h" />
     <ClInclude Include="..\Source\MedicManager.h" />
@@ -210,7 +211,6 @@ xcopy "$(SolutionDir)\..\Charles_config.txt" "$(SC_DIR)\bwapi-data\AI\" /s /i /y
     <ClInclude Include="..\Source\UnitUtil.h" />
     <ClInclude Include="..\source\WorkerData.h" />
     <ClInclude Include="..\source\WorkerManager.h" />
-    <ClInclude Include="LurkerManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
