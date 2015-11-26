@@ -153,7 +153,7 @@
     <ClCompile Include="..\Source\Logger.cpp">
       <Filter>util</Filter>
     </ClCompile>
-    <ClCompile Include="LurkerManager.cpp">
+    <ClCompile Include="..\Source\LurkerManager.cpp">
       <Filter>game\combat\micro</Filter>
     </ClCompile>
   </ItemGroup>
@@ -278,7 +278,7 @@
     <ClInclude Include="..\Source\Logger.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="LurkerManager.h">
+    <ClInclude Include="..\Source\LurkerManager.h">
       <Filter>game\combat\micro</Filter>
     </ClInclude>
   </ItemGroup>

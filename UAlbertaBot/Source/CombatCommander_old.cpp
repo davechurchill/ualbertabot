@@ -4,11 +4,10 @@
 using namespace UAlbertaBot;
 
 const size_t IdlePriority = 0;
-const size_t AttackPriority = 2;
-const size_t LurkPriority = 1;
-const size_t BaseDefensePriority = 3;
-const size_t ScoutDefensePriority = 4;
-const size_t DropPriority = 5;
+const size_t AttackPriority = 1;
+const size_t BaseDefensePriority = 2;
+const size_t ScoutDefensePriority = 3;
+const size_t DropPriority = 4;
 
 CombatCommander::CombatCommander() 
     : _initialized(false)
@@ -23,17 +22,18 @@ void CombatCommander::initializeSquads()
     
     /* This is the Lurker squad. Only accepts Lurkers and is specialized to deal with them */
     SquadOrder lurkerAttackOrder(SquadOrderTypes::Attack, getMainAttackLocation(), 800, "Lurkers Attack Enemy Base");
-	_squadData.addSquad("LurkerAttack", Squad("LurkerAttack", lurkerAttackOrder, LurkPriority));
+	_squadData.addSquad("LurkerAttack", Squad("LurkerAttack", lurkerAttackOrder, AttackPriority));
 
     // the main attack squad that will pressure the enemy's closest base location
     SquadOrder mainAttackOrder(SquadOrderTypes::Attack, getMainAttackLocation(), 800, "Attack Enemy Base");
 	_squadData.addSquad("MainAttack", Squad("MainAttack", mainAttackOrder, AttackPriority));
 
     BWAPI::Position ourBasePosition = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
-
     // the scout defense squad will handle chasing the enemy worker scout
     SquadOrder enemyScoutDefense(SquadOrderTypes::Defend, ourBasePosition, 900, "Get the scout");
     _squadData.addSquad("ScoutDefense", Squad("ScoutDefense", enemyScoutDefense, ScoutDefensePriority));
+	// detectors that goes to last known location of cloaked units, spread out zerg detectors early in the game 
+
 	SquadOrder Detectororder(SquadOrderTypes::Attack, getMainAttackLocation(), 900, "Detector");
 	_squadData.addSquad("Detector_1", Squad("Detector_1", Detectororder, AttackPriority));
 	_squadData.addSquad("Detector_2", Squad("Detector_2", Detectororder, AttackPriority));
@@ -83,70 +83,7 @@ void CombatCommander::update(const BWAPI::Unitset & combatUnits)
 
 	_squadData.update();
 }
-void CombatCommander::updateDetectorSquad()
-{
-	Squad & detector_1 = _squadData.getSquad("Detector_1");
-	Squad & detector_2 = _squadData.getSquad("Detector_2");
-	Squad & detector_3 = _squadData.getSquad("Detector_3");
-	Squad & detector_4 = _squadData.getSquad("Detector_4");
-	int assign = 0;
-	for (auto & unit : _combatUnits)
-	{
-		if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord)
-		{
-			if (assign == 0)
-			{
-				if (_squadData.canAssignUnitToSquad(unit, detector_1))
-				{
-					_squadData.assignUnitToSquad(unit, detector_1);
-				}
 
-			}
-			else if (assign == 1)
-			{
-				if (_squadData.canAssignUnitToSquad(unit, detector_2))
-				{
-					_squadData.assignUnitToSquad(unit, detector_2);
-				}
-			}
-			else if (assign == 2)
-			{
-				if (_squadData.canAssignUnitToSquad(unit, detector_3))
-				{
-					_squadData.assignUnitToSquad(unit, detector_3);
-				}
-			}
-			else if (assign == 3)
-			{
-				if (_squadData.canAssignUnitToSquad(unit, detector_4))
-				{
-					_squadData.assignUnitToSquad(unit, detector_4);
-				}
-
-			}
-			else
-			{
-				assign = 0;
-			}
-
-		}
-	}
-
-	SquadOrder Detectororder(SquadOrderTypes::Attack, getRandomLocation(), 900, "Detector");
-
-	detector_1.setSquadOrder(Detectororder);
-	detector_2.setSquadOrder(Detectororder);
-	detector_3.setSquadOrder(Detectororder);
-	detector_4.setSquadOrder(Detectororder);
-
-
-
-
-
-
-
-
-}
 void CombatCommander::updateIdleSquad()
 {
     Squad & idleSquad = _squadData.getSquad("Idle");
@@ -235,14 +172,76 @@ void CombatCommander::updateLurkerSquads()
     {
         if (unit->getType() == BWAPI::UnitTypes::Zerg_Lurker)
         {
-			if (_squadData.canAssignUnitToSquad(unit, lurkerAttackSquad)) {
-				_squadData.assignUnitToSquad(unit, lurkerAttackSquad);
-			}
+             _squadData.assignUnitToSquad(unit, lurkerAttackSquad);
         }
     }
 
     SquadOrder lurkerAttackOrder(SquadOrderTypes::Attack, getMainAttackLocation(), 800, "Lurkers Attack Enemy Base");
     lurkerAttackSquad.setSquadOrder(lurkerAttackOrder);
+}
+void CombatCommander::updateDetectorSquad()
+{
+	Squad & detector_1 = _squadData.getSquad("Detector_1");
+	Squad & detector_2 = _squadData.getSquad("Detector_2");
+	Squad & detector_3 = _squadData.getSquad("Detector_3");
+	Squad & detector_4 = _squadData.getSquad("Detector_4");
+	int assign = 0;
+	for (auto & unit : _combatUnits)
+	{
+		if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord)
+		{
+			if (assign == 0)
+			{
+				if (_squadData.canAssignUnitToSquad(unit, detector_1))
+				{
+					_squadData.assignUnitToSquad(unit, detector_1);
+				}
+				
+			}
+			else if (assign == 1)
+			{
+				if (_squadData.canAssignUnitToSquad(unit, detector_2))
+				{
+					_squadData.assignUnitToSquad(unit, detector_2);
+				}
+			}
+			else if (assign == 2)
+			{
+				if (_squadData.canAssignUnitToSquad(unit, detector_3))
+				{
+					_squadData.assignUnitToSquad(unit, detector_3);
+				}
+			}
+			else if (assign == 3)
+			{
+				if (_squadData.canAssignUnitToSquad(unit, detector_4))
+				{
+					_squadData.assignUnitToSquad(unit, detector_4);
+				}
+
+			}
+			else
+			{
+				assign = 0;
+			}
+			
+		}
+	}
+
+	SquadOrder Detectororder(SquadOrderTypes::Attack, getRandomLocation(), 900, "Detector");
+	
+	detector_1.setSquadOrder(Detectororder);
+	detector_2.setSquadOrder(Detectororder);
+	detector_3.setSquadOrder(Detectororder);
+	detector_4.setSquadOrder(Detectororder);
+
+
+
+
+
+
+
+
 }
 
 void CombatCommander::updateDropSquads()
@@ -604,6 +603,11 @@ BWAPI::Position CombatCommander::getDefendLocation()
 {
 	return BWTA::getRegion(BWTA::getStartLocation(BWAPI::Broodwar->self())->getTilePosition())->getCenter();
 }
+BWAPI::Position CombatCommander::getRandomLocation()
+{
+	return MapGrid::Instance().getNaturalExpansion();
+}
+
 
 void CombatCommander::drawSquadInformation(int x, int y)
 {
@@ -774,8 +778,4 @@ bool CombatCommander::beingBuildingRushed()
     }
 
     return false;
-}
-BWAPI::Position CombatCommander::getRandomLocation()
-{
-	return MapGrid::Instance().getNaturalExpansion();
 }

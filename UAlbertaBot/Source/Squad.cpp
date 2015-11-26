@@ -53,16 +53,18 @@ void Squad::update()
 		}
 
 		BWAPI::Broodwar->drawCircleMap(regroupPosition.x, regroupPosition.y, 30, BWAPI::Colors::Purple, true);
-
+		
 		_meleeManager.regroup(regroupPosition);
 		_rangedManager.regroup(regroupPosition);
 		//_lurkerManager.regroup(regroupPosition);
 		_tankManager.regroup(regroupPosition);
 		_medicManager.regroup(regroupPosition);
 		//_medicManager.regroup(regroupPosition);
+		_detectorManager.regroup(regroupPosition);
 	}
 	else // otherwise, execute micro
 	{
+		_detectorManager.execute(_order);
 		_meleeManager.execute(_order);
 		_rangedManager.execute(_order);
 		_lurkerManager.execute(_order);
@@ -198,6 +200,7 @@ void Squad::addUnitsToMicroManagers()
 	_transportManager.setUnits(transportUnits);
 	_tankManager.setUnits(tankUnits);
 	_medicManager.setUnits(medicUnits);
+
 }
 
 // calculates whether or not to regroup
