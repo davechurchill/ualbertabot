@@ -347,7 +347,7 @@ void ProductionManager::create(BWAPI::Unit producer, BuildOrderItem & item)
         && !t.getUnitType().isAddon())
     {
         // send the building task to the building manager
-		/*if (t.getUnitType() == BWAPI::UnitTypes::Zerg_Creep_Colony) {
+		if (t.getUnitType() == BWAPI::UnitTypes::Zerg_Creep_Colony) {
 			auto home = BWAPI::Broodwar->self()->getStartLocation();
 			int dist = 1000;
 			BWTA::BaseLocation * nat;
@@ -368,16 +368,18 @@ void ProductionManager::create(BWAPI::Unit producer, BuildOrderItem & item)
 				}
 			}
 			BWAPI::TilePosition natPosition = nat->getTilePosition();
-			BWAPI::Broodwar->printf("Nat position for creep colony: %d , %d", natPosition.x, natPosition.y);
-			BWAPI::Broodwar->printf("Home Position for creep colony: %d , %d", home.x, home.y);
-
+			//BWAPI::Broodwar->printf("Nat position for creep colony: %d , %d", natPosition.x, natPosition.y);
+			const std::vector<BWAPI::TilePosition> & closestToBuilding = MapTools::Instance().getClosestTilesTo(BWAPI::Position(natPosition));
+			//BWAPI::Broodwar->printf("number of tiles near NATURAL: %d", closestToBuilding.size());
+			
 			BuildingManager::Instance().addBuildingTask(t.getUnitType(), natPosition, false);
+			//BuildingManager::Instance().addBuildingTask(t.getUnitType(), BWAPI::Broodwar->self()->getStartLocation(), item.isGasSteal);
+
 		}
 		else {
 			BuildingManager::Instance().addBuildingTask(t.getUnitType(), BWAPI::Broodwar->self()->getStartLocation(), item.isGasSteal);
-		}*/
-		BuildingManager::Instance().addBuildingTask(t.getUnitType(), BWAPI::Broodwar->self()->getStartLocation(), item.isGasSteal);
-
+		}
+	
 	}
     else if (t.getUnitType().isAddon())
     {

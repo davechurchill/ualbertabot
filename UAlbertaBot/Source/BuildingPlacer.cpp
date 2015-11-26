@@ -211,17 +211,21 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b,int 
     {
         return BWAPI::TilePositions::None;
     }
-	if (b.type == BWAPI::UnitTypes::Zerg_Creep_Colony){
-		//BWAPI::Broodwar->printf("in the getBuildLocationNear method");
-		//BWAPI::Broodwar->printf("Trying to make Creep Colony near %d , %d", b.desiredPosition.x, b.desiredPosition.y);
-	}
-
+	/*if (b.type == BWAPI::UnitTypes::Zerg_Creep_Colony){
+		BWAPI::Broodwar->printf("desired position is: %d %d", b.desiredPosition.x, b.desiredPosition.y);
+		BWAPI::Broodwar->printf("number of tiles closeby: %d", closestToBuilding.size());
+		BWAPI::Broodwar->printf("start location: %d %d", BWAPI::Broodwar->self()->getStartLocation().x, BWAPI::Broodwar->self()->getStartLocation().y);
+	}*/
 
     // iterate through the list until we've found a suitable location
     for (size_t i(0); i < closestToBuilding.size(); ++i)
     {
         if (canBuildHereWithSpace(closestToBuilding[i],b,buildDist,horizontalOnly))
         {
+			if (b.type == BWAPI::UnitTypes::Zerg_Creep_Colony){
+				BWAPI::Broodwar->printf("====================================");
+				BWAPI::Broodwar->printf("FOUND LOCATION FOR CREEP COLONY AT %d %d", closestToBuilding[i].x, closestToBuilding[i].y);
+			}
             double ms = t.getElapsedTimeInMilliSec();
             //BWAPI::Broodwar->printf("Building Placer Took %d iterations, lasting %lf ms @ %lf iterations/ms, %lf setup ms", i, ms, (i / ms), ms1);
 

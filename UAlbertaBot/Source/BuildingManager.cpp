@@ -111,8 +111,7 @@ void BuildingManager::constructAssignedBuildings()
 {
     for (auto & b : _buildings)
     {
-        if (b.status != BuildingStatus::Assigned)
-        {
+		if (b.status != BuildingStatus::Assigned) {
             continue;
         }
 
@@ -146,11 +145,13 @@ void BuildingManager::constructAssignedBuildings()
             }
             else
             {
+
                 // issue the build order!
                 b.builderUnit->build(b.type,b.finalPosition);
 
                 // set the flag to true
                 b.buildCommandGiven = true;
+
             }
         }
     }
@@ -397,7 +398,13 @@ std::vector<BWAPI::UnitType> BuildingManager::buildingsQueued()
 BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
 {
 	int numPylons = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Pylon);
-
+	int numCC = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hatchery)
+		+ UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Lair)
+		+ UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hive);
+	if (numCC == 3) {
+		//BWAPI::Broodwar->printf("3cc's detected, macrohatch = true");
+		macroHatch = true;
+	}
 	if (b.isGasSteal)
 	{
 		BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
@@ -422,20 +429,25 @@ BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
 	}
 
 	if (b.type.isResourceDepot())
-	{
-		// TODO: Fix hard coded 2 
-		int numCC = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hatchery)
-			+ UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Lair)
-			+ UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hive);
-		if (numCC == 2) {
+	{		
+		if ((numCC == 2) && (macroHatch == false)) {
 			BWAPI::Broodwar->printf("Should be making macro hatch");
-			BWAPI::TilePosition tile = BuildingPlacer::Instance().getBuildLocationNear(b, Config::Macro::BuildingSpacing, false);
+			BWTA::BaseLocation * home;
+			for (BWTA::BaseLocation * base : BWTA::getBaseLocations()) {
+				if (base->isStartLocation()){
+					home = base;
+				}
+			}
+			Building homeBase(BWAPI::UnitTypes::Zerg_Hatchery, home->getTilePosition());
+			BWAPI::TilePosition tile = BuildingPlacer::Instance().getBuildLocationNear(homeBase,Config::Macro::BuildingSpacing, false);
 			return tile;
 		}
-		// get the location 
-		BWAPI::TilePosition tile = MapTools::Instance().getNextExpansion();
+		else {
+			// get the location 
+			BWAPI::TilePosition tile = MapTools::Instance().getNextExpansion();
 
-		return tile;
+			return tile;
+		}
 	}
 
 	// set the building padding specifically

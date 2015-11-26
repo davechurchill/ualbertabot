@@ -4,10 +4,11 @@
 using namespace UAlbertaBot;
 
 const size_t IdlePriority = 0;
-const size_t AttackPriority = 1;
-const size_t BaseDefensePriority = 2;
-const size_t ScoutDefensePriority = 3;
-const size_t DropPriority = 4;
+const size_t AttackPriority = 2;
+const size_t LurkPriority = 1;
+const size_t BaseDefensePriority = 3;
+const size_t ScoutDefensePriority = 4;
+const size_t DropPriority = 5;
 
 CombatCommander::CombatCommander() 
     : _initialized(false)
@@ -22,7 +23,7 @@ void CombatCommander::initializeSquads()
     
     /* This is the Lurker squad. Only accepts Lurkers and is specialized to deal with them */
     SquadOrder lurkerAttackOrder(SquadOrderTypes::Attack, getMainAttackLocation(), 800, "Lurkers Attack Enemy Base");
-	_squadData.addSquad("LurkerAttack", Squad("LurkerAttack", lurkerAttackOrder, AttackPriority));
+	_squadData.addSquad("LurkerAttack", Squad("LurkerAttack", lurkerAttackOrder, LurkPriority));
 
     // the main attack squad that will pressure the enemy's closest base location
     SquadOrder mainAttackOrder(SquadOrderTypes::Attack, getMainAttackLocation(), 800, "Attack Enemy Base");
@@ -166,7 +167,9 @@ void CombatCommander::updateLurkerSquads()
     {
         if (unit->getType() == BWAPI::UnitTypes::Zerg_Lurker)
         {
-             _squadData.assignUnitToSquad(unit, lurkerAttackSquad);
+			if (_squadData.canAssignUnitToSquad(unit, lurkerAttackSquad)) {
+				_squadData.assignUnitToSquad(unit, lurkerAttackSquad);
+			}
         }
     }
 
