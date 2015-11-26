@@ -394,6 +394,11 @@ const MetaPairVector StrategyManager::getScienceVesselBuildOrderGoal() const
 		goal.push_back(MetaPair(BWAPI::TechTypes::EMP_Shockwave,1));
 	}
 
+	if (InformationManager::Instance().enemyHasCloakedUnits())
+	{
+		
+	}
+
 	goal.push_back(MetaPair(BWAPI::UnitTypes::Terran_Marine, marinesWanted));
 	goal.push_back(MetaPair(BWAPI::UnitTypes::Terran_Science_Vessel, svWanted));
 	return goal;

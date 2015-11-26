@@ -146,6 +146,21 @@ void ProductionManager::update()
 			}
 
 		}
+		else if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran)
+		{
+
+			if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Missle_Turret) < 2)
+			{
+				queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Missle_Turret), true);
+				queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Missle_Turret), true);
+			}
+
+			if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Engineering_Bay) == 0)
+			{
+				queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Engineering_Bay), true);
+			}
+
+		}
         if (Config::Debug::PrintBuildOrderSearchInfo)
         {
 		    BWAPI::Broodwar->printf("Enemy Cloaked Unit Detected!");
