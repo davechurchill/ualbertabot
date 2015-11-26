@@ -387,6 +387,13 @@ const MetaPairVector StrategyManager::getScienceVesselBuildOrderGoal() const
 	int marinesWanted = numMarines + 11;
 	int svWanted = numSV + 1;
 
+	if(BWAPI::Broodwar->enemy()->getRace() == BWAPI::Races::Zerg) {
+		goal.push_back(MetaPair(BWAPI::TechTypes::Irradiate,1));
+	}
+	if(BWAPI::Broodwar->enemy()->getRace() == BWAPI::Races::Protoss) {
+		goal.push_back(MetaPair(BWAPI::TechTypes::EMP_Shockwave,1));
+	}
+
 	goal.push_back(MetaPair(BWAPI::UnitTypes::Terran_Marine, marinesWanted));
 	goal.push_back(MetaPair(BWAPI::UnitTypes::Terran_Science_Vessel, svWanted));
 	return goal;
