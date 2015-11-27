@@ -298,7 +298,7 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
 	if (currentStrategyIt != std::end(_strategies))
 	{
 		auto nextUpgrade = currentStrategyIt->second._upgradeOrder.getNextUpgrade();
-		if (!playerHasUpgrade(nextUpgrade.getUpgradeType())) {
+		if (!playerHasUpgrade(nextUpgrade.getUpgradeType()) && nextUpgrade.type() != MetaTypes::Default) {
 			goal.push_back(std::pair<MetaType, int>(nextUpgrade, 1));
 			currentStrategyIt->second._upgradeOrder.upgradeAddedToBuild();
 		}
