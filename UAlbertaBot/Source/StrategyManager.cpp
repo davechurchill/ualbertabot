@@ -126,7 +126,7 @@ const MetaPairVector StrategyManager::getProtossBuildOrderGoal() const
     int numReaver           = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Protoss_Reaver);
     int numDarkTeplar       = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Protoss_Dark_Templar);
 
-    if (Config::Strategy::StrategyName == "Protoss_ZealotRush")
+    if (Config::Strategy::StrategyName == "Protoss_ZealotRush") 
     {
         goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Zealot, numZealots + 8));
 
@@ -258,6 +258,15 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 	return goal;
 }
 
+bool StrategyManager::playerHasUpgrade(BWAPI::UpgradeType upgrade) const {
+
+	if (BWAPI::Broodwar->self()->getUpgradeLevel(upgrade) > 0 || BWAPI::Broodwar->self()->isUpgrading(upgrade)) {
+		return true;
+	}
+
+	return false;
+};
+
 const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
 {
 	// the goal to return
@@ -281,6 +290,23 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
 	int hydrasWanted = numHydras + 6;
 	int lurkersWanted = numLurkers + 3;
 
+	std::vector<BWAPI::UpgradeType> upgradeList = { BWAPI::UpgradeTypes::Grooved_Spines, BWAPI::UpgradeTypes::Muscular_Augments, BWAPI::UpgradeTypes::Metabolic_Boost };
+
+	auto currentStrategyIt = _strategies.find(Config::Strategy::StrategyName);
+
+	if (currentStrategyIt != std::end(_strategies))
+	{
+		auto order = currentStrategyIt->second._upgradeOrder;
+		for (int i = 0; i < order.size(); ++i) {
+			if (!playerHasUpgrade(order[i].getUpgradeType())) {
+				goal.push_back(std::pair<MetaType, int>(order[i], 1));
+				break;
+			}
+		}
+	}
+
+
+
 
     if (Config::Strategy::StrategyName == "Zerg_ZerglingRush")
     {
@@ -291,8 +317,9 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
 		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Hydralisk, numLurkers + 4));
 		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Zergling, zerglings + 2));
 		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Lurker, numLurkers + 1));
-        goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Grooved_Spines, 1));
-        goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Drone, numDrones + 4));
+
+		// This seemed to slow stuff down...
+        //goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Drone, numDrones + 4));
     }
     else if (Config::Strategy::StrategyName == "Zerg_3HatchMuta")
     {

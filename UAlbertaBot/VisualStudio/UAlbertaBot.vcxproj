@@ -61,7 +61,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetName>Charles</TargetName>
-    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -166,6 +166,7 @@ xcopy "$(SolutionDir)\..\Charles_config.txt" "$(SC_DIR)\bwapi-data\AI\" /s /i /y
     <ClCompile Include="..\Source\UAlbertaBotModule.cpp" />
     <ClCompile Include="..\Source\UnitData.cpp" />
     <ClCompile Include="..\Source\UnitUtil.cpp" />
+    <ClCompile Include="..\Source\UpgradeOrder.cpp" />
     <ClCompile Include="..\source\WorkerData.cpp" />
     <ClCompile Include="..\source\WorkerManager.cpp" />
   </ItemGroup>
@@ -209,6 +210,7 @@ xcopy "$(SolutionDir)\..\Charles_config.txt" "$(SC_DIR)\bwapi-data\AI\" /s /i /y
     <ClInclude Include="..\Source\UAlbertaBotModule.h" />
     <ClInclude Include="..\Source\UnitData.h" />
     <ClInclude Include="..\Source\UnitUtil.h" />
+    <ClInclude Include="..\Source\UpgradeOrder.h" />
     <ClInclude Include="..\source\WorkerData.h" />
     <ClInclude Include="..\source\WorkerManager.h" />
   </ItemGroup>
