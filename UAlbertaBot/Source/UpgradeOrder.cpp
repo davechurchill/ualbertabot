@@ -48,3 +48,16 @@ MetaType & UpgradeOrder::operator [] (const size_t & index)
 {
 	return _upgradeOrder[index];
 }
+
+MetaType UpgradeOrder::getNextUpgrade() {
+
+	if (_upgradeOrder.size() <= _currentUpgrade)
+		return MetaType();
+
+	return _upgradeOrder[_currentUpgrade];
+}
+
+void	 UpgradeOrder::upgradeAddedToBuild() {
+	if (_currentUpgrade < _upgradeOrder.size())
+		++_currentUpgrade;
+}

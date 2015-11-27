@@ -218,9 +218,9 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
                 }
 
 				UpgradeOrder upgradeOrder(strategyRace);
-				if (val.HasMember("UpgradeStrategy") && val["UpgradeStrategy"].IsArray())
+				if (val.HasMember("UpgradeOrder") && val["UpgradeOrder"].IsArray())
 				{
-					const rapidjson::Value & upgrade = val["UpgradeStrategy"];
+					const rapidjson::Value & upgrade = val["UpgradeOrder"];
 
 					for (size_t b(0); b < upgrade.Size(); ++b)
 					{

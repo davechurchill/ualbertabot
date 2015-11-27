@@ -290,22 +290,19 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
 	int hydrasWanted = numHydras + 6;
 	int lurkersWanted = numLurkers + 3;
 
-
+	// Gets the upgrade order
+	// Is mutable now, updates int in upgradeorder to the next
+	// Can't repeat upgrages
 	auto currentStrategyIt = _strategies.find(Config::Strategy::StrategyName);
 
 	if (currentStrategyIt != std::end(_strategies))
 	{
-		auto order = currentStrategyIt->second._upgradeOrder;
-		for (size_t i = 0; i < order.size(); ++i) {
-			if (!playerHasUpgrade(order[i].getUpgradeType())) {
-				goal.push_back(std::pair<MetaType, int>(order[i], 1));
-				break;
-			}
+		auto nextUpgrade = currentStrategyIt->second._upgradeOrder.getNextUpgrade();
+		if (!playerHasUpgrade(nextUpgrade.getUpgradeType())) {
+			goal.push_back(std::pair<MetaType, int>(nextUpgrade, 1));
+			currentStrategyIt->second._upgradeOrder.upgradeAddedToBuild();
 		}
 	}
-
-
-
 
     if (Config::Strategy::StrategyName == "Zerg_ZerglingRush")
     {

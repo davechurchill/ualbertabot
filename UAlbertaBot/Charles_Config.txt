@@ -8,7 +8,7 @@
         
     "BWAPI" : 
     {
-        "SetLocalSpeed"             : 10,
+        "SetLocalSpeed"             : 0,
         "SetFrameSkip"              : 0,
         "UserInput"                 : true,
         "CompleteMapInformation"    : false

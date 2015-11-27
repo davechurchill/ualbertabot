@@ -49,7 +49,7 @@ class StrategyManager
 
 	BWAPI::Race					    _selfRace;
 	BWAPI::Race					    _enemyRace;
-    std::map<std::string, Strategy> _strategies;
+    mutable std::map<std::string, Strategy> _strategies;
     int                             _totalGamesPlayed;
     const BuildOrder                _emptyBuildOrder;
 
