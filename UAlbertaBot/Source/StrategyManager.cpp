@@ -290,14 +290,13 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
 	int hydrasWanted = numHydras + 6;
 	int lurkersWanted = numLurkers + 3;
 
-	std::vector<BWAPI::UpgradeType> upgradeList = { BWAPI::UpgradeTypes::Grooved_Spines, BWAPI::UpgradeTypes::Muscular_Augments, BWAPI::UpgradeTypes::Metabolic_Boost };
 
 	auto currentStrategyIt = _strategies.find(Config::Strategy::StrategyName);
 
 	if (currentStrategyIt != std::end(_strategies))
 	{
 		auto order = currentStrategyIt->second._upgradeOrder;
-		for (int i = 0; i < order.size(); ++i) {
+		for (size_t i = 0; i < order.size(); ++i) {
 			if (!playerHasUpgrade(order[i].getUpgradeType())) {
 				goal.push_back(std::pair<MetaType, int>(order[i], 1));
 				break;

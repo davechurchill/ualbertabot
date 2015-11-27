@@ -24,7 +24,7 @@ UpgradeOrder::UpgradeOrder(const BWAPI::Race & race, const std::vector<MetaType>
 void UpgradeOrder::add(const MetaType & t)
 {
     UAB_ASSERT(t.getRace() == getRace(), "Trying to add difference Race metatype to upgrade order");
-	UAB_ASSERT(t.isUpgrade, "Trying to add something that is not an upgrade");
+	UAB_ASSERT(t.isUpgrade(), "Trying to add something that is not an upgrade");
 
 	_upgradeOrder.push_back(t);
 }
