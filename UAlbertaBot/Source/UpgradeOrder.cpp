@@ -26,7 +26,8 @@ void UpgradeOrder::add(const MetaType & t)
     UAB_ASSERT(t.getRace() == getRace(), "Trying to add difference Race metatype to upgrade order");
 	UAB_ASSERT(t.isUpgrade(), "Trying to add something that is not an upgrade");
 
-	_upgradeOrder.push_back(t);
+	// Place at front
+	_upgradeOrder.insert(_upgradeOrder.begin(),t);
 }
 
 const BWAPI::Race & UpgradeOrder::getRace() const
@@ -39,25 +40,18 @@ const size_t UpgradeOrder::size() const
 	return _upgradeOrder.size();
 }
 
-const MetaType & UpgradeOrder::operator [] (const size_t & index) const
+bool UpgradeOrder::empty() const
 {
-	return _upgradeOrder[index];
-}
-
-MetaType & UpgradeOrder::operator [] (const size_t & index)
-{
-	return _upgradeOrder[index];
+	return _upgradeOrder.empty();
 }
 
 MetaType UpgradeOrder::getNextUpgrade() {
-
-	if (_upgradeOrder.size() <= _currentUpgrade)
-		return MetaType();
-
-	return _upgradeOrder[_currentUpgrade];
+	return _upgradeOrder.back();
 }
 
+
 void	 UpgradeOrder::upgradeAddedToBuild() {
-	if (_currentUpgrade < _upgradeOrder.size())
-		++_currentUpgrade;
+	if (!_upgradeOrder.empty()){
+		_upgradeOrder.pop_back();
+	}
 }

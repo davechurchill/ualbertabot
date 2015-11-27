@@ -258,7 +258,9 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 	return goal;
 }
 
-bool StrategyManager::playerHasUpgrade(BWAPI::UpgradeType upgrade) const {
+bool StrategyManager::playerHasUpgrade(MetaType upgradeMeta) const {
+
+	auto upgrade = upgradeMeta.getUpgradeType();
 
 	if (BWAPI::Broodwar->self()->getUpgradeLevel(upgrade) > 0 || BWAPI::Broodwar->self()->isUpgrading(upgrade)) {
 		return true;
@@ -290,19 +292,7 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
 	int hydrasWanted = numHydras + 6;
 	int lurkersWanted = numLurkers + 3;
 
-	// Gets the upgrade order
-	// Is mutable now, updates int in upgradeorder to the next
-	// Can't repeat upgrages
-	auto currentStrategyIt = _strategies.find(Config::Strategy::StrategyName);
 
-	if (currentStrategyIt != std::end(_strategies))
-	{
-		auto nextUpgrade = currentStrategyIt->second._upgradeOrder.getNextUpgrade();
-		if (!playerHasUpgrade(nextUpgrade.getUpgradeType()) && nextUpgrade.type() != MetaTypes::Default) {
-			goal.push_back(std::pair<MetaType, int>(nextUpgrade, 1));
-			currentStrategyIt->second._upgradeOrder.upgradeAddedToBuild();
-		}
-	}
 
     if (Config::Strategy::StrategyName == "Zerg_ZerglingRush")
     {
@@ -342,6 +332,25 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
         goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Hatchery, numCC + 1));
 		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Extractor, numExtractor + 1));
     }
+
+	// Gets the upgrade order
+	// Is mutable now, updates int in upgradeorder to the next
+	// Can't repeat upgrages
+	auto currentStrategyIt = _strategies.find(Config::Strategy::StrategyName);
+
+	if (currentStrategyIt != std::end(_strategies))
+	{
+		UpgradeOrder upgradeOrder = currentStrategyIt->second._upgradeOrder;
+		// Check bounds
+		if (!upgradeOrder.empty() && !playerHasUpgrade(upgradeOrder.getNextUpgrade())) {
+			goal.push_back(std::pair<MetaType, int>(upgradeOrder.getNextUpgrade(), 1));
+			upgradeOrder.upgradeAddedToBuild();
+
+			// Update the order in the map
+			_strategies[Config::Strategy::StrategyName]._upgradeOrder = upgradeOrder;
+		}
+	}
+
 
 	return goal;
 }
