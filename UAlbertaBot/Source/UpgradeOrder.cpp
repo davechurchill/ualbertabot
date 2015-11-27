@@ -49,7 +49,6 @@ MetaType UpgradeOrder::getNextUpgrade() {
 	return _upgradeOrder.back();
 }
 
-
 void	 UpgradeOrder::upgradeAddedToBuild() {
 	if (!_upgradeOrder.empty()){
 		_upgradeOrder.pop_back();
