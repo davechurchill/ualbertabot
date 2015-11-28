@@ -287,7 +287,7 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
 	int numLurkers		= UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Lurker);
 	int numScourge		= UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Scourge);
     int numGuardians    = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Guardian);
-
+	int numOverlords    = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Overlord);
 	int mutasWanted = numMutas + 6;
 	int hydrasWanted = numHydras + 6;
 	int lurkersWanted = numLurkers + 3;
@@ -332,6 +332,7 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
         goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Hatchery, numCC + 1));
 		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Extractor, numExtractor + 1));
     }
+<<<<<<< HEAD
 
 	// Gets the upgrade order
 	// Is mutable now, updates int in upgradeorder to the next
@@ -352,6 +353,10 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
 	}
 
 
+	if (numOverlords < 4)
+	{
+		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Overlord, numOverlords + 1));
+	}
 	return goal;
 }
 

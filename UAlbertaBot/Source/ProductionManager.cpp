@@ -130,6 +130,10 @@ void ProductionManager::onUnitDestroy(BWAPI::Unit unit)
 				performBuildOrderSearch();
 			}
 		}
+		if (unit->getType() == BWAPI::UnitTypes::Zerg_Drone)
+		{
+			performBuildOrderSearch();
+		}
 	}
 }
 
