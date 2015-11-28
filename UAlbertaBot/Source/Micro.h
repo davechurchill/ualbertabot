@@ -13,8 +13,10 @@ namespace Micro
     void SmartRightClick(BWAPI::Unit unit, BWAPI::Unit target);
     void SmartLaySpiderMine(BWAPI::Unit unit, BWAPI::Position pos);
     void SmartRepair(BWAPI::Unit unit, BWAPI::Unit target);
+	void SmartBurrow(BWAPI::Unit unit,BWAPI::Position pos);
     void SmartKiteTarget(BWAPI::Unit rangedUnit, BWAPI::Unit target);
     void MutaDanceTarget(BWAPI::Unit muta, BWAPI::Unit target);
+	
     BWAPI::Position GetKiteVector(BWAPI::Unit unit, BWAPI::Unit target);
 
     void Rotate(double &x, double &y, double angle);

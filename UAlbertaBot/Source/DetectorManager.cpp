@@ -13,10 +13,6 @@ void DetectorManager::executeMicro(const BWAPI::Unitset & targets)
 		return;
 	}
 
-	for (size_t i(0); i<targets.size(); ++i)
-	{
-		// do something here if there's targets
-	}
 
 	cloakedUnitMap.clear();
 	BWAPI::Unitset cloakedUnits;

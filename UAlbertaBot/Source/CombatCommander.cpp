@@ -4,10 +4,11 @@
 using namespace UAlbertaBot;
 
 const size_t IdlePriority = 0;
-const size_t AttackPriority = 1;
-const size_t BaseDefensePriority = 2;
-const size_t ScoutDefensePriority = 3;
-const size_t DropPriority = 4;
+const size_t AttackPriority = 2;
+const size_t LurkPriority = 1;
+const size_t BaseDefensePriority = 3;
+const size_t ScoutDefensePriority = 4;
+const size_t DropPriority = 5;
 
 CombatCommander::CombatCommander() 
     : _initialized(false)
@@ -19,6 +20,10 @@ void CombatCommander::initializeSquads()
 {
     SquadOrder idleOrder(SquadOrderTypes::Idle, BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation()), 100, "Chill Out");
 	_squadData.addSquad("Idle", Squad("Idle", idleOrder, IdlePriority));
+    
+    /* This is the Lurker squad. Only accepts Lurkers and is specialized to deal with them */
+    SquadOrder lurkerAttackOrder(SquadOrderTypes::Attack, getMainAttackLocation(), 800, "Lurkers Attack Enemy Base");
+	_squadData.addSquad("LurkerAttack", Squad("LurkerAttack", lurkerAttackOrder, LurkPriority));
 
     // the main attack squad that will pressure the enemy's closest base location
     SquadOrder mainAttackOrder(SquadOrderTypes::Attack, getMainAttackLocation(), 800, "Attack Enemy Base");
@@ -29,7 +34,6 @@ void CombatCommander::initializeSquads()
     // the scout defense squad will handle chasing the enemy worker scout
     SquadOrder enemyScoutDefense(SquadOrderTypes::Defend, ourBasePosition, 900, "Get the scout");
     _squadData.addSquad("ScoutDefense", Squad("ScoutDefense", enemyScoutDefense, ScoutDefensePriority));
-
     // add a drop squad if we are using a drop strategy
     if (Config::Strategy::StrategyName == "Protoss_Drop")
     {
@@ -66,28 +70,76 @@ void CombatCommander::update(const BWAPI::Unitset & combatUnits)
         updateDropSquads();
         updateScoutDefenseSquad();
 		updateDefenseSquads();
+        updateLurkerSquads();
 		updateAttackSquads();
 	}
-
 	_squadData.update();
 }
 
 void CombatCommander::updateIdleSquad()
 {
     Squad & idleSquad = _squadData.getSquad("Idle");
-    for (auto & unit : _combatUnits)
+	int idleUnits = 0;
+	for (auto& unit : idleSquad.getUnits()) {
+		idleUnits++;
+	}
+	//BWAPI::Broodwar->printf("Idle: %d", idleUnits);
+
+	for (auto & unit : _combatUnits)
     {
         // if it hasn't been assigned to a squad yet, put it in the low priority idle squad
         if (_squadData.canAssignUnitToSquad(unit, idleSquad))
         {
-            idleSquad.addUnit(unit);
-        }
+			// Initial move for overlord scouting
+			if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord){
+				BWAPI::Position overlordDestination = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
+				BWAPI::Position patrolLocation = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
+
+				int centreX = BWAPI::Broodwar->mapWidth() * 32 / 2;
+				int centreY = BWAPI::Broodwar->mapHeight() * 32 / 2;
+				if (overlordDestination.x > centreX ) {
+					overlordDestination.x -= rand() % centreX;
+					patrolLocation.x -= rand() % centreX;
+
+				}
+				else {
+					overlordDestination.x += rand() % centreX;
+					patrolLocation.x += rand() % centreX;
+				}
+				if (overlordDestination.y > centreY) {
+					overlordDestination.y -= rand() % centreY;
+					patrolLocation.y -= rand() % centreY;
+				}
+				else {
+					overlordDestination.y += rand() % centreY;
+					patrolLocation.y += rand() % centreY;
+				}
+				//BWAPI::Broodwar->printf("Moving Overlord to: %d , %d", overlordDestination.x, overlordDestination.y);
+
+				unit->move(overlordDestination);
+				unit->patrol(patrolLocation, true);
+			}
+			idleSquad.addUnit(unit);
+		}
     }
 }
 
 void CombatCommander::updateAttackSquads()
 {
     Squad & mainAttackSquad = _squadData.getSquad("MainAttack");
+
+	//check for overlord in squad
+	bool containsoverlord = false;
+	int numOverlords = 0;
+	for (auto& unit : mainAttackSquad.getUnits()) {
+		if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord)
+		{
+			containsoverlord = true;
+			numOverlords++;
+		}
+	}
+
+//	BWAPI::Broodwar->printf("Overlords in Attack squad: %d", numOverlords);
 
     for (auto & unit : _combatUnits)
     {
@@ -97,14 +149,44 @@ void CombatCommander::updateAttackSquads()
         }
 
         // get every unit of a lower priority and put it into the attack squad
-        if (!unit->getType().isWorker() && (unit->getType() != BWAPI::UnitTypes::Zerg_Overlord) && _squadData.canAssignUnitToSquad(unit, mainAttackSquad))
-        {
-            _squadData.assignUnitToSquad(unit, mainAttackSquad);
+		if (!unit->getType().isWorker() && (unit->getType() != BWAPI::UnitTypes::Zerg_Lurker) && _squadData.canAssignUnitToSquad(unit, mainAttackSquad))
+		{
+			if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord)
+			{
+				if (!containsoverlord && numOverlords < 2)
+				{
+					_squadData.assignUnitToSquad(unit, mainAttackSquad);
+					containsoverlord = true;
+					numOverlords++;
+				}
+			}
+			else {
+				_squadData.assignUnitToSquad(unit, mainAttackSquad);
+			}
         }
     }
 
     SquadOrder mainAttackOrder(SquadOrderTypes::Attack, getMainAttackLocation(), 800, "Attack Enemy Base");
     mainAttackSquad.setSquadOrder(mainAttackOrder);
+}
+
+/* Updates the Lurker Squad */
+void CombatCommander::updateLurkerSquads()
+{
+    Squad & lurkerAttackSquad = _squadData.getSquad("LurkerAttack");
+
+    for (auto & unit : _combatUnits)
+    {
+        if (unit->getType() == BWAPI::UnitTypes::Zerg_Lurker)
+        {
+			if (_squadData.canAssignUnitToSquad(unit, lurkerAttackSquad)) {
+				_squadData.assignUnitToSquad(unit, lurkerAttackSquad);
+			}
+        }
+    }
+
+    SquadOrder lurkerAttackOrder(SquadOrderTypes::Attack, getMainAttackLocation(), 800, "Lurkers Attack Enemy Base");
+    lurkerAttackSquad.setSquadOrder(lurkerAttackOrder);
 }
 
 void CombatCommander::updateDropSquads()
@@ -177,7 +259,7 @@ void CombatCommander::updateScoutDefenseSquad()
 
     // if the current squad has units in it then we can ignore this
     Squad & scoutDefenseSquad = _squadData.getSquad("ScoutDefense");
-  
+
     // get the region that our base is located in
     BWTA::Region * myRegion = BWTA::getRegion(BWAPI::Broodwar->self()->getStartLocation());
     if (!myRegion && myRegion->getCenter().isValid())
@@ -239,7 +321,7 @@ void CombatCommander::updateDefenseSquads()
     { 
         return; 
     }
-    
+
     BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
     BWTA::Region * enemyRegion = nullptr;
     if (enemyBaseLocation)
@@ -322,7 +404,15 @@ void CombatCommander::updateDefenseSquads()
         // assign units to the squad
         if (_squadData.squadExists(squadName.str()))
         {
+
             Squad & defenseSquad = _squadData.getSquad(squadName.str());
+			/*Squad & idleSquad = _squadData.getSquad("Idle");
+
+			for (auto & unit : idleSquad.getUnits()) {
+				if (unit->getType() == BWAPI::UnitTypes::Zerg_Lurker) {
+					_squadData.assignUnitToSquad(unit, defenseSquad);
+				}
+			}*/
 
             // figure out how many units we need on defense
 	        int flyingDefendersNeeded = numDefendersPerEnemyUnit * numEnemyFlyingInRegion;

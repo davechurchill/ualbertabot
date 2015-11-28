@@ -33,6 +33,13 @@ void Micro::SmartAttackUnit(BWAPI::Unit attacker, BWAPI::Unit target)
     // get the unit's current command
     BWAPI::UnitCommand currentCommand(attacker->getLastCommand());
 
+    if (attacker->getType() == BWAPI::UnitTypes::Zerg_Lurker) {
+        // if nothing prevents it, attack the target
+        attacker->attack(target);
+        TotalCommands++;
+        return;
+    }
+
     // if we've already told this unit to attack this target, ignore this command
     if (currentCommand.getType() == BWAPI::UnitCommandTypes::Attack_Unit &&	currentCommand.getTarget() == target)
     {
@@ -69,6 +76,14 @@ void Micro::SmartAttackMove(BWAPI::Unit attacker, const BWAPI::Position & target
 
     // get the unit's current command
     BWAPI::UnitCommand currentCommand(attacker->getLastCommand());
+    
+    // if lurker, move to the target 
+    /*
+    if (attacker->getType() == BWAPI::UnitTypes::Zerg_Lurker && (!attacker->isMoving())) {
+        // if nothing prevents it, attack the target
+        attacker->attack(targetPosition);
+        TotalCommands++;
+    }*/
 
     // if we've already told this unit to attack this target, ignore this command
     if (currentCommand.getType() == BWAPI::UnitCommandTypes::Attack_Move &&	currentCommand.getTargetPosition() == targetPosition)
@@ -183,6 +198,29 @@ void Micro::SmartLaySpiderMine(BWAPI::Unit unit, BWAPI::Position pos)
     }
 
     unit->canUseTechPosition(BWAPI::TechTypes::Spider_Mines, pos);
+}
+void Micro::SmartBurrow(BWAPI::Unit unit, BWAPI::Position pos)
+{
+	if (!unit)
+	{
+		return;
+	}
+
+	if (!unit->canUseTech(BWAPI::TechTypes::Burrowing,pos))
+	{
+		return;
+	}
+
+	BWAPI::UnitCommand currentCommand(unit->getLastCommand());
+
+	// if we've already told this unit to move to this position, ignore this command
+	if ((currentCommand.getType() == BWAPI::UnitCommandTypes::Use_Tech_Position) && (currentCommand.getTargetPosition() == pos))
+	{
+		return;
+	}
+
+	unit->canUseTechPosition(BWAPI::TechTypes::Burrowing, pos);
+
 }
 
 void Micro::SmartRepair(BWAPI::Unit unit, BWAPI::Unit target)

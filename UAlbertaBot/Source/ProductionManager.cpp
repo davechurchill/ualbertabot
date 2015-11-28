@@ -1,4 +1,6 @@
 #include "ProductionManager.h"
+#include "MapGrid.h"
+
 
 using namespace UAlbertaBot;
 
@@ -66,7 +68,8 @@ void ProductionManager::update()
         {
 		    BWAPI::Broodwar->printf("Supply deadlock detected, building supply!");
         }
-		_queue.queueAsHighestPriority(MetaType(BWAPI::Broodwar->self()->getRace().getSupplyProvider()), true);
+		//BWAPI::Broodwar->printf("Supply Provider : %s", MetaType(BWAPI::Broodwar->self()->getRace().getSupplyProvider().getName()));
+		_queue.queueAsRequiredPriority(MetaType(BWAPI::Broodwar->self()->getRace().getSupplyProvider()), true);
 	}
 
 	// if they have cloaked units get a new goal asap
@@ -150,6 +153,13 @@ void ProductionManager::manageBuildOrderQueue()
 		// check to see if we can make it right now
 		bool canMake = canMakeNow(producer, currentItem.metaType);
 
+		// Check if it's an upgrade, just do it right away and continue on
+		// Was waiting before
+		if (canMake && currentItem.metaType.isUpgrade()) {
+			create(producer, currentItem);
+			_queue.removeCurrentHighestPriorityItem();
+			break;
+		} else 
 		// if we try to build too many refineries manually remove it
 		if (currentItem.metaType.isRefinery() && (BWAPI::Broodwar->self()->allUnitCount(BWAPI::Broodwar->self()->getRace().getRefinery() >= 3)))
 		{
@@ -339,11 +349,45 @@ void ProductionManager::create(BWAPI::Unit producer, BuildOrderItem & item)
         && t.getUnitType() != BWAPI::UnitTypes::Zerg_Lair 
         && t.getUnitType() != BWAPI::UnitTypes::Zerg_Hive
         && t.getUnitType() != BWAPI::UnitTypes::Zerg_Greater_Spire
+		&& t.getUnitType() != BWAPI::UnitTypes::Zerg_Sunken_Colony
+		&& t.getUnitType() != BWAPI::UnitTypes::Zerg_Spore_Colony
         && !t.getUnitType().isAddon())
     {
         // send the building task to the building manager
-        BuildingManager::Instance().addBuildingTask(t.getUnitType(), BWAPI::Broodwar->self()->getStartLocation(), item.isGasSteal);
-    }
+		if (t.getUnitType() == BWAPI::UnitTypes::Zerg_Creep_Colony) {
+			auto home = BWAPI::Broodwar->self()->getStartLocation();
+			int dist = 1000;
+			BWTA::BaseLocation * nat;
+			for (BWTA::BaseLocation * base : BWTA::getBaseLocations())
+			{
+				// get nearest base to home (your natural)
+				if (!base->isStartLocation()){
+					int bx1 = base->getTilePosition().x;
+					int by1 = base->getTilePosition().y;
+
+					int xdist = (home.x - bx1)* (home.x - bx1);
+					int ydist = (home.y - by1)* (home.y - by1);
+					int totaldist = xdist + ydist;
+					if (totaldist < dist) {
+						dist = totaldist;
+						nat = base;
+					}
+				}
+			}
+			BWAPI::TilePosition natPosition = nat->getTilePosition();
+			//BWAPI::Broodwar->printf("Nat position for creep colony: %d , %d", natPosition.x, natPosition.y);
+			const std::vector<BWAPI::TilePosition> & closestToBuilding = MapTools::Instance().getClosestTilesTo(BWAPI::Position(natPosition));
+			//BWAPI::Broodwar->printf("number of tiles near NATURAL: %d", closestToBuilding.size());
+			
+			BuildingManager::Instance().addBuildingTask(t.getUnitType(), natPosition, false);
+			//BuildingManager::Instance().addBuildingTask(t.getUnitType(), BWAPI::Broodwar->self()->getStartLocation(), item.isGasSteal);
+
+		}
+		else {
+			BuildingManager::Instance().addBuildingTask(t.getUnitType(), BWAPI::Broodwar->self()->getStartLocation(), item.isGasSteal);
+		}
+	
+	}
     else if (t.getUnitType().isAddon())
     {
         //BWAPI::TilePosition addonPosition(producer->getTilePosition().x + producer->getType().tileWidth(), producer->getTilePosition().y + producer->getType().tileHeight() - t.unitType.tileHeight());
@@ -389,6 +433,22 @@ bool ProductionManager::canMakeNow(BWAPI::Unit producer, MetaType t)
 		if (t.isUnit())
 		{
 			canMake = BWAPI::Broodwar->canMake(t.getUnitType(), producer);
+			if (t.getUnitType() == BWAPI::UnitTypes::Zerg_Lurker) {
+				bool haveHydra = false;
+				for (auto & unit : BWAPI::Broodwar->self()->getUnits()) {
+					if (unit->getType() == BWAPI::UnitTypes::Zerg_Hydralisk) {
+						haveHydra = true;
+					}
+				}
+				if (!haveHydra) {
+					//BWAPI::Broodwar->printf("Adding Hydras because we have 0 hydras");
+					_queue.queueAsHighestPriority(BWAPI::UnitTypes::Zerg_Hydralisk, true);
+					_queue.queueAsHighestPriority(BWAPI::UnitTypes::Zerg_Hydralisk, true);
+					_queue.queueAsHighestPriority(BWAPI::UnitTypes::Zerg_Hydralisk, true);
+				}
+			}
+
+			//BWAPI::Broodwar->printf("Canmake= %s", canMake ? "true" : "false");
 		}
 		else if (t.isTech())
 		{
@@ -416,37 +476,40 @@ bool ProductionManager::detectBuildOrderDeadlock()
 	}
 
 	// are any supply providers being built currently
-	bool supplyInProgress =	BuildingManager::Instance().isBeingBuilt(BWAPI::Broodwar->self()->getRace().getSupplyProvider());
+	bool supplyInProgress = BuildingManager::Instance().isBeingBuilt(BWAPI::Broodwar->self()->getRace().getSupplyProvider());
 
-    for (auto & unit : BWAPI::Broodwar->self()->getUnits())
-    {
-        if (unit->getType() == BWAPI::UnitTypes::Zerg_Egg)
-        {
-            if (unit->getBuildType() == BWAPI::UnitTypes::Zerg_Overlord)
-            {
-                supplyInProgress = true;
-                break;
-            }
-        }
-    }
+	for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+	{
+		if (unit->getType() == BWAPI::UnitTypes::Zerg_Egg)
+		{
+			if (unit->getBuildType() == BWAPI::UnitTypes::Zerg_Overlord)
+			{
+				supplyInProgress = true;
+				break;
+			}
+		}
+	}
 
 	// does the current item being built require more supply
     
 	int supplyCost			= _queue.getHighestPriorityItem().metaType.supplyRequired();
-	int supplyAvailable		= std::max(0, BWAPI::Broodwar->self()->supplyTotal() - BWAPI::Broodwar->self()->supplyUsed());
+	int supplyAvailable		= BWAPI::Broodwar->self()->supplyTotal() - BWAPI::Broodwar->self()->supplyUsed();
+
+	// If we are negative
+	if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Zerg && supplyAvailable < 0) {
+		BuildOrderItem boi(MetaType(BWAPI::UnitTypes::Zerg_Overlord), 100000, false, false);
+		auto producer = getProducer(boi.metaType);
+		create(producer, boi);
+		// Just make them
+		// Assume no deadlock
+		return false;
+	}
 
 	// if we don't have enough supply and none is being built, there's a deadlock
+	// 8 * numOverlords = extra supply
 	if ((supplyAvailable < supplyCost) && !supplyInProgress)
 	{
-        // if we're zerg, check to see if a building is planned to be built
-        if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Zerg && BuildingManager::Instance().buildingsQueued().size() > 0)
-        {
-            return false;
-        }
-        else
-        {
-		    return true;
-        }
+		return true;
 	}
 
 	return false;

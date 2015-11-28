@@ -2,6 +2,8 @@
 #include "BuildingManager.h"
 #include "Micro.h"
 #include "ScoutManager.h"
+#include "UnitUtil.h"
+
 
 using namespace UAlbertaBot;
 
@@ -109,8 +111,7 @@ void BuildingManager::constructAssignedBuildings()
 {
     for (auto & b : _buildings)
     {
-        if (b.status != BuildingStatus::Assigned)
-        {
+		if (b.status != BuildingStatus::Assigned) {
             continue;
         }
 
@@ -144,11 +145,13 @@ void BuildingManager::constructAssignedBuildings()
             }
             else
             {
+
                 // issue the build order!
                 b.builderUnit->build(b.type,b.finalPosition);
 
                 // set the flag to true
                 b.buildCommandGiven = true;
+
             }
         }
     }
@@ -394,46 +397,69 @@ std::vector<BWAPI::UnitType> BuildingManager::buildingsQueued()
 
 BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
 {
-    int numPylons = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Pylon);
+	int numPylons = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Pylon);
 
-    if (b.isGasSteal)
-    {
-        BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
-        UAB_ASSERT(enemyBaseLocation,"Should have enemy base location before attempting gas steal");
-        UAB_ASSERT(enemyBaseLocation->getGeysers().size() > 0,"Should have spotted an enemy geyser");
+	int numCC = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hatchery)
+		+ UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Lair)
+		+ UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hive);
 
-        for (auto & unit : enemyBaseLocation->getGeysers())
-        {
-            BWAPI::TilePosition tp(unit->getInitialTilePosition());
-            return tp;
-        }
-    }
+	if (numCC == 3) {
+		//BWAPI::Broodwar->printf("3cc's detected, macrohatch = true");
+		macroHatch = true;
+	}
 
-    if (b.type.requiresPsi() && numPylons == 0)
-    {
-        return BWAPI::TilePositions::None;
-    }
 
-    if (b.type.isRefinery())
-    {
-        return BuildingPlacer::Instance().getRefineryPosition();
-    }
+	if (b.isGasSteal)
+	{
+		BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
+		UAB_ASSERT(enemyBaseLocation, "Should have enemy base location before attempting gas steal");
+		UAB_ASSERT(enemyBaseLocation->getGeysers().size() > 0, "Should have spotted an enemy geyser");
 
-    if (b.type.isResourceDepot())
-    {
-        // get the location 
-        BWAPI::TilePosition tile = MapTools::Instance().getNextExpansion();
+		for (auto & unit : enemyBaseLocation->getGeysers())
+		{
+			BWAPI::TilePosition tp(unit->getInitialTilePosition());
+			return tp;
+		}
+	}
 
-        return tile;
-    }
+	if (b.type.requiresPsi() && numPylons == 0)
+	{
+		return BWAPI::TilePositions::None;
+	}
 
-    // set the building padding specifically
-    int distance = b.type == BWAPI::UnitTypes::Protoss_Photon_Cannon ? 0 : Config::Macro::BuildingSpacing;
+	if (b.type.isRefinery())
+	{
+		return BuildingPlacer::Instance().getRefineryPosition();
+	}
+
+	if (b.type.isResourceDepot())
+	{		
+		if ((numCC == 2) && (macroHatch == false)) {
+			BWAPI::Broodwar->printf("Should be making macro hatch");
+			BWTA::BaseLocation * home;
+			for (BWTA::BaseLocation * base : BWTA::getBaseLocations()) {
+				if (base->getTilePosition() == BWAPI::Broodwar->self()->getStartLocation()){
+					home = base;
+				}
+			}
+			Building homeBase(BWAPI::UnitTypes::Zerg_Hatchery, home->getTilePosition());
+			BWAPI::TilePosition tile = BuildingPlacer::Instance().getBuildLocationNear(homeBase,Config::Macro::BuildingSpacing, false);
+			return tile;
+		}
+		else {
+			// get the location 
+			BWAPI::TilePosition tile = MapTools::Instance().getNextExpansion();
+
+			return tile;
+		}
+	}
+
+	// set the building padding specifically
+	int distance = (b.type == BWAPI::UnitTypes::Protoss_Photon_Cannon || b.type == BWAPI::UnitTypes::Zerg_Creep_Colony) ? 0 : Config::Macro::BuildingSpacing;
     if (b.type == BWAPI::UnitTypes::Protoss_Pylon && (numPylons < 3))
     {
         distance = Config::Macro::PylonSpacing;
     }
-
     // get a position within our region
     return BuildingPlacer::Instance().getBuildLocationNear(b,distance,false);
 }

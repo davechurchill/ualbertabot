@@ -7,8 +7,8 @@ namespace Config
     {
         bool ConfigFileFound                = false;
         bool ConfigFileParsed               = false;
-        std::string ConfigFileLocation      = "bwapi-data/AI/UAlbertaBot_Config.txt";
-    }
+		std::string ConfigFileLocation = "bwapi-data/AI/Charles_Config.txt";
+	}
 
     namespace Strategy
     {
@@ -31,7 +31,7 @@ namespace Config
         bool UsingScoutManager              = true;
         bool UsingCombatCommander           = true;
         bool UsingBuildOrderSearch          = true;     // toggle use of Build Order Search, currently no backup
-        bool UsingAutoObserver              = false;
+        bool UsingAutoObserver              = true;
         bool UsingStrategyIO                = false;    // toggle the use of file io for strategy
         bool UsingUnitCommandManager        = false;    // handles all unit commands
 		
@@ -41,7 +41,7 @@ namespace Config
 
     namespace BotInfo
     {
-        std::string BotName                 = "UAlbertaBot";
+        std::string BotName                 = "Charles";
         std::string Authors                 = "Dave Churchill";
         bool PrintInfoOnStart               = false;
     }

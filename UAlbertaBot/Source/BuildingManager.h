@@ -13,6 +13,7 @@ class BuildingManager
     BuildingManager();
 
     std::vector<Building> _buildings;
+	bool macroHatch = false;
 
     bool            _debugMode;
     int             _reservedMinerals;				// minerals reserved for planned buildings

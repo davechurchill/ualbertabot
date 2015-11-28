@@ -496,7 +496,7 @@ bool InformationManager::isCombatUnit(BWAPI::UnitType type) const
 {
 	if (type == BWAPI::UnitTypes::Zerg_Lurker/* || type == BWAPI::UnitTypes::Protoss_Dark_Templar*/)
 	{
-		return false;
+		return true;
 	}
 
 	// check for various types of combat units

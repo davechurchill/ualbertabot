@@ -6,6 +6,7 @@
 #include "InformationManager.h"
 #include "WorkerManager.h"
 #include "BuildOrder.h"
+#include "UpgradeOrder.h"
 
 namespace UAlbertaBot
 {
@@ -19,6 +20,7 @@ struct Strategy
     int         _wins;
     int         _losses;
     BuildOrder  _buildOrder;
+	UpgradeOrder  _upgradeOrder;
 
     Strategy()
         : _name("None")
@@ -29,12 +31,13 @@ struct Strategy
     
     }
 
-    Strategy(const std::string & name, const BWAPI::Race & race, const BuildOrder & buildOrder)
+    Strategy(const std::string & name, const BWAPI::Race & race, const BuildOrder & buildOrder, const UpgradeOrder & upgradeOrder)
         : _name(name)
         , _race(race)
         , _wins(0)
         , _losses(0)
         , _buildOrder(buildOrder)
+		, _upgradeOrder(upgradeOrder)
     {
     
     }
@@ -46,7 +49,7 @@ class StrategyManager
 
 	BWAPI::Race					    _selfRace;
 	BWAPI::Race					    _enemyRace;
-    std::map<std::string, Strategy> _strategies;
+    mutable std::map<std::string, Strategy> _strategies;
     int                             _totalGamesPlayed;
     const BuildOrder                _emptyBuildOrder;
 
@@ -71,5 +74,6 @@ public:
 	const	int				        defendWithWorkers();
 	const	MetaPairVector		    getBuildOrderGoal();
 	const	BuildOrder &            getOpeningBookBuildOrder() const;
+			bool					playerHasUpgrade(MetaType upgrade) const;
 };
 }

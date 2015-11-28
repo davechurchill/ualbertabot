@@ -17,8 +17,10 @@ class CombatCommander
     void            updateScoutDefenseSquad();
 	void            updateDefenseSquads();
 	void            updateAttackSquads();
+    void            updateLurkerSquads();
     void            updateDropSquads();
 	void            updateIdleSquad();
+	void			updateDetectorSquad();
 	bool            isSquadUpdateFrame();
 	int             getNumType(BWAPI::Unitset & units, BWAPI::UnitType type);
 

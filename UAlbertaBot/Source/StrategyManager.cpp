@@ -126,7 +126,7 @@ const MetaPairVector StrategyManager::getProtossBuildOrderGoal() const
     int numReaver           = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Protoss_Reaver);
     int numDarkTeplar       = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Protoss_Dark_Templar);
 
-    if (Config::Strategy::StrategyName == "Protoss_ZealotRush")
+    if (Config::Strategy::StrategyName == "Protoss_ZealotRush") 
     {
         goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Zealot, numZealots + 8));
 
@@ -258,6 +258,17 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 	return goal;
 }
 
+bool StrategyManager::playerHasUpgrade(MetaType upgradeMeta) const {
+
+	auto upgrade = upgradeMeta.getUpgradeType();
+
+	if (BWAPI::Broodwar->self()->getUpgradeLevel(upgrade) > 0 || BWAPI::Broodwar->self()->isUpgrading(upgrade)) {
+		return true;
+	}
+
+	return false;
+};
+
 const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
 {
 	// the goal to return
@@ -267,25 +278,37 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
     int numCC           = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hatchery)
                         + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Lair)
                         + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hive);
+	int numExtractor = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Extractor);
+
 	int numMutas        = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Mutalisk);
     int numDrones       = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Drone);
     int zerglings       = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Zergling);
-	int numHydras       = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hydralisk);
-    int numScourge      = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Scourge);
+	int numHydras		= UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hydralisk);
+	int numLurkers		= UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Lurker);
+	int numScourge		= UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Scourge);
     int numGuardians    = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Guardian);
-
+	int numOverlords    = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Overlord);
 	int mutasWanted = numMutas + 6;
 	int hydrasWanted = numHydras + 6;
+	int lurkersWanted = numLurkers + 3;
+
+	if (numCC * (15) > numWorkers) {
+		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Drone, numWorkers + 3));
+	}
 
     if (Config::Strategy::StrategyName == "Zerg_ZerglingRush")
     {
         goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Zergling, zerglings + 6));
     }
     else if (Config::Strategy::StrategyName == "Zerg_2HatchHydra")
-    {
-        goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Hydralisk, numHydras + 8));
-        goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Grooved_Spines, 1));
-        goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Drone, numDrones + 4));
+	{
+
+		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Hydralisk, numLurkers + 4));
+		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Zergling, zerglings + 1));
+		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Lurker, numLurkers + 1));
+
+		// This seemed to slow stuff down...
+        //goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Drone, numDrones + 4));
     }
     else if (Config::Strategy::StrategyName == "Zerg_3HatchMuta")
     {
@@ -310,9 +333,33 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
     if (shouldExpandNow())
     {
         goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Hatchery, numCC + 1));
-        goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Drone, numWorkers + 10));
+		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Extractor, numExtractor + 1));
     }
 
+	// Gets the upgrade order
+	// Is mutable now, updates int in upgradeorder to the next
+	// Can't repeat upgrages
+	auto currentStrategyIt = _strategies.find(Config::Strategy::StrategyName);
+
+	if (currentStrategyIt != std::end(_strategies))
+	{
+		UpgradeOrder upgradeOrder = currentStrategyIt->second._upgradeOrder;
+		// Check bounds
+		if (!upgradeOrder.empty() && !playerHasUpgrade(upgradeOrder.getNextUpgrade())) {
+			goal.push_back(std::pair<MetaType, int>(upgradeOrder.getNextUpgrade(), 1));
+			upgradeOrder.upgradeAddedToBuild();
+
+			// Update the order in the map
+			_strategies[Config::Strategy::StrategyName]._upgradeOrder = upgradeOrder;
+		}
+		if (!upgradeOrder.empty() && !playerHasUpgrade(upgradeOrder.getNextUpgrade())) {
+			goal.push_back(std::pair<MetaType, int>(upgradeOrder.getNextUpgrade(), 1));
+			upgradeOrder.upgradeAddedToBuild();
+			// Update the order in the map
+
+			_strategies[Config::Strategy::StrategyName]._upgradeOrder = upgradeOrder;
+		}
+	}
 	return goal;
 }
 
