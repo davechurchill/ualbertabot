@@ -441,7 +441,7 @@ BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
 			BWAPI::Broodwar->printf("Should be making macro hatch");
 			BWTA::BaseLocation * home;
 			for (BWTA::BaseLocation * base : BWTA::getBaseLocations()) {
-				if (base->isStartLocation()){
+				if (base->getTilePosition() == BWAPI::Broodwar->self()->getStartLocation()){
 					home = base;
 				}
 			}
