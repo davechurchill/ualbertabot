@@ -288,7 +288,6 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
 	int numScourge		= UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Scourge);
     int numGuardians    = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Guardian);
 	int numOverlords    = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Overlord);
-
 	int mutasWanted = numMutas + 6;
 	int hydrasWanted = numHydras + 6;
 	int lurkersWanted = numLurkers + 3;

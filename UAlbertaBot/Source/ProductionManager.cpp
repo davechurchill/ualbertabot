@@ -476,27 +476,38 @@ bool ProductionManager::detectBuildOrderDeadlock()
 	}
 
 	// are any supply providers being built currently
-	bool supplyInProgress =	BuildingManager::Instance().isBeingBuilt(BWAPI::Broodwar->self()->getRace().getSupplyProvider());
-	int count = 0;
+	bool supplyInProgress = BuildingManager::Instance().isBeingBuilt(BWAPI::Broodwar->self()->getRace().getSupplyProvider());
 
-    for (auto & unit : BWAPI::Broodwar->self()->getUnits())
-    {
-        if (unit->getType() == BWAPI::UnitTypes::Zerg_Egg)
-        {
-            if (unit->getBuildType() == BWAPI::UnitTypes::Zerg_Overlord)
-            {
-				++count;
-            }
-        }
-    }
+	for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+	{
+		if (unit->getType() == BWAPI::UnitTypes::Zerg_Egg)
+		{
+			if (unit->getBuildType() == BWAPI::UnitTypes::Zerg_Overlord)
+			{
+				supplyInProgress = true;
+				break;
+			}
+		}
+	}
 
 	// does the current item being built require more supply
     
 	int supplyCost			= _queue.getHighestPriorityItem().metaType.supplyRequired();
 	int supplyAvailable		= BWAPI::Broodwar->self()->supplyTotal() - BWAPI::Broodwar->self()->supplyUsed();
 
+	// If we are negative
+	if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Zerg && supplyAvailable < 0) {
+		BuildOrderItem boi(MetaType(BWAPI::UnitTypes::Zerg_Overlord), 100000, false, false);
+		auto producer = getProducer(boi.metaType);
+		create(producer, boi);
+		// Just make them
+		// Assume no deadlock
+		return false;
+	}
+
 	// if we don't have enough supply and none is being built, there's a deadlock
-	if ((supplyAvailable < supplyCost) || (((count * 9) + supplyAvailable) < supplyCost))
+	// 8 * numOverlords = extra supply
+	if ((supplyAvailable < supplyCost) && !supplyInProgress)
 	{
 		return true;
 	}
