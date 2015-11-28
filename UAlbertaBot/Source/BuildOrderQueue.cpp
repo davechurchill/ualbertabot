@@ -81,6 +81,10 @@ bool BuildOrderQueue::canSkipItem()
 void BuildOrderQueue::queueItem(BuildOrderItem b) 
 {
 	// if the queue is empty, set the highest and lowest priorities
+
+	if (b.metaType.isUpgrade()){
+		b.blocking = false;
+	}
 	if (queue.empty()) 
 	{
 		highestPriority = b.priority;

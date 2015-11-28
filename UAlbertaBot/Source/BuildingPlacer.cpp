@@ -222,10 +222,10 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b,int 
     {
         if (canBuildHereWithSpace(closestToBuilding[i],b,buildDist,horizontalOnly))
         {
-			if (b.type == BWAPI::UnitTypes::Zerg_Creep_Colony){
+			/*if (b.type == BWAPI::UnitTypes::Zerg_Creep_Colony){
 				BWAPI::Broodwar->printf("====================================");
 				BWAPI::Broodwar->printf("FOUND LOCATION FOR CREEP COLONY AT %d %d", closestToBuilding[i].x, closestToBuilding[i].y);
-			}
+			}*/
             double ms = t.getElapsedTimeInMilliSec();
             //BWAPI::Broodwar->printf("Building Placer Took %d iterations, lasting %lf ms @ %lf iterations/ms, %lf setup ms", i, ms, (i / ms), ms1);
 

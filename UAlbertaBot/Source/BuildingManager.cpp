@@ -407,9 +407,6 @@ BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
 		//BWAPI::Broodwar->printf("3cc's detected, macrohatch = true");
 		macroHatch = true;
 	}
-	else {
-		macroHatch = false;
-	}
 
 
 	if (b.isGasSteal)

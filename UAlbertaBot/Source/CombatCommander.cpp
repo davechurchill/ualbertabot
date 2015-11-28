@@ -34,11 +34,6 @@ void CombatCommander::initializeSquads()
     // the scout defense squad will handle chasing the enemy worker scout
     SquadOrder enemyScoutDefense(SquadOrderTypes::Defend, ourBasePosition, 900, "Get the scout");
     _squadData.addSquad("ScoutDefense", Squad("ScoutDefense", enemyScoutDefense, ScoutDefensePriority));
-	SquadOrder Detectororder(SquadOrderTypes::Attack, getMainAttackLocation(), 900, "Detector");
-	_squadData.addSquad("Detector_1", Squad("Detector_1", Detectororder, AttackPriority));
-	_squadData.addSquad("Detector_2", Squad("Detector_2", Detectororder, AttackPriority));
-	_squadData.addSquad("Detector_3", Squad("Detector_3", Detectororder, AttackPriority));
-	_squadData.addSquad("Detector_4", Squad("Detector_4", Detectororder, AttackPriority));
     // add a drop squad if we are using a drop strategy
     if (Config::Strategy::StrategyName == "Protoss_Drop")
     {
@@ -77,76 +72,10 @@ void CombatCommander::update(const BWAPI::Unitset & combatUnits)
 		updateDefenseSquads();
         updateLurkerSquads();
 		updateAttackSquads();
-		updateDetectorSquad();
 	}
-
-
 	_squadData.update();
 }
-void CombatCommander::updateDetectorSquad()
-{
-	Squad & detector_1 = _squadData.getSquad("Detector_1");
-	Squad & detector_2 = _squadData.getSquad("Detector_2");
-	Squad & detector_3 = _squadData.getSquad("Detector_3");
-	Squad & detector_4 = _squadData.getSquad("Detector_4");
-	int assign = 0;
-	for (auto & unit : _combatUnits)
-	{
-		if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord)
-		{
-			if (assign == 0)
-			{
-				if (_squadData.canAssignUnitToSquad(unit, detector_1))
-				{
-					_squadData.assignUnitToSquad(unit, detector_1);
-				}
 
-			}
-			else if (assign == 1)
-			{
-				if (_squadData.canAssignUnitToSquad(unit, detector_2))
-				{
-					_squadData.assignUnitToSquad(unit, detector_2);
-				}
-			}
-			else if (assign == 2)
-			{
-				if (_squadData.canAssignUnitToSquad(unit, detector_3))
-				{
-					_squadData.assignUnitToSquad(unit, detector_3);
-				}
-			}
-			else if (assign == 3)
-			{
-				if (_squadData.canAssignUnitToSquad(unit, detector_4))
-				{
-					_squadData.assignUnitToSquad(unit, detector_4);
-				}
-
-			}
-			else
-			{
-				assign = 0;
-			}
-
-		}
-	}
-
-	SquadOrder Detectororder(SquadOrderTypes::Attack, getRandomLocation(), 900, "Detector");
-
-	detector_1.setSquadOrder(Detectororder);
-	detector_2.setSquadOrder(Detectororder);
-	detector_3.setSquadOrder(Detectororder);
-	detector_4.setSquadOrder(Detectororder);
-
-
-
-
-
-
-
-
-}
 void CombatCommander::updateIdleSquad()
 {
     Squad & idleSquad = _squadData.getSquad("Idle");
@@ -161,8 +90,37 @@ void CombatCommander::updateIdleSquad()
         // if it hasn't been assigned to a squad yet, put it in the low priority idle squad
         if (_squadData.canAssignUnitToSquad(unit, idleSquad))
         {
-            idleSquad.addUnit(unit);
-        }
+			// Initial move for overlord scouting
+			if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord){
+				BWAPI::Position overlordDestination = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
+				BWAPI::Position patrolLocation = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
+
+				int centreX = BWAPI::Broodwar->mapWidth() * 32 / 2;
+				int centreY = BWAPI::Broodwar->mapHeight() * 32 / 2;
+				if (overlordDestination.x > centreX ) {
+					overlordDestination.x -= rand() % centreX;
+					patrolLocation.x -= rand() % centreX;
+
+				}
+				else {
+					overlordDestination.x += rand() % centreX;
+					patrolLocation.x += rand() % centreX;
+				}
+				if (overlordDestination.y > centreY) {
+					overlordDestination.y -= rand() % centreY;
+					patrolLocation.y -= rand() % centreY;
+				}
+				else {
+					overlordDestination.y += rand() % centreY;
+					patrolLocation.y += rand() % centreY;
+				}
+				//BWAPI::Broodwar->printf("Moving Overlord to: %d , %d", overlordDestination.x, overlordDestination.y);
+
+				unit->move(overlordDestination);
+				unit->patrol(patrolLocation, true);
+			}
+			idleSquad.addUnit(unit);
+		}
     }
 }
 
@@ -170,29 +128,18 @@ void CombatCommander::updateAttackSquads()
 {
     Squad & mainAttackSquad = _squadData.getSquad("MainAttack");
 
-	//int numUnits = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hydralisk) + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Zergling) + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Lurker);
-	//if (numUnits < 20) {
-	//	return;
-	//}
-	//int attackUnits = 0;
-
-	//for (auto& unit : mainAttackSquad.getUnits())
-	//{
-	//	attackUnits++;
-
-	//}
 	//check for overlord in squad
-	//bool containsoverlord = false;
-	//for (auto& unit : mainAttackSquad.getUnits())
-	//{
-	//	if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord)
-	//	{
-	//		containsoverlord = true;
-	//		break;
-	//	}
-	//}
-	//BWAPI::Broodwar->printf("Attack Units: %d", attackUnits);
+	bool containsoverlord = false;
+	int numOverlords = 0;
+	for (auto& unit : mainAttackSquad.getUnits()) {
+		if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord)
+		{
+			containsoverlord = true;
+			numOverlords++;
+		}
+	}
 
+//	BWAPI::Broodwar->printf("Overlords in Attack squad: %d", numOverlords);
 
     for (auto & unit : _combatUnits)
     {
@@ -202,23 +149,20 @@ void CombatCommander::updateAttackSquads()
         }
 
         // get every unit of a lower priority and put it into the attack squad
-		if (!unit->getType().isWorker() && (unit->getType() != BWAPI::UnitTypes::Zerg_Overlord) && (unit->getType() != BWAPI::UnitTypes::Zerg_Lurker) && _squadData.canAssignUnitToSquad(unit, mainAttackSquad))
+		if (!unit->getType().isWorker() && (unit->getType() != BWAPI::UnitTypes::Zerg_Lurker) && _squadData.canAssignUnitToSquad(unit, mainAttackSquad))
 		{
-//        if (!unit->getType().isWorker() && _squadData.canAssignUnitToSquad(unit, mainAttackSquad))
-			/*if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord)
+			if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord)
 			{
-				if (!containsoverlord)
+				if (!containsoverlord && numOverlords < 2)
 				{
 					_squadData.assignUnitToSquad(unit, mainAttackSquad);
 					containsoverlord = true;
+					numOverlords++;
 				}
-				else
-				{
-					continue;
-				}
-			}*/
-            _squadData.assignUnitToSquad(unit, mainAttackSquad);
-			
+			}
+			else {
+				_squadData.assignUnitToSquad(unit, mainAttackSquad);
+			}
         }
     }
 
@@ -774,8 +718,4 @@ bool CombatCommander::beingBuildingRushed()
     }
 
     return false;
-}
-BWAPI::Position CombatCommander::getRandomLocation()
-{
-	return MapGrid::Instance().getNaturalExpansion();
 }

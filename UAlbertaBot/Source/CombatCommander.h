@@ -27,7 +27,6 @@ class CombatCommander
 	BWAPI::Unit     findClosestDefender(const Squad & defenseSquad, BWAPI::Position pos, bool flyingDefender);
     BWAPI::Unit     findClosestWorkerToTarget(BWAPI::Unitset & unitsToAssign, BWAPI::Unit target);
 
-	BWAPI::Position getRandomLocation();
 	BWAPI::Position getDefendLocation();
     BWAPI::Position getMainAttackLocation();
 
