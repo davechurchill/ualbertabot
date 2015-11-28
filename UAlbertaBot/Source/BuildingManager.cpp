@@ -398,13 +398,20 @@ std::vector<BWAPI::UnitType> BuildingManager::buildingsQueued()
 BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
 {
 	int numPylons = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Pylon);
+
 	int numCC = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hatchery)
 		+ UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Lair)
 		+ UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hive);
+
 	if (numCC == 3) {
 		//BWAPI::Broodwar->printf("3cc's detected, macrohatch = true");
 		macroHatch = true;
 	}
+	else {
+		macroHatch = false;
+	}
+
+
 	if (b.isGasSteal)
 	{
 		BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());

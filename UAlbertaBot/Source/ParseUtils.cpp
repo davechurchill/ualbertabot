@@ -2,6 +2,7 @@
 #include "rapidjson\document.h"
 #include "JSONTools.h"
 #include "BuildOrder.h"
+#include "UpgradeOrder.h"
 #include "StrategyManager.h"
 
 using namespace UAlbertaBot;
@@ -216,7 +217,31 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
                     }
                 }
 
-                StrategyManager::Instance().addStrategy(name, Strategy(name, strategyRace, buildOrder));
+				UpgradeOrder upgradeOrder(strategyRace);
+				if (val.HasMember("UpgradeOrder") && val["UpgradeOrder"].IsArray())
+				{
+					const rapidjson::Value & upgrade = val["UpgradeOrder"];
+
+					for (size_t b(0); b < upgrade.Size(); ++b)
+					{
+						if (upgrade[b].IsString())
+						{
+							MetaType type(upgrade[b].GetString());
+
+							if (type.getRace() != BWAPI::Races::None)
+							{
+								upgradeOrder.add(type);
+							}
+						}
+						else
+						{
+							UAB_ASSERT_WARNING(false, "Build order item must be a string %s", name.c_str());
+							continue;
+						}
+					}
+				}
+
+                StrategyManager::Instance().addStrategy(name, Strategy(name, strategyRace, buildOrder, upgradeOrder));
             }
         }
     }

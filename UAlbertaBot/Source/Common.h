@@ -10,6 +10,7 @@
 #include <sstream>
 #include <algorithm>
 #include <vector>
+#include <queue>
 #include <deque>
 #include <list>
 #include <set>

@@ -15,6 +15,7 @@ void BuildOrderQueue::clearAll()
 {
 	// clear the queue
 	queue.clear();
+	requiredQueue.clear();
 
 	// reset the priorities
 	highestPriority = 0;
@@ -23,6 +24,11 @@ void BuildOrderQueue::clearAll()
 
 BuildOrderItem & BuildOrderQueue::getHighestPriorityItem() 
 {
+
+	if (!requiredQueue.empty()) {
+		return requiredQueue.back();
+	}
+
 	// reset the number of skipped items to zero
 	numSkippedItems = 0;
 
@@ -30,8 +36,12 @@ BuildOrderItem & BuildOrderQueue::getHighestPriorityItem()
 	return queue.back();
 }
 
-BuildOrderItem & BuildOrderQueue::getNextHighestPriorityItem() 
+BuildOrderItem & BuildOrderQueue::getNextHighestPriorityItem()
 {
+	if (!requiredQueue.empty()) {
+		return requiredQueue.back();
+	}
+
 	assert(queue.size() - 1 - numSkippedItems >= 0);
 
 	// the queue will be sorted with the highest priority at the back
@@ -49,6 +59,10 @@ void BuildOrderQueue::skipItem()
 
 bool BuildOrderQueue::canSkipItem() 
 {
+	if (!requiredQueue.empty()) {
+		return false;
+	}
+
 	// does the queue have more elements
 	bool bigEnough = queue.size() > (size_t)(1 + numSkippedItems);
 
@@ -104,6 +118,11 @@ void BuildOrderQueue::queueAsHighestPriority(MetaType m, bool blocking, bool gas
 	queueItem(BuildOrderItem(m, newPriority, blocking, gasSteal));
 }
 
+void BuildOrderQueue::queueAsRequiredPriority(MetaType m, bool blocking, bool gasSteal)
+{
+	requiredQueue.push_back(BuildOrderItem(m, 0, blocking, gasSteal));
+}
+
 void BuildOrderQueue::queueAsLowestPriority(MetaType m, bool blocking) 
 {
 	// the new priority will be higher
@@ -115,6 +134,11 @@ void BuildOrderQueue::queueAsLowestPriority(MetaType m, bool blocking)
 
 void BuildOrderQueue::removeHighestPriorityItem() 
 {
+
+	if (!requiredQueue.empty()) {
+		requiredQueue.pop_back();
+	}
+
 	// remove the back element of the vector
 	queue.pop_back();
 
@@ -125,24 +149,30 @@ void BuildOrderQueue::removeHighestPriorityItem()
 
 void BuildOrderQueue::removeCurrentHighestPriorityItem() 
 {
-	// remove the back element of the vector
-	queue.erase(queue.begin() + queue.size() - 1 - numSkippedItems);
+	if (!requiredQueue.empty()) {
+		requiredQueue.pop_back();
+	}
+	else {
 
-	//assert((int)(queue.size()) < size);
+		// remove the back element of the vector
+		queue.erase(queue.begin() + queue.size() - 1 - numSkippedItems);
 
-	// if the list is not empty, set the highest accordingly
-	highestPriority = queue.empty() ? 0 : queue.back().priority;
-	lowestPriority  = queue.empty() ? 0 : lowestPriority;
+		//assert((int)(queue.size()) < size);
+
+		// if the list is not empty, set the highest accordingly
+		highestPriority = queue.empty() ? 0 : queue.back().priority;
+		lowestPriority = queue.empty() ? 0 : lowestPriority;
+	}
 }
 
 size_t BuildOrderQueue::size() 
 {
-	return queue.size();
+	return queue.size() + requiredQueue.size();
 }
 
 bool BuildOrderQueue::isEmpty()
 {
-	return (queue.size() == 0);
+	return (queue.size() == 0 && requiredQueue.empty());
 }
 
 BuildOrderItem BuildOrderQueue::operator [] (int i)
