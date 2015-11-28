@@ -69,7 +69,7 @@ void ProductionManager::update()
 		    BWAPI::Broodwar->printf("Supply deadlock detected, building supply!");
         }
 		//BWAPI::Broodwar->printf("Supply Provider : %s", MetaType(BWAPI::Broodwar->self()->getRace().getSupplyProvider().getName()));
-		_queue.queueAsHighestPriority(MetaType(BWAPI::Broodwar->self()->getRace().getSupplyProvider()), true);
+		_queue.queueAsRequiredPriority(MetaType(BWAPI::Broodwar->self()->getRace().getSupplyProvider()), true);
 	}
 
 	// if they have cloaked units get a new goal asap
@@ -130,10 +130,6 @@ void ProductionManager::onUnitDestroy(BWAPI::Unit unit)
 				performBuildOrderSearch();
 			}
 		}
-		if (unit->getType() == BWAPI::UnitTypes::Zerg_Drone)
-		{
-			performBuildOrderSearch();
-		}
 	}
 }
 
@@ -157,6 +153,13 @@ void ProductionManager::manageBuildOrderQueue()
 		// check to see if we can make it right now
 		bool canMake = canMakeNow(producer, currentItem.metaType);
 
+		// Check if it's an upgrade, just do it right away and continue on
+		// Was waiting before
+		if (canMake && currentItem.metaType.isUpgrade()) {
+			create(producer, currentItem);
+			_queue.removeCurrentHighestPriorityItem();
+			break;
+		} else 
 		// if we try to build too many refineries manually remove it
 		if (currentItem.metaType.isRefinery() && (BWAPI::Broodwar->self()->allUnitCount(BWAPI::Broodwar->self()->getRace().getRefinery() >= 3)))
 		{
@@ -474,6 +477,7 @@ bool ProductionManager::detectBuildOrderDeadlock()
 
 	// are any supply providers being built currently
 	bool supplyInProgress =	BuildingManager::Instance().isBeingBuilt(BWAPI::Broodwar->self()->getRace().getSupplyProvider());
+	int count = 0;
 
     for (auto & unit : BWAPI::Broodwar->self()->getUnits())
     {
@@ -481,8 +485,7 @@ bool ProductionManager::detectBuildOrderDeadlock()
         {
             if (unit->getBuildType() == BWAPI::UnitTypes::Zerg_Overlord)
             {
-                supplyInProgress = true;
-                break;
+				++count;
             }
         }
     }
@@ -490,20 +493,12 @@ bool ProductionManager::detectBuildOrderDeadlock()
 	// does the current item being built require more supply
     
 	int supplyCost			= _queue.getHighestPriorityItem().metaType.supplyRequired();
-	int supplyAvailable		= std::max(0, BWAPI::Broodwar->self()->supplyTotal() - BWAPI::Broodwar->self()->supplyUsed());
+	int supplyAvailable		= BWAPI::Broodwar->self()->supplyTotal() - BWAPI::Broodwar->self()->supplyUsed();
 
 	// if we don't have enough supply and none is being built, there's a deadlock
-	if ((supplyAvailable < supplyCost) && !supplyInProgress)
+	if ((supplyAvailable < supplyCost) || (((count * 9) + supplyAvailable) < supplyCost))
 	{
-        // if we're zerg, check to see if a building is planned to be built
-        if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Zerg && BuildingManager::Instance().buildingsQueued().size() > 0)
-        {
-            return false;
-        }
-        else
-        {
-		    return true;
-        }
+		return true;
 	}
 
 	return false;

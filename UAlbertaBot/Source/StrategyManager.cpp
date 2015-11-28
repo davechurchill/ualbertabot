@@ -288,11 +288,14 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
 	int numScourge		= UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Scourge);
     int numGuardians    = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Guardian);
 	int numOverlords    = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Overlord);
+
 	int mutasWanted = numMutas + 6;
 	int hydrasWanted = numHydras + 6;
 	int lurkersWanted = numLurkers + 3;
 
-
+	if (numCC * (15) > numWorkers) {
+		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Drone, numWorkers + 3));
+	}
 
     if (Config::Strategy::StrategyName == "Zerg_ZerglingRush")
     {
@@ -332,7 +335,6 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
         goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Hatchery, numCC + 1));
 		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Extractor, numExtractor + 1));
     }
-<<<<<<< HEAD
 
 	// Gets the upgrade order
 	// Is mutable now, updates int in upgradeorder to the next
@@ -350,12 +352,6 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
 			// Update the order in the map
 			_strategies[Config::Strategy::StrategyName]._upgradeOrder = upgradeOrder;
 		}
-	}
-
-
-	if (numOverlords < 4)
-	{
-		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Overlord, numOverlords + 1));
 	}
 	return goal;
 }
