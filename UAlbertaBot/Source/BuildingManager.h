@@ -30,6 +30,10 @@ class BuildingManager
     void            checkForCompletedBuildings();			// STEP 6
 
     char            getBuildingWorkerCode(const Building & b) const;
+
+	//this is used to get a location for photon cannons to be placed
+	//near checkpoints
+	BWAPI::TilePosition PhotonLocationReassignment(BWAPI::TilePosition OldLocation);
     
 
 public:
@@ -46,6 +50,7 @@ public:
     int                 getReservedMinerals();
     int                 getReservedGas();
 
+	int					cannonsBuilt;
     bool                isBeingBuilt(BWAPI::UnitType type);
 
     std::vector<BWAPI::UnitType> buildingsQueued();
