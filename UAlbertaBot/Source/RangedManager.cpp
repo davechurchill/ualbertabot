@@ -98,11 +98,11 @@ BWAPI::Unit RangedManager::getTarget(BWAPI::Unit rangedUnit, const BWAPI::Unitse
 {
 	BWAPI::Unit chosenTarget= nullptr;
 	int highPriority = 0;
-	double lowest_hp = std::numeric_limits<double>::infinity();
+	int lowest_hp = std::numeric_limits<int>::infinity();
 	double bestLTD = 0;
 	
 	for(const auto & target : targets){
-		double hp = target->getHitPoints();
+		int hp = target->getHitPoints();
 		double LTD = UnitUtil::CalculateLTD(target, rangedUnit);
 		int priority            = getAttackPriority(rangedUnit, target);
         bool targetIsThreat     = LTD > 0;
@@ -113,6 +113,7 @@ BWAPI::Unit RangedManager::getTarget(BWAPI::Unit rangedUnit, const BWAPI::Unitse
 			chosenTarget = target;
 		}       
 	}
+    BWAPI::Broodwar->printf("%d",lowest_hp);
 	return chosenTarget;
 }
 

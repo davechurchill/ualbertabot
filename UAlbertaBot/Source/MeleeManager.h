@@ -26,6 +26,6 @@ public:
     void assignTargetsNew(const BWAPI::Unitset & targets);
     void assignTargetsOld(const BWAPI::Unitset & targets);
 	
-	void blockAttack(const BWAPI::Unitset & protect, const BWAPI::Unitset & targets);
+	void moveToFront(const BWAPI::Unit & meleeUnit);
 };
 }
