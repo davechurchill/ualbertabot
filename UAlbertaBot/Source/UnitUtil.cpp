@@ -177,44 +177,8 @@ size_t UnitUtil::GetAllUnitCount(BWAPI::UnitType type)
 
     return count;
 }
-/*NEW*/
-/*
-Defining the most dangerous unit as the unit
-with the highest hp and is ready to attack our
-units
-*/
 
-BWAPI::Unit UnitUtil::GetDangerousUnitTypeToTarget(BWAPI::UnitType type)
-{
-	BWAPI::Unit dangerUnit = nullptr;
-    double highest_hp=0;
-	
-	for (auto & unit : BWAPI::Broodwar->self()->getUnits())
-	{
-		if (unit->getType() == type)
-		{
-			double hp=unit->getHitPoints();
-			if(unit->getGroundWeaponCooldown()==0 || unit->getAirWeaponCooldown()==0 ||  unit->getSpellCooldown()==0)
-			{
-				if(!dangerUnit || highest_hp<hp)
-				{
-					dangerUnit = unit;
-					highest_hp=hp;
-				}
-			}
-			else
-			{
-				if(!dangerUnit || highest_hp<hp)
-				{
-					dangerUnit = unit;
-					highest_hp=hp;
-				}
-			}
-		}
-	}
 
-	return dangerUnit;
-}
 BWAPI::Unit UnitUtil::GetClosestUnitTypeToTarget(BWAPI::UnitType type, BWAPI::Position target)
 {
 	BWAPI::Unit closestUnit = nullptr;

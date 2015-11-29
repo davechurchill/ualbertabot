@@ -62,6 +62,7 @@ void MeleeManager::assignTargetsOld(const BWAPI::Unitset & targets)
 				{
 					// move to it
 					Micro::SmartMove(meleeUnit, order.getPosition());
+					//moveToFront(meleeUnit);
 				}
 			}
 		}
@@ -94,34 +95,30 @@ std::pair<BWAPI::Unit, BWAPI::Unit> MeleeManager::findClosestUnitPair(const BWAP
 
     return closestPair;
 }
-/*void MeleeManager::blockAttack(const BWAPI::Unitset & protect, const BWAPI::Unitset & targets){
-	for (auto & target : targets){
-		if(target->isAttackFrame()){
-			BWAPI::Unit deadman = nullptr;
-			for(auto sacrifice : protect ){
-				if( sacrifice->getType() == BWAPI::UnitTypes::Protoss_Zealot){
-					deadman = sacrifice;
-					break;
-				}
-			}
-		BWAPI::Position location=target->getPosition();
-		deadman->move(location);
-		}
+void MeleeManager::moveToFront(const BWAPI::Unit & meleeUnit)
+{
+	double pi = 3.14159265359;
+	if(meleeUnit->getType()==BWAPI::UnitTypes::Protoss_Zealot)
+	{
+		BWAPI::Position center = MicroManager::calcCenter();
+		double angle = meleeUnit->getAngle()*(180/pi);
+		center.x=center.x+(int)(5*cos(angle));
+		center.y=center.y+(int)(5*sin(angle));
+		meleeUnit->move(center);
 	}
-}*/
+}
 // get a target for the meleeUnit to attack
 BWAPI::Unit MeleeManager::getTarget(BWAPI::Unit meleeUnit, const BWAPI::Unitset & targets)
 {
+	
 	int highPriority = 0;
-	double lowest_hp = std::numeric_limits<double>::infinity();
+	int lowest_hp = std::numeric_limits<int>::infinity();
 	BWAPI::Unit chosenTarget = nullptr;
-
 	// for each target possiblity
 	for (auto & unit : targets)
 	{
 		int priority = getAttackPriority(meleeUnit, unit);
 		int hp = unit->getHitPoints();
-
 		// if it's a higher priority, or it's weaker, set it
 		if (!chosenTarget || (priority > highPriority) || (priority == highPriority && hp < lowest_hp))
 		{
@@ -130,7 +127,7 @@ BWAPI::Unit MeleeManager::getTarget(BWAPI::Unit meleeUnit, const BWAPI::Unitset 
 			chosenTarget = unit;
 		}
 	}
-
+	BWAPI::Broodwar->printf("%d",lowest_hp);
 	return chosenTarget;
 }
 
