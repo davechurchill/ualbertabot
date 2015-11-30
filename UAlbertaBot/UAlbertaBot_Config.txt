@@ -78,7 +78,7 @@
     
     "Strategy" :
     {
-        "Protoss"                   : "Protoss_ZealotRush",
+        "Protoss"                   : "ProtossTBJY",
         "Terran"                    : "Terran_MarineRush",
         "Zerg"                      : "Zerg_ZerglingRush",
         

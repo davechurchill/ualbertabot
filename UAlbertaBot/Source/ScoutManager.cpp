@@ -200,11 +200,11 @@ void ScoutManager::followPerimeter()
 
 void ScoutManager::gasSteal()
 {
-    if (!Config::Strategy::GasStealWithScout)
+   /* if (!Config::Strategy::GasStealWithScout)
     {
         _gasStealStatus = "Not using gas steal";
         return;
-    }
+    }*/
 
     if (_didGasSteal)
     {
@@ -216,7 +216,11 @@ void ScoutManager::gasSteal()
         _gasStealStatus = "No worker scout";
         return;
     }
-
+    BWAPI::Race enemyRace = BWAPI::Broodwar->enemy()->getRace();
+    if (enemyRace == BWAPI::Races::Zerg){
+        _gasStealStatus = "Enemy is zerg. Don't bother with gas steal.";
+        return;
+    }
     BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
     if (!enemyBaseLocation)
     {
