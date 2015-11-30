@@ -281,78 +281,14 @@ bool BuildingManager::isEvolvedBuilding(BWAPI::UnitType type)
 void BuildingManager::addBuildingTask(BWAPI::UnitType type, BWAPI::TilePosition desiredLocation, bool isGasSteal)
 {
 
-	
-	if (pylonAmount == 1 && type==BWAPI::UnitTypes::Protoss_Pylon){
-	
-		BWTA::BaseLocation* base = BWTA::getNearestBaseLocation(desiredLocation);
-		BWTA::Chokepoint* Choke = BWTA::getNearestChokepoint(base->getPosition());
+	_reservedMinerals += type.mineralPrice();
+	_reservedGas += type.gasPrice();
 
-		if (BWAPI::Broodwar->isExplored(Choke->getCenter().x, Choke->getCenter().y)){
+	Building b(type, desiredLocation);
+	b.isGasSteal = isGasSteal;
+	b.status = BuildingStatus::Unassigned;
 
-
-			BWAPI::TilePosition chokeTile =  BWAPI::TilePosition(Choke->getCenter());
-			bool valid = chokeTile.isValid();
-
-			if (valid){
-			
-				//BWAPI::Broodwar->printf("choke center is valid");
-
-			
-			}
-
-			int directionX = (base->getPosition().x - chokeTile.x) < 0 ? -1 : 1;
-			int directionY = (base->getPosition().y - chokeTile.y) < 0 ? -1 : 1;
-
-			int moveBackX = 0;
-			int moveBackY = 0;
-
-			chokeTile.x += (directionX * moveBackX);
-			chokeTile.y += (directionY * moveBackY);
-
-			
-
-
-			int dist = desiredLocation.getApproxDistance(chokeTile);
-			desiredLocation.y = 0;
-			std::string s = std::to_string(dist);
-			char const *pchar = s.c_str();
-			BWAPI::Broodwar->printf(pchar);
-			BWAPI::TilePosition TILE = BWAPI::TilePosition(BWAPI::Broodwar->self()->getStartLocation().x + 1, BWAPI::Broodwar->self()->getStartLocation().y + 1);
-			Building c(type, TILE);
-
-			c.isGasSteal = isGasSteal;
-			c.status = BuildingStatus::Unassigned;
-			_reservedMinerals += type.mineralPrice();
-			_reservedGas += type.gasPrice();
-
-
-
-			//bool const canBuild = BuildingPlacer::Instance().canBuildHere(chokeTile, c);
-		
-			_buildings.push_back(c);
-			pylonAmount++;
-			return;
-			//bool const canBuild =  BuildingPlacer::canBuildHere(chokeTile,&c);
-
-		}
-	
-	}
-
-	if (type == BWAPI::UnitTypes::Protoss_Pylon){
-
-		pylonAmount++;
-	}
-
-    _reservedMinerals += type.mineralPrice();
-    _reservedGas	     += type.gasPrice();
-
-
-
-    Building b(type, desiredLocation);
-    b.isGasSteal = isGasSteal;
-    b.status = BuildingStatus::Unassigned;
-
-    _buildings.push_back(b);
+	_buildings.push_back(b);
 }
 
 bool BuildingManager::isBuildingPositionExplored(const Building & b) const

@@ -14,6 +14,7 @@ class ScoutManager
 	int				                _numWorkerScouts;
 	bool			                _scoutUnderAttack;
     bool                            _didGasSteal;
+	bool							_didExpansion;
     bool                            _gasStealFinished;
     int                             _currentRegionVertexIndex;
     int                             _previousScoutHP;
@@ -30,6 +31,7 @@ class ScoutManager
 	void                            moveScouts();
     void                            drawScoutInformation(int x, int y);
     void                            calculateEnemyRegionVertices();
+	BWAPI::Position					stealEnemyExpansion();
 
 	ScoutManager();
 
