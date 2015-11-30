@@ -281,8 +281,8 @@ bool BuildingManager::isEvolvedBuilding(BWAPI::UnitType type)
 void BuildingManager::addBuildingTask(BWAPI::UnitType type, BWAPI::TilePosition desiredLocation, bool isGasSteal)
 {
 
-
-	if (pylonAmount == 0 && type==BWAPI::UnitTypes::Protoss_Pylon){
+	
+	if (pylonAmount == 1 && type==BWAPI::UnitTypes::Protoss_Pylon){
 	
 		BWTA::BaseLocation* base = BWTA::getNearestBaseLocation(desiredLocation);
 		BWTA::Chokepoint* Choke = BWTA::getNearestChokepoint(base->getPosition());
@@ -291,36 +291,56 @@ void BuildingManager::addBuildingTask(BWAPI::UnitType type, BWAPI::TilePosition 
 
 
 			BWAPI::TilePosition chokeTile =  BWAPI::TilePosition(Choke->getCenter());
+			bool valid = chokeTile.isValid();
+
+			if (valid){
+			
+				//BWAPI::Broodwar->printf("choke center is valid");
+
+			
+			}
+
 			int directionX = (base->getPosition().x - chokeTile.x) < 0 ? -1 : 1;
 			int directionY = (base->getPosition().y - chokeTile.y) < 0 ? -1 : 1;
 
-			chokeTile.x += (directionX * 1);
-			chokeTile.y += (directionY * 1);
-			Building  c(type, chokeTile);
+			int moveBackX = 0;
+			int moveBackY = 0;
 
-			int moveBackX = 1;
-			int moveBackY = 1;
+			chokeTile.x += (directionX * moveBackX);
+			chokeTile.y += (directionY * moveBackY);
 
-			///bool const canBuild = BuildingPlacer::canBuildHere( BuildingPlacer::GetBuildLocation(&c,2) , &c);
-
-			//BWAPI::TilePosition BuildingPlacer::GetBuildLocation(const Building & b, int padding)
 			
-			//turns out it explores spots that are in the build list. 
-			// so i dont have to cehck that.
-			//i have to check if i can build where I want to build.
-			BWAPI::Broodwar->printf("we've seen the chokepoint");
-			
-			_reservedMinerals += type.mineralPrice();
-			_reservedGas += type.gasPrice();
+
+
+			int dist = desiredLocation.getApproxDistance(chokeTile);
+			desiredLocation.y = 0;
+			std::string s = std::to_string(dist);
+			char const *pchar = s.c_str();
+			BWAPI::Broodwar->printf(pchar);
+			BWAPI::TilePosition TILE = BWAPI::TilePosition(BWAPI::Broodwar->self()->getStartLocation().x + 1, BWAPI::Broodwar->self()->getStartLocation().y + 1);
+			Building c(type, TILE);
+
 			c.isGasSteal = isGasSteal;
 			c.status = BuildingStatus::Unassigned;
-			pylonAmount++;
+			_reservedMinerals += type.mineralPrice();
+			_reservedGas += type.gasPrice();
+
+
+
+			//bool const canBuild = BuildingPlacer::Instance().canBuildHere(chokeTile, c);
+		
 			_buildings.push_back(c);
+			pylonAmount++;
 			return;
 			//bool const canBuild =  BuildingPlacer::canBuildHere(chokeTile,&c);
 
 		}
 	
+	}
+
+	if (type == BWAPI::UnitTypes::Protoss_Pylon){
+
+		pylonAmount++;
 	}
 
     _reservedMinerals += type.mineralPrice();

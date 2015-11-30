@@ -48,6 +48,8 @@ public:
     void					drawReservedTiles();
     void					computeResourceBox();
 
+	bool					getCanBuildHere(BWAPI::TilePosition position, Building & b);
+
     BWAPI::TilePosition		getRefineryPosition();
 
 };

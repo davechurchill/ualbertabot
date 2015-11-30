@@ -405,4 +405,3 @@ bool BuildingPlacer::isReserved(int x, int y) const
 
     return _reserveMap[x][y];
 }
-
