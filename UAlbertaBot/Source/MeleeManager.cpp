@@ -127,7 +127,7 @@ BWAPI::Unit MeleeManager::getTarget(BWAPI::Unit meleeUnit, const BWAPI::Unitset 
 			chosenTarget = unit;
 		}
 	}
-	BWAPI::Broodwar->printf("%d",lowest_hp);
+	BWAPI::Broodwar->printf("%d %d",lowest_hp, chosenTarget->getHitPoints());
 	return chosenTarget;
 }
 
