@@ -11,6 +11,7 @@ BuildingManager::BuildingManager()
     , _reservedGas(0)
 {
 	cannonsBuilt = 0;
+	pylonAmount = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Pylon);
 }
 
 // gets called every frame from GameCommander
@@ -279,6 +280,48 @@ bool BuildingManager::isEvolvedBuilding(BWAPI::UnitType type)
 // add a new building to be constructed
 void BuildingManager::addBuildingTask(BWAPI::UnitType type, BWAPI::TilePosition desiredLocation, bool isGasSteal)
 {
+
+
+	if (pylonAmount == 0 && type==BWAPI::UnitTypes::Protoss_Pylon){
+	
+		BWTA::BaseLocation* base = BWTA::getNearestBaseLocation(desiredLocation);
+		BWTA::Chokepoint* Choke = BWTA::getNearestChokepoint(base->getPosition());
+
+		if (BWAPI::Broodwar->isExplored(Choke->getCenter().x, Choke->getCenter().y)){
+
+
+			BWAPI::TilePosition chokeTile =  BWAPI::TilePosition(Choke->getCenter());
+			int directionX = (base->getPosition().x - chokeTile.x) < 0 ? -1 : 1;
+			int directionY = (base->getPosition().y - chokeTile.y) < 0 ? -1 : 1;
+
+			chokeTile.x += (directionX * 1);
+			chokeTile.y += (directionY * 1);
+			Building  c(type, chokeTile);
+
+			int moveBackX = 1;
+			int moveBackY = 1;
+
+			///bool const canBuild = BuildingPlacer::canBuildHere( BuildingPlacer::GetBuildLocation(&c,2) , &c);
+
+			//BWAPI::TilePosition BuildingPlacer::GetBuildLocation(const Building & b, int padding)
+			
+			//turns out it explores spots that are in the build list. 
+			// so i dont have to cehck that.
+			//i have to check if i can build where I want to build.
+			BWAPI::Broodwar->printf("we've seen the chokepoint");
+			
+			_reservedMinerals += type.mineralPrice();
+			_reservedGas += type.gasPrice();
+			c.isGasSteal = isGasSteal;
+			c.status = BuildingStatus::Unassigned;
+			pylonAmount++;
+			_buildings.push_back(c);
+			return;
+			//bool const canBuild =  BuildingPlacer::canBuildHere(chokeTile,&c);
+
+		}
+	
+	}
 
     _reservedMinerals += type.mineralPrice();
     _reservedGas	     += type.gasPrice();
