@@ -280,14 +280,6 @@ bool BuildingManager::isEvolvedBuilding(BWAPI::UnitType type)
 void BuildingManager::addBuildingTask(BWAPI::UnitType type, BWAPI::TilePosition desiredLocation, bool isGasSteal)
 {
 
-	if (type==BWAPI::UnitTypes::Protoss_Photon_Cannon){
-	
-		BWAPI::TilePosition trueLocation = PhotonLocationReassignment(desiredLocation);
-		desiredLocation = trueLocation;
-		cannonsBuilt++;
-	}
-
-
     _reservedMinerals += type.mineralPrice();
     _reservedGas	     += type.gasPrice();
 
@@ -462,52 +454,3 @@ void BuildingManager::removeBuildings(const std::vector<Building> & toRemove)
     }
 }
 
-
-BWAPI::TilePosition BuildingManager::PhotonLocationReassignment(BWAPI::TilePosition OldLocation){
-
-	BWTA::Chokepoint* nearestChoke = BWTA::getNearestChokepoint(OldLocation);
-	std::pair<BWAPI::Position, BWAPI::Position> ChokeSides = nearestChoke->getSides();
-	int x1 = ChokeSides.first.x;
-	int y1 = ChokeSides.first.y;
-	int x2 = ChokeSides.second.x;
-	int y2 = ChokeSides.second.y;
-
-
-	bool canBuild1 = BWAPI::Broodwar->isBuildable(x1,y1 , true);
-	bool canBuild2 = BWAPI::Broodwar->isBuildable(x2 , y2, true);
-
-	if (canBuild1){
-	
-		return BWAPI::TilePosition(ChokeSides.first);
-	}
-
-	else if (canBuild2){
-	
-		return BWAPI::TilePosition(ChokeSides.second);
-	}
-
-	else if (!canBuild1 && !canBuild2){
-	
-		const BWAPI::Position baseLocation = BWTA::BaseLocation::getPosition;
-		
-		int moveWhichWayX = 0;
-		int moveWhichWayY = 0;
-
-
-		//alternate which side of the chokepoint
-		//the cannons will be built
-
-		if (cannonsBuilt % 2 == 0){
-			moveWhichWayX = (baseLocation.x - ChokeSides.first.x) < 0 ? -1 : 1;
-			moveWhichWayY = (baseLocation.y - ChokeSides.first.y) < 0 ? -1 : 1;
-		}
-		else{
-			moveWhichWayX = (baseLocation.x - ChokeSides.second.x) < 0 ? -1 : 1;
-			moveWhichWayY = (baseLocation.y - ChokeSides.second.y) < 0 ? -1 : 1;
-		}
-		int move = 1 + cannonsBuilt;
-
-		return BWAPI::TilePosition(move*moveWhichWayX , move * moveWhichWayY);
-		
-	}
-}
