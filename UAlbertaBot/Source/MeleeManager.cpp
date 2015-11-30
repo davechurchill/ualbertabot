@@ -62,7 +62,7 @@ void MeleeManager::assignTargetsOld(const BWAPI::Unitset & targets)
 				{
 					// move to it
 					Micro::SmartMove(meleeUnit, order.getPosition());
-					//moveToFront(meleeUnit);
+					moveToFront(meleeUnit);
 				}
 			}
 		}
@@ -95,6 +95,7 @@ std::pair<BWAPI::Unit, BWAPI::Unit> MeleeManager::findClosestUnitPair(const BWAP
 
     return closestPair;
 }
+//Attempt to get Zealots to become the closest unit to enemy
 void MeleeManager::moveToFront(const BWAPI::Unit & meleeUnit)
 {
 	double pi = 3.14159265359;
@@ -127,7 +128,7 @@ BWAPI::Unit MeleeManager::getTarget(BWAPI::Unit meleeUnit, const BWAPI::Unitset 
 			chosenTarget = unit;
 		}
 	}
-	BWAPI::Broodwar->printf("%d",lowest_hp);
+	//BWAPI::Broodwar->printf("%d %d",lowest_hp, chosenTarget->getHitPoints());
 	return chosenTarget;
 }
 
