@@ -114,7 +114,7 @@ bool WorkerManager::isGasStealRefinery(BWAPI::Unit unit)
     
 	for (auto & u : enemyBaseLocation->getGeysers())
 	{
-        if (unit->getTilePosition() == u->getTilePosition())
+		if (unit->getTilePosition() == ((BWAPI::Unit)u)->getTilePosition())
         {
             return true;
         }

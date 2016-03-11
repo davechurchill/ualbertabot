@@ -41,9 +41,11 @@ void InformationManager::updateUnitInfo()
 
 void InformationManager::initializeRegionInformation() 
 {
+	BWAPI::Player tmp = BWAPI::Broodwar->self();
 	// set initial pointers to null
-	_mainBaseLocations[_self] = BWTA::getStartLocation(BWAPI::Broodwar->self());
-	_mainBaseLocations[_enemy] = BWTA::getStartLocation(BWAPI::Broodwar->enemy());
+	_mainBaseLocations[_self] = BWTA::getStartLocation(tmp);
+	BWAPI::Player tmp1 = BWAPI::Broodwar->self();
+	_mainBaseLocations[_enemy] = BWTA::getStartLocation(tmp1);
 
 	// push that region into our occupied vector
 	updateOccupiedRegions(BWTA::getRegion(_mainBaseLocations[_self]->getTilePosition()), BWAPI::Broodwar->self());
@@ -404,16 +406,24 @@ void InformationManager::drawMapInformation()
 		BWAPI::Broodwar->drawBoxMap(p.x * 32, p.y * 32, p.x * 32 + 4 * 32, p.y * 32 + 3 * 32, BWAPI::Colors::Blue);
 
 		//draw a circle at each mineral patch
-		for (BWAPI::Unitset::iterator j = (*i)->getStaticMinerals().begin(); j != (*i)->getStaticMinerals().end(); j++)
+		//BWTA::BaseLocation & tmp;
+		//BWTA::BaseLocation * base = *i;
+		//base->getStaticMinerals().begin
+		BWAPI::Unitset::iterator j = ((*i)->getStaticMinerals().begin());
+		//BWAPI::Unitset::iterator j ();
+
+		for (; j != (*i)->getStaticMinerals().end(); j++)
 		{
-			BWAPI::Position q = (*j)->getInitialPosition();
+			BWAPI::Position q = ((BWAPI::Unit)(*j))->getInitialPosition();
 			BWAPI::Broodwar->drawCircleMap(q.x, q.y, 30, BWAPI::Colors::Cyan);
 		}
 
+		BWAPI::Unitset::iterator kk = ((*i)->getGeysers().begin());
+
 		//draw the outlines of vespene geysers
-		for (BWAPI::Unitset::iterator j = (*i)->getGeysers().begin(); j != (*i)->getGeysers().end(); j++)
+		for (; kk != (*i)->getGeysers().end(); kk++)
 		{
-			BWAPI::TilePosition q = (*j)->getInitialTilePosition();
+			BWAPI::TilePosition q = ((BWAPI::Unit)(*kk))->getInitialTilePosition();
 			BWAPI::Broodwar->drawBoxMap(q.x * 32, q.y * 32, q.x * 32 + 4 * 32, q.y * 32 + 2 * 32, BWAPI::Colors::Orange);
 		}
 

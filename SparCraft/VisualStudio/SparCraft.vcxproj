@@ -73,7 +73,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SDL_IMAGE_DIR);$(SDL_GFX_DIR);$(SDL_DIR)/include;$(BWAPI_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SDL_IMAGE_DIR);$(SDL_GFX_DIR);$(SDL_DIR)/include;$(BWAPI_DIR)/include;G:\bwapi\bwapi\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -96,7 +96,7 @@
     <ClCompile>
       <Optimization>Full</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(BWAPI_DIR);$(BWAPI_DIR)\include;$(SDL_DIR)\include;$(SDL_IMAGE_DIR);$(SDL_GFX_DIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BWAPI_DIR);$(BWAPI_DIR)\include;$(SDL_DIR)\include;$(SDL_IMAGE_DIR);$(SDL_GFX_DIR);G:\bwapi\bwapi\include;G:\bwapi\bwapi;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;NOMINMAX;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
