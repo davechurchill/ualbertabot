@@ -404,7 +404,9 @@ BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
 
         for (auto & unit : enemyBaseLocation->getGeysers())
         {
-            BWAPI::TilePosition tp(unit->getInitialTilePosition());
+			//BWAPI::Point<int, 32> pt = unit->getInitialTilePosition();
+			//::UnitInterface tmp = (BWAPI::UnitInterface)unit;
+			BWAPI::TilePosition tp(((BWAPI::Unit) unit)->getInitialTilePosition());
             return tp;
         }
     }

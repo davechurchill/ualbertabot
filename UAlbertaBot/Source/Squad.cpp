@@ -366,7 +366,8 @@ BWAPI::Position Squad::calcRegroupPosition()
 
 	if (regroup == BWAPI::Position(0,0))
 	{
-		return BWTA::getRegion(BWTA::getStartLocation(BWAPI::Broodwar->self())->getTilePosition())->getCenter();
+		BWAPI::Player tmp = BWAPI::Broodwar->self();
+		return BWTA::getRegion(BWTA::getStartLocation(tmp)->getTilePosition())->getCenter();
 	}
 	else
 	{

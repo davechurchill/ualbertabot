@@ -4,8 +4,9 @@ echo Please edit this file before running for the first time
 
 pause
 
-setx BWAPI_DIR %CD%\bwapidata
-setx BOOST_DIR C:\libraries\boost_1_53_0
+setx BWAPI_DIR G:\bwapi\bwapi\include
+setx BWTA_DIR G:\AIUR\
+setx BOOST_DIR E:\boost_1_56_0
 setx EXTERNAL_LIB_DIR c:\libraries\external_lib_dir
 setx SDL_DIR C:\libraries\SDL-1.2.15
 setx SDL_IMAGE_DIR C:\libraries\SDL_image-1.2.12
