@@ -7,12 +7,12 @@ Player_AttackWeakest::Player_AttackWeakest (const IDType & playerID)
 	_playerID = playerID;
 }
 
-void Player_AttackWeakest::getMoves(GameState & state, const MoveArray & moves, std::vector<UnitAction> & moveVec)
+void Player_AttackWeakest::getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec)
 {
     moveVec.clear();
 	for (IDType u(0); u<moves.numUnits(); ++u)
 	{
-		bool foundUnitAction						(false);
+		bool foundAction						(false);
 		size_t actionMoveIndex					(0);
 		size_t closestMoveIndex					(0);
 		size_t actionLowestHP					(1000000);
@@ -23,31 +23,31 @@ void Player_AttackWeakest::getMoves(GameState & state, const MoveArray & moves, 
 
 		for (size_t m(0); m<moves.numMoves(u); ++m)
 		{
-			const UnitAction move						(moves.getMove(u, m));
+			const Action move						(moves.getMove(u, m));
 				
-			if (move.type() == UnitActionTypes::ATTACK)
+			if (move.type() == ActionTypes::ATTACK)
 			{
-				const Unit & target				(state.getUnit(state.getEnemy(move.player()), move._moveIndex));
+				const Unit & target				(state.getUnit(state.getEnemy(move.player()), move.index()));
 
 				if ((size_t)target.currentHP() < actionLowestHP)
 				{
 					actionLowestHP = target.currentHP();
 					actionMoveIndex = m;
-					foundUnitAction = true;
+					foundAction = true;
 				}
 			}
-			else if (move.type() == UnitActionTypes::HEAL)
+			else if (move.type() == ActionTypes::HEAL)
 			{
-				const Unit & target				(state.getUnit(move.player(), move._moveIndex));
+				const Unit & target				(state.getUnit(move.player(), move.index()));
 
 				if ((size_t)target.currentHP() < actionLowestHP)
 				{
 					actionLowestHP = target.currentHP();
 					actionMoveIndex = m;
-					foundUnitAction = true;
+					foundAction = true;
 				}
 			}
-			else if (move.type() == UnitActionTypes::RELOAD)
+			else if (move.type() == ActionTypes::RELOAD)
 			{
 				if (ourUnit.canAttackTarget(closestUnit, state.getTime()))
 				{
@@ -55,10 +55,10 @@ void Player_AttackWeakest::getMoves(GameState & state, const MoveArray & moves, 
 					break;
 				}
 			}
-			else if (move.type() == UnitActionTypes::MOVE)
+			else if (move.type() == ActionTypes::MOVE)
 			{
-				Position ourDest				(ourUnit.x() + Constants::Move_Dir[move._moveIndex][0], 
-												 ourUnit.y() + Constants::Move_Dir[move._moveIndex][1]);
+				Position ourDest				(ourUnit.x() + Constants::Move_Dir[move.index()][0], 
+												 ourUnit.y() + Constants::Move_Dir[move.index()][1]);
 				size_t dist						(closestUnit.getDistanceSqToPosition(ourDest, state.getTime()));
 
 				if (dist < closestMoveDist)
@@ -69,7 +69,7 @@ void Player_AttackWeakest::getMoves(GameState & state, const MoveArray & moves, 
 			}
 		}
 
-		size_t bestMoveIndex(foundUnitAction ? actionMoveIndex : closestMoveIndex);
+		size_t bestMoveIndex(foundAction ? actionMoveIndex : closestMoveIndex);
 			
 		moveVec.push_back(moves.getMove(u, bestMoveIndex));
 	}

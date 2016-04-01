@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Common.h"
-#include "UnitAction.hpp"
+#include "Action.h"
 
 namespace SparCraft
 {
@@ -17,7 +17,7 @@ class UCTNode
     // game specific variables
     size_t                      _player;            // the player who made a move to generate this node
     IDType                      _nodeType;
-    std::vector<UnitAction>     _move;              // the ove that generated this node
+    std::vector<Action>     _move;              // the ove that generated this node
 
     // holds children
     std::vector<UCTNode>        _children;
@@ -38,7 +38,7 @@ public:
 
     }
 
-    UCTNode (UCTNode * parent, const IDType player, const IDType nodeType, const std::vector<UnitAction> & move, const size_t & maxChildren, std::vector<UCTNode> * fromPool = NULL)
+    UCTNode (UCTNode * parent, const IDType player, const IDType nodeType, const std::vector<Action> & move, const size_t & maxChildren, std::vector<UCTNode> * fromPool = NULL)
         : _numVisits            (0)
         , _numWins              (0)
         , _uctVal               (0)
@@ -67,17 +67,17 @@ public:
 
     std::vector<UCTNode> & getChildren()                        { return _children; }
 
-    const std::vector<UnitAction> & getMove() const
+    const std::vector<Action> & getMove() const
     {
         return _move;
     }
 
-    void setMove(const std::vector<UnitAction> & move)
+    void setMove(const std::vector<Action> & move)
     {
         _move = move;
     }
 
-    void addChild(UCTNode * parent, const IDType player, const IDType nodeType, const std::vector<UnitAction> & move, const size_t & maxChildren, std::vector<UCTNode> * fromPool = NULL)
+    void addChild(UCTNode * parent, const IDType player, const IDType nodeType, const std::vector<Action> & move, const size_t & maxChildren, std::vector<UCTNode> * fromPool = NULL)
     {
         _children.push_back(UCTNode(parent, player, nodeType, move, maxChildren));
     }

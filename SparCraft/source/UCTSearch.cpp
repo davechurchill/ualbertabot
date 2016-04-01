@@ -27,7 +27,7 @@ void UCTSearch::setMemoryPool(UCTMemoryPool * pool)
     _memoryPool = pool;
 }
 
-void UCTSearch::doSearch(GameState & initialState, std::vector<UnitAction> & move)
+void UCTSearch::doSearch(GameState & initialState, std::vector<Action> & move)
 {
     Timer t;
     t.start();
@@ -94,7 +94,7 @@ void UCTSearch::generateOrderedMoves(GameState & state, MoveArray & moves, const
     if (_params.playerModel(playerToMove) != PlayerModels::None)
 	{
         // put the vector into the ordered moves array
-        _orderedMoves.add(std::vector<UnitAction>());
+        _orderedMoves.add(std::vector<Action>());
 
         // generate the moves into that vector
 		_playerModels[playerToMove]->getMoves(state, moves, _orderedMoves[0]);
@@ -107,7 +107,7 @@ void UCTSearch::generateOrderedMoves(GameState & state, MoveArray & moves, const
     {
         for (size_t s(0); s<_params.getOrderedMoveScripts().size(); s++)
 	    {
-            std::vector<UnitAction> moveVec;
+            std::vector<Action> moveVec;
 		    _allScripts[playerToMove][s]->getMoves(state, moves, moveVec);
 		    _orderedMoves.add(moveVec);
 	    }
@@ -143,7 +143,7 @@ const size_t UCTSearch::getChildNodeType(UCTNode & parent, const GameState & pre
     return SearchNodeType::Default;
 }
 
-const bool UCTSearch::getNextMove(IDType playerToMove, MoveArray & moves, const size_t & moveNumber, std::vector<UnitAction> & actionVec)
+const bool UCTSearch::getNextMove(IDType playerToMove, MoveArray & moves, const size_t & moveNumber, std::vector<Action> & actionVec)
 {
     if (moveNumber > _params.maxChildren())
     {

@@ -2,7 +2,7 @@
 
 #include "Common.h"
 
-#include "UnitAction.hpp"
+#include "Action.h"
 #include "Position.hpp"
 #include "Hash.h"
 #include "PlayerProperties.h"
@@ -13,7 +13,7 @@
 namespace SparCraft
 {
 
-class UnitAction;
+class Action;
 
 class Unit 
 {
@@ -31,7 +31,7 @@ class Unit
 	TimeType            _timeCanMove;			// time the unit can next move
 	TimeType            _timeCanAttack;			// time the unit can next attack
 
-	UnitAction          _previousAction;		// the previous action that the unit performed
+	Action              _previousAction;		// the previous action that the unit performed
 	TimeType            _previousActionTime;	// the time the previous move was performed
 	Position            _previousPosition;
 
@@ -48,14 +48,14 @@ public:
 	const bool operator < (const Unit & rhs) const;
 
     // action functions
-	void                    setPreviousAction(const UnitAction & m, const TimeType & previousMoveTime);
+	void                    setPreviousAction(const Action & m, const TimeType & previousMoveTime);
 	void                    updateAttackActionTime(const TimeType & newTime);
 	void                    updateMoveActionTime(const TimeType & newTime);
-	void                    attack(const UnitAction & move, const Unit & target, const TimeType & gameTime);
-	void                    heal(const UnitAction & move, const Unit & target, const TimeType & gameTime);
-	void                    move(const UnitAction & move, const TimeType & gameTime) ;
-	void                    waitUntilAttack(const UnitAction & move, const TimeType & gameTime);
-	void                    pass(const UnitAction & move, const TimeType & gameTime);
+	void                    attack(const Action & move, const Unit & target, const TimeType & gameTime);
+	void                    heal(const Action & move, const Unit & target, const TimeType & gameTime);
+	void                    move(const Action & move, const TimeType & gameTime) ;
+	void                    waitUntilAttack(const Action & move, const TimeType & gameTime);
+	void                    pass(const Action & move, const TimeType & gameTime);
 	void                    takeAttack(const Unit & attacker);
 	void                    takeHeal(const Unit & healer);
 
@@ -122,7 +122,7 @@ public:
 	const int			    typeID()                    const;
 	const double		    speed()                     const;
 	const BWAPI::UnitType   type()                      const;
-	const UnitAction &	    previousAction()            const;
+	const Action &	        previousAction()            const;
 	const std::string       name()                      const;
 	void                    print()                     const;
     const std::string       debugString()               const;

@@ -1,22 +1,19 @@
-#include "Common.h"
-
-#ifdef USING_VISUALIZATION_LIBRARIES
-
 #pragma once
 
+#define NO_SDL_GLEXT
+
+#include "Common.h"
 #include "GameState.h"
 #include "AlphaBetaSearchResults.hpp"
 #include "AlphaBetaSearchParameters.hpp"
 #include "UCTSearchParameters.hpp"
 #include "Timer.h"
 
-#include "boost/foreach.hpp"
-
-#include "glfont/glfont.h"
 #include <SDL.h>
+#undef main
+
 #include <SDL_opengl.h>
 #include <SDL_image.h>
-#include <SDL_gfxPrimitives.h>
 
 #include <sys/stat.h>
 
@@ -43,46 +40,10 @@ struct float3
 	const float3 & operator /= (const float3 & v) { x/=v.x; y/=v.y; z/=v.z; return *this; }
 };
 
-struct int2
+class GUI
 {
-	int x,y;
-
-	int2() {}
-	int2(int x, int y) : x(x), y(y) {}
-
-	operator const int * () const { return &x; }
-};
-
-struct Shape
-{
-	std::vector<int2>	points;
-	float3				color;
-	bool				solid;
-public:
-	Shape(const float3 & color, bool solid) : color(color), solid(solid) {}
-
-	void AddPoint(const int2 & point) { points.push_back(point); }
-
-	void OnRender() const;
-};
-
-struct TextElement
-{
-	int2		position;
-	float3		color;
-	std::string	text;
-
-	TextElement() {}
-	TextElement(const int2 & position, const float3 & color, const char * text) : position(position), color(color), text(text) {}
-};
-
-class Display
-{
-	unsigned int                texFont;
 	int	                        windowSizeX;
 	int                         windowSizeY;
-	int                         zoomX;
-	int                         zoomY;
 	int                         cameraX;
 	int                         cameraY;
 	int                         mapWidth;
@@ -92,12 +53,12 @@ class Display
 	bool                        bl,br,bd,bu;
 
 	std::vector<Position>       textureSizes;
-	std::vector<Shape>          shapes;
-	std::vector<TextElement>    textElements;
 
     std::string                 imageDir;
 
+    SDL_Window *                window;
 	SDL_Surface *               screen;
+    SDL_GLContext               glcontext;
 
 	GameState                   state;
 
@@ -110,29 +71,21 @@ class Display
     std::vector<std::vector<std::string> >    results[2];
     std::vector<std::vector<std::string> >    exp;
 
-#ifdef WIN32
-    void setVSync(int interval);
-#endif
-
 	void HandleEvents();
 
 	void RenderMainMap();
-	void RenderShapes();
-	void RenderMinimap();
 	void RenderTextOverlay();
 	void RenderInformation();
 	
 	const std::string getTextureFileName(const BWAPI::UnitType type) const;
 
 	void LoadTextures();
-	void LoadTexture(int textureNumber, const char * fileName);
+	void LoadTexture(int textureNumber, const std::string & filename);
 
 	void DrawSearchResults(int x, int y);
 	void DrawParameters(int x, int y);
     void DrawExperiment(int x, int y);
 	
-	void DrawCircle(float cx, float cy, float r, int num_segments) const;
-	void DrawText(const int & x, const int & y, const int & size, const std::string & text);
     void DrawTextVector(const int & x, const int & y, const int & size, const std::vector<std::vector<std::string> > & text);
 
 	void DrawUnitTexture(const Unit & unit) const;
@@ -147,9 +100,11 @@ class Display
 
 
 public:
+    
+    static const int            TextureFont;
 
-	Display(const int mw, const int mh);
-	~Display();
+	GUI(const int mw, const int mh);
+	~GUI();
 
 	void OnStart();
 	void OnFrame();
@@ -163,10 +118,56 @@ public:
 	void SetPlayerTypes(const IDType & p1, const IDType & p2);
     
     void SetImageDir(const std::string & filename);
-
-	void AddShape(const Shape & shape) { shapes.push_back(shape); }
-	void AddTextElement(const TextElement & element) { textElements.push_back(element); }
 };
 }
 
+
+/*
+#ifdef USING_VISUALIZATION_LIBRARIES
+        if (disp)
+        {
+            GameState copy(state);
+            GameState copy2(state);
+            copy2.finishedMoving();
+
+            TimeType nextTime = std::min(copy2.getUnit(0, 0).firstTimeFree(), copy2.getUnit(1, 0).firstTimeFree());
+
+            // set the parameter overlays for search players
+            for (IDType p(0); p<Constants::Num_Players; ++p)
+            {
+                Player_UCT *        uct = dynamic_cast<Player_UCT *>        (_players[p].get());
+                Player_AlphaBeta *  ab  = dynamic_cast<Player_AlphaBeta *>  (_players[p].get());
+
+                if (uct) 
+                { 
+                    disp->SetParams(p, uct->getParams().getDescription());
+                    disp->SetResults(p, uct->getResults().getDescription());
+                }
+
+                if (ab) 
+                { 
+                    disp->SetParams(p, ab->getParams().getDescription()); 
+                    disp->SetResults(p, ab->results().getDescription());
+                }
+            }
+            
+            bool everyFrame = true;
+            if (everyFrame)
+            {
+                while (copy.getTime() < nextTime)
+                {
+                    while (frameTimer.getElapsedTimeInMilliSec() < 30);
+                    frameTimer.start();
+                    disp->SetState(copy);
+                    disp->OnFrame();
+                    copy.setTime(copy.getTime()+1);
+                }
+            }
+            else
+            { 
+                disp->SetState(state);
+                disp->OnFrame();
+            }
+        }
 #endif
+*/

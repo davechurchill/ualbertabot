@@ -21,6 +21,6 @@ class SparCraft::Player_AttackClosest : public SparCraft::Player
 {
 public:
 	Player_AttackClosest (const IDType & playerID);
-	void getMoves(GameState & state, const MoveArray & moves, std::vector<UnitAction> & moveVec);
+	void getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec);
 	IDType getType() { return PlayerModels::AttackClosest; }
 };

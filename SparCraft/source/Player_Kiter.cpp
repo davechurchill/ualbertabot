@@ -7,12 +7,12 @@ Player_Kiter::Player_Kiter (const IDType & playerID)
 	_playerID = playerID;
 }
 
-void Player_Kiter::getMoves(GameState & state, const MoveArray & moves, std::vector<UnitAction> & moveVec)
+void Player_Kiter::getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec)
 {
     moveVec.clear();
 	for (IDType u(0); u<moves.numUnits(); ++u)
 	{
-		bool foundUnitAction						(false);
+		bool foundAction						(false);
 		IDType actionMoveIndex					(0);
 		IDType furthestMoveIndex				(0);
 		size_t furthestMoveDist					(0);
@@ -25,36 +25,36 @@ void Player_Kiter::getMoves(GameState & state, const MoveArray & moves, std::vec
 
 		for (IDType m(0); m<moves.numMoves(u); ++m)
 		{
-			const UnitAction move						(moves.getMove(u, m));
+			const Action move						(moves.getMove(u, m));
 				
-			if (move.type() == UnitActionTypes::ATTACK)
+			if (move.type() == ActionTypes::ATTACK)
 			{
-				const Unit & target				(state.getUnit(state.getEnemy(move.player()), move._moveIndex));
+				const Unit & target				(state.getUnit(state.getEnemy(move.player()), move.index()));
 				PositionType dist				(ourUnit.getDistanceSqToUnit(target, state.getTime()));
 
 				if (dist < actionDistance)
 				{
 					actionDistance = dist;
 					actionMoveIndex = m;
-					foundUnitAction = true;
+					foundAction = true;
 				}
 			}
-			else if (move.type() == UnitActionTypes::HEAL)
+			else if (move.type() == ActionTypes::HEAL)
 			{
-				const Unit & target				(state.getUnit(move.player(), move._moveIndex));
+				const Unit & target				(state.getUnit(move.player(), move.index()));
 				PositionType dist				(ourUnit.getDistanceSqToUnit(target, state.getTime()));
 
 				if (dist < actionDistance)
 				{
 					actionDistance = dist;
 					actionMoveIndex = m;
-					foundUnitAction = true;
+					foundAction = true;
 				}
 			}
-			else if (move.type() == UnitActionTypes::MOVE)
+			else if (move.type() == ActionTypes::MOVE)
 			{
-				Position ourDest				(ourUnit.x() + Constants::Move_Dir[move._moveIndex][0], 
-												 ourUnit.y() + Constants::Move_Dir[move._moveIndex][1]);
+				Position ourDest				(ourUnit.x() + Constants::Move_Dir[move.index()][0], 
+												 ourUnit.y() + Constants::Move_Dir[move.index()][1]);
 				size_t dist						(closestUnit.getDistanceSqToPosition(ourDest, state.getTime()));
 
 				if (dist > furthestMoveDist)
@@ -75,7 +75,7 @@ void Player_Kiter::getMoves(GameState & state, const MoveArray & moves, std::vec
 		size_t bestMoveIndex(0);
 
 		// if we have an attack move we will use that one
-		if (foundUnitAction)
+		if (foundAction)
 		{
 			bestMoveIndex = actionMoveIndex;
 		}

@@ -8,7 +8,7 @@ Player_UCT::Player_UCT (const IDType & playerID, const UCTSearchParameters & par
     _params = params;
 }
 
-void Player_UCT::getMoves(GameState & state, const MoveArray & moves, std::vector<UnitAction> & moveVec)
+void Player_UCT::getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec)
 {
     moveVec.clear();
     

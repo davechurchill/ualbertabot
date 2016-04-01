@@ -7,7 +7,7 @@ Player_Cluster::Player_Cluster (const IDType & playerID)
 	_playerID = playerID;
 }
 
-void Player_Cluster::getMoves(GameState & state, const MoveArray & moves, std::vector<UnitAction> & moveVec)
+void Player_Cluster::getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec)
 {
     moveVec.clear();
 	IDType enemy(state.getEnemy(_playerID));
@@ -32,12 +32,12 @@ void Player_Cluster::getMoves(GameState & state, const MoveArray & moves, std::v
 		
 		for (size_t m(0); m<moves.numMoves(u); ++m)
 		{
-			const UnitAction move						(moves.getMove(u, m));
+			const Action move						(moves.getMove(u, m));
 				
-			if (move.type() == UnitActionTypes::MOVE)
+			if (move.type() == ActionTypes::MOVE)
 			{
-				Position ourDest				(ourUnit.x() + Constants::Move_Dir[move._moveIndex][0], 
-												 ourUnit.y() + Constants::Move_Dir[move._moveIndex][1]);
+				Position ourDest				(ourUnit.x() + Constants::Move_Dir[move.index()][0], 
+												 ourUnit.y() + Constants::Move_Dir[move.index()][1]);
                 size_t dist						(avgPos.getDistanceSq(ourDest));
 
 				if (dist < closestMoveDist)

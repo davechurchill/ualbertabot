@@ -7,7 +7,7 @@ Player_Kiter_NOKDPS::Player_Kiter_NOKDPS (const IDType & playerID)
 	_playerID = playerID;
 }
 
-void Player_Kiter_NOKDPS::getMoves(GameState & state, const MoveArray & moves, std::vector<UnitAction> & moveVec)
+void Player_Kiter_NOKDPS::getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec)
 {
     moveVec.clear();
 	IDType enemy(state.getEnemy(_playerID));
@@ -21,7 +21,7 @@ void Player_Kiter_NOKDPS::getMoves(GameState & state, const MoveArray & moves, s
 
 	for (IDType u(0); u<moves.numUnits(); ++u)
 	{
-		bool foundUnitAction					(false);
+		bool foundAction					(false);
 		size_t actionMoveIndex					(0);
         IDType furthestMoveIndex				(0);
 		size_t furthestMoveDist					(0);
@@ -34,40 +34,40 @@ void Player_Kiter_NOKDPS::getMoves(GameState & state, const MoveArray & moves, s
 
 		for (size_t m(0); m<moves.numMoves(u); ++m)
 		{
-			const UnitAction move						(moves.getMove(u, m));
+			const Action move						(moves.getMove(u, m));
 				
-			if ((move.type() == UnitActionTypes::ATTACK) && (hpRemaining[move._moveIndex] > 0))
+			if ((move.type() == ActionTypes::ATTACK) && (hpRemaining[move.index()] > 0))
 			{
-				const Unit & target				(state.getUnit(state.getEnemy(move.player()), move._moveIndex));
-				double dpsHPValue =				(target.dpf() / hpRemaining[move._moveIndex]);
+				const Unit & target				(state.getUnit(state.getEnemy(move.player()), move.index()));
+				double dpsHPValue =				(target.dpf() / hpRemaining[move.index()]);
 
 				if (dpsHPValue > actionHighestDPS)
 				{
 					actionHighestDPS = dpsHPValue;
 					actionMoveIndex = m;
-					foundUnitAction = true;
+					foundAction = true;
 				}
 
-                if (move._moveIndex >= state.numUnits(enemy))
+                if (move.index() >= state.numUnits(enemy))
                 {
                     int e = enemy;
                     int pl = _playerID;
                     printf("wtf\n");
                 }
 			}
-			else if (move.type() == UnitActionTypes::HEAL)
+			else if (move.type() == ActionTypes::HEAL)
 			{
-				const Unit & target				(state.getUnit(move.player(), move._moveIndex));
-				double dpsHPValue =				(target.dpf() / hpRemaining[move._moveIndex]);
+				const Unit & target				(state.getUnit(move.player(), move.index()));
+				double dpsHPValue =				(target.dpf() / hpRemaining[move.index()]);
 
 				if (dpsHPValue > actionHighestDPS)
 				{
 					actionHighestDPS = dpsHPValue;
 					actionMoveIndex = m;
-					foundUnitAction = true;
+					foundAction = true;
 				}
 			}
-			else if (move.type() == UnitActionTypes::RELOAD)
+			else if (move.type() == ActionTypes::RELOAD)
 			{
 				if (ourUnit.canAttackTarget(closestUnit, state.getTime()))
 				{
@@ -75,10 +75,10 @@ void Player_Kiter_NOKDPS::getMoves(GameState & state, const MoveArray & moves, s
 					break;
 				}
 			}
-			else if (move.type() == UnitActionTypes::MOVE)
+			else if (move.type() == ActionTypes::MOVE)
 			{
-				Position ourDest				(ourUnit.x() + Constants::Move_Dir[move._moveIndex][0], 
-												 ourUnit.y() + Constants::Move_Dir[move._moveIndex][1]);
+				Position ourDest				(ourUnit.x() + Constants::Move_Dir[move.index()][0], 
+												 ourUnit.y() + Constants::Move_Dir[move.index()][1]);
 				size_t dist						(closestUnit.getDistanceSqToPosition(ourDest, state.getTime()));
 
                 if (dist > furthestMoveDist)
@@ -97,7 +97,7 @@ void Player_Kiter_NOKDPS::getMoves(GameState & state, const MoveArray & moves, s
 
 		size_t bestMoveIndex(0);
         // if we have an attack move we will use that one
-		if (foundUnitAction)
+		if (foundAction)
 		{
 			bestMoveIndex = actionMoveIndex;
 		}
@@ -116,8 +116,8 @@ void Player_Kiter_NOKDPS::getMoves(GameState & state, const MoveArray & moves, s
 			}
 		}
 
-		UnitAction theMove(moves.getMove(u, actionMoveIndex));
-		if (theMove.type() == UnitActionTypes::ATTACK)
+		Action theMove(moves.getMove(u, actionMoveIndex));
+		if (theMove.type() == ActionTypes::ATTACK)
 		{
 			hpRemaining[theMove.index()] -= state.getUnit(_playerID, theMove.unit()).damage();
 		}

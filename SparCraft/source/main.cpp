@@ -1,4 +1,5 @@
 #include "SparCraft.h"
+#include "SearchExperiment.h"
 
 int main(int argc, char *argv[])
 {

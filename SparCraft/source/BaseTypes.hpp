@@ -5,109 +5,109 @@
 
 namespace SparCraft
 {
-    
-// type definitions for storing data
-typedef		unsigned char		IDType;
-typedef		unsigned char		UnitCountType;
-typedef		unsigned char		ChildCountType;
-typedef 	int					PositionType;
-typedef 	int					TimeType;
-typedef		short				HealthType;
-typedef		int					ScoreType;
-typedef		unsigned int		HashType;
-typedef     int                 UCTValue;
-	
-class StateEvalScore
-{
-	ScoreType	_val;
-	int			_numMoves;
 
-public:
+    // type definitions for storing data
+    typedef		unsigned char		IDType;
+    typedef		unsigned char		UnitCountType;
+    typedef		unsigned char		ChildCountType;
+    typedef 	int					PositionType;
+    typedef 	int					TimeType;
+    typedef		short				HealthType;
+    typedef		int					ScoreType;
+    typedef		unsigned int		HashType;
+    typedef     int                 UCTValue;
 
-	StateEvalScore()
-		: _val(0)
-		, _numMoves(0)
-	{
-	}
+    class StateEvalScore
+    {
+        ScoreType	_val;
+        int			_numMoves;
 
-	StateEvalScore(const ScoreType & val, const int & numMoves)
-		: _val(val)
-		, _numMoves(numMoves)
-	{
-	}
+    public:
 
-	const bool operator < (const StateEvalScore & rhs) const
-	{
-		if (_val < rhs._val)
-		{
-			return true;
-		}
-		else if (_val == rhs._val)
-		{
-			return _numMoves > rhs._numMoves;
-		}
-		else
-		{
-			return false;
-		}
-	}
+        StateEvalScore()
+            : _val(0)
+            ,_numMoves(0)
+        {
+        }
 
-	const bool operator > (const StateEvalScore & rhs) const
-	{
-		if (_val > rhs._val)
-		{
-			return true;
-		}
-		else if (_val == rhs._val)
-		{
-			return _numMoves < rhs._numMoves;
-		}
-		else
-		{
-			return false;
-		}
-	}
+        StateEvalScore(const ScoreType & val,const int & numMoves)
+            : _val(val)
+            ,_numMoves(numMoves)
+        {
+        }
 
-	const bool operator <= (const StateEvalScore & rhs) const
-	{
-		if (_val > rhs._val)
-		{
-			return true;
-		}
-		else if (_val == rhs._val)
-		{
-			return _numMoves >= rhs._numMoves;
-		}
-		else
-		{
-			return false;
-		}
-	}
+        const bool operator < (const StateEvalScore & rhs) const
+        {
+            if (_val < rhs._val)
+            {
+                return true;
+            }
+            else if (_val == rhs._val)
+            {
+                return _numMoves > rhs._numMoves;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
-	const bool operator >= (const StateEvalScore & rhs) const
-	{
-		if (_val > rhs._val)
-		{
-			return true;
-		}
-		else if (_val == rhs._val)
-		{
-			return _numMoves <= rhs._numMoves;
-		}
-		else
-		{
-			return false;
-		}
-	}
+        const bool operator > (const StateEvalScore & rhs) const
+        {
+            if (_val > rhs._val)
+            {
+                return true;
+            }
+            else if (_val == rhs._val)
+            {
+                return _numMoves < rhs._numMoves;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
-	const bool operator == (const StateEvalScore & rhs) const
-	{
-		return (_val == rhs._val) && (_numMoves == rhs._numMoves);
-	}
+        const bool operator <= (const StateEvalScore & rhs) const
+        {
+            if (_val > rhs._val)
+            {
+                return true;
+            }
+            else if (_val == rhs._val)
+            {
+                return _numMoves >= rhs._numMoves;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
-	const ScoreType & val() const { return _val; }
-	const TimeType & numMoves() const { return _numMoves; }
-};
+        const bool operator >= (const StateEvalScore & rhs) const
+        {
+            if (_val > rhs._val)
+            {
+                return true;
+            }
+            else if (_val == rhs._val)
+            {
+                return _numMoves <= rhs._numMoves;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        const bool operator == (const StateEvalScore & rhs) const
+        {
+            return (_val == rhs._val) && (_numMoves == rhs._numMoves);
+        }
+
+        const ScoreType & val() const { return _val; }
+        const TimeType & numMoves() const { return _numMoves; }
+    };
 
 
 

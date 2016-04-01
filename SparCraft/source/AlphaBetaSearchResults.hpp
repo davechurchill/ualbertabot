@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "UnitAction.hpp"
+#include "Action.h"
 
 namespace SparCraft
 {
@@ -18,7 +18,7 @@ public:
 	double 				timeElapsed,	// time elapsed in milliseconds
 						avgBranch;		// avg branching factor
 
-    std::vector<UnitAction>   bestMoves;
+    std::vector<Action>   bestMoves;
 	ScoreType			abValue;
 	unsigned long long  ttcuts;
 	size_t				maxDepthReached;	

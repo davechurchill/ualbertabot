@@ -83,24 +83,24 @@ int main(int argc, char *argv[])
     
     //testBuildOrderPlot();
 
-    //doCombatExperiment();
+    doCombatExperiment();
 
-    ResetExperiment("");
-
-    if (experiments.getVisExperiments().size() > 0)
-    {
-        GUI::Instance().OnStart();
-        GUI::Instance().SetVisExperiment(experiments.getVisExperiments()[0]);
-    }
-
-#ifndef EMSCRIPTEN
-    while (true)
-    {
-        mainLoop();
-    }
-#else
-    emscripten_set_main_loop(mainLoop,0,true);
-#endif
+//    ResetExperiment("");
+//
+//    if (experiments.getVisExperiments().size() > 0)
+//    {
+//        GUI::Instance().OnStart();
+//        GUI::Instance().SetVisExperiment(experiments.getVisExperiments()[0]);
+//    }
+//
+//#ifndef EMSCRIPTEN
+//    while (true)
+//    {
+//        mainLoop();
+//    }
+//#else
+//    emscripten_set_main_loop(mainLoop,0,true);
+//#endif
     
     return 0;
 }

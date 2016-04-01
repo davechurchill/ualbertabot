@@ -19,7 +19,7 @@ Player_PortfolioGreedySearch::Player_PortfolioGreedySearch (const IDType & playe
     _timeLimit = timeLimit;
 }
 
-void Player_PortfolioGreedySearch::getMoves(GameState & state, const MoveArray & moves, std::vector<UnitAction> & moveVec)
+void Player_PortfolioGreedySearch::getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec)
 {
     moveVec.clear();
 	PortfolioGreedySearch pgs(_playerID, _seed, _iterations, _responses, _timeLimit);

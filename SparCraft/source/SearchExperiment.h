@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SparCraft.h"
+#include "GUI.h"
 #include <iomanip>
 
 namespace SparCraft
@@ -19,7 +20,9 @@ typedef std::vector<dvv> dvvv;
 
 class TranspositionTable;
 
-class SparCraft::SearchExperiment
+namespace SparCraft
+{
+class SearchExperiment
 {
 	std::vector<PlayerPtr>      players[2];
     std::vector<std::string>    playerStrings[2];
@@ -92,3 +95,4 @@ public:
     void runExperiment();
 	void writeResultsSummary();
 };
+}

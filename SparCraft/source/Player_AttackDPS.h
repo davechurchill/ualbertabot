@@ -18,7 +18,7 @@ class Player_AttackDPS : public Player
 {
 public:
 	Player_AttackDPS (const IDType & playerID);
-	void getMoves(GameState & state, const MoveArray & moves, std::vector<UnitAction> & moveVec);
+	void getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec);
 	IDType getType() { return PlayerModels::AttackDPS; }
 };
 }

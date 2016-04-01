@@ -4,7 +4,7 @@
 #include "GameState.h"
 #include "Player.h"
 #include "AllPlayers.h"
-#include "UnitAction.hpp"
+#include "Action.h"
 #include <memory>
 #include <set>
 
@@ -23,17 +23,17 @@ class UnitScriptData
     std::vector<PlayerPtr>  _playerPtrVec[2];
     
    
-    std::vector<UnitAction>       _allScriptMoves[2][PlayerModels::Size];
+    std::vector<Action>       _allScriptMoves[2][PlayerModels::Size];
 
-    std::vector<UnitAction> & getMoves(const IDType & player, const IDType & actualScript);
+    std::vector<Action> & getMoves(const IDType & player, const IDType & actualScript);
 
-    UnitAction & getMove(const IDType & player, const IDType & unitIndex, const IDType & actualScript);
+    Action & getMove(const IDType & player, const IDType & unitIndex, const IDType & actualScript);
 
 public:
 
     UnitScriptData();
 
-    void calculateMoves(const IDType & player, MoveArray & moves, GameState & state, std::vector<UnitAction> & moveVec);
+    void calculateMoves(const IDType & player, MoveArray & moves, GameState & state, std::vector<Action> & moveVec);
     void setUnitScript(const IDType & player, const int & id, const IDType & script);
     void setUnitScript(const Unit & unit, const IDType & script);
 

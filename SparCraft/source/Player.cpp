@@ -3,7 +3,7 @@
 using namespace SparCraft;
 
 
-void Player::getMoves(GameState & state, const MoveArray & moves, std::vector<UnitAction> & moveVec)
+void Player::getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec)
 {
 	// not implemented
 }

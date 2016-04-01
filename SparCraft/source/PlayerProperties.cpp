@@ -1,4 +1,5 @@
 #include "PlayerProperties.h"
+#include "WeaponProperties.h"
 
 using namespace SparCraft;
 

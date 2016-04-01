@@ -14,7 +14,6 @@
 #include <cstdlib>
 #include "Logger.h"
 
-//#define USING_VISUALIZATION_LIBRARIES
 extern char SPARCRAFT_LOGFILE[100];
 
 namespace SparCraft

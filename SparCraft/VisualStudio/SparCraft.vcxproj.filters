@@ -7,9 +7,6 @@
     <ClCompile Include="..\source\Common.cpp">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\Display.cpp">
-      <Filter>util</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\Game.cpp">
       <Filter>simulation</Filter>
     </ClCompile>
@@ -73,9 +70,6 @@
     <ClCompile Include="..\source\MoveArray.cpp">
       <Filter>util</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\glfont\glfont.cc">
-      <Filter>util</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\Player_Cluster.cpp">
       <Filter>simulation\players\script</Filter>
     </ClCompile>
@@ -106,6 +100,12 @@
     <ClCompile Include="..\source\Logger.cpp">
       <Filter>util</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\Action.cpp">
+      <Filter>simulation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\AlphaBetaMove.cpp">
+      <Filter>search\AlphaBeta</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\AlphaBetaSearch.h">
@@ -121,9 +121,6 @@
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\source\Array.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Display.h">
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="..\source\Game.h">
@@ -210,9 +207,6 @@
     <ClInclude Include="..\source\MoveArray.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\glfont\glfont.h">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\Player_Cluster.h">
       <Filter>simulation\players\script</Filter>
     </ClInclude>
@@ -234,9 +228,6 @@
     <ClInclude Include="..\source\PlayerProperties.h">
       <Filter>simulation\properties</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\UnitAction.hpp">
-      <Filter>simulation</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\Random.hpp">
       <Filter>util</Filter>
     </ClInclude>
@@ -251,6 +242,12 @@
     </ClInclude>
     <ClInclude Include="..\source\Logger.h">
       <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Action.h">
+      <Filter>simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\AlphaBetaMove.h">
+      <Filter>search\AlphaBeta</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

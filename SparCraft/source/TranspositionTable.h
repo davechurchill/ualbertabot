@@ -3,7 +3,8 @@
 #include <vector>
 #include "Common.h"
 #include "GameState.h"
-#include "UnitAction.hpp"
+#include "Action.h"
+#include "AlphaBetaMove.h"
 #include <memory>
 
 namespace SparCraft

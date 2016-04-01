@@ -18,7 +18,7 @@ class Player_NOKDPS : public Player
 {
 public:
 	Player_NOKDPS (const IDType & playerID);
-	void getMoves(GameState & state, const MoveArray & moves, std::vector<UnitAction> & moveVec);
+	void getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec);
 	IDType getType() { return PlayerModels::NOKDPS; }
 };
 }

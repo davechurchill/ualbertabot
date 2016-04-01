@@ -3,26 +3,26 @@
 #include "Common.h"
 #include "Array.hpp"
 #include "Unit.h"
-#include "UnitAction.hpp"
+#include "Action.h"
 
 namespace SparCraft
 {
 class MoveArray
 {
 	// the array which contains all the moves
-	Array2D<UnitAction, Constants::Max_Units, Constants::Max_Moves>     _moves;
+	Array2D<Action, Constants::Max_Units, Constants::Max_Moves> _moves;
 
 	// how many moves each unit has
-	Array<size_t, Constants::Max_Units>                                 _numMoves;
+	Array<size_t, Constants::Max_Units>                         _numMoves;
 
     // the current move array, used for the 'iterator'
-    //std::vector<UnitAction> _currentMoves;
-    //std::vector<UnitAction>                                             _currentMovesVec;
-    Array<UnitAction, Constants::Max_Units>                             _currentMoves;
-    Array<size_t, Constants::Max_Units>                                 _currentMovesIndex;
+    //std::vector<Action> _currentMoves;
+    //std::vector<Action>                                             _currentMovesVec;
+    Array<Action, Constants::Max_Units>                         _currentMoves;
+    Array<size_t, Constants::Max_Units>                         _currentMovesIndex;
 
 	// the number of units that have moves;
-	size_t                                                              _numUnits;
+	size_t                                                      _numUnits;
 	size_t                                                              _maxUnits;
     bool                                                                _hasMoreMoves;
 
@@ -33,7 +33,7 @@ public:
 	void clear();
 
 	// returns a given move from a unit
-	const UnitAction & getMove(const size_t & unit, const size_t & move) const;
+	const Action & getMove(const size_t & unit, const size_t & move) const;
 
     void printCurrentMoveIndex();
 
@@ -43,12 +43,12 @@ public:
 
     void resetMoveIterator();
 
-    void getNextMoveVec(std::vector<UnitAction> & moves);
+    void getNextMoveVec(std::vector<Action> & moves);
 
 	const size_t maxUnits() const;
 
 	// adds a Move to the unit specified
-	void add(const UnitAction & move);
+	void add(const Action & move);
 	
 	bool validateMoves();
 

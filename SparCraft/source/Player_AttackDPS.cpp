@@ -7,12 +7,12 @@ Player_AttackDPS::Player_AttackDPS (const IDType & playerID)
 	_playerID = playerID;
 }
 
-void Player_AttackDPS::getMoves(GameState & state, const MoveArray & moves, std::vector<UnitAction> & moveVec)
+void Player_AttackDPS::getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec)
 {
     moveVec.clear();
 	for (IDType u(0); u<moves.numUnits(); ++u)
 	{
-		bool foundUnitAction						(false);
+		bool foundAction						(false);
 		size_t actionMoveIndex					(0);
 		size_t closestMoveIndex					(0);
 		double actionHighestDPS					(0);
@@ -23,33 +23,33 @@ void Player_AttackDPS::getMoves(GameState & state, const MoveArray & moves, std:
 
 		for (size_t m(0); m<moves.numMoves(u); ++m)
 		{
-			const UnitAction move						(moves.getMove(u, m));
+			const Action move						(moves.getMove(u, m));
 				
-			if (move.type() == UnitActionTypes::ATTACK)
+			if (move.type() == ActionTypes::ATTACK)
 			{
-				const Unit & target				(state.getUnit(state.getEnemy(move.player()), move._moveIndex));
+				const Unit & target				(state.getUnit(state.getEnemy(move.player()), move.index()));
 				double dpsHPValue =				(target.dpf() / target.currentHP());
 
 				if (dpsHPValue > actionHighestDPS)
 				{
 					actionHighestDPS = dpsHPValue;
 					actionMoveIndex = m;
-					foundUnitAction = true;
+					foundAction = true;
 				}
 			}
-			if (move.type() == UnitActionTypes::HEAL)
+			if (move.type() == ActionTypes::HEAL)
 			{
-				const Unit & target				(state.getUnit(move.player(), move._moveIndex));
+				const Unit & target				(state.getUnit(move.player(), move.index()));
 				double dpsHPValue =				(target.dpf() / target.currentHP());
 
 				if (dpsHPValue > actionHighestDPS)
 				{
 					actionHighestDPS = dpsHPValue;
 					actionMoveIndex = m;
-					foundUnitAction = true;
+					foundAction = true;
 				}
 			}
-			else if (move.type() == UnitActionTypes::RELOAD)
+			else if (move.type() == ActionTypes::RELOAD)
 			{
 				if (ourUnit.canAttackTarget(closestUnit, state.getTime()))
 				{
@@ -57,10 +57,10 @@ void Player_AttackDPS::getMoves(GameState & state, const MoveArray & moves, std:
 					break;
 				}
 			}
-			else if (move.type() == UnitActionTypes::MOVE)
+			else if (move.type() == ActionTypes::MOVE)
 			{
-				Position ourDest				(ourUnit.x() + Constants::Move_Dir[move._moveIndex][0], 
-												 ourUnit.y() + Constants::Move_Dir[move._moveIndex][1]);
+				Position ourDest				(ourUnit.x() + Constants::Move_Dir[move.index()][0], 
+												 ourUnit.y() + Constants::Move_Dir[move.index()][1]);
 				size_t dist						(closestUnit.getDistanceSqToPosition(ourDest, state.getTime()));
 
 				if (dist < closestMoveDist)
@@ -71,7 +71,7 @@ void Player_AttackDPS::getMoves(GameState & state, const MoveArray & moves, std:
 			}
 		}
 
-		size_t bestMoveIndex(foundUnitAction ? actionMoveIndex : closestMoveIndex);
+		size_t bestMoveIndex(foundAction ? actionMoveIndex : closestMoveIndex);
 			
 		moveVec.push_back(moves.getMove(u, bestMoveIndex));
 	}

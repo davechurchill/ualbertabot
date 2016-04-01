@@ -42,12 +42,12 @@ void MoveArray::shuffleMoveActions()
             IDType moveType(getMove(u, a).type());
 
             // mark the end of the move actions
-            if (moveEnd == -1 && (moveType == UnitActionTypes::MOVE))
+            if (moveEnd == -1 && (moveType == ActionTypes::MOVE))
             {
                 moveEnd = a;
             }
             // mark the beginning of the MOVE unit actions
-            else if ((moveEnd != -1) && (moveBegin == -1) && (moveType != UnitActionTypes::MOVE))
+            else if ((moveEnd != -1) && (moveBegin == -1) && (moveType != ActionTypes::MOVE))
             {
                 moveBegin = a;
             }
@@ -74,7 +74,7 @@ void MoveArray::shuffleMoveActions()
 }
 
 // returns a given move from a unit
-const UnitAction & MoveArray::getMove(const size_t & unit, const size_t & move) const
+const Action & MoveArray::getMove(const size_t & unit, const size_t & move) const
 {
     assert(_moves[unit][(size_t)move].unit() != 255);
 
@@ -136,7 +136,7 @@ void MoveArray::resetMoveIterator()
     }
 }
 
-void MoveArray::getNextMoveVec(std::vector<UnitAction> & moves)
+void MoveArray::getNextMoveVec(std::vector<Action> & moves)
 {
     moves.assign(&_currentMoves[0], &_currentMoves[_numUnits]);
     //moves = _currentMovesVec;
@@ -149,14 +149,14 @@ const size_t MoveArray::maxUnits() const
 }
 
 // adds a Move to the unit specified
-void MoveArray::add(const UnitAction & move)
+void MoveArray::add(const Action & move)
 {
-	_moves[move._unit][_numMoves[move._unit]] = move;
-	_numMoves[move._unit]++;
+	_moves[move.unit()][_numMoves[move.unit()]] = move;
+	_numMoves[move.unit()]++;
 
     _currentMovesIndex[_numUnits-1] = 0;
-    _currentMoves[_numUnits-1] = _moves[move._unit][0];
-    //_currentMovesVec.push_back(_moves[move._unit][0]);
+    _currentMoves[_numUnits-1] = _moves[move.unit()][0];
+    //_currentMovesVec.push_back(_moves[move.unit()][0]);
     //resetMoveIterator();
 }
 	
@@ -166,7 +166,7 @@ bool MoveArray::validateMoves()
 	{
 		for (size_t m(0); m<numMoves(u); ++m)
 		{
-			const UnitAction & move(getMove(u, m));
+			const Action & move(getMove(u, m));
 
 			if (move.unit() > 200)
 			{

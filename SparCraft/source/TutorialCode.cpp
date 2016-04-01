@@ -107,14 +107,14 @@ PlayerPtr getSamplePlayer(const IDType playerID)
     return attackClosest;
 }
 
-std::vector<UnitAction> getSamplePlayerActionsFromState()
+std::vector<Action> getSamplePlayerActionsFromState()
 {
     // get our sample player
     IDType currentPlayerID = Players::Player_One;
     PlayerPtr myPlayer = getSamplePlayer(currentPlayerID);
 
-    // Construct a blank vector of UnitActions, which are individual unit moves
-    std::vector<UnitAction> move;
+    // Construct a blank vector of Actions, which are individual unit moves
+    std::vector<Action> move;
 
     // Get a state
     GameState state = getSampleState();

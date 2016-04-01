@@ -15,7 +15,7 @@ class Player_PortfolioGreedySearch : public Player
 public:
 	Player_PortfolioGreedySearch (const IDType & playerID);
     Player_PortfolioGreedySearch (const IDType & playerID, const IDType & seed, const size_t & iter, const size_t & responses, const size_t & timeLimit);
-	void getMoves(GameState & state, const MoveArray & moves, std::vector<UnitAction> & moveVec);
+	void getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec);
     IDType getType() { return PlayerModels::PortfolioGreedySearch; }
 };
 }

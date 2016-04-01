@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "UnitAction.hpp"
+#include "Action.h"
 
 namespace SparCraft
 {
@@ -19,7 +19,7 @@ public:
     int                         totalVisits;
     int                         nodesCreated;
 
-    std::vector<UnitAction>     bestMoves;
+    std::vector<Action>     bestMoves;
 	ScoreType                   abValue;
 	
     std::vector<std::vector<std::string> > _desc;    // 2-column description vector

@@ -838,10 +838,10 @@ void SearchExperiment::runExperiment()
     }
 
 	#ifdef USING_VISUALIZATION_LIBRARIES
-		Display * disp = NULL;
+		GUI * disp = NULL;
         if (showDisplay)
         {
-            disp = new Display(map ? map->getBuildTileWidth() : 40, map ? map->getBuildTileHeight() : 22);
+            disp = new GUI(map ? map->getBuildTileWidth() : 40, map ? map->getBuildTileHeight() : 22);
             disp->SetImageDir(imageDir);
             disp->OnStart();
 		    disp->LoadMapTexture(map, 19);
@@ -893,7 +893,7 @@ void SearchExperiment::runExperiment()
 				#ifdef USING_VISUALIZATION_LIBRARIES
                     if (showDisplay)
                     {
-					    g.disp = disp;
+					    //g.disp = disp;
                         disp->SetExpDesc(getExpDescription(p1Player, p2Player, state));
                     }
 				#endif

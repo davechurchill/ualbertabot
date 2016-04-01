@@ -43,7 +43,7 @@ class GameState
     const bool              checkFull(const IDType & player)                                        const;
     const bool              checkUniqueUnitIDs()                                                    const;
 
-    void                    performUnitAction(const UnitAction & theMove);
+    void                    performAction(const Action & theMove);
 
 public:
 
@@ -102,7 +102,7 @@ public:
 
     // move related functions
     void                    generateMoves(MoveArray & moves, const IDType & playerIndex)            const;
-    void                    makeMoves(const std::vector<UnitAction> & moves);
+    void                    makeMoves(const std::vector<Action> & moves);
     const int &             getNumMovements(const IDType & player)                                  const;
     const IDType            whoCanMove()                                                            const;
     const bool              bothCanMove()                                                           const;

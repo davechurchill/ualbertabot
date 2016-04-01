@@ -168,8 +168,8 @@ void GameState::generateMoves(MoveArray & moves, const IDType & playerIndex) con
 				}
 				if (!invisible && unit.canAttackTarget(enemyUnit, _currentTime) && enemyUnit.isAlive())
 				{
-					moves.add(UnitAction(unitIndex, playerIndex, UnitActionTypes::ATTACK, u));
-                    //moves.add(UnitAction(unitIndex, playerIndex, UnitActionTypes::ATTACK, unit.ID()));
+					moves.add(Action(unitIndex, playerIndex, ActionTypes::ATTACK, u));
+                    //moves.add(Action(unitIndex, playerIndex, ActionTypes::ATTACK, unit.ID()));
 				}
 			}
 		}
@@ -186,8 +186,8 @@ void GameState::generateMoves(MoveArray & moves, const IDType & playerIndex) con
 				const Unit & ourUnit(getUnit(playerIndex, u));
 				if (unit.canHealTarget(ourUnit, _currentTime) && ourUnit.isAlive())
 				{
-					moves.add(UnitAction(unitIndex, playerIndex, UnitActionTypes::HEAL, u));
-                    //moves.add(UnitAction(unitIndex, playerIndex, UnitActionTypes::HEAL, unit.ID()));
+					moves.add(Action(unitIndex, playerIndex, ActionTypes::HEAL, u));
+                    //moves.add(Action(unitIndex, playerIndex, ActionTypes::HEAL, unit.ID()));
 				}
 			}
 		}
@@ -196,7 +196,7 @@ void GameState::generateMoves(MoveArray & moves, const IDType & playerIndex) con
 		{
 			if (!unit.canHeal())
 			{
-				moves.add(UnitAction(unitIndex, playerIndex, UnitActionTypes::RELOAD, 0));
+				moves.add(Action(unitIndex, playerIndex, ActionTypes::RELOAD, 0));
 			}
 		}
 		
@@ -243,7 +243,7 @@ void GameState::generateMoves(MoveArray & moves, const IDType & playerIndex) con
                 if (isWalkable(dest) || (unit.type().isFlyer() && isFlyable(dest)))
 				{
                     // add the move to the MoveArray
-					moves.add(UnitAction(unitIndex, playerIndex, UnitActionTypes::MOVE, d, dest));
+					moves.add(Action(unitIndex, playerIndex, ActionTypes::MOVE, d, dest));
 				}
 			}
 		}
@@ -251,13 +251,13 @@ void GameState::generateMoves(MoveArray & moves, const IDType & playerIndex) con
 		// if no moves were generated for this unit, it must be issued a 'PASS' move
 		if (moves.numMoves(unitIndex) == 0)
 		{
-			moves.add(UnitAction(unitIndex, playerIndex, UnitActionTypes::PASS, 0));
+			moves.add(Action(unitIndex, playerIndex, ActionTypes::PASS, 0));
 		}
 	}
 }
 
 
-void GameState::makeMoves(const std::vector<UnitAction> & moves)
+void GameState::makeMoves(const std::vector<Action> & moves)
 {    
     if (moves.size() > 0)
     {
@@ -271,20 +271,20 @@ void GameState::makeMoves(const std::vector<UnitAction> & moves)
     
     for (size_t m(0); m<moves.size(); ++m)
     {
-        performUnitAction(moves[m]);
+        performAction(moves[m]);
     }
 }
 
-void GameState::performUnitAction(const UnitAction & move)
+void GameState::performAction(const Action & move)
 {
-	Unit & ourUnit		= getUnit(move._player, move._unit);
+	Unit & ourUnit		= getUnit(move.player(), move.unit());
 	IDType player		= ourUnit.player();
 	IDType enemyPlayer  = getEnemy(player);
 
-	if (move._moveType == UnitActionTypes::ATTACK)
+	if (move.type() == ActionTypes::ATTACK)
 	{
-		Unit & enemyUnit(getUnit(enemyPlayer,move._moveIndex));
-        //Unit & enemyUnit(getUnitByID(enemyPlayer ,move._moveIndex));
+		Unit & enemyUnit(getUnit(enemyPlayer,move.index()));
+        //Unit & enemyUnit(getUnitByID(enemyPlayer ,move.index()));
 			
 		// attack the unit
 		ourUnit.attack(move, enemyUnit, _currentTime);
@@ -302,15 +302,15 @@ void GameState::performUnitAction(const UnitAction & move)
 			}
 		}			
 	}
-	else if (move._moveType == UnitActionTypes::MOVE)
+	else if (move.type() == ActionTypes::MOVE)
 	{
 		_numMovements[player]++;
 
 		ourUnit.move(move, _currentTime);
 	}
-	else if (move._moveType == UnitActionTypes::HEAL)
+	else if (move.type() == ActionTypes::HEAL)
 	{
-		Unit & ourOtherUnit(getUnit(player,move._moveIndex));
+		Unit & ourOtherUnit(getUnit(player,move.index()));
 			
 		// attack the unit
 		ourUnit.heal(move, ourOtherUnit, _currentTime);
@@ -320,11 +320,11 @@ void GameState::performUnitAction(const UnitAction & move)
 			ourOtherUnit.takeHeal(ourUnit);
 		}
 	}
-	else if (move._moveType == UnitActionTypes::RELOAD)
+	else if (move.type() == ActionTypes::RELOAD)
 	{
 		ourUnit.waitUntilAttack(move, _currentTime);
 	}
-	else if (move._moveType == UnitActionTypes::PASS)
+	else if (move.type() == ActionTypes::PASS)
 	{
 		ourUnit.pass(move, _currentTime);
 	}
