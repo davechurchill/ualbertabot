@@ -1,55 +1,103 @@
 #include "GUITools.h"
-#include "StarCraftGUI.h"
+#include "GUI.h"
 
-namespace BOSS
+namespace SparCraft
 {
 namespace GUITools
 {
+    std::string GetClipboardText()
+    {
+        std::string text;
+
+        #ifdef WIN32
+
+            if (! OpenClipboard(nullptr))
+            {
+                return text;
+            }
+
+            // Get handle of clipboard object for ANSI text
+            HANDLE hData = GetClipboardData(CF_TEXT);
+            if (hData == nullptr)
+            {
+                return text; 
+            }
+
+            // Lock the handle to get the actual text pointer
+            char * pszText = static_cast<char*>( GlobalLock(hData) );
+            if (pszText == nullptr)
+            {
+                return text;
+            }
+
+            // Save text in a string class instance
+            text = std::string( pszText );
+
+            // Release the lock
+            GlobalUnlock( hData );
+
+            // Release the clipboard
+            CloseClipboard();
+      
+        #endif
+
+        return text;
+    }
+
     void DrawString(const Position & p, const std::string & text, const GLfloat * rgba) 
     {
         Position origin(p);
         Position fontSize(8,8);
 
-        int linePos = 0;
-        for (size_t i(0); i < text.length(); ++i)
-        {
-            if (text[i] == '\n') 
-            { 
-                origin = Position(p.x(), origin.y() + fontSize.y()); 
-                linePos = 0;
-            }
-            else
-            {
-                Position charStart = Position(origin.x() + linePos*fontSize.x(), origin.y() - fontSize.y());
-                Position charEnd = charStart + fontSize;
+        glPushMatrix();
+        glColor4fv(rgba);
+        glEnable( GL_TEXTURE_2D );
+        glBindTexture( GL_TEXTURE_2D, GUI::TextureFont );
+        glBegin( GL_QUADS );
 
-                DrawChar(charStart, charEnd, text[i], rgba);
+            int linePos = 0;
+            for (size_t i(0); i < text.length(); ++i)
+            {
+                if (text[i] == '\n') 
+                { 
+                    origin = Position(p.x(), origin.y() + fontSize.y()); 
+                    linePos = 0;
+                }
+                else
+                {
+                    Position charStart = Position(origin.x() + linePos*fontSize.x(), origin.y() - fontSize.y());
+                    Position charEnd = charStart + fontSize;
+
+                    char cc = text[i];
+                    float xPos = ((cc % 16) / 16.0f);
+                    float yPos = (cc >> 4) / 16.0f;
+                    float del = 1/16.0f;
+                    glTexCoord2f(xPos,yPos);            glVertex2i(charStart.x(),charStart.y());
+                    glTexCoord2f(xPos+del,yPos);        glVertex2i(charEnd.x(),charStart.y());
+                    glTexCoord2f(xPos+del,yPos+del);    glVertex2i(charEnd.x(),charEnd.y());
+                    glTexCoord2f(xPos,yPos+del);        glVertex2i(charStart.x(),charEnd.y());
                     
-                linePos++;    
+                    linePos++;    
+                }
             }
-        }
+        glEnd();
+        glDisable( GL_TEXTURE_2D );
+        glPopMatrix();
     }
 
-    const size_t FontTextureSize = 128;
-    const size_t CharSize = 8;
-    const float CharDelta = 1.0f / 16.0f;
-    void DrawChar(const Position & tl, const Position & br, char ch, const GLfloat * rgba) 
+    void DrawStringLarge(const Position & p, const std::string & text, const GLfloat * rgba) 
     {
-        float xPos = ((ch % 16) / 16.0f);
-        float yPos = (ch >> 4) / 16.0f;
-        
-        glPushMatrix();
-            glEnable( GL_TEXTURE_2D );
-                glColor4fv(rgba);
-                glBindTexture( GL_TEXTURE_2D, StarCraftGUI::TextureFont );
-                glBegin( GL_QUADS );
-                    glTexCoord2f(xPos,yPos);                        glVertex2i(tl.x(), tl.y());
-                    glTexCoord2f(xPos+CharDelta,yPos);              glVertex2i(br.x(), tl.y());
-                    glTexCoord2f(xPos+CharDelta,yPos+CharDelta);    glVertex2i(br.x(), br.y());
-                    glTexCoord2f(xPos,yPos+CharDelta);              glVertex2i(tl.x(), br.y());
-                glEnd();
-            glDisable( GL_TEXTURE_2D );
-        glPopMatrix();
+        DrawString(p, text, rgba);
+    }
+
+    void DrawStringWithShadow(const Position & p, const std::string & text, const GLfloat * rgba) 
+    {
+        DrawString(p, text, rgba);
+    }
+
+    void DrawStringLargeWithShadow(const Position & p, const std::string & text, const GLfloat * rgba) 
+    {
+        DrawStringLarge(p, text, rgba);
     }
 
     void DrawLine(const Position & p1, const Position & p2, const float thickness, const GLfloat * rgba)
@@ -137,6 +185,5 @@ namespace GUITools
         GUITools::DrawTexturedRect(statusNumPos, statusNumPos + iconSize.scale(0.65f), textureID2, rgba); 
     }
 
-    
 }
 }

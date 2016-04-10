@@ -123,15 +123,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\GUI.h" />
     <ClInclude Include="..\source\GUITools.h" />
     <ClInclude Include="..\source\SearchExperiment.h" />
+    <ClInclude Include="..\source\StarCraftGUI.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\GUI.cpp" />
     <ClCompile Include="..\source\GUITools.cpp" />
     <ClCompile Include="..\source\main.cpp" />
     <ClCompile Include="..\source\SearchExperiment.cpp" />
+    <ClCompile Include="..\source\StarCraftGUI.cpp" />
     <ClCompile Include="..\source\TutorialCode.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

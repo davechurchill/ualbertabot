@@ -4,12 +4,6 @@ namespace BOSS
 {
     void init()
     {
-        // Initialize data
-
-        // initialize BWAPI from BWAPIDATA if we're not in windows
-        #ifndef _MSC_VER
-            BWAPI::BWAPI_init();
-        #endif
         ActionTypeData::Init();
         ActionTypes::init();
     }

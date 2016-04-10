@@ -183,9 +183,6 @@
     <ClInclude Include="..\source\DFBB_BuildOrderStackSearch.h">
       <Filter>search\BuildOrderSearch</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\Position.hpp">
-      <Filter>common</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\HatcheryData.h">
       <Filter>engine</Filter>
     </ClInclude>

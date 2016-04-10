@@ -106,6 +106,12 @@
     <ClCompile Include="..\source\AlphaBetaMove.cpp">
       <Filter>search\AlphaBeta</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\SparCraftAssert.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\SparCraftException.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\AlphaBetaSearch.h">
@@ -248,6 +254,12 @@
     </ClInclude>
     <ClInclude Include="..\source\AlphaBetaMove.h">
       <Filter>search\AlphaBeta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\SparCraftAssert.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\SparCraftException.h">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

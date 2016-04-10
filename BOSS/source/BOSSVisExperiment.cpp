@@ -167,7 +167,7 @@ PositionType BOSSVisExperiment::DrawScenario(const Position & pos, const size_t 
     ssres << "GWorkers: " << currentState.getNumGasWorkers() << "\n";
     ssres << "C Supply: " << currentState.getUnitData().getCurrentSupply() << "\n";
     ssres << "M Supply: " << currentState.getUnitData().getMaxSupply() << "\n";
-    GUITools::DrawStringLargeWithShadow(pos + Position(20, 20), ssres.str(), white);
+    GUITools::DrawString(pos + Position(20, 20), ssres.str(), white);
 
     Position completed = pos + Position(225,0);
     size_t cwidth = 64;
@@ -189,7 +189,7 @@ PositionType BOSSVisExperiment::DrawScenario(const Position & pos, const size_t 
         {
             GUI::Instance().DrawActionType(allActions[a], completed, cwidth);
             std::stringstream num; num << numCompleted;
-            GUITools::DrawStringLargeWithShadow(completed + Position(10, 20), num.str(), white);
+            GUITools::DrawString(completed + Position(10, 20), num.str(), white);
             completed.add(cwidth, 0);
         }
     }
@@ -197,7 +197,7 @@ PositionType BOSSVisExperiment::DrawScenario(const Position & pos, const size_t 
     Position legal = pos + Position(225,80);
     ActionSet legalActions;
     currentState.getAllLegalActions(legalActions);
-    GUITools::DrawStringWithShadow(legal + Position(0,-5), "Legal Actions", white);
+    GUITools::DrawString(legal + Position(0,-5), "Legal Actions", white);
     for (size_t a(0); a < legalActions.size(); ++a)
     {
         const ActionType & action = legalActions[a];
@@ -298,7 +298,7 @@ PositionType BOSSVisExperiment::DrawScenario(const Position & pos, const size_t 
 
         GUITools::DrawRect(topLeft, bottomRight, white);
         GUITools::DrawRect(topLeft+Position(1,1), bottomRight-Position(1,1), finishTimes[i] < currentState.getCurrentFrame() ? red : blue);
-        GUITools::DrawStringWithShadow(topLeft + Position(3, 13), name, white);
+        GUITools::DrawString(topLeft + Position(3, 13), name, white);
     }
 
     PositionType boWidth = std::min(32, (PositionType)(maxWidth / buildOrder.size()));
@@ -331,26 +331,26 @@ PositionType BOSSVisExperiment::DrawScenario(const Position & pos, const size_t 
             name = name.substr(loc, 2);
         }
 
-        GUITools::DrawStringWithShadow(topLeft - Position(-1, 3), name, white);
+        GUITools::DrawString(topLeft - Position(-1, 3), name, white);
     }
 
     if (currentState.getCurrentFrame() < maxFinishTime)
     {
         GUITools::DrawLine(Position((PositionType)framePos, concurrent.y() - 10), Position((PositionType)framePos, concurrent.y() + (maxLayer)*(height + heightBuffer) + 10 + height), 1, white);
-        GUITools::DrawStringWithShadow(Position((PositionType)framePos, concurrent.y() + (maxLayer)*(height + heightBuffer) + 10 + height + 20), stateTime.c_str(), white);
+        GUITools::DrawString(Position((PositionType)framePos, concurrent.y() + (maxLayer)*(height + heightBuffer) + 10 + height + 20), stateTime.c_str(), white);
     }
 
     for (FrameCountType timeFrame = 0; timeFrame < maxFinishTime; timeFrame += 24*30)
     {
         float xPos = concurrent.x() + timeFrame*scale;
-        GUITools::DrawStringWithShadow(Position((PositionType)xPos, concurrent.y() + (maxLayer)*(height + heightBuffer) + 10 + height + 20), getTimeString(timeFrame).c_str(), white);
+        GUITools::DrawString(Position((PositionType)xPos, concurrent.y() + (maxLayer)*(height + heightBuffer) + 10 + height + 20), getTimeString(timeFrame).c_str(), white);
     }
 
     Position progress = concurrent + Position(PositionType(maxWidth + 20), 0);
     Position progressBar(175,20);
     Position progressBuffer(0, 3);
 
-    GUITools::DrawStringWithShadow(progress - Position(0,5), "Actions in Progress:", white);
+    GUITools::DrawString(progress - Position(0,5), "Actions in Progress:", white);
     for (size_t a(0); a < currentState.getUnitData().getNumActionsInProgress(); ++a)
     {
         size_t index = currentState.getUnitData().getNumActionsInProgress() - a - 1;
@@ -368,13 +368,13 @@ PositionType BOSSVisExperiment::DrawScenario(const Position & pos, const size_t 
         GUITools::DrawRect(progress + progressBuffer + Position(1,1), progress + progressBuffer - Position(1,1) + ratioBar, blue);
 
         std::stringstream time; time << actionInProgress.getName() << " " << (int)remainingTime;
-        GUITools::DrawStringWithShadow(progress + progressBuffer + Position(10, 13), time.str(), white);
+        GUITools::DrawString(progress + progressBuffer + Position(10, 13), time.str(), white);
         progress.add(0, progressBar.y() + progressBuffer.y());
     }
 
     Position buildings(progress.x() + 195, concurrent.y());
     const BuildingData & buildingData = currentState.getBuildingData();
-    GUITools::DrawStringWithShadow(buildings - Position(0,5), "Completed Buildings", white);
+    GUITools::DrawString(buildings - Position(0,5), "Completed Buildings", white);
     for (size_t i(0); i < buildingData.size(); ++i)
     {
         const BuildingStatus & buildingStatus = buildingData.getBuilding(i);
@@ -395,11 +395,11 @@ PositionType BOSSVisExperiment::DrawScenario(const Position & pos, const size_t 
             GUITools::DrawRect(buildings + progressBuffer + Position(1,1), buildings + progressBuffer - Position(1,1) + ratioBar, blue);
             std::stringstream time; time << type.getName() << " " << (int)remainingTime;
             
-            GUITools::DrawStringWithShadow(buildings + progressBuffer + Position(10, 13), time.str(), white);
+            GUITools::DrawString(buildings + progressBuffer + Position(10, 13), time.str(), white);
         }
         else
         {
-            GUITools::DrawStringWithShadow(buildings + progressBuffer + Position(10, 13), type.getName(), white);
+            GUITools::DrawString(buildings + progressBuffer + Position(10, 13), type.getName(), white);
         }
         
         buildings.add(0, progressBar.y() + progressBuffer.y());

@@ -18,6 +18,7 @@
     <ClCompile Include="..\source\GUITools.cpp" />
     <ClCompile Include="..\source\BOSS_main.cpp" />
     <ClCompile Include="..\source\BuildOrderTester.cpp" />
+    <ClCompile Include="..\source\StarCraftGUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\BOSSExperiments.h" />
@@ -26,6 +27,8 @@
     <ClInclude Include="..\source\GUI.h" />
     <ClInclude Include="..\source\GUITools.h" />
     <ClInclude Include="..\source\BuildOrderTester.h" />
+    <ClInclude Include="..\source\Position.hpp" />
+    <ClInclude Include="..\source\StarCraftGUI.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{25544976-2D9A-4669-8EF6-B622C3B5A42E}</ProjectGuid>

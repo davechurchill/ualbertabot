@@ -77,30 +77,26 @@ void testBuildOrderPlot()
     plot.writeArmyValuePlot("gnuplot/testnewarmy.gpl");
 }
 
+#include "StarCraftGUI.h"
+void testNewGUI()
+{
+    StarCraftGUI gui(1280, 720);
+    
+    while (true)
+    {
+        gui.onFrame();
+    }
+}
+
 int main(int argc, char *argv[])
 {
+    //testNewGUI();
+
     BOSS::init();
     
     //testBuildOrderPlot();
 
     doCombatExperiment();
-
-//    ResetExperiment("");
-//
-//    if (experiments.getVisExperiments().size() > 0)
-//    {
-//        GUI::Instance().OnStart();
-//        GUI::Instance().SetVisExperiment(experiments.getVisExperiments()[0]);
-//    }
-//
-//#ifndef EMSCRIPTEN
-//    while (true)
-//    {
-//        mainLoop();
-//    }
-//#else
-//    emscripten_set_main_loop(mainLoop,0,true);
-//#endif
     
     return 0;
 }

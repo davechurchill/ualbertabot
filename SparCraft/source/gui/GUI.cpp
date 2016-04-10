@@ -45,8 +45,9 @@ void GUI::OnStart()
 	mapPixelWidth	= mapWidth * 32;
 	mapPixelHeight	= mapHeight * 32;
 
-	cameraX			= 400 - windowSizeX / 2;
-	cameraY			= 400 - windowSizeY / 2;
+    // start with the origin in the middle of the viewport
+	cameraX			= windowSizeX / 2;
+	cameraY			= windowSizeY / 2;
     
     //(*wglGetProcAddress("wglSwapIntervalEXT"));
 
@@ -61,6 +62,7 @@ void GUI::OnStart()
 
     glcontext = SDL_GL_CreateContext(window);
 
+    LoadTextures();
 
 	// enable alpha blending for transparency
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

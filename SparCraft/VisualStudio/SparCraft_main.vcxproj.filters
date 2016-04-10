@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\source\main.cpp" />
+    <ClCompile Include="..\source\SearchExperiment.cpp" />
+    <ClCompile Include="..\source\TutorialCode.cpp" />
+    <ClCompile Include="..\source\GUITools.cpp">
+      <Filter>gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\StarCraftGUI.cpp">
+      <Filter>gui</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\source\SearchExperiment.h" />
+    <ClInclude Include="..\source\GUITools.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\StarCraftGUI.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="gui">
+      <UniqueIdentifier>{ceb05fc9-cc5d-4f5b-808d-c844862d2269}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

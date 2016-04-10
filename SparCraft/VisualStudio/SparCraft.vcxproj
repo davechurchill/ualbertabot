@@ -157,6 +157,8 @@
     <ClInclude Include="..\source\Common.h" />
     <ClInclude Include="..\source\Position.hpp" />
     <ClInclude Include="..\source\SparCraft.h" />
+    <ClInclude Include="..\source\SparCraftAssert.h" />
+    <ClInclude Include="..\source\SparCraftException.h" />
     <ClInclude Include="..\source\Timer.h" />
     <ClInclude Include="..\source\TranspositionTable.h" />
     <ClInclude Include="..\source\UCTMemoryPool.hpp" />
@@ -199,6 +201,8 @@
     <ClCompile Include="..\source\Player_UCT.cpp" />
     <ClCompile Include="..\source\PortfolioGreedySearch.cpp" />
     <ClCompile Include="..\source\SparCraft.cpp" />
+    <ClCompile Include="..\source\SparCraftAssert.cpp" />
+    <ClCompile Include="..\source\SparCraftException.cpp" />
     <ClCompile Include="..\source\Timer.cpp" />
     <ClCompile Include="..\source\TranspositionTable.cpp" />
     <ClCompile Include="..\source\UCTSearch.cpp" />

@@ -20,6 +20,9 @@
     <ClCompile Include="..\source\CombatSearchExperiment.cpp">
       <Filter>experiments</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\StarCraftGUI.cpp">
+      <Filter>gui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="gui">
@@ -50,6 +53,12 @@
     </ClInclude>
     <ClInclude Include="..\source\CombatSearchExperiment.h">
       <Filter>experiments</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\StarCraftGUI.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Position.hpp">
+      <Filter>gui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
