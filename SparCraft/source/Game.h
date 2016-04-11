@@ -33,6 +33,8 @@ protected:
 	MoveArray moves[2];
 	std::vector<Action> scriptMoves[2];
 
+    
+
 public:
 	
 	// game constructor
@@ -40,13 +42,16 @@ public:
     Game(const GameState & initialState, const size_t & limit);
 
 	void            play();
+    void            playNextTurn();
     void            playIndividualScripts(UnitScriptData & scriptsChosen);
 	void            storeHistory(const bool & store);
-	bool            gameOver();
+	bool            gameOver() const;
+    
 
 	ScoreType       eval(const IDType & evalMethod) const;
 
 	GameState &     getState();
+    const GameState &     getState() const;
 	int             getRounds();
 	double          getTime();
 	const IDType    getPlayerToMove();

@@ -10,6 +10,9 @@
     <ClCompile Include="..\source\StarCraftGUI.cpp">
       <Filter>gui</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\GUIGame.cpp">
+      <Filter>gui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\SearchExperiment.h" />
@@ -17,6 +20,9 @@
       <Filter>gui</Filter>
     </ClInclude>
     <ClInclude Include="..\source\StarCraftGUI.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\GUIGame.h">
       <Filter>gui</Filter>
     </ClInclude>
   </ItemGroup>

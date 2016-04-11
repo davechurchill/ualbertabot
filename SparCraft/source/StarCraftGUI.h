@@ -4,6 +4,7 @@
 #include "GUITools.h"
 #include "Timer.h"
 #include "Position.hpp"
+#include "GUIGame.h"
 #include <vector>
 
 #include <SDL.h>
@@ -16,6 +17,7 @@
 
 namespace SparCraft
 {
+
 class StarCraftGUI
 {
     int                 _initialWidth;
@@ -35,6 +37,8 @@ class StarCraftGUI
     SDL_Surface *       _surface;
     SDL_GLContext       _glcontext;
 
+    GUIGame             _guiGame;
+
     std::vector<GLuint>     _textures;
     std::vector<Position>   _textureSizes;
 
@@ -51,7 +55,7 @@ class StarCraftGUI
     void drawAllBWAPIUnits();
     void onStart();
     void testRender();
-    void drawUnitType(const BWAPI::UnitType & type, Position & p);
+    
     bool isStarted() const;
 
     static std::string GetTextureFileName(const BWAPI::UnitType & type);
@@ -71,6 +75,10 @@ public:
 
     void onFrame();
     void setCenter(int x, int y);
+    void setGame(const Game & game);
+    void drawUnitType(const BWAPI::UnitType & type, const Position & p);
+
+    const Game & getGame() const;
 
     bool saveScreenshotBMP(const std::string & filename);
 };

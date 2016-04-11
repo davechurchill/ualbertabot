@@ -168,7 +168,7 @@ void Unit::takeAttack(const Unit & attacker)
         damage *= 2;
     }
 
-    std::cout << type().getName() << " took " << (int)attacker.player() << " " << damage << "\n";
+    //std::cout << type().getName() << " took " << (int)attacker.player() << " " << damage << "\n";
 
     updateCurrentHP(_currentHP - damage);
 }

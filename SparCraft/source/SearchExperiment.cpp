@@ -890,18 +890,24 @@ void SearchExperiment::runExperiment()
 
 				// construct the game
 				Game g(states[state], playerOne, playerTwo, 20000);
-				#ifdef USING_VISUALIZATION_LIBRARIES
-                    if (showDisplay)
-                    {
-					    //g.disp = disp;
-                        disp->SetExpDesc(getExpDescription(p1Player, p2Player, state));
-                    }
-				#endif
+                ScoreType gameEval = 0;
 
-				// play the game to the end
-				g.play();
-				
-				ScoreType gameEval = g.getState().eval(Players::Player_One, SparCraft::EvaluationMethods::LTD2).val();
+                if (showDisplay)
+                {
+					static StarCraftGUI gui(1280, 720);
+                    gui.setGame(g);
+
+                    while (!gui.getGame().gameOver())
+                    {
+                        gui.onFrame();
+                    }
+
+                    gameEval = gui.getGame().getState().eval(Players::Player_One, SparCraft::EvaluationMethods::LTD2).val();
+                }
+                else
+                {
+                    gameEval = g.getState().eval(Players::Player_One, SparCraft::EvaluationMethods::LTD2).val();
+                }
 
                 numGames[p1Player][p2Player]++;
                 if (gameEval > 0)

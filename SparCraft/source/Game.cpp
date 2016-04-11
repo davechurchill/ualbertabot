@@ -24,7 +24,6 @@ Game::Game(const GameState & initialState, PlayerPtr & p1, PlayerPtr & p2, const
     _players[Players::Player_Two] = p2;
 }
 
-
 // play the game until there is a winner
 void Game::play()
 {
@@ -41,40 +40,45 @@ void Game::play()
             break;
         }
 
-        Timer frameTimer;
-        frameTimer.start();
-
-        scriptMoves[0].clear();
-        scriptMoves[1].clear();
-
-        // the player that will move next
-        const IDType playerToMove(getPlayerToMove());
-        PlayerPtr & toMove = _players[playerToMove];
-        PlayerPtr & enemy = _players[state.getEnemy(playerToMove)];
-
-        // generate the moves possible from this state
-        state.generateMoves(moves[toMove->ID()], toMove->ID());
-
-        // the tuple of moves he wishes to make
-        toMove->getMoves(state, moves[playerToMove], scriptMoves[playerToMove]);
-        
-        // if both players can move, generate the other player's moves
-        if (state.bothCanMove())
-        {
-            state.generateMoves(moves[enemy->ID()], enemy->ID());
-            enemy->getMoves(state, moves[enemy->ID()], scriptMoves[enemy->ID()]);
-
-            state.makeMoves(scriptMoves[enemy->ID()]);
-        }
-
-        // make the moves
-        state.makeMoves(scriptMoves[toMove->ID()]);
-
-        state.finishedMoving();
-        rounds++;
+        playNextTurn();
     }
 
     gameTimeMS = t.getElapsedTimeInMilliSec();
+}
+
+void Game::playNextTurn()
+{
+    Timer frameTimer;
+    frameTimer.start();
+
+    scriptMoves[0].clear();
+    scriptMoves[1].clear();
+
+    // the player that will move next
+    const IDType playerToMove(getPlayerToMove());
+    PlayerPtr & toMove = _players[playerToMove];
+    PlayerPtr & enemy = _players[state.getEnemy(playerToMove)];
+
+    // generate the moves possible from this state
+    state.generateMoves(moves[toMove->ID()], toMove->ID());
+
+    // the tuple of moves he wishes to make
+    toMove->getMoves(state, moves[playerToMove], scriptMoves[playerToMove]);
+        
+    // if both players can move, generate the other player's moves
+    if (state.bothCanMove())
+    {
+        state.generateMoves(moves[enemy->ID()], enemy->ID());
+        enemy->getMoves(state, moves[enemy->ID()], scriptMoves[enemy->ID()]);
+
+        state.makeMoves(scriptMoves[enemy->ID()]);
+    }
+
+    // make the moves
+    state.makeMoves(scriptMoves[toMove->ID()]);
+
+    state.finishedMoving();
+    rounds++;
 }
 
 // play the game until there is a winner
@@ -152,9 +156,14 @@ double Game::getTime()
 }
 
 // returns whether or not the game is over
-bool Game::gameOver()
+bool Game::gameOver() const
 {
     return state.isTerminal(); 
+}
+
+const GameState & Game::getState() const
+{
+    return state;
 }
 
 GameState & Game::getState()

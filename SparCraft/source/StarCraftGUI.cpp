@@ -21,6 +21,7 @@ StarCraftGUI::StarCraftGUI(int width, int height)
     , _mousePressed(false)
     , _shiftPressed(false)
     , _currentFrame(0)
+    , _guiGame(*this)
 {
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
     {
@@ -76,7 +77,6 @@ void StarCraftGUI::onStart()
 
     _isStarted = true;
 }
-
 
 void StarCraftGUI::onFrame()
 {
@@ -184,7 +184,9 @@ void StarCraftGUI::render()
         {
             glTranslatef(static_cast<float>(-_cameraX),static_cast<float>(-_cameraY),0);
               
-            drawAllBWAPIUnits();
+            _guiGame.onFrame();
+
+            //drawAllBWAPIUnits();
             
             //GUITools::DrawTexturedRect(Position(0,0), Position(200,200), TextureFont, ColorWhite);
             //GUITools::DrawString(Position(300, 300), "Test String", ColorWhite);
@@ -258,10 +260,10 @@ void StarCraftGUI::drawAllBWAPIUnits()
     }
 }
 
-void StarCraftGUI::drawUnitType(const BWAPI::UnitType & type, Position & p)
+void StarCraftGUI::drawUnitType(const BWAPI::UnitType & type, const Position & p)
 {
     const int id = _unitTypeTextureID[type];
-    GUITools::DrawString(p, type.getName(), ColorWhite);
+    //GUITools::DrawString(p, type.getName(), ColorWhite);
     GUITools::DrawTexturedRect(p, p + _textureSizes[id], id, ColorWhite);
 }
 
@@ -305,7 +307,7 @@ void StarCraftGUI::loadTextures()
     
     loadTexture(TextureFont, imageDir + "fonts/alpha_trans.png");
 
-    std::cout << "Successfully loaded " << textureNumber << " textures" << std::endl;
+    std::cout << "\n\nSuccessfully loaded " << textureNumber << " textures\n\n";
 }
 
 bool StarCraftGUI::loadTexture(int textureNumber, const std::string & fileName)
@@ -340,7 +342,7 @@ bool StarCraftGUI::loadTexture(int textureNumber, const std::string & fileName)
         SDL_FreeSurface( surface2 );
     }
 
-    std::cout << textureNumber << "Loaded: " << fileName << std::endl;
+    //std::cout << textureNumber << "Loaded: " << fileName << std::endl;
 
     return true;
 }
@@ -401,4 +403,14 @@ std::string StarCraftGUI::GetTextureFileName(const BWAPI::UpgradeType & type)
 	}
 
 	return filename;
+}
+
+void StarCraftGUI::setGame(const Game & game)
+{
+    _guiGame.setGame(game);
+}
+
+const Game & StarCraftGUI::getGame() const
+{
+    return _guiGame.getGame();
 }
