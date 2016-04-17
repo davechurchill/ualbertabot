@@ -7,10 +7,10 @@
     <ClCompile Include="..\source\GUITools.cpp">
       <Filter>gui</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\StarCraftGUI.cpp">
+    <ClCompile Include="..\source\GUIGame.cpp">
       <Filter>gui</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\GUIGame.cpp">
+    <ClCompile Include="..\source\GUI.cpp">
       <Filter>gui</Filter>
     </ClCompile>
   </ItemGroup>
@@ -19,10 +19,10 @@
     <ClInclude Include="..\source\GUITools.h">
       <Filter>gui</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\StarCraftGUI.h">
+    <ClInclude Include="..\source\GUIGame.h">
       <Filter>gui</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\GUIGame.h">
+    <ClInclude Include="..\source\GUI.h">
       <Filter>gui</Filter>
     </ClInclude>
   </ItemGroup>

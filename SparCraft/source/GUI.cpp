@@ -1,4 +1,4 @@
-#include "StarCraftGUI.h"
+#include "GUI.h"
 #include "BWAPI.h"
 #include <cassert>
 #include <iostream>
@@ -6,11 +6,11 @@
 using namespace SparCraft;
 
 const size_t MaxStarCraftTextures                   = 512;
-const int StarCraftGUI::TextureFont                 = 256;
+const int GUI::TextureFont                 = 256;
 
 GLfloat ColorWhite[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 
-StarCraftGUI::StarCraftGUI(int width, int height) 
+GUI::GUI(int width, int height) 
     : _initialWidth(width)
     , _initialHeight(height)
     , _cameraX(0)
@@ -21,6 +21,7 @@ StarCraftGUI::StarCraftGUI(int width, int height)
     , _mousePressed(false)
     , _shiftPressed(false)
     , _currentFrame(0)
+    , _previousRenderTime(0)
     , _guiGame(*this)
 {
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
@@ -32,18 +33,18 @@ StarCraftGUI::StarCraftGUI(int width, int height)
     onStart();
 }
 
-StarCraftGUI::~StarCraftGUI()
+GUI::~GUI()
 {
     SDL_Quit();
 }
 
-bool StarCraftGUI::isStarted() const
+bool GUI::isStarted() const
 {
     return _isStarted;
 }
 
 // This function must be called before OnFrame
-void StarCraftGUI::onStart()
+void GUI::onStart()
 {
     // if we've already called OnStart, don't re-initialize everything
     if (_isStarted)
@@ -78,7 +79,7 @@ void StarCraftGUI::onStart()
     _isStarted = true;
 }
 
-void StarCraftGUI::onFrame()
+void GUI::onFrame()
 {
     SPARCRAFT_ASSERT(isStarted(), "Must initialize GUI before calling OnFrame()");
 
@@ -92,7 +93,7 @@ void StarCraftGUI::onFrame()
     SDL_GL_SwapWindow(_window);
 }
 
-void StarCraftGUI::handleEvents()
+void GUI::handleEvents()
 {
     // Handle SDL events
     SDL_Event event;
@@ -170,8 +171,11 @@ void StarCraftGUI::handleEvents()
     }
 }
 
-void StarCraftGUI::render()
+void GUI::render()
 {
+    Timer renderTimer;
+    renderTimer.start();
+
     glViewport(0, 0, width(), height());
 
     glMatrixMode(GL_PROJECTION);
@@ -200,7 +204,7 @@ void StarCraftGUI::render()
     _currentFrame++;
 }
 
-int StarCraftGUI::width()
+int GUI::width()
 {
     int x, y;
     SDL_GetWindowSize(_window, &x, &y);
@@ -208,7 +212,7 @@ int StarCraftGUI::width()
     return x;
 }
 
-int StarCraftGUI::height()
+int GUI::height()
 {
     int x, y;
     SDL_GetWindowSize(_window, &x, &y);
@@ -216,13 +220,13 @@ int StarCraftGUI::height()
     return y;
 }
 
-void StarCraftGUI::setCenter(int x, int y)
+void GUI::setCenter(int x, int y)
 {
     _cameraX = -(width() - x) / 2;
     _cameraY = -(height() - y) / 2;
 }
 
-void StarCraftGUI::drawAllBWAPIUnits()
+void GUI::drawAllBWAPIUnits()
 {
     Position p(0, 0);
     size_t maxHeight = 0;
@@ -260,14 +264,16 @@ void StarCraftGUI::drawAllBWAPIUnits()
     }
 }
 
-void StarCraftGUI::drawUnitType(const BWAPI::UnitType & type, const Position & p)
+void GUI::drawUnitType(const BWAPI::UnitType & type, const Position & p)
 {
     const int id = _unitTypeTextureID[type];
     //GUITools::DrawString(p, type.getName(), ColorWhite);
-    GUITools::DrawTexturedRect(p, p + _textureSizes[id], id, ColorWhite);
+    Position pos = p - Position(_textureSizes[id].x()/2, _textureSizes[id].y()/2);
+
+    GUITools::DrawTexturedRect(pos, pos + _textureSizes[id], id, ColorWhite);
 }
 
-void StarCraftGUI::loadTextures()
+void GUI::loadTextures()
 {
     std::string imageDir = "../asset/images/";
 
@@ -310,7 +316,7 @@ void StarCraftGUI::loadTextures()
     std::cout << "\n\nSuccessfully loaded " << textureNumber << " textures\n\n";
 }
 
-bool StarCraftGUI::loadTexture(int textureNumber, const std::string & fileName)
+bool GUI::loadTexture(int textureNumber, const std::string & fileName)
 {
     struct stat buf;
     if (stat(fileName.c_str(), &buf) == -1)
@@ -347,7 +353,7 @@ bool StarCraftGUI::loadTexture(int textureNumber, const std::string & fileName)
     return true;
 }
 
-bool StarCraftGUI::saveScreenshotBMP(const std::string & filename) 
+bool GUI::saveScreenshotBMP(const std::string & filename) 
 {
     SDL_Surface * image = SDL_CreateRGBSurface(SDL_SWSURFACE, width(), height(), 32, 0x000000FF, 0x0000FF00, 0x00FF0000, 0);
 
@@ -360,7 +366,7 @@ bool StarCraftGUI::saveScreenshotBMP(const std::string & filename)
     return true;
 }
 
-std::string StarCraftGUI::GetTextureFileName(const BWAPI::TechType & type)
+std::string GUI::GetTextureFileName(const BWAPI::TechType & type)
 {
 	std::string filename = "command_icons/" + type.getName() + ".png";
 
@@ -375,7 +381,7 @@ std::string StarCraftGUI::GetTextureFileName(const BWAPI::TechType & type)
 	return filename;
 }
 
-std::string StarCraftGUI::GetTextureFileName(const BWAPI::UnitType & type)
+std::string GUI::GetTextureFileName(const BWAPI::UnitType & type)
 {
 	std::string filename = "units/" + type.getName() + ".png";
 
@@ -390,7 +396,7 @@ std::string StarCraftGUI::GetTextureFileName(const BWAPI::UnitType & type)
 	return filename;
 }
 
-std::string StarCraftGUI::GetTextureFileName(const BWAPI::UpgradeType & type)
+std::string GUI::GetTextureFileName(const BWAPI::UpgradeType & type)
 {
 	std::string filename = "command_icons/" + type.getName() + ".png";
 
@@ -405,12 +411,12 @@ std::string StarCraftGUI::GetTextureFileName(const BWAPI::UpgradeType & type)
 	return filename;
 }
 
-void StarCraftGUI::setGame(const Game & game)
+void GUI::setGame(const Game & game)
 {
     _guiGame.setGame(game);
 }
 
-const Game & StarCraftGUI::getGame() const
+const Game & GUI::getGame() const
 {
     return _guiGame.getGame();
 }

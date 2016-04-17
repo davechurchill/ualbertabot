@@ -55,6 +55,7 @@ public:
 	int             getRounds();
 	double          getTime();
 	const IDType    getPlayerToMove();
+    PlayerPtr       getPlayer(const IDType & player);
 
 };
 

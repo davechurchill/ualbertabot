@@ -1,5 +1,5 @@
 #include "GUITools.h"
-#include "StarCraftGUI.h"
+#include "GUI.h"
 
 namespace SparCraft
 {
@@ -41,7 +41,7 @@ namespace GUITools
         glPushMatrix();
             glEnable( GL_TEXTURE_2D );
                 glColor4fv(rgba);
-                glBindTexture( GL_TEXTURE_2D, StarCraftGUI::TextureFont );
+                glBindTexture( GL_TEXTURE_2D, GUI::TextureFont );
                 glBegin( GL_QUADS );
                     glTexCoord2f(xPos,yPos);                        glVertex2i(tl.x(), tl.y());
                     glTexCoord2f(xPos+CharDelta,yPos);              glVertex2i(br.x(), tl.y());

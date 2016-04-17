@@ -894,7 +894,7 @@ void SearchExperiment::runExperiment()
 
                 if (showDisplay)
                 {
-					static StarCraftGUI gui(1280, 720);
+					static GUI gui(1280, 720);
                     gui.setGame(g);
 
                     while (!gui.getGame().gameOver())

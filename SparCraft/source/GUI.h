@@ -18,7 +18,7 @@
 namespace SparCraft
 {
 
-class StarCraftGUI
+class GUI
 {
     int                 _initialWidth;
     int                 _initialHeight;
@@ -30,6 +30,7 @@ class StarCraftGUI
     int                 _previousMouseY;
     bool                _mousePressed;
     bool                _shiftPressed;
+    double              _previousRenderTime;
 
     size_t              _currentFrame;
 
@@ -67,8 +68,8 @@ public:
     static const int TextureASCIIOffset;
     static const int TextureFont;
     
-    StarCraftGUI(int width, int height);
-    ~StarCraftGUI();
+    GUI(int width, int height);
+    ~GUI();
 
     int width();
     int height();

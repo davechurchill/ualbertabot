@@ -145,6 +145,11 @@ void Game::playIndividualScripts(UnitScriptData & scriptData)
     gameTimeMS = t.getElapsedTimeInMilliSec();
 }
 
+PlayerPtr Game::getPlayer(const IDType & player)
+{
+    return _players[player];
+}
+
 int Game::getRounds()
 {
     return rounds;
