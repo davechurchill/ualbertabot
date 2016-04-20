@@ -1,102 +1,51 @@
 #include "BOSS.h"
+#include "BOSSParameters.h"
 #include "BOSSExperiments.h"
-#include "BuildOrderTester.h"
-#include "GUI.h"
+
+#include "CImg/CImg.h"
 
 using namespace BOSS;
+using namespace cimg_library;
 
-#ifdef EMSCRIPTEN
-#include <emscripten.h>
-#endif
-
-BOSS::BOSSExperiments experiments;
-std::string returnString("TestReturn");
-
-void mainLoop()
+int main2() 
 {
+    CImg<unsigned char> image("logo.bmp");
+    CImg<unsigned char> visu(500,400,1,3,0);
 
+    const unsigned char red[]   = {255,0,0};
+    const unsigned char green[] = {0,255,0};
+    const unsigned char blue[]  = {0,0,255};
 
-    GUI::Instance().OnFrame();
-}
+    image.blur(2.5);
+    CImgDisplay main_disp(image,"Click a point");
+    CImgDisplay draw_disp(visu,"Intensity profile");
 
-extern "C" 
-{
-const char * ResetExperiment(char * paramString)
-{
-    std::cout << "Param String Received" << std::endl;
-
-    std::string params(paramString);
-
-    experiments = BOSS::BOSSExperiments();
-
-    if (params.length() == 0)
+    while (!main_disp.is_closed() && !draw_disp.is_closed()) 
     {
-        #ifndef EMSCRIPTEN
-            experiments.loadExperimentsFromFile("../asset/config/config.txt");
-        #else
-            experiments.loadExperimentsFromFile("asset/config/webconfig.txt");
-        #endif
-    }
-    else
-    {
-        experiments.loadExperimentsFromString(params);
+        main_disp.wait();
+        if (main_disp.button() && main_disp.mouse_y()>=0) 
+        {
+            const int y = main_disp.mouse_y();
+            visu.fill(0).draw_graph(image.get_crop(0,y,0,0,image.width()-1,y,0,0),red,1,1,0,255,0);
+            visu.draw_graph(image.get_crop(0,y,0,1,image.width()-1,y,0,1),green,1,1,0,255,0);
+            visu.draw_graph(image.get_crop(0,y,0,2,image.width()-1,y,0,2),blue,1,1,0,255,0).display(draw_disp);
+        }
     }
 
-    if (experiments.getVisExperiments().size() > 0)
-    {
-        GUI::Instance().SetVisExperiment(experiments.getVisExperiments()[0]);
-    }
- 
-    return returnString.c_str();
-}
+    return 0;
 }
 
-void doCombatExperiment()
-{
-    BOSS::BOSSExperiments exp;
-    exp.loadExperimentsFromFile("../asset/config/config.txt");
-
-    for (size_t i(0); i < exp.getCombatSearchExperiments().size(); ++i)
-    {
-        exp.getCombatSearchExperiments()[i].run();
-    }
-}
-
-#include "BuildOrderPlot.h"
-void testBuildOrderPlot()
-{
-    const std::string buildOrderJSON = "[ \"Protoss_Probe\", \"Protoss_Probe\", \"Protoss_Probe\", \"Protoss_Probe\", \"Protoss_Pylon\", \"Protoss_Probe\", \"Protoss_Probe\", \"Protoss_Gateway\", \"Protoss_Probe\", \"Protoss_Assimilator\", \"Protoss_Probe\", \"Protoss_Probe\", \"Protoss_Cybernetics_Core\", \"Protoss_Probe\", \"Protoss_Probe\", \"Protoss_Gateway\", \"Singularity_Charge\", \"Protoss_Dragoon\", \"Protoss_Gateway\", \"Protoss_Pylon\", \"Protoss_Dragoon\", \"Protoss_Dragoon\", \"Protoss_Probe\", \"Protoss_Gateway\", \"Protoss_Pylon\", \"Protoss_Probe\", \"Protoss_Dragoon\", \"Protoss_Dragoon\", \"Protoss_Dragoon\"]";
-
-    GameState state(Races::Protoss);
-    state.setStartingState();
-
-    BuildOrder buildOrder = JSONTools::GetBuildOrder(buildOrderJSON);
-
-    BuildOrderPlot plot(state, buildOrder);
-    plot.writeRectanglePlot("gnuplot/testnew.gpl");
-    plot.writeArmyValuePlot("gnuplot/testnewarmy.gpl");
-}
-
-#include "StarCraftGUI.h"
-void testNewGUI()
-{
-    StarCraftGUI gui(1280, 720);
-    
-    while (true)
-    {
-        gui.onFrame();
-    }
-}
 
 int main(int argc, char *argv[])
 {
-    //testNewGUI();
-
+    // Initialize all the BOSS internal data
     BOSS::init();
-    
-    //testBuildOrderPlot();
 
-    doCombatExperiment();
+    // Read in the config parameters that will be used for experiments
+    BOSS::BOSSParameters::Instance().ParseParameters("BOSS_Config.txt");
+    
+    // Run the experiments
+    BOSS::Experiments::RunExperiments("BOSS_Config.txt");
     
     return 0;
 }

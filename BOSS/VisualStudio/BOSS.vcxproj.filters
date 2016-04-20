@@ -43,9 +43,6 @@
     <ClCompile Include="..\source\Tools.cpp">
       <Filter>search\util</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\DFBB_BuildOrderSearchSaveState.cpp">
-      <Filter>search\BuildOrderSearch</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\DFBB_BuildOrderSmartSearch.cpp">
       <Filter>search\BuildOrderSearch</Filter>
     </ClCompile>
@@ -165,9 +162,6 @@
     <ClInclude Include="..\source\Tools.h">
       <Filter>search\util</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\DFBB_BuildOrderSearchSaveState.h">
-      <Filter>search\BuildOrderSearch</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\DFBB_BuildOrderSmartSearch.h">
       <Filter>search\BuildOrderSearch</Filter>
     </ClInclude>
@@ -248,5 +242,8 @@
     <Filter Include="engine">
       <UniqueIdentifier>{975df5db-5385-4879-9a2a-e0f7d4354574}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

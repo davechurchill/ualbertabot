@@ -85,7 +85,7 @@ void DFBB_BuildOrderStackSearch::generateLegalActions(const GameState & state, A
                 continue;
             }
 
-            // if we alread have more than the goal it's not legal
+            // if we already have more than the goal it's not legal
             if (goal.getGoal(actionType) && (numTotal >= goal.getGoal(actionType)))
             {
                 continue;

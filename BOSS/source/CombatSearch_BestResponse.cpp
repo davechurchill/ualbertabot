@@ -10,7 +10,7 @@ CombatSearch_BestResponse::CombatSearch_BestResponse(const CombatSearchParameter
     BOSS_ASSERT(_params.getInitialState().getRace() != Races::None, "Combat search initial state is invalid");
 }
 
-void CombatSearch_BestResponse::doSearch(const GameState & state, size_t depth)
+void CombatSearch_BestResponse::recurse(const GameState & state, size_t depth)
 {
     if (timeLimitReached())
     {
@@ -36,7 +36,7 @@ void CombatSearch_BestResponse::doSearch(const GameState & state, size_t depth)
         child.doAction(legalActions[ri]);
         _buildOrder.add(legalActions[ri]);
         
-        doSearch(child,depth+1);
+        recurse(child,depth+1);
 
         _buildOrder.pop_back();
     }

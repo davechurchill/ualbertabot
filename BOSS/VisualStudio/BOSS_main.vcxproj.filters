@@ -1,33 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\source\GUITools.cpp">
-      <Filter>gui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\GUI.cpp">
-      <Filter>gui</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\BOSS_main.cpp" />
-    <ClCompile Include="..\source\BOSSExperiments.cpp">
-      <Filter>experiments</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\BOSSVisExperiment.cpp">
-      <Filter>experiments</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\BuildOrderTester.cpp">
       <Filter>testing</Filter>
     </ClCompile>
     <ClCompile Include="..\source\CombatSearchExperiment.cpp">
       <Filter>experiments</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\StarCraftGUI.cpp">
-      <Filter>gui</Filter>
+    <ClCompile Include="..\source\BOSSPlotBuildOrders.cpp">
+      <Filter>experiments</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\BOSSParameters.cpp">
+      <Filter>experiments</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\BOSSExperiments.cpp">
+      <Filter>experiments</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="gui">
-      <UniqueIdentifier>{3d80a73e-cfef-4628-9cb5-7c132f896eea}</UniqueIdentifier>
-    </Filter>
     <Filter Include="experiments">
       <UniqueIdentifier>{1d1bf021-f0f5-44d7-abf5-ded9f0d6ed4d}</UniqueIdentifier>
     </Filter>
@@ -36,29 +27,20 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\GUI.h">
-      <Filter>gui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\GUITools.h">
-      <Filter>gui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\BOSSExperiments.h">
-      <Filter>experiments</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\BOSSVisExperiment.h">
-      <Filter>experiments</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\BuildOrderTester.h">
       <Filter>testing</Filter>
     </ClInclude>
     <ClInclude Include="..\source\CombatSearchExperiment.h">
       <Filter>experiments</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\StarCraftGUI.h">
-      <Filter>gui</Filter>
+    <ClInclude Include="..\source\BOSSPlotBuildOrders.h">
+      <Filter>experiments</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\Position.hpp">
-      <Filter>gui</Filter>
+    <ClInclude Include="..\source\BOSSParameters.h">
+      <Filter>experiments</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\BOSSExperiments.h">
+      <Filter>experiments</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

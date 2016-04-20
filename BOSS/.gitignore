@@ -11,6 +11,7 @@ bin/*.pdb
 bin/*.ilk
 bin/*.txt
 bin/*.map
+bin/*.bsc
 bin/gnuplot/*.gpl
 bin/gnuplot/*.txt
 source/*.o

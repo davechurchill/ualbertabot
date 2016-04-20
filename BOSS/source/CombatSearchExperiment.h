@@ -1,7 +1,6 @@
 #pragma once
 
 #include "BOSS.h"
-#include "GUITools.h"
 #include "JSONTools.h"
 #include <memory>
 #include "rapidjson/rapidjson.h"
@@ -23,7 +22,7 @@ class CombatSearchExperiment
 public:
 
     CombatSearchExperiment();
-    CombatSearchExperiment(const std::string & name, const rapidjson::Value & experimentVal, std::map< std::string, GameState > & stateMap, std::map< std::string, BuildOrder > & buildOrderMap);
+    CombatSearchExperiment(const std::string & name, const rapidjson::Value & experimentVal);
 
     void run();
 };

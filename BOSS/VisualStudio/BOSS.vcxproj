@@ -36,7 +36,6 @@
     <ClInclude Include="..\source\BuildOrderSearchGoal.h" />
     <ClInclude Include="..\source\DFBB_BuildOrderSearchParameters.h" />
     <ClInclude Include="..\source\DFBB_BuildOrderSearchResults.h" />
-    <ClInclude Include="..\source\DFBB_BuildOrderSearchSaveState.h" />
     <ClInclude Include="..\source\DFBB_BuildOrderSmartSearch.h" />
     <ClInclude Include="..\source\DFBB_BuildOrderStackSearch.h" />
     <ClInclude Include="..\source\Eval.h" />
@@ -74,7 +73,6 @@
     <ClCompile Include="..\source\BuildOrderSearchGoal.cpp" />
     <ClCompile Include="..\source\DFBB_BuildOrderSearchParameters.cpp" />
     <ClCompile Include="..\source\DFBB_BuildOrderSearchResults.cpp" />
-    <ClCompile Include="..\source\DFBB_BuildOrderSearchSaveState.cpp" />
     <ClCompile Include="..\source\DFBB_BuildOrderSmartSearch.cpp" />
     <ClCompile Include="..\source\DFBB_BuildOrderStackSearch.cpp" />
     <ClCompile Include="..\source\Eval.cpp" />
@@ -86,6 +84,9 @@
     <ClCompile Include="..\source\PrerequisiteSet.cpp" />
     <ClCompile Include="..\source\Tools.cpp" />
     <ClCompile Include="..\source\UnitData.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9F8709E3-AC4F-45F2-8105-4A99D8E2A127}</ProjectGuid>
@@ -159,6 +160,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -168,6 +170,9 @@
       <AdditionalDependencies>../../bwapidata/lib/bwapidata_$(PlatformToolset).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateMapFile>true</GenerateMapFile>
     </Link>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

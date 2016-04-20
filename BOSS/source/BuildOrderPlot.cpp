@@ -64,6 +64,7 @@ void BuildOrderPlot::calculatePlot()
         FrameCountType finish   = _finishTimes[i];
 
         std::vector<int> layerOverlap;
+
         // loop through everything up to this action and see which layers it can't be in
         for (size_t j(0); j < i; ++j)
         {
@@ -100,6 +101,11 @@ void BuildOrderPlot::calculatePlot()
     }
 }
 
+void BuildOrderPlot::addPlot(const BuildOrderPlot & plot)
+{
+    _otherPlots.push_back(plot);
+}
+
 void BuildOrderPlot::writeResourcePlot(const std::string & filename)
 {
     std::stringstream mineralss;
@@ -124,6 +130,11 @@ void BuildOrderPlot::writeRectanglePlot(const std::string & filename)
 {
     std::stringstream ss;
     int maxY = (_maxLayer + 1) * (_boxHeight + _boxHeightBuffer) + 15;
+
+    for (size_t p(0); p < _otherPlots.size(); ++p)
+    {
+        maxY += (_otherPlots[p]._maxLayer + 2) * (_boxHeight + _boxHeightBuffer) + 15;
+    }
 
     //ss << "set title \"Title Goes Here\"" << std::endl;
     //ss << "set xlabel \"Time (frames)\"" << std::endl;
@@ -188,6 +199,67 @@ void BuildOrderPlot::writeRectanglePlot(const std::string & filename)
 
         ss << "set label " << (i+1) << " at " << pos.str() << " \"" << _buildOrder[i].getShortName() << "\" front center";
         ss << std::endl;
+    }
+
+    int currentLayer = _maxLayer + 2;
+    int currentObject = _buildOrder.size();
+
+    for (size_t p(0); p < _otherPlots.size(); ++p)
+    {
+        const BuildOrder & buildOrder = _otherPlots[p]._buildOrder;
+
+        for (size_t i(0); i < buildOrder.size(); ++i)
+        {
+            const Rectangle & rect = _otherPlots[p]._rectangles[i];
+            const int rectWidth = (rect.bottomRight.x() - rect.topLeft.x());
+            const int rectCenterX = rect.bottomRight.x() - (rectWidth / 2);
+        
+            std::stringstream pos;
+            pos << "(boxWidthScale * " << rectCenterX << "),";
+            pos << "((boxHeight + boxHeightBuffer) * " << (_otherPlots[p]._layers[i] + currentLayer) << " + boxHeight/2)";
+
+            ss << "set object " << (currentObject+i+1) << " rect at ";
+            ss << pos.str();
+            ss << " size ";
+            ss << "(boxWidthScale * " << (rectWidth) << "),";
+            ss << "(boxHeight) ";
+            //ss << "(boxWidthScale * " << _finishTimes[i] << "),";
+            //ss << "((boxHeight + boxHeightBuffer) * " << _layers[i] << " + boxHeight) ";
+            ss << "lw 1";
+
+            if (buildOrder[i].isWorker())
+            {
+                ss << " fc rgb \"cyan\"";
+            }
+            else if (buildOrder[i].isSupplyProvider())
+            {
+                ss << " fc rgb \"gold\"";
+            }
+            else if (buildOrder[i].isRefinery())
+            {
+                ss << " fc rgb \"green\"";
+            }
+            else if (buildOrder[i].isBuilding())
+            {
+                ss << " fc rgb \"brown\"";
+            }
+            else if (buildOrder[i].isUpgrade())
+            {
+                ss << " fc rgb \"purple\"";
+            }
+            else if (buildOrder[i].isTech())
+            {
+                ss << " fc rgb \"magenta\"";
+            }
+
+            ss << std::endl;
+
+            ss << "set label " << (currentObject+i+1) << " at " << pos.str() << " \"" << buildOrder[i].getShortName() << "\" front center";
+            ss << std::endl;
+        }
+
+        currentLayer += _otherPlots[p]._maxLayer + 2;
+        currentObject += buildOrder.size();
     }
 
     ss << "plot -10000" << std::endl;

@@ -15,7 +15,7 @@ void CombatSearch::search()
 
     try
     {
-        doSearch(initialState, 0);
+        recurse(initialState, 0);
     
         _results.solved = true;
     }
@@ -30,6 +30,7 @@ void CombatSearch::search()
     _results.timeElapsed = _searchTimer.getElapsedTimeInMilliSec();
 }
 
+// This functio generates the legal actions from a GameState based on the input search parameters
 void CombatSearch::generateLegalActions(const GameState & state, ActionSet & legalActions, const CombatSearchParameters & params)
 {
     // prune actions we have too many of already
@@ -103,7 +104,7 @@ const CombatSearchResults & CombatSearch::getResults() const
 
 bool CombatSearch::timeLimitReached()
 {
-    return (_params.getSearchTimeLimit() && (_results.nodesExpanded % 1000 == 0) && (_searchTimer.getElapsedTimeInMilliSec() > _params.getSearchTimeLimit()));
+    return (_params.getSearchTimeLimit() && (_results.nodesExpanded % 100 == 0) && (_searchTimer.getElapsedTimeInMilliSec() > _params.getSearchTimeLimit()));
 }
 
 bool CombatSearch::isTerminalNode(const GameState & s, int depth)
@@ -116,12 +117,7 @@ bool CombatSearch::isTerminalNode(const GameState & s, int depth)
     return false;
 }
 
-double CombatSearch::eval(const GameState & state) const
-{
-    return BOSS::Eval::ArmyTotalResourceSum(state);
-}
-
-void CombatSearch::doSearch(const GameState & state, size_t depth)
+void CombatSearch::recurse(const GameState & state, size_t depth)
 {
     // This base class function should never be called, leaving the code
     // here as a basis to form child classes

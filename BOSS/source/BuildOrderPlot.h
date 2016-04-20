@@ -32,6 +32,8 @@ class BuildOrderPlot
     std::vector< std::pair<int,int> > _gas;
     std::vector<Rectangle>  _rectangles;
 
+    std::vector<BuildOrderPlot> _otherPlots;
+
     int                     _maxLayer;
     int                     _maxFinishTime;
     int                     _boxHeight;
@@ -49,6 +51,8 @@ public:
     void writeRectanglePlot(const std::string & filename);
     void writeArmyValuePlot(const std::string & filename);
     void writeHybridPlot(const std::string & filename);
+
+    void addPlot(const BuildOrderPlot & plot);
 
     static std::string GetFileNameFromPath(const std::string & path);
     static std::string RemoveFileExtension(const std::string & path);

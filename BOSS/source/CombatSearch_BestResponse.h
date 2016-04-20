@@ -14,7 +14,7 @@ namespace BOSS
 
 class CombatSearch_BestResponse : public CombatSearch
 {
-	virtual void                    doSearch(const GameState & s, size_t depth);
+	virtual void                    recurse(const GameState & s, size_t depth);
 
     CombatSearch_BestResponseData   _bestResponseData;
 

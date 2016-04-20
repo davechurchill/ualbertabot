@@ -1,11 +1,11 @@
 {
     "Experiments" : 
     {    
-        "BuildOrderPlot_3Muta" :
+        "BuildOrderPlot" :
         {
             "Run"           : true,
             "Type"          : "BuildOrderPlot",
-            "OutputFile"    : "gnuplot/3Muta"
+            "OutputFile"    : "gnuplot/BuildOrderPlot.gpl"
             "Scenarios"     :   
             [ 
                 { "state" : "Zerg Start State", "BuildOrder" : "3 Hatch Muta" },
@@ -15,7 +15,7 @@
     
         "TestCombatSearch" :
         {
-            "Run"               : false,
+            "Run"               : true,
             "Type"              : "CombatSearch",
             "SearchTypes"       : [ "BestResponse", "Integral", "Bucket"],
             "Race"              : "Protoss",
@@ -41,6 +41,32 @@
             "OutputFile"    : "DTRush_Opt.txt", 
             "Race"          : "Protoss",
             "State"         : "Protoss Start State"
+        },
+        
+    
+        "Visualize UAB Openers" :   
+        {   
+            "Run" : false, 
+            "Type" : "BuildOrderVisualization", 
+            "FPS" : 1000, 
+            "OutputFile" : "UAB_Openers.txt", 
+            "Scenarios"     :   
+            [ 
+                { "state":"Protoss Start State", "buildOrder" : "UAB Zealot Rush" }
+            ] 
+        },
+        
+        "Visualize Muta Builds" :   
+        {   
+            "Run" : false, 
+            "Type" : "BuildOrderVisualization", 
+            "FPS" : 1000, 
+            "OutputFile" : "Muta_Vis.txt", 
+            "Scenarios"     :   
+            [ 
+                { "state":"Zerg Start State", "buildOrder" : "3 Hatch Muta" },
+                { "state":"Zerg Start State", "buildOrder" : "3 Hatch Muta 2" }
+            ] 
         }
     },
 
