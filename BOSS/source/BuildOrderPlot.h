@@ -13,10 +13,10 @@ class Rectangle
 {
 public:
 
-    std::string label;
+    std::string labelText;
     Position topLeft;
     Position bottomRight;
-    Rectangle(const std::string & label, Position & tl, const Position & br) : topLeft(tl), bottomRight(br) { }
+    Rectangle(const std::string & label, Position & tl, const Position & br) : labelText(label), topLeft(tl), bottomRight(br) { }
 };
 
 class BuildOrderPlot

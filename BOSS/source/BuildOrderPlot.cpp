@@ -264,7 +264,7 @@ void BuildOrderPlot::writeRectanglePlot(const std::string & filename)
 
     ss << "plot -10000" << std::endl;
 
-    std::ofstream out(filename + ".gpl");
+    std::ofstream out(filename);
     out << ss.str();
     out.close();
 }
@@ -294,7 +294,7 @@ void BuildOrderPlot::WriteGnuPlot(const std::string & filename, const std::strin
     ss << "set ylabel \"Army Resource Sum\"" << std::endl;
     ss << "plot \"" << (file + "_Data.txt") << "\" " << args << std::endl;
 
-    std::ofstream out(filename + ".gpl");
+    std::ofstream out(filename);
     out << ss.str();
     out.close();
 }

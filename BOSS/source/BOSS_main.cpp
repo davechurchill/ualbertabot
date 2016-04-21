@@ -35,7 +35,6 @@ int main2()
     return 0;
 }
 
-
 int main(int argc, char *argv[])
 {
     // Initialize all the BOSS internal data
