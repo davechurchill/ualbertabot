@@ -80,7 +80,7 @@ public:
     const FrameCountType        getLastActionFinishTime()                                               const;
 
     void                        getAllLegalActions(ActionSet & actions)                                 const;
-    bool                        whyIsNotLegal(const ActionType & action)                                const;
+    std::string                 whyIsNotLegal(const ActionType & action)                                const;
     bool                        isLegal(const ActionType & action)                                      const;
     bool                        canAfford(const ActionType & action)                                    const;
     bool                        canAffordGas(const ActionType & action)                                 const;

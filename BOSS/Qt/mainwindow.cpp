@@ -6,16 +6,38 @@
 #include "BOSS.h"
 #include "BuildOrderPlot.h"
 
+std::map<std::string, QIcon> iconMap;
+std::map<std::string, QListWidgetItem> itemMap;
+std::map<std::string, QImage> imageMap;
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    for (size_t r(0); r < BOSS::Races::NUM_RACES; ++r)
+    {
+        const std::vector<BOSS::ActionType> & actions = BOSS::ActionTypes::GetAllActionTypes((r));
+
+        for (size_t a(0); a < actions.size(); ++a)
+        {
+            const std::string & name = actions[a].getName();
+            QString imageFile = getImageName(actions[a]);
+
+            iconMap[name] = QIcon(imageFile);
+            itemMap[name] = QListWidgetItem(iconMap[name], QString::fromStdString(name));
+            imageMap[name] = QImage(imageFile);
+        }
+    }
+
     ui->setupUi(this);
 
+    ui->raceComboBox->addItem(iconMap["Protoss_Probe"], "Protoss");
+    ui->raceComboBox->addItem(iconMap["Terran_SCV"], "Terran");
+    ui->raceComboBox->addItem(iconMap["Zerg_Drone"], "Zerg");
 
-    ui->raceComboBox->addItem("Protoss");
-    ui->raceComboBox->addItem("Terran");
-    ui->raceComboBox->addItem("Zerg");
+    ui->armyValueGraph->setToolTip("Visualizes sum of resouces spent on fighting units over time.\n\nWorkers are not counted.");
+    ui->resourceGraphButton->setToolTip("Visualizes resource totals over time.\n\nWill create separate graphs for minerals and gas collected.\n\nAppends _minerals and _gas to file chosen.");
+    ui->visualizeButton->setToolTip("Visualizes build order concurrency and timings.");
 }
 
 MainWindow::~MainWindow()
@@ -30,8 +52,66 @@ void MainWindow::on_deleteItemsButton_clicked()
 
 void MainWindow::on_addToBuildOrderButton_clicked()
 {
-    ui->buildOrderList->addItem(ui->actionTypeComboBox->currentText());
+    const QString & actionName = ui->actionTypeComboBox->currentText();
+    addToList(ui->buildOrderList, actionName.toStdString());
+
+    //ui->buildOrderList->addItem();
     ui->buildOrderList->scrollToBottom();
+}
+
+void MainWindow::on_addToStateButton_clicked()
+{
+    const QString & actionName = ui->actionTypeComboBox->currentText();
+    addToList(ui->initialStateList, actionName.toStdString());
+
+    //ui->buildOrderList->addItem();
+    ui->initialStateList->scrollToBottom();
+}
+
+void MainWindow::setInitialState(const std::string & raceString)
+{
+    BOSS::RaceID race = BOSS::Races::GetRaceID(raceString);
+    ui->initialStateList->clear();
+
+    // set the initial state items to the default starting state
+    addToList(ui->initialStateList, BOSS::ActionTypes::GetWorker(race));
+    addToList(ui->initialStateList, BOSS::ActionTypes::GetWorker(race));
+    addToList(ui->initialStateList, BOSS::ActionTypes::GetWorker(race));
+    addToList(ui->initialStateList, BOSS::ActionTypes::GetWorker(race));
+    addToList(ui->initialStateList, BOSS::ActionTypes::GetResourceDepot(race));
+
+    if (race == BOSS::Races::Zerg)
+    {
+        addToList(ui->initialStateList, BOSS::ActionTypes::GetSupplyProvider(race));
+    }
+}
+
+void MainWindow::setInitialBuildOrder(const std::string & raceString)
+{
+    BOSS::RaceID race = BOSS::Races::GetRaceID(raceString);
+    ui->buildOrderList->clear();
+
+    // add a sample build order to the build order list
+    addToList(ui->buildOrderList, BOSS::ActionTypes::GetWorker(race));
+    addToList(ui->buildOrderList, BOSS::ActionTypes::GetWorker(race));
+    addToList(ui->buildOrderList, BOSS::ActionTypes::GetWorker(race));
+    addToList(ui->buildOrderList, BOSS::ActionTypes::GetWorker(race));
+    addToList(ui->buildOrderList, BOSS::ActionTypes::GetSupplyProvider(race));
+    addToList(ui->buildOrderList, BOSS::ActionTypes::GetWorker(race));
+    addToList(ui->buildOrderList, BOSS::ActionTypes::GetWorker(race));
+
+    if (race == BOSS::Races::Protoss)
+    {
+        addToList(ui->buildOrderList, BOSS::ActionTypes::GetActionType("Protoss_Gateway"));
+    }
+    else if (race == BOSS::Races::Terran)
+    {
+        addToList(ui->buildOrderList, BOSS::ActionTypes::GetActionType("Terran_Barracks"));
+    }
+    else if (race == BOSS::Races::Zerg)
+    {
+        addToList(ui->buildOrderList, BOSS::ActionTypes::GetActionType("Zerg_Spawning_Pool"));
+    }
 }
 
 void MainWindow::on_raceComboBox_currentIndexChanged(const QString &arg1)
@@ -41,22 +121,12 @@ void MainWindow::on_raceComboBox_currentIndexChanged(const QString &arg1)
     BOSS::RaceID race = BOSS::Races::GetRaceID(raceString);
 
     ui->actionTypeComboBox->clear();
-    ui->buildOrderList->clear();
     ui->initialStateList->clear();
     ui->mineralsSpinBox->setValue(50);
     ui->gasSpinBox->setValue(0);
 
-    // set the initial state items to the default starting state
-    ui->initialStateList->addItem(QString::fromStdString(BOSS::ActionTypes::GetWorker(race).getName()));
-    ui->initialStateList->addItem(QString::fromStdString(BOSS::ActionTypes::GetWorker(race).getName()));
-    ui->initialStateList->addItem(QString::fromStdString(BOSS::ActionTypes::GetWorker(race).getName()));
-    ui->initialStateList->addItem(QString::fromStdString(BOSS::ActionTypes::GetWorker(race).getName()));
-    ui->initialStateList->addItem(QString::fromStdString(BOSS::ActionTypes::GetResourceDepot(race).getName()));
-
-    if (race == BOSS::Races::Zerg)
-    {
-        ui->initialStateList->addItem(QString::fromStdString(BOSS::ActionTypes::GetSupplyProvider(race).getName()));
-    }
+    setInitialState(raceString);
+    setInitialBuildOrder(raceString);
 
     const auto & actionTypes = BOSS::ActionTypes::GetAllActionTypes(race);
 
@@ -66,15 +136,20 @@ void MainWindow::on_raceComboBox_currentIndexChanged(const QString &arg1)
         if (type.getName() == "Protoss_Dark_Archon") continue;
         if (type.getName() == "Protoss_Archon") continue;
 
-        ui->actionTypeComboBox->addItem(QString::fromStdString(type.getName()));
+        ui->actionTypeComboBox->addItem(iconMap[type.getName()], QString::fromStdString(type.getName()));
     }
 }
 
-void MainWindow::on_addToStateButton_clicked()
+void MainWindow::addToList(QListWidget * list, const BOSS::ActionType & type)
 {
-    ui->initialStateList->addItem(ui->actionTypeComboBox->currentText());
-    ui->initialStateList->scrollToBottom();
+    list->insertItem(list->count(), new QListWidgetItem(itemMap[type.getName()]));
 }
+
+void MainWindow::addToList(QListWidget * list, const std::string & typeName)
+{
+    list->insertItem(list->count(), new QListWidgetItem(itemMap[typeName]));
+}
+
 
 void MainWindow::on_clearAllItems_clicked()
 {
@@ -122,13 +197,12 @@ void MainWindow::on_actionTypeComboBox_currentIndexChanged(const QString &arg1)
     ui->builder->setText(QString::fromStdString(builder.str()));
     ui->hpShield->setText(QString::fromStdString(hpShield.str()));
 
-    QImage image(getImageName(type));
-    ui->imageLabel->setPixmap(QPixmap::fromImage(image));
+    ui->imageLabel->setPixmap(QPixmap::fromImage(imageMap[type.getName()]));
 }
 
 QString MainWindow::getImageName(const BOSS::ActionType & type)
 {
-    std::string filename = "../asset/images/";
+    std::string filename = "images/";
 
     if (type.isUnit())
     {
@@ -145,6 +219,8 @@ QString MainWindow::getImageName(const BOSS::ActionType & type)
 void MainWindow::on_visualizeButton_clicked()
 {
     BOSS::GameState state(BOSS::Races::GetRaceID(ui->raceComboBox->currentText().toStdString()));
+    state.setMinerals(ui->mineralsSpinBox->value() * BOSS::Constants::RESOURCE_SCALE);
+    state.setGas(ui->gasSpinBox->value() * BOSS::Constants::RESOURCE_SCALE);
 
     for(int row = 0; row < ui->initialStateList->count(); row++)
     {
@@ -167,15 +243,305 @@ void MainWindow::on_visualizeButton_clicked()
 
     if (buildOrder.isLegalFromState(state))
     {
-        QString file = QFileDialog::getSaveFileName(this, tr("Save gnuplot file as"), QDir::currentPath(), tr("gnuplot files (*.gpl);;All files (*.*)"));
+        QString file = QFileDialog::getSaveFileName(this, tr("Save Visualization Gnuplot File"), QDir::currentPath(), tr("gnuplot files (*.gpl);;All files (*.*)"));
 
         BOSS::BuildOrderPlot plot(state, buildOrder);
         plot.writeRectanglePlot(file.toStdString());
     }
     else
     {
-        QMessageBox::information(this, tr("BOSS Visualization Error"), tr("The build order you entered is not legal from the initial state. Please try another.") );
+        std::string why = buildOrder.whyIsNotLegalFromState(state);
+
+        QMessageBox::information(this, tr("BOSS Visualization Error"), tr(why.c_str()) );
     }
 
 
 }
+
+void MainWindow::on_loadBuildOrderButton_clicked()
+{
+    QString file = QFileDialog::getOpenFileName(this, tr("Load Build-Order File"), QDir::currentPath(), tr("Text Files (*.txt);;All files (*.*)"));
+    if (file.size() == 0) return;
+
+    std::ifstream fin(file.toStdString());
+
+    std::string line;
+    std::string raceString;
+
+    // read the first line of the file which should be the race
+    std::getline(fin, raceString);
+    BOSS::RaceID race = BOSS::Races::GetRaceID(raceString);
+    if (race == BOSS::Races::None)
+    {
+        QMessageBox::information(this, tr("BOSS Visualization Error"), tr("First line of the build-order file was not a valid race.\n\nIt must be Protoss, Terran, or Zerg.") );
+        return;
+    }
+
+    size_t lineNum = 1;
+    std::vector<BOSS::ActionType> types;
+
+    // read the remaining lines which each should be one build-order item
+    while (std::getline(fin, line))
+    {
+        // break when we reach a blank line
+        if (line.size() == 0)
+        {
+            break;
+        }
+
+        ++lineNum;
+        if (!BOSS::ActionTypes::TypeExists(line))
+        {
+            std::stringstream ss;
+            ss << "Line " << lineNum << " of the build order file was not a valid Build-Order ActionType.";
+
+            QMessageBox::information(this, tr("BOSS Visualization Error"), tr(ss.str().c_str()) );
+            return;
+        }
+
+        BOSS::ActionType type = BOSS::ActionTypes::GetActionType(line);
+
+        if (type.getRace() != race)
+        {
+            std::stringstream ss;
+            ss << "Build order file specifies " << raceString << " race.\n\nLine " << lineNum << ": " << type.getName() << " is not a " << raceString << " unit.";
+            ss << "\n\nPlease ensure all units are of the same race and try again.";
+
+            QMessageBox::information(this, tr("BOSS Visualization Error"), tr(ss.str().c_str()) );
+            return;
+        }
+
+        types.push_back(type);
+    }
+
+    // we must change the selected race to the race loaded
+    if (raceString != ui->raceComboBox->currentText().toStdString())
+    {
+        for (int i=0; i < ui->raceComboBox->count(); ++i)
+        {
+            std::string itemRace = ui->raceComboBox->itemText(i).toStdString();
+
+            if (itemRace == raceString)
+            {
+                ui->raceComboBox->setCurrentIndex(i);
+                break;
+            }
+        }
+    }
+
+    ui->buildOrderList->clear();
+
+    for (const auto & type : types)
+    {
+        addToList(ui->buildOrderList, type.getName());
+    }
+
+    fin.close();
+
+    ui->buildOrderList->scrollToBottom();
+}
+
+void MainWindow::on_saveBuildOrderButton_clicked()
+{
+    QString file = QFileDialog::getSaveFileName(this, tr("Save Build-Order"), QDir::currentPath(), tr("Text Files (*.txt);;All files (*.*)"));
+    if (file.size() == 0) return;
+
+    std::ofstream fout(file.toStdString());
+
+    fout << ui->raceComboBox->currentText().toStdString() << "\n";
+    for(int row = 0; row < ui->buildOrderList->count(); row++)
+    {
+        fout << ui->buildOrderList->item(row)->text().toStdString() << "\n";
+    }
+
+    ui->buildOrderList->scrollToBottom();
+    fout.close();
+}
+
+void MainWindow::on_resourceGraphButton_clicked()
+{
+    BOSS::GameState state(BOSS::Races::GetRaceID(ui->raceComboBox->currentText().toStdString()));
+    state.setMinerals(ui->mineralsSpinBox->value() * BOSS::Constants::RESOURCE_SCALE);
+    state.setGas(ui->gasSpinBox->value() * BOSS::Constants::RESOURCE_SCALE);
+
+    for(int row = 0; row < ui->initialStateList->count(); row++)
+    {
+        state.addCompletedAction(BOSS::ActionTypes::GetActionType(ui->initialStateList->item(row)->text().toStdString()));
+    }
+
+    BOSS::BuildOrder buildOrder;
+
+    for(int row = 0; row < ui->buildOrderList->count(); row++)
+    {
+        buildOrder.add(BOSS::ActionTypes::GetActionType(ui->buildOrderList->item(row)->text().toStdString()));
+    }
+
+    if (buildOrder.size() == 0)
+    {
+        QMessageBox::information(this, tr("BOSS Visualization Error"), tr("Cannot visualize an empty build order. Try adding some units.") );
+        return;
+    }
+
+    if (buildOrder.isLegalFromState(state))
+    {
+        QString file = QFileDialog::getSaveFileName(this, tr("Save Resource Plot Data"), QDir::currentPath(), tr("gnuplot files (*.gpl);;All files (*.*)"));
+
+        BOSS::BuildOrderPlot plot(state, buildOrder);
+        plot.writeResourcePlot(file.toStdString());
+    }
+    else
+    {
+        std::string why = buildOrder.whyIsNotLegalFromState(state);
+
+        QMessageBox::information(this, tr("BOSS Visualization Error"), tr(why.c_str()) );
+    }
+}
+
+void MainWindow::on_armyValueGraph_clicked()
+{
+    BOSS::GameState state(BOSS::Races::GetRaceID(ui->raceComboBox->currentText().toStdString()));
+    state.setMinerals(ui->mineralsSpinBox->value() * BOSS::Constants::RESOURCE_SCALE);
+    state.setGas(ui->gasSpinBox->value() * BOSS::Constants::RESOURCE_SCALE);
+
+    for(int row = 0; row < ui->initialStateList->count(); row++)
+    {
+        state.addCompletedAction(BOSS::ActionTypes::GetActionType(ui->initialStateList->item(row)->text().toStdString()));
+    }
+
+    BOSS::BuildOrder buildOrder;
+
+    for(int row = 0; row < ui->buildOrderList->count(); row++)
+    {
+        buildOrder.add(BOSS::ActionTypes::GetActionType(ui->buildOrderList->item(row)->text().toStdString()));
+    }
+
+    if (buildOrder.size() == 0)
+    {
+        QMessageBox::information(this, tr("BOSS Visualization Error"), tr("Cannot visualize an empty build order. Try adding some units.") );
+        return;
+    }
+
+    if (buildOrder.isLegalFromState(state))
+    {
+        QString file = QFileDialog::getSaveFileName(this, tr("Save Resource Plot Data"), QDir::currentPath(), tr("gnuplot files (*.gpl);;All files (*.*)"));
+
+        BOSS::BuildOrderPlot plot(state, buildOrder);
+        plot.writeArmyValuePlot(file.toStdString());
+    }
+    else
+    {
+        std::string why = buildOrder.whyIsNotLegalFromState(state);
+
+        QMessageBox::information(this, tr("BOSS Visualization Error"), tr(why.c_str()) );
+    }
+}
+
+void MainWindow::on_actionAbout_triggered()
+{
+    QMessageBox msgBox(this);
+    msgBox.setWindowTitle("About");
+    msgBox.setIconPixmap(QPixmap::fromImage(imageMap["Protoss_Probe"]));
+    msgBox.setTextFormat(Qt::RichText);   //this is what makes the links clickable
+    msgBox.setText("StarCraft Build-Order Visualizer<br><br>Written by <a href=\"http://webdocs.cs.ualberta.ca/~cdavid/\">David Churchill</a><br><br>Source and details available on <a href=\"https://github.com/davechurchill/ualbertabot\">GitHub</a><br><br>To view output graphs, use <a href=\"http://www.gnuplot.info/\">gnuplot</a>");
+    msgBox.exec();
+}
+
+void MainWindow::on_loadStateButton_clicked()
+{
+    QString file = QFileDialog::getOpenFileName(this, tr("Load State File"), QDir::currentPath(), tr("Text Files (*.txt);;All files (*.*)"));
+    if (file.size() == 0) return;
+
+    std::ifstream fin(file.toStdString());
+
+    std::string line;
+    std::string raceString;
+
+    // read the first line of the file which should be the race
+    std::getline(fin, raceString);
+    BOSS::RaceID race = BOSS::Races::GetRaceID(raceString);
+    if (race == BOSS::Races::None)
+    {
+        QMessageBox::information(this, tr("BOSS Visualization Error"), tr("First line of the state file was not a valid race.\n\nIt must be Protoss, Terran, or Zerg.") );
+        return;
+    }
+
+    size_t lineNum = 1;
+    std::vector<BOSS::ActionType> types;
+
+    // read the remaining lines which each should be one build-order item
+    while (std::getline(fin, line))
+    {
+        // break when we reach a blank line
+        if (line.size() == 0)
+        {
+            break;
+        }
+
+        ++lineNum;
+        if (!BOSS::ActionTypes::TypeExists(line))
+        {
+            std::stringstream ss;
+            ss << "Line " << lineNum << " of the state file was not a valid ActionType.";
+
+            QMessageBox::information(this, tr("BOSS Visualization Error"), tr(ss.str().c_str()) );
+            return;
+        }
+
+        BOSS::ActionType type = BOSS::ActionTypes::GetActionType(line);
+
+        if (type.getRace() != race)
+        {
+            std::stringstream ss;
+            ss << "State file specifies " << raceString << " race.\n\nLine " << lineNum << ": " << type.getName() << " is not a " << raceString << " unit.";
+            ss << "\n\nPlease ensure all units are of the same race and try again.";
+
+            QMessageBox::information(this, tr("BOSS Visualization Error"), tr(ss.str().c_str()) );
+            return;
+        }
+
+        types.push_back(type);
+    }
+
+    // we must change the selected race to the race loaded
+    if (raceString != ui->raceComboBox->currentText().toStdString())
+    {
+        for (int i=0; i < ui->raceComboBox->count(); ++i)
+        {
+            std::string itemRace = ui->raceComboBox->itemText(i).toStdString();
+
+            if (itemRace == raceString)
+            {
+                ui->raceComboBox->setCurrentIndex(i);
+                break;
+            }
+        }
+    }
+
+    ui->initialStateList->clear();
+
+    for (const auto & type : types)
+    {
+        addToList(ui->initialStateList, type.getName());
+    }
+
+    fin.close();
+
+    ui->initialStateList->scrollToBottom();
+}
+
+void MainWindow::on_saveStateButton_clicked()
+{
+    QString file = QFileDialog::getSaveFileName(this, tr("Save State"), QDir::currentPath(), tr("Text Files (*.txt);;All files (*.*)"));
+    if (file.size() == 0) return;
+
+    std::ofstream fout(file.toStdString());
+
+    fout << ui->raceComboBox->currentText().toStdString() << "\n";
+    for(int row = 0; row < ui->initialStateList->count(); row++)
+    {
+        fout << ui->initialStateList->item(row)->text().toStdString() << "\n";
+    }
+
+    fout.close();
+}
+

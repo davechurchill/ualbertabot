@@ -32,6 +32,7 @@ public:
     const size_t            size() const;
     const size_t            getTypeCount(const ActionType & type) const;
     const bool              isLegalFromState(const GameState & state, const size_t buildOrderStartIndex = 0) const;
+    std::string             whyIsNotLegalFromState(const GameState & state, const size_t buildOrderStartIndex = 0) const;
     const bool              empty() const;
     const FrameCountType    getCompletionTime(const GameState & state, const size_t buildOrderStartIndex = 0) const;
 

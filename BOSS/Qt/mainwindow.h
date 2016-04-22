@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QListWidget>
 #include "BOSS.h"
 
 namespace Ui {
@@ -27,8 +28,22 @@ private slots:
     void on_deleteItemsButtonState_clicked();
     void on_clearAllItemsState_clicked();
     void on_actionTypeComboBox_currentIndexChanged(const QString &arg1);
+    void on_saveBuildOrderButton_clicked();
+    void on_resourceGraphButton_clicked();
+    void on_armyValueGraph_clicked();
+    void on_actionAbout_triggered();
+    void on_loadStateButton_clicked();
+    void on_saveStateButton_clicked();
 
     QString getImageName(const BOSS::ActionType & type);
+
+    void on_loadBuildOrderButton_clicked();
+
+    void setInitialState(const std::string & raceString);
+    void setInitialBuildOrder(const std::string & raceString);
+    void addToList(QListWidget * list, const BOSS::ActionType & type);
+    void addToList(QListWidget * list, const std::string & typeName);
+
 
 private:
     Ui::MainWindow *ui;

@@ -108,6 +108,7 @@ void BuildOrderPlot::addPlot(const BuildOrderPlot & plot)
 
 void BuildOrderPlot::writeResourcePlot(const std::string & filename)
 {
+    std::string noext = RemoveFileExtension(filename);
     std::stringstream mineralss;
 
     for (size_t i(0); i < _minerals.size(); ++i)
@@ -122,8 +123,8 @@ void BuildOrderPlot::writeResourcePlot(const std::string & filename)
         gasss << _gas[i].first << " " << _gas[i].second/Constants::RESOURCE_SCALE << std::endl;
     }
 
-    WriteGnuPlot(filename + "_Minerals", mineralss.str(), " with lines ");
-    WriteGnuPlot(filename + "_Gas", gasss.str(), " with lines ");
+    WriteGnuPlot(noext + "_minerals", mineralss.str(), " with lines ");
+    WriteGnuPlot(noext + "_gas", gasss.str(), " with lines ");
 }
 
 void BuildOrderPlot::writeRectanglePlot(const std::string & filename)
@@ -145,7 +146,7 @@ void BuildOrderPlot::writeRectanglePlot(const std::string & filename)
     ss << "set grid xtics" << std::endl;
     ss << "set nokey" << std::endl;
     //ss << "set size ratio " << (0.05 * _maxLayer) << std::endl;
-    ss << "set terminal wxt size 1500,300" << std::endl;
+    ss << "set terminal wxt size 960,300" << std::endl;
     ss << "plotHeight = " << 1000 << std::endl;
     ss << "boxHeight = " << _boxHeight << std::endl;
     ss << "boxHeightBuffer = " << _boxHeightBuffer << std::endl;
@@ -285,16 +286,16 @@ void BuildOrderPlot::WriteGnuPlot(const std::string & filename, const std::strin
     std::string file = RemoveFileExtension(GetFileNameFromPath(filename));
     std::string noext = RemoveFileExtension(filename);
 
-    std::ofstream dataout(noext + "_Data.txt");
+    std::ofstream dataout(noext + "_data.txt");
     dataout << data;
     dataout.close();
 
     std::stringstream ss;
     ss << "set xlabel \"Time (frames)\"" << std::endl;
-    ss << "set ylabel \"Army Resource Sum\"" << std::endl;
-    ss << "plot \"" << (file + "_Data.txt") << "\" " << args << std::endl;
+    ss << "set ylabel \"Resource Over Time\"" << std::endl;
+    ss << "plot \"" << (file + "_data.txt") << "\" " << args << std::endl;
 
-    std::ofstream out(filename);
+    std::ofstream out(noext + ".gpl");
     out << ss.str();
     out.close();
 }

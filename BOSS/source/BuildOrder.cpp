@@ -110,6 +110,27 @@ const bool BuildOrder::isLegalFromState(const GameState & state, size_t buildOrd
     return true;
 }
 
+std::string BuildOrder::whyIsNotLegalFromState(const GameState & state, size_t buildOrderStartIndex) const
+{
+    GameState currentState(state);
+
+    for (size_t i(buildOrderStartIndex); i < _buildOrder.size(); ++i)
+    {
+        if (!currentState.isLegal(_buildOrder[i]))
+        {
+            std::stringstream ss;
+            ss << "Build order item " << (i+1) << " is not legal.\n\n" << currentState.whyIsNotLegal(_buildOrder[i]);
+            return ss.str();
+        }
+        else
+        {
+            currentState.doAction(_buildOrder[i]);
+        }
+    }
+
+    return "Legal";
+}
+
 std::string BuildOrder::getJSONString() const
 {
     std::stringstream ss;
