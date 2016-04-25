@@ -14,7 +14,7 @@ Hatchery::Hatchery()
 
 void Hatchery::fastForward(const FrameCountType & currentFrame, const FrameCountType & toFrame)
 {
-    if (_numLarva == 3 || currentFrame == 0)
+    if (_numLarva == 3)
     {
         return;
     }

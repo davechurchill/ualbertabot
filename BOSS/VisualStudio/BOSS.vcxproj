@@ -18,6 +18,7 @@
     <ClInclude Include="..\source\Array.hpp" />
     <ClInclude Include="..\source\BaseTypes.h" />
     <ClInclude Include="..\source\BOSSAssert.h" />
+    <ClInclude Include="..\source\BOSSException.h" />
     <ClInclude Include="..\source\BuildOrder.h" />
     <ClInclude Include="..\source\BuildOrderPlot.h" />
     <ClInclude Include="..\source\CombatSearch_BestResponse.h" />
@@ -56,6 +57,7 @@
     <ClCompile Include="..\source\ActionType.cpp" />
     <ClCompile Include="..\source\ActionTypeData.cpp" />
     <ClCompile Include="..\source\BOSSAssert.cpp" />
+    <ClCompile Include="..\source\BOSSException.cpp" />
     <ClCompile Include="..\source\BuildOrder.cpp" />
     <ClCompile Include="..\source\BuildOrderPlot.cpp" />
     <ClCompile Include="..\source\CombatSearch.cpp" />

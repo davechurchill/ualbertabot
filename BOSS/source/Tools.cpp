@@ -246,7 +246,7 @@ BuildOrder Tools::GetNaiveBuildOrderAddWorkersOld(const GameState & state, const
 				currentState.doAction(supplyProvider);
 				continue;
 			}
-			catch (const Assert::BOSSException &)
+			catch (BOSSException e)
 			{
 				break;
 			}
@@ -266,7 +266,7 @@ BuildOrder Tools::GetNaiveBuildOrderAddWorkersOld(const GameState & state, const
 				finalBuildOrder.add(worker);
 				currentState.doAction(worker);
 			}
-			catch (const Assert::BOSSException &)
+			catch (BOSSException)
 			{
 			}
 			continue;

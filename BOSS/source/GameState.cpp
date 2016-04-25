@@ -517,8 +517,16 @@ const FrameCountType GameState::whenCanPerform(const ActionType & action) const
 
 const FrameCountType GameState::raceSpecificWhenReady(const ActionType & a) const
 {
+    const static ActionType larva = ActionTypes::GetActionType("Zerg_Larva");
+
+
     if (getRace() == Races::Zerg)
-    {
+    {        
+        if (a.whatBuildsActionType() != larva)
+        {
+            return 0;
+        }
+
         if (getHatcheryData().numLarva() == 0)
         {
             return getHatcheryData().nextLarvaFrameAfter(_currentFrame);
@@ -1020,7 +1028,7 @@ const std::string GameState::toString() const
 	std::stringstream ss;
 	ss << "\n-----------------------------------------------------------\n";
     
-	ss << "Current Frame: " << _currentFrame << "(" << (_currentFrame / (60 * 24)) << "m " << ((_currentFrame / 24) % 60) << "s)\n\n";
+	ss << "Current Frame: " << _currentFrame << " (" << (_currentFrame / (60 * 24)) << "m " << ((_currentFrame / 24) % 60) << "s)\n\n";
 
 	ss << "Units Completed:\n";
     const std::vector<ActionType> & allActions = ActionTypes::GetAllActionTypes(getRace());
@@ -1096,27 +1104,27 @@ std::string GameState::whyIsNotLegal(const ActionType & action) const
     static const ActionType & Zerg_Larva = ActionTypes::GetActionType("Zerg_Larva");
     if (action == Zerg_Larva)
     {
-        ss << "WhyNotLegal: " << action.getName() << " - Cannot build a Larva" << std::endl;
+        ss << action.getName() << " - Reason: Cannot build a Larva" << std::endl;
         return ss.str();
     }
 
     if (action.getRace() == Races::Protoss && action.isBuilding() && !action.isResourceDepot() && _units.getNumTotal(ActionTypes::GetSupplyProvider(Races::Protoss)) == 0)
     {
-        ss << "WhyNotLegal: " << action.getName() << " - Protoss buildings require a Pylon" << std::endl;
+        ss << action.getName() << " - Reason: Protoss buildings require a Pylon" << std::endl;
         return ss.str();
     }
 
     // check if the tech requirements are met
     if (!_units.hasPrerequisites(action.getPrerequisites()))
     {
-        ss << "WhyNotLegal: " << action.getName() << " - Tech prerequisites not met" << std::endl;
+        ss << action.getName() << " - Reason: Tech prerequisites not met" << std::endl;
         return ss.str();
     }
 	
     // if it's a unit and we are out of supply and aren't making an overlord, it's not legal
 	if (!action.isMorphed() && !action.isSupplyProvider() && ((_units.getCurrentSupply() + action.supplyRequired()) > (_units.getMaxSupply() + _units.getSupplyInProgress())))
     {
-        ss << "WhyNotLegal: " << action.getName() << " - Not enough supply to build" << std::endl;
+        ss << action.getName() << " - Reason: Not enough supply" << std::endl;
         return ss.str();
     }
 
@@ -1127,7 +1135,7 @@ std::string GameState::whyIsNotLegal(const ActionType & action) const
         // be very strict about when we can make refineries to ensure we have enough workers to go in gas
         if (action.isRefinery() && (getNumMineralWorkers() <= (4 + 3*refineriesInProgress)))
         {
-            ss << "WhyNotLegal: " << action.getName() << " - Not enough workers for refinery" << std::endl;
+            ss << action.getName() << " - Reason: Not enough workers for refinery" << std::endl;
             return ss.str();
         }
 
@@ -1139,7 +1147,7 @@ std::string GameState::whyIsNotLegal(const ActionType & action) const
 
         if (candidateWorkers < workersToBeUsed)
         {
-            ss << "WhyNotLegal: " << action.getName() << " - Not enough workers to build building" << std::endl;
+            ss << action.getName() << " - Reason: Not enough workers to build building" << std::endl;
             return ss.str();
         }
     }
@@ -1147,42 +1155,42 @@ std::string GameState::whyIsNotLegal(const ActionType & action) const
     // if we have no gas income we can't make a gas unit
     if (!canAffordGas(action) && !_units.hasGasIncome())
     {
-        ss << "WhyNotLegal: " << action.getName() << " - No gas income" << std::endl;
+        ss << action.getName() << " - Reason: No gas income" << std::endl;
         return ss.str();
     }
 
     // if we have no mineral income we'll never have a minerla unit
     if (!canAffordMinerals(action) && !_units.hasMineralIncome())
     {
-        ss << "WhyNotLegal: " << action.getName() << " - No mineral income" << std::endl;
+        ss << action.getName() << " - Reason: No mineral income" << std::endl;
         return ss.str();
     }
 
     // don't build more refineries than resource depots
     if (action.isRefinery() && (numRefineries >= numDepots))
     {
-        ss << "WhyNotLegal: " << action.getName() << " - Can't have more refineries than depots" << std::endl;
+        ss << action.getName() << " - Reason: Can't have more refineries than depots" << std::endl;
         return ss.str();
     }
 
     // we don't need to go over the maximum supply limit with supply providers
     if (action.isSupplyProvider() && (_units.getMaxSupply() + _units.getSupplyInProgress() > 420))
     {
-        ss << "WhyNotLegal: " << action.getName() << " - Too many supply providers" << std::endl;
+        ss << action.getName() << " - Reason: Unnecessary supply providers" << std::endl;
         return ss.str();
     }
 
     // can only build one of a tech type
     if (action.isTech() && getUnitData().getNumTotal(action) > 0)
     {
-        ss << "WhyNotLegal: " << action.getName() << " - Can't build more than one of a tech" << std::endl;
+        ss << action.getName() << " - Reason: Can't build more than one of a tech" << std::endl;
         return ss.str();
     }
 
     // check to see if an addon can ever be built
     if (action.isAddon() && !_units.getBuildingData().canBuildEventually(action) && (_units.getNumInProgress(action.whatBuildsActionType()) == 0))
     {
-        ss << "WhyNotLegal: " << action.getName() << " - Cannot build addon" << std::endl;
+        ss << action.getName() << " - Reason: No building for addon" << std::endl;
         return ss.str();
     }
 

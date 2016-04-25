@@ -32,7 +32,7 @@ void BOSSPlotBuildOrders::doPlots()
     {
         BuildOrderPlot plot(_states[i], _buildOrders[i]);
         
-        plot.writeRectanglePlot(_outputDir + _buildOrderNames[i]);
+        plot.writeRectanglePlot(_outputDir + _buildOrderNames[i] + ".gpl");
         plot.writeArmyValuePlot(_outputDir + _buildOrderNames[i] + "_army");
         plot.writeResourcePlot(_outputDir + _buildOrderNames[i] + "_resource");
     }

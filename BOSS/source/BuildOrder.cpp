@@ -119,7 +119,7 @@ std::string BuildOrder::whyIsNotLegalFromState(const GameState & state, size_t b
         if (!currentState.isLegal(_buildOrder[i]))
         {
             std::stringstream ss;
-            ss << "Build order item " << (i+1) << " is not legal.\n\n" << currentState.whyIsNotLegal(_buildOrder[i]);
+            ss << "Build-Order item " << (i+1) << " can't be built.\n\n" << currentState.whyIsNotLegal(_buildOrder[i]);
             return ss.str();
         }
         else

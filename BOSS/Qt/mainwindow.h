@@ -5,8 +5,14 @@
 #include <QListWidget>
 #include "BOSS.h"
 
-namespace Ui {
-class MainWindow;
+namespace PlotTypes
+{
+    enum { BuildOrderPlot, ArmyPlot, ResourcePlot };
+}
+
+namespace Ui
+{
+    class MainWindow;
 }
 
 class MainWindow : public QMainWindow
@@ -36,6 +42,9 @@ private slots:
     void on_saveStateButton_clicked();
 
     QString getImageName(const BOSS::ActionType & type);
+    BOSS::GameState getState();
+    BOSS::BuildOrder getBuildOrder();
+    void generatePlot(int plotType);
 
     void on_loadBuildOrderButton_clicked();
 
@@ -44,6 +53,12 @@ private slots:
     void addToList(QListWidget * list, const BOSS::ActionType & type);
     void addToList(QListWidget * list, const std::string & typeName);
 
+
+    void on_viewStateButton_clicked();
+
+    void on_buildOrderDetails_clicked();
+
+    void on_viewFinalStateButton_clicked();
 
 private:
     Ui::MainWindow *ui;

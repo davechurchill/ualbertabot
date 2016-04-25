@@ -14,8 +14,10 @@ bin/*.map
 bin/*.bsc
 bin/*.lib
 bin/*.gpl
-bin/gnuplot/*.gpl
-bin/gnuplot/*.txt
+bin/*.zip
+bin/qtdeploy/*
+bin/deploy/*
+bin/gnuplot/*
 source/*.o
 qtgui/*
 build-BOSSGUI-Desktop_Qt_5_6_0_MSVC2013_32bit-Release

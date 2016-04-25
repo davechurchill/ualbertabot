@@ -5,6 +5,7 @@
 
 #include "BOSS.h"
 #include "BuildOrderPlot.h"
+#include "BOSSException.h"
 
 std::map<std::string, QIcon> iconMap;
 std::map<std::string, QListWidgetItem> itemMap;
@@ -199,6 +200,31 @@ void MainWindow::on_actionTypeComboBox_currentIndexChanged(const QString &arg1)
 
     ui->imageLabel->setPixmap(QPixmap::fromImage(imageMap[type.getName()]));
 }
+BOSS::GameState MainWindow::getState()
+{
+    BOSS::GameState state(BOSS::Races::GetRaceID(ui->raceComboBox->currentText().toStdString()));
+    state.setMinerals(ui->mineralsSpinBox->value());
+    state.setGas(ui->gasSpinBox->value());
+
+    for(int row = 0; row < ui->initialStateList->count(); row++)
+    {
+        state.addCompletedAction(BOSS::ActionTypes::GetActionType(ui->initialStateList->item(row)->text().toStdString()));
+    }
+
+    return state;
+}
+
+BOSS::BuildOrder MainWindow::getBuildOrder()
+{
+    BOSS::BuildOrder buildOrder;
+
+    for(int row = 0; row < ui->buildOrderList->count(); row++)
+    {
+        buildOrder.add(BOSS::ActionTypes::GetActionType(ui->buildOrderList->item(row)->text().toStdString()));
+    }
+
+    return buildOrder;
+}
 
 QString MainWindow::getImageName(const BOSS::ActionType & type)
 {
@@ -218,44 +244,66 @@ QString MainWindow::getImageName(const BOSS::ActionType & type)
 
 void MainWindow::on_visualizeButton_clicked()
 {
-    BOSS::GameState state(BOSS::Races::GetRaceID(ui->raceComboBox->currentText().toStdString()));
-    state.setMinerals(ui->mineralsSpinBox->value() * BOSS::Constants::RESOURCE_SCALE);
-    state.setGas(ui->gasSpinBox->value() * BOSS::Constants::RESOURCE_SCALE);
+    generatePlot(PlotTypes::BuildOrderPlot);
+}
 
-    for(int row = 0; row < ui->initialStateList->count(); row++)
+void MainWindow::on_resourceGraphButton_clicked()
+{
+    generatePlot(PlotTypes::ResourcePlot);
+}
+
+void MainWindow::on_armyValueGraph_clicked()
+{
+    generatePlot(PlotTypes::ArmyPlot);
+}
+
+
+void MainWindow::generatePlot(int plotType)
+{
+    try
     {
-        state.addCompletedAction(BOSS::ActionTypes::GetActionType(ui->initialStateList->item(row)->text().toStdString()));
+        BOSS::GameState state = getState();
+        BOSS::BuildOrder buildOrder = getBuildOrder();
+
+        if (buildOrder.size() == 0)
+        {
+            QMessageBox::information(this, tr("BOSS Visualization Error"), tr("Cannot visualize an empty build order. Try adding some units.") );
+            return;
+        }
+
+        if (buildOrder.isLegalFromState(state))
+        {
+            QString file = QFileDialog::getSaveFileName(this, tr("Save Visualization Gnuplot File"), QDir::currentPath(), tr("gnuplot files (*.gpl);;All files (*.*)"));
+
+            BOSS::BuildOrderPlot plot(state, buildOrder);
+
+            if (plotType == PlotTypes::BuildOrderPlot)
+            {
+                plot.writeRectanglePlot(file.toStdString());
+            }
+            else if (plotType == PlotTypes::ArmyPlot)
+            {
+                plot.writeArmyValuePlot(file.toStdString());
+            }
+            else if (plotType == PlotTypes::ResourcePlot)
+            {
+                plot.writeResourcePlot(file.toStdString());
+            }
+        }
+        else
+        {
+            std::string why = buildOrder.whyIsNotLegalFromState(state);
+
+            QMessageBox::information(this, tr("BOSS Visualization Error"), tr(why.c_str()) );
+        }
     }
-
-    BOSS::BuildOrder buildOrder;
-
-    for(int row = 0; row < ui->buildOrderList->count(); row++)
+    catch (BOSS::BOSSException e)
     {
-        buildOrder.add(BOSS::ActionTypes::GetActionType(ui->buildOrderList->item(row)->text().toStdString()));
+        std::stringstream ss;
+        ss << "Build-Order Exception Thrown\n\nPlease contact author with error details\n\n" << e.what();
+
+        QMessageBox::information(this, "BOSS Visualization Error", ss.str().c_str());
     }
-
-    if (buildOrder.size() == 0)
-    {
-        QMessageBox::information(this, tr("BOSS Visualization Error"), tr("Cannot visualize an empty build order. Try adding some units.") );
-        return;
-    }
-
-
-    if (buildOrder.isLegalFromState(state))
-    {
-        QString file = QFileDialog::getSaveFileName(this, tr("Save Visualization Gnuplot File"), QDir::currentPath(), tr("gnuplot files (*.gpl);;All files (*.*)"));
-
-        BOSS::BuildOrderPlot plot(state, buildOrder);
-        plot.writeRectanglePlot(file.toStdString());
-    }
-    else
-    {
-        std::string why = buildOrder.whyIsNotLegalFromState(state);
-
-        QMessageBox::information(this, tr("BOSS Visualization Error"), tr(why.c_str()) );
-    }
-
-
 }
 
 void MainWindow::on_loadBuildOrderButton_clicked()
@@ -356,84 +404,6 @@ void MainWindow::on_saveBuildOrderButton_clicked()
 
     ui->buildOrderList->scrollToBottom();
     fout.close();
-}
-
-void MainWindow::on_resourceGraphButton_clicked()
-{
-    BOSS::GameState state(BOSS::Races::GetRaceID(ui->raceComboBox->currentText().toStdString()));
-    state.setMinerals(ui->mineralsSpinBox->value() * BOSS::Constants::RESOURCE_SCALE);
-    state.setGas(ui->gasSpinBox->value() * BOSS::Constants::RESOURCE_SCALE);
-
-    for(int row = 0; row < ui->initialStateList->count(); row++)
-    {
-        state.addCompletedAction(BOSS::ActionTypes::GetActionType(ui->initialStateList->item(row)->text().toStdString()));
-    }
-
-    BOSS::BuildOrder buildOrder;
-
-    for(int row = 0; row < ui->buildOrderList->count(); row++)
-    {
-        buildOrder.add(BOSS::ActionTypes::GetActionType(ui->buildOrderList->item(row)->text().toStdString()));
-    }
-
-    if (buildOrder.size() == 0)
-    {
-        QMessageBox::information(this, tr("BOSS Visualization Error"), tr("Cannot visualize an empty build order. Try adding some units.") );
-        return;
-    }
-
-    if (buildOrder.isLegalFromState(state))
-    {
-        QString file = QFileDialog::getSaveFileName(this, tr("Save Resource Plot Data"), QDir::currentPath(), tr("gnuplot files (*.gpl);;All files (*.*)"));
-
-        BOSS::BuildOrderPlot plot(state, buildOrder);
-        plot.writeResourcePlot(file.toStdString());
-    }
-    else
-    {
-        std::string why = buildOrder.whyIsNotLegalFromState(state);
-
-        QMessageBox::information(this, tr("BOSS Visualization Error"), tr(why.c_str()) );
-    }
-}
-
-void MainWindow::on_armyValueGraph_clicked()
-{
-    BOSS::GameState state(BOSS::Races::GetRaceID(ui->raceComboBox->currentText().toStdString()));
-    state.setMinerals(ui->mineralsSpinBox->value() * BOSS::Constants::RESOURCE_SCALE);
-    state.setGas(ui->gasSpinBox->value() * BOSS::Constants::RESOURCE_SCALE);
-
-    for(int row = 0; row < ui->initialStateList->count(); row++)
-    {
-        state.addCompletedAction(BOSS::ActionTypes::GetActionType(ui->initialStateList->item(row)->text().toStdString()));
-    }
-
-    BOSS::BuildOrder buildOrder;
-
-    for(int row = 0; row < ui->buildOrderList->count(); row++)
-    {
-        buildOrder.add(BOSS::ActionTypes::GetActionType(ui->buildOrderList->item(row)->text().toStdString()));
-    }
-
-    if (buildOrder.size() == 0)
-    {
-        QMessageBox::information(this, tr("BOSS Visualization Error"), tr("Cannot visualize an empty build order. Try adding some units.") );
-        return;
-    }
-
-    if (buildOrder.isLegalFromState(state))
-    {
-        QString file = QFileDialog::getSaveFileName(this, tr("Save Resource Plot Data"), QDir::currentPath(), tr("gnuplot files (*.gpl);;All files (*.*)"));
-
-        BOSS::BuildOrderPlot plot(state, buildOrder);
-        plot.writeArmyValuePlot(file.toStdString());
-    }
-    else
-    {
-        std::string why = buildOrder.whyIsNotLegalFromState(state);
-
-        QMessageBox::information(this, tr("BOSS Visualization Error"), tr(why.c_str()) );
-    }
 }
 
 void MainWindow::on_actionAbout_triggered()
@@ -545,3 +515,79 @@ void MainWindow::on_saveStateButton_clicked()
     fout.close();
 }
 
+
+void MainWindow::on_viewStateButton_clicked()
+{
+    BOSS::GameState state = getState();
+    QMessageBox::about(this, "State Details", state.toString().c_str());
+}
+
+void MainWindow::on_buildOrderDetails_clicked()
+{
+    std::stringstream ss;
+
+    BOSS::GameState state = getState();
+    BOSS::BuildOrder buildOrder = getBuildOrder();
+
+    if (buildOrder.isLegalFromState(state))
+    {
+        ss << "Build-Order can be built from the chosen initial state.\n\n";
+
+        buildOrder.doActions(state);
+        int totalFrames = state.getLastActionFinishTime();
+
+        ss << "Total time to completion: " << totalFrames << " frames " << " (" << (totalFrames / (60 * 24)) << "m " << ((totalFrames / 24) % 60) << "s)\n\n";
+
+        int totalMinerals = 0;
+        int totalGas = 0;
+        for (size_t a(0); a < buildOrder.size(); ++a)
+        {
+            totalMinerals += buildOrder[a].mineralPrice();
+            totalGas+= buildOrder[a].gasPrice();
+        }
+
+        ss << "Total Minerals Gathered: " << (state.getMinerals() + totalMinerals)/BOSS::Constants::RESOURCE_SCALE << "\n";
+        ss << "Total Gas Gathered: " << (state.getGas() + totalGas)/BOSS::Constants::RESOURCE_SCALE << "\n\n";
+    }
+    else
+    {
+        ss << buildOrder.whyIsNotLegalFromState(state);
+    }
+
+    QMessageBox::about(this, "Build-Order Details", ss.str().c_str() );
+}
+
+void MainWindow::on_viewFinalStateButton_clicked()
+{
+    std::stringstream ss;
+    BOSS::GameState state = getState();
+    BOSS::BuildOrder buildOrder = getBuildOrder();
+
+    if (buildOrder.isLegalFromState(state))
+    {
+        ss << "Final state after build-order has completed:\n";
+
+        buildOrder.doActions(state);
+
+        state.fastForward(state.getLastActionFinishTime());
+
+        ss << state.toString() << "\n";
+
+        int totalMinerals = 0;
+        int totalGas = 0;
+        for (size_t a(0); a < buildOrder.size(); ++a)
+        {
+            totalMinerals += buildOrder[a].mineralPrice();
+            totalGas+= buildOrder[a].gasPrice();
+        }
+
+        ss << "Total Minerals Gathered: " << (state.getMinerals() + totalMinerals)/BOSS::Constants::RESOURCE_SCALE << "\n";
+        ss << "Total Gas Gathered: " << (state.getGas() + totalGas)/BOSS::Constants::RESOURCE_SCALE << "\n\n";
+    }
+    else
+    {
+        ss << buildOrder.whyIsNotLegalFromState(state);
+    }
+
+    QMessageBox::about(this, "Final State Details", ss.str().c_str() );
+}
