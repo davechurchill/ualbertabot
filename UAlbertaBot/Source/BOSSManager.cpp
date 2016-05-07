@@ -64,7 +64,7 @@ void BOSSManager::startNewSearch(const std::vector<MetaPair> & goalUnits)
         _totalPreviousSearchTime = 0;
         _previousGoalUnits = goalUnits;
     }
-    catch (const BOSS::Assert::BOSSException)
+    catch (const BOSS::BOSSException)
     {
         BWAPI::BroodwarPtr->printf("Exception in BOSS::GameState constructor, will try again next frame");
     }
@@ -135,7 +135,7 @@ void BOSSManager::update(double timeLimit)
 			_smartSearch->search();
 		}
         // catch any errors that might happen in the search
-		catch (const BOSS::Assert::BOSSException & exception)
+		catch (const BOSS::BOSSException & exception)
         {
             UAB_ASSERT_WARNING(false, "BOSS SmartSearch Exception: %s", exception.what());
 			BWAPI::Broodwar->drawTextScreen(0, 0, "Previous search didn't find a solution, resorting to Naive Build Order");
@@ -217,7 +217,7 @@ void BOSSManager::update(double timeLimit)
 					return;
 				}
                 // and if that search doesn't work then we're out of luck, no build orders forus
-				catch (const BOSS::Assert::BOSSException & exception)
+				catch (const BOSS::BOSSException & exception)
                 {
                     UAB_ASSERT_WARNING(false, "BOSS Timeout Naive Search Exception: %s", exception.what());
                     _previousStatus += "\x08Naive Exception";

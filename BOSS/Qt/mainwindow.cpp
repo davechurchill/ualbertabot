@@ -151,7 +151,6 @@ void MainWindow::addToList(QListWidget * list, const std::string & typeName)
     list->insertItem(list->count(), new QListWidgetItem(itemMap[typeName]));
 }
 
-
 void MainWindow::on_clearAllItems_clicked()
 {
     ui->buildOrderList->clear();

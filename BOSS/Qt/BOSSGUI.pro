@@ -26,4 +26,4 @@ win32:RC_ICONS += Protoss_Probe.ico
 LIBS += -L$$PWD/../bin/ -lBOSS
 LIBS += -LC:/libraries/BWAPI_412/lib/ -lBWAPI
 
-DESTDIR = $$PWD/../bin/
+DESTDIR = $$PWD/../../bin/
