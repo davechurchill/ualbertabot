@@ -1,6 +1,8 @@
 #include "SparCraftAssert.h"
 #include "SparCraftException.h"
 
+#include <cstring>
+
 using namespace SparCraft;
 
 namespace SparCraft

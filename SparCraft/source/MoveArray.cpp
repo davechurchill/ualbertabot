@@ -85,10 +85,10 @@ void MoveArray::printCurrentMoveIndex()
 {
     for (size_t u(0); u<_numUnits; ++u)
     {
-        printf("%d ", _currentMovesIndex[u]);
+        std::cout << _currentMovesIndex[u] << " ";
     }
 
-    printf("\n");
+    std::cout << std::endl;
 }
 
 void MoveArray::incrementMove(const size_t & unit)
