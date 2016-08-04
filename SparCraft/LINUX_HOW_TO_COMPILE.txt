@@ -1,20 +1,22 @@
-SparCraft for linux uses a stripped-down version of BWAPI called bwdata, located in SparCraft/linux/bwdata
-Do not attempt to use this with any other version of BWAPI libraries under linux because it's not tested and not necessary
+Compilation Instructions:
 
-You need the following packages installed:
+1. Install the required libraries
 
-OpenGL Libraries
-- opengl (freeglut worked)
+libsdl2-dev
+libsdl2-image-dev
 
-SDL Libraries
-- libsdl
-- libsdl-gfx
-- libsdl-image
+2. Clone the BWAPI github repository somewhere on your system
 
-To compile: (from SparCraft root)
+git clone https://github.com/bwapi/bwapi.git
 
-g++ -O3 source/*.cpp bwapidata/include/*.cpp source/glfont/*.cc -Ibwapidata/include -Isource/glfont -o SparCraft `sdl-config --cflags --libs` -lGL -lGLU -lSDL_image
+3. Edit the Makefile to point to the directory that you cloned BWAPI
 
-run with:
+BWAPI_DIR=/where_you_cloned_to/bwapi/bwapi  (yes, bwapi/bwapi)
 
-./SparCraft sample_experiment/sample_exp_linux.txt
+4. If your BWAPI_DIR doesn't contain bwapi/svnrev.h, you need to generate it using the vbs script in that dir
+
+5. Run 'make' in the SparCraft directory, the binary will go to the 'SparCraft/bin' directory
+
+6. cd to 'SparCraft/bin' and run './SparCraft ../sample_experiment/sample_exp.txt'
+
+Enjoy!

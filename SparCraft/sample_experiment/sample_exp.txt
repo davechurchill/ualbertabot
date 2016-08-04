@@ -52,19 +52,19 @@
 ####################################################################################################
 
 # Sample AlphaBeta Players
-#Player 0 AlphaBeta 40 20 ScriptFirst Playout NOKDPS NOKDPS Alternate None
-#Player 1 AlphaBeta 40 20 ScriptFirst Playout NOKDPS NOKDPS Alternate NOKDPS
+Player 0 AlphaBeta 10 20 ScriptFirst Playout NOKDPS NOKDPS Alternate None
+#Player 1 AlphaBeta 5 20 ScriptFirst Playout NOKDPS NOKDPS Alternate NOKDPS
 
 # Sample UCT Players
-#Player 0 UCT 40 1.6 5000 20 ScriptFirst Playout NOKDPS NOKDPS Alternate None
-#Player 0 UCT 40 1.6 5000 20 ScriptFirst Playout NOKDPS NOKDPS Alternate NOKDPS
+Player 1 UCT 10 1.6 5000 20 ScriptFirst Playout NOKDPS NOKDPS Alternate None
+#Player 0 UCT 5 1.6 5000 20 ScriptFirst Playout NOKDPS NOKDPS Alternate NOKDPS
 
 # Sample PortfolioGreedySearch Players
-Player 0 PortfolioGreedySearch 0 NOKDPS 1 0
+#Player 0 PortfolioGreedySearch 0 NOKDPS 1 0
 
 # Sample Scripted Players
-Player 0 NOKDPS
-Player 1 NOKDPS
+#Player 0 NOKDPS
+#Player 1 NOKDPS
 
 ####################################################
 #
