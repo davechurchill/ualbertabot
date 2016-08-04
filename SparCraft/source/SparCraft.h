@@ -1,5 +1,10 @@
 #pragma once
 
+#ifndef WIN32
+#define APIENTRY
+#define APIENTRYP
+#endif
+
 #include "Common.h"
 #include "PlayerProperties.h"
 #include "UnitProperties.h"

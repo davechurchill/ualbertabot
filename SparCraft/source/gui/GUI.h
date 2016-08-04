@@ -1,9 +1,10 @@
 #pragma once
 
-#include "BWAPI.h"
-#include "GUITools.h"
+#include "../SparCraft.h"
 #include "../Timer.h"
 #include "../Position.hpp"
+#include "BWAPI.h"
+#include "GUITools.h"
 #include "GUIGame.h"
 #include <vector>
 

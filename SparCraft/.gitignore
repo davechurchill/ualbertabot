@@ -1,4 +1,5 @@
 VisualStudio/Release
 VisualStudio/Debug
-bin/*
+bin/SparCraft
+bin/*.txt
 source/*.o

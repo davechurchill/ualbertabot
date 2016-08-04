@@ -1,8 +1,6 @@
 #pragma once
 
-#include "../Position.hpp"
-#include "../Action.h"
-#include "../Game.h"
+#include "../SparCraft.h"
 
 namespace SparCraft
 {

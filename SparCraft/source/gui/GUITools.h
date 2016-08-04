@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Position.hpp"
+#include "../SparCraft.h"
 #include <SDL.h>
 #include <SDL_opengl.h>
 
