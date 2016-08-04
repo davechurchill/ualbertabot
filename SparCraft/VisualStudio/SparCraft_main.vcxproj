@@ -123,17 +123,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\GUIGame.h" />
-    <ClInclude Include="..\source\GUITools.h" />
+    <ClInclude Include="..\source\gui\GUI.h" />
+    <ClInclude Include="..\source\gui\GUIGame.h" />
+    <ClInclude Include="..\source\gui\GUITools.h" />
     <ClInclude Include="..\source\SearchExperiment.h" />
-    <ClInclude Include="..\source\GUI.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\GUIGame.cpp" />
-    <ClCompile Include="..\source\GUITools.cpp" />
+    <ClCompile Include="..\source\gui\GUI.cpp" />
+    <ClCompile Include="..\source\gui\GUIGame.cpp" />
+    <ClCompile Include="..\source\gui\GUITools.cpp" />
     <ClCompile Include="..\source\main.cpp" />
     <ClCompile Include="..\source\SearchExperiment.cpp" />
-    <ClCompile Include="..\source\GUI.cpp" />
     <ClCompile Include="..\source\TutorialCode.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

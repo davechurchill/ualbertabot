@@ -167,6 +167,7 @@
     <ClInclude Include="..\source\DetectorManager.h" />
     <ClInclude Include="..\Source\DistanceMap.hpp" />
     <ClInclude Include="..\Source\GameCommander.h" />
+    <ClInclude Include="..\Source\GameHistory.hpp" />
     <ClInclude Include="..\Source\InformationManager.h" />
     <ClInclude Include="..\source\JSONTools.h" />
     <ClInclude Include="..\Source\Logger.h" />

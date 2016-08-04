@@ -275,5 +275,8 @@
     <ClInclude Include="..\Source\Logger.h">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\GameHistory.hpp">
+      <Filter>game\util</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
