@@ -1,5 +1,5 @@
 #include "../SparCraft.h"
-#include "SearchExperiment.h"
+//#include "SearchExperiment.h"
 
 int main(int argc, char *argv[])
 {
@@ -9,8 +9,8 @@ int main(int argc, char *argv[])
     {
         if (argc == 2)
         {
-            SparCraft::SearchExperiment exp(argv[1]);
-            exp.runExperiment();
+ //           SparCraft::SearchExperiment exp(argv[1]);
+ //           exp.runExperiment();
         }
         else
         {
