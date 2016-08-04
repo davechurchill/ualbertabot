@@ -1,7 +1,7 @@
 #pragma once
 
-#include "SparCraft.h"
-#include "gui/GUI.h"
+#include "../SparCraft.h"
+#include "../gui/GUI.h"
 #include <iomanip>
 
 namespace SparCraft
