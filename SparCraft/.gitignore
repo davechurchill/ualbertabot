@@ -2,4 +2,8 @@ VisualStudio/Release
 VisualStudio/Debug
 bin/SparCraft
 bin/*.txt
+bin/*.pdb
+bin/*.map
+bin/*.dll
+bin/*.exe
 source/*.o
