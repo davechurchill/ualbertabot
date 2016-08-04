@@ -13,7 +13,7 @@ git clone https://github.com/bwapi/bwapi.git
 
 BWAPI_DIR=/where_you_cloned_to/bwapi/bwapi  (yes, bwapi/bwapi)
 
-4. If your BWAPI_DIR doesn't contain bwapi/svnrev.h, you need to generate it using the vbs script in that dir
+4. If your BWAPI_DIR doesn't contain the file svnrev.h, you need to generate it using the vbs script in that dir
 
 5. Run 'make' in the SparCraft directory, the binary will go to the 'SparCraft/bin' directory
 
