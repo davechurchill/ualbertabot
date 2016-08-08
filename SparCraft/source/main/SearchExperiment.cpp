@@ -43,10 +43,8 @@ void SearchExperiment::setupResults()
 void SearchExperiment::writeConfig(const std::string & configfile)
 {
     std::ofstream config(getConfigOutFileName().c_str());
-    if (!config.is_open())
-    {
-        System::FatalError("Problem Opening Output File: Config");
-    }
+
+    SPARCRAFT_ASSERT(config.is_open(), "Problem Opening Output File: Config");
 
     std::vector<std::string> lines(getLines(configfile));
 
@@ -61,10 +59,8 @@ void SearchExperiment::writeConfig(const std::string & configfile)
 void SearchExperiment::writeResultsSummary()
 {
 	std::ofstream results(getResultsSummaryFileName().c_str());
-    if (!results.is_open())
-    {
-        System::FatalError("Problem Opening Output File: Results Summary");
-    }
+    
+    SPARCRAFT_ASSERT(results.is_open(), "Problem Opening Output File: Config");
 
 	for (size_t p1(0); p1 < players[0].size(); ++p1)
 	{
@@ -164,10 +160,8 @@ std::vector<std::string> SearchExperiment::getLines(const std::string & filename
 {
     // set up the file
     std::ifstream fin(filename.c_str());
-    if (!fin.is_open())
-    {
-         System::FatalError("Problem Opening File: " + filename);
-    }
+
+    SPARCRAFT_ASSERT(fin.is_open(), "Problem Opening Output File: Config");
 
 	std::string line;
 
@@ -274,7 +268,7 @@ void SearchExperiment::parseConfigFile(const std::string & filename)
         }
         else
         {
-            System::FatalError("Invalid Option in Configuration File: " + option);
+            SPARCRAFT_ASSERT(false, "Invalid Option in Configuration File: %s", option.c_str());
         }
     }
 }
@@ -369,7 +363,7 @@ void SearchExperiment::addState(const std::string & line)
     }
     else
     {
-        System::FatalError("Invalid State Type in Configuration File: " + stateType);
+        SPARCRAFT_ASSERT(false, "Invalid State Type in Configuration File: %s", stateType.c_str());
     }  
 }
 
@@ -417,10 +411,7 @@ BWAPI::UnitType SearchExperiment::getUnitType(const std::string & unitTypeString
 
 void SearchExperiment::addGameState(const GameState & state)
 {
-    if (states.size() >= 10000)
-    {
-        System::FatalError("Search Experiment cannot contain more than 10,000 states.");
-    }
+    
 }
 
 void SearchExperiment::addPlayer(const std::string & line)
@@ -648,7 +639,7 @@ void SearchExperiment::addPlayer(const std::string & line)
     }
 	else
     {
-        System::FatalError("Invalid Player Type in Configuration File: " + playerModelString);
+        SPARCRAFT_ASSERT(false, "Invalid Player Type in Configuration File: %d", playerModelString.c_str());
     }
 }
 
@@ -776,19 +767,19 @@ svv SearchExperiment::getExpDescription(const size_t & p1Ind, const size_t & p2I
         }
     }
 
-    ss << PlayerModels::getName(players[0][p1Ind]->getType());        desc[1].push_back(ss.str()); ss.str(std::string());
-    ss << PlayerModels::getName(players[1][p2Ind]->getType());        desc[1].push_back(ss.str()); ss.str(std::string());
+    //ss << PlayerModels::getName(players[0][p1Ind]->getType());        desc[1].push_back(ss.str()); ss.str(std::string());
+    //ss << PlayerModels::getName(players[1][p2Ind]->getType());        desc[1].push_back(ss.str()); ss.str(std::string());
     ss << state << " of " << states.size();                         desc[1].push_back(ss.str()); ss.str(std::string());
     ss << states[state].numUnits(0);                                desc[1].push_back(ss.str()); ss.str(std::string());
 
     for (size_t p1(0); p1 < players[0].size(); ++p1)
 	{
-        desc[1].push_back(PlayerModels::getName(players[0][p1]->getType()));
+        //desc[1].push_back(PlayerModels::getName(players[0][p1]->getType()));
     }
 
     for (size_t p2(0); p2 < players[1].size(); ++p2)
 	{
-        desc[1].push_back(PlayerModels::getName(players[1][p2]->getType()));
+        //desc[1].push_back(PlayerModels::getName(players[1][p2]->getType()));
     }
 
     char buf[30];
@@ -826,10 +817,8 @@ std::string SearchExperiment::getBaseFilename(const std::string & filename)
 void SearchExperiment::runExperiment()
 {
     std::ofstream results(getResultsOutFileName().c_str());
-    if (!results.is_open())
-    {
-        System::FatalError("Problem Opening Output File: Results Raw");
-    }
+
+    SPARCRAFT_ASSERT(results.is_open(), "Problem Opening Output File: Results Raw");
     
     // set the map file for all states
     for (size_t state(0); state < states.size(); ++state)

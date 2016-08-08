@@ -1,10 +1,9 @@
-#include "SparCraftAssert.h"
+#include "BOSSAssert.h"
+#include "BOSSException.h"
 
-#include <cstring>
+using namespace BOSS;
 
-using namespace SparCraft;
-
-namespace SparCraft
+namespace BOSS
 {
 namespace Assert
 {
@@ -49,10 +48,10 @@ namespace Assert
         
         #if !defined(EMSCRIPTEN)
             std::cerr << ss.str();  
-            throw SparCraftException(ss.str(), state);
+            throw BOSSException(ss.str());
         #else
             printf("C++ AI: AI Exception Thrown:\n %s\n", ss.str().c_str());
-            throw SparCraftException(ss.str());
+            throw BOSSException(ss.str());
         #endif
     }
 }

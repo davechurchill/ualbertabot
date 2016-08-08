@@ -4,7 +4,9 @@
 #endif
 
 #include "../SparCraft.h"
-#include "SearchExperiment.h"
+#include "SearchExperiment.h""
+
+using namespace SparCraft;
 
 int main(int argc, char *argv[])
 {
@@ -19,19 +21,12 @@ int main(int argc, char *argv[])
         }
         else
         {
-            SparCraft::System::FatalError("Please provide experiment file as only argument");
+            std::cout << "Please provide experiment file as only argument";
         }
     }
-    catch(int e)
+    catch(SparCraftException e)
     {
-        if (e == SparCraft::System::SPARCRAFT_FATAL_ERROR)
-        {
-            std::cerr << "\nSparCraft FatalError Exception, Shutting Down\n\n";
-        }
-        else
-        {
-            std::cerr << "\nUnknown Exception, Shutting Down\n\n";
-        }
+        std::cerr << "\nSparCraft Exception, Shutting Down\n\n";
     }
    
     return 0;

@@ -119,7 +119,7 @@ void GameState::generateMoves(MoveArray & moves, const IDType & playerIndex) con
     const IDType canMove(whoCanMove());
     if (canMove == enemyPlayer)
     {
-        System::FatalError("GameState Error - Called generateMoves() for a player that cannot currently move");
+        SPARCRAFT_ASSERT(false, "GameState Error - Called generateMoves() for a player that cannot currently move");
     }
 
 	// we are interested in all simultaneous moves
@@ -140,7 +140,7 @@ void GameState::generateMoves(MoveArray & moves, const IDType & playerIndex) con
 
 		if (unit.previousActionTime() == _currentTime && _currentTime != 0)
 		{
-            System::FatalError("Previous Move Took 0 Time: " + unit.previousAction().moveString());
+            SPARCRAFT_ASSERT(false, "Previous Move Took 0 Time: %s", unit.previousAction().moveString().c_str());
 		}
 
 		moves.addUnit();
@@ -221,8 +221,7 @@ void GameState::generateMoves(MoveArray & moves, const IDType & playerIndex) con
             // DEBUG: If chosen move distance is ever 0, something is wrong
             if (moveDistance == 0)
             {
-                System::FatalError("Move Action with distance 0 generated. timeUntilAttack:"+
-					std::to_string(timeUntilAttack)+", speed:"+std::to_string(unit.speed()));
+                SPARCRAFT_ASSERT(false, "Move Action with distance 0 generated. timeUntilAttack: %d, speed: %d", timeUntilAttack, unit.speed());
             }
 
             // we are only generating moves in the cardinal direction specified in common.h
@@ -265,7 +264,7 @@ void GameState::makeMoves(const std::vector<Action> & moves)
         const IDType playerToMove(moves[0].player());
         if (canMove == getEnemy(playerToMove))
         {
-            System::FatalError("GameState Error - Called makeMove() for a player that cannot currently move");
+            SPARCRAFT_ASSERT(false, "GameState Error - Called makeMove() for a player that cannot currently move");
         }
     }
     
@@ -343,7 +342,7 @@ const Unit & GameState::getUnitByID(const IDType & unitID) const
 		}
 	}
 
-	System::FatalError("GameState Error: getUnitByID() Unit not found, id:" + std::to_string(unitID));
+	SPARCRAFT_ASSERT(false, "GameState Error: getUnitByID() Unit not found, id: %d", unitID);
 	return getUnit(0,0);
 }
 
@@ -357,7 +356,7 @@ const Unit & GameState::getUnitByID(const IDType & player, const IDType & unitID
 		}
 	}
 
-	System::FatalError("GameState Error: getUnitByID() Unit not found, player:"+std::to_string(player)+" id:" + std::to_string(unitID));
+	SPARCRAFT_ASSERT(false, "GameState Error: getUnitByID() Unit not found, player: %d, id: %d", player, unitID);
 	return getUnit(0,0);
 }
 
@@ -371,7 +370,7 @@ Unit & GameState::getUnitByID(const IDType & player, const IDType & unitID)
 		}
 	}
 
-	System::FatalError("GameState Error: getUnitByID() Unit not found, player:" + std::to_string(player) + " id:" + std::to_string(unitID));
+	SPARCRAFT_ASSERT(false, "GameState Error: getUnitByID() Unit not found, player: %d, id: %d", player, unitID);
 	return getUnit(0,0);
 }
 
@@ -484,13 +483,7 @@ const Unit & GameState::getClosestEnemyUnit(const IDType & player, const IDType 
 
 const bool GameState::checkFull(const IDType & player) const
 {
-    if (numUnits(player) >= Constants::Max_Units)
-    {
-        std::stringstream ss;
-        ss << "GameState has too many units. Constants::Max_Units = " << Constants::Max_Units;
-        System::FatalError(ss.str());
-        return false;
-    }
+    SPARCRAFT_ASSERT(numUnits(player) < Constants::Max_Units, "GameState has too many units");
 
     return false;
 }
@@ -518,10 +511,7 @@ void GameState::addUnit(const Unit & u)
 	finishedMoving();
 	calculateStartingHealth();
 
-    if (!checkUniqueUnitIDs())
-    {
-        System::FatalError("GameState has non-unique Unit ID values");
-    }
+    SPARCRAFT_ASSERT(checkUniqueUnitIDs(), "GameState has non-unique Unit ID values");
 }
 
 // Add a unit with given parameters to the state
@@ -547,10 +537,7 @@ void GameState::addUnit(const BWAPI::UnitType type, const IDType playerID, const
 	finishedMoving();
 	calculateStartingHealth();
 
-    if (!checkUniqueUnitIDs())
-    {
-        System::FatalError("GameState has non-unique Unit ID values");
-    }
+    SPARCRAFT_ASSERT(checkUniqueUnitIDs(), "GameState has non-unique Unit ID values");
 }
 
 // Add a given unit to the state
@@ -571,10 +558,7 @@ void GameState::addUnitWithID(const Unit & u)
 	finishedMoving();
 	calculateStartingHealth();
 
-    if (!checkUniqueUnitIDs())
-    {
-        System::FatalError("GameState has non-unique Unit ID values");
-    }
+    SPARCRAFT_ASSERT(checkUniqueUnitIDs(), "GameState has non-unique Unit ID values");
 }
 
 void GameState::sortUnits()
@@ -873,12 +857,7 @@ void GameState::setMap(Map * map)
         {
             const Position & pos(getUnit(p, u).pos());
 
-            if (!isWalkable(pos))
-            {
-                std::stringstream ss;
-                ss << "Unit initial position on non-walkable map tile: " << getUnit(p, u).name() << " (" << pos.x() << "," << pos.y() << ")";
-                System::FatalError(ss.str());
-            }
+            SPARCRAFT_ASSERT(isWalkable(pos), "Unit initial position on non-walkable map tile");
         }
     }
 }

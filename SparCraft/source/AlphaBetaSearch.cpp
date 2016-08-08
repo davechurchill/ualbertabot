@@ -350,7 +350,7 @@ const IDType AlphaBetaSearch::getPlayerToMove(GameState & state, const size_t & 
 		}
 
 		// we should never get to this state
-		System::FatalError("AlphaBeta Error: Nobody can move for some reason");
+		SPARCRAFT_ASSERT(false, "AlphaBeta Error: Nobody can move for some reason");
 		return Players::Player_None;
 	}
 	else

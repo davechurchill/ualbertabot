@@ -70,14 +70,44 @@ namespace SparCraft
 		const int Move_Dir[4][2] = {{-1,0}, {1,0}, {0,1}, {0,-1} };
 	}
 
+    namespace Players
+    {
+        enum { Player_One = 0, Player_Two = 1, Player_None = 2, Player_Both = 3, Size};
+    }
+
+    namespace SearchMethods
+    {
+        enum { AlphaBeta, IDAlphaBeta, MiniMax, Size };
+    }
+
+    namespace PlayerModels
+    {
+        enum { AlphaBeta, AttackClosest, Kiter, Random, AttackWeakest, AttackDPS, KiterDPS, NOKDPS, Kiter_NOKDPS, Cluster, PortfolioGreedySearch, UCT, None, Size };
+    }
+
+    namespace EvaluationMethods
+    {
+        enum { LTD, LTD2, Playout, Size };
+    }
+
+    namespace SearchNodeType
+    {
+        enum { Default, RootNode, SoloNode, FirstSimNode, SecondSimNode, Size };
+    }
+
+    namespace MoveOrderMethod
+    {
+        enum { ScriptFirst, None, Size };
+    }
+
+    namespace PlayerToMove
+    {
+        enum { Random, Alternate, Not_Alternate, Size };
+    }
+
     namespace System
     {
-        const int SPARCRAFT_FATAL_ERROR = -1;
-
-        void FatalError(const std::string & errorMessage);
         void checkSupportedUnitType(const BWAPI::UnitType & type);
         bool isSupportedUnitType(const BWAPI::UnitType & type);
     }
 };
-
-#include "EnumData.h"

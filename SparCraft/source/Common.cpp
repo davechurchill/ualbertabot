@@ -7,24 +7,11 @@ namespace SparCraft
 {
     namespace System
     {
-        void FatalError(const std::string & errorMessage)
-        {
-            std::cerr << "\n\n\nSparCraft Fatal Error: \n\n\n      " << errorMessage << "\n\n";
-
-			/*std::ofstream logStream;
-			logStream.open(SPARCRAFT_LOGFILE, std::ofstream::app);
-			logStream << "\n\n\nSparCraft Fatal Error: \n\n\n      " << errorMessage << "\n\n";
-			logStream.flush();
-			logStream.close();*/
-
-            throw(SPARCRAFT_FATAL_ERROR);
-        }
-        
         void checkSupportedUnitType(const BWAPI::UnitType & type)
         {
             if (type == BWAPI::UnitTypes::None || type == BWAPI::UnitTypes::Unknown)
             {
-                System::FatalError("Unknown unit type in experiment file, not supported");
+                SPARCRAFT_ASSERT(false, "Unknown unit type in experiment file, not supported");
             }
 
             if (type == BWAPI::UnitTypes::Protoss_Corsair || 
@@ -32,17 +19,17 @@ namespace SparCraft
                 type == BWAPI::UnitTypes::Zerg_Scourge ||
                 type == BWAPI::UnitTypes::Terran_Valkyrie)
             {
-                System::FatalError("Units with just air weapons currently not supported correctly: " + type.getName());
+                SPARCRAFT_ASSERT(false, "Units with just air weapons currently not supported correctly: %s", type.getName().c_str());
             }
 
             if (type.isBuilding() && !(type == BWAPI::UnitTypes::Protoss_Photon_Cannon || type == BWAPI::UnitTypes::Zerg_Sunken_Colony || type == BWAPI::UnitTypes::Terran_Missile_Turret))
             {
-                System::FatalError("Non-attacking buildings not currently supported: " + type.getName());
+                SPARCRAFT_ASSERT(false, "Non-attacking buildings not currently supported: %s", type.getName().c_str());
             }
 
             if (type.isSpellcaster())
             {
-                System::FatalError("Spell casting units not currently supported: " + type.getName());
+                SPARCRAFT_ASSERT(false, "Spell casting units not currently supported: ", type.getName().c_str());
             }
 
              // Don't support units loading other units yet
@@ -54,7 +41,7 @@ namespace SparCraft
                 type == BWAPI::UnitTypes::Zerg_Broodling)
             {
 
-                System::FatalError("Units which have unit projectiles not supported: " + type.getName());
+                SPARCRAFT_ASSERT(false, "Units which have unit projectiles not supported: %s", type.getName().c_str());
             }
         }
 

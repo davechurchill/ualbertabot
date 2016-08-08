@@ -226,7 +226,7 @@ const IDType UCTSearch::getPlayerToMove(UCTNode & node, const GameState & state)
 		    }
 
             // we should never get to this state
-		    System::FatalError("UCT Error: Nobody can move for some reason");
+		    SPARCRAFT_ASSERT(false, "UCT Error: Nobody can move for some reason");
 		    return Players::Player_None;
         }
 	}

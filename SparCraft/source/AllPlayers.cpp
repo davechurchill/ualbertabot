@@ -12,7 +12,7 @@ Player * AllPlayers::getPlayer(const IDType & playerID, const IDType & type)
     else if		(type == PlayerModels::Kiter_NOKDPS)		{ return new Player_Kiter_NOKDPS(playerID); }
     else if		(type == PlayerModels::Cluster)		    	{ return new Player_Cluster(playerID); }
 	else if		(type == PlayerModels::NOKDPS)              { return new Player_NOKDPS(playerID); }
-	else if		(type == PlayerModels::Random)				{ return new Player_Random(playerID); }
+	else if		(type == PlayerModels::Random)				{ return new Player_Random(playerID); } 
 	else													{ return NULL; }
 }
 

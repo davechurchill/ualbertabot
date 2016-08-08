@@ -1,12 +1,12 @@
 #pragma once
 
 #include "Common.h"
-#include "SparCraftException.h"
 #include <cstdarg>
+#include "BOSSException.h"
 
 #include <ctime>
 
-namespace SparCraft
+namespace BOSS
 {
 
 class GameState;
@@ -17,25 +17,25 @@ namespace Assert
 }
 }
 
-#define SPARCRAFT_ASSERT_ENABLE
+#define BOSS_ASSERT_ENABLE
 
-#ifdef SPARCRAFT_ASSERT_ENABLE
+#ifdef BOSS_ASSERT_ENABLE
 
-    #define SPARCRAFT_ASSERT(cond, msg, ...) \
+    #define BOSS_ASSERT(cond, msg, ...) \
         do \
         { \
             if (!(cond)) \
             { \
-                SparCraft::Assert::ReportFailure(nullptr, #cond, __FILE__, __LINE__, (msg), ##__VA_ARGS__); \
+                BOSS::Assert::ReportFailure(nullptr, #cond, __FILE__, __LINE__, (msg), ##__VA_ARGS__); \
             } \
         } while(0)
 
-    #define SPARCRAFT_ASSERT_STATE(cond, state, filename, msg, ...) \
+    #define BOSS_ASSERT_STATE(cond, state, filename, msg, ...) \
         do \
         { \
             if (!(cond)) \
             { \
-                SparCraft::Assert::ReportFailure(&state, #cond, __FILE__, __LINE__, (msg), ##__VA_ARGS__); \
+                BOSS::Assert::ReportFailure(&state, #cond, __FILE__, __LINE__, (msg), ##__VA_ARGS__); \
             } \
         } while(0)
 
