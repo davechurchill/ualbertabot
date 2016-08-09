@@ -2,6 +2,7 @@
 
 #include "BWAPI.h"
 #include "BaseTypes.hpp"
+#include "SparCraftAssert.h"
 
 namespace SparCraft
 {
@@ -95,5 +96,10 @@ namespace SparCraft
     {
         void checkSupportedUnitType(const BWAPI::UnitType & type);
         bool isSupportedUnitType(const BWAPI::UnitType & type);
+    }
+        
+    namespace FileUtils
+    {
+        std::string ReadFile(const std::string & filename);
     }
 };

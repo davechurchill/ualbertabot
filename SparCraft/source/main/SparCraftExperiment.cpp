@@ -5,9 +5,8 @@ using namespace SparCraft;
 
 SparCraftExperiment::SparCraftExperiment()
     : _showGUI(false)
-    , _guiActionDelay(0)
-    , _guiTurnDelay(0)
-    , _currentGameIndex(0)
+    , _guiWidth(1280)
+    , _guiHeight(720)
 {
 
 }
@@ -24,9 +23,9 @@ void SparCraftExperiment::parseConfigFile(const std::string & filename)
         int errorPos = document.GetErrorOffset();
 
         std::stringstream ss;
-        ss << MCDS::endl << "JSON Parse Error: " << document.GetParseError() << MCDS::endl;
-        ss << "Error Position:   " << errorPos << MCDS::endl;
-        ss << "Error Substring:  " << json.substr(errorPos-5, 10) << MCDS::endl;
+        ss << std::endl << "JSON Parse Error: " << document.GetParseError() << std::endl;
+        ss << "Error Position:   " << errorPos << std::endl;
+        ss << "Error Substring:  " << json.substr(errorPos-5, 10) << std::endl;
 
         SPARCRAFT_ASSERT(!parsingFailed, "Error parsing JSON config file: %s", ss.str().c_str());
     }
@@ -39,28 +38,12 @@ void SparCraftExperiment::parseConfigFile(const std::string & filename)
     SPARCRAFT_ASSERT(guiValue.HasMember("Enabled"), "GUI has no 'Enabled' option");
     SPARCRAFT_ASSERT(guiValue.HasMember("Width"), "GUI has no 'Width' option");
     SPARCRAFT_ASSERT(guiValue.HasMember("Height"), "GUI has no 'Height' option");
-    SPARCRAFT_ASSERT(guiValue.HasMember("ActionDelay"), "GUI has no 'ActionDelay' option");
-    SPARCRAFT_ASSERT(guiValue.HasMember("TurnDelay"), "GUI has no 'TurnDelay' option");
 
     _showGUI = guiValue["Enabled"].GetBool();
-    _guiActionDelay = guiValue["ActionDelay"].GetInt();
-    _guiTurnDelay = guiValue["TurnDelay"].GetInt();
 
     parseGamesJSON(document["Games"], document);
 
     printf("Parsing of config file complete\n");
-}
-
-bool SparCraftExperiment::hasMoreGames() const
-{
-    return _currentGameIndex < _games.size();
-}
-
-const Game & SparCraftExperiment::getNextGame()
-{
-    SPARCRAFT_ASSERT(hasMoreGames(), "No more games yo");
-
-    return _games[_currentGameIndex++];
 }
 
 void SparCraftExperiment::parseGamesJSON(const rapidjson::Value & games, const rapidjson::Value & root)
@@ -78,11 +61,11 @@ void SparCraftExperiment::parseGamesJSON(const rapidjson::Value & games, const r
         }
 
         SPARCRAFT_ASSERT(game.HasMember("Name"), "Game has no 'Name' option");
-        SPARCRAFT_ASSERT(game.HasMember("State") && game["state"].IsString(), "Game has no 'State' String option");
+        SPARCRAFT_ASSERT(game.HasMember("State") && game["State"].IsString(), "Game has no 'State' String option");
         SPARCRAFT_ASSERT(game.HasMember("Games") && game["Games"].IsInt(), "Game has no 'Gtate' int option");
         SPARCRAFT_ASSERT(game.HasMember("Players") && game["Players"].IsArray(), "Game has no 'Players' array option");
 
-        size_t numGames = game["games"].GetInt();
+        size_t numGames = game["Games"].GetInt();
 
         std::vector<int> winners(3,0);
         for (size_t i(0); i < numGames; ++i)
@@ -90,14 +73,14 @@ void SparCraftExperiment::parseGamesJSON(const rapidjson::Value & games, const r
             std::cout << "Parsing game " << i << " for " << game["Name"].GetString() << std::endl;
             
             GameState state = GetStateFromVariable(game["State"].GetString(), root);
-            PlayerPtr white = AIParameters::Instance().getPlayer(Players::Player_One, game["WhitePlayer"].GetString());
-            PlayerPtr black = AIParameters::Instance().getPlayer(Players::Player_Two, game["BlackPlayer"].GetString());
+            PlayerPtr white = AIParameters::Instance().getPlayer(Players::Player_One, game["Players"][0].GetString());
+            PlayerPtr black = AIParameters::Instance().getPlayer(Players::Player_Two, game["Players"][1].GetString());
 
             Game g(state, white, black, 20000);
 
             if (_showGUI)
             {
-                static GUI gui(1280, 720);
+                static GUI gui(_guiWidth, _guiHeight);
                 gui.setGame(g);
 
                 while (!gui.getGame().gameOver())
@@ -120,37 +103,10 @@ void SparCraftExperiment::parseGamesJSON(const rapidjson::Value & games, const r
     }
 }
 
-GameState SparCraftExperiment::GetAttackTestState()
-{
-    GameState state;
-
-    return state;
-}
-
-GameState SparCraftExperiment::GetSnipeTestState()
-{
-    GameState state;
-
-    return state;
-}
-
-GameState SparCraftExperiment::GetChillTestState()
-{
-    GameState state;
-
-    return state;
-}
-
-GameState SparCraftExperiment::GetFrontlineTestState()
-{
-    GameState state;   
-
-    return state;
-}
-
 GameState SparCraftExperiment::GetStateFromVariable(const std::string & stateVariable, const rapidjson::Value & root)
 {
     SPARCRAFT_ASSERT(root["States"].HasMember(stateVariable.c_str()), "State variable not found");
+
     const rapidjson::Value & stateValue = root["States"][stateVariable.c_str()];
     SPARCRAFT_ASSERT(stateValue.HasMember("Type"), "State has no 'Type' option");
     const std::string & stateType = stateValue["Type"].GetString();

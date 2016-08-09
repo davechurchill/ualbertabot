@@ -1,3 +1,4 @@
+#include "Common.h"
 #include "AIParameters.h"
 
 using namespace SparCraft;
@@ -18,8 +19,7 @@ void AIParameters::parseJSONValue(const rapidjson::Value & rootValue)
 {  
     Instance() = AIParameters();
 
-    SPARCRAFT_ASSERT(rootValue.HasMember("Partial Players"),  "AIParameters: No 'Partial Players' Options Found");
-    SPARCRAFT_ASSERT(rootValue.HasMember("Move Iterators"),   "AIParameters: No 'Move Iterators' Options Found");
+    //SPARCRAFT_ASSERT(rootValue.HasMember("Move Iterators"),   "AIParameters: No 'Move Iterators' Options Found");
     SPARCRAFT_ASSERT(rootValue.HasMember("Players"),          "AIParameters: No 'Players' Options Found");
 
     Timer t;
@@ -51,11 +51,11 @@ void AIParameters::parsePlayers(const std::string & keyName, const rapidjson::Va
         
         SPARCRAFT_ASSERT(val.IsObject(), "Player value must be an Object");
 
-        /*if (_moveIteratorMap[Players::Player_One].find(name) == _moveIteratorMap[Players::Player_One].end())
+        if (_playerMap[Players::Player_One].find(name) == _playerMap[Players::Player_One].end())
         {
             parsePlayer(Players::Player_One, name, rootValue);
             parsePlayer(Players::Player_Two, name, rootValue);
-        }*/
+        }
 
         _playerNames.push_back(name);
     }
@@ -73,15 +73,15 @@ PlayerPtr AIParameters::parsePlayer(const IDType & player, const std::string & p
 
     const rapidjson::Value & playerValue = findPlayer(playerVariable.c_str(), root);
 
-    SPARCRAFT_ASSERT(playerValue.HasMember("type"), "Player has no 'type' option");
+    SPARCRAFT_ASSERT(playerValue.HasMember("Type"), "Player has no 'Type' option");
 
-    std::string playerClassName = playerValue["type"].GetString();
+    std::string playerClassName = playerValue["Type"].GetString();
     
     PlayerPtr playerPtr;
 
-    if (playerClassName == "Player_Default")  
+    if (playerClassName == "AttackClosest")  
     { 
-        //playerPtr = PlayerPtr(new Player_Default(player));
+        playerPtr = PlayerPtr(new Player_AttackClosest(player));
     }
     else if (playerClassName == "Player_Random")  
     { 
@@ -270,7 +270,7 @@ void AIParameters::parseJSONString(const std::string & jsonString)
 void AIParameters::parseFile(const std::string & filename)
 {
     std::cout << "Reading AI Parameters File: " << filename << "\n";
-    std::string json = "";//FileUtils::ReadFile(filename);
+    std::string json = FileUtils::ReadFile(filename);
     
     parseJSONString(json);
 }

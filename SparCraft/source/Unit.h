@@ -13,8 +13,6 @@
 namespace SparCraft
 {
 
-class Action;
-
 class Unit 
 {
     BWAPI::UnitType     _unitType;				// the BWAPI unit type that we are mimicing

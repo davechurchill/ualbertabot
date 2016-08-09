@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Common.h"
-#include <algorithm>
 #include "MoveArray.h"
 #include "Hash.h"
 #include "Map.hpp"
@@ -9,6 +8,7 @@
 #include "GraphViz.hpp"
 #include "Array.hpp"
 #include <memory>
+#include <algorithm>
 
 typedef std::shared_ptr<SparCraft::Map> MapPtr;
 

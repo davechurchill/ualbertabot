@@ -11,6 +11,7 @@ namespace Hash
 
 	class HashValues
 	{
+
 		HashType	unitPositionHash[Constants::Num_Players];
 		HashType	timeCanAttackHash[Constants::Num_Players];
 		HashType	timeCanMoveHash[Constants::Num_Players];

@@ -4,32 +4,17 @@
 #endif
 
 #include "../SparCraft.h"
-#include "SearchExperiment.h""
+#include "SparCraftExperiment.h"
 
 using namespace SparCraft;
 
 int main(int argc, char *argv[])
 {
     SparCraft::init();
+    AIParameters::Instance().parseFile("SparCraft_Config.txt");
 
-    int a = Constants::Max_Moves;
+    SparCraftExperiment exp;
+    exp.parseConfigFile("SparCraft_Config.txt");
 
-    try
-    {
-        if (argc == 2)
-        {
-            SparCraft::SearchExperiment exp(argv[1]);
-            exp.runExperiment();
-        }
-        else
-        {
-            std::cerr << "Please provide experiment file as only argument";
-        }
-    }
-    catch(SparCraftException e)
-    {
-        std::cerr << "\nSparCraft Exception, Shutting Down\n\n";
-    }
-   
     return 0;
 }

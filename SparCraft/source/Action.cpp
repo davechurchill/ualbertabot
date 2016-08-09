@@ -1,3 +1,4 @@
+#include "Common.h"
 #include "Action.h"
 
 using namespace SparCraft;

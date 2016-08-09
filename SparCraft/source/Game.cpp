@@ -1,3 +1,4 @@
+#include "Common.h"
 #include "Game.h"
 
 using namespace SparCraft;

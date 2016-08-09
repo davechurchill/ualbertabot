@@ -1,3 +1,4 @@
+#include "Common.h"
 #include "SparCraftAssert.h"
 
 #include <cstring>

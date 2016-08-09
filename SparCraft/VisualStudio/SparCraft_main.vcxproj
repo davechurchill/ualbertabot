@@ -126,7 +126,6 @@
     <ClInclude Include="..\source\gui\GUI.h" />
     <ClInclude Include="..\source\gui\GUIGame.h" />
     <ClInclude Include="..\source\gui\GUITools.h" />
-    <ClInclude Include="..\source\main\SearchExperiment.h" />
     <ClInclude Include="..\source\main\SparCraftExperiment.h" />
   </ItemGroup>
   <ItemGroup>
@@ -134,7 +133,6 @@
     <ClCompile Include="..\source\gui\GUIGame.cpp" />
     <ClCompile Include="..\source\gui\GUITools.cpp" />
     <ClCompile Include="..\source\main\main.cpp" />
-    <ClCompile Include="..\source\main\SearchExperiment.cpp" />
     <ClCompile Include="..\source\main\SparCraftExperiment.cpp" />
     <ClCompile Include="..\source\TutorialCode.cpp" />
   </ItemGroup>
