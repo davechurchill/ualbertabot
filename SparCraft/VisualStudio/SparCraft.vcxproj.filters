@@ -91,14 +91,8 @@
     <ClCompile Include="..\source\SparCraft.cpp">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\EnumData.cpp">
-      <Filter>data</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\AnimationFrameData.cpp">
-      <Filter>data</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\Logger.cpp">
-      <Filter>util</Filter>
+      <Filter>simulation\data</Filter>
     </ClCompile>
     <ClCompile Include="..\source\Action.cpp">
       <Filter>simulation</Filter>
@@ -111,6 +105,9 @@
     </ClCompile>
     <ClCompile Include="..\source\SparCraftException.cpp">
       <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\AIParameters.cpp">
+      <Filter>AI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -240,14 +237,8 @@
     <ClInclude Include="..\source\SparCraft.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\EnumData.h">
-      <Filter>data</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\AnimationFrameData.h">
-      <Filter>data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Logger.h">
-      <Filter>util</Filter>
+      <Filter>simulation\data</Filter>
     </ClInclude>
     <ClInclude Include="..\source\Action.h">
       <Filter>simulation</Filter>
@@ -260,6 +251,9 @@
     </ClInclude>
     <ClInclude Include="..\source\SparCraftException.h">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\AIParameters.h">
+      <Filter>AI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -274,9 +268,6 @@
     </Filter>
     <Filter Include="simulation\properties">
       <UniqueIdentifier>{2617c193-9e36-4c48-a76e-4ffcfee4093e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="data">
-      <UniqueIdentifier>{c8b3aadc-390f-460b-af33-29a0570bb914}</UniqueIdentifier>
     </Filter>
     <Filter Include="AI">
       <UniqueIdentifier>{1bb4c001-8b1e-46d3-a8db-95c27c134952}</UniqueIdentifier>
@@ -301,6 +292,9 @@
     </Filter>
     <Filter Include="AI\search\UCT">
       <UniqueIdentifier>{5d28a734-3947-4ec3-9f52-b1259520d851}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="simulation\data">
+      <UniqueIdentifier>{c8b3aadc-390f-460b-af33-29a0570bb914}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

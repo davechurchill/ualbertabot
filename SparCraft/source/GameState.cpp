@@ -1,6 +1,7 @@
 #include "GameState.h"
 #include "Player.h"
 #include "Game.h"
+#include "SparCraftAssert.h"
 
 using namespace SparCraft;
 

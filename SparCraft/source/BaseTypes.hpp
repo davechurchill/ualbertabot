@@ -1,11 +1,7 @@
 #pragma once
 
-#include "Common.h"
-
-
 namespace SparCraft
 {
-
     // type definitions for storing data
     typedef		unsigned char		IDType;
     typedef		unsigned char		UnitCountType;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cassert>
+
 namespace SparCraft
 {
 template <class T, size_t elem>

@@ -1,4 +1,5 @@
 #include "UCTSearch.h"
+#include "SparCraftAssert.h"
 
 using namespace SparCraft;
 
@@ -434,7 +435,7 @@ void UCTSearch::printSubTreeGraphViz(UCTNode & node, GraphViz::Graph & g, GameSt
         move << "root";
     }
 
-    std::string firstSim = SearchNodeType::getName(node.getNodeType());
+    std::string firstSim = "FIX"; //SearchNodeType::getName(node.getNodeType());
 
     Unit p1 = state.getUnit(0,0);
     Unit p2 = state.getUnit(1,0);

@@ -123,6 +123,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\source\Action.h" />
+    <ClInclude Include="..\source\AIParameters.h" />
     <ClInclude Include="..\source\AllPlayers.h" />
     <ClInclude Include="..\source\AlphaBetaMove.h" />
     <ClInclude Include="..\source\AlphaBetaSearch.h" />
@@ -130,12 +131,10 @@
     <ClInclude Include="..\source\AlphaBetaSearchResults.hpp" />
     <ClInclude Include="..\source\AnimationFrameData.h" />
     <ClInclude Include="..\source\BaseTypes.hpp" />
-    <ClInclude Include="..\source\EnumData.h" />
     <ClInclude Include="..\source\Game.h" />
     <ClInclude Include="..\source\GameState.h" />
     <ClInclude Include="..\source\GraphViz.hpp" />
     <ClInclude Include="..\source\Hash.h" />
-    <ClInclude Include="..\source\Logger.h" />
     <ClInclude Include="..\source\Map.hpp" />
     <ClInclude Include="..\source\MoveArray.h" />
     <ClInclude Include="..\source\Player.h" />
@@ -174,16 +173,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\Action.cpp" />
+    <ClCompile Include="..\source\AIParameters.cpp" />
     <ClCompile Include="..\source\AllPlayers.cpp" />
     <ClCompile Include="..\source\AlphaBetaMove.cpp" />
     <ClCompile Include="..\source\AlphaBetaSearch.cpp" />
     <ClCompile Include="..\source\AnimationFrameData.cpp" />
     <ClCompile Include="..\source\Common.cpp" />
-    <ClCompile Include="..\source\EnumData.cpp" />
     <ClCompile Include="..\source\Game.cpp" />
     <ClCompile Include="..\source\GameState.cpp" />
     <ClCompile Include="..\source\Hash.cpp" />
-    <ClCompile Include="..\source\Logger.cpp" />
     <ClCompile Include="..\source\MoveArray.cpp" />
     <ClCompile Include="..\source\Player.cpp" />
     <ClCompile Include="..\source\PlayerProperties.cpp" />

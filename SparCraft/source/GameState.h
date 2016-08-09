@@ -8,7 +8,6 @@
 #include "Unit.h"
 #include "GraphViz.hpp"
 #include "Array.hpp"
-#include "Logger.h"
 #include <memory>
 
 typedef std::shared_ptr<SparCraft::Map> MapPtr;

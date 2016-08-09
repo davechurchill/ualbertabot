@@ -1,9 +1,7 @@
 #pragma once
 
-#include "Common.h"
 #include "SparCraftException.h"
 #include <cstdarg>
-
 #include <ctime>
 
 namespace SparCraft

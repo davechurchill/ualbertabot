@@ -2,20 +2,6 @@
 
 #include "BWAPI.h"
 #include "BaseTypes.hpp"
-#include <cassert>
-#include <vector>
-#include <stdio.h>
-#include <math.h>
-#include <fstream>
-#include <sstream>
-#include <map>
-#include <ios>
-#include <iostream>
-#include <cstdlib>
-#include "Logger.h"
-#include "SparCraftAssert.h"
-
-extern char SPARCRAFT_LOGFILE[100];
 
 namespace SparCraft
 {

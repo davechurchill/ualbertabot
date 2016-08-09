@@ -4,6 +4,9 @@
 #include "Array.hpp"
 #include "Unit.h"
 
+#include <iostream>
+#include <fstream>
+
 namespace SparCraft
 {
 

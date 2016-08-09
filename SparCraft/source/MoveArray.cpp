@@ -1,4 +1,5 @@
 #include "MoveArray.h"
+#include "SparCraftAssert.h"
 
 using namespace SparCraft;
 
@@ -76,7 +77,7 @@ void MoveArray::shuffleMoveActions()
 // returns a given move from a unit
 const Action & MoveArray::getMove(const size_t & unit, const size_t & move) const
 {
-    assert(_moves[unit][(size_t)move].unit() != 255);
+    SPARCRAFT_ASSERT(_moves[unit][(size_t)move].unit() != 255, "Move size too large");
 
     return _moves[unit][(size_t)move];
 }

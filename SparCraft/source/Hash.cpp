@@ -1,4 +1,5 @@
 #include "Hash.h"
+#include "Random.hpp"
 
 using namespace SparCraft;
 

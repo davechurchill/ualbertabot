@@ -13,6 +13,7 @@
     </ClCompile>
     <ClCompile Include="..\source\main\main.cpp" />
     <ClCompile Include="..\source\main\SearchExperiment.cpp" />
+    <ClCompile Include="..\source\main\SparCraftExperiment.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\gui\GUI.h">
@@ -25,6 +26,7 @@
       <Filter>gui</Filter>
     </ClInclude>
     <ClInclude Include="..\source\main\SearchExperiment.h" />
+    <ClInclude Include="..\source\main\SparCraftExperiment.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="gui">

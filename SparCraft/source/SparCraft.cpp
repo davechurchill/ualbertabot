@@ -13,8 +13,5 @@ namespace SparCraft
         // Initialize Weapon and Unit Property Data
         SparCraft::WeaponProperties::Init();
 	    SparCraft::UnitProperties::Init();
-    
-        // Initialize EnumData Class Types
-        SparCraft::EnumDataInit();
     }
 }

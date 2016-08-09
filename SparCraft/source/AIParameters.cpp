@@ -51,11 +51,11 @@ void AIParameters::parsePlayers(const std::string & keyName, const rapidjson::Va
         
         SPARCRAFT_ASSERT(val.IsObject(), "Player value must be an Object");
 
-        if (_moveIteratorMap[Players::Player_One].find(name) == _moveIteratorMap[Players::Player_One].end())
+        /*if (_moveIteratorMap[Players::Player_One].find(name) == _moveIteratorMap[Players::Player_One].end())
         {
             parsePlayer(Players::Player_One, name, rootValue);
             parsePlayer(Players::Player_Two, name, rootValue);
-        }
+        }*/
 
         _playerNames.push_back(name);
     }
@@ -81,37 +81,25 @@ PlayerPtr AIParameters::parsePlayer(const IDType & player, const std::string & p
 
     if (playerClassName == "Player_Default")  
     { 
-        playerPtr = PlayerPtr(new Player_Default(player));
+        //playerPtr = PlayerPtr(new Player_Default(player));
     }
     else if (playerClassName == "Player_Random")  
     { 
-        playerPtr = PlayerPtr(new Player_Random(player));
+        //playerPtr = PlayerPtr(new Player_Random(player));
     }
     else if (playerClassName == "Player_RandomFromIterator")  
     { 
         SPARCRAFT_ASSERT(playerValue.HasMember("iterator"), "Player_RandomFromIterator has no iterator value");
 
-        playerPtr = PlayerPtr(new Player_RandomFromIterator(player, getMoveIterator(player, playerValue["iterator"].GetString())));
+        //playerPtr = PlayerPtr(new Player_RandomFromIterator(player, getMoveIterator(player, playerValue["iterator"].GetString())));
     }
     else if (playerClassName == "Player_GUI")  
     {
-        playerPtr = PlayerPtr(new Player_GUI(player));
+        //playerPtr = PlayerPtr(new Player_GUI(player));
     }
     else if (playerClassName == "Player_PPSequence")  
     { 
-        SPARCRAFT_ASSERT(playerValue.HasMember("PartialPlayers"), "Partial players args not found");
-
-        PPSequence ppSequence;
-
-        for (size_t pp(0); pp<playerValue["PartialPlayers"].Size(); ++pp)
-        {
-            SPARCRAFT_ASSERT(playerValue["PartialPlayers"][pp].IsString(), "PPSequence player entry must be a string referring to a partial player variable");
-
-            PPPtr ppptr = getPartialPlayer(player, playerValue["PartialPlayers"][pp].GetString());
-            ppSequence[pp] = ppptr;
-        }
         
-        playerPtr = PlayerPtr(new Player_PPSequence(player, ppSequence));
     }
     else if (playerClassName == "Player_UCT")  
     { 
@@ -128,18 +116,18 @@ PlayerPtr AIParameters::parsePlayer(const IDType & player, const std::string & p
         params.setTimeLimit(args["TimeLimit"].GetInt());
         params.setMaxTraversals(args["MaxTraversals"].GetInt());
         params.setMaxChildren(args["MaxChildren"].GetInt());
-        params.setMoveIterator(Players::Player_One, getMoveIterator(Players::Player_One, args["MoveIterator"].GetString()));
-        params.setMoveIterator(Players::Player_Two, getMoveIterator(Players::Player_Two, args["MoveIterator"].GetString()));
+        //params.setMoveIterator(Players::Player_One, getMoveIterator(Players::Player_One, args["MoveIterator"].GetString()));
+        //params.setMoveIterator(Players::Player_Two, getMoveIterator(Players::Player_Two, args["MoveIterator"].GetString()));
 
         if (args.HasMember("RootMoveIterator"))
         {
-            params.setRootMoveIterator(Players::Player_One, getMoveIterator(Players::Player_One, args["RootMoveIterator"].GetString()));
-            params.setRootMoveIterator(Players::Player_Two, getMoveIterator(Players::Player_Two, args["RootMoveIterator"].GetString()));
+            //params.setRootMoveIterator(Players::Player_One, getMoveIterator(Players::Player_One, args["RootMoveIterator"].GetString()));
+            //params.setRootMoveIterator(Players::Player_Two, getMoveIterator(Players::Player_Two, args["RootMoveIterator"].GetString()));
         }
         else
         {
-            params.setRootMoveIterator(Players::Player_One, getMoveIterator(Players::Player_One, args["MoveIterator"].GetString()));
-            params.setRootMoveIterator(Players::Player_Two, getMoveIterator(Players::Player_Two, args["MoveIterator"].GetString()));
+            //params.setRootMoveIterator(Players::Player_One, getMoveIterator(Players::Player_One, args["MoveIterator"].GetString()));
+            //params.setRootMoveIterator(Players::Player_Two, getMoveIterator(Players::Player_Two, args["MoveIterator"].GetString()));
         }
 
         std::string evalMethodString = args["Eval"].GetString();
@@ -149,16 +137,16 @@ PlayerPtr AIParameters::parsePlayer(const IDType & player, const std::string & p
 
             SPARCRAFT_ASSERT(args.HasMember("PlayoutPlayer"), "No playout player found");
 
-            params.setPlayoutPlayer(Players::Player_One, parsePlayer(Players::Player_One, args["PlayoutPlayer"].GetString(), root));
-            params.setPlayoutPlayer(Players::Player_Two, parsePlayer(Players::Player_Two, args["PlayoutPlayer"].GetString(), root));
+            //params.setPlayoutPlayer(Players::Player_One, parsePlayer(Players::Player_One, args["PlayoutPlayer"].GetString(), root));
+            //params.setPlayoutPlayer(Players::Player_Two, parsePlayer(Players::Player_Two, args["PlayoutPlayer"].GetString(), root));
         }
         else if (evalMethodString == "WillScore")
         {
-            params.setEvalMethod(EvaluationMethods::WillScore);
+            //params.setEvalMethod(EvaluationMethods::WillScore);
         }
         else if (evalMethodString == "WillScoreInflation")
         {
-            params.setEvalMethod(EvaluationMethods::WillScoreInflation);
+            //params.setEvalMethod(EvaluationMethods::WillScoreInflation);
         }
         else
         {
@@ -187,18 +175,18 @@ PlayerPtr AIParameters::parsePlayer(const IDType & player, const std::string & p
         params.setMaxPlayer(player);
         params.setTimeLimit(args["TimeLimit"].GetInt());
         params.setMaxChildren(args["MaxChildren"].GetInt());
-        params.setMoveIterator(Players::Player_One, getMoveIterator(Players::Player_One, args["MoveIterator"].GetString()));
-        params.setMoveIterator(Players::Player_Two, getMoveIterator(Players::Player_Two, args["MoveIterator"].GetString()));
+        //params.setMoveIterator(Players::Player_One, getMoveIterator(Players::Player_One, args["MoveIterator"].GetString()));
+        //params.setMoveIterator(Players::Player_Two, getMoveIterator(Players::Player_Two, args["MoveIterator"].GetString()));
 
         if (args.HasMember("RootMoveIterator"))
         {
-            params.setRootMoveIterator(Players::Player_One, getMoveIterator(Players::Player_One, args["RootMoveIterator"].GetString()));
-            params.setRootMoveIterator(Players::Player_Two, getMoveIterator(Players::Player_Two, args["RootMoveIterator"].GetString()));
+            //params.setRootMoveIterator(Players::Player_One, getMoveIterator(Players::Player_One, args["RootMoveIterator"].GetString()));
+            //params.setRootMoveIterator(Players::Player_Two, getMoveIterator(Players::Player_Two, args["RootMoveIterator"].GetString()));
         }
         else
         {
-            params.setRootMoveIterator(Players::Player_One, getMoveIterator(Players::Player_One, args["MoveIterator"].GetString()));
-            params.setRootMoveIterator(Players::Player_Two, getMoveIterator(Players::Player_Two, args["MoveIterator"].GetString()));
+            //params.setRootMoveIterator(Players::Player_One, getMoveIterator(Players::Player_One, args["MoveIterator"].GetString()));
+            //params.setRootMoveIterator(Players::Player_Two, getMoveIterator(Players::Player_Two, args["MoveIterator"].GetString()));
         }
 
         if (args.HasMember("MaxDepth") && args["MaxDepth"].IsInt())
@@ -213,16 +201,16 @@ PlayerPtr AIParameters::parsePlayer(const IDType & player, const std::string & p
 
             SPARCRAFT_ASSERT(args.HasMember("PlayoutPlayer"), "No playout player found");
 
-            params.setPlayoutPlayer(Players::Player_One, parsePlayer(Players::Player_One, args["PlayoutPlayer"].GetString(), root));
-            params.setPlayoutPlayer(Players::Player_Two, parsePlayer(Players::Player_Two, args["PlayoutPlayer"].GetString(), root));
+            //params.setPlayoutPlayer(Players::Player_One, parsePlayer(Players::Player_One, args["PlayoutPlayer"].GetString(), root));
+            //params.setPlayoutPlayer(Players::Player_Two, parsePlayer(Players::Player_Two, args["PlayoutPlayer"].GetString(), root));
         }
         else if (evalMethodString == "WillScore")
         {
-            params.setEvalMethod(EvaluationMethods::WillScore);
+            //params.setEvalMethod(EvaluationMethods::WillScore);
         }
         else if (evalMethodString == "WillScoreInflation")
         {
-            params.setEvalMethod(EvaluationMethods::WillScoreInflation);
+            //params.setEvalMethod(EvaluationMethods::WillScoreInflation);
         }
         else
         {
@@ -231,11 +219,11 @@ PlayerPtr AIParameters::parsePlayer(const IDType & player, const std::string & p
 
         if (playerClassName == "Player_AlphaBeta")
         {
-            playerPtr = PlayerPtr(new Player_AlphaBeta(player, params));
+            //playerPtr = PlayerPtr(new Player_AlphaBeta(player, params));
         }
         else if (playerClassName == "Player_StackAlphaBeta")
         {
-            playerPtr = PlayerPtr(new Player_StackAlphaBeta(player, params));
+            //playerPtr = PlayerPtr(new Player_StackAlphaBeta(player, params));
         }
     }
     else
@@ -244,17 +232,19 @@ PlayerPtr AIParameters::parsePlayer(const IDType & player, const std::string & p
     }
 
     _playerParses++;
-    playerPtr->setDescription(playerVariable);
+    //playerPtr->setDescription(playerVariable);
 
     _playerMap[player][playerVariable] = playerPtr;
 
-    return playerPtr->clone();
+    return playerPtr;
+    //return playerPtr->clone();
 }
 PlayerPtr AIParameters::getPlayer(const IDType & player, const std::string & playerName)
 {
     SPARCRAFT_ASSERT(_playerMap[player].find(playerName) != _playerMap[player].end(), "AIParameters::getPlayer Couldn't find player variable: %d %s", (int)_playerMap[player].size(), playerName.c_str());
 
-    return _playerMap[player][playerName]->clone();
+    return _playerMap[player][playerName];
+    //return _playerMap[player][playerName]->clone();
 }
 
 void AIParameters::parseJSONString(const std::string & jsonString)
@@ -280,7 +270,7 @@ void AIParameters::parseJSONString(const std::string & jsonString)
 void AIParameters::parseFile(const std::string & filename)
 {
     std::cout << "Reading AI Parameters File: " << filename << "\n";
-    std::string json = FileUtils::ReadFile(filename);
+    std::string json = "";//FileUtils::ReadFile(filename);
     
     parseJSONString(json);
 }

@@ -12,6 +12,8 @@ int main(int argc, char *argv[])
 {
     SparCraft::init();
 
+    int a = Constants::Max_Moves;
+
     try
     {
         if (argc == 2)
@@ -21,7 +23,7 @@ int main(int argc, char *argv[])
         }
         else
         {
-            std::cout << "Please provide experiment file as only argument";
+            std::cerr << "Please provide experiment file as only argument";
         }
     }
     catch(SparCraftException e)

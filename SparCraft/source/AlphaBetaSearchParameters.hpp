@@ -91,9 +91,9 @@ public:
             ss << "AlphaBeta";                                              _desc[1].push_back(ss.str()); ss.str(std::string());
             ss << timeLimit() << "ms";                                      _desc[1].push_back(ss.str()); ss.str(std::string());
             ss << maxChildren();                                            _desc[1].push_back(ss.str()); ss.str(std::string());
-            ss << MoveOrderMethod::getName(moveOrderingMethod());             _desc[1].push_back(ss.str()); ss.str(std::string());
-            ss << PlayerToMove::getName(playerToMoveMethod());                _desc[1].push_back(ss.str()); ss.str(std::string());
-            ss << PlayerModels::getName(playerModel((maxPlayer()+1)%2));   _desc[1].push_back(ss.str()); ss.str(std::string());
+            //ss << MoveOrderMethod::getName(moveOrderingMethod());             _desc[1].push_back(ss.str()); ss.str(std::string());
+            //ss << PlayerToMove::getName(playerToMoveMethod());                _desc[1].push_back(ss.str()); ss.str(std::string());
+            //ss << PlayerModels::getName(playerModel((maxPlayer()+1)%2));   _desc[1].push_back(ss.str()); ss.str(std::string());
         }
         
         return _desc;

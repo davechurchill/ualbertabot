@@ -1,4 +1,5 @@
 #include "AlphaBetaSearch.h"
+#include "SparCraftAssert.h"
 
 using namespace SparCraft;
 

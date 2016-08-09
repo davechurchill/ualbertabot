@@ -1,7 +1,5 @@
 #include "Common.h"
-
-// SEARCH PARAMETERS
-char SPARCRAFT_LOGFILE[100] { "sparcraft_error_log.txt" };
+#include "SparCraftAssert.h"
 
 namespace SparCraft
 {
