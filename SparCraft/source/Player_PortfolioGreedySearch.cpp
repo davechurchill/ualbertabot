@@ -2,7 +2,7 @@
 
 using namespace SparCraft;
 
-Player_PortfolioGreedySearch::Player_PortfolioGreedySearch (const IDType & playerID) 
+Player_PortfolioGreedySearch::Player_PortfolioGreedySearch (const PlayerID & playerID) 
 {
 	_playerID = playerID;
 	_iterations = 1;
@@ -10,7 +10,7 @@ Player_PortfolioGreedySearch::Player_PortfolioGreedySearch (const IDType & playe
 	_seed = PlayerModels::NOKDPS;
 }
 
-Player_PortfolioGreedySearch::Player_PortfolioGreedySearch (const IDType & playerID, const IDType & seed, const size_t & iter, const size_t & responses, const size_t & timeLimit)
+Player_PortfolioGreedySearch::Player_PortfolioGreedySearch (const PlayerID & playerID, const PlayerID & seed, const size_t & iter, const size_t & responses, const size_t & timeLimit)
 {
 	_playerID = playerID;
 	_iterations = iter;

@@ -9,21 +9,21 @@ namespace SparCraft
 
 class SparCraft::AlphaBetaSearchParameters
 {											        // DEFAULT				DESCRIPTION
-    IDType          _searchMethod;                  // ID-AB                The Method to use for AB Search
-    IDType		    _maxPlayer;					    // Player_One			The player who will make maximizing moves
-    IDType          _maxDepth;                      // Max_Depth            Maximum depth of AB search to allow
+    PlayerID          _searchMethod;                  // ID-AB                The Method to use for AB Search
+    PlayerID		    _maxPlayer;					    // Player_One			The player who will make maximizing moves
+    PlayerID          _maxDepth;                      // Max_Depth            Maximum depth of AB search to allow
 
 	size_t		    _timeLimit;					    // 0					Search time limit. 0 means no time limit
     size_t          _maxChildren;                   // 10                   Max children at each node
-    IDType          _moveOrdering;                  // ScriptFirst          Move ordering method for child generation
-	IDType		    _evalMethod;				    // LTD				Evaluation function type
-    IDType          _simScripts[2];                 // NOKDPS               Policy to use for playouts
-	IDType		    _playerToMoveMethod;		    // Alternate			The player to move policy
-	IDType		    _playerModel[2];                // None                 Player model to use for each player
+    PlayerID          _moveOrdering;                  // ScriptFirst          Move ordering method for child generation
+	PlayerID		    _evalMethod;				    // LTD				Evaluation function type
+    PlayerID          _simScripts[2];                 // NOKDPS               Policy to use for playouts
+	PlayerID		    _playerToMoveMethod;		    // Alternate			The player to move policy
+	PlayerID		    _playerModel[2];                // None                 Player model to use for each player
 
     std::string     _graphVizFilename;              // ""                   File name to output graph viz file
 
-    std::vector<IDType> _orderedMoveScripts;
+    std::vector<PlayerID> _orderedMoveScripts;
 
     std::vector<std::vector<std::string> > _desc;    // 2-column description vector
 
@@ -45,32 +45,32 @@ public:
         setSimScripts(PlayerModels::NOKDPS, PlayerModels::NOKDPS);
     }
 
-    const IDType & searchMethod()							    const   { return _searchMethod; }
-    const IDType & maxPlayer()							        const   { return _maxPlayer; }
-    const IDType & maxDepth()							        const   { return _maxDepth; }
+    const PlayerID & searchMethod()							    const   { return _searchMethod; }
+    const PlayerID & maxPlayer()							        const   { return _maxPlayer; }
+    const PlayerID & maxDepth()							        const   { return _maxDepth; }
     const size_t & timeLimit()							        const   { return _timeLimit; }
     const size_t & maxChildren()                                const   { return _maxChildren; }
-    const IDType & moveOrderingMethod()                         const   { return _moveOrdering; }
-    const IDType & evalMethod()						            const   { return _evalMethod; }
-    const IDType & simScript(const IDType & player)             const   { return _simScripts[player]; }
-    const IDType & playerToMoveMethod()				            const   { return _playerToMoveMethod; }
-    const IDType & playerModel(const IDType & player)	        const   { return _playerModel[player]; }
+    const PlayerID & moveOrderingMethod()                         const   { return _moveOrdering; }
+    const PlayerID & evalMethod()						            const   { return _evalMethod; }
+    const PlayerID & simScript(const PlayerID & player)             const   { return _simScripts[player]; }
+    const PlayerID & playerToMoveMethod()				            const   { return _playerToMoveMethod; }
+    const PlayerID & playerModel(const PlayerID & player)	        const   { return _playerModel[player]; }
     const std::string & graphVizFilename()                      const   { return _graphVizFilename; }
-    const std::vector<IDType> & getOrderedMoveScripts()         const   { return _orderedMoveScripts; }
+    const std::vector<PlayerID> & getOrderedMoveScripts()         const   { return _orderedMoveScripts; }
 	
-    void setSearchMethod(const IDType & method)                         { _searchMethod = method; }
-    void setMaxPlayer(const IDType & player)					        { _maxPlayer = player; }
-    void setMaxDepth(const IDType & depth)                              { _maxDepth = depth; }
+    void setSearchMethod(const PlayerID & method)                         { _searchMethod = method; }
+    void setMaxPlayer(const PlayerID & player)					        { _maxPlayer = player; }
+    void setMaxDepth(const PlayerID & depth)                              { _maxDepth = depth; }
     
     void setTimeLimit(const size_t & timeLimit)					        { _timeLimit = timeLimit; }
     void setMaxChildren(const size_t & children)                        { _maxChildren = children; }
     void setMoveOrderingMethod(const size_t & method)                   { _moveOrdering = method; }
-    void setEvalMethod(const IDType & eval)						        { _evalMethod = eval; }
-    void setSimScripts(const IDType & p1, const IDType & p2)		    { _simScripts[0] = p1; _simScripts[1] = p2; }
-    void setPlayerToMoveMethod(const IDType & method)				    { _playerToMoveMethod = method; }
+    void setEvalMethod(const PlayerID & eval)						        { _evalMethod = eval; }
+    void setSimScripts(const PlayerID & p1, const PlayerID & p2)		    { _simScripts[0] = p1; _simScripts[1] = p2; }
+    void setPlayerToMoveMethod(const PlayerID & method)				    { _playerToMoveMethod = method; }
     void setGraphVizFilename(const std::string & filename)              { _graphVizFilename = filename; }
-    void addOrderedMoveScript(const IDType & script)                    { _orderedMoveScripts.push_back(script); }
-    void setPlayerModel(const IDType & player, const IDType & model)	{ _playerModel[player] = model; }	
+    void addOrderedMoveScript(const PlayerID & script)                    { _orderedMoveScripts.push_back(script); }
+    void setPlayerModel(const PlayerID & player, const PlayerID & model)	{ _playerModel[player] = model; }	
 
     std::vector<std::vector<std::string> > & getDescription()
     {

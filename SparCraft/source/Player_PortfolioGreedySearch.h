@@ -8,13 +8,13 @@ namespace SparCraft
 {
 class Player_PortfolioGreedySearch : public Player
 {
-	IDType _seed;
+	PlayerID _seed;
 	size_t _iterations;
     size_t _responses;
     size_t _timeLimit;
 public:
-	Player_PortfolioGreedySearch (const IDType & playerID);
-    Player_PortfolioGreedySearch (const IDType & playerID, const IDType & seed, const size_t & iter, const size_t & responses, const size_t & timeLimit);
+	Player_PortfolioGreedySearch (const PlayerID & playerID);
+    Player_PortfolioGreedySearch (const PlayerID & playerID, const PlayerID & seed, const size_t & iter, const size_t & responses, const size_t & timeLimit);
 	void getMoves(const GameState & state, std::vector<Action> & moveVec);
     virtual PlayerPtr clone();
 };

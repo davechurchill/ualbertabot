@@ -15,11 +15,11 @@ typedef std::shared_ptr<Player> PlayerPtr;
 class Player 
 {
 protected:
-    IDType                  _playerID;
+    PlayerID                  _playerID;
     std::string             _description;
 public:
     virtual void		    getMoves(const GameState & state, std::vector<Action> & moveVec);
-    const IDType            ID();
+    const PlayerID            ID();
     virtual std::string     getDescription();
     virtual void            setDescription(const std::string & desc);
 

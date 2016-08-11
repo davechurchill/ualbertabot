@@ -2,7 +2,7 @@
 
 using namespace SparCraft;
 
-PortfolioGreedySearch::PortfolioGreedySearch(const IDType & player, const IDType & enemyScript, const size_t & iter, const size_t & responses, const size_t & timeLimit)
+PortfolioGreedySearch::PortfolioGreedySearch(const PlayerID & player, const PlayerID & enemyScript, const size_t & iter, const size_t & responses, const size_t & timeLimit)
 	: _player(player)
 	, _enemyScript(enemyScript)
 	, _iterations(iter)
@@ -14,17 +14,17 @@ PortfolioGreedySearch::PortfolioGreedySearch(const IDType & player, const IDType
 	_playerScriptPortfolio.push_back(PlayerModels::KiterDPS);
 }
 
-std::vector<Action> PortfolioGreedySearch::search(const IDType & player, const GameState & state)
+std::vector<Action> PortfolioGreedySearch::search(const PlayerID & player, const GameState & state)
 {
     Timer t;
     t.start();
 
-    const IDType enemyPlayer(state.getEnemy(player));
+    const PlayerID enemyPlayer(state.getEnemy(player));
 
     // calculate the seed scripts for each player
     // they will be used to seed the initial root search
-    IDType seedScript = calculateInitialSeed(player, state);
-    IDType enemySeedScript = calculateInitialSeed(enemyPlayer, state);
+    PlayerID seedScript = calculateInitialSeed(player, state);
+    PlayerID enemySeedScript = calculateInitialSeed(enemyPlayer, state);
 
     // set up the root script data
     UnitScriptData originalScriptData;
@@ -60,18 +60,18 @@ std::vector<Action> PortfolioGreedySearch::search(const IDType & player, const G
     return moveVec;
 }
 
-void PortfolioGreedySearch::doPortfolioSearch(const IDType & player, const GameState & state, UnitScriptData & currentScriptData)
+void PortfolioGreedySearch::doPortfolioSearch(const PlayerID & player, const GameState & state, UnitScriptData & currentScriptData)
 {
     Timer t;
     t.start();
 
     // the enemy of this player
-    const IDType enemyPlayer(state.getEnemy(player));
+    const PlayerID enemyPlayer(state.getEnemy(player));
     
     for (size_t i(0); i<_iterations; ++i)
     {
         // set up data for best scripts
-        IDType          bestScriptVec[Constants::Max_Units];
+        PlayerID          bestScriptVec[Constants::Max_Units];
 	    StateEvalScore  bestScoreVec[Constants::Max_Units];
 
         // for each unit that can move
@@ -107,11 +107,11 @@ void PortfolioGreedySearch::doPortfolioSearch(const IDType & player, const GameS
     }   
 }
 
-IDType PortfolioGreedySearch::calculateInitialSeed(const IDType & player, const GameState & state)
+PlayerID PortfolioGreedySearch::calculateInitialSeed(const PlayerID & player, const GameState & state)
 {
-    IDType bestScript;
+    PlayerID bestScript;
     StateEvalScore bestScriptScore;
-    const IDType enemyPlayer(state.getEnemy(player));
+    const PlayerID enemyPlayer(state.getEnemy(player));
     
     // try each script in the portfolio for each unit as an initial seed
     for (size_t sIndex(0); sIndex<_playerScriptPortfolio.size(); ++sIndex)
@@ -143,9 +143,9 @@ IDType PortfolioGreedySearch::calculateInitialSeed(const IDType & player, const 
     return bestScript;
 }
 
-StateEvalScore PortfolioGreedySearch::eval(const IDType & player, const GameState & state, UnitScriptData & playerScriptsChosen)
+StateEvalScore PortfolioGreedySearch::eval(const PlayerID & player, const GameState & state, UnitScriptData & playerScriptsChosen)
 {
-    const IDType enemyPlayer(state.getEnemy(player));
+    const PlayerID enemyPlayer(state.getEnemy(player));
 
 	Game g(state, 100);
 
@@ -156,7 +156,7 @@ StateEvalScore PortfolioGreedySearch::eval(const IDType & player, const GameStat
 	return g.getState().eval(player, SparCraft::EvaluationMethods::LTD2);
 }
 
-void  PortfolioGreedySearch::setAllScripts(const IDType & player, const GameState & state, UnitScriptData & data, const IDType & script)
+void  PortfolioGreedySearch::setAllScripts(const PlayerID & player, const GameState & state, UnitScriptData & data, const PlayerID & script)
 {
     for (size_t unitIndex(0); unitIndex < state.numUnits(player); ++unitIndex)
     {
@@ -165,14 +165,14 @@ void  PortfolioGreedySearch::setAllScripts(const IDType & player, const GameStat
 }
 
 /*
-std::vector<Action> PortfolioGreedySparCraft::search(const IDType & player, const GameState & state)
+std::vector<Action> PortfolioGreedySparCraft::search(const PlayerID & player, const GameState & state)
 {
-    const IDType enemyPlayer(state.getEnemy(player));
+    const PlayerID enemyPlayer(state.getEnemy(player));
 	GameState initialState(state);
 	MoveArray moves;
 	state.generateMoves(moves, player);
 
-    IDType seedScript = calculateInitialSeed(player, state);
+    PlayerID seedScript = calculateInitialSeed(player, state);
 
     UnitScriptData currentScriptData;
     
@@ -188,11 +188,11 @@ std::vector<Action> PortfolioGreedySparCraft::search(const IDType & player, cons
         currentScriptData.setUnitScript(state.getUnit(enemyPlayer, unitIndex), _enemyScript);
     }
 	
-    std::vector<IDType> bestScriptVec(moves.numUnits(), seedScript);
+    std::vector<PlayerID> bestScriptVec(moves.numUnits(), seedScript);
 	std::vector<StateEvalScore> bestScoreVec(moves.numUnits());
 
     // the current script vector we will be working with
-    std::vector<IDType> currentScriptVec(moves.numUnits(), seedScript);
+    std::vector<PlayerID> currentScriptVec(moves.numUnits(), seedScript);
 
     // for each unit that can move
     for (size_t unitIndex(0); unitIndex<moves.numUnits(); ++unitIndex)

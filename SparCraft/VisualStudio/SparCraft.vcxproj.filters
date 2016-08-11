@@ -118,6 +118,9 @@
     <ClCompile Include="..\source\Eval.cpp">
       <Filter>AI</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\GameStateUnitData.cpp">
+      <Filter>simulation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\AlphaBetaSearch.h">
@@ -272,6 +275,9 @@
     </ClInclude>
     <ClInclude Include="..\source\Eval.h">
       <Filter>AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\GameStateUnitData.h">
+      <Filter>simulation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

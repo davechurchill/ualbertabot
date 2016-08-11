@@ -7,6 +7,9 @@
 #include "Unit.h"
 #include "GraphViz.hpp"
 #include "Array.hpp"
+#include "GameStateUnitData.h"
+
+
 #include <memory>
 #include <algorithm>
 
@@ -17,6 +20,8 @@ namespace SparCraft
 class GameState 
 {
     Map *                                                           _map;               
+
+    GameStateUnitData                                               _unitData;
 
     std::vector<Unit> _units[Constants::Num_Players];
     std::vector<int>  _unitIndex[Constants::Num_Players];
@@ -39,7 +44,7 @@ class GameState
     TimeType                                                        _sameHPFrames;
 
     // checks to see if the unit array is full before adding a unit to the state
-    const bool              checkFull(const IDType & player)                                        const;
+    const bool              checkFull(const PlayerID & player)                                        const;
     const bool              checkUniqueUnitIDs()                                                    const;
 
     void                    performAction(const Action & theMove);
@@ -52,29 +57,29 @@ public:
 	// misc functions
     void                    finishedMoving();
     void                    updateGameTime();
-    const bool              playerDead(const IDType & player)                                       const;
+    const bool              playerDead(const PlayerID & player)                                       const;
     const bool              isTerminal()                                                            const;
 
     // unit data functions
-    const size_t            numUnits(const IDType & player)                                         const;
-    const size_t            prevNumUnits(const IDType & player)                                     const;
+    const size_t            numUnits(const PlayerID & player)                                         const;
+    const size_t            prevNumUnits(const PlayerID & player)                                     const;
     const size_t            numNeutralUnits()                                                       const;
     const size_t            closestEnemyUnitDistance(const Unit & unit)                             const;
 
     // Unit functions
     void                    sortUnits();
     void                    addUnit(const Unit & u);
-    void                    addUnit(const BWAPI::UnitType unitType, const IDType playerID, const Position & pos);
+    void                    addUnit(const BWAPI::UnitType unitType, const PlayerID playerID, const Position & pos);
     void                    addUnitWithID(const Unit & u);
     void                    addNeutralUnit(const Unit & unit);
-    const Unit &            getUnit(const IDType & player, const UnitCountType & unitIndex)         const;
-    const Unit &            getUnitByID(const IDType & unitID)                                      const;
-          Unit &            getUnit(const IDType & player, const UnitCountType & unitIndex);
-    const Unit &            getUnitByID(const IDType & player, const IDType & unitID)               const;
-          Unit &            getUnitByID(const IDType & player, const IDType & unitID);
-    const Unit &            getClosestEnemyUnit(const IDType & player, const IDType & unitIndex, bool checkCloaked=false) const;
-    const Unit &            getClosestOurUnit(const IDType & player, const IDType & unitIndex)      const;
-    const Unit &            getUnitDirect(const IDType & player, const IDType & unit)               const;
+    const Unit &            getUnit(const PlayerID & player, const UnitCountType & unitIndex)         const;
+    const Unit &            getUnitByID(const PlayerID & unitID)                                      const;
+          Unit &            getUnit(const PlayerID & player, const UnitCountType & unitIndex);
+    const Unit &            getUnitByID(const PlayerID & player, const PlayerID & unitID)               const;
+          Unit &            getUnitByID(const PlayerID & player, const PlayerID & unitID);
+    const Unit &            getClosestEnemyUnit(const PlayerID & player, const PlayerID & unitIndex, bool checkCloaked=false) const;
+    const Unit &            getClosestOurUnit(const PlayerID & player, const PlayerID & unitIndex)      const;
+    const Unit &            getUnitDirect(const PlayerID & player, const PlayerID & unit)               const;
     const Unit &            getNeutralUnit(const size_t & u)                                        const;
     
     // game time functions
@@ -82,28 +87,28 @@ public:
     const TimeType          getTime()                                                               const;
 
     // evaluation functions
-    const StateEvalScore    eval(   const IDType & player, const IDType & evalMethod, 
-                                    const IDType p1Script = PlayerModels::NOKDPS,
-                                    const IDType p2Script = PlayerModels::NOKDPS)                   const;
-    const ScoreType         evalLTD(const IDType & player)                                        const;
-    const ScoreType         evalLTD2(const IDType & player)                                       const;
-    const ScoreType         LTD(const IDType & player)                                            const;
-    const ScoreType         LTD2(const IDType & player)                                           const;
-    const StateEvalScore    evalSim(const IDType & player, const IDType & p1, const IDType & p2)    const;
-    const IDType            getEnemy(const IDType & player)                                         const;
+    const StateEvalScore    eval(   const PlayerID & player, const PlayerID & evalMethod, 
+                                    const PlayerID p1Script = PlayerModels::NOKDPS,
+                                    const PlayerID p2Script = PlayerModels::NOKDPS)                   const;
+    const ScoreType         evalLTD(const PlayerID & player)                                        const;
+    const ScoreType         evalLTD2(const PlayerID & player)                                       const;
+    const ScoreType         LTD(const PlayerID & player)                                            const;
+    const ScoreType         LTD2(const PlayerID & player)                                           const;
+    const StateEvalScore    evalSim(const PlayerID & player, const PlayerID & p1, const PlayerID & p2)    const;
+    const PlayerID            getEnemy(const PlayerID & player)                                         const;
 
     // unit hitpoint calculations, needed for LTD2 evaluation
     void                    calculateStartingHealth();
     void                    setTotalLTD(const float & p1, const float & p2);
     void                    setTotalLTD2(const float & p1, const float & p2);
-    const float &           getTotalLTD(const IDType & player)                                    const;
-    const float &           getTotalLTD2(const IDType & player)                                   const;
+    const float &           getTotalLTD(const PlayerID & player)                                    const;
+    const float &           getTotalLTD2(const PlayerID & player)                                   const;
 
     // move related functions
-    void                    generateMoves(MoveArray & moves, const IDType & playerIndex)            const;
+    void                    generateMoves(MoveArray & moves, const PlayerID & playerIndex)            const;
     void                    makeMoves(const std::vector<Action> & moves);
-    const int &             getNumMovements(const IDType & player)                                  const;
-    const IDType            whoCanMove()                                                            const;
+    const int &             getNumMovements(const PlayerID & player)                                  const;
+    const PlayerID            whoCanMove()                                                            const;
     const bool              bothCanMove()                                                           const;
 		  
     // map-related functions

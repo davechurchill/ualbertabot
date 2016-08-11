@@ -52,9 +52,9 @@ public:
 	
 	bool validateMoves();
 
-	const IDType getUnitID(const IDType & unit) const;
+	const PlayerID getUnitID(const PlayerID & unit) const;
 
-	const IDType getPlayerID(const IDType & unit) const;
+	const PlayerID getPlayerID(const PlayerID & unit) const;
 
 	void addUnit();
 

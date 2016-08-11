@@ -50,18 +50,18 @@ public:
     // UCT-specific functions
     UCTNode &       UCTNodeSelect(UCTNode & parent);
     StateEvalScore  traverse(UCTNode & node, GameState & currentState);
-	void            uct(GameState & state, size_t depth, const IDType lastPlayerToMove, std::vector<Action> * firstSimMove);
+	void            uct(GameState & state, size_t depth, const PlayerID lastPlayerToMove, std::vector<Action> * firstSimMove);
 
 	void            doSearch(const GameState & initialState, std::vector<Action> & move);
     
     // Move and Child generation functions
     void            generateChildren(UCTNode & node, GameState & state);
-	void            generateOrderedMoves(GameState & state, const IDType & playerToMove);
+	void            generateOrderedMoves(GameState & state, const PlayerID & playerToMove);
     void            makeMove(const UCTNode & node, GameState & state);
-	const bool      getNextMove(IDType playerToMove, MoveArray & moves, const size_t & moveNumber, std::vector<Action> & actionVec);
+	const bool      getNextMove(PlayerID playerToMove, MoveArray & moves, const size_t & moveNumber, std::vector<Action> & actionVec);
 
     // Utility functions
-	const IDType    getPlayerToMove(const UCTNode & node, const GameState & state) const;
+	const PlayerID    getPlayerToMove(const UCTNode & node, const GameState & state) const;
     const size_t    getChildNodeType(const UCTNode & parent, const GameState & prevState) const;
 	const bool      searchTimeOut();
 	const bool      isRoot(const UCTNode & node) const;

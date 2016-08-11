@@ -2,7 +2,7 @@
 
 using namespace SparCraft;
 
-Player_UCT::Player_UCT (const IDType & playerID, const UCTSearchParameters & params) 
+Player_UCT::Player_UCT (const PlayerID & playerID, const UCTSearchParameters & params) 
 {
 	_playerID = playerID;
     _params = params;

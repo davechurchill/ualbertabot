@@ -8,6 +8,6 @@ namespace SparCraft
 {
 namespace Eval
 {
-    IDType  PerformPlayout(const GameState & state, const PlayerPtr & p1, const PlayerPtr & p2);
+    PlayerID  PerformPlayout(const GameState & state, const PlayerPtr & p1, const PlayerPtr & p2);
 }
 }

@@ -2,7 +2,7 @@
 
 using namespace SparCraft;
 
-Player_AttackDPS::Player_AttackDPS (const IDType & playerID) 
+Player_AttackDPS::Player_AttackDPS (const PlayerID & playerID) 
 {
 	_playerID = playerID;
 }
@@ -13,7 +13,7 @@ void Player_AttackDPS::getMoves(const GameState & state, std::vector<Action> & m
     state.generateMoves(moves, _playerID);
 
     moveVec.clear();
-	for (IDType u(0); u<moves.numUnits(); ++u)
+	for (PlayerID u(0); u<moves.numUnits(); ++u)
 	{
 		bool foundAction						(false);
 		size_t actionMoveIndex					(0);
@@ -30,7 +30,7 @@ void Player_AttackDPS::getMoves(const GameState & state, std::vector<Action> & m
 				
 			if (move.type() == ActionTypes::ATTACK)
 			{
-				const Unit & target				(state.getUnit(state.getEnemy(move.player()), move.index()));
+				const Unit & target				(state.getUnit(state.getEnemy(move.getPlayerID()), move.index()));
 				double dpsHPValue =				(target.dpf() / target.currentHP());
 
 				if (dpsHPValue > actionHighestDPS)
@@ -42,7 +42,7 @@ void Player_AttackDPS::getMoves(const GameState & state, std::vector<Action> & m
 			}
 			if (move.type() == ActionTypes::HEAL)
 			{
-				const Unit & target				(state.getUnit(move.player(), move.index()));
+				const Unit & target				(state.getUnit(move.getPlayerID(), move.index()));
 				double dpsHPValue =				(target.dpf() / target.currentHP());
 
 				if (dpsHPValue > actionHighestDPS)

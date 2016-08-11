@@ -18,7 +18,7 @@ Unit::Unit()
 }
 
 // test constructor for setting all variables of a unit
-Unit::Unit(const BWAPI::UnitType unitType, const Position & pos, const IDType & unitID, const IDType & playerID, 
+Unit::Unit(const BWAPI::UnitType unitType, const Position & pos, const PlayerID & unitID, const PlayerID & playerID, 
            const HealthType & hp, const HealthType & energy, const TimeType & tm, const TimeType & ta) 
     : _unitType             (unitType)
     , _range                (PlayerWeapon(&PlayerProperties::Get(playerID), unitType.groundWeapon()).GetMaxRange() + Constants::Range_Addition)
@@ -38,7 +38,7 @@ Unit::Unit(const BWAPI::UnitType unitType, const Position & pos, const IDType & 
 }
 
 // constructor for units to construct basic units, sets some things automatically
-Unit::Unit(const BWAPI::UnitType unitType, const IDType & playerID, const Position & pos) 
+Unit::Unit(const BWAPI::UnitType unitType, const PlayerID & playerID, const Position & pos) 
     : _unitType             (unitType)
     , _range                (PlayerWeapon(&PlayerProperties::Get(playerID), unitType.groundWeapon()).GetMaxRange() + Constants::Range_Addition)
     , _position             (pos)
@@ -75,7 +75,7 @@ const bool Unit::operator < (const Unit & rhs) const
 
     if (firstTimeFree() == rhs.firstTimeFree())
     {
-        return ID() < rhs.ID();
+        return getUnitID() < rhs.getUnitID();
     }
     else
     {
@@ -135,7 +135,7 @@ const bool Unit::canAttackTarget(const Unit & unit, const TimeType & gameTime) c
 const bool Unit::canHealTarget(const Unit & unit, const TimeType & gameTime) const
 {
     // if the unit can't heal or the target unit is not on the same team
-    if (!canHeal() || !unit.isOrganic() || !(unit.player() == player()) || (unit.currentHP() == unit.maxHP()))
+    if (!canHeal() || !unit.isOrganic() || !(unit.getPlayerID() == getPlayerID()) || (unit.currentHP() == unit.maxHP()))
     {
         // then it can't heal the target
         return false;
@@ -168,7 +168,7 @@ void Unit::takeAttack(const Unit & attacker)
         damage *= 2;
     }
 
-    //std::cout << type().getName() << " took " << (int)attacker.player() << " " << damage << "\n";
+    //std::cout << type().getName() << " took " << (int)attacker.getPlayerID() << " " << damage << "\n";
 
     updateCurrentHP(_currentHP - damage);
 }
@@ -373,7 +373,7 @@ void Unit::setCooldown(TimeType attack, TimeType move)
     _timeCanAttack = attack; _timeCanMove = move; 
 }
 
-void Unit::setUnitID(const IDType & id)
+void Unit::setUnitID(const UnitID & id)
 { 
     _unitID = id; 
 }
@@ -420,12 +420,12 @@ const bool Unit::isOrganic() const
     return _unitType.isOrganic(); 
 }
 
-const IDType Unit::ID() const	
+const UnitID Unit::getUnitID() const	
 { 
     return _unitID; 
 }
 
-const IDType Unit::player() const
+const PlayerID Unit::getPlayerID() const
 { 
     return _playerID; 
 }
@@ -557,12 +557,12 @@ const BWAPI::UnitSizeType Unit::getSize() const
 
 const PlayerWeapon Unit::getWeapon(const Unit & target) const
 {
-    return PlayerWeapon(&PlayerProperties::Get(player()), target.type().isFlyer() ? _unitType.airWeapon() : _unitType.groundWeapon());
+    return PlayerWeapon(&PlayerProperties::Get(getPlayerID()), target.type().isFlyer() ? _unitType.airWeapon() : _unitType.groundWeapon());
 }
 
 const HealthType Unit::getArmor() const
 {
-    return UnitProperties::Get(type()).GetArmor(PlayerProperties::Get(player())); 
+    return UnitProperties::Get(type()).GetArmor(PlayerProperties::Get(getPlayerID())); 
 }
 
 const BWAPI::WeaponType Unit::getWeapon(BWAPI::UnitType target) const
@@ -610,8 +610,8 @@ const std::string Unit::debugString() const
     std::stringstream ss;
 
     ss << "Unit Type:           " << type().getName()                               << "\n";
-    ss << "Unit ID:             " << (int)ID()                                      << "\n";
-    ss << "Player:              " << (int)player()                                  << "\n";
+    ss << "Unit ID:             " << (int)getUnitID()                               << "\n";
+    ss << "Player:              " << (int)getPlayerID()                             << "\n";
     ss << "Range:               " << range()                                        << "\n";
     ss << "Position:            " << "(" << _position.x() << "," << _position.y()   << ")\n";
     ss << "Current HP:          " << currentHP()                                    << "\n";

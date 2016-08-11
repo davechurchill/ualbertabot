@@ -40,7 +40,7 @@ void MoveArray::shuffleMoveActions()
         // reverse through the list of actions for this unit
         for (int a(numMoves(u)-1); a >= 0; --a)
         {
-            IDType moveType(getMove(u, a).type());
+            PlayerID moveType(getMove(u, a).type());
 
             // mark the end of the move actions
             if (moveEnd == -1 && (moveType == ActionTypes::MOVE))
@@ -77,7 +77,7 @@ void MoveArray::shuffleMoveActions()
 // returns a given move from a unit
 const Action & MoveArray::getMove(const size_t & unit, const size_t & move) const
 {
-    SPARCRAFT_ASSERT(_moves[unit][(size_t)move].unit() != 255, "Move size too large");
+    SPARCRAFT_ASSERT(_moves[unit][(size_t)move].getUnitID() != 255, "Move size too large");
 
     return _moves[unit][(size_t)move];
 }
@@ -152,12 +152,12 @@ const size_t MoveArray::maxUnits() const
 // adds a Move to the unit specified
 void MoveArray::add(const Action & move)
 {
-	_moves[move.unit()][_numMoves[move.unit()]] = move;
-	_numMoves[move.unit()]++;
+	_moves[move.getUnitID()][_numMoves[move.getUnitID()]] = move;
+	_numMoves[move.getUnitID()]++;
 
     _currentMovesIndex[_numUnits-1] = 0;
-    _currentMoves[_numUnits-1] = _moves[move.unit()][0];
-    //_currentMovesVec.push_back(_moves[move.unit()][0]);
+    _currentMoves[_numUnits-1] = _moves[move.getUnitID()][0];
+    //_currentMovesVec.push_back(_moves[move.getUnitID()][0]);
     //resetMoveIterator();
 }
 	
@@ -169,7 +169,7 @@ bool MoveArray::validateMoves()
 		{
 			const Action & move(getMove(u, m));
 
-			if (move.unit() > 200)
+			if (move.getUnitID() > 200)
 			{
 				printf("Unit Move Incorrect! Something will be wrong\n");
 				return false;
@@ -180,14 +180,14 @@ bool MoveArray::validateMoves()
 	return true;
 }
 
-const IDType MoveArray::getUnitID(const IDType & unit) const
+const PlayerID MoveArray::getUnitID(const PlayerID & unit) const
 {
-	return getMove(unit, 0).unit();
+	return getMove(unit, 0).getUnitID();
 }
 
-const IDType MoveArray::getPlayerID(const IDType & unit) const
+const PlayerID MoveArray::getPlayerID(const PlayerID & unit) const
 {
-	return getMove(unit, 0).player();
+	return getMove(unit, 0).getPlayerID();
 }
 
 void MoveArray::addUnit() 											{ _numUnits++; }

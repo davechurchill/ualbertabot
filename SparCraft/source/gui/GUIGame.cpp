@@ -83,9 +83,9 @@ void GUIGame::drawHPBars()
 {
     const GameState & state = _game.getState();
 
-    for (IDType p(0); p<Constants::Num_Players; ++p)
+    for (PlayerID p(0); p<Constants::Num_Players; ++p)
     {
-        for (IDType u(0); u<_initialState.numUnits(p); ++u)
+        for (PlayerID u(0); u<_initialState.numUnits(p); ++u)
         {
             int barHeight = 12;
 
@@ -112,7 +112,7 @@ void GUIGame::drawHPBars()
                 GUITools::DrawRectGradient(Position(xx,yy),Position(xx+cw,yy+h),PlayerColors[p], PlayerColorsDark[p]);
             }
 
-            //if (unit.ID() < 255)
+            //if (unit.getUnitID() < 255)
             //{
             //	glEnable( GL_TEXTURE_2D );
             //		glBindTexture( GL_TEXTURE_2D, unit.type().getID() );
@@ -221,7 +221,7 @@ void GUIGame::drawUnit(const Unit & unit)
 	int		xx = pos.x() - (x1-x0)/2;
 	int		yy = pos.y() - healthBoxHeight - (y1-y0)/2 - 5;
 
-    GUITools::DrawRect(Position(xx, yy), Position(xx+cw, yy+healthBoxHeight), PlayerColors[unit.player()]);
+    GUITools::DrawRect(Position(xx, yy), Position(xx+cw, yy+healthBoxHeight), PlayerColors[unit.getPlayerID()]);
 
     const Action & action = unit.previousAction();
             
@@ -235,10 +235,10 @@ void GUIGame::drawUnit(const Unit & unit)
 	}
 	else if (action.type() == ActionTypes::ATTACK)
 	{
-		const Unit &	target(state.getUnit(state.getEnemy(unit.player()), action.index()));
+		const Unit &	target(state.getUnit(state.getEnemy(unit.getPlayerID()), action.index()));
 		const Position	targetPos(target.currentPosition(state.getTime()));
 
-        GUITools::DrawLine(pos, targetPos, 1, PlayerColors[unit.player()]);
+        GUITools::DrawLine(pos, targetPos, 1, PlayerColors[unit.getPlayerID()]);
 	}
 }
 
@@ -253,12 +253,12 @@ const Game & GUIGame::getGame() const
     return _game;
 }
 
-void GUIGame::setResults(const IDType & player, const std::vector<std::vector<std::string> > & r)
+void GUIGame::setResults(const PlayerID & player, const std::vector<std::vector<std::string> > & r)
 {
 	_results[player] = r;
 }
 
-void GUIGame::setParams(const IDType & player, const std::vector<std::vector<std::string> > & p)
+void GUIGame::setParams(const PlayerID & player, const std::vector<std::vector<std::string> > & p)
 {
 	_params[player] = p;
 }

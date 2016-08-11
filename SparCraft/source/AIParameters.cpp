@@ -63,7 +63,7 @@ void AIParameters::parsePlayers(const std::string & keyName, const rapidjson::Va
     std::sort(_playerNames.begin(), _playerNames.end());
 }
 
-PlayerPtr AIParameters::parsePlayer(const IDType & player, const std::string & playerVariable, const rapidjson::Value & root)
+PlayerPtr AIParameters::parsePlayer(const PlayerID & player, const std::string & playerVariable, const rapidjson::Value & root)
 {
     // if the player has already been parsed, no need to re-parse it, just return the already parsed version
     if (_playerMap[player].find(playerVariable) != _playerMap[player].end())
@@ -239,7 +239,7 @@ PlayerPtr AIParameters::parsePlayer(const IDType & player, const std::string & p
     return playerPtr;
     //return playerPtr->clone();
 }
-PlayerPtr AIParameters::getPlayer(const IDType & player, const std::string & playerName)
+PlayerPtr AIParameters::getPlayer(const PlayerID & player, const std::string & playerName)
 {
     SPARCRAFT_ASSERT(_playerMap[player].find(playerName) != _playerMap[player].end(), "AIParameters::getPlayer Couldn't find player variable: %d %s", (int)_playerMap[player].size(), playerName.c_str());
 

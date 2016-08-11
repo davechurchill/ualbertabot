@@ -20,7 +20,7 @@ class Game
 protected:
 	PlayerPtr			_players[2];
 	size_t				_numPlayers;
-	IDType				_playerToMoveMethod;
+	PlayerID				_playerToMoveMethod;
 	size_t				_rounds;
 	Timer				_t;
 	double				_gameTimeMS;
@@ -44,14 +44,14 @@ public:
 	void                storeHistory(const bool & store);
 	bool                gameOver() const;
     
-	ScoreType           eval(const IDType & evalMethod) const;
+	ScoreType           eval(const PlayerID & evalMethod) const;
 
 	GameState &         getState();
     const GameState &   getState() const;
 	int                 getRounds();
 	double              getTime();
-	const IDType        getPlayerToMove();
-    PlayerPtr           getPlayer(const IDType & player);
+	const PlayerID        getPlayerToMove();
+    PlayerPtr           getPlayer(const PlayerID & player);
 
 };
 

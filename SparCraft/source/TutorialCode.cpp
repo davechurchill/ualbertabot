@@ -11,13 +11,13 @@ Unit getSampleUnit()
     // Unit has several constructors
     // You will typically only be using this one to construct a 'starting' unit
 
-    // Unit(const BWAPI::UnitType unitType, const IDType & playerID, const Position & pos)
+    // Unit(const BWAPI::UnitType unitType, const PlayerID & playerID, const Position & pos)
 
     // The BWAPI::UnitType of the unit to be added
     BWAPI::UnitType marine = BWAPI::UnitTypes::Terran_Marine;
 
-    // The player to add this unit to, specified by an IDType
-    IDType player = Players::Player_One;
+    // The player to add this unit to, specified by an PlayerID
+    PlayerID player = Players::Player_One;
 
     // A Position, measured in Pixel coordinates
     Position p(0,0);
@@ -95,7 +95,7 @@ Map getSampleMap()
 // When dealing with players, use a shared pointer, it's safer
 // PlayerPtr is a boost::shared_pointer wrapper for Player *
 
-PlayerPtr getSamplePlayer(const IDType playerID)
+PlayerPtr getSamplePlayer(const PlayerID playerID)
 {
     // Player is the base class for all Player objects
     //
@@ -110,7 +110,7 @@ PlayerPtr getSamplePlayer(const IDType playerID)
 std::vector<Action> getSamplePlayerActionsFromState()
 {
     // get our sample player
-    IDType currentPlayerID = Players::Player_One;
+    PlayerID currentPlayerID = Players::Player_One;
     PlayerPtr myPlayer = getSamplePlayer(currentPlayerID);
 
     // Construct a blank vector of Actions, which are individual unit moves

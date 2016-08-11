@@ -13,7 +13,7 @@ class Player_UCT : public Player
     UCTSearchParameters     _params;
     UCTSearchResults        _prevResults;
 public:
-    Player_UCT (const IDType & playerID, const UCTSearchParameters & params);
+    Player_UCT (const PlayerID & playerID, const UCTSearchParameters & params);
 	void getMoves(const GameState & state, std::vector<Action> & moveVec);
     UCTSearchParameters & getParams();
     UCTSearchResults & getResults();

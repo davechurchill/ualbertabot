@@ -2,7 +2,7 @@
 
 using namespace SparCraft;
 
-Player_Kiter::Player_Kiter (const IDType & playerID) 
+Player_Kiter::Player_Kiter (const PlayerID & playerID) 
 {
 	_playerID = playerID;
 }
@@ -13,26 +13,26 @@ void Player_Kiter::getMoves(const GameState & state, std::vector<Action> & moveV
     state.generateMoves(moves, _playerID);
 
     moveVec.clear();
-	for (IDType u(0); u<moves.numUnits(); ++u)
+	for (PlayerID u(0); u<moves.numUnits(); ++u)
 	{
 		bool foundAction						(false);
-		IDType actionMoveIndex					(0);
-		IDType furthestMoveIndex				(0);
+		PlayerID actionMoveIndex					(0);
+		PlayerID furthestMoveIndex				(0);
 		size_t furthestMoveDist					(0);
-		IDType closestMoveIndex					(0);
+		PlayerID closestMoveIndex					(0);
 		int actionDistance						(std::numeric_limits<int>::max());
 		unsigned long long closestMoveDist		(std::numeric_limits<unsigned long long>::max());
 
 		const Unit & ourUnit					(state.getUnit(_playerID, u));
 		const Unit & closestUnit				(ourUnit.canHeal() ? state.getClosestOurUnit(_playerID, u) : state.getClosestEnemyUnit(_playerID, u));
 
-		for (IDType m(0); m<moves.numMoves(u); ++m)
+		for (PlayerID m(0); m<moves.numMoves(u); ++m)
 		{
 			const Action move						(moves.getMove(u, m));
 				
 			if (move.type() == ActionTypes::ATTACK)
 			{
-				const Unit & target				(state.getUnit(state.getEnemy(move.player()), move.index()));
+				const Unit & target				(state.getUnit(state.getEnemy(move.getPlayerID()), move.index()));
 				PositionType dist				(ourUnit.getDistanceSqToUnit(target, state.getTime()));
 
 				if (dist < actionDistance)
@@ -44,7 +44,7 @@ void Player_Kiter::getMoves(const GameState & state, std::vector<Action> & moveV
 			}
 			else if (move.type() == ActionTypes::HEAL)
 			{
-				const Unit & target				(state.getUnit(move.player(), move.index()));
+				const Unit & target				(state.getUnit(move.getPlayerID(), move.index()));
 				PositionType dist				(ourUnit.getDistanceSqToUnit(target, state.getTime()));
 
 				if (dist < actionDistance)

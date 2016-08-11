@@ -2,7 +2,7 @@
 
 using namespace SparCraft;
 
-Player_AttackWeakest::Player_AttackWeakest (const IDType & playerID) 
+Player_AttackWeakest::Player_AttackWeakest (const PlayerID & playerID) 
 {
 	_playerID = playerID;
 }
@@ -13,7 +13,7 @@ void Player_AttackWeakest::getMoves(const GameState & state, std::vector<Action>
     state.generateMoves(moves, _playerID);
 
     moveVec.clear();
-	for (IDType u(0); u<moves.numUnits(); ++u)
+	for (PlayerID u(0); u<moves.numUnits(); ++u)
 	{
 		bool foundAction						(false);
 		size_t actionMoveIndex					(0);
@@ -30,7 +30,7 @@ void Player_AttackWeakest::getMoves(const GameState & state, std::vector<Action>
 				
 			if (move.type() == ActionTypes::ATTACK)
 			{
-				const Unit & target				(state.getUnit(state.getEnemy(move.player()), move.index()));
+				const Unit & target				(state.getUnit(state.getEnemy(move.getPlayerID()), move.index()));
 
 				if ((size_t)target.currentHP() < actionLowestHP)
 				{
@@ -41,7 +41,7 @@ void Player_AttackWeakest::getMoves(const GameState & state, std::vector<Action>
 			}
 			else if (move.type() == ActionTypes::HEAL)
 			{
-				const Unit & target				(state.getUnit(move.player(), move.index()));
+				const Unit & target				(state.getUnit(move.getPlayerID(), move.index()));
 
 				if ((size_t)target.currentHP() < actionLowestHP)
 				{

@@ -7,7 +7,7 @@ void Player::getMoves(const GameState & state, std::vector<Action> & moveVec)
 	SPARCRAFT_ASSERT(false, "Base class Player constructor called");
 }
 
-const IDType Player::ID() 
+const PlayerID Player::ID() 
 { 
 	return _playerID; 
 }

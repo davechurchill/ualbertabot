@@ -134,6 +134,7 @@
     <ClInclude Include="..\source\Eval.h" />
     <ClInclude Include="..\source\Game.h" />
     <ClInclude Include="..\source\GameState.h" />
+    <ClInclude Include="..\source\GameStateUnitData.h" />
     <ClInclude Include="..\source\GraphViz.hpp" />
     <ClInclude Include="..\source\Hash.h" />
     <ClInclude Include="..\source\Map.hpp" />
@@ -185,6 +186,7 @@
     <ClCompile Include="..\source\Eval.cpp" />
     <ClCompile Include="..\source\Game.cpp" />
     <ClCompile Include="..\source\GameState.cpp" />
+    <ClCompile Include="..\source\GameStateUnitData.cpp" />
     <ClCompile Include="..\source\Hash.cpp" />
     <ClCompile Include="..\source\MoveArray.cpp" />
     <ClCompile Include="..\source\Player.cpp" />

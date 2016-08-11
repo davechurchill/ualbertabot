@@ -2,7 +2,7 @@
     
 using namespace SparCraft;
 
-Player * AllPlayers::getPlayer(const IDType & playerID, const IDType & type)
+Player * AllPlayers::getPlayer(const PlayerID & playerID, const PlayerID & type)
 {
 	if			(type == PlayerModels::AttackClosest)		{ return new Player_AttackClosest(playerID); }
 	else if		(type == PlayerModels::AttackDPS)			{ return new Player_AttackDPS(playerID); }
@@ -16,7 +16,7 @@ Player * AllPlayers::getPlayer(const IDType & playerID, const IDType & type)
 	else													{ return NULL; }
 }
 
-PlayerPtr AllPlayers::getPlayerPtr(const IDType & playerID, const IDType & type)
+PlayerPtr AllPlayers::getPlayerPtr(const PlayerID & playerID, const PlayerID & type)
 {
 	if			(type == PlayerModels::AttackClosest)		{ return PlayerPtr(new Player_AttackClosest(playerID)); }
 	else if		(type == PlayerModels::AttackDPS)			{ return PlayerPtr(new Player_AttackDPS(playerID)); }

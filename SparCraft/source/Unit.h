@@ -20,8 +20,8 @@ class Unit
 	
 	Position            _position;				// current location in a possibly infinite space
 	
-	IDType              _unitID;				// unique unit ID to the state it's contained in
-    IDType              _playerID;				// the player who controls the unit
+	UnitID              _unitID;				// unique unit ID to the state it's contained in
+    PlayerID            _playerID;				// the player who controls the unit
 	
 	HealthType          _currentHP;				// current HP of the unit
 	HealthType          _currentEnergy;
@@ -39,8 +39,8 @@ class Unit
 public:
 
 	Unit();
-	Unit(const BWAPI::UnitType unitType, const IDType & playerID, const Position & pos);
-	Unit(const BWAPI::UnitType unitType, const Position & pos, const IDType & unitID, const IDType & playerID, 
+	Unit(const BWAPI::UnitType unitType, const PlayerID & playerID, const Position & pos);
+	Unit(const BWAPI::UnitType unitType, const Position & pos, const PlayerID & unitID, const PlayerID & playerID, 
 		 const HealthType & hp, const HealthType & energy, const TimeType & tm, const TimeType & ta);
 
 	const bool operator < (const Unit & rhs) const;
@@ -72,9 +72,9 @@ public:
 	const bool              canHealTarget(const Unit & unit, const TimeType & gameTime) const;
 
     // id related
-	void                    setUnitID(const IDType & id);
-	const IDType		    ID()                        const;
-	const IDType		    player()                    const;
+	void                    setUnitID(const UnitID & id);
+	const UnitID            getUnitID()                 const;
+	const PlayerID		    getPlayerID()               const;
 
     // position related functions
 	const Position &        position()                  const;

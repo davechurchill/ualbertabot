@@ -2,7 +2,7 @@
 
 using namespace SparCraft;
 
-Player_KiterDPS::Player_KiterDPS (const IDType & playerID) 
+Player_KiterDPS::Player_KiterDPS (const PlayerID & playerID) 
 {
 	_playerID = playerID;
 }
@@ -13,13 +13,13 @@ void Player_KiterDPS::getMoves(const GameState & state, std::vector<Action> & mo
     state.generateMoves(moves, _playerID);
 
     moveVec.clear();
-	for (IDType u(0); u<moves.numUnits(); ++u)
+	for (PlayerID u(0); u<moves.numUnits(); ++u)
 	{
 		bool foundAction					(false);
-		IDType actionMoveIndex					(0);
-		IDType furthestMoveIndex				(0);
+		PlayerID actionMoveIndex					(0);
+		PlayerID furthestMoveIndex				(0);
 		size_t furthestMoveDist					(0);
-		IDType closestMoveIndex					(0);
+		PlayerID closestMoveIndex					(0);
 		double actionHighestDPS					(0);
 		unsigned long long closestMoveDist		(std::numeric_limits<unsigned long long>::max());
 
@@ -27,13 +27,13 @@ void Player_KiterDPS::getMoves(const GameState & state, std::vector<Action> & mo
 		const Unit & closestUnit				(ourUnit.canHeal() ? 
                                                 state.getClosestOurUnit(_playerID, u) : state.getClosestEnemyUnit(_playerID, u));
 
-		for (IDType m(0); m<moves.numMoves(u); ++m)
+		for (PlayerID m(0); m<moves.numMoves(u); ++m)
 		{
 			const Action move						(moves.getMove(u, m));
 				
 			if (move.type() == ActionTypes::ATTACK)
 			{
-				const Unit & target				(state.getUnit(state.getEnemy(move.player()), move.index()));
+				const Unit & target				(state.getUnit(state.getEnemy(move.getPlayerID()), move.index()));
 				double dpsHPValue 				(target.dpf() / target.currentHP());
 
 				if (dpsHPValue > actionHighestDPS)
@@ -45,7 +45,7 @@ void Player_KiterDPS::getMoves(const GameState & state, std::vector<Action> & mo
 			}
 			else if (move.type() == ActionTypes::HEAL)
 			{
-				const Unit & target				(state.getUnit(move.player(), move.index()));
+				const Unit & target				(state.getUnit(move.getPlayerID(), move.index()));
 				double dpsHPValue 				(target.dpf() / target.currentHP());
 
 				if (dpsHPValue > actionHighestDPS)

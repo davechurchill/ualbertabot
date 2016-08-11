@@ -53,7 +53,7 @@ void Game::playNextTurn()
     //_scriptMoves[1].clear();
 
     // the player that will move next
-    const IDType playerToMove   = getPlayerToMove();
+    const PlayerID playerToMove   = getPlayerToMove();
     PlayerPtr player            = _players[playerToMove];
     PlayerPtr enemy             = _players[_state.getEnemy(playerToMove)];
 
@@ -101,17 +101,17 @@ void Game::playIndividualScripts(UnitScriptData & scriptData)
         frameTimer.start();
 
         // clear all script moves for both players
-        for (IDType p(0); p<Constants::Num_Players; p++)
+        for (PlayerID p(0); p<Constants::Num_Players; p++)
         {
-            for (IDType s(0); s<PlayerModels::Size; ++s)
+            for (PlayerID s(0); s<PlayerModels::Size; ++s)
             {
                 allScriptMoves[p][s].clear();
             }
         }
 
         // the playr that will move next
-        const IDType playerToMove = getPlayerToMove();
-        const IDType enemyPlayer  = _state.getEnemy(playerToMove);
+        const PlayerID playerToMove = getPlayerToMove();
+        const PlayerID enemyPlayer  = _state.getEnemy(playerToMove);
 
         MoveArray playerLegalMoves;
         std::vector<Action> playerMove;
@@ -143,7 +143,7 @@ void Game::playIndividualScripts(UnitScriptData & scriptData)
     _gameTimeMS = _t.getElapsedTimeInMilliSec();
 }
 
-PlayerPtr Game::getPlayer(const IDType & player)
+PlayerPtr Game::getPlayer(const PlayerID & player)
 {
     return _players[player];
 }
@@ -175,9 +175,9 @@ GameState & Game::getState()
 }
 
 // determine the player to move
-const IDType Game::getPlayerToMove()
+const PlayerID Game::getPlayerToMove()
 {
-    const IDType whoCanMove(_state.whoCanMove());
+    const PlayerID whoCanMove(_state.whoCanMove());
 
     return (whoCanMove == Players::Player_Both) ? Players::Player_One : whoCanMove;
 }

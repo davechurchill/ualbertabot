@@ -69,11 +69,11 @@ void GameState::finishedMoving()
 
     // calculate the hp sum of each player
     int hpSum[2];
-    for (IDType p(0); p<Constants::Num_Players; ++p)
+    for (PlayerID p(0); p<Constants::Num_Players; ++p)
 	{
 		hpSum[p] = 0;
 
-		for (IDType u(0); u<numUnits(p); ++u)
+		for (PlayerID u(0); u<numUnits(p); ++u)
 		{ 
             hpSum[p] += getUnit(p, u).currentHP();
         }
@@ -89,7 +89,7 @@ void GameState::finishedMoving()
         _sameHPFrames = 0;
     }
 
-    for (IDType p(0); p<Constants::Num_Players; ++p)
+    for (PlayerID p(0); p<Constants::Num_Players; ++p)
 	{
         _prevHPSum[p] = hpSum[p];
     }
@@ -99,9 +99,9 @@ const HashType GameState::calculateHash(const size_t & hashNum) const
 {
 	HashType hash(0);
 
-	for (IDType p(0); p < Constants::Num_Players; ++p)
+	for (PlayerID p(0); p < Constants::Num_Players; ++p)
 	{
-		for (IDType u(0); u < _numUnits[p]; ++u)
+		for (PlayerID u(0); u < _numUnits[p]; ++u)
 		{
 			hash ^= Hash::magicHash(getUnit(p,u).calculateHash(hashNum, _currentTime), p, u);
 		}
@@ -110,15 +110,15 @@ const HashType GameState::calculateHash(const size_t & hashNum) const
 	return hash;
 }
 
-void GameState::generateMoves(MoveArray & moves, const IDType & playerIndex) const
+void GameState::generateMoves(MoveArray & moves, const PlayerID & playerIndex) const
 {
 	moves.clear();
 
     // which is the enemy player
-	IDType enemyPlayer  = getEnemy(playerIndex);
+	PlayerID enemyPlayer  = getEnemy(playerIndex);
 
     // make sure this player can move right now
-    const IDType canMove(whoCanMove());
+    const PlayerID canMove(whoCanMove());
     if (canMove == enemyPlayer)
     {
         SPARCRAFT_ASSERT(false, "GameState Error - Called generateMoves() for a player that cannot currently move");
@@ -128,7 +128,7 @@ void GameState::generateMoves(MoveArray & moves, const IDType & playerIndex) con
 	// so return all units which can move at the same time as the first
 	TimeType firstUnitMoveTime = getUnit(playerIndex, 0).firstTimeFree();
 		
-	for (IDType unitIndex(0); unitIndex < _numUnits[playerIndex]; ++unitIndex)
+	for (PlayerID unitIndex(0); unitIndex < _numUnits[playerIndex]; ++unitIndex)
 	{
 		// unit reference
 		const Unit & unit(getUnit(playerIndex,unitIndex));
@@ -150,14 +150,14 @@ void GameState::generateMoves(MoveArray & moves, const IDType & playerIndex) con
 		// generate attack moves
 		if (unit.canAttackNow())
 		{
-			for (IDType u(0); u<_numUnits[enemyPlayer]; ++u)
+			for (PlayerID u(0); u<_numUnits[enemyPlayer]; ++u)
 			{
 				const Unit & enemyUnit(getUnit(enemyPlayer, u));
 				bool invisible = false;
 				if (enemyUnit.type().hasPermanentCloak())
 				{
 					invisible = true;
-					for (IDType detectorIndex(0); detectorIndex < _numUnits[playerIndex]; ++detectorIndex)
+					for (PlayerID detectorIndex(0); detectorIndex < _numUnits[playerIndex]; ++detectorIndex)
 					{
 						// unit reference
 						const Unit & detector(getUnit(playerIndex, detectorIndex));
@@ -171,13 +171,13 @@ void GameState::generateMoves(MoveArray & moves, const IDType & playerIndex) con
 				if (!invisible && unit.canAttackTarget(enemyUnit, _currentTime) && enemyUnit.isAlive())
 				{
 					moves.add(Action(unitIndex, playerIndex, ActionTypes::ATTACK, u));
-                    //moves.add(Action(unitIndex, playerIndex, ActionTypes::ATTACK, unit.ID()));
+                    //moves.add(Action(unitIndex, playerIndex, ActionTypes::ATTACK, unit.getUnitID()));
 				}
 			}
 		}
 		else if (unit.canHealNow())
 		{
-			for (IDType u(0); u<_numUnits[playerIndex]; ++u)
+			for (PlayerID u(0); u<_numUnits[playerIndex]; ++u)
 			{
 				// units cannot heal themselves in broodwar
 				if (u == unitIndex)
@@ -189,7 +189,7 @@ void GameState::generateMoves(MoveArray & moves, const IDType & playerIndex) con
 				if (unit.canHealTarget(ourUnit, _currentTime) && ourUnit.isAlive())
 				{
 					moves.add(Action(unitIndex, playerIndex, ActionTypes::HEAL, u));
-                    //moves.add(Action(unitIndex, playerIndex, ActionTypes::HEAL, unit.ID()));
+                    //moves.add(Action(unitIndex, playerIndex, ActionTypes::HEAL, unit.getUnitID()));
 				}
 			}
 		}
@@ -227,7 +227,7 @@ void GameState::generateMoves(MoveArray & moves, const IDType & playerIndex) con
             }
 
             // we are only generating moves in the cardinal direction specified in common.h
-			for (IDType d(0); d<Constants::Num_Directions; ++d)
+			for (PlayerID d(0); d<Constants::Num_Directions; ++d)
 			{			
                 // the direction of this movement
               	Position dir(Constants::Move_Dir[d][0], Constants::Move_Dir[d][1]);
@@ -262,8 +262,8 @@ void GameState::makeMoves(const std::vector<Action> & moves)
 {    
     if (moves.size() > 0)
     {
-        const IDType canMove(whoCanMove());
-        const IDType playerToMove(moves[0].player());
+        const PlayerID canMove(whoCanMove());
+        const PlayerID playerToMove(moves[0].getPlayerID());
         if (canMove == getEnemy(playerToMove))
         {
             SPARCRAFT_ASSERT(false, "GameState Error - Called makeMove() for a player that cannot currently move");
@@ -278,9 +278,9 @@ void GameState::makeMoves(const std::vector<Action> & moves)
 
 void GameState::performAction(const Action & move)
 {
-	Unit & ourUnit		= getUnit(move.player(), move.unit());
-	IDType player		= ourUnit.player();
-	IDType enemyPlayer  = getEnemy(player);
+	Unit & ourUnit		= getUnit(move.getPlayerID(), move.getUnitID());
+	PlayerID player		= ourUnit.getPlayerID();
+	PlayerID enemyPlayer  = getEnemy(player);
 
 	if (move.type() == ActionTypes::ATTACK)
 	{
@@ -331,13 +331,13 @@ void GameState::performAction(const Action & move)
 	}
 }
 
-const Unit & GameState::getUnitByID(const IDType & unitID) const
+const Unit & GameState::getUnitByID(const PlayerID & unitID) const
 {
-	for (IDType p(0); p<Constants::Num_Players; ++p)
+	for (PlayerID p(0); p<Constants::Num_Players; ++p)
 	{
-		for (IDType u(0); u<numUnits(p); ++u)
+		for (PlayerID u(0); u<numUnits(p); ++u)
 		{
-			if (getUnit(p, u).ID() == unitID)
+			if (getUnit(p, u).getUnitID() == unitID)
 			{
 				return getUnit(p, u);
 			}
@@ -348,11 +348,11 @@ const Unit & GameState::getUnitByID(const IDType & unitID) const
 	return getUnit(0,0);
 }
 
-const Unit & GameState::getUnitByID(const IDType & player, const IDType & unitID) const
+const Unit & GameState::getUnitByID(const PlayerID & player, const PlayerID & unitID) const
 {
-	for (IDType u(0); u<numUnits(player); ++u)
+	for (PlayerID u(0); u<numUnits(player); ++u)
 	{
-		if (getUnit(player, u).ID() == unitID)
+		if (getUnit(player, u).getUnitID() == unitID)
 		{
 			return getUnit(player, u);
 		}
@@ -362,11 +362,11 @@ const Unit & GameState::getUnitByID(const IDType & player, const IDType & unitID
 	return getUnit(0,0);
 }
 
-Unit & GameState::getUnitByID(const IDType & player, const IDType & unitID) 
+Unit & GameState::getUnitByID(const PlayerID & player, const PlayerID & unitID) 
 {
-	for (IDType u(0); u<numUnits(player); ++u)
+	for (PlayerID u(0); u<numUnits(player); ++u)
 	{
-		if (getUnit(player, u).ID() == unitID)
+		if (getUnit(player, u).getUnitID() == unitID)
 		{
 			return getUnit(player, u);
 		}
@@ -398,21 +398,21 @@ const bool GameState::isFlyable(const Position & pos) const
 	return true;
 }
 
-const IDType GameState::getEnemy(const IDType & player) const
+const PlayerID GameState::getEnemy(const PlayerID & player) const
 {
 	return (player + 1) % 2;
 }
 
-const Unit & GameState::getClosestOurUnit(const IDType & player, const IDType & unitIndex) const
+const Unit & GameState::getClosestOurUnit(const PlayerID & player, const PlayerID & unitIndex) const
 {
 	const Unit & myUnit(getUnit(player,unitIndex));
 
 	size_t minDist(1000000);
-	IDType minUnitInd(0);
+	PlayerID minUnitInd(0);
 
 	Position currentPos = myUnit.currentPosition(_currentTime);
 
-	for (IDType u(0); u<_numUnits[player]; ++u)
+	for (PlayerID u(0); u<_numUnits[player]; ++u)
 	{
 		if (u == unitIndex || getUnit(player, u).canHeal())
 		{
@@ -432,24 +432,24 @@ const Unit & GameState::getClosestOurUnit(const IDType & player, const IDType & 
 	return getUnit(player, minUnitInd);
 }
 
-const Unit & GameState::getClosestEnemyUnit(const IDType & player, const IDType & unitIndex, bool checkCloaked) const
+const Unit & GameState::getClosestEnemyUnit(const PlayerID & player, const PlayerID & unitIndex, bool checkCloaked) const
 {
-	const IDType enemyPlayer(getEnemy(player));
+	const PlayerID enemyPlayer(getEnemy(player));
 	const Unit & myUnit(getUnit(player,unitIndex));
 
 	PositionType minDist(1000000);
-	IDType minUnitInd(0);
-    IDType minUnitID(255);
+	PlayerID minUnitInd(0);
+    PlayerID minUnitID(255);
 
 	Position currentPos = myUnit.currentPosition(_currentTime);
 
-	for (IDType u(0); u<_numUnits[enemyPlayer]; ++u)
+	for (PlayerID u(0); u<_numUnits[enemyPlayer]; ++u)
 	{
         const Unit & enemyUnit(getUnit(enemyPlayer, u));
 		if (checkCloaked&& enemyUnit.type().hasPermanentCloak())
 		{
 			bool invisible = true;
-			for (IDType detectorIndex(0); detectorIndex < _numUnits[player]; ++detectorIndex)
+			for (PlayerID detectorIndex(0); detectorIndex < _numUnits[player]; ++detectorIndex)
 			{
 				// unit reference
 				const Unit & detector(getUnit(player, detectorIndex));
@@ -466,24 +466,24 @@ const Unit & GameState::getClosestEnemyUnit(const IDType & player, const IDType 
 		}
         PositionType distSq = myUnit.getDistanceSqToUnit(enemyUnit, _currentTime);
 
-		if ((distSq < minDist))// || ((distSq == minDist) && (enemyUnit.ID() < minUnitID)))
+		if ((distSq < minDist))// || ((distSq == minDist) && (enemyUnit.getUnitID() < minUnitID)))
 		{
 			minDist = distSq;
 			minUnitInd = u;
-            minUnitID = enemyUnit.ID();
+            minUnitID = enemyUnit.getUnitID();
 		}
-        else if ((distSq == minDist) && (enemyUnit.ID() < minUnitID))
+        else if ((distSq == minDist) && (enemyUnit.getUnitID() < minUnitID))
         {
             minDist = distSq;
 			minUnitInd = u;
-            minUnitID = enemyUnit.ID();
+            minUnitID = enemyUnit.getUnitID();
         }
 	}
 
 	return getUnit(enemyPlayer, minUnitInd);
 }
 
-const bool GameState::checkFull(const IDType & player) const
+const bool GameState::checkFull(const PlayerID & player) const
 {
     SPARCRAFT_ASSERT(numUnits(player) < Constants::Max_Units, "GameState has too many units");
 
@@ -494,20 +494,20 @@ const bool GameState::checkFull(const IDType & player) const
 // This function will give the unit a unique unitID
 void GameState::addUnit(const Unit & u)
 {
-    checkFull(u.player());
+    checkFull(u.getPlayerID());
     System::checkSupportedUnitType(u.type());
 
     // Calculate the unitID for this unit
     // This will just be the current total number of units in the state
-    IDType unitID = _numUnits[Players::Player_One] + _numUnits[Players::Player_Two];
+    PlayerID unitID = _numUnits[Players::Player_One] + _numUnits[Players::Player_Two];
 
     // Set the unit and it's unitID
-	getUnit(u.player(), _numUnits[u.player()]) = u;
-    getUnit(u.player(), _numUnits[u.player()]).setUnitID(unitID);
+	getUnit(u.getPlayerID(), _numUnits[u.getPlayerID()]) = u;
+    getUnit(u.getPlayerID(), _numUnits[u.getPlayerID()]).setUnitID(unitID);
 
     // Increment the number of units this player has
-	_numUnits[u.player()]++;
-	_prevNumUnits[u.player()]++;
+	_numUnits[u.getPlayerID()]++;
+	_prevNumUnits[u.getPlayerID()]++;
 
     // And do the clean-up
 	finishedMoving();
@@ -518,14 +518,14 @@ void GameState::addUnit(const Unit & u)
 
 // Add a unit with given parameters to the state
 // This function will give the unit a unique unitID
-void GameState::addUnit(const BWAPI::UnitType type, const IDType playerID, const Position & pos)
+void GameState::addUnit(const BWAPI::UnitType type, const PlayerID playerID, const Position & pos)
 {
     checkFull(playerID);
     System::checkSupportedUnitType(type);
 
     // Calculate the unitID for this unit
     // This will just be the current total number of units in the state
-    IDType unitID = _numUnits[Players::Player_One] + _numUnits[Players::Player_Two];
+    PlayerID unitID = _numUnits[Players::Player_One] + _numUnits[Players::Player_Two];
 
     // Set the unit and it's unitID
 	getUnit(playerID, _numUnits[playerID]) = Unit(type, playerID, pos);
@@ -546,15 +546,15 @@ void GameState::addUnit(const BWAPI::UnitType type, const IDType playerID, const
 // This function will keep the unit ID assigned by player. Only use this for advanced / BWAPI states
 void GameState::addUnitWithID(const Unit & u)
 {
-    checkFull(u.player());
+    checkFull(u.getPlayerID());
     System::checkSupportedUnitType(u.type());
 
     // Simply add the unit to the array
-	getUnit(u.player(), _numUnits[u.player()]) = u;
+	getUnit(u.getPlayerID(), _numUnits[u.getPlayerID()]) = u;
 
     // Increment the number of units this player has
-	_numUnits[u.player()]++;
-	_prevNumUnits[u.player()]++;
+	_numUnits[u.getPlayerID()]++;
+	_prevNumUnits[u.getPlayerID()]++;
 
     // And do the clean-up
 	finishedMoving();
@@ -605,23 +605,23 @@ void GameState::sortUnits()
 	}	
 }
 
-Unit & GameState::getUnit(const IDType & player, const UnitCountType & unitIndex)
+Unit & GameState::getUnit(const PlayerID & player, const UnitCountType & unitIndex)
 {
     return _units[player][_unitIndex[player][unitIndex]];
 }
 
-const Unit & GameState::getUnit(const IDType & player, const UnitCountType & unitIndex) const
+const Unit & GameState::getUnit(const PlayerID & player, const UnitCountType & unitIndex) const
 {
     return _units[player][_unitIndex[player][unitIndex]];
 }
 
 const size_t GameState::closestEnemyUnitDistance(const Unit & unit) const
 {
-	IDType enemyPlayer(getEnemy(unit.player()));
+	PlayerID enemyPlayer(getEnemy(unit.getPlayerID()));
 
 	size_t closestDist(0);
 
-	for (IDType u(0); u<numUnits(enemyPlayer); ++u)
+	for (PlayerID u(0); u<numUnits(enemyPlayer); ++u)
 	{
         size_t dist(unit.getDistanceSqToUnit(getUnit(enemyPlayer, u), _currentTime));
 
@@ -634,7 +634,7 @@ const size_t GameState::closestEnemyUnitDistance(const Unit & unit) const
 	return closestDist;
 }
 
-const bool GameState::playerDead(const IDType & player) const
+const bool GameState::playerDead(const PlayerID & player) const
 {
 	if (numUnits(player) <= 0)
 	{
@@ -652,7 +652,7 @@ const bool GameState::playerDead(const IDType & player) const
 	return true;
 }
 
-const IDType GameState::whoCanMove() const
+const PlayerID GameState::whoCanMove() const
 {
 	TimeType p1Time(getUnit(0,0).firstTimeFree());
 	TimeType p2Time(getUnit(1,0).firstTimeFree());
@@ -675,13 +675,13 @@ const IDType GameState::whoCanMove() const
 
 const bool GameState::checkUniqueUnitIDs() const
 {
-    std::set<IDType> unitIDs;
+    std::set<PlayerID> unitIDs;
 
     for (size_t p(0); p<Constants::Num_Players; ++p)
     {
         for (size_t u(0); u<numUnits(p); ++u)
         {
-            IDType unitID(getUnit(p, u).ID());
+            PlayerID unitID(getUnit(p, u).getUnitID());
             if (unitIDs.find(unitID) != unitIDs.end())
             {
                 return false;
@@ -698,7 +698,7 @@ const bool GameState::checkUniqueUnitIDs() const
 
 void GameState::updateGameTime()
 {
-	const IDType who(whoCanMove());
+	const PlayerID who(whoCanMove());
 
 	// if the first player is to move, set the time to his time
 	if (who == Players::Player_One)
@@ -712,10 +712,10 @@ void GameState::updateGameTime()
 	}
 }
 
-const StateEvalScore GameState::eval(const IDType & player, const IDType & evalMethod, const IDType p1Script, const IDType p2Script) const
+const StateEvalScore GameState::eval(const PlayerID & player, const PlayerID & evalMethod, const PlayerID p1Script, const PlayerID p2Script) const
 {
 	StateEvalScore score;
-	const IDType enemyPlayer(getEnemy(player));
+	const PlayerID enemyPlayer(getEnemy(player));
 
 	// if both players are dead, return 0
 	if (playerDead(enemyPlayer) && playerDead(player))
@@ -758,25 +758,25 @@ const StateEvalScore GameState::eval(const IDType & player, const IDType & evalM
 }
 
 // evaluate the state for _playerToMove
-const ScoreType GameState::evalLTD(const IDType & player) const
+const ScoreType GameState::evalLTD(const PlayerID & player) const
 {
-	const IDType enemyPlayer(getEnemy(player));
+	const PlayerID enemyPlayer(getEnemy(player));
 	
 	return LTD(player) - LTD(enemyPlayer);
 }
 
 // evaluate the state for _playerToMove
-const ScoreType GameState::evalLTD2(const IDType & player) const
+const ScoreType GameState::evalLTD2(const PlayerID & player) const
 {
-	const IDType enemyPlayer(getEnemy(player));
+	const PlayerID enemyPlayer(getEnemy(player));
 
 	return LTD2(player) - LTD2(enemyPlayer);
 }
 
-const StateEvalScore GameState::evalSim(const IDType & player, const IDType & p1Script, const IDType & p2Script) const
+const StateEvalScore GameState::evalSim(const PlayerID & player, const PlayerID & p1Script, const PlayerID & p2Script) const
 {
-	const IDType p1Model = (p1Script == PlayerModels::Random) ? PlayerModels::NOKDPS : p1Script;
-	const IDType p2Model = (p2Script == PlayerModels::Random) ? PlayerModels::NOKDPS : p2Script;
+	const PlayerID p1Model = (p1Script == PlayerModels::Random) ? PlayerModels::NOKDPS : p1Script;
+	const PlayerID p2Model = (p2Script == PlayerModels::Random) ? PlayerModels::NOKDPS : p2Script;
 
 	PlayerPtr p1(AllPlayers::getPlayerPtr(Players::Player_One, p1Model));
 	PlayerPtr p2(AllPlayers::getPlayerPtr(Players::Player_Two, p2Model));
@@ -792,12 +792,12 @@ const StateEvalScore GameState::evalSim(const IDType & player, const IDType & p1
 
 void GameState::calculateStartingHealth()
 {
-	for (IDType p(0); p<Constants::Num_Players; ++p)
+	for (PlayerID p(0); p<Constants::Num_Players; ++p)
 	{
 		float totalHP(0);
 		float totalSQRT(0);
 
-		for (IDType u(0); u<_numUnits[p]; ++u)
+		for (PlayerID u(0); u<_numUnits[p]; ++u)
 		{
 			totalHP += getUnit(p, u).maxHP() * getUnit(p, u).dpf();
 			totalSQRT += sqrtf(getUnit(p,u).maxHP()) * getUnit(p, u).dpf();;
@@ -808,7 +808,7 @@ void GameState::calculateStartingHealth()
 	}
 }
 
-const ScoreType	GameState::LTD2(const IDType & player) const
+const ScoreType	GameState::LTD2(const PlayerID & player) const
 {
 	if (numUnits(player) == 0)
 	{
@@ -817,7 +817,7 @@ const ScoreType	GameState::LTD2(const IDType & player) const
 
 	float sum(0);
 
-	for (IDType u(0); u<numUnits(player); ++u)
+	for (PlayerID u(0); u<numUnits(player); ++u)
 	{
 		const Unit & unit(getUnit(player, u));
 
@@ -829,7 +829,7 @@ const ScoreType	GameState::LTD2(const IDType & player) const
 	return ret;
 }
 
-const ScoreType GameState::LTD(const IDType & player) const
+const ScoreType GameState::LTD(const PlayerID & player) const
 {
 	if (numUnits(player) == 0)
 	{
@@ -838,7 +838,7 @@ const ScoreType GameState::LTD(const IDType & player) const
 
 	float sum(0);
 
-	for (IDType u(0); u<numUnits(player); ++u)
+	for (PlayerID u(0); u<numUnits(player); ++u)
 	{
 		const Unit & unit(getUnit(player, u));
 
@@ -864,17 +864,17 @@ void GameState::setMap(Map * map)
     }
 }
 
-const size_t GameState::numUnits(const IDType & player) const
+const size_t GameState::numUnits(const PlayerID & player) const
 {
 	return _numUnits[player];
 }
 
-const size_t GameState::prevNumUnits(const IDType & player) const
+const size_t GameState::prevNumUnits(const PlayerID & player) const
 {
 	return _prevNumUnits[player];
 }
 
-const Unit & GameState::getUnitDirect(const IDType & player, const IDType & unit) const
+const Unit & GameState::getUnitDirect(const PlayerID & player, const PlayerID & unit) const
 {
 	return _units[player][unit];
 }
@@ -889,7 +889,7 @@ void GameState::setTime(const TimeType & time)
 	_currentTime = time;
 }
 
-const int & GameState::getNumMovements(const IDType & player) const
+const int & GameState::getNumMovements(const PlayerID & player) const
 {
 	return _numMovements[player];
 }
@@ -899,12 +899,12 @@ const TimeType GameState::getTime() const
 	return _currentTime;
 }
 
-const float & GameState::getTotalLTD(const IDType & player) const
+const float & GameState::getTotalLTD(const PlayerID & player) const
 {
 	return _totalLTD[player];
 }
 
-const float & GameState::getTotalLTD2(const IDType & player)	const
+const float & GameState::getTotalLTD2(const PlayerID & player)	const
 {
 	return _totalSumSQRT[player];
 }
@@ -997,14 +997,14 @@ void GameState::print(int indent) const
 	std::cout << calculateHash(0) << "\n";
 	fprintf(stderr, "State - Time: %d\n", _currentTime);
 
-	for (IDType p(0); p<Constants::Num_Players; ++p)
+	for (PlayerID p(0); p<Constants::Num_Players; ++p)
 	{
 		for (UnitCountType u(0); u<_numUnits[p]; ++u)
 		{
 			const Unit & unit(getUnit(p, u));
 
 			TABS(indent);
-			fprintf(stderr, "  P%d %5d %5d    (%3d, %3d)     %s\n", unit.player(), unit.currentHP(), unit.firstTimeFree(), unit.x(), unit.y(), unit.name().c_str());
+			fprintf(stderr, "  P%d %5d %5d    (%3d, %3d)     %s\n", unit.getPlayerID(), unit.currentHP(), unit.firstTimeFree(), unit.x(), unit.y(), unit.name().c_str());
 		}
 	}
 	fprintf(stderr, "\n\n");
@@ -1018,13 +1018,13 @@ std::string GameState::toString() const
 	ss << calculateHash(0) << "\n";
 	ss << "Time: " << _currentTime << std::endl;
 
-	for (IDType p(0); p<Constants::Num_Players; ++p)
+	for (PlayerID p(0); p<Constants::Num_Players; ++p)
 	{
 		for (UnitCountType u(0); u<_numUnits[p]; ++u)
 		{
 			const Unit & unit(getUnit(p, u));
 
-			ss << "  P" << (int)unit.player() << " " << unit.currentHP() << " (" << unit.x() << ", " << unit.y() << ") " << unit.name() << std::endl;
+			ss << "  P" << (int)unit.getPlayerID() << " " << unit.currentHP() << " (" << unit.x() << ", " << unit.y() << ") " << unit.name() << std::endl;
 		}
 	}
 	ss << std::endl;
@@ -1036,7 +1036,7 @@ std::string GameState::toStringCompact() const
 {
 	std::stringstream ss;
 
-	for (IDType p(0); p<Constants::Num_Players; ++p)
+	for (PlayerID p(0); p<Constants::Num_Players; ++p)
 	{
         std::map<BWAPI::UnitType, size_t> typeCount;
 

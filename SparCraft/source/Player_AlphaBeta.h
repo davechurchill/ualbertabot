@@ -19,8 +19,8 @@ class Player_AlphaBeta : public Player
 	TTPtr TT;
 	AlphaBetaSearchParameters _params;
 public:
-	Player_AlphaBeta (const IDType & playerID);
-	Player_AlphaBeta (const IDType & playerID, const AlphaBetaSearchParameters & params, TTPtr table);
+	Player_AlphaBeta (const PlayerID & playerID);
+	Player_AlphaBeta (const PlayerID & playerID, const AlphaBetaSearchParameters & params, TTPtr table);
     virtual ~Player_AlphaBeta();
 
 	void getMoves(const GameState & state, std::vector<Action> & moveVec);

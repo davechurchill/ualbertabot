@@ -2,7 +2,7 @@
 
 using namespace SparCraft;
 
-Player_NOKDPS::Player_NOKDPS (const IDType & playerID) 
+Player_NOKDPS::Player_NOKDPS (const PlayerID & playerID) 
 {
 	_playerID = playerID;
 }
@@ -13,16 +13,16 @@ void Player_NOKDPS::getMoves(const GameState & state, std::vector<Action> & move
     state.generateMoves(moves, _playerID);
 
     moveVec.clear();
-	IDType enemy(state.getEnemy(_playerID));
+	PlayerID enemy(state.getEnemy(_playerID));
 
 	Array<int, Constants::Max_Units> hpRemaining;
 
-	for (IDType u(0); u<state.numUnits(enemy); ++u)
+	for (PlayerID u(0); u<state.numUnits(enemy); ++u)
 	{
 		hpRemaining[u] = state.getUnit(enemy,u).currentHP();
 	}
 
-	for (IDType u(0); u<moves.numUnits(); ++u)
+	for (PlayerID u(0); u<moves.numUnits(); ++u)
 	{
 		bool foundAction						(false);
 		size_t actionMoveIndex					(0);
@@ -39,7 +39,7 @@ void Player_NOKDPS::getMoves(const GameState & state, std::vector<Action> & move
 				
 			if ((move.type() == ActionTypes::ATTACK) && (hpRemaining[move.index()] > 0))
 			{
-				const Unit & target				(state.getUnit(state.getEnemy(move.player()), move.index()));
+				const Unit & target				(state.getUnit(state.getEnemy(move.getPlayerID()), move.index()));
 				double dpsHPValue =				(target.dpf() / hpRemaining[move.index()]);
 
 				if (dpsHPValue > actionHighestDPS)
@@ -58,7 +58,7 @@ void Player_NOKDPS::getMoves(const GameState & state, std::vector<Action> & move
 			}
 			else if (move.type() == ActionTypes::HEAL)
 			{
-				const Unit & target				(state.getUnit(move.player(), move.index()));
+				const Unit & target				(state.getUnit(move.getPlayerID(), move.index()));
 				double dpsHPValue =				(target.dpf() / hpRemaining[move.index()]);
 
 				if (dpsHPValue > actionHighestDPS)
@@ -95,7 +95,7 @@ void Player_NOKDPS::getMoves(const GameState & state, std::vector<Action> & move
 		Action theMove(moves.getMove(u, actionMoveIndex));
 		if (theMove.type() == ActionTypes::ATTACK)
 		{
-			hpRemaining[theMove.index()] -= state.getUnit(_playerID, theMove.unit()).damage();
+			hpRemaining[theMove.index()] -= state.getUnit(_playerID, theMove.getUnitID()).damage();
 		}
 			
 		moveVec.push_back(moves.getMove(u, bestMoveIndex));
