@@ -23,16 +23,6 @@ class GameState
 
     GameStateUnitData                                               _unitData;
 
-    std::vector<Unit> _units[Constants::Num_Players];
-    std::vector<int>  _unitIndex[Constants::Num_Players];
-
-    Array2D<Unit, Constants::Num_Players, Constants::Max_Units>     _units2;             
-    Array2D<int, Constants::Num_Players, Constants::Max_Units>      _unitIndex2;        
-    Array<Unit, 1>                                                  _neutralUnits;
-
-    Array<UnitCountType, Constants::Num_Players>                    _numUnits;
-    Array<UnitCountType, Constants::Num_Players>                    _prevNumUnits;
-
     Array<float, Constants::Num_Players>                            _totalLTD;
     Array<float, Constants::Num_Players>                            _totalSumSQRT;
 
@@ -49,13 +39,15 @@ class GameState
 
     void                    performAction(const Action & theMove);
 
+    Unit &                  _getUnitByID(const UnitID & unitID);
+    Unit &                  _getUnit(const PlayerID & player, const UnitCountType & unitIndex);
+
 public:
 
     GameState();
     GameState(const std::string & filename);
 
 	// misc functions
-    void                    finishedMoving();
     void                    updateGameTime();
     const bool              playerDead(const PlayerID & player)                                       const;
     const bool              isTerminal()                                                            const;
@@ -63,28 +55,20 @@ public:
     // unit data functions
     const size_t            numUnits(const PlayerID & player)                                         const;
     const size_t            prevNumUnits(const PlayerID & player)                                     const;
-    const size_t            numNeutralUnits()                                                       const;
     const size_t            closestEnemyUnitDistance(const Unit & unit)                             const;
 
     // Unit functions
-    void                    sortUnits();
     void                    addUnit(const Unit & u);
     void                    addUnit(const BWAPI::UnitType unitType, const PlayerID playerID, const Position & pos);
-    void                    addUnitWithID(const Unit & u);
-    void                    addNeutralUnit(const Unit & unit);
+    const Unit &            getUnitByID(const UnitID & unitID)                                      const;
     const Unit &            getUnit(const PlayerID & player, const UnitCountType & unitIndex)         const;
-    const Unit &            getUnitByID(const PlayerID & unitID)                                      const;
-          Unit &            getUnit(const PlayerID & player, const UnitCountType & unitIndex);
-    const Unit &            getUnitByID(const PlayerID & player, const PlayerID & unitID)               const;
-          Unit &            getUnitByID(const PlayerID & player, const PlayerID & unitID);
-    const Unit &            getClosestEnemyUnit(const PlayerID & player, const PlayerID & unitIndex, bool checkCloaked=false) const;
-    const Unit &            getClosestOurUnit(const PlayerID & player, const PlayerID & unitIndex)      const;
-    const Unit &            getUnitDirect(const PlayerID & player, const PlayerID & unit)               const;
-    const Unit &            getNeutralUnit(const size_t & u)                                        const;
+    const Unit &            getClosestEnemyUnit(const PlayerID & player, const UnitID & unitIndex, bool checkCloaked=false) const;
+    const Unit &            getClosestOurUnit(const PlayerID & player, const UnitID & unitIndex)      const;
     
     // game time functions
     void                    setTime(const TimeType & time);
     const TimeType          getTime()                                                               const;
+    const TimeType          getTimeNextUnitCanAct(const PlayerID & player)                          const;
 
     // evaluation functions
     const StateEvalScore    eval(   const PlayerID & player, const PlayerID & evalMethod, 
@@ -95,7 +79,7 @@ public:
     const ScoreType         LTD(const PlayerID & player)                                            const;
     const ScoreType         LTD2(const PlayerID & player)                                           const;
     const StateEvalScore    evalSim(const PlayerID & player, const PlayerID & p1, const PlayerID & p2)    const;
-    const PlayerID            getEnemy(const PlayerID & player)                                         const;
+    const PlayerID          getEnemy(const PlayerID & player)                                         const;
 
     // unit hitpoint calculations, needed for LTD2 evaluation
     void                    calculateStartingHealth();
@@ -105,7 +89,6 @@ public:
     const float &           getTotalLTD2(const PlayerID & player)                                   const;
 
     // move related functions
-    void                    generateMoves(MoveArray & moves, const PlayerID & playerIndex)            const;
     void                    makeMoves(const std::vector<Action> & moves);
     const int &             getNumMovements(const PlayerID & player)                                  const;
     const PlayerID            whoCanMove()                                                            const;

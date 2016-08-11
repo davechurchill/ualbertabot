@@ -4,56 +4,56 @@
 using namespace SparCraft;
 
 Action::Action()
-	: _unit(255)
-	, _player(255)
-	, _moveType(ActionTypes::NONE)
-	, _moveIndex(255)
+	: _unitID(0)
+	, _playerID(0)
+	, _actionType(ActionTypes::NONE)
+	, _targetID(0)
 {
 
 }
 
-Action::Action( const PlayerID & unitIndex, const PlayerID & player, const PlayerID & type, const PlayerID & moveIndex, const Position & dest)
-    : _unit(unitIndex)
-    , _player(player)
-    , _moveType(type)
-    , _moveIndex(moveIndex)
+Action::Action(const UnitID & unitIndex, const PlayerID & player, const size_t & type, const UnitID & targetID, const Position & dest)
+    : _unitID(unitIndex)
+    , _playerID(player)
+    , _actionType(type)
+    , _targetID(targetID)
     , _p(dest)
 {
         
 }
 
-Action::Action( const PlayerID & unitIndex, const PlayerID & player, const PlayerID & type, const PlayerID & moveIndex)
-	: _unit(unitIndex)
-	, _player(player)
-	, _moveType(type)
-	, _moveIndex(moveIndex)
+Action::Action(const UnitID & unitIndex, const PlayerID & player, const size_t & type, const UnitID & targetID)
+	: _unitID(unitIndex)
+	, _playerID(player)
+	, _actionType(type)
+	, _targetID(targetID)
 {
 		
 }
 
 const bool Action::operator == (const Action & rhs)
 {
-	return _unit == rhs._unit && _player == rhs._player && _moveType == rhs._moveType && _moveIndex == rhs._moveIndex && _p == rhs._p;
+	return _unitID == rhs._unitID && _playerID == rhs._playerID && _actionType == rhs._actionType && _targetID == rhs._targetID && _p == rhs._p;
 }
 
-const UnitID & Action::getUnitID() const	
+const UnitID & Action::getID() const	
 { 
-    return _unit; 
+    return _unitID; 
 }
 
 const PlayerID & Action::getPlayerID() const	
 { 
-    return _player; 
+    return _playerID; 
 }
 
 const size_t & Action::type() const	
 { 
-    return _moveType; 
+    return _actionType; 
 }
 
-const size_t & Action::index() const	
+const size_t & Action::getTargetID() const	
 { 
-    return _moveIndex; 
+    return _targetID; 
 }
 
 const Position & Action::pos() const   
@@ -63,23 +63,23 @@ const Position & Action::pos() const
 
 const std::string Action::moveString() const
 {
-	if (_moveType == ActionTypes::ATTACK) 
+	if (_actionType == ActionTypes::ATTACK) 
 	{
 		return "ATTACK";
 	}
-	else if (_moveType == ActionTypes::MOVE)
+	else if (_actionType == ActionTypes::MOVE)
 	{
 		return "MOVE";
 	}
-	else if (_moveType == ActionTypes::RELOAD)
+	else if (_actionType == ActionTypes::RELOAD)
 	{
 		return "RELOAD";
 	}
-	else if (_moveType == ActionTypes::PASS)
+	else if (_actionType == ActionTypes::PASS)
 	{
 		return "PASS";
 	}
-	else if (_moveType == ActionTypes::HEAL)
+	else if (_actionType == ActionTypes::HEAL)
 	{
 		return "HEAL";
 	}
@@ -89,13 +89,13 @@ const std::string Action::moveString() const
 
 const Position Action::getDir() const
 {
-	return Position(Constants::Move_Dir[_moveIndex][0], Constants::Move_Dir[_moveIndex][1]);
+	return Position(Constants::Move_Dir[_targetID][0], Constants::Move_Dir[_targetID][1]);
 }
 
 const std::string Action::debugString() const
 {
     std::stringstream ss;
-    ss << moveString() << ": (" << (int)getUnitID() << "," << (int)getPlayerID() << "," << (int)type() << "," << (int)index() << ")  " << "(" << pos().x() << "," << pos().y()   << ")";
+    ss << moveString() << ": (" << (int)getID() << "," << (int)getPlayerID() << "," << (int)type() << "," << (int)getTargetID() << ")  " << "(" << pos().x() << "," << pos().y()   << ")";
     return ss.str();
 }
 

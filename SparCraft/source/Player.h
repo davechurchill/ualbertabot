@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Common.h"
+#include "ActionGenerators.h"
 #include "GameState.h"
 #include "MoveArray.h"
 #include "Unit.h"

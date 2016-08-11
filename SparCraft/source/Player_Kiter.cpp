@@ -10,7 +10,7 @@ Player_Kiter::Player_Kiter (const PlayerID & playerID)
 void Player_Kiter::getMoves(const GameState & state, std::vector<Action> & moveVec)
 {
     MoveArray moves;
-    state.generateMoves(moves, _playerID);
+    ActionGenerators::GenerateCompassActions(state, _playerID, moves);
 
     moveVec.clear();
 	for (PlayerID u(0); u<moves.numUnits(); ++u)
@@ -32,7 +32,7 @@ void Player_Kiter::getMoves(const GameState & state, std::vector<Action> & moveV
 				
 			if (move.type() == ActionTypes::ATTACK)
 			{
-				const Unit & target				(state.getUnit(state.getEnemy(move.getPlayerID()), move.index()));
+				const Unit & target				(state.getUnit(state.getEnemy(move.getPlayerID()), move.getTargetID()));
 				PositionType dist				(ourUnit.getDistanceSqToUnit(target, state.getTime()));
 
 				if (dist < actionDistance)
@@ -44,7 +44,7 @@ void Player_Kiter::getMoves(const GameState & state, std::vector<Action> & moveV
 			}
 			else if (move.type() == ActionTypes::HEAL)
 			{
-				const Unit & target				(state.getUnit(move.getPlayerID(), move.index()));
+				const Unit & target				(state.getUnit(move.getPlayerID(), move.getTargetID()));
 				PositionType dist				(ourUnit.getDistanceSqToUnit(target, state.getTime()));
 
 				if (dist < actionDistance)
@@ -56,8 +56,8 @@ void Player_Kiter::getMoves(const GameState & state, std::vector<Action> & moveV
 			}
 			else if (move.type() == ActionTypes::MOVE)
 			{
-				Position ourDest				(ourUnit.x() + Constants::Move_Dir[move.index()][0], 
-												 ourUnit.y() + Constants::Move_Dir[move.index()][1]);
+				Position ourDest				(ourUnit.x() + Constants::Move_Dir[move.getTargetID()][0], 
+												 ourUnit.y() + Constants::Move_Dir[move.getTargetID()][1]);
 				size_t dist						(closestUnit.getDistanceSqToPosition(ourDest, state.getTime()));
 
 				if (dist > furthestMoveDist)

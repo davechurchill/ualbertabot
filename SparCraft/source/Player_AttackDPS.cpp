@@ -10,7 +10,7 @@ Player_AttackDPS::Player_AttackDPS (const PlayerID & playerID)
 void Player_AttackDPS::getMoves(const GameState & state, std::vector<Action> & moveVec)
 {
     MoveArray moves;
-    state.generateMoves(moves, _playerID);
+    ActionGenerators::GenerateCompassActions(state, _playerID, moves);
 
     moveVec.clear();
 	for (PlayerID u(0); u<moves.numUnits(); ++u)
@@ -30,7 +30,7 @@ void Player_AttackDPS::getMoves(const GameState & state, std::vector<Action> & m
 				
 			if (move.type() == ActionTypes::ATTACK)
 			{
-				const Unit & target				(state.getUnit(state.getEnemy(move.getPlayerID()), move.index()));
+				const Unit & target				(state.getUnit(state.getEnemy(move.getPlayerID()), move.getTargetID()));
 				double dpsHPValue =				(target.dpf() / target.currentHP());
 
 				if (dpsHPValue > actionHighestDPS)
@@ -42,7 +42,7 @@ void Player_AttackDPS::getMoves(const GameState & state, std::vector<Action> & m
 			}
 			if (move.type() == ActionTypes::HEAL)
 			{
-				const Unit & target				(state.getUnit(move.getPlayerID(), move.index()));
+				const Unit & target				(state.getUnit(move.getPlayerID(), move.getTargetID()));
 				double dpsHPValue =				(target.dpf() / target.currentHP());
 
 				if (dpsHPValue > actionHighestDPS)
@@ -62,8 +62,8 @@ void Player_AttackDPS::getMoves(const GameState & state, std::vector<Action> & m
 			}
 			else if (move.type() == ActionTypes::MOVE)
 			{
-				Position ourDest				(ourUnit.x() + Constants::Move_Dir[move.index()][0], 
-												 ourUnit.y() + Constants::Move_Dir[move.index()][1]);
+				Position ourDest				(ourUnit.x() + Constants::Move_Dir[move.getTargetID()][0], 
+												 ourUnit.y() + Constants::Move_Dir[move.getTargetID()][1]);
 				size_t dist						(closestUnit.getDistanceSqToPosition(ourDest, state.getTime()));
 
 				if (dist < closestMoveDist)

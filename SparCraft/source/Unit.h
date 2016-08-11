@@ -21,6 +21,7 @@ class Unit
 	Position            _position;				// current location in a possibly infinite space
 	
 	UnitID              _unitID;				// unique unit ID to the state it's contained in
+    UnitID              _bwapiID;
     PlayerID            _playerID;				// the player who controls the unit
 	
 	HealthType          _currentHP;				// current HP of the unit
@@ -73,7 +74,8 @@ public:
 
     // id related
 	void                    setUnitID(const UnitID & id);
-	const UnitID            getUnitID()                 const;
+    void                    setBWAPIUnitID(const UnitID & id);
+	const UnitID            getID()                 const;
 	const PlayerID		    getPlayerID()               const;
 
     // position related functions

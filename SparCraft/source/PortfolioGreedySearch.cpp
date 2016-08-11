@@ -50,7 +50,7 @@ std::vector<Action> PortfolioGreedySearch::search(const PlayerID & player, const
 
     // convert the script vector into a move vector and return it
 	MoveArray moves;
-	state.generateMoves(moves, player);
+    ActionGenerators::GenerateCompassActions(state, player, moves);
     std::vector<Action> moveVec;
     GameState copy(state);
     currentScriptData.calculateMoves(player, moves, copy, moveVec);

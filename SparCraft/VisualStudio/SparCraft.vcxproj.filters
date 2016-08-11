@@ -121,6 +121,9 @@
     <ClCompile Include="..\source\GameStateUnitData.cpp">
       <Filter>simulation</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\ActionGenerators.cpp">
+      <Filter>AI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\AlphaBetaSearch.h">
@@ -278,6 +281,9 @@
     </ClInclude>
     <ClInclude Include="..\source\GameStateUnitData.h">
       <Filter>simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\ActionGenerators.h">
+      <Filter>AI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

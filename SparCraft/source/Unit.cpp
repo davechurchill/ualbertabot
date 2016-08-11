@@ -5,8 +5,9 @@ using namespace SparCraft;
 Unit::Unit()
     : _unitType             (BWAPI::UnitTypes::None)
     , _range                (0)
-    , _unitID               (255)
-    , _playerID             (255)
+    , _unitID               (0)
+    , _bwapiID              (0)
+    , _playerID             (0)
     , _currentHP            (0)
     , _currentEnergy        (0)
     , _timeCanMove          (0)
@@ -24,6 +25,7 @@ Unit::Unit(const BWAPI::UnitType unitType, const Position & pos, const PlayerID 
     , _range                (PlayerWeapon(&PlayerProperties::Get(playerID), unitType.groundWeapon()).GetMaxRange() + Constants::Range_Addition)
     , _position             (pos)
     , _unitID               (unitID)
+    , _bwapiID              (0)
     , _playerID             (playerID)
     , _currentHP            (hp)
     , _currentEnergy        (energy)
@@ -43,6 +45,7 @@ Unit::Unit(const BWAPI::UnitType unitType, const PlayerID & playerID, const Posi
     , _range                (PlayerWeapon(&PlayerProperties::Get(playerID), unitType.groundWeapon()).GetMaxRange() + Constants::Range_Addition)
     , _position             (pos)
     , _unitID               (0)
+    , _bwapiID              (0)
     , _playerID             (playerID)
     , _currentHP            (maxHP())
     , _currentEnergy        (unitType == BWAPI::UnitTypes::Terran_Medic ? Constants::Starting_Energy : 0)
@@ -75,7 +78,7 @@ const bool Unit::operator < (const Unit & rhs) const
 
     if (firstTimeFree() == rhs.firstTimeFree())
     {
-        return getUnitID() < rhs.getUnitID();
+        return getID() < rhs.getID();
     }
     else
     {
@@ -378,6 +381,11 @@ void Unit::setUnitID(const UnitID & id)
     _unitID = id; 
 }
 
+void Unit::setBWAPIUnitID(const UnitID & id)
+{ 
+    _bwapiID = id; 
+}
+
 void Unit::setPreviousAction(const Action & m, const TimeType & previousMoveTime) 
 {	
     // if it was an attack move, store the unitID of the opponent unit
@@ -420,7 +428,7 @@ const bool Unit::isOrganic() const
     return _unitType.isOrganic(); 
 }
 
-const UnitID Unit::getUnitID() const	
+const UnitID Unit::getID() const	
 { 
     return _unitID; 
 }
@@ -610,7 +618,7 @@ const std::string Unit::debugString() const
     std::stringstream ss;
 
     ss << "Unit Type:           " << type().getName()                               << "\n";
-    ss << "Unit ID:             " << (int)getUnitID()                               << "\n";
+    ss << "Unit ID:             " << (int)getID()                               << "\n";
     ss << "Player:              " << (int)getPlayerID()                             << "\n";
     ss << "Range:               " << range()                                        << "\n";
     ss << "Position:            " << "(" << _position.x() << "," << _position.y()   << ")\n";

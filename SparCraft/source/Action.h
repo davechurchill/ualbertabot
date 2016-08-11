@@ -12,10 +12,10 @@ namespace ActionTypes
 
 class Action 
 {
-	UnitID      _unit;
-	PlayerID    _player;
-	size_t      _moveType;
-	size_t      _moveIndex;
+	UnitID      _unitID;
+	PlayerID    _playerID;
+	size_t      _actionType;
+	UnitID      _targetID;
 
     Position _p;
 
@@ -23,18 +23,16 @@ public:
 
 
 	Action();
-
-    Action( const PlayerID & unitIndex, const PlayerID & player, const PlayerID & type, const PlayerID & moveIndex, const Position & dest);
-
-	Action( const PlayerID & unitIndex, const PlayerID & player, const PlayerID & type, const PlayerID & moveIndex);
+    Action(const UnitID & unitIndex, const PlayerID & player, const size_t & type, const UnitID & moveIndex, const Position & dest);
+	Action(const UnitID & unitIndex, const PlayerID & player, const size_t & type, const UnitID & moveIndex);
 
 	const bool operator == (const Action & rhs);
 
-	const UnitID & getUnitID() const;
+	const UnitID & getID() const;
 	const PlayerID & getPlayerID() const;
-	const size_t & type()	const;
-	const size_t & index()	const;
-    const Position & pos()  const;
+	const size_t & type() const;
+	const size_t & getTargetID() const;
+    const Position & pos() const;
 
 	const std::string moveString() const;
 

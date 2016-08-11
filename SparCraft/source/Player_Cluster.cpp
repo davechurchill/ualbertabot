@@ -10,7 +10,7 @@ Player_Cluster::Player_Cluster (const PlayerID & playerID)
 void Player_Cluster::getMoves(const GameState & state, std::vector<Action> & moveVec)
 {
     MoveArray moves;
-    state.generateMoves(moves, _playerID);
+    ActionGenerators::GenerateCompassActions(state, _playerID, moves);
 
     moveVec.clear();
 	PlayerID enemy(state.getEnemy(_playerID));
@@ -39,8 +39,8 @@ void Player_Cluster::getMoves(const GameState & state, std::vector<Action> & mov
 				
 			if (move.type() == ActionTypes::MOVE)
 			{
-				Position ourDest				(ourUnit.x() + Constants::Move_Dir[move.index()][0], 
-												 ourUnit.y() + Constants::Move_Dir[move.index()][1]);
+				Position ourDest				(ourUnit.x() + Constants::Move_Dir[move.getTargetID()][0], 
+												 ourUnit.y() + Constants::Move_Dir[move.getTargetID()][1]);
                 size_t dist						(avgPos.getDistanceSq(ourDest));
 
 				if (dist < closestMoveDist)

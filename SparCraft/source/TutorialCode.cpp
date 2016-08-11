@@ -49,10 +49,6 @@ GameState getSampleState()
     // Set the unitID
     u.setUnitID(5);
 
-    // Add it to the state and tell it not to change the unitID.
-    // If a state contains two units with the same ID, an error will occur
-    state.addUnitWithID(u);
-
     return state;
 }
 

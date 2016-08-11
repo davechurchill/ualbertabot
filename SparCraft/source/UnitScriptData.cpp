@@ -53,7 +53,7 @@ const PlayerID & UnitScriptData::getUnitScript(const PlayerID & player, const in
     
 const PlayerID & UnitScriptData::getUnitScript(const Unit & unit) const
 {
-    return getUnitScript(unit.getPlayerID(), unit.getUnitID());
+    return getUnitScript(unit.getPlayerID(), unit.getID());
 }
 
 const PlayerID & UnitScriptData::getScript(const PlayerID & player, const size_t & index)
@@ -85,5 +85,5 @@ void UnitScriptData::setUnitScript(const PlayerID & player, const int & id, cons
 
 void UnitScriptData::setUnitScript(const Unit & unit, const PlayerID & script)
 {
-    setUnitScript(unit.getPlayerID(), unit.getUnitID(), script);
+    setUnitScript(unit.getPlayerID(), unit.getID(), script);
 }

@@ -53,7 +53,7 @@ Unit & GameStateUnitData::addUnit(const Unit & unit)
 
     Unit & unitInVector = _allUnits.back();
 
-    _liveUnitIDs[unitInVector.getPlayerID()].push_back(unitInVector.getUnitID());
+    _liveUnitIDs[unitInVector.getPlayerID()].push_back(unitInVector.getID());
     
     return unitInVector;
 }

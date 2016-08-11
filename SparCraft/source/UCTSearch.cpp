@@ -298,7 +298,6 @@ void UCTSearch::updateState(UCTNode & node, GameState & state, bool isLeaf)
 
         // do the current node moves and call finished moving
         state.makeMoves(node.getMove());
-        state.finishedMoving();
     }
 }
 
@@ -379,7 +378,6 @@ void UCTSearch::generateChildren(UCTNode & node, GameState & state)
 StateEvalScore UCTSearch::performPlayout(const GameState & state)
 {
     GameState copy(state);
-    copy.finishedMoving();
 
     return copy.eval(_params.maxPlayer(), _params.evalMethod(), _params.simScript(Players::Player_One), _params.simScript(Players::Player_Two));
 }
@@ -415,7 +413,6 @@ void UCTSearch::printSubTreeGraphViz(const UCTNode & node, GraphViz::Graph & g, 
         }
 
         state.makeMoves(node.getMove());
-        state.finishedMoving();
     }
 
     std::stringstream label;

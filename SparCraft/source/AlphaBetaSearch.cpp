@@ -404,7 +404,7 @@ AlphaBetaValue AlphaBetaSearch::alphaBeta(const GameState & state, size_t depth,
 
 	// move generation
 	MoveArray & moves = _allMoves[depth];
-	state.generateMoves(moves, playerToMove);
+    ActionGenerators::GenerateCompassActions(state, playerToMove, moves);
     moves.shuffleMoveActions();
 	generateOrderedMoves(state, TTval, playerToMove, depth);
 
@@ -445,7 +445,6 @@ AlphaBetaValue AlphaBetaSearch::alphaBeta(const GameState & state, size_t depth,
 
 			// do the moves of the current player
             child.makeMoves(moveVec);
-			child.finishedMoving();
 
 			// get the alpha beta value
 			val = alphaBeta(child, depth-1, playerToMove, NULL, alpha, beta);

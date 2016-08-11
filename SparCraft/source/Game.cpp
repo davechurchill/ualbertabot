@@ -1,5 +1,6 @@
 #include "Common.h"
 #include "Game.h"
+#include "ActionGenerators.h"
 
 using namespace SparCraft;
 
@@ -77,7 +78,7 @@ void Game::playNextTurn()
     // make the moves
     _state.makeMoves(playerMove);
 
-    _state.finishedMoving();
+    //_state.finishedMoving();
     _rounds++;
 }
 
@@ -117,7 +118,7 @@ void Game::playIndividualScripts(UnitScriptData & scriptData)
         std::vector<Action> playerMove;
 
         // generate the moves possible from this state
-        _state.generateMoves(playerLegalMoves, playerToMove);
+        ActionGenerators::GenerateCompassActions(_state, playerToMove, playerLegalMoves);
 
         // calculate the moves the unit would do given its script preferences
         scriptData.calculateMoves(playerToMove, playerLegalMoves, _state, playerMove);
@@ -127,7 +128,7 @@ void Game::playIndividualScripts(UnitScriptData & scriptData)
         {
             MoveArray enemyLegalMoves;
             std::vector<Action> enemyMove;
-            _state.generateMoves(enemyLegalMoves, enemyPlayer);
+            ActionGenerators::GenerateCompassActions(_state, enemyPlayer, enemyLegalMoves);
 
             scriptData.calculateMoves(enemyPlayer, enemyLegalMoves, _state, enemyMove);
 
@@ -136,7 +137,6 @@ void Game::playIndividualScripts(UnitScriptData & scriptData)
 
         // make the moves
         _state.makeMoves(playerMove);
-        _state.finishedMoving();
         _rounds++;
     }
 
@@ -177,7 +177,7 @@ GameState & Game::getState()
 // determine the player to move
 const PlayerID Game::getPlayerToMove()
 {
-    const PlayerID whoCanMove(_state.whoCanMove());
+    const PlayerID whoCanMove = _state.whoCanMove();
 
     return (whoCanMove == Players::Player_Both) ? Players::Player_One : whoCanMove;
 }

@@ -3,26 +3,14 @@
 
 using namespace SparCraft;
 
-MoveArray::MoveArray(const size_t maxUnits) 
-	: _numUnits(0)
-	, _maxUnits(Constants::Max_Units)
-    , _hasMoreMoves(true)
+MoveArray::MoveArray() 
+	: _hasMoreMoves(true)
 {
-    //_currentMovesVec.reserve(Constants::Max_Units);
-	_numMoves.fill(0);
-    _currentMovesIndex.fill(0);
+
 }
     
 void MoveArray::clear() 
 {
-    // only clear things if they need to be cleared
-    if (_numUnits == 0)
-    {
-        return;
-    }
-
-	_numUnits = 0;
-	_numMoves.fill(0);
     resetMoveIterator();
 }
 
@@ -77,14 +65,14 @@ void MoveArray::shuffleMoveActions()
 // returns a given move from a unit
 const Action & MoveArray::getMove(const size_t & unit, const size_t & move) const
 {
-    SPARCRAFT_ASSERT(_moves[unit][(size_t)move].getUnitID() != 255, "Move size too large");
+    SPARCRAFT_ASSERT(_moves[unit][(size_t)move].getID() != 255, "Move size too large");
 
     return _moves[unit][(size_t)move];
 }
 
 void MoveArray::printCurrentMoveIndex()
 {
-    for (size_t u(0); u<_numUnits; ++u)
+    for (size_t u(0); u<numUnits(); ++u)
     {
         std::cout << _currentMovesIndex[u] << " ";
     }
@@ -92,19 +80,19 @@ void MoveArray::printCurrentMoveIndex()
     std::cout << std::endl;
 }
 
-void MoveArray::incrementMove(const size_t & unit)
+void MoveArray::incrementMove(const size_t & unitIndex)
 {
     // increment the index for this unit
-    _currentMovesIndex[unit] = (_currentMovesIndex[unit] + 1) % _numMoves[unit];
+    _currentMovesIndex[unitIndex] = (_currentMovesIndex[unitIndex] + 1) % _moves[unitIndex].size();
 
     // if the value rolled over, we need to do the carry calculation
-    if (_currentMovesIndex[unit] == 0)
+    if (_currentMovesIndex[unitIndex] == 0)
     {
         // the next unit index
-        size_t nextUnit = unit + 1;
+        size_t nextUnit = unitIndex + 1;
 
         // if we have space left to increment, do it
-        if (nextUnit < _numUnits)
+        if (nextUnit < numUnits())
         {
             incrementMove(nextUnit);
         }
@@ -116,11 +104,11 @@ void MoveArray::incrementMove(const size_t & unit)
         }
     }
 
-    _currentMoves[unit] = _moves[unit][_currentMovesIndex[unit]];
+    _currentMoves[unitIndex] = _moves[unitIndex][_currentMovesIndex[unitIndex]];
     //_currentMovesVec[unit] = _moves[unit][_currentMovesIndex[unit]];
 }
 
-const bool MoveArray::hasMoreMoves() const
+bool MoveArray::hasMoreMoves() const
 {
     return _hasMoreMoves;
 }
@@ -128,37 +116,52 @@ const bool MoveArray::hasMoreMoves() const
 void MoveArray::resetMoveIterator()
 {
     _hasMoreMoves = true;
-    _currentMovesIndex.fill(0);
+    std::fill(_currentMovesIndex.begin(), _currentMovesIndex.end(), 0);
 
     for (size_t u(0); u<numUnits(); ++u)
     {
         _currentMoves[u] = _moves[u][_currentMovesIndex[u]];
-        //_currentMovesVec[u] = _moves[u][_currentMovesIndex[u]];
     }
 }
 
 void MoveArray::getNextMoveVec(std::vector<Action> & moves)
 {
-    moves.assign(&_currentMoves[0], &_currentMoves[_numUnits]);
+    moves.assign(&_currentMoves[0], &_currentMoves[numUnits()]);
     //moves = _currentMovesVec;
     incrementMove(0);
 }
 
-const size_t MoveArray::maxUnits() const
+// adds a Move to the unit specified
+void MoveArray::add(const Action & action)
 {
-	return _moves.getRows();
+    SPARCRAFT_ASSERT(action.type() != ActionTypes::NONE, "Adding NONE action type to MoveArray");
+
+    const size_t unitIndex = getUnitIndex(action.getID());
+
+    if (unitIndex >= _moves.size())
+    {
+        _moves.push_back(std::vector<Action>());
+        _moves.back().push_back(action);
+        _currentMoves.push_back(_moves.back()[0]);
+        _currentMovesIndex.push_back(0);
+    }
+    else
+    {
+        _moves[unitIndex].push_back(action);
+    }
 }
 
-// adds a Move to the unit specified
-void MoveArray::add(const Action & move)
+size_t MoveArray::getUnitIndex(const UnitID & unitID) const
 {
-	_moves[move.getUnitID()][_numMoves[move.getUnitID()]] = move;
-	_numMoves[move.getUnitID()]++;
+    for (size_t u(0); u < _moves.size(); ++u)
+    {
+        if (_moves[u].size() > 0 && _moves[u][0].getID() == unitID)
+        {
+            return u;
+        }
+    }
 
-    _currentMovesIndex[_numUnits-1] = 0;
-    _currentMoves[_numUnits-1] = _moves[move.getUnitID()][0];
-    //_currentMovesVec.push_back(_moves[move.getUnitID()][0]);
-    //resetMoveIterator();
+    return _moves.size();
 }
 	
 bool MoveArray::validateMoves()
@@ -169,7 +172,7 @@ bool MoveArray::validateMoves()
 		{
 			const Action & move(getMove(u, m));
 
-			if (move.getUnitID() > 200)
+			if (move.getID() > 200)
 			{
 				printf("Unit Move Incorrect! Something will be wrong\n");
 				return false;
@@ -182,7 +185,7 @@ bool MoveArray::validateMoves()
 
 const PlayerID MoveArray::getUnitID(const PlayerID & unit) const
 {
-	return getMove(unit, 0).getUnitID();
+	return getMove(unit, 0).getID();
 }
 
 const PlayerID MoveArray::getPlayerID(const PlayerID & unit) const
@@ -190,8 +193,14 @@ const PlayerID MoveArray::getPlayerID(const PlayerID & unit) const
 	return getMove(unit, 0).getPlayerID();
 }
 
-void MoveArray::addUnit() 											{ _numUnits++; }
+size_t MoveArray::numUnits() const
+{ 
+    return _moves.size(); 
+}
 
-const size_t & MoveArray::numUnits()						const	{ return _numUnits; }
-const size_t & MoveArray::numUnitsInTuple()				const	{ return numUnits(); }
-const size_t & MoveArray::numMoves(const size_t & unit)	const	{ return _numMoves[unit]; }
+size_t MoveArray::numMoves(const size_t & unitIndex) const
+{ 
+    SPARCRAFT_ASSERT(unitIndex < _moves.size(), "Trying to get numMoves of a unit that isn't in the MoveArray");
+
+    return _moves[unitIndex].size(); 
+}

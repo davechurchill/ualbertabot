@@ -10,40 +10,36 @@ namespace SparCraft
 class MoveArray
 {
 	// the array which contains all the moves
-	Array2D<Action, Constants::Max_Units, Constants::Max_Moves> _moves;
+    std::vector< std::vector<Action> > _moves;
+	//Array2D<Action, Constants::Max_Units, Constants::Max_Moves> _moves;
 
 	// how many moves each unit has
-	Array<size_t, Constants::Max_Units>                         _numMoves;
+	//Array<size_t, Constants::Max_Units>                         _numMoves;
 
     // the current move array, used for the 'iterator'
     //std::vector<Action> _currentMoves;
     //std::vector<Action>                                             _currentMovesVec;
-    Array<Action, Constants::Max_Units>                         _currentMoves;
-    Array<size_t, Constants::Max_Units>                         _currentMovesIndex;
+    std::vector<Action>                             _currentMoves;
+    std::vector<size_t>                             _currentMovesIndex;
 
 	// the number of units that have moves;
-	size_t                                                      _numUnits;
-	size_t                                                              _maxUnits;
-    bool                                                                _hasMoreMoves;
+    bool                                            _hasMoreMoves;
 
 public:
 
-	MoveArray(const size_t maxUnits = 0);
+	MoveArray();
 
 	void clear();
 
 	// returns a given move from a unit
 	const Action & getMove(const size_t & unit, const size_t & move) const;
-
-    void printCurrentMoveIndex();
-
-    void incrementMove(const size_t & unit);
-
-    const bool hasMoreMoves() const;
-
-    void resetMoveIterator();
+    bool hasMoreMoves() const;
+    size_t getUnitIndex(const UnitID & unitID) const;
 
     void getNextMoveVec(std::vector<Action> & moves);
+    void resetMoveIterator();
+    void incrementMove(const size_t & unit);
+    void printCurrentMoveIndex();
 
 	const size_t maxUnits() const;
 
@@ -53,15 +49,11 @@ public:
 	bool validateMoves();
 
 	const PlayerID getUnitID(const PlayerID & unit) const;
-
 	const PlayerID getPlayerID(const PlayerID & unit) const;
-
-	void addUnit();
 
     void shuffleMoveActions();
 
-	const size_t & numUnits()						const;
-	const size_t & numUnitsInTuple()				const;
-	const size_t & numMoves(const size_t & unit)	const;
+	size_t numUnits() const;
+	size_t numMoves(const size_t & unit) const;
 };
 }

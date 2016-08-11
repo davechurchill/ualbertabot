@@ -123,6 +123,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\source\Action.h" />
+    <ClInclude Include="..\source\ActionGenerators.h" />
     <ClInclude Include="..\source\AIParameters.h" />
     <ClInclude Include="..\source\AllPlayers.h" />
     <ClInclude Include="..\source\AlphaBetaMove.h" />
@@ -177,6 +178,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\Action.cpp" />
+    <ClCompile Include="..\source\ActionGenerators.cpp" />
     <ClCompile Include="..\source\AIParameters.cpp" />
     <ClCompile Include="..\source\AllPlayers.cpp" />
     <ClCompile Include="..\source\AlphaBetaMove.cpp" />

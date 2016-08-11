@@ -55,10 +55,11 @@ void GUIGame::onFrame()
 void GUIGame::drawInfo()
 {
     std::stringstream ss;
+    ss << "Game Time: " << _game.getState().getTime() << "\n\n";
     ss << "Frame Draw Time: " << _previousDrawGameTimer << "ms\n\n";
     ss << "Turn Time: " << _previousTurnTimer << "ms";
 
-    GUITools::DrawString(Position(5, _gui.height()-20), ss.str(), White);
+    GUITools::DrawString(Position(5, _gui.height()-50), ss.str(), White);
 }
 
 void GUIGame::drawGame()
@@ -83,21 +84,20 @@ void GUIGame::drawHPBars()
 {
     const GameState & state = _game.getState();
 
-    for (PlayerID p(0); p<Constants::Num_Players; ++p)
+    for (PlayerID p(0); p < Constants::Num_Players; ++p)
     {
-        for (PlayerID u(0); u<_initialState.numUnits(p); ++u)
+        for (PlayerID u(0); u < state.numUnits(p); ++u)
         {
             int barHeight = 12;
 
-            const Unit &			unit(state.getUnitDirect(p,u));
+            const Unit & unit = state.getUnit(p,u);
+            const Position pos = Position(1000+170*p,40+barHeight*u);
+            const BWAPI::UnitType type = unit.type();
 
-            const Position			pos(1000+170*p,40+barHeight*u);
-            const BWAPI::UnitType	type(unit.type());
-
-            const int				x0(pos.x());
-            const int				x1(pos.x() + 150);
-            const int				y0(pos.y());
-            const int				y1(pos.y() + 15);
+            const int x0 = pos.x();
+            const int x1 = pos.x() + 150;
+            const int y0 = pos.y();
+            const int y1 = pos.y() + 15;
 
             // draw the unit HP box
             double	percHP = (double)unit.currentHP() / (double)unit.maxHP();
@@ -112,7 +112,7 @@ void GUIGame::drawHPBars()
                 GUITools::DrawRectGradient(Position(xx,yy),Position(xx+cw,yy+h),PlayerColors[p], PlayerColorsDark[p]);
             }
 
-            //if (unit.getUnitID() < 255)
+            //if (unit.getID() < 255)
             //{
             //	glEnable( GL_TEXTURE_2D );
             //		glBindTexture( GL_TEXTURE_2D, unit.type().getID() );
@@ -235,7 +235,7 @@ void GUIGame::drawUnit(const Unit & unit)
 	}
 	else if (action.type() == ActionTypes::ATTACK)
 	{
-		const Unit &	target(state.getUnit(state.getEnemy(unit.getPlayerID()), action.index()));
+		const Unit &	target = state.getUnitByID(action.getTargetID());
 		const Position	targetPos(target.currentPosition(state.getTime()));
 
         GUITools::DrawLine(pos, targetPos, 1, PlayerColors[unit.getPlayerID()]);
