@@ -7,8 +7,11 @@ Player_KiterDPS::Player_KiterDPS (const IDType & playerID)
 	_playerID = playerID;
 }
 
-void Player_KiterDPS::getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec)
+void Player_KiterDPS::getMoves(const GameState & state, std::vector<Action> & moveVec)
 {
+    MoveArray moves;
+    state.generateMoves(moves, _playerID);
+
     moveVec.clear();
 	for (IDType u(0); u<moves.numUnits(); ++u)
 	{
@@ -97,4 +100,9 @@ void Player_KiterDPS::getMoves(GameState & state, const MoveArray & moves, std::
 		
 		moveVec.push_back(moves.getMove(u, bestMoveIndex));
 	}
+}
+
+PlayerPtr Player_KiterDPS::clone()
+{
+    return PlayerPtr(new Player_KiterDPS(*this));
 }

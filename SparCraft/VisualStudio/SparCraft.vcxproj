@@ -131,6 +131,7 @@
     <ClInclude Include="..\source\AlphaBetaSearchResults.hpp" />
     <ClInclude Include="..\source\AnimationFrameData.h" />
     <ClInclude Include="..\source\BaseTypes.hpp" />
+    <ClInclude Include="..\source\Eval.h" />
     <ClInclude Include="..\source\Game.h" />
     <ClInclude Include="..\source\GameState.h" />
     <ClInclude Include="..\source\GraphViz.hpp" />
@@ -150,11 +151,13 @@
     <ClInclude Include="..\source\Player_NOKDPS.h" />
     <ClInclude Include="..\source\Player_PortfolioGreedySearch.h" />
     <ClInclude Include="..\source\Player_Random.h" />
+    <ClInclude Include="..\source\Player_Script.h" />
     <ClInclude Include="..\source\Player_UCT.h" />
     <ClInclude Include="..\source\PortfolioGreedySearch.h" />
     <ClInclude Include="..\source\Random.hpp" />
     <ClInclude Include="..\source\Common.h" />
     <ClInclude Include="..\source\Position.hpp" />
+    <ClInclude Include="..\source\ScriptPlayerPolicy.h" />
     <ClInclude Include="..\source\SparCraft.h" />
     <ClInclude Include="..\source\SparCraftAssert.h" />
     <ClInclude Include="..\source\SparCraftException.h" />
@@ -179,6 +182,7 @@
     <ClCompile Include="..\source\AlphaBetaSearch.cpp" />
     <ClCompile Include="..\source\AnimationFrameData.cpp" />
     <ClCompile Include="..\source\Common.cpp" />
+    <ClCompile Include="..\source\Eval.cpp" />
     <ClCompile Include="..\source\Game.cpp" />
     <ClCompile Include="..\source\GameState.cpp" />
     <ClCompile Include="..\source\Hash.cpp" />
@@ -196,8 +200,10 @@
     <ClCompile Include="..\source\Player_NOKDPS.cpp" />
     <ClCompile Include="..\source\Player_PortfolioGreedySearch.cpp" />
     <ClCompile Include="..\source\Player_Random.cpp" />
+    <ClCompile Include="..\source\Player_Script.cpp" />
     <ClCompile Include="..\source\Player_UCT.cpp" />
     <ClCompile Include="..\source\PortfolioGreedySearch.cpp" />
+    <ClCompile Include="..\source\ScriptPlayerPolicy.cpp" />
     <ClCompile Include="..\source\SparCraft.cpp" />
     <ClCompile Include="..\source\SparCraftAssert.cpp" />
     <ClCompile Include="..\source\SparCraftException.cpp" />

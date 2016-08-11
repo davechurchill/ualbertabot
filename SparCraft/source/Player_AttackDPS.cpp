@@ -7,8 +7,11 @@ Player_AttackDPS::Player_AttackDPS (const IDType & playerID)
 	_playerID = playerID;
 }
 
-void Player_AttackDPS::getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec)
+void Player_AttackDPS::getMoves(const GameState & state, std::vector<Action> & moveVec)
 {
+    MoveArray moves;
+    state.generateMoves(moves, _playerID);
+
     moveVec.clear();
 	for (IDType u(0); u<moves.numUnits(); ++u)
 	{
@@ -75,4 +78,9 @@ void Player_AttackDPS::getMoves(GameState & state, const MoveArray & moves, std:
 			
 		moveVec.push_back(moves.getMove(u, bestMoveIndex));
 	}
+}
+
+PlayerPtr Player_AttackDPS::clone()
+{
+    return PlayerPtr(new Player_AttackDPS(*this));
 }

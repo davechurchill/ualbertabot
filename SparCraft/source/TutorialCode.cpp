@@ -119,14 +119,8 @@ std::vector<Action> getSamplePlayerActionsFromState()
     // Get a state
     GameState state = getSampleState();
 
-    // Construct a MoveArray. This structure will hold all the legal moves for each unit possible for this state
-    MoveArray moveArray;
-
-    // Generate the moves possible by currentPlayer from state into moveArray
-    state.generateMoves(moveArray, currentPlayerID);
-
     // Call getMoves with these arguments
-    myPlayer->getMoves(state, moveArray, move);
+    myPlayer->getMoves(state, move);
     
     return move;
 }

@@ -8,31 +8,23 @@
 
 namespace SparCraft
 {
- 
-class GameState;
+
+class Player;
+typedef std::shared_ptr<Player> PlayerPtr; 
 
 class Player 
 {
 protected:
-    IDType _playerID;
+    IDType                  _playerID;
+    std::string             _description;
 public:
-    virtual void		getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec);
-    const IDType        ID();
-    void                setID(const IDType & playerid);
-    virtual IDType      getType() { return PlayerModels::None; }
+    virtual void		    getMoves(const GameState & state, std::vector<Action> & moveVec);
+    const IDType            ID();
+    virtual std::string     getDescription();
+    virtual void            setDescription(const std::string & desc);
+
+    virtual PlayerPtr       clone();
 };
 
-class CompareUnitDPSThreat
-{
-    const bool operator() (Unit * u1, Unit * u2) const
-    {
-        double u1Threat = ((double)u1->damage()/(double)u1->attackCooldown()) / u1->currentHP();
-        double u2Threat = ((double)u2->damage()/(double)u2->attackCooldown()) / u2->currentHP();
-
-        return u1Threat > u2Threat;
-    }
-};
-
-typedef	std::shared_ptr<Player> PlayerPtr; 
 
 }

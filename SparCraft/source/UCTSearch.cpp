@@ -28,7 +28,7 @@ void UCTSearch::setMemoryPool(UCTMemoryPool * pool)
     _memoryPool = pool;
 }
 
-void UCTSearch::doSearch(GameState & initialState, std::vector<Action> & move)
+void UCTSearch::doSearch(const GameState & initialState, std::vector<Action> & move)
 {
     Timer t;
     t.start();
@@ -87,7 +87,7 @@ const bool UCTSearch::terminalState(GameState & state, const size_t & depth) con
 	return (depth <= 0 || state.isTerminal());
 }
 
-void UCTSearch::generateOrderedMoves(GameState & state, MoveArray & moves, const IDType & playerToMove)
+void UCTSearch::generateOrderedMoves(GameState & state, const IDType & playerToMove)
 {
 	_orderedMoves.clear();
 
@@ -98,7 +98,7 @@ void UCTSearch::generateOrderedMoves(GameState & state, MoveArray & moves, const
         _orderedMoves.add(std::vector<Action>());
 
         // generate the moves into that vector
-		_playerModels[playerToMove]->getMoves(state, moves, _orderedMoves[0]);
+		_playerModels[playerToMove]->getMoves(state, _orderedMoves[0]);
 		
 		return;
 	}
@@ -109,13 +109,13 @@ void UCTSearch::generateOrderedMoves(GameState & state, MoveArray & moves, const
         for (size_t s(0); s<_params.getOrderedMoveScripts().size(); s++)
 	    {
             std::vector<Action> moveVec;
-		    _allScripts[playerToMove][s]->getMoves(state, moves, moveVec);
+		    _allScripts[playerToMove][s]->getMoves(state, moveVec);
 		    _orderedMoves.add(moveVec);
 	    }
     }
 	
 }
-const size_t UCTSearch::getChildNodeType(UCTNode & parent, const GameState & prevState) const
+const size_t UCTSearch::getChildNodeType(const UCTNode & parent, const GameState & prevState) const
 {
     if (!prevState.bothCanMove())
     {
@@ -185,7 +185,7 @@ const bool UCTSearch::getNextMove(IDType playerToMove, MoveArray & moves, const 
 	}
 }
 
-const IDType UCTSearch::getPlayerToMove(UCTNode & node, const GameState & state) const
+const IDType UCTSearch::getPlayerToMove(const UCTNode & node, const GameState & state) const
 {
 	const IDType whoCanMove(state.whoCanMove());
 
@@ -363,13 +363,9 @@ void UCTSearch::generateChildren(UCTNode & node, GameState & state)
 {
     // figure out who is next to move in the game
     const IDType playerToMove(getPlayerToMove(node, state));
-
-    // generate all the moves possible from this state
-	state.generateMoves(_moveArray, playerToMove);
-    _moveArray.shuffleMoveActions();
-
+    
     // generate the 'ordered moves' for move ordering
-    generateOrderedMoves(state, _moveArray, playerToMove);
+    generateOrderedMoves(state, playerToMove);
 
     // for each child of this state, add a child to the current node
     for (size_t child(0); (child < _params.maxChildren()) && getNextMove(playerToMove, _moveArray, child, _actionVec); ++child)
@@ -380,7 +376,7 @@ void UCTSearch::generateChildren(UCTNode & node, GameState & state)
     }
 }
 
-StateEvalScore UCTSearch::performPlayout(GameState & state)
+StateEvalScore UCTSearch::performPlayout(const GameState & state)
 {
     GameState copy(state);
     copy.finishedMoving();
@@ -388,12 +384,12 @@ StateEvalScore UCTSearch::performPlayout(GameState & state)
     return copy.eval(_params.maxPlayer(), _params.evalMethod(), _params.simScript(Players::Player_One), _params.simScript(Players::Player_Two));
 }
 
-const bool UCTSearch::isRoot(UCTNode & node) const
+const bool UCTSearch::isRoot(const UCTNode & node) const
 {
     return &node == &_rootNode;
 }
 
-void UCTSearch::printSubTree(UCTNode & node, GameState s, std::string filename)
+void UCTSearch::printSubTree(const UCTNode & node, GameState s, std::string filename)
 {
     std::ofstream out(filename.c_str());
 
@@ -405,7 +401,7 @@ void UCTSearch::printSubTree(UCTNode & node, GameState s, std::string filename)
     G.print(out);
 }
 
-void UCTSearch::printSubTreeGraphViz(UCTNode & node, GraphViz::Graph & g, GameState state)
+void UCTSearch::printSubTreeGraphViz(const UCTNode & node, GraphViz::Graph & g, GameState state)
 {
     if (node.getNodeType() == SearchNodeType::FirstSimNode && node.hasChildren())
     {
@@ -477,7 +473,7 @@ void UCTSearch::printSubTreeGraphViz(UCTNode & node, GraphViz::Graph & g, GameSt
     // recurse for each child
     for (size_t c(0); c<node.numChildren(); ++c)
     {
-        UCTNode & child = node.getChild(c);
+        const UCTNode & child = node.getChild(c);
         if (child.numVisits() > 0)
         {
             GraphViz::Edge edge(getNodeIDString(node), getNodeIDString(child));
@@ -487,7 +483,7 @@ void UCTSearch::printSubTreeGraphViz(UCTNode & node, GraphViz::Graph & g, GameSt
     }
 }
  
-std::string UCTSearch::getNodeIDString(UCTNode & node)
+std::string UCTSearch::getNodeIDString(const UCTNode & node)
 {
     std::stringstream ss;
     ss << (unsigned long long)&node;

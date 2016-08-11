@@ -23,7 +23,7 @@
 namespace SparCraft
 {
     
-typedef std::shared_ptr<SparCraft::Player> PlayerPtr;
+typedef std::shared_ptr<Player> PlayerPtr;
 
 namespace AllPlayers
 {

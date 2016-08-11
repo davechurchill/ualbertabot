@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 namespace SparCraft
 {
     // type definitions for storing data

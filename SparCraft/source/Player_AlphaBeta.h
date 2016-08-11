@@ -10,13 +10,9 @@
 
 namespace SparCraft
 {
-   
+
 class AlphaBetaSearch;
-/*----------------------------------------------------------------------
- | Alpha Beta Player
- |----------------------------------------------------------------------
- | Runs Alpha Beta search given a set of search parameters
- `----------------------------------------------------------------------*/
+   
 class Player_AlphaBeta : public Player
 {
 	AlphaBetaSearch * alphaBeta;
@@ -26,12 +22,14 @@ public:
 	Player_AlphaBeta (const IDType & playerID);
 	Player_AlphaBeta (const IDType & playerID, const AlphaBetaSearchParameters & params, TTPtr table);
     virtual ~Player_AlphaBeta();
-	void getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec);
+
+	void getMoves(const GameState & state, std::vector<Action> & moveVec);
 	void setParameters(AlphaBetaSearchParameters & p);
-	AlphaBetaSearchParameters & getParams();
 	void setTranspositionTable(TTPtr table);
+
+	AlphaBetaSearchParameters & getParams();
 	AlphaBetaSearchResults & results();
-	IDType getType() { return PlayerModels::AlphaBeta; }
+	virtual PlayerPtr clone();
 };
 
 }

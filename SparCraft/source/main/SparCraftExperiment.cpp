@@ -78,28 +78,33 @@ void SparCraftExperiment::parseGamesJSON(const rapidjson::Value & games, const r
 
             Game g(state, white, black, 20000);
 
-            if (_showGUI)
-            {
-                static GUI gui(_guiWidth, _guiHeight);
-                gui.setGame(g);
+            playGame(g);
 
-                while (!gui.getGame().gameOver())
-                {
-                    gui.onFrame();
-                }
-            }
-            else
+            if (i % 500 == 0)
             {
-                g.play();
-                
-                if (i % 500 == 0)
-                {
-                    double ms = t.getElapsedTimeInMilliSec();
-                    double gps = (i * 1000.0) / ms;
-                    std::cout << "Played game " << i << ", time = " << ms/1000.0 << " @ " << gps << " games per second \n";
-                }
+                double ms = t.getElapsedTimeInMilliSec();
+                double gps = (i * 1000.0) / ms;
+                std::cout << "Played game " << i << ", time = " << ms/1000.0 << " @ " << gps << " games per second \n";
             }
         }
+    }
+}
+
+void SparCraftExperiment::playGame(Game & game)
+{
+    if (_showGUI)
+    {
+        static GUI gui(_guiWidth, _guiHeight);
+        gui.setGame(game);
+
+        while (!gui.getGame().gameOver())
+        {
+            gui.onFrame();
+        }
+    }
+    else
+    {
+        game.play();
     }
 }
 

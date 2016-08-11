@@ -26,7 +26,7 @@ protected:
     size_t                      _timeLimit;
 
     void                        doPortfolioSearch(const IDType & player,const GameState & state,UnitScriptData & currentData);
-    std::vector<Action>     getMoveVec(const IDType & player,const GameState & state,const std::vector<IDType> & playerScripts);
+    std::vector<Action>         getMoveVec(const IDType & player,const GameState & state,const std::vector<IDType> & playerScripts);
     StateEvalScore              eval(const IDType & player,const GameState & state,UnitScriptData & playerScriptsChosen);
     IDType                      calculateInitialSeed(const IDType & player,const GameState & state);
     void                        setAllScripts(const IDType & player,const GameState & state,UnitScriptData & data,const IDType & script);

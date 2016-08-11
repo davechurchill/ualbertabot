@@ -7,8 +7,11 @@ Player_AttackClosest::Player_AttackClosest(const IDType & playerID)
     _playerID = playerID;
 }
 
-void Player_AttackClosest::getMoves(GameState & state,const MoveArray & moves,std::vector<Action> & moveVec)
+void Player_AttackClosest::getMoves(const GameState & state, std::vector<Action> & moveVec)
 {
+    MoveArray moves;
+    state.generateMoves(moves, _playerID);
+
     moveVec.clear();
     for (IDType u(0); u<moves.numUnits(); ++u)
     {
@@ -75,4 +78,9 @@ void Player_AttackClosest::getMoves(GameState & state,const MoveArray & moves,st
 
         moveVec.push_back(moves.getMove(u,bestMoveIndex));
     }
+}
+
+PlayerPtr Player_AttackClosest::clone()
+{
+    return PlayerPtr(new Player_AttackClosest(*this));
 }

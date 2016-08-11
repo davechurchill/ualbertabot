@@ -8,7 +8,7 @@ Player_UCT::Player_UCT (const IDType & playerID, const UCTSearchParameters & par
     _params = params;
 }
 
-void Player_UCT::getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec)
+void Player_UCT::getMoves(const GameState & state, std::vector<Action> & moveVec)
 {
     moveVec.clear();
     
@@ -26,4 +26,9 @@ UCTSearchParameters & Player_UCT::getParams()
 UCTSearchResults & Player_UCT::getResults()
 {
     return _prevResults;
+}
+
+PlayerPtr Player_UCT::clone()
+{
+    return PlayerPtr(new Player_UCT(*this));
 }

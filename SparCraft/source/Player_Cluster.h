@@ -18,7 +18,7 @@ class Player_Cluster : public Player
 {
 public:
 	Player_Cluster (const IDType & playerID);
-	void getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec);
-	IDType getType() { return PlayerModels::Cluster; }
+	void getMoves(const GameState & state, std::vector<Action> & moveVec);
+	virtual PlayerPtr clone();
 };
 }

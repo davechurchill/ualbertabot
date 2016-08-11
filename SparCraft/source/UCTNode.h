@@ -59,6 +59,7 @@ public:
     const IDType    getPlayer()                 const           { return _player; }
 
     UCTNode *       getParent()                 const           { return _parent; }
+    const UCTNode & getChild(const size_t & c)  const           { return _children[c]; }
     UCTNode &       getChild(const size_t & c)                  { return _children[c]; }
 
     void            setUCTVal(double val)                       { _uctVal = val; }

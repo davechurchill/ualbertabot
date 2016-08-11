@@ -403,7 +403,7 @@ const IDType GameState::getEnemy(const IDType & player) const
 	return (player + 1) % 2;
 }
 
-const Unit & GameState::getClosestOurUnit(const IDType & player, const IDType & unitIndex)
+const Unit & GameState::getClosestOurUnit(const IDType & player, const IDType & unitIndex) const
 {
 	const Unit & myUnit(getUnit(player,unitIndex));
 
@@ -432,7 +432,7 @@ const Unit & GameState::getClosestOurUnit(const IDType & player, const IDType & 
 	return getUnit(player, minUnitInd);
 }
 
-const Unit & GameState::getClosestEnemyUnit(const IDType & player, const IDType & unitIndex, bool checkCloaked)
+const Unit & GameState::getClosestEnemyUnit(const IDType & player, const IDType & unitIndex, bool checkCloaked) const
 {
 	const IDType enemyPlayer(getEnemy(player));
 	const Unit & myUnit(getUnit(player,unitIndex));
@@ -445,7 +445,7 @@ const Unit & GameState::getClosestEnemyUnit(const IDType & player, const IDType 
 
 	for (IDType u(0); u<_numUnits[enemyPlayer]; ++u)
 	{
-        Unit & enemyUnit(getUnit(enemyPlayer, u));
+        const Unit & enemyUnit(getUnit(enemyPlayer, u));
 		if (checkCloaked&& enemyUnit.type().hasPermanentCloak())
 		{
 			bool invisible = true;

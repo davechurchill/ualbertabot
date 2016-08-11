@@ -243,8 +243,8 @@ PlayerPtr AIParameters::getPlayer(const IDType & player, const std::string & pla
 {
     SPARCRAFT_ASSERT(_playerMap[player].find(playerName) != _playerMap[player].end(), "AIParameters::getPlayer Couldn't find player variable: %d %s", (int)_playerMap[player].size(), playerName.c_str());
 
-    return _playerMap[player][playerName];
-    //return _playerMap[player][playerName]->clone();
+    //return _playerMap[player][playerName];
+    return _playerMap[player][playerName]->clone();
 }
 
 void AIParameters::parseJSONString(const std::string & jsonString)

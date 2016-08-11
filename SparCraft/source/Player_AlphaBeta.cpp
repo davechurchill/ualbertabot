@@ -41,9 +41,14 @@ void Player_AlphaBeta::setTranspositionTable(TTPtr table)
 	TT = table;
 }
 
-void Player_AlphaBeta::getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec)
+void Player_AlphaBeta::getMoves(const GameState & state, std::vector<Action> & moveVec)
 {
     moveVec.clear();
 	alphaBeta->doSearch(state);
     moveVec.assign(alphaBeta->getResults().bestMoves.begin(), alphaBeta->getResults().bestMoves.end());
+}
+
+PlayerPtr Player_AlphaBeta::clone()
+{
+    return PlayerPtr(new Player_AlphaBeta(*this));
 }

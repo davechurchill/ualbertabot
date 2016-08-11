@@ -29,7 +29,7 @@ void UnitScriptData::calculateMoves(const IDType & player, MoveArray & moves, Ga
 
         // generate the moves inside the appropriate vector
         getMoves(player, actualScript).clear();
-        pp->getMoves(state, moves, getMoves(player, actualScript));
+        pp->getMoves(state, getMoves(player, actualScript));
     }
 
     // for each unit the player has to move, populate the move vector with the appropriate script move

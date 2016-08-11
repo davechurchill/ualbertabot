@@ -21,40 +21,37 @@ protected:
 	PlayerPtr			_players[2];
 	size_t				_numPlayers;
 	IDType				_playerToMoveMethod;
-	size_t				rounds;
-	Timer				t;
-	double				gameTimeMS;
-	size_t				moveLimit;
+	size_t				_rounds;
+	Timer				_t;
+	double				_gameTimeMS;
+	size_t				_moveLimit;
 
-	GameState state;
+	GameState           _state;
 
 	// moves array to store moves in
-	MoveArray moves[2];
-	std::vector<Action> scriptMoves[2];
-
-    
+	//MoveArray           _moves[2];
+	//std::vector<Action> _scriptMoves[2];
 
 public:
 	
 	// game constructor
-	Game(const GameState & initialState, PlayerPtr & p1, PlayerPtr & p2, const size_t & limit);
-    Game(const GameState & initialState, const size_t & limit);
+	Game(const GameState & initialState, PlayerPtr p1, PlayerPtr p2, size_t turnLimit = 0);
+    Game(const GameState & initialState, size_t limit = 0);
 
-	void            play();
-    void            playNextTurn();
-    void            playIndividualScripts(UnitScriptData & scriptsChosen);
-	void            storeHistory(const bool & store);
-	bool            gameOver() const;
+	void                play();
+    void                playNextTurn();
+    void                playIndividualScripts(UnitScriptData & scriptsChosen);
+	void                storeHistory(const bool & store);
+	bool                gameOver() const;
     
+	ScoreType           eval(const IDType & evalMethod) const;
 
-	ScoreType       eval(const IDType & evalMethod) const;
-
-	GameState &     getState();
-    const GameState &     getState() const;
-	int             getRounds();
-	double          getTime();
-	const IDType    getPlayerToMove();
-    PlayerPtr       getPlayer(const IDType & player);
+	GameState &         getState();
+    const GameState &   getState() const;
+	int                 getRounds();
+	double              getTime();
+	const IDType        getPlayerToMove();
+    PlayerPtr           getPlayer(const IDType & player);
 
 };
 

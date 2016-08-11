@@ -7,8 +7,11 @@ Player_Cluster::Player_Cluster (const IDType & playerID)
 	_playerID = playerID;
 }
 
-void Player_Cluster::getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec)
+void Player_Cluster::getMoves(const GameState & state, std::vector<Action> & moveVec)
 {
+    MoveArray moves;
+    state.generateMoves(moves, _playerID);
+
     moveVec.clear();
 	IDType enemy(state.getEnemy(_playerID));
 
@@ -53,4 +56,9 @@ void Player_Cluster::getMoves(GameState & state, const MoveArray & moves, std::v
         			
 		moveVec.push_back(moves.getMove(u, bestMoveIndex));
 	}
+}
+
+PlayerPtr Player_Cluster::clone()
+{
+    return PlayerPtr(new Player_Cluster(*this));
 }

@@ -109,6 +109,15 @@
     <ClCompile Include="..\source\AIParameters.cpp">
       <Filter>AI</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\ScriptPlayerPolicy.cpp">
+      <Filter>AI\players\script</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Player_Script.cpp">
+      <Filter>AI\players\script</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Eval.cpp">
+      <Filter>AI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\AlphaBetaSearch.h">
@@ -253,6 +262,15 @@
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\source\AIParameters.h">
+      <Filter>AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\ScriptPlayerPolicy.h">
+      <Filter>AI\players\script</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Player_Script.h">
+      <Filter>AI\players\script</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Eval.h">
       <Filter>AI</Filter>
     </ClInclude>
   </ItemGroup>

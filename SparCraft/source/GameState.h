@@ -72,8 +72,8 @@ public:
           Unit &            getUnit(const IDType & player, const UnitCountType & unitIndex);
     const Unit &            getUnitByID(const IDType & player, const IDType & unitID)               const;
           Unit &            getUnitByID(const IDType & player, const IDType & unitID);
-    const Unit &            getClosestEnemyUnit(const IDType & player, const IDType & unitIndex, bool checkCloaked=false);
-    const Unit &            getClosestOurUnit(const IDType & player, const IDType & unitIndex);
+    const Unit &            getClosestEnemyUnit(const IDType & player, const IDType & unitIndex, bool checkCloaked=false) const;
+    const Unit &            getClosestOurUnit(const IDType & player, const IDType & unitIndex)      const;
     const Unit &            getUnitDirect(const IDType & player, const IDType & unit)               const;
     const Unit &            getNeutralUnit(const size_t & u)                                        const;
     

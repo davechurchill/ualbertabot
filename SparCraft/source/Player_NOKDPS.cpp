@@ -7,8 +7,11 @@ Player_NOKDPS::Player_NOKDPS (const IDType & playerID)
 	_playerID = playerID;
 }
 
-void Player_NOKDPS::getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec)
+void Player_NOKDPS::getMoves(const GameState & state, std::vector<Action> & moveVec)
 {
+    MoveArray moves;
+    state.generateMoves(moves, _playerID);
+
     moveVec.clear();
 	IDType enemy(state.getEnemy(_playerID));
 
@@ -97,4 +100,9 @@ void Player_NOKDPS::getMoves(GameState & state, const MoveArray & moves, std::ve
 			
 		moveVec.push_back(moves.getMove(u, bestMoveIndex));
 	}
+}
+
+PlayerPtr Player_NOKDPS::clone()
+{
+    return PlayerPtr(new Player_NOKDPS(*this));
 }
