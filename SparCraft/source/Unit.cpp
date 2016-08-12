@@ -19,7 +19,7 @@ Unit::Unit()
 }
 
 // test constructor for setting all variables of a unit
-Unit::Unit(const BWAPI::UnitType unitType, const Position & pos, const PlayerID & unitID, const PlayerID & playerID, 
+Unit::Unit(const BWAPI::UnitType unitType, const Position & pos, const size_t & unitID, const size_t & playerID, 
            const HealthType & hp, const HealthType & energy, const TimeType & tm, const TimeType & ta) 
     : _unitType             (unitType)
     , _range                (PlayerWeapon(&PlayerProperties::Get(playerID), unitType.groundWeapon()).GetMaxRange() + Constants::Range_Addition)
@@ -40,7 +40,7 @@ Unit::Unit(const BWAPI::UnitType unitType, const Position & pos, const PlayerID 
 }
 
 // constructor for units to construct basic units, sets some things automatically
-Unit::Unit(const BWAPI::UnitType unitType, const PlayerID & playerID, const Position & pos) 
+Unit::Unit(const BWAPI::UnitType unitType, const size_t & playerID, const Position & pos) 
     : _unitType             (unitType)
     , _range                (PlayerWeapon(&PlayerProperties::Get(playerID), unitType.groundWeapon()).GetMaxRange() + Constants::Range_Addition)
     , _position             (pos)
@@ -376,12 +376,12 @@ void Unit::setCooldown(TimeType attack, TimeType move)
     _timeCanAttack = attack; _timeCanMove = move; 
 }
 
-void Unit::setUnitID(const UnitID & id)
+void Unit::setUnitID(const size_t & id)
 { 
     _unitID = id; 
 }
 
-void Unit::setBWAPIUnitID(const UnitID & id)
+void Unit::setBWAPIUnitID(const size_t & id)
 { 
     _bwapiID = id; 
 }
@@ -428,12 +428,12 @@ const bool Unit::isOrganic() const
     return _unitType.isOrganic(); 
 }
 
-const UnitID Unit::getID() const	
+const size_t Unit::getID() const	
 { 
     return _unitID; 
 }
 
-const PlayerID Unit::getPlayerID() const
+const size_t Unit::getPlayerID() const
 { 
     return _playerID; 
 }

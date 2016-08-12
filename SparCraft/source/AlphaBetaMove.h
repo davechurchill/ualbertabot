@@ -3,6 +3,7 @@
 #include "Common.h"
 #include "Position.hpp"
 #include "Action.h"
+#include "Eval.h"
 
 namespace SparCraft
 {

@@ -16,7 +16,7 @@ class UCTNode
             
     // game specific variables
     size_t                      _player;            // the player who made a move to generate this node
-    PlayerID                      _nodeType;
+    size_t                      _nodeType;
     std::vector<Action>     _move;              // the ove that generated this node
 
     // holds children
@@ -38,7 +38,7 @@ public:
 
     }
 
-    UCTNode (UCTNode * parent, const PlayerID player, const PlayerID nodeType, const std::vector<Action> & move, const size_t & maxChildren, std::vector<UCTNode> * fromPool = NULL)
+    UCTNode (UCTNode * parent, const size_t player, const size_t nodeType, const std::vector<Action> & move, const size_t & maxChildren, std::vector<UCTNode> * fromPool = NULL)
         : _numVisits            (0)
         , _numWins              (0)
         , _uctVal               (0)
@@ -56,7 +56,7 @@ public:
     const double    getUCTVal()                 const           { return _uctVal; }
     const bool      hasChildren()               const           { return numChildren() > 0; }
     const size_t    getNodeType()               const           { return _nodeType; }
-    const PlayerID    getPlayer()                 const           { return _player; }
+    const size_t    getPlayer()                 const           { return _player; }
 
     UCTNode *       getParent()                 const           { return _parent; }
     const UCTNode & getChild(const size_t & c)  const           { return _children[c]; }
@@ -78,7 +78,7 @@ public:
         _move = move;
     }
 
-    void addChild(UCTNode * parent, const PlayerID player, const PlayerID nodeType, const std::vector<Action> & move, const size_t & maxChildren, std::vector<UCTNode> * fromPool = NULL)
+    void addChild(UCTNode * parent, const size_t player, const size_t nodeType, const std::vector<Action> & move, const size_t & maxChildren, std::vector<UCTNode> * fromPool = NULL)
     {
         _children.push_back(UCTNode(parent, player, nodeType, move, maxChildren));
     }

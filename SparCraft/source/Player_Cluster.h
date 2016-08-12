@@ -17,7 +17,7 @@ namespace SparCraft
 class Player_Cluster : public Player
 {
 public:
-	Player_Cluster (const PlayerID & playerID);
+	Player_Cluster (const size_t & playerID);
 	void getMoves(const GameState & state, std::vector<Action> & moveVec);
 	virtual PlayerPtr clone();
 };

@@ -2,7 +2,7 @@
 
 using namespace SparCraft;
 
-Player_AttackDPS::Player_AttackDPS (const PlayerID & playerID) 
+Player_AttackDPS::Player_AttackDPS (const size_t & playerID) 
 {
 	_playerID = playerID;
 }
@@ -13,7 +13,7 @@ void Player_AttackDPS::getMoves(const GameState & state, std::vector<Action> & m
     ActionGenerators::GenerateCompassActions(state, _playerID, moves);
 
     moveVec.clear();
-	for (PlayerID u(0); u<moves.numUnits(); ++u)
+	for (size_t u(0); u<moves.numUnits(); ++u)
 	{
 		bool foundAction						(false);
 		size_t actionMoveIndex					(0);
@@ -22,7 +22,7 @@ void Player_AttackDPS::getMoves(const GameState & state, std::vector<Action> & m
 		unsigned long long closestMoveDist		(std::numeric_limits<unsigned long long>::max());
 		
 		const Unit & ourUnit					(state.getUnit(_playerID, u));
-		const Unit & closestUnit				(ourUnit.canHeal() ? state.getClosestOurUnit(_playerID, u) : state.getClosestEnemyUnit(_playerID, u));
+		const Unit & closestUnit				(ourUnit.canHeal() ? AITools::GetClosestOurUnit(state, _playerID, u) : AITools::GetClosestEnemyUnit(state, _playerID, u));
 
 		for (size_t m(0); m<moves.numMoves(u); ++m)
 		{

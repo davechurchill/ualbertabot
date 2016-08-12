@@ -11,7 +11,7 @@ TTEntry::TTEntry()
 }
 
 TTEntry::TTEntry(const HashType & hash2, const StateEvalScore & score, const size_t & depth, const int & type, 
-				const PlayerID & firstPlayer, const AlphaBetaMove & bestFirstMove, const AlphaBetaMove & bestSecondMove)
+				const size_t & firstPlayer, const AlphaBetaMove & bestFirstMove, const AlphaBetaMove & bestSecondMove)
 	: _hash2(hash2)
 	, _score(score)
 	, _depth(depth)
@@ -34,8 +34,8 @@ const HashType & TTEntry::getHash()								const { return _hash2; }
 const StateEvalScore & TTEntry::getScore()						const { return _score; }
 const size_t & TTEntry::getDepth()								const { return _depth; }
 const int & TTEntry::getType()									const { return _type;  }
-const TTBestMove & TTEntry::getBestMove(const PlayerID & player)	const { return _bestMoves[player];  }
-void TTEntry::setBestMove(const PlayerID &firstPlayer, const AlphaBetaMove & bestFirstMove, const AlphaBetaMove & bestSecondMove)
+const TTBestMove & TTEntry::getBestMove(const size_t & player)	const { return _bestMoves[player];  }
+void TTEntry::setBestMove(const size_t &firstPlayer, const AlphaBetaMove & bestFirstMove, const AlphaBetaMove & bestSecondMove)
 {
 	_bestMoves[firstPlayer] = TTBestMove(bestFirstMove, bestSecondMove);
 }
@@ -103,7 +103,7 @@ const size_t TranspositionTable::getSaveIndex(const size_t & index, const HashTy
 }
 
 void TranspositionTable::save(	const HashType & hash1, const HashType & hash2, const StateEvalScore & value, const size_t & depth, const int & type,
-			const PlayerID & firstPlayer, const AlphaBetaMove & bestFirstMove, const AlphaBetaMove & bestSecondMove)
+			const size_t & firstPlayer, const AlphaBetaMove & bestFirstMove, const AlphaBetaMove & bestSecondMove)
 {
 	size_t indexToSave = getSaveIndex(getIndex(hash1), hash2, depth);
 	TTEntry existing = TT[indexToSave];

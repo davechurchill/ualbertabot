@@ -2,7 +2,7 @@
 
 using namespace SparCraft;
 
-Player_NOKDPS::Player_NOKDPS (const PlayerID & playerID) 
+Player_NOKDPS::Player_NOKDPS (const size_t & playerID) 
 {
 	_playerID = playerID;
 }
@@ -13,16 +13,16 @@ void Player_NOKDPS::getMoves(const GameState & state, std::vector<Action> & move
     ActionGenerators::GenerateCompassActions(state, _playerID, moves);
 
     moveVec.clear();
-	PlayerID enemy(state.getEnemy(_playerID));
+	size_t enemy(state.getEnemy(_playerID));
 
 	Array<int, Constants::Max_Units> hpRemaining;
 
-	for (PlayerID u(0); u<state.numUnits(enemy); ++u)
+	for (size_t u(0); u<state.numUnits(enemy); ++u)
 	{
 		hpRemaining[u] = state.getUnit(enemy,u).currentHP();
 	}
 
-	for (PlayerID u(0); u<moves.numUnits(); ++u)
+	for (size_t u(0); u<moves.numUnits(); ++u)
 	{
 		bool foundAction						(false);
 		size_t actionMoveIndex					(0);
@@ -31,7 +31,8 @@ void Player_NOKDPS::getMoves(const GameState & state, std::vector<Action> & move
 		unsigned long long closestMoveDist		(std::numeric_limits<unsigned long long>::max());
 		
 		const Unit & ourUnit				(state.getUnit(_playerID, u));
-		const Unit & closestUnit(ourUnit.canHeal() ? state.getClosestOurUnit(_playerID, u) : ourUnit.type().isDetector() ? state.getClosestEnemyUnit(_playerID, u, false):state.getClosestEnemyUnit(_playerID, u, true));
+		const Unit & closestUnit(ourUnit.canHeal() ? AITools::GetClosestOurUnit(state, _playerID, u) : ourUnit.type().isDetector() ? 
+            AITools::GetClosestEnemyUnit(state, _playerID, u, false) : AITools::GetClosestEnemyUnit(state,_playerID, u, true));
 		
 		for (size_t m(0); m<moves.numMoves(u); ++m)
 		{

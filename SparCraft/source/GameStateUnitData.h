@@ -7,33 +7,33 @@
 namespace SparCraft
 {
 
-typedef std::vector<Unit>       UnitVector;
-typedef std::vector<PlayerID>   UnitIDVector;
-
 class GameStateUnitData 
 {
-    UnitVector              _allUnits;         
-    UnitIDVector            _liveUnitIDs[2]; 
+    std::vector<Unit>       _allUnits;         
+    std::vector<size_t>     _liveUnitIDs[2];
+    size_t                  _numTotalUnits[2];
     
-    void                    removeUnit(const PlayerID & player, const UnitID & UnitIndex);
-    void                    removeUnitByID(const UnitID & unitID);
+    void                    removeUnit(const size_t & player, const size_t & UnitIndex);
+    void                    removeUnitByID(const size_t & unitID);
 
 public:
         
     GameStateUnitData();
     
-    const   Unit &          getUnit(const PlayerID & player, const UnitID & unitIndex) const;
-            Unit &          getUnit(const PlayerID & player, const UnitID & unitIndex);
+    const Unit &            getUnit(const size_t & player, const size_t & unitIndex) const;
+          Unit &            getUnit(const size_t & player, const size_t & unitIndex);
 
-    const   Unit &          getUnitByID(const UnitID & id) const;
-            Unit &          getUnitByID(const UnitID & id);
+    const Unit &            getUnitByID(const size_t & id) const;
+          Unit &            getUnitByID(const size_t & id);
 
-    const   UnitID          numUnits(const PlayerID & player) const;
+    const size_t            numUnits(const size_t & player) const;
+    const size_t            numTotalUnits(const size_t & player) const;
 
-    const   UnitIDVector &  getUnitIDs(const PlayerID & player) const;
+    const std::vector<Unit> & getAllUnits() const;
+    const std::vector<size_t> & getUnitIDs(const size_t & player) const;
 
     Unit &                  addUnit(const Unit & unit);
-    void                    killUnit(const UnitID & unitID);
+    void                    killUnit(const size_t & unitID);
 };
 
 }

@@ -8,6 +8,6 @@ namespace SparCraft
 {
 namespace ActionGenerators
 {
-    void GenerateCompassActions(const GameState & state, const PlayerID & player, MoveArray & moves);
+    void GenerateCompassActions(const GameState & state, const size_t & player, MoveArray & moves);
 }
 }

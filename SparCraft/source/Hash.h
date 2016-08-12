@@ -26,7 +26,7 @@ namespace Hash
 		const HashType getMoveHash			(const size_t & player, const size_t & value) const;
 		const HashType getUnitTypeHash		(const size_t & player, const size_t & value) const;
 		const HashType getCurrentHPHash		(const size_t & player, const size_t & value) const;
-		const HashType positionHash			(const PlayerID & player, const PositionType & x, const PositionType & y) const;
+		const HashType positionHash			(const size_t & player, const PositionType & x, const PositionType & y) const;
 	};
 
 	// some data storage

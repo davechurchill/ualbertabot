@@ -34,7 +34,7 @@ public:
 	// returns a given move from a unit
 	const Action & getMove(const size_t & unit, const size_t & move) const;
     bool hasMoreMoves() const;
-    size_t getUnitIndex(const UnitID & unitID) const;
+    size_t getUnitIndex(const size_t & unitID) const;
 
     void getNextMoveVec(std::vector<Action> & moves);
     void resetMoveIterator();
@@ -48,8 +48,8 @@ public:
 	
 	bool validateMoves();
 
-	const PlayerID getUnitID(const PlayerID & unit) const;
-	const PlayerID getPlayerID(const PlayerID & unit) const;
+	const size_t getUnitID(const size_t & unit) const;
+	const size_t getPlayerID(const size_t & unit) const;
 
     void shuffleMoveActions();
 

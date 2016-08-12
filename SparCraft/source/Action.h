@@ -12,10 +12,10 @@ namespace ActionTypes
 
 class Action 
 {
-	UnitID      _unitID;
-	PlayerID    _playerID;
+	size_t      _unitID;
+	size_t      _playerID;
 	size_t      _actionType;
-	UnitID      _targetID;
+	size_t      _targetID;
 
     Position _p;
 
@@ -23,13 +23,13 @@ public:
 
 
 	Action();
-    Action(const UnitID & unitIndex, const PlayerID & player, const size_t & type, const UnitID & moveIndex, const Position & dest);
-	Action(const UnitID & unitIndex, const PlayerID & player, const size_t & type, const UnitID & moveIndex);
+    Action(const size_t & unitIndex, const size_t & player, const size_t & type, const size_t & moveIndex, const Position & dest);
+	Action(const size_t & unitIndex, const size_t & player, const size_t & type, const size_t & moveIndex);
 
 	const bool operator == (const Action & rhs);
 
-	const UnitID & getID() const;
-	const PlayerID & getPlayerID() const;
+	const size_t & getID() const;
+	const size_t & getPlayerID() const;
 	const size_t & type() const;
 	const size_t & getTargetID() const;
     const Position & pos() const;

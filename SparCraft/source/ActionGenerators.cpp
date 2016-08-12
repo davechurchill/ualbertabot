@@ -2,15 +2,15 @@
 
 using namespace SparCraft;
 
-void ActionGenerators::GenerateCompassActions(const GameState & state, const PlayerID & player, MoveArray & moves)
+void ActionGenerators::GenerateCompassActions(const GameState & state, const size_t & player, MoveArray & moves)
 {
 	moves.clear();
 
     // which is the enemy player
-	PlayerID enemyPlayer  = state.getEnemy(player);
+	size_t enemyPlayer  = state.getEnemy(player);
 
     // make sure this player can move right now
-    const PlayerID canMove = state.whoCanMove();
+    const size_t canMove = state.whoCanMove();
     if (canMove == enemyPlayer)
     {
         SPARCRAFT_ASSERT(false, "GameState Error - Called generateMoves() for a player that cannot currently move");
@@ -20,7 +20,7 @@ void ActionGenerators::GenerateCompassActions(const GameState & state, const Pla
 	// so return all units which can move at the same time as the first
 	TimeType firstUnitMoveTime = state.getTimeNextUnitCanAct(player);
 
-	for (PlayerID unitIndex(0); unitIndex < state.numUnits(player); ++unitIndex)
+	for (size_t unitIndex(0); unitIndex < state.numUnits(player); ++unitIndex)
 	{
 		// unit reference
 		const Unit & unit = state.getUnit(player,unitIndex);
@@ -40,14 +40,14 @@ void ActionGenerators::GenerateCompassActions(const GameState & state, const Pla
 		// generate attack moves
 		if (unit.canAttackNow())
 		{
-			for (PlayerID u(0); u < state.numUnits(enemyPlayer); ++u)
+			for (size_t u(0); u < state.numUnits(enemyPlayer); ++u)
 			{
 				const Unit & enemyUnit = state.getUnit(enemyPlayer, u);
 				bool invisible = false;
 				if (enemyUnit.type().hasPermanentCloak())
 				{
 					invisible = true;
-					for (PlayerID detectorIndex(0); detectorIndex < state.numUnits(player); ++detectorIndex)
+					for (size_t detectorIndex(0); detectorIndex < state.numUnits(player); ++detectorIndex)
 					{
 						// unit reference
 						const Unit & detector = state.getUnit(player, detectorIndex);
@@ -67,7 +67,7 @@ void ActionGenerators::GenerateCompassActions(const GameState & state, const Pla
 		}
 		else if (unit.canHealNow())
 		{
-			for (PlayerID u(0); u< state.numUnits(player); ++u)
+			for (size_t u(0); u< state.numUnits(player); ++u)
 			{
 				// units cannot heal themselves in broodwar
 				if (u == unitIndex)
@@ -117,7 +117,7 @@ void ActionGenerators::GenerateCompassActions(const GameState & state, const Pla
             }
 
             // we are only generating moves in the cardinal direction specified in common.h
-			for (PlayerID d(0); d<Constants::Num_Directions; ++d)
+			for (size_t d(0); d<Constants::Num_Directions; ++d)
 			{			
                 // the direction of this movement
               	Position dir(Constants::Move_Dir[d][0], Constants::Move_Dir[d][1]);

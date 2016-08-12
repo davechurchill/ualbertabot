@@ -1,5 +1,6 @@
 #include "AlphaBetaSearch.h"
 #include "SparCraftAssert.h"
+#include "Eval.h"
 
 using namespace SparCraft;
 
@@ -76,7 +77,7 @@ AlphaBetaValue AlphaBetaSearch::IDAlphaBeta(const GameState & initialState, cons
 			// if we didn't finish the first depth, set the move to the best script move
 			if (d == 1)
 			{
-				const PlayerID playerToMove = getPlayerToMove(initialState, 1, Players::Player_None, true);
+				const size_t playerToMove = getPlayerToMove(initialState, 1, Players::Player_None, true);
 				PlayerPtr bestScript(new Player_NOKDPS(playerToMove));
 				bestScript->getMoves(initialState, _results.bestMoves);
 			}
@@ -96,7 +97,7 @@ AlphaBetaValue AlphaBetaSearch::IDAlphaBeta(const GameState & initialState, cons
 
 // Transposition Table save 
 void AlphaBetaSearch::TTsave( const GameState & state, const StateEvalScore & value, const StateEvalScore & alpha, const StateEvalScore & beta, const size_t & depth, 
-						const PlayerID & firstPlayer, const AlphaBetaMove & bestFirstMove, const AlphaBetaMove & bestSecondMove) 
+						const size_t & firstPlayer, const AlphaBetaMove & bestFirstMove, const AlphaBetaMove & bestSecondMove) 
 {
 	// IF THE DEPTH OF THE ENTRY IS BIGGER THAN CURRENT DEPTH, DO NOTHING
 	TTEntry * entry = _TT->lookupScan(state.calculateHash(0), state.calculateHash(1));
@@ -183,9 +184,9 @@ const bool AlphaBetaSearch::terminalState(const GameState & state, const size_t 
 	return (depth <= 0 || state.isTerminal());
 }
 
-const AlphaBetaMove & AlphaBetaSearch::getAlphaBetaMove(const TTLookupValue & TTval, const PlayerID & playerToMove) const
+const AlphaBetaMove & AlphaBetaSearch::getAlphaBetaMove(const TTLookupValue & TTval, const size_t & playerToMove) const
 {
-	const PlayerID enemyPlayer(getEnemy(playerToMove));
+	const size_t enemyPlayer(getEnemy(playerToMove));
 
 	// if we have a valid first move for this player, use it
 	if (TTval.entry()->getBestMove(playerToMove).firstMove().isValid())
@@ -199,7 +200,7 @@ const AlphaBetaMove & AlphaBetaSearch::getAlphaBetaMove(const TTLookupValue & TT
 	}
 }
 
-void AlphaBetaSearch::generateOrderedMoves(const GameState & state, const TTLookupValue & TTval, const PlayerID & playerToMove, const size_t & depth)
+void AlphaBetaSearch::generateOrderedMoves(const GameState & state, const TTLookupValue & TTval, const size_t & playerToMove, const size_t & depth)
 {
 	// get the array where we will store the moves and clear it
 	Array<std::vector<Action>, Constants::Max_Ordered_Moves> & orderedMoves(_orderedMoves[depth]);
@@ -263,7 +264,7 @@ void AlphaBetaSearch::generateOrderedMoves(const GameState & state, const TTLook
     }
 }
 
-bool AlphaBetaSearch::getNextMoveVec(PlayerID playerToMove, MoveArray & moves, const size_t & moveNumber, const TTLookupValue & TTval, const size_t & depth, std::vector<Action> & moveVec) const
+bool AlphaBetaSearch::getNextMoveVec(size_t playerToMove, MoveArray & moves, const size_t & moveNumber, const TTLookupValue & TTval, const size_t & depth, std::vector<Action> & moveVec) const
 {
     if (_params.maxChildren() && (moveNumber >= _params.maxChildren()))
     {
@@ -317,9 +318,9 @@ bool AlphaBetaSearch::getNextMoveVec(PlayerID playerToMove, MoveArray & moves, c
 	}
 }
 
-const PlayerID AlphaBetaSearch::getPlayerToMove(const GameState & state, const size_t & depth, const PlayerID & lastPlayerToMove, const bool isFirstSimMove) const
+const size_t AlphaBetaSearch::getPlayerToMove(const GameState & state, const size_t & depth, const size_t & lastPlayerToMove, const bool isFirstSimMove) const
 {
-	const PlayerID whoCanMove(state.whoCanMove());
+	const size_t whoCanMove(state.whoCanMove());
 
 	// if both players can move
 	if (whoCanMove == Players::Player_Both)
@@ -331,8 +332,8 @@ const PlayerID AlphaBetaSearch::getPlayerToMove(const GameState & state, const s
 		}
 
 		// pick the first move based on our policy
-		const PlayerID policy(_params.playerToMoveMethod());
-		const PlayerID maxPlayer(_params.maxPlayer());
+		const size_t policy(_params.playerToMoveMethod());
+		const size_t maxPlayer(_params.maxPlayer());
 
 		if (policy == SparCraft::PlayerToMove::Alternate)
 		{
@@ -363,7 +364,7 @@ const bool AlphaBetaSearch::isTranspositionLookupState(const GameState & state, 
 	return !state.bothCanMove() || (state.bothCanMove() && !firstSimMove);
 }
 
-AlphaBetaValue AlphaBetaSearch::alphaBeta(const GameState & state, size_t depth, const PlayerID lastPlayerToMove, std::vector<Action> * prevSimMove, StateEvalScore alpha, StateEvalScore beta)
+AlphaBetaValue AlphaBetaSearch::alphaBeta(const GameState & state, size_t depth, const size_t lastPlayerToMove, std::vector<Action> * prevSimMove, StateEvalScore alpha, StateEvalScore beta)
 {
 	// update statistics
 	_results.nodesExpanded++;
@@ -376,13 +377,13 @@ AlphaBetaValue AlphaBetaSearch::alphaBeta(const GameState & state, size_t depth,
 	if (terminalState(state, depth))
 	{
 		// return the value, but the move will not be valid since none was performed
-        StateEvalScore evalScore = state.eval(_params.maxPlayer(), _params.evalMethod(), _params.simScript(Players::Player_One), _params.simScript(Players::Player_Two));
+        StateEvalScore evalScore = Eval::Eval(state, _params.maxPlayer(), _params.evalMethod(), _params.playoutPlayer(Players::Player_One), _params.playoutPlayer(Players::Player_Two));
 		
 		return AlphaBetaValue(StateEvalScore(evalScore.val(), state.getNumMovements(_params.maxPlayer()) + evalScore.numMoves() ), AlphaBetaMove());
 	}
 
 	// figure out which player is to move
-	const PlayerID playerToMove(getPlayerToMove(state, depth, lastPlayerToMove, !prevSimMove));
+	const size_t playerToMove(getPlayerToMove(state, depth, lastPlayerToMove, !prevSimMove));
 
 	// is the player to move the max player?
 	bool maxPlayer = (playerToMove == _params.maxPlayer());
@@ -440,11 +441,11 @@ AlphaBetaValue AlphaBetaSearch::alphaBeta(const GameState & state, size_t depth,
 			if (prevSimMove)
 			{
 				// do the previous move selected by the first player to move during this state
-                child.makeMoves(*prevSimMove);
+                child.doMove(*prevSimMove);
 			}
 
 			// do the moves of the current player
-            child.makeMoves(moveVec);
+            child.doMove(moveVec);
 
 			// get the alpha beta value
 			val = alphaBeta(child, depth-1, playerToMove, NULL, alpha, beta);
@@ -504,7 +505,7 @@ AlphaBetaSearchResults & AlphaBetaSearch::getResults()
 	return _results;
 }
 
-const PlayerID AlphaBetaSearch::getEnemy(const PlayerID & player) const
+const size_t AlphaBetaSearch::getEnemy(const size_t & player) const
 {
 	return (player + 1) % 2;
 }

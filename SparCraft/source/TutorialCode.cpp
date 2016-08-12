@@ -11,13 +11,13 @@ Unit getSampleUnit()
     // Unit has several constructors
     // You will typically only be using this one to construct a 'starting' unit
 
-    // Unit(const BWAPI::UnitType unitType, const PlayerID & playerID, const Position & pos)
+    // Unit(const BWAPI::UnitType unitType, const size_t & playerID, const Position & pos)
 
     // The BWAPI::UnitType of the unit to be added
     BWAPI::UnitType marine = BWAPI::UnitTypes::Terran_Marine;
 
     // The player to add this unit to, specified by an PlayerID
-    PlayerID player = Players::Player_One;
+    size_t player = Players::Player_One;
 
     // A Position, measured in Pixel coordinates
     Position p(0,0);
@@ -37,8 +37,8 @@ GameState getSampleState()
     state.addUnit(getSampleUnit());
 
     // Or it can be added to the state via unit construction parameters
-    state.addUnit(BWAPI::UnitTypes::Terran_Marine, Players::Player_One, Position(10,10));
-    state.addUnit(BWAPI::UnitTypes::Protoss_Dragoon, Players::Player_Two, Position(40,40));
+    state.addUnit(Unit(BWAPI::UnitTypes::Terran_Marine, Players::Player_One, Position(10,10)));
+    state.addUnit(Unit(BWAPI::UnitTypes::Protoss_Dragoon, Players::Player_Two, Position(40,40)));
 
     // Units added with those 2 functions will be given a unique unitID inside GameState
     // If you require setting your own unique unitID for a unit, for example when translating a BWAPI::Broodwar state to GameState
@@ -91,7 +91,7 @@ Map getSampleMap()
 // When dealing with players, use a shared pointer, it's safer
 // PlayerPtr is a boost::shared_pointer wrapper for Player *
 
-PlayerPtr getSamplePlayer(const PlayerID playerID)
+PlayerPtr getSamplePlayer(const size_t playerID)
 {
     // Player is the base class for all Player objects
     //
@@ -106,7 +106,7 @@ PlayerPtr getSamplePlayer(const PlayerID playerID)
 std::vector<Action> getSamplePlayerActionsFromState()
 {
     // get our sample player
-    PlayerID currentPlayerID = Players::Player_One;
+    size_t currentPlayerID = Players::Player_One;
     PlayerPtr myPlayer = getSamplePlayer(currentPlayerID);
 
     // Construct a blank vector of Actions, which are individual unit moves
@@ -143,7 +143,7 @@ void runSampleGame()
     GameState finalState = g.getState();
 
     // you can now evaluate the state however you wish. let's use an LTD2 evaluation from the point of view of player one
-    StateEvalScore score = finalState.eval(Players::Player_One, EvaluationMethods::LTD2);
+    StateEvalScore score = Eval::Eval(finalState, Players::Player_One, EvaluationMethods::LTD2);
 
     // StateEvalScore has two components, a numerical score and a number of Movement actions performed by each player
     // with this evaluation, positive val means win, negative means loss, 0 means tie

@@ -151,8 +151,8 @@ GameState SparCraftExperiment::GetStateFromVariable(const std::string & stateVar
                 Position u1(center[0][0] + r.x(), center[0][1] + r.y());
                 Position u2(center[1][0] - r.x(), center[1][1] - r.y());
 
-                state.addUnit(type, Players::Player_One, u1);
-                state.addUnit(type, Players::Player_Two, u2);
+                state.addUnit(Unit(type, Players::Player_One, u1));
+                state.addUnit(Unit(type, Players::Player_Two, u2));
 	        }
         }
 

@@ -2,7 +2,7 @@
 
 using namespace SparCraft;
 
-Player_AttackClosest::Player_AttackClosest(const PlayerID & playerID)
+Player_AttackClosest::Player_AttackClosest(const size_t & playerID)
 {
     _playerID = playerID;
 }
@@ -13,7 +13,7 @@ void Player_AttackClosest::getMoves(const GameState & state, std::vector<Action>
     ActionGenerators::GenerateCompassActions(state, _playerID, moves);
 
     moveVec.clear();
-    for (UnitID u(0); u<moves.numUnits(); ++u)
+    for (size_t u(0); u<moves.numUnits(); ++u)
     {
         bool foundAction = false;
         size_t actionMoveIndex = 0;
@@ -24,7 +24,7 @@ void Player_AttackClosest::getMoves(const GameState & state, std::vector<Action>
         SPARCRAFT_ASSERT(moves.numMoves(u) > 0, "0 moves found for unit");
 
         const Unit & ourUnit = state.getUnitByID(moves.getMove(u, 0).getID());
-        const Unit & closestUnit = ourUnit.canHeal() ? state.getClosestOurUnit(_playerID,u) : state.getClosestEnemyUnit(_playerID,u);
+        const Unit & closestUnit = ourUnit.canHeal() ? AITools::GetClosestOurUnit(state, _playerID, u) : AITools::GetClosestEnemyUnit(state, _playerID, u);
 
         for (size_t m(0); m<moves.numMoves(u); ++m)
         {

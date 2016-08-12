@@ -54,14 +54,18 @@ void Game::playNextTurn()
     //_scriptMoves[1].clear();
 
     // the player that will move next
-    const PlayerID playerToMove   = getPlayerToMove();
+    const size_t playerToMove   = getPlayerToMove();
     PlayerPtr player            = _players[playerToMove];
     PlayerPtr enemy             = _players[_state.getEnemy(playerToMove)];
 
     // generate the moves possible from this state
     //_state.generateMoves(_moves[toMove->ID()], toMove->ID());
 
+    const size_t whoCanMove = _state.whoCanMove();
     std::vector<Action> playerMove;
+    std::vector<Action> enemyMove;
+
+    int times[2] = {_state.getTimeNextUnitCanAct(0), _state.getTimeNextUnitCanAct(1) };
 
     // the tuple of moves he wishes to make
     player->getMoves(_state, playerMove);
@@ -69,14 +73,13 @@ void Game::playNextTurn()
     // if both players can move, generate the other player's moves
     if (_state.bothCanMove())
     {
-        std::vector<Action> enemyMove;
         enemy->getMoves(_state, enemyMove);
-
-        _state.makeMoves(enemyMove);
     }
 
+    int times2[2] = {_state.getTimeNextUnitCanAct(0), _state.getTimeNextUnitCanAct(1) };
+
     // make the moves
-    _state.makeMoves(playerMove);
+    _state.doMove(playerMove, enemyMove);
 
     //_state.finishedMoving();
     _rounds++;
@@ -102,17 +105,17 @@ void Game::playIndividualScripts(UnitScriptData & scriptData)
         frameTimer.start();
 
         // clear all script moves for both players
-        for (PlayerID p(0); p<Constants::Num_Players; p++)
+        for (size_t p(0); p<Constants::Num_Players; p++)
         {
-            for (PlayerID s(0); s<PlayerModels::Size; ++s)
+            for (size_t s(0); s<PlayerModels::Size; ++s)
             {
                 allScriptMoves[p][s].clear();
             }
         }
 
         // the playr that will move next
-        const PlayerID playerToMove = getPlayerToMove();
-        const PlayerID enemyPlayer  = _state.getEnemy(playerToMove);
+        const size_t playerToMove = getPlayerToMove();
+        const size_t enemyPlayer  = _state.getEnemy(playerToMove);
 
         MoveArray playerLegalMoves;
         std::vector<Action> playerMove;
@@ -132,18 +135,18 @@ void Game::playIndividualScripts(UnitScriptData & scriptData)
 
             scriptData.calculateMoves(enemyPlayer, enemyLegalMoves, _state, enemyMove);
 
-            _state.makeMoves(enemyMove);
+            _state.doMove(enemyMove);
         }
 
         // make the moves
-        _state.makeMoves(playerMove);
+        _state.doMove(playerMove);
         _rounds++;
     }
 
     _gameTimeMS = _t.getElapsedTimeInMilliSec();
 }
 
-PlayerPtr Game::getPlayer(const PlayerID & player)
+PlayerPtr Game::getPlayer(const size_t & player)
 {
     return _players[player];
 }
@@ -175,9 +178,9 @@ GameState & Game::getState()
 }
 
 // determine the player to move
-const PlayerID Game::getPlayerToMove()
+const size_t Game::getPlayerToMove()
 {
-    const PlayerID whoCanMove = _state.whoCanMove();
+    const size_t whoCanMove = _state.whoCanMove();
 
     return (whoCanMove == Players::Player_Both) ? Players::Player_One : whoCanMove;
 }

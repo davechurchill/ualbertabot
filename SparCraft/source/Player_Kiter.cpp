@@ -2,7 +2,7 @@
 
 using namespace SparCraft;
 
-Player_Kiter::Player_Kiter (const PlayerID & playerID) 
+Player_Kiter::Player_Kiter (const size_t & playerID) 
 {
 	_playerID = playerID;
 }
@@ -13,20 +13,20 @@ void Player_Kiter::getMoves(const GameState & state, std::vector<Action> & moveV
     ActionGenerators::GenerateCompassActions(state, _playerID, moves);
 
     moveVec.clear();
-	for (PlayerID u(0); u<moves.numUnits(); ++u)
+	for (size_t u(0); u<moves.numUnits(); ++u)
 	{
 		bool foundAction						(false);
-		PlayerID actionMoveIndex					(0);
-		PlayerID furthestMoveIndex				(0);
+		size_t actionMoveIndex					(0);
+		size_t furthestMoveIndex				(0);
 		size_t furthestMoveDist					(0);
-		PlayerID closestMoveIndex					(0);
+		size_t closestMoveIndex					(0);
 		int actionDistance						(std::numeric_limits<int>::max());
 		unsigned long long closestMoveDist		(std::numeric_limits<unsigned long long>::max());
 
 		const Unit & ourUnit					(state.getUnit(_playerID, u));
-		const Unit & closestUnit				(ourUnit.canHeal() ? state.getClosestOurUnit(_playerID, u) : state.getClosestEnemyUnit(_playerID, u));
+		const Unit & closestUnit				(ourUnit.canHeal() ? AITools::GetClosestOurUnit(state, _playerID, u) : AITools::GetClosestEnemyUnit(state, _playerID, u));
 
-		for (PlayerID m(0); m<moves.numMoves(u); ++m)
+		for (size_t m(0); m<moves.numMoves(u); ++m)
 		{
 			const Action move						(moves.getMove(u, m));
 				

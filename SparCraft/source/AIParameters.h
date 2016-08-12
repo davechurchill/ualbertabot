@@ -22,7 +22,7 @@ class AIParameters
 
     void                parsePlayers(const std::string & keyName, const rapidjson::Value & rootValue);
     
-    PlayerPtr           parsePlayer(const PlayerID & player, const std::string & playerVariable, const rapidjson::Value & root);
+    PlayerPtr           parsePlayer(const size_t & player, const std::string & playerVariable, const rapidjson::Value & root);
     
     AIParameters();
 
@@ -34,7 +34,7 @@ public:
     void                parseJSONString(const std::string & jsonString);
     void                parseFile(const std::string & filename);
 
-    PlayerPtr           getPlayer(const PlayerID & player, const std::string & playerName);
+    PlayerPtr           getPlayer(const size_t & player, const std::string & playerName);
 
     const std::vector<std::string> & getPlayerNames() const;
     const std::vector<std::string> & getPartialPlayerNames() const;

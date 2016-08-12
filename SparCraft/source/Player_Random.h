@@ -16,7 +16,7 @@ class Player_Random : public Player
 {
 	RandomInt rand;
 public:
-	Player_Random (const PlayerID & playerID);
+	Player_Random (const size_t & playerID);
 	void getMoves(const GameState & state, std::vector<Action> & moveVec);
 	virtual PlayerPtr clone();
 };

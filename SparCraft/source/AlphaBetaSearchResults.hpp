@@ -19,7 +19,7 @@ public:
 						avgBranch;		// avg branching factor
 
     std::vector<Action>   bestMoves;
-	ScoreType			abValue;
+	double			abValue;
 	unsigned long long  ttcuts;
 	size_t				maxDepthReached;	
 

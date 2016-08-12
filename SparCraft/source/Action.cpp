@@ -12,7 +12,7 @@ Action::Action()
 
 }
 
-Action::Action(const UnitID & unitIndex, const PlayerID & player, const size_t & type, const UnitID & targetID, const Position & dest)
+Action::Action(const size_t & unitIndex, const size_t & player, const size_t & type, const size_t & targetID, const Position & dest)
     : _unitID(unitIndex)
     , _playerID(player)
     , _actionType(type)
@@ -22,7 +22,7 @@ Action::Action(const UnitID & unitIndex, const PlayerID & player, const size_t &
         
 }
 
-Action::Action(const UnitID & unitIndex, const PlayerID & player, const size_t & type, const UnitID & targetID)
+Action::Action(const size_t & unitIndex, const size_t & player, const size_t & type, const size_t & targetID)
 	: _unitID(unitIndex)
 	, _playerID(player)
 	, _actionType(type)
@@ -36,12 +36,12 @@ const bool Action::operator == (const Action & rhs)
 	return _unitID == rhs._unitID && _playerID == rhs._playerID && _actionType == rhs._actionType && _targetID == rhs._targetID && _p == rhs._p;
 }
 
-const UnitID & Action::getID() const	
+const size_t & Action::getID() const	
 { 
     return _unitID; 
 }
 
-const PlayerID & Action::getPlayerID() const	
+const size_t & Action::getPlayerID() const	
 { 
     return _playerID; 
 }

@@ -28,7 +28,7 @@ void MoveArray::shuffleMoveActions()
         // reverse through the list of actions for this unit
         for (int a(numMoves(u)-1); a >= 0; --a)
         {
-            PlayerID moveType(getMove(u, a).type());
+            size_t moveType(getMove(u, a).type());
 
             // mark the end of the move actions
             if (moveEnd == -1 && (moveType == ActionTypes::MOVE))
@@ -65,8 +65,6 @@ void MoveArray::shuffleMoveActions()
 // returns a given move from a unit
 const Action & MoveArray::getMove(const size_t & unit, const size_t & move) const
 {
-    SPARCRAFT_ASSERT(_moves[unit][(size_t)move].getID() != 255, "Move size too large");
-
     return _moves[unit][(size_t)move];
 }
 
@@ -151,7 +149,7 @@ void MoveArray::add(const Action & action)
     }
 }
 
-size_t MoveArray::getUnitIndex(const UnitID & unitID) const
+size_t MoveArray::getUnitIndex(const size_t & unitID) const
 {
     for (size_t u(0); u < _moves.size(); ++u)
     {
@@ -183,12 +181,12 @@ bool MoveArray::validateMoves()
 	return true;
 }
 
-const PlayerID MoveArray::getUnitID(const PlayerID & unit) const
+const size_t MoveArray::getUnitID(const size_t & unit) const
 {
 	return getMove(unit, 0).getID();
 }
 
-const PlayerID MoveArray::getPlayerID(const PlayerID & unit) const
+const size_t MoveArray::getPlayerID(const size_t & unit) const
 {
 	return getMove(unit, 0).getPlayerID();
 }

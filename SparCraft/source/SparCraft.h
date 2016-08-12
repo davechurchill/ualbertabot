@@ -14,6 +14,8 @@
 #include "GameState.h"
 #include "AnimationFrameData.h"
 #include "AIParameters.h"
+#include "Eval.h"
+#include "AITools.h"
 
 namespace SparCraft
 {

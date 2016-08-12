@@ -25,8 +25,8 @@ class GUIGame
     void drawParameters(int x, int y);
     void drawSearchResults(int x, int y);
 
-    void setResults(const PlayerID & player, const std::vector<std::vector<std::string> > & r);
-    void setParams(const PlayerID & player, const std::vector<std::vector<std::string> > & p);
+    void setResults(const size_t & player, const std::vector<std::vector<std::string> > & r);
+    void setParams(const size_t & player, const std::vector<std::vector<std::string> > & p);
 
 public:
 

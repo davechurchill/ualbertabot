@@ -27,7 +27,7 @@ typedef std::shared_ptr<Player> PlayerPtr;
 
 namespace AllPlayers
 {
-    Player * getPlayer(const PlayerID & playerID, const PlayerID & type);
-    PlayerPtr getPlayerPtr(const PlayerID & playerID, const PlayerID & type);
+    Player * getPlayer(const size_t & playerID, const size_t & type);
+    PlayerPtr getPlayerPtr(const size_t & playerID, const size_t & type);
 }
 }

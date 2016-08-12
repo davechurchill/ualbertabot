@@ -19,7 +19,7 @@ GUIGame::GUIGame(GUI & gui)
 void GUIGame::onFrame()
 {
     drawGame();
-    drawHPBars();
+    //drawHPBars();
 
     Timer turnTimer;
     turnTimer.start();
@@ -84,9 +84,9 @@ void GUIGame::drawHPBars()
 {
     const GameState & state = _game.getState();
 
-    for (PlayerID p(0); p < Constants::Num_Players; ++p)
+    for (size_t p(0); p < Constants::Num_Players; ++p)
     {
-        for (PlayerID u(0); u < state.numUnits(p); ++u)
+        for (size_t u(0); u < state.numUnits(p); ++u)
         {
             int barHeight = 12;
 
@@ -253,12 +253,12 @@ const Game & GUIGame::getGame() const
     return _game;
 }
 
-void GUIGame::setResults(const PlayerID & player, const std::vector<std::vector<std::string> > & r)
+void GUIGame::setResults(const size_t & player, const std::vector<std::vector<std::string> > & r)
 {
 	_results[player] = r;
 }
 
-void GUIGame::setParams(const PlayerID & player, const std::vector<std::vector<std::string> > & p)
+void GUIGame::setParams(const size_t & player, const std::vector<std::vector<std::string> > & p)
 {
 	_params[player] = p;
 }

@@ -87,7 +87,7 @@ const bool UCTSearch::terminalState(GameState & state, const size_t & depth) con
 	return (depth <= 0 || state.isTerminal());
 }
 
-void UCTSearch::generateOrderedMoves(GameState & state, const PlayerID & playerToMove)
+void UCTSearch::generateOrderedMoves(GameState & state, const size_t & playerToMove)
 {
 	_orderedMoves.clear();
 
@@ -144,7 +144,7 @@ const size_t UCTSearch::getChildNodeType(const UCTNode & parent, const GameState
     return SearchNodeType::Default;
 }
 
-const bool UCTSearch::getNextMove(PlayerID playerToMove, MoveArray & moves, const size_t & moveNumber, std::vector<Action> & actionVec)
+const bool UCTSearch::getNextMove(size_t playerToMove, MoveArray & moves, const size_t & moveNumber, std::vector<Action> & actionVec)
 {
     if (moveNumber > _params.maxChildren())
     {
@@ -185,16 +185,16 @@ const bool UCTSearch::getNextMove(PlayerID playerToMove, MoveArray & moves, cons
 	}
 }
 
-const PlayerID UCTSearch::getPlayerToMove(const UCTNode & node, const GameState & state) const
+const size_t UCTSearch::getPlayerToMove(const UCTNode & node, const GameState & state) const
 {
-	const PlayerID whoCanMove(state.whoCanMove());
+	const size_t whoCanMove(state.whoCanMove());
 
 	// if both players can move
 	if (whoCanMove == Players::Player_Both)
 	{
         // pick the first move based on our policy
-		const PlayerID policy(_params.playerToMoveMethod());
-		const PlayerID maxPlayer(_params.maxPlayer());
+		const size_t policy(_params.playerToMoveMethod());
+		const size_t maxPlayer(_params.maxPlayer());
 
         // the max player always chooses at the root
         if (isRoot(node))
@@ -203,7 +203,7 @@ const PlayerID UCTSearch::getPlayerToMove(const UCTNode & node, const GameState 
         }
 
         // the type of node this is
-        const PlayerID nodeType = node.getNodeType();
+        const size_t nodeType = node.getNodeType();
 
         // the 2nd player in a sim move is always the enemy of the first
         if (nodeType == SearchNodeType::FirstSimNode)
@@ -293,11 +293,11 @@ void UCTSearch::updateState(UCTNode & node, GameState & state, bool isLeaf)
         if (node.getNodeType() == SearchNodeType::SecondSimNode)
         {
             // make the parent's moves on the state because they haven't been done yet
-            state.makeMoves(node.getParent()->getMove());
+            state.doMove(node.getParent()->getMove());
         }
 
         // do the current node moves and call finished moving
-        state.makeMoves(node.getMove());
+        state.doMove(node.getMove());
     }
 }
 
@@ -315,7 +315,7 @@ StateEvalScore UCTSearch::traverse(UCTNode & node, GameState & currentState)
         updateState(node, currentState, true);
 
         // do the playout
-        playoutVal = currentState.eval(_params.maxPlayer(), _params.evalMethod(), _params.simScript(Players::Player_One), _params.simScript(Players::Player_Two));
+        playoutVal = Eval::Eval(currentState, _params.maxPlayer(), _params.evalMethod(), _params.playoutPlayer(Players::Player_One), _params.playoutPlayer(Players::Player_Two));
 
         _results.nodesVisited++;
     }
@@ -327,7 +327,7 @@ StateEvalScore UCTSearch::traverse(UCTNode & node, GameState & currentState)
 
         if (currentState.isTerminal())
         {
-            playoutVal = currentState.eval(_params.maxPlayer(), EvaluationMethods::LTD2);
+            playoutVal = Eval::Eval(currentState, _params.maxPlayer(), EvaluationMethods::LTD2);
         }
         else
         {
@@ -361,7 +361,7 @@ StateEvalScore UCTSearch::traverse(UCTNode & node, GameState & currentState)
 void UCTSearch::generateChildren(UCTNode & node, GameState & state)
 {
     // figure out who is next to move in the game
-    const PlayerID playerToMove(getPlayerToMove(node, state));
+    const size_t playerToMove(getPlayerToMove(node, state));
     
     // generate the 'ordered moves' for move ordering
     generateOrderedMoves(state, playerToMove);
@@ -377,9 +377,7 @@ void UCTSearch::generateChildren(UCTNode & node, GameState & state)
 
 StateEvalScore UCTSearch::performPlayout(const GameState & state)
 {
-    GameState copy(state);
-
-    return copy.eval(_params.maxPlayer(), _params.evalMethod(), _params.simScript(Players::Player_One), _params.simScript(Players::Player_Two));
+    return Eval::Eval(state, _params.maxPlayer(), _params.evalMethod(), _params.playoutPlayer(Players::Player_One), _params.playoutPlayer(Players::Player_Two));
 }
 
 const bool UCTSearch::isRoot(const UCTNode & node) const
@@ -409,10 +407,10 @@ void UCTSearch::printSubTreeGraphViz(const UCTNode & node, GraphViz::Graph & g, 
     {
         if (node.getNodeType() == SearchNodeType::SecondSimNode)
         {
-            state.makeMoves(node.getParent()->getMove());
+            state.doMove(node.getParent()->getMove());
         }
 
-        state.makeMoves(node.getMove());
+        state.doMove(node.getMove());
     }
 
     std::stringstream label;

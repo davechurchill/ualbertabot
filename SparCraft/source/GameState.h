@@ -17,98 +17,66 @@ typedef std::shared_ptr<SparCraft::Map> MapPtr;
 
 namespace SparCraft
 {
-class GameState 
+class GameState
 {
-    Map *                                                           _map;               
+    Map *                   _map;
 
-    GameStateUnitData                                               _unitData;
+    GameStateUnitData       _unitData;
 
-    Array<float, Constants::Num_Players>                            _totalLTD;
-    Array<float, Constants::Num_Players>                            _totalSumSQRT;
+    size_t                  _numMovements[2];
+    size_t                  _prevHPSum[2];
+    TimeType                _currentTime;
+    size_t                  _maxUnits;
+    TimeType                _sameHPFrames;
 
-    Array<int, Constants::Num_Players>                              _numMovements;
-    Array<int, Constants::Num_Players>                              _prevHPSum;
-	
-    TimeType                                                        _currentTime;
-    size_t                                                          _maxUnits;
-    TimeType                                                        _sameHPFrames;
+    void                    doAction(const Action & theMove);
 
-    // checks to see if the unit array is full before adding a unit to the state
-    const bool              checkFull(const PlayerID & player)                                        const;
-    const bool              checkUniqueUnitIDs()                                                    const;
-
-    void                    performAction(const Action & theMove);
-
-    Unit &                  _getUnitByID(const UnitID & unitID);
-    Unit &                  _getUnit(const PlayerID & player, const UnitCountType & unitIndex);
+    Unit &                  _getUnitByID(const size_t & unitID);
+    Unit &                  _getUnit(const size_t & player,const size_t & unitIndex);
 
 public:
 
     GameState();
     GameState(const std::string & filename);
 
-	// misc functions
+    // misc functions
     void                    updateGameTime();
-    const bool              playerDead(const PlayerID & player)                                       const;
-    const bool              isTerminal()                                                            const;
+    bool                    playerDead(const size_t & player)                                       const;
+    bool                    isTerminal()                                                            const;
+    size_t                  getEnemy(const size_t & player)                                         const;
 
     // unit data functions
-    const size_t            numUnits(const PlayerID & player)                                         const;
-    const size_t            prevNumUnits(const PlayerID & player)                                     const;
-    const size_t            closestEnemyUnitDistance(const Unit & unit)                             const;
+    size_t                  numUnits(const size_t & player)                                         const;
+    size_t                  numTotalUnits(const size_t & player)                                    const;
+    size_t                  prevNumUnits(const size_t & player)                                     const;
 
     // Unit functions
     void                    addUnit(const Unit & u);
-    void                    addUnit(const BWAPI::UnitType unitType, const PlayerID playerID, const Position & pos);
-    const Unit &            getUnitByID(const UnitID & unitID)                                      const;
-    const Unit &            getUnit(const PlayerID & player, const UnitCountType & unitIndex)         const;
-    const Unit &            getClosestEnemyUnit(const PlayerID & player, const UnitID & unitIndex, bool checkCloaked=false) const;
-    const Unit &            getClosestOurUnit(const PlayerID & player, const UnitID & unitIndex)      const;
-    
+    const Unit &            getUnitByID(const size_t & unitID)                                      const;
+    const Unit &            getUnit(const size_t & player, const size_t & unitIndex)                const;
+    const std::vector<Unit> & getAllUnits()                                                         const;
+
     // game time functions
     void                    setTime(const TimeType & time);
-    const TimeType          getTime()                                                               const;
-    const TimeType          getTimeNextUnitCanAct(const PlayerID & player)                          const;
-
-    // evaluation functions
-    const StateEvalScore    eval(   const PlayerID & player, const PlayerID & evalMethod, 
-                                    const PlayerID p1Script = PlayerModels::NOKDPS,
-                                    const PlayerID p2Script = PlayerModels::NOKDPS)                   const;
-    const ScoreType         evalLTD(const PlayerID & player)                                        const;
-    const ScoreType         evalLTD2(const PlayerID & player)                                       const;
-    const ScoreType         LTD(const PlayerID & player)                                            const;
-    const ScoreType         LTD2(const PlayerID & player)                                           const;
-    const StateEvalScore    evalSim(const PlayerID & player, const PlayerID & p1, const PlayerID & p2)    const;
-    const PlayerID          getEnemy(const PlayerID & player)                                         const;
-
-    // unit hitpoint calculations, needed for LTD2 evaluation
-    void                    calculateStartingHealth();
-    void                    setTotalLTD(const float & p1, const float & p2);
-    void                    setTotalLTD2(const float & p1, const float & p2);
-    const float &           getTotalLTD(const PlayerID & player)                                    const;
-    const float &           getTotalLTD2(const PlayerID & player)                                   const;
+    TimeType                getTime()                                                               const;
+    TimeType                getTimeNextUnitCanAct(const size_t & player)                            const;
 
     // move related functions
-    void                    makeMoves(const std::vector<Action> & moves);
-    const int &             getNumMovements(const PlayerID & player)                                  const;
-    const PlayerID            whoCanMove()                                                            const;
-    const bool              bothCanMove()                                                           const;
-		  
+    void                    doMove(const std::vector<Action> & moves);
+    void                    doMove(const std::vector<Action> & m1,const std::vector<Action> & m2);
+    size_t                  getNumMovements(const size_t & player)                                  const;
+    size_t                  whoCanMove()                                                            const;
+    bool                    bothCanMove()                                                           const;
+
     // map-related functions
     void                    setMap(Map * map);
     Map *                   getMap()                                                                const;
-    const bool              isWalkable(const Position & pos)                                        const;
-    const bool              isFlyable(const Position & pos)                                         const;
+    bool                    isWalkable(const Position & pos)                                        const;
+    bool                    isFlyable(const Position & pos)                                         const;
 
     // hashing functions
-    const HashType          calculateHash(const size_t & hashNum)                                   const;
-
-    // state i/o functions
-    void                    print(int indent = 0) const;
-	std::string             toString() const;
-    std::string             toStringCompact() const;
-    void                    write(const std::string & filename)                                     const;
-    void                    read(const std::string & filename);
+    HashType                calculateHash(const size_t & hashNum)                                   const;
+    
 };
 
 }

@@ -4,10 +4,11 @@ using namespace SparCraft;
 
 GameStateUnitData::GameStateUnitData()
 {
-    
+    _numTotalUnits[0] = 0;
+    _numTotalUnits[1] = 0;
 }
 
-const Unit & GameStateUnitData::getUnit(const PlayerID & player, const UnitID & index) const
+const Unit & GameStateUnitData::getUnit(const size_t & player, const size_t & index) const
 { 
     SPARCRAFT_ASSERT(player < Constants::Num_Players, "player exceeds capacity: player=%d, total players=%d", player, Constants::Num_Players);
     SPARCRAFT_ASSERT(index < numUnits(player), "UnitIndex exceeds live Unit capacity: UnitIndex=%d, capacity=%d", index, numUnits(player));
@@ -16,7 +17,7 @@ const Unit & GameStateUnitData::getUnit(const PlayerID & player, const UnitID & 
     return _allUnits[_liveUnitIDs[player][index]];
 }
 
-Unit & GameStateUnitData::getUnit(const PlayerID & player, const UnitID & index)
+Unit & GameStateUnitData::getUnit(const size_t & player, const size_t & index)
 {
     SPARCRAFT_ASSERT(player < Constants::Num_Players, "player exceeds capacity: player=%d, total players=%d", player, Constants::Num_Players);
     SPARCRAFT_ASSERT(index < numUnits(player), "UnitIndex exceeds live Unit capacity: UnitIndex=%d, capacity=%d", index, numUnits(player));
@@ -25,21 +26,28 @@ Unit & GameStateUnitData::getUnit(const PlayerID & player, const UnitID & index)
     return _allUnits[_liveUnitIDs[player][index]];
 }
     
-const UnitID GameStateUnitData::numUnits(const PlayerID & player) const
+const size_t GameStateUnitData::numUnits(const size_t & player) const
 {
     SPARCRAFT_ASSERT(player < Constants::Num_Players, "player exceeds capacity: player=%d", player);
 
-    return (UnitID)_liveUnitIDs[player].size();
+    return _liveUnitIDs[player].size();
 }
 
-const Unit & GameStateUnitData::getUnitByID(const UnitID & id) const
+const size_t GameStateUnitData::numTotalUnits(const size_t & player) const
+{
+    SPARCRAFT_ASSERT(player < Constants::Num_Players, "player exceeds capacity: player=%d", player);
+
+    return _numTotalUnits[player];
+}
+
+const Unit & GameStateUnitData::getUnitByID(const size_t & id) const
 {
     SPARCRAFT_ASSERT(id < _allUnits.size(), "id exceeds capacity: id=%d, capacity=%d", id, _allUnits.size());
 
     return _allUnits[id];
 }
 
-Unit & GameStateUnitData::getUnitByID(const UnitID & id)
+Unit & GameStateUnitData::getUnitByID(const size_t & id)
 {
     SPARCRAFT_ASSERT(id < _allUnits.size(), "id exceeds capacity: id=%d, capacity=%d", id, _allUnits.size());
 
@@ -54,11 +62,12 @@ Unit & GameStateUnitData::addUnit(const Unit & unit)
     Unit & unitInVector = _allUnits.back();
 
     _liveUnitIDs[unitInVector.getPlayerID()].push_back(unitInVector.getID());
+    _numTotalUnits[unitInVector.getPlayerID()]++;
     
     return unitInVector;
 }
 
-void GameStateUnitData::removeUnit(const PlayerID & player, const UnitID & unitIndex)
+void GameStateUnitData::removeUnit(const size_t & player, const size_t & unitIndex)
 {
     SPARCRAFT_ASSERT(player < Constants::Num_Players, "player exceeds capacity: player=%d, total players=%d", player, Constants::Num_Players);    
     SPARCRAFT_ASSERT(unitIndex < numUnits(player), "UnitIndex=%d, size=%d", unitIndex, numUnits(player));
@@ -66,12 +75,12 @@ void GameStateUnitData::removeUnit(const PlayerID & player, const UnitID & unitI
     _liveUnitIDs[player].erase(_liveUnitIDs[player].begin() + unitIndex);
 }
 
-void GameStateUnitData::removeUnitByID(const UnitID & unitID)
+void GameStateUnitData::removeUnitByID(const size_t & unitID)
 {
-    const PlayerID player = getUnitByID(unitID).getPlayerID();
-    const UnitID units = numUnits(player);
+    const size_t player = getUnitByID(unitID).getPlayerID();
+    const size_t units = numUnits(player);
     
-    for (UnitID c(0); c < units; ++c)
+    for (size_t c(0); c < units; ++c)
     {
         if (_liveUnitIDs[player][c] == unitID)
         {
@@ -83,14 +92,19 @@ void GameStateUnitData::removeUnitByID(const UnitID & unitID)
     SPARCRAFT_ASSERT(false, "Tried to remove a Unit that didn't exist: %d", unitID);
 }
 
-void GameStateUnitData::killUnit(const UnitID & UnitID)
+void GameStateUnitData::killUnit(const size_t & UnitID)
 {
     Unit & Unit = getUnitByID(UnitID);
 
     removeUnitByID(UnitID);
 }
 
-const UnitIDVector & GameStateUnitData::getUnitIDs(const PlayerID & player) const
+const std::vector<size_t> & GameStateUnitData::getUnitIDs(const size_t & player) const
 {
     return _liveUnitIDs[player];
+}
+
+const std::vector<Unit> & GameStateUnitData::getAllUnits() const
+{
+    return _allUnits;
 }
