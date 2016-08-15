@@ -30,7 +30,7 @@ protected:
 
 	// moves array to store moves in
 	//MoveArray           _moves[2];
-	//std::vector<Action> _scriptMoves[2];
+	//Move _scriptMoves[2];
 
 public:
 	

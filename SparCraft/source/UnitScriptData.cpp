@@ -6,7 +6,7 @@ UnitScriptData::UnitScriptData()
 {
 }
 
-std::vector<Action> & UnitScriptData::getMoves(const size_t & player, const size_t & actualScript)
+Move & UnitScriptData::getMove(const size_t & player, const size_t & actualScript)
 {
     return _allScriptMoves[player][actualScript];
 }
@@ -16,7 +16,7 @@ Action & UnitScriptData::getMove(const size_t & player, const size_t & unitIndex
     return _allScriptMoves[player][actualScript][unitIndex];
 }
 
-void UnitScriptData::calculateMoves(const size_t & player, MoveArray & moves, GameState & state, std::vector<Action> & moveVec)
+void UnitScriptData::calculateMoves(const size_t & player, MoveArray & moves, GameState & state, Move & move)
 {
     // generate all script moves for this player at this state and store them in allScriptMoves
     for (size_t scriptIndex(0); scriptIndex<_scriptVec[player].size(); ++scriptIndex)
@@ -28,8 +28,8 @@ void UnitScriptData::calculateMoves(const size_t & player, MoveArray & moves, Ga
         const size_t actualScript = getScript(player, scriptIndex);
 
         // generate the moves inside the appropriate vector
-        getMoves(player, actualScript).clear();
-        pp->getMoves(state, getMoves(player, actualScript));
+        getMove(player, actualScript).clear();
+        pp->getMove(state, getMove(player, actualScript));
     }
 
     // for each unit the player has to move, populate the move vector with the appropriate script move
@@ -42,7 +42,7 @@ void UnitScriptData::calculateMoves(const size_t & player, MoveArray & moves, Ga
         Action unitMove = getMove(player, unitIndex, getUnitScript(unit));
 
         // put the unit into the move vector
-        moveVec.push_back(unitMove);
+        move.addAction(unitMove);
     }
 }
 

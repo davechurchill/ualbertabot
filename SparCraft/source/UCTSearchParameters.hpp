@@ -74,7 +74,7 @@ public:
     void setMoveOrderingMethod(const size_t & method)                   { _moveOrdering = method; }
     void setEvalMethod(const size_t & eval)						        { _evalMethod = eval; }
     void setPlayerToMoveMethod(const size_t & method)				    { _playerToMoveMethod = method; }
-    void setPlayoutPlayers(const PlayerPtr & p1, const PlayerPtr & p2)  { _playoutPlayers[0] = p1->clone(); _playoutPlayers[1] = p2->clone(); }
+    void setPlayoutPlayer(const size_t & player, const PlayerPtr & p)   { _playoutPlayers[player] = p->clone(); }
     void setRootMoveSelectionMethod(const size_t & method)              { _rootMoveSelection = method; }
     void setGraphVizFilename(const std::string & filename)              { _graphVizFilename = filename; }
     void addOrderedMoveScript(const size_t & script)                    { _orderedMoveScripts.push_back(script); }

@@ -10,17 +10,17 @@ namespace SparCraft
 
 class AlphaBetaMove
 {
-	std::vector<Action> _move;
+	Move _move;
 	bool _isValid;
 
 public:
 
 	AlphaBetaMove();
 
-	AlphaBetaMove(const std::vector<Action> & move, const bool & isValid);
+	AlphaBetaMove(const Move & move, const bool & isValid);
 
 	const bool isValid() const;
-	const std::vector<Action> & moveVec() const;
+	const Move & move() const;
 };
 
 class TTBestMove

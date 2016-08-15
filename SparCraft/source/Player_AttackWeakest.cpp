@@ -7,12 +7,12 @@ Player_AttackWeakest::Player_AttackWeakest (const size_t & playerID)
 	_playerID = playerID;
 }
 
-void Player_AttackWeakest::getMoves(const GameState & state, std::vector<Action> & moveVec)
+void Player_AttackWeakest::getMove(const GameState & state, Move & move)
 {
     MoveArray moves;
     ActionGenerators::GenerateCompassActions(state, _playerID, moves);
 
-    moveVec.clear();
+    move.clear();
 	for (size_t u(0); u<moves.numUnits(); ++u)
 	{
 		bool foundAction						(false);
@@ -74,7 +74,7 @@ void Player_AttackWeakest::getMoves(const GameState & state, std::vector<Action>
 
 		size_t bestMoveIndex(foundAction ? actionMoveIndex : closestMoveIndex);
 			
-		moveVec.push_back(moves.getMove(u, bestMoveIndex));
+		move.addAction(moves.getMove(u, bestMoveIndex));
 	}
 }
 

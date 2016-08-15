@@ -2,22 +2,15 @@
 
 using namespace SparCraft;
 
-Player_Script::Player_Script (const size_t & playerID) 
+Player_Script::Player_Script (const size_t & playerID, const ScriptPlayerPolicy & policy) 
 {
 	_playerID = playerID;
 }
 
-void Player_Script::getMoves(GameState & state, std::vector<Action> & moveVec)
+void Player_Script::getMove(const GameState & state, Move & move)
 {
-    moveVec.clear();
-	size_t enemy(state.getEnemy(_playerID));
-
-	Array<int, Constants::Max_Units> hpRemaining;
-
-	for (size_t u(0); u<state.numUnits(enemy); ++u)
-	{
-		hpRemaining[u] = state.getUnit(enemy,u).currentHP();
-	}
+    move.clear();
+	const size_t enemy = state.getEnemy(_playerID);
 
 
 }

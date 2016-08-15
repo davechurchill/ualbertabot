@@ -2,7 +2,7 @@
 
 using namespace SparCraft;
 
-void Player::getMoves(const GameState & state, std::vector<Action> & moveVec)
+void Player::getMove(const GameState & state, Move & move)
 {
 	SPARCRAFT_ASSERT(false, "Base class Player constructor called");
 }

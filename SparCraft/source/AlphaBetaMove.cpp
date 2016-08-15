@@ -7,7 +7,7 @@ AlphaBetaMove::AlphaBetaMove()
 {
 }
 
-AlphaBetaMove::AlphaBetaMove(const std::vector<Action> & move,const bool & isValid)
+AlphaBetaMove::AlphaBetaMove(const Move & move,const bool & isValid)
     : _move(move)
     ,_isValid(isValid)
 {
@@ -18,7 +18,7 @@ const bool AlphaBetaMove::isValid() const
     return _isValid; 
 }
 
-const std::vector<Action> & AlphaBetaMove::moveVec() const 
+const Move & AlphaBetaMove::move() const 
 { 
     return _move; 
 }

@@ -23,7 +23,7 @@ public:
 	Player_AlphaBeta (const size_t & playerID, const AlphaBetaSearchParameters & params, TTPtr table);
     virtual ~Player_AlphaBeta();
 
-	void getMoves(const GameState & state, std::vector<Action> & moveVec);
+	void getMove(const GameState & state, Move & move);
 	void setParameters(AlphaBetaSearchParameters & p);
 	void setTranspositionTable(TTPtr table);
 

@@ -127,6 +127,9 @@
     <ClCompile Include="..\source\AITools.cpp">
       <Filter>AI</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\Move.cpp">
+      <Filter>simulation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\AlphaBetaSearch.h">
@@ -291,6 +294,9 @@
     <ClInclude Include="..\source\AITools.h">
       <Filter>AI</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\Move.h">
+      <Filter>simulation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="util">
@@ -331,6 +337,9 @@
     </Filter>
     <Filter Include="simulation\data">
       <UniqueIdentifier>{c8b3aadc-390f-460b-af33-29a0570bb914}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\move iterators">
+      <UniqueIdentifier>{ba568fcc-fb2c-4e63-bd90-7c38f763e466}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

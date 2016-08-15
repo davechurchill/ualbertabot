@@ -122,9 +122,9 @@ void MoveArray::resetMoveIterator()
     }
 }
 
-void MoveArray::getNextMoveVec(std::vector<Action> & moves)
+void MoveArray::getNextmove(Move & moves)
 {
-    moves.assign(&_currentMoves[0], &_currentMoves[numUnits()]);
+    moves = _currentMoves;
     //moves = _currentMovesVec;
     incrementMove(0);
 }
@@ -138,14 +138,14 @@ void MoveArray::add(const Action & action)
 
     if (unitIndex >= _moves.size())
     {
-        _moves.push_back(std::vector<Action>());
-        _moves.back().push_back(action);
-        _currentMoves.push_back(_moves.back()[0]);
+        _moves.push_back(Move());
+        _moves.back().addAction(action);
+        _currentMoves.addAction(_moves.back()[0]);
         _currentMovesIndex.push_back(0);
     }
     else
     {
-        _moves[unitIndex].push_back(action);
+        _moves[unitIndex].addAction(action);
     }
 }
 

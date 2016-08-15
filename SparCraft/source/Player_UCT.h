@@ -14,7 +14,7 @@ class Player_UCT : public Player
     UCTSearchResults        _prevResults;
 public:
     Player_UCT (const size_t & playerID, const UCTSearchParameters & params);
-	void getMoves(const GameState & state, std::vector<Action> & moveVec);
+	void getMove(const GameState & state, Move & move);
     UCTSearchParameters & getParams();
     UCTSearchResults & getResults();
     virtual PlayerPtr clone();

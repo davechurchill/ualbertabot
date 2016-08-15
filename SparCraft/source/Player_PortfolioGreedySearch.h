@@ -15,7 +15,7 @@ class Player_PortfolioGreedySearch : public Player
 public:
 	Player_PortfolioGreedySearch (const size_t & playerID);
     Player_PortfolioGreedySearch (const size_t & playerID, const size_t & seed, const size_t & iter, const size_t & responses, const size_t & timeLimit);
-	void getMoves(const GameState & state, std::vector<Action> & moveVec);
+	void getMove(const GameState & state, Move & move);
     virtual PlayerPtr clone();
 };
 }

@@ -8,13 +8,13 @@ Player_UCT::Player_UCT (const size_t & playerID, const UCTSearchParameters & par
     _params = params;
 }
 
-void Player_UCT::getMoves(const GameState & state, std::vector<Action> & moveVec)
+void Player_UCT::getMove(const GameState & state, Move & move)
 {
-    moveVec.clear();
+    move.clear();
     
     UCTSearch uct(_params);
 
-    uct.doSearch(state, moveVec);
+    uct.doSearch(state, move);
     _prevResults = uct.getResults();
 }
 

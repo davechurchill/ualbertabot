@@ -15,7 +15,7 @@ PortfolioGreedySearch::PortfolioGreedySearch(const size_t & player, const size_t
 	_playerScriptPortfolio.push_back(PlayerModels::KiterDPS);
 }
 
-std::vector<Action> PortfolioGreedySearch::search(const size_t & player, const GameState & state)
+Move PortfolioGreedySearch::search(const size_t & player, const GameState & state)
 {
     Timer t;
     t.start();
@@ -52,13 +52,13 @@ std::vector<Action> PortfolioGreedySearch::search(const size_t & player, const G
     // convert the script vector into a move vector and return it
 	MoveArray moves;
     ActionGenerators::GenerateCompassActions(state, player, moves);
-    std::vector<Action> moveVec;
+    Move move;
     GameState copy(state);
-    currentScriptData.calculateMoves(player, moves, copy, moveVec);
+    currentScriptData.calculateMoves(player, moves, copy, move);
 
     _totalEvals = 0;
 
-    return moveVec;
+    return move;
 }
 
 void PortfolioGreedySearch::doPortfolioSearch(const size_t & player, const GameState & state, UnitScriptData & currentScriptData)
@@ -166,7 +166,7 @@ void  PortfolioGreedySearch::setAllScripts(const size_t & player, const GameStat
 }
 
 /*
-std::vector<Action> PortfolioGreedySparCraft::search(const size_t & player, const GameState & state)
+Move PortfolioGreedySparCraft::search(const size_t & player, const GameState & state)
 {
     const size_t enemyPlayer(state.getEnemy(player));
 	GameState initialState(state);
@@ -221,7 +221,7 @@ std::vector<Action> PortfolioGreedySparCraft::search(const size_t & player, cons
         currentScriptData.setUnitScript(unit, bestScriptVec[unitIndex]);
     }
 	
-    std::vector<Action> moveVec;
-    currentScriptData.calculateMoves(player, moves, GameState(state), moveVec);
-    return moveVec;
+    Move move;
+    currentScriptData.calculateMoves(player, moves, GameState(state), move);
+    return move;
 }*/

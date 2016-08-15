@@ -34,9 +34,9 @@ class UCTSearch
     GameState               _currentState;
 
 	// we will use these as variables to save stack allocation every time
-    std::vector<Action>                 _actionVec;
+    Move                 _actionVec;
 	MoveArray                           _moveArray;
-	Array<std::vector<Action>,
+	Array<Move,
 		 Constants::Max_Ordered_Moves>  _orderedMoves;
 
     std::vector<PlayerPtr>				_allScripts[Constants::Num_Players];
@@ -50,15 +50,15 @@ public:
     // UCT-specific functions
     UCTNode &       UCTNodeSelect(UCTNode & parent);
     StateEvalScore  traverse(UCTNode & node, GameState & currentState);
-	void            uct(GameState & state, size_t depth, const size_t lastPlayerToMove, std::vector<Action> * firstSimMove);
+	void            uct(GameState & state, size_t depth, const size_t lastPlayerToMove, Move * firstSimMove);
 
-	void            doSearch(const GameState & initialState, std::vector<Action> & move);
+	void            doSearch(const GameState & initialState, Move & move);
     
     // Move and Child generation functions
     void            generateChildren(UCTNode & node, GameState & state);
 	void            generateOrderedMoves(GameState & state, const size_t & playerToMove);
     void            makeMove(const UCTNode & node, GameState & state);
-	const bool      getNextMove(size_t playerToMove, MoveArray & moves, const size_t & moveNumber, std::vector<Action> & actionVec);
+	const bool      getNextMove(size_t playerToMove, MoveArray & moves, const size_t & moveNumber, Move & actionVec);
 
     // Utility functions
 	const size_t    getPlayerToMove(const UCTNode & node, const GameState & state) const;

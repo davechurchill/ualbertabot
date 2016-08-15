@@ -6,6 +6,7 @@
 #include "GameState.h"
 #include "MoveArray.h"
 #include "Unit.h"
+#include "Move.h"
 #include <memory>
 
 namespace SparCraft
@@ -20,7 +21,7 @@ protected:
     size_t                  _playerID;
     std::string             _description;
 public:
-    virtual void		    getMoves(const GameState & state, std::vector<Action> & moveVec);
+    virtual void		    getMove(const GameState & state, Move & move);
     const size_t            ID();
     virtual std::string     getDescription();
     virtual void            setDescription(const std::string & desc);

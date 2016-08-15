@@ -17,7 +17,7 @@ class UCTNode
     // game specific variables
     size_t                      _player;            // the player who made a move to generate this node
     size_t                      _nodeType;
-    std::vector<Action>     _move;              // the ove that generated this node
+    Move     _move;              // the ove that generated this node
 
     // holds children
     std::vector<UCTNode>        _children;
@@ -38,7 +38,7 @@ public:
 
     }
 
-    UCTNode (UCTNode * parent, const size_t player, const size_t nodeType, const std::vector<Action> & move, const size_t & maxChildren, std::vector<UCTNode> * fromPool = NULL)
+    UCTNode (UCTNode * parent, const size_t player, const size_t nodeType, const Move & move, const size_t & maxChildren, std::vector<UCTNode> * fromPool = NULL)
         : _numVisits            (0)
         , _numWins              (0)
         , _uctVal               (0)
@@ -68,17 +68,17 @@ public:
 
     std::vector<UCTNode> & getChildren()                        { return _children; }
 
-    const std::vector<Action> & getMove() const
+    const Move & getMove() const
     {
         return _move;
     }
 
-    void setMove(const std::vector<Action> & move)
+    void setMove(const Move & move)
     {
         _move = move;
     }
 
-    void addChild(UCTNode * parent, const size_t player, const size_t nodeType, const std::vector<Action> & move, const size_t & maxChildren, std::vector<UCTNode> * fromPool = NULL)
+    void addChild(UCTNode * parent, const size_t player, const size_t nodeType, const Move & move, const size_t & maxChildren, std::vector<UCTNode> * fromPool = NULL)
     {
         _children.push_back(UCTNode(parent, player, nodeType, move, maxChildren));
     }

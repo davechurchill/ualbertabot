@@ -19,12 +19,12 @@ Player_PortfolioGreedySearch::Player_PortfolioGreedySearch (const size_t & playe
     _timeLimit = timeLimit;
 }
 
-void Player_PortfolioGreedySearch::getMoves(const GameState & state, std::vector<Action> & moveVec)
+void Player_PortfolioGreedySearch::getMove(const GameState & state, Move & move)
 {
-    moveVec.clear();
+    move.clear();
 	PortfolioGreedySearch pgs(_playerID, _seed, _iterations, _responses, _timeLimit);
 
-	moveVec = pgs.search(_playerID, state);
+	move = pgs.search(_playerID, state);
 }
 
 PlayerPtr Player_PortfolioGreedySearch::clone()

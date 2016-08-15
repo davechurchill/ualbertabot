@@ -24,9 +24,7 @@ class GameState
     GameStateUnitData       _unitData;
 
     size_t                  _numMovements[2];
-    size_t                  _prevHPSum[2];
     TimeType                _currentTime;
-    size_t                  _maxUnits;
     TimeType                _sameHPFrames;
 
     void                    doAction(const Action & theMove);
@@ -62,8 +60,8 @@ public:
     TimeType                getTimeNextUnitCanAct(const size_t & player)                            const;
 
     // move related functions
-    void                    doMove(const std::vector<Action> & moves);
-    void                    doMove(const std::vector<Action> & m1,const std::vector<Action> & m2);
+    void                    doMove(const Move & moves);
+    void                    doMove(const Move & m1,const Move & m2);
     size_t                  getNumMovements(const size_t & player)                                  const;
     size_t                  whoCanMove()                                                            const;
     bool                    bothCanMove()                                                           const;

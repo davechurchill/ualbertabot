@@ -26,7 +26,7 @@ protected:
     size_t                      _timeLimit;
 
     void                        doPortfolioSearch(const size_t & player,const GameState & state,UnitScriptData & currentData);
-    std::vector<Action>         getMoveVec(const size_t & player,const GameState & state,const std::vector<size_t> & playerScripts);
+    Move         getmove(const size_t & player,const GameState & state,const std::vector<size_t> & playerScripts);
     StateEvalScore              eval(const size_t & player,const GameState & state,UnitScriptData & playerScriptsChosen);
     size_t                      calculateInitialSeed(const size_t & player,const GameState & state);
     void                        setAllScripts(const size_t & player,const GameState & state,UnitScriptData & data,const size_t & script);
@@ -34,7 +34,7 @@ protected:
 public:
 
     PortfolioGreedySearch(const size_t & player, const size_t & enemyScript, const size_t & iter, const size_t & responses, const size_t & timeLimit);
-    std::vector<Action> search(const size_t & player, const GameState & state);
+    Move search(const size_t & player, const GameState & state);
 };
 
 }

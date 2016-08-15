@@ -23,9 +23,9 @@ class UnitScriptData
     std::vector<PlayerPtr>  _playerPtrVec[2];
     
    
-    std::vector<Action>       _allScriptMoves[2][PlayerModels::Size];
+    Move       _allScriptMoves[2][PlayerModels::Size];
 
-    std::vector<Action> & getMoves(const size_t & player, const size_t & actualScript);
+    Move & getMove(const size_t & player, const size_t & actualScript);
 
     Action & getMove(const size_t & player, const size_t & unitIndex, const size_t & actualScript);
 
@@ -33,7 +33,7 @@ public:
 
     UnitScriptData();
 
-    void calculateMoves(const size_t & player, MoveArray & moves, GameState & state, std::vector<Action> & moveVec);
+    void calculateMoves(const size_t & player, MoveArray & moves, GameState & state, Move & move);
     void setUnitScript(const size_t & player, const int & id, const size_t & script);
     void setUnitScript(const Unit & unit, const size_t & script);
 

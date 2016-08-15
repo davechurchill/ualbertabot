@@ -9,13 +9,10 @@ using namespace SparCraft;
 GameState::GameState()
 	: _map(NULL)
 	, _currentTime(0)
-	, _maxUnits(Constants::Max_Units)
     , _sameHPFrames(0)
 {
     _numMovements[0] = 0;
     _numMovements[1] = 0;
-    _prevHPSum[0] = 0;
-    _prevHPSum[1] = 0;
 }
 
 void GameState::doAction(const Action & action)
@@ -78,7 +75,7 @@ void GameState::doAction(const Action & action)
     }
 }
 
-void GameState::doMove(const std::vector<Action> & moves)
+void GameState::doMove(const Move & moves)
 {    
     for (size_t m(0); m<moves.size(); ++m)
     {
@@ -91,7 +88,7 @@ void GameState::doMove(const std::vector<Action> & moves)
     updateGameTime();
 }
 
-void GameState::doMove(const std::vector<Action> & m1, const std::vector<Action> & m2)
+void GameState::doMove(const Move & m1, const Move & m2)
 {
     for (size_t m(0); m<m1.size(); ++m)
     {

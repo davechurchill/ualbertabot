@@ -19,7 +19,7 @@ public:
     int                         totalVisits;
     int                         nodesCreated;
 
-    std::vector<Action>     bestMoves;
+    Move     bestMoves;
 	double                   abValue;
 	
     std::vector<std::vector<std::string> > _desc;    // 2-column description vector

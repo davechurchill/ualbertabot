@@ -19,7 +19,7 @@ class Player_AttackWeakest : public Player
 {
 public:
 	Player_AttackWeakest (const size_t & playerID);
-	void getMoves(const GameState & state, std::vector<Action> & moveVec);
+	void getMove(const GameState & state, Move & move);
 	virtual PlayerPtr clone();
 };
 }

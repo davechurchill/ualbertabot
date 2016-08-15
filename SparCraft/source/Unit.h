@@ -22,7 +22,7 @@ class Unit
 	
 	size_t              _unitID;				// unique unit ID to the state it's contained in
     size_t              _bwapiID;
-    size_t            _playerID;				// the player who controls the unit
+    size_t              _playerID;				// the player who controls the unit
 	
 	HealthType          _currentHP;				// current HP of the unit
 	HealthType          _currentEnergy;

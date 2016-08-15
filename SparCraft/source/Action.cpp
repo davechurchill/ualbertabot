@@ -31,9 +31,14 @@ Action::Action(const size_t & unitIndex, const size_t & player, const size_t & t
 		
 }
 
-const bool Action::operator == (const Action & rhs)
+bool Action::operator == (const Action & rhs) const
 {
 	return _unitID == rhs._unitID && _playerID == rhs._playerID && _actionType == rhs._actionType && _targetID == rhs._targetID && _p == rhs._p;
+}
+
+bool Action::operator != (const Action & rhs) const
+{
+	return !(*this == rhs);
 }
 
 const size_t & Action::getID() const	

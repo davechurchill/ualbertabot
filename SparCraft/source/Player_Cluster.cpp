@@ -7,12 +7,12 @@ Player_Cluster::Player_Cluster (const size_t & playerID)
 	_playerID = playerID;
 }
 
-void Player_Cluster::getMoves(const GameState & state, std::vector<Action> & moveVec)
+void Player_Cluster::getMove(const GameState & state, Move & move)
 {
     MoveArray moves;
     ActionGenerators::GenerateCompassActions(state, _playerID, moves);
 
-    moveVec.clear();
+    move.clear();
 	size_t enemy(state.getEnemy(_playerID));
 
     // compute the centroid of our unit cluster
@@ -54,7 +54,7 @@ void Player_Cluster::getMoves(const GameState & state, std::vector<Action> & mov
 
 		size_t bestMoveIndex(foundMoveAction ? closestMoveIndex : 0);
         			
-		moveVec.push_back(moves.getMove(u, bestMoveIndex));
+		move.addAction(moves.getMove(u, bestMoveIndex));
 	}
 }
 

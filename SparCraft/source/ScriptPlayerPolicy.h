@@ -69,9 +69,10 @@ public:
 
 class ScriptPlayerPolicy 
 {
-    ScriptPolicy   _oorPolicy;
-    ScriptPolicy   _irPolicy;
-    ScriptPolicy   _reloadPolicy;
+    ScriptPolicy    _oorPolicy;
+    ScriptPolicy    _irPolicy;
+    ScriptPolicy    _reloadPolicy;
+    bool            _allowOverkill;
 
 public:
     

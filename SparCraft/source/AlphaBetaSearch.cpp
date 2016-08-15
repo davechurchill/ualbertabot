@@ -66,7 +66,7 @@ AlphaBetaValue AlphaBetaSearch::IDAlphaBeta(const GameState & initialState, cons
 		{
 			val = alphaBeta(initialState, d, Players::Player_None, NULL, alpha, beta);
 
-			_results.bestMoves = val.abMove().moveVec();
+			_results.bestMoves = val.abMove().move();
 			_results.abValue = val.score().val();
 		}
 		// if we do time-out
@@ -79,7 +79,7 @@ AlphaBetaValue AlphaBetaSearch::IDAlphaBeta(const GameState & initialState, cons
 			{
 				const size_t playerToMove = getPlayerToMove(initialState, 1, Players::Player_None, true);
 				PlayerPtr bestScript(new Player_NOKDPS(playerToMove));
-				bestScript->getMoves(initialState, _results.bestMoves);
+				bestScript->getMove(initialState, _results.bestMoves);
 			}
 
 			break;
@@ -203,17 +203,17 @@ const AlphaBetaMove & AlphaBetaSearch::getAlphaBetaMove(const TTLookupValue & TT
 void AlphaBetaSearch::generateOrderedMoves(const GameState & state, const TTLookupValue & TTval, const size_t & playerToMove, const size_t & depth)
 {
 	// get the array where we will store the moves and clear it
-	Array<std::vector<Action>, Constants::Max_Ordered_Moves> & orderedMoves(_orderedMoves[depth]);
+	Array<Move, Constants::Max_Ordered_Moves> & orderedMoves(_orderedMoves[depth]);
 	orderedMoves.clear();
 
 	// if we are using opponent modeling, get the move and then return, we don't want to put any more moves in
 	if (_params.playerModel(playerToMove) != PlayerModels::None)
 	{
         // put the vector into the ordered moves array
-        orderedMoves.add(std::vector<Action>());
+        orderedMoves.add(Move());
 
         // generate the moves into that vector
-        _playerModels[playerToMove]->getMoves(state, orderedMoves[0]);
+        _playerModels[playerToMove]->getMove(state, orderedMoves[0]);
 		
 		return;
 	}
@@ -232,7 +232,7 @@ void AlphaBetaSearch::generateOrderedMoves(const GameState & state, const TTLook
         //        Was previously done with move tuple numbers
 		if (abMove.isValid())
 		{
-			orderedMoves.add(abMove.moveVec());
+			orderedMoves.add(abMove.move());
 			_results.ttMoveOrders++;
 			return;
 		}
@@ -252,9 +252,9 @@ void AlphaBetaSearch::generateOrderedMoves(const GameState & state, const TTLook
     {
         for (size_t s(0); s<_params.getOrderedMoveScripts().size(); s++)
 	    {
-            std::vector<Action> moveVec;
-		    _allScripts[playerToMove][s]->getMoves(state, moveVec);
-		    orderedMoves.add(moveVec);
+            Move move;
+		    _allScripts[playerToMove][s]->getMove(state, move);
+		    orderedMoves.add(move);
 	    }
 
         if (orderedMoves.size() < 2)
@@ -264,7 +264,7 @@ void AlphaBetaSearch::generateOrderedMoves(const GameState & state, const TTLook
     }
 }
 
-bool AlphaBetaSearch::getNextMoveVec(size_t playerToMove, MoveArray & moves, const size_t & moveNumber, const TTLookupValue & TTval, const size_t & depth, std::vector<Action> & moveVec) const
+bool AlphaBetaSearch::getNextmove(size_t playerToMove, MoveArray & moves, const size_t & moveNumber, const TTLookupValue & TTval, const size_t & depth, Move & move) const
 {
     if (_params.maxChildren() && (moveNumber >= _params.maxChildren()))
     {
@@ -294,13 +294,13 @@ bool AlphaBetaSearch::getNextMoveVec(size_t playerToMove, MoveArray & moves, con
 	    }
     }
 
-	const Array<std::vector<Action>, Constants::Max_Ordered_Moves> & orderedMoves(_orderedMoves[depth]);
-    moveVec.clear();
+	const Array<Move, Constants::Max_Ordered_Moves> & orderedMoves(_orderedMoves[depth]);
+    move.clear();
    
-	// if this move should be from the ordered list, return it from the list
+	// if this action should be from the ordered list, return it from the list
 	if (moveNumber < orderedMoves.size())
 	{
-        moveVec.assign(orderedMoves[moveNumber].begin(), orderedMoves[moveNumber].end());
+        //move.assign(orderedMoves[moveNumber].begin(), orderedMoves[moveNumber].end());
         return true;
 	}
 	// otherwise return the next move vector starting from the beginning
@@ -308,7 +308,7 @@ bool AlphaBetaSearch::getNextMoveVec(size_t playerToMove, MoveArray & moves, con
 	{
         if (moves.hasMoreMoves())
         {
-            moves.getNextMoveVec(moveVec);
+            moves.getNextmove(move);
             return true;
         }
         else
@@ -359,12 +359,12 @@ const size_t AlphaBetaSearch::getPlayerToMove(const GameState & state, const siz
 	}
 }
 
-const bool AlphaBetaSearch::isTranspositionLookupState(const GameState & state, const std::vector<Action> * firstSimMove) const
+const bool AlphaBetaSearch::isTranspositionLookupState(const GameState & state, const Move * firstSimMove) const
 {
 	return !state.bothCanMove() || (state.bothCanMove() && !firstSimMove);
 }
 
-AlphaBetaValue AlphaBetaSearch::alphaBeta(const GameState & state, size_t depth, const size_t lastPlayerToMove, std::vector<Action> * prevSimMove, StateEvalScore alpha, StateEvalScore beta)
+AlphaBetaValue AlphaBetaSearch::alphaBeta(const GameState & state, size_t depth, const size_t lastPlayerToMove, Move * prevSimMove, StateEvalScore alpha, StateEvalScore beta)
 {
 	// update statistics
 	_results.nodesExpanded++;
@@ -413,10 +413,10 @@ AlphaBetaValue AlphaBetaSearch::alphaBeta(const GameState & state, size_t depth,
 	AlphaBetaMove bestMove, bestSimResponse;
 	    
     size_t moveNumber(0);
-    std::vector<Action> moveVec;
+    Move move;
 
     // for each child
-    while (getNextMoveVec(playerToMove, moves, moveNumber, TTval, depth, moveVec))
+    while (getNextmove(playerToMove, moves, moveNumber, TTval, depth, move))
 	{
         // the value of the recursive AB we will call
 		AlphaBetaValue val;
@@ -431,7 +431,7 @@ AlphaBetaValue AlphaBetaSearch::alphaBeta(const GameState & state, size_t depth,
 		{
 			firstMove = true;
 			// don't generate a child yet, just pass on the move we are investigating
-			val = alphaBeta(state, depth-1, playerToMove, &moveVec, alpha, beta);
+			val = alphaBeta(state, depth-1, playerToMove, &move, alpha, beta);
 		}
 		else
 		{
@@ -445,7 +445,7 @@ AlphaBetaValue AlphaBetaSearch::alphaBeta(const GameState & state, size_t depth,
 			}
 
 			// do the moves of the current player
-            child.doMove(moveVec);
+            child.doMove(move);
 
 			// get the alpha beta value
 			val = alphaBeta(child, depth-1, playerToMove, NULL, alpha, beta);
@@ -455,7 +455,7 @@ AlphaBetaValue AlphaBetaSearch::alphaBeta(const GameState & state, size_t depth,
 		if (maxPlayer && (val.score() > alpha)) 
 		{
 			alpha = val.score();
-			bestMove = AlphaBetaMove(moveVec, true);
+			bestMove = AlphaBetaMove(move, true);
 			bestMoveSet = true;
 
 			if (state.bothCanMove() && !prevSimMove)
@@ -468,7 +468,7 @@ AlphaBetaValue AlphaBetaSearch::alphaBeta(const GameState & state, size_t depth,
 		else if (!maxPlayer && (val.score() < beta))
 		{
 			beta = val.score();
-			bestMove = AlphaBetaMove(moveVec, true);
+			bestMove = AlphaBetaMove(move, true);
 			bestMoveSet = true;
 
 			if (state.bothCanMove() && prevSimMove)

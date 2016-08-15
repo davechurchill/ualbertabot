@@ -28,7 +28,7 @@ void UCTSearch::setMemoryPool(UCTMemoryPool * pool)
     _memoryPool = pool;
 }
 
-void UCTSearch::doSearch(const GameState & initialState, std::vector<Action> & move)
+void UCTSearch::doSearch(const GameState & initialState, Move & move)
 {
     Timer t;
     t.start();
@@ -95,10 +95,10 @@ void UCTSearch::generateOrderedMoves(GameState & state, const size_t & playerToM
     if (_params.playerModel(playerToMove) != PlayerModels::None)
 	{
         // put the vector into the ordered moves array
-        _orderedMoves.add(std::vector<Action>());
+        _orderedMoves.add(Move());
 
         // generate the moves into that vector
-		_playerModels[playerToMove]->getMoves(state, _orderedMoves[0]);
+		_playerModels[playerToMove]->getMove(state, _orderedMoves[0]);
 		
 		return;
 	}
@@ -108,9 +108,9 @@ void UCTSearch::generateOrderedMoves(GameState & state, const size_t & playerToM
     {
         for (size_t s(0); s<_params.getOrderedMoveScripts().size(); s++)
 	    {
-            std::vector<Action> moveVec;
-		    _allScripts[playerToMove][s]->getMoves(state, moveVec);
-		    _orderedMoves.add(moveVec);
+            Move move;
+		    _allScripts[playerToMove][s]->getMove(state, move);
+		    _orderedMoves.add(move);
 	    }
     }
 	
@@ -144,7 +144,7 @@ const size_t UCTSearch::getChildNodeType(const UCTNode & parent, const GameState
     return SearchNodeType::Default;
 }
 
-const bool UCTSearch::getNextMove(size_t playerToMove, MoveArray & moves, const size_t & moveNumber, std::vector<Action> & actionVec)
+const bool UCTSearch::getNextMove(size_t playerToMove, MoveArray & moves, const size_t & moveNumber, Move & actionVec)
 {
     if (moveNumber > _params.maxChildren())
     {
@@ -167,7 +167,7 @@ const bool UCTSearch::getNextMove(size_t playerToMove, MoveArray & moves, const 
 	// if this move should be from the ordered list, return it from the list
 	if (moveNumber < _orderedMoves.size())
 	{
-        actionVec.assign(_orderedMoves[moveNumber].begin(), _orderedMoves[moveNumber].end());
+        actionVec = _orderedMoves[moveNumber];
         return true;
 	}
 	// otherwise return the next move vector starting from the beginning
@@ -175,7 +175,7 @@ const bool UCTSearch::getNextMove(size_t playerToMove, MoveArray & moves, const 
 	{
         if (moves.hasMoreMoves())
         {
-            moves.getNextMoveVec(actionVec);
+            moves.getNextmove(actionVec);
             return true;
         }
         else

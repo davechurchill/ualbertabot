@@ -245,13 +245,11 @@ bool Squad::needsToRegroup()
         return false;
     }
 
-    SparCraft::ScoreType score = 0;
-
 	//do the SparCraft Simulation!
 	CombatSimulation sim;
-    
 	sim.setCombatUnits(unitClosest->getPosition(), Config::Micro::CombatRegroupRadius);
-	score = sim.simulateCombat();
+	
+    auto score = sim.simulateCombat();
 
 	// if we are DT rushing and we haven't lost a DT yet, no retreat!
 	if (Config::Strategy::StrategyName == "Protoss_DTRush" && (BWAPI::Broodwar->self()->deadUnitCount(BWAPI::UnitTypes::Protoss_Dark_Templar) == 0))

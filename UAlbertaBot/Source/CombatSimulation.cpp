@@ -84,8 +84,6 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
 		}
 	}
 
-	s.finishedMoving();
-
 	state = s;
 }
 
@@ -123,7 +121,7 @@ const SparCraft::Unit CombatSimulation::getSparCraftUnit(const UnitInfo & ui) co
                             BWAPI::Broodwar->getFrameCount());	
 }
 
-SparCraft::ScoreType CombatSimulation::simulateCombat()
+double CombatSimulation::simulateCombat()
 {
     try
     {
@@ -137,18 +135,18 @@ SparCraft::ScoreType CombatSimulation::simulateCombat()
 
 	    g.play();
 	
-	    SparCraft::ScoreType eval =  g.getState().eval(SparCraft::Players::Player_One, SparCraft::EvaluationMethods::LTD2).val();
+	    double eval = SparCraft::Eval::Eval(g.getState(), SparCraft::Players::Player_One, SparCraft::EvaluationMethods::LTD2).val();
 
         if (Config::Debug::DrawCombatSimulationInfo)
         {
             std::stringstream ss1;
             ss1 << "Initial State:\n";
-            ss1 << s1.toStringCompact() << "\n\n";
+            ss1 << SparCraft::AITools::StateToStringCompact(s1) << "\n\n";
 
             std::stringstream ss2;
 
             ss2 << "Predicted Outcome: " << eval << "\n";
-            ss2 << g.getState().toStringCompact() << "\n";
+            ss2 << SparCraft::AITools::StateToStringCompact(g.getState()) << "\n";
 
             BWAPI::Broodwar->drawTextScreen(150,200,"%s", ss1.str().c_str());
             BWAPI::Broodwar->drawTextScreen(300,200,"%s", ss2.str().c_str());
@@ -171,7 +169,7 @@ const SparCraft::GameState & CombatSimulation::getSparCraftState() const
 	return state;
 }
 
-const SparCraft::IDType CombatSimulation::getSparCraftPlayerID(BWAPI::Player player) const
+const size_t CombatSimulation::getSparCraftPlayerID(BWAPI::Player player) const
 {
 	if (player == BWAPI::Broodwar->self())
 	{

@@ -3,6 +3,7 @@
 using namespace SparCraft;
 
 ScriptPlayerPolicy::ScriptPlayerPolicy()
+    : _allowOverkill(true)
 {
 
 }
@@ -16,6 +17,11 @@ ScriptPlayerPolicy::ScriptPlayerPolicy(const rapidjson::Value & value)
     _oorPolicy = ScriptPolicy(value["OutOfRange"]);
     _irPolicy = ScriptPolicy(value["InRange"]);
     _reloadPolicy = ScriptPolicy(value["Reload"]);
+
+    if (value.HasMember("AllowOverkill") && value["AllowOverkill"].IsBool())
+    {
+        _allowOverkill = value["AllowOverkill"].GetBool();
+    }
 }
 
 ScriptPolicy::ScriptPolicy()
@@ -127,7 +133,7 @@ int ScriptPolicyTarget::GetTargetPlayer(const std::string & string)
     {
         return PolicyTargetPlayer::Self;
     }
-    else if (string == "Center")
+    else if (string == "Enemy")
     {
         return PolicyTargetPlayer::Enemy;
     }

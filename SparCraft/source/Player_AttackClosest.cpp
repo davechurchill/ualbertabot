@@ -7,12 +7,12 @@ Player_AttackClosest::Player_AttackClosest(const size_t & playerID)
     _playerID = playerID;
 }
 
-void Player_AttackClosest::getMoves(const GameState & state, std::vector<Action> & moveVec)
+void Player_AttackClosest::getMove(const GameState & state, Move & move)
 {
     MoveArray moves;
     ActionGenerators::GenerateCompassActions(state, _playerID, moves);
 
-    moveVec.clear();
+    move.clear();
     for (size_t u(0); u<moves.numUnits(); ++u)
     {
         bool foundAction = false;
@@ -82,7 +82,7 @@ void Player_AttackClosest::getMoves(const GameState & state, std::vector<Action>
         
         SPARCRAFT_ASSERT(toAdd.type() != ActionTypes::NONE, "Adding NONE action type");
 
-        moveVec.push_back(toAdd);
+        move.addAction(toAdd);
     }
 }
 

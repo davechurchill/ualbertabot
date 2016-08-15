@@ -4,22 +4,23 @@
 #include "Array.hpp"
 #include "Unit.h"
 #include "Action.h"
+#include "Move.h"
 
 namespace SparCraft
 {
 class MoveArray
 {
 	// the array which contains all the moves
-    std::vector< std::vector<Action> > _moves;
+    std::vector< Move > _moves;
 	//Array2D<Action, Constants::Max_Units, Constants::Max_Moves> _moves;
 
 	// how many moves each unit has
 	//Array<size_t, Constants::Max_Units>                         _numMoves;
 
     // the current move array, used for the 'iterator'
-    //std::vector<Action> _currentMoves;
-    //std::vector<Action>                                             _currentMovesVec;
-    std::vector<Action>                             _currentMoves;
+    //Move _currentMoves;
+    //Move                                             _currentMovesVec;
+    Move                             _currentMoves;
     std::vector<size_t>                             _currentMovesIndex;
 
 	// the number of units that have moves;
@@ -36,7 +37,7 @@ public:
     bool hasMoreMoves() const;
     size_t getUnitIndex(const size_t & unitID) const;
 
-    void getNextMoveVec(std::vector<Action> & moves);
+    void getNextmove(Move & moves);
     void resetMoveIterator();
     void incrementMove(const size_t & unit);
     void printCurrentMoveIndex();

@@ -7,12 +7,12 @@ Player_KiterDPS::Player_KiterDPS (const size_t & playerID)
 	_playerID = playerID;
 }
 
-void Player_KiterDPS::getMoves(const GameState & state, std::vector<Action> & moveVec)
+void Player_KiterDPS::getMove(const GameState & state, Move & move)
 {
     MoveArray moves;
     ActionGenerators::GenerateCompassActions(state, _playerID, moves);
 
-    moveVec.clear();
+    move.clear();
 	for (size_t u(0); u<moves.numUnits(); ++u)
 	{
 		bool foundAction					(false);
@@ -98,7 +98,7 @@ void Player_KiterDPS::getMoves(const GameState & state, std::vector<Action> & mo
 			}
 		}
 		
-		moveVec.push_back(moves.getMove(u, bestMoveIndex));
+		move.addAction(moves.getMove(u, bestMoveIndex));
 	}
 }
 

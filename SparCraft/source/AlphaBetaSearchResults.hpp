@@ -18,8 +18,8 @@ public:
 	double 				timeElapsed,	// time elapsed in milliseconds
 						avgBranch;		// avg branching factor
 
-    std::vector<Action>   bestMoves;
-	double			abValue;
+    Move                bestMoves;
+	double			    abValue;
 	unsigned long long  ttcuts;
 	size_t				maxDepthReached;	
 

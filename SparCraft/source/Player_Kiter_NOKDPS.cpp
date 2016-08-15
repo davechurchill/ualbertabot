@@ -7,12 +7,12 @@ Player_Kiter_NOKDPS::Player_Kiter_NOKDPS (const size_t & playerID)
 	_playerID = playerID;
 }
 
-void Player_Kiter_NOKDPS::getMoves(const GameState & state, std::vector<Action> & moveVec)
+void Player_Kiter_NOKDPS::getMove(const GameState & state, Move & move)
 {
     MoveArray moves;
     ActionGenerators::GenerateCompassActions(state, _playerID, moves);
 
-    moveVec.clear();
+    move.clear();
 	size_t enemy(state.getEnemy(_playerID));
 
 	Array<int, Constants::Max_Units> hpRemaining;
@@ -125,7 +125,7 @@ void Player_Kiter_NOKDPS::getMoves(const GameState & state, std::vector<Action> 
 			hpRemaining[theMove.getTargetID()] -= state.getUnit(_playerID, theMove.getID()).damage();
 		}
 			
-		moveVec.push_back(moves.getMove(u, bestMoveIndex));
+		move.addAction(moves.getMove(u, bestMoveIndex));
 	}
 }
 

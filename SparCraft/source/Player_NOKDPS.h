@@ -18,7 +18,7 @@ class Player_NOKDPS : public Player
 {
 public:
 	Player_NOKDPS (const size_t & playerID);
-	void getMoves(const GameState & state, std::vector<Action> & moveVec);
+	void getMove(const GameState & state, Move & move);
 	virtual PlayerPtr clone();
 };
 }

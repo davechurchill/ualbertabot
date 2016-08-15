@@ -103,20 +103,20 @@ PlayerPtr getSamplePlayer(const size_t playerID)
     return attackClosest;
 }
 
-std::vector<Action> getSamplePlayerActionsFromState()
+Move getSamplePlayerActionsFromState()
 {
     // get our sample player
     size_t currentPlayerID = Players::Player_One;
     PlayerPtr myPlayer = getSamplePlayer(currentPlayerID);
 
     // Construct a blank vector of Actions, which are individual unit moves
-    std::vector<Action> move;
+    Move move;
 
     // Get a state
     GameState state = getSampleState();
 
-    // Call getMoves with these arguments
-    myPlayer->getMoves(state, move);
+    // Call getMove with these arguments
+    myPlayer->getMove(state, move);
     
     return move;
 }

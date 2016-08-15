@@ -25,13 +25,13 @@ public:
 
 	void setCombatUnits(const BWAPI::Position & center, const int radius);
 
-	SparCraft::ScoreType simulateCombat();
+	double simulateCombat();
 
 	const SparCraft::Unit			getSparCraftUnit(const UnitInfo & ui) const;
     const SparCraft::Unit			getSparCraftUnit(BWAPI::Unit unit) const;
 	const SparCraft::GameState &	getSparCraftState() const;
 
-	const SparCraft::IDType getSparCraftPlayerID(BWAPI::Player player) const;
+	const size_t getSparCraftPlayerID(BWAPI::Player player) const;
 
 	void logState(const SparCraft::GameState & state);
 };

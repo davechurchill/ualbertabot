@@ -8,13 +8,13 @@ Player_Random::Player_Random (const size_t & playerID)
 	_playerID = playerID;
 }
 
-void Player_Random::getMoves(const GameState & state, std::vector<Action> & moveVec)
+void Player_Random::getMove(const GameState & state, Move & move)
 {
     MoveArray moves;
     ActionGenerators::GenerateCompassActions(state, _playerID, moves);
 	for (size_t u(0); u<moves.numUnits(); u++)
 	{
-		moveVec.push_back(moves.getMove(u, rand.nextInt() % moves.numMoves(u)));
+		move.addAction(moves.getMove(u, rand.nextInt() % moves.numMoves(u)));
 	}
 }
 

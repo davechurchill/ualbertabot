@@ -26,7 +26,8 @@ public:
     Action(const size_t & unitIndex, const size_t & player, const size_t & type, const size_t & moveIndex, const Position & dest);
 	Action(const size_t & unitIndex, const size_t & player, const size_t & type, const size_t & moveIndex);
 
-	const bool operator == (const Action & rhs);
+	bool operator == (const Action & rhs) const;
+    bool operator != (const Action & rhs) const;
 
 	const size_t & getID() const;
 	const size_t & getPlayerID() const;

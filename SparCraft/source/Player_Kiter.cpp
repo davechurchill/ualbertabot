@@ -7,12 +7,12 @@ Player_Kiter::Player_Kiter (const size_t & playerID)
 	_playerID = playerID;
 }
 
-void Player_Kiter::getMoves(const GameState & state, std::vector<Action> & moveVec)
+void Player_Kiter::getMove(const GameState & state, Move & move)
 {
     MoveArray moves;
     ActionGenerators::GenerateCompassActions(state, _playerID, moves);
 
-    moveVec.clear();
+    move.clear();
 	for (size_t u(0); u<moves.numUnits(); ++u)
 	{
 		bool foundAction						(false);
@@ -97,7 +97,7 @@ void Player_Kiter::getMoves(const GameState & state, std::vector<Action> & moveV
 			}
 		}
 			
-		moveVec.push_back(moves.getMove(u, bestMoveIndex));
+		move.addAction(moves.getMove(u, bestMoveIndex));
 	}
 }
 

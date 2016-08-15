@@ -62,18 +62,18 @@ void Game::playNextTurn()
     //_state.generateMoves(_moves[toMove->ID()], toMove->ID());
 
     const size_t whoCanMove = _state.whoCanMove();
-    std::vector<Action> playerMove;
-    std::vector<Action> enemyMove;
+    Move playerMove;
+    Move enemyMove;
 
     int times[2] = {_state.getTimeNextUnitCanAct(0), _state.getTimeNextUnitCanAct(1) };
 
     // the tuple of moves he wishes to make
-    player->getMoves(_state, playerMove);
+    player->getMove(_state, playerMove);
         
     // if both players can move, generate the other player's moves
     if (_state.bothCanMove())
     {
-        enemy->getMoves(_state, enemyMove);
+        enemy->getMove(_state, enemyMove);
     }
 
     int times2[2] = {_state.getTimeNextUnitCanAct(0), _state.getTimeNextUnitCanAct(1) };
@@ -89,7 +89,7 @@ void Game::playNextTurn()
 void Game::playIndividualScripts(UnitScriptData & scriptData)
 {
     // array which will hold all the script moves for players
-    Array2D<std::vector<Action>, Constants::Num_Players, PlayerModels::Size> allScriptMoves;
+    Array2D<Move, Constants::Num_Players, PlayerModels::Size> allScriptMoves;
 
     _t.start();
 
@@ -118,7 +118,7 @@ void Game::playIndividualScripts(UnitScriptData & scriptData)
         const size_t enemyPlayer  = _state.getEnemy(playerToMove);
 
         MoveArray playerLegalMoves;
-        std::vector<Action> playerMove;
+        Move playerMove;
 
         // generate the moves possible from this state
         ActionGenerators::GenerateCompassActions(_state, playerToMove, playerLegalMoves);
@@ -130,7 +130,7 @@ void Game::playIndividualScripts(UnitScriptData & scriptData)
         if (_state.bothCanMove())
         {
             MoveArray enemyLegalMoves;
-            std::vector<Action> enemyMove;
+            Move enemyMove;
             ActionGenerators::GenerateCompassActions(_state, enemyPlayer, enemyLegalMoves);
 
             scriptData.calculateMoves(enemyPlayer, enemyLegalMoves, _state, enemyMove);
