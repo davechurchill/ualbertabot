@@ -63,6 +63,11 @@ public:
     ScriptPolicy();
     ScriptPolicy(const rapidjson::Value & value);
 
+    int getActionType() const;
+    int getAngle() const;
+    int getDistance() const;
+    const ScriptPolicyTarget & getTarget() const;
+
     static int GetTargetType(const std::string & targetString);
 };
 
@@ -79,7 +84,10 @@ public:
     ScriptPlayerPolicy();
     ScriptPlayerPolicy(const rapidjson::Value & value);
 
-    
+    const ScriptPolicy & getOutOfRangePolicy() const;
+    const ScriptPolicy & getInRangePolicy() const;    
+    const ScriptPolicy & getReloadPolicy() const;
+    bool getAllowOverkill();
 };
 
 

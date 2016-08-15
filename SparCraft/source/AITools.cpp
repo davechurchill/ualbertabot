@@ -160,3 +160,18 @@ std::string AITools::StateToStringCompact(const GameState & state)
 
 	return ss.str();
 }
+
+Position AITools::CalculatePlayerCenter(const GameState & state, const size_t & player)
+{
+    Position center(0,0);
+
+    for (size_t u(0); u < state.numUnits(player); ++u)
+    {
+        const Position & pos = state.getUnit(player, u).currentPosition(state.getTime());
+        center.addPosition(pos);
+    }
+
+    center = Position((PositionType)((double)center.x() / state.numUnits(player)), (PositionType)((double)center.y() / state.numUnits(player)));
+
+    return center;
+}

@@ -24,12 +24,52 @@ ScriptPlayerPolicy::ScriptPlayerPolicy(const rapidjson::Value & value)
     }
 }
 
+const ScriptPolicy & ScriptPlayerPolicy::getOutOfRangePolicy() const
+{
+    return _oorPolicy;
+}
+
+const ScriptPolicy & ScriptPlayerPolicy::getInRangePolicy() const
+{
+    return _irPolicy;
+}
+
+const ScriptPolicy & ScriptPlayerPolicy::getReloadPolicy() const
+{
+    return _reloadPolicy;
+}
+
+bool ScriptPlayerPolicy::getAllowOverkill()
+{
+    return _allowOverkill;
+}
+
 ScriptPolicy::ScriptPolicy()
     : _actionType       (0)
     , _angle            (0)
     , _distance         (0)
 {
 
+}
+
+int ScriptPolicy::getActionType() const
+{
+    return _actionType;
+}
+
+int ScriptPolicy::getAngle() const
+{
+    return _angle;
+}
+
+int ScriptPolicy::getDistance() const
+{
+    return _distance;
+}
+
+const ScriptPolicyTarget & ScriptPolicy::getTarget() const
+{
+    return _target;
 }
 
 ScriptPolicy::ScriptPolicy(const rapidjson::Value & value)
