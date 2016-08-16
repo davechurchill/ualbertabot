@@ -53,6 +53,7 @@ public:
     const Unit &            getUnitByID(const size_t & unitID)                                      const;
     const Unit &            getUnit(const size_t & player, const size_t & unitIndex)                const;
     const std::vector<Unit> & getAllUnits()                                                         const;
+    const std::vector<size_t> & getUnitIDs(const size_t & player)                                   const;
 
     // game time functions
     void                    setTime(const TimeType & time);

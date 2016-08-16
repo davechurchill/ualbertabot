@@ -47,8 +47,8 @@ void GUIGame::onFrame()
         }
     }
 
-    drawParameters(5, 15);
-    drawSearchResults(5, 150);
+    //drawParameters(5, 15);
+    //drawSearchResults(5, 150);
     drawInfo();
 }
 
@@ -59,7 +59,7 @@ void GUIGame::drawInfo()
     ss << "Frame Draw Time: " << _previousDrawGameTimer << "ms\n\n";
     ss << "Turn Time: " << _previousTurnTimer << "ms";
 
-    GUITools::DrawString(Position(5, _gui.height()-50), ss.str(), White);
+    GUITools::DrawString(Position(10, _gui.height()-50), ss.str(), White);
 }
 
 void GUIGame::drawGame()

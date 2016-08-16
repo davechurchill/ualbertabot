@@ -67,17 +67,24 @@ void SparCraftExperiment::parseGamesJSON(const rapidjson::Value & games, const r
 
         size_t numGames = game["Games"].GetInt();
 
+        Map map(_guiWidth/32, _guiHeight/32);
+
         std::vector<int> winners(3,0);
         for (size_t i(0); i < numGames; ++i)
         {
             std::cout << "Parsing game " << i << " for " << game["Name"].GetString() << std::endl;
             
             GameState state = GetStateFromVariable(game["State"].GetString(), root);
+
+            if (_showGUI)
+            {
+                state.setMap(&map);
+            }
+
             PlayerPtr white = AIParameters::Instance().getPlayer(Players::Player_One, game["Players"][0].GetString());
             PlayerPtr black = AIParameters::Instance().getPlayer(Players::Player_Two, game["Players"][1].GetString());
 
             Game g(state, white, black, 20000);
-
             playGame(g);
 
             if (i % 500 == 0)

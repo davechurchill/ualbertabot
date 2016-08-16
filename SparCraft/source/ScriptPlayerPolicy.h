@@ -8,7 +8,7 @@ namespace SparCraft
 
 namespace PolicyAction
 {
-    enum { Default, Attack, Move, None };
+    enum { Default, Attack, Move, Reload, Pass };
 }
 
 namespace PolicyTargetPlayer
@@ -39,16 +39,14 @@ public:
     int     targetType;
     int     targetOperator;
     int     targetOperand;
-    int     targetOperandPlayer;
-    int     targetOperandType;
 
     ScriptPolicyTarget();
     ScriptPolicyTarget(const rapidjson::Value & value);
 
-    static int GetTargetType(const std::string & string);
-    static int GetTargetPlayer(const std::string & string);
+    static int GetTargetType    (const std::string & string);
+    static int GetTargetPlayer  (const std::string & string);
     static int GetTargetOperator(const std::string & string);
-    static int GetTargetOperand(const std::string & string);
+    static int GetTargetOperand (const std::string & string);
 };
 
 class ScriptPolicy

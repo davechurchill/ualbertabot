@@ -19,7 +19,11 @@ Action::Action(const size_t & unitIndex, const size_t & player, const size_t & t
     , _targetID(targetID)
     , _p(dest)
 {
-        
+    if (dest.x() < -20000 || dest.y() < -20000)
+    {
+        int d = dest.x();
+        int e = dest.y();
+    }
 }
 
 Action::Action(const size_t & unitIndex, const size_t & player, const size_t & type, const size_t & targetID)

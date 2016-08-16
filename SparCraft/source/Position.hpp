@@ -136,7 +136,7 @@ public:
 		return Position(-_x, -_y);
 	}
 
-    inline const PositionType getDistance(const Position & p) const	
+    const PositionType getDistance(const Position & p) const	
 	{
         PositionType dX = x() - p.x();
         PositionType dY = y() - p.y();
@@ -155,7 +155,12 @@ public:
         }
 	}
 
-	inline const PositionType getDistanceSq(const Position & p) const	
+    double getLength() const
+    {
+        return sqrt(_x*_x + _y*_y);
+    }
+
+	const PositionType getDistanceSq(const Position & p) const	
 	{
         return (x()-p.x())*(x()-p.x()) + (y()-p.y())*(y()-p.y());
 	}

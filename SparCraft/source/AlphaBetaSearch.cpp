@@ -361,7 +361,9 @@ const size_t AlphaBetaSearch::getPlayerToMove(const GameState & state, const siz
 
 const bool AlphaBetaSearch::isTranspositionLookupState(const GameState & state, const Move * firstSimMove) const
 {
-	return !state.bothCanMove() || (state.bothCanMove() && !firstSimMove);
+    bool bothCanMove = state.whoCanMove() == Players::Player_Both;
+
+	return !bothCanMove || (bothCanMove && !firstSimMove);
 }
 
 AlphaBetaValue AlphaBetaSearch::alphaBeta(const GameState & state, size_t depth, const size_t lastPlayerToMove, Move * prevSimMove, StateEvalScore alpha, StateEvalScore beta)

@@ -190,6 +190,8 @@ const bool Unit::isAlive() const
 // attack a unit, set the times accordingly
 void Unit::attack(const Action & move, const Unit & target, const TimeType & gameTime)
 {
+    SPARCRAFT_ASSERT(nextAttackActionTime() == gameTime, "Trying to attack when we can't");
+
     // if this is a repeat attack
     if (_previousAction.type() == ActionTypes::ATTACK || _previousAction.type() == ActionTypes::RELOAD)
     {
@@ -238,12 +240,14 @@ void Unit::heal(const Action & move, const Unit & target, const TimeType & gameT
 }
 
 // unit update for moving based on a given Move
-void Unit::move(const Action & move, const TimeType & gameTime) 
+void Unit::move(const Action & action, const TimeType & gameTime) 
 {
+    SPARCRAFT_ASSERT(nextMoveActionTime() == gameTime, "Trying to move when we can't");
+
     _previousPosition = pos();
 
     // get the distance to the move action destination
-    PositionType dist = move.pos().getDistance(pos());
+    PositionType dist = action.pos().getDistance(pos());
     
     // how long will this move take?
     TimeType moveDuration = (TimeType)((double)dist / speed());
@@ -256,9 +260,11 @@ void Unit::move(const Action & move, const TimeType & gameTime)
 
     // update the position
     //_position.addPosition(dist * dir.x(), dist * dir.y());
-    _position.moveTo(move.pos());
+    _position.moveTo(action.pos());
 
-    setPreviousAction(move, gameTime);
+    setPreviousAction(action, gameTime);
+
+    SPARCRAFT_ASSERT(_previousActionTime < nextMoveActionTime(), "Move didn't take any time");
 }
 
 // unit is commanded to wait until his attack cooldown is up

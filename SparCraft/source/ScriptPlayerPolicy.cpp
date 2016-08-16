@@ -94,9 +94,13 @@ ScriptPolicy::ScriptPolicy(const rapidjson::Value & value)
         SPARCRAFT_ASSERT(value[2].IsInt(), "ScriptPolicy Move[2] should be int (angle, degrees)");
         _angle = value[2].GetInt();
     }
-    else if (actionString == "None")
+    else if (actionString == "Reload")
     {
-        _actionType = PolicyAction::None;
+        _actionType = PolicyAction::Reload;
+    }
+    else if (actionString == "Pass")
+    {
+        _actionType = PolicyAction::Pass;
     }
     else
     {
@@ -110,8 +114,6 @@ ScriptPolicyTarget::ScriptPolicyTarget()
     , targetType            (0)
     , targetOperator        (0)
     , targetOperand         (0)
-    , targetOperandPlayer   (0)
-    , targetOperandType     (0)
 {
     
 }
@@ -134,17 +136,6 @@ ScriptPolicyTarget::ScriptPolicyTarget(const rapidjson::Value & value)
 
         SPARCRAFT_ASSERT(value[3].IsString(), "ScriptPolicyTarget[3] is not String");
         targetOperand = GetTargetOperand(value[3].GetString());
-
-        if (targetOperand == PolicyOperand::Distance && value.Size() > 4)
-        {
-            SPARCRAFT_ASSERT(value[4].IsString(), "ScriptPolicyTarget[4] is not String");
-            targetOperandPlayer = GetTargetPlayer(value[4].GetString());
-
-            SPARCRAFT_ASSERT(value[5].IsString(), "ScriptPolicyTarget[5] is not String");
-            targetOperandType = GetTargetType(value[5].GetString());
-
-            SPARCRAFT_ASSERT(targetOperandType != PolicyTargetType::Unit, "ScriptPolicyTarget[5] optional target cannot be 'Unit'");
-        }
     }
 }
 

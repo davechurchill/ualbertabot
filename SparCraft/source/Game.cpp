@@ -71,7 +71,7 @@ void Game::playNextTurn()
     player->getMove(_state, playerMove);
         
     // if both players can move, generate the other player's moves
-    if (_state.bothCanMove())
+    if (_state.whoCanMove() == Players::Player_Both)
     {
         enemy->getMove(_state, enemyMove);
     }
