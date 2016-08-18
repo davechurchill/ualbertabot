@@ -62,7 +62,7 @@ public:
 
     // move related functions
     void                    doMove(const Move & moves);
-    void                    doMove(const Move & m1,const Move & m2);
+    void                    doMove(const Move & m1, const Move & m2, bool advanceGameTime = true);
     size_t                  getNumMovements(const size_t & player)                                  const;
     size_t                  whoCanMove()                                                            const;
     bool                    bothCanMove()                                                           const;

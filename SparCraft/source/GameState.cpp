@@ -88,14 +88,9 @@ void GameState::doMove(const Move & moves)
     updateGameTime();
 }
 
-void GameState::doMove(const Move & m1, const Move & m2)
+void GameState::doMove(const Move & m1, const Move & m2, bool advanceGameTime)
 {
     const TimeType prevUnitActTime = std::min(getTimeNextUnitCanAct(0), getTimeNextUnitCanAct(1));
-
-    if (getTime() == 2)
-    {
-        int a = 6;
-    }
 
     for (size_t m(0); m<m1.size(); ++m)
     {
@@ -110,7 +105,10 @@ void GameState::doMove(const Move & m1, const Move & m2)
     const TimeType nextUnitActTime = std::min(getTimeNextUnitCanAct(0), getTimeNextUnitCanAct(1));
     SPARCRAFT_ASSERT(nextUnitActTime > getTime(), "doMove didn't result in game time advancing");
 
-    updateGameTime();
+    if (advanceGameTime)
+    {
+        updateGameTime();
+    }
 }
 
 const std::vector<size_t> & GameState::getUnitIDs(const size_t & player) const
@@ -191,6 +189,11 @@ size_t GameState::whoCanMove() const
 	TimeType p1Time = getTimeNextUnitCanAct(0); //getUnit(0,0).firstTimeFree();
 	TimeType p2Time = getTimeNextUnitCanAct(1); //getUnit(1,0).firstTimeFree();
 
+    if (p1Time > getTime() && p2Time > getTime())
+    {
+        return Players::Player_None;
+    }
+
 	// if player one is to move first
 	if (p1Time < p2Time)
 	{
@@ -220,16 +223,7 @@ TimeType GameState::getTimeNextUnitCanAct(const size_t & player) const
 
 void GameState::updateGameTime()
 {
-	const size_t who = whoCanMove();
-
-	if (who == Players::Player_One)
-	{
-		_currentTime = getTimeNextUnitCanAct(0);
-	}
-	else
-	{
-		_currentTime = getTimeNextUnitCanAct(1);
-	}
+    _currentTime = std::min(getTimeNextUnitCanAct(0), getTimeNextUnitCanAct(1));
 }
 
 void GameState::setMap(Map * map)

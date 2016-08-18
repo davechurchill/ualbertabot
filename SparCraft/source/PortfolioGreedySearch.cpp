@@ -20,7 +20,7 @@ Move PortfolioGreedySearch::search(const size_t & player, const GameState & stat
     Timer t;
     t.start();
 
-    const size_t enemyPlayer(state.getEnemy(player));
+    const size_t enemyPlayer = state.getEnemy(player);
 
     // calculate the seed scripts for each player
     // they will be used to seed the initial root search

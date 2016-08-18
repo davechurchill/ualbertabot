@@ -247,7 +247,7 @@ void Unit::move(const Action & action, const TimeType & gameTime)
     _previousPosition = pos();
 
     // get the distance to the move action destination
-    PositionType dist = action.pos().getDistance(pos());
+    double dist = action.pos().getDistance(pos());
     
     // how long will this move take?
     TimeType moveDuration = (TimeType)((double)dist / speed());

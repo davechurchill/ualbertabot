@@ -27,24 +27,6 @@ void GUIGame::onFrame()
     {
         _game.playNextTurn();
         _previousTurnTimer =  turnTimer.getElapsedTimeInMilliSec();
-
-        for (size_t p(0); p < 2; ++p)
-        {
-            Player_UCT *        uct = dynamic_cast<Player_UCT *>        (_game.getPlayer(p).get());
-            Player_AlphaBeta *  ab  = dynamic_cast<Player_AlphaBeta *>  (_game.getPlayer(p).get());
-
-            if (uct) 
-            { 
-                setParams(p, uct->getParams().getDescription());
-                setResults(p, uct->getResults().getDescription());
-            }
-
-            if (ab) 
-            { 
-                setParams(p, ab->getParams().getDescription()); 
-                setResults(p, ab->results().getDescription());
-            }
-        }
     }
 
     //drawParameters(5, 15);

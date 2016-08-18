@@ -10,6 +10,7 @@ Game::Game(const GameState & initialState, size_t turnLimit)
     , _playerToMoveMethod(SparCraft::PlayerToMove::Alternate)
     , _rounds(0)
     , _moveLimit(turnLimit)
+    , _simulateEveryFrame(false)
 {
 
 }
@@ -20,6 +21,7 @@ Game::Game(const GameState & initialState, PlayerPtr p1, PlayerPtr p2, const siz
     , _playerToMoveMethod(SparCraft::PlayerToMove::Alternate)
     , _rounds(0)
     , _moveLimit(turnLimit)
+    , _simulateEveryFrame(false)
 {
     // add the players
     _players[Players::Player_One] = p1;
@@ -50,24 +52,23 @@ void Game::playNextTurn()
     Timer frameTimer;
     frameTimer.start();
 
-    //_scriptMoves[0].clear();
-    //_scriptMoves[1].clear();
+    const size_t whoCanMove = _state.whoCanMove();
+    if (whoCanMove == Players::Player_None)
+    {
+        _state.setTime(_state.getTime() + 1);
+        return;
+    }
 
     // the player that will move next
     const size_t playerToMove   = getPlayerToMove();
     PlayerPtr player            = _players[playerToMove];
     PlayerPtr enemy             = _players[_state.getEnemy(playerToMove)];
 
-    // generate the moves possible from this state
-    //_state.generateMoves(_moves[toMove->ID()], toMove->ID());
-
-    const size_t whoCanMove = _state.whoCanMove();
     Move playerMove;
     Move enemyMove;
 
     int times[2] = {_state.getTimeNextUnitCanAct(0), _state.getTimeNextUnitCanAct(1) };
 
-    // the tuple of moves he wishes to make
     player->getMove(_state, playerMove);
         
     // if both players can move, generate the other player's moves
@@ -78,10 +79,8 @@ void Game::playNextTurn()
 
     int times2[2] = {_state.getTimeNextUnitCanAct(0), _state.getTimeNextUnitCanAct(1) };
 
-    // make the moves
-    _state.doMove(playerMove, enemyMove);
+    _state.doMove(playerMove, enemyMove, !_simulateEveryFrame);
 
-    //_state.finishedMoving();
     _rounds++;
 }
 
@@ -144,6 +143,11 @@ void Game::playIndividualScripts(UnitScriptData & scriptData)
     }
 
     _gameTimeMS = _t.getElapsedTimeInMilliSec();
+}
+
+void Game::setSimulateEveryFrame(bool sim)
+{
+    _simulateEveryFrame = sim;
 }
 
 PlayerPtr Game::getPlayer(const size_t & player)

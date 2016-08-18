@@ -18,15 +18,17 @@ class UnitScriptData;
 class Game
 {
 protected:
-	PlayerPtr			_players[2];
+	
+    GameState           _state;
+    PlayerPtr			_players[2];
 	size_t				_numPlayers;
 	size_t				_playerToMoveMethod;
 	size_t				_rounds;
 	Timer				_t;
 	double				_gameTimeMS;
 	size_t				_moveLimit;
-
-	GameState           _state;
+    bool                _simulateEveryFrame;
+	
 
 	// moves array to store moves in
 	//MoveArray           _moves[2];
@@ -42,9 +44,10 @@ public:
     void                playNextTurn();
     void                playIndividualScripts(UnitScriptData & scriptsChosen);
 	void                storeHistory(const bool & store);
+    void                setSimulateEveryFrame(bool sim);
 	bool                gameOver() const;
     
-	double           eval(const size_t & evalMethod) const;
+	double              eval(const size_t & evalMethod) const;
 
 	GameState &         getState();
     const GameState &   getState() const;

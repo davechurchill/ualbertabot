@@ -136,23 +136,12 @@ public:
 		return Position(-_x, -_y);
 	}
 
-    const PositionType getDistance(const Position & p) const	
+    double getDistance(const Position & p) const	
 	{
-        PositionType dX = x() - p.x();
-        PositionType dY = y() - p.y();
+        double dX = x() - p.x();
+        double dY = y() - p.y();
 
-        if (dX == 0)
-        {
-            return abs(dY);
-        }
-        else if (dY == 0)
-        {
-            return abs(dX);
-        }
-        else
-        {
-            return (PositionType)sqrt((float)(dX*dX - dY*dY));
-        }
+        return sqrt(dX*dX + dY*dY);
 	}
 
     double getLength() const
