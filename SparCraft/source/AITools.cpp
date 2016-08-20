@@ -99,7 +99,7 @@ void AITools::StatePrint(const GameState & state, int indent)
 			const Unit & unit = state.getUnit(p, u);
 
 			TABS(indent);
-			fprintf(stderr, "  P%d %5d %5d    (%3d, %3d)     %s\n", unit.getPlayerID(), unit.currentHP(), unit.firstTimeFree(), unit.x(), unit.y(), unit.name().c_str());
+			fprintf(stderr, "  P%d %5d %5d    (%3d, %3d)     %s\n", unit.getPlayerID(), unit.currentHP(), (int)unit.firstTimeFree(), unit.x(), unit.y(), unit.name().c_str());
 		}
 	}
 	fprintf(stderr, "\n\n");

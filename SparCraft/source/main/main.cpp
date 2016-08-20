@@ -1,8 +1,3 @@
-#ifndef WIN32
-#define APIENTRY
-#define APIENTRYP
-#endif
-
 #include "../SparCraft.h"
 #include "SparCraftExperiment.h"
 
