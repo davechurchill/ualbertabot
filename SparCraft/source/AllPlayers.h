@@ -11,13 +11,6 @@
 
 // script-based players
 #include "Player_AttackClosest.h"
-#include "Player_AttackDPS.h"
-#include "Player_AttackWeakest.h"
-#include "Player_Kiter.h"
-#include "Player_KiterDPS.h"
-#include "Player_NOKDPS.h"
-#include "Player_Kiter_NOKDPS.h"
-#include "Player_Cluster.h"
 #include "Player_Random.h"
 #include "Player_Script.h"
 
@@ -26,9 +19,4 @@ namespace SparCraft
     
 typedef std::shared_ptr<Player> PlayerPtr;
 
-namespace AllPlayers
-{
-    Player * getPlayer(const size_t & playerID, const size_t & type);
-    PlayerPtr getPlayerPtr(const size_t & playerID, const size_t & type);
-}
 }

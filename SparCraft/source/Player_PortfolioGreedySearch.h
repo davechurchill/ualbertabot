@@ -3,18 +3,17 @@
 #include "Common.h"
 #include "Player.h"
 #include "PortfolioGreedySearch.h"
+#include "PGSParameters.h"
 
 namespace SparCraft
 {
 class Player_PortfolioGreedySearch : public Player
 {
-	size_t _seed;
-	size_t _iterations;
-    size_t _responses;
-    size_t _timeLimit;
+	PGSParameters _params;
+
 public:
-	Player_PortfolioGreedySearch (const size_t & playerID);
-    Player_PortfolioGreedySearch (const size_t & playerID, const size_t & seed, const size_t & iter, const size_t & responses, const size_t & timeLimit);
+
+    Player_PortfolioGreedySearch (const size_t & playerID, const PGSParameters & params);
 	void getMove(const GameState & state, Move & move);
     virtual PlayerPtr clone();
 };

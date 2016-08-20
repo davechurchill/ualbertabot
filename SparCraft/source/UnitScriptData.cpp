@@ -4,6 +4,7 @@ using namespace SparCraft;
 
 UnitScriptData::UnitScriptData() 
 {
+
 }
 
 Move & UnitScriptData::getMove(const size_t & player, const size_t & actualScript)
@@ -77,7 +78,7 @@ void UnitScriptData::setUnitScript(const size_t & player, const int & id, const 
     {
         _scriptSet[player].insert(script);
         _scriptVec[player].push_back(script);
-        _playerPtrVec[player].push_back(PlayerPtr(AllPlayers::getPlayerPtr(player, script)));
+        // FIX _playerPtrVec[player].push_back(PlayerPtr(AllPlayers::getPlayerPtr(player, script)));
     }
         
     _unitScriptMap[player][id] = script;

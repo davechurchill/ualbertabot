@@ -87,20 +87,21 @@ ScriptPolicy::ScriptPolicy(const rapidjson::Value & value)
     }
     else if (actionString == "Move")
     {
+        SPARCRAFT_ASSERT(value.Size() == 4, "Move policy must have 4 elements: [Move, Target, Angle, Distance]");
+
         _actionType = PolicyAction::Move;
         SPARCRAFT_ASSERT(value[1].IsArray(), "ScriptPolicy Move[1] should be target array");
         _target = ScriptPolicyTarget(value[1]);
 
         SPARCRAFT_ASSERT(value[2].IsInt(), "ScriptPolicy Move[2] should be int (angle, degrees)");
         _angle = value[2].GetInt();
+
+        SPARCRAFT_ASSERT(value[3].IsInt(), "ScriptPolicy Move[3] should be int (distance, pixels)");
+        _distance = value[3].GetInt();
     }
     else if (actionString == "Reload")
     {
         _actionType = PolicyAction::Reload;
-    }
-    else if (actionString == "Pass")
-    {
-        _actionType = PolicyAction::Pass;
     }
     else
     {

@@ -17,7 +17,7 @@
       <Filter>util</Filter>
     </ClCompile>
     <ClCompile Include="..\source\PortfolioGreedySearch.cpp">
-      <Filter>AI\search\Greedy</Filter>
+      <Filter>AI\search\PGS</Filter>
     </ClCompile>
     <ClCompile Include="..\source\Timer.cpp">
       <Filter>util</Filter>
@@ -29,28 +29,13 @@
       <Filter>AI\search\UCT</Filter>
     </ClCompile>
     <ClCompile Include="..\source\UnitScriptData.cpp">
-      <Filter>AI\search\Greedy</Filter>
+      <Filter>AI\search\PGS</Filter>
     </ClCompile>
     <ClCompile Include="..\source\Player.cpp">
       <Filter>AI\players</Filter>
     </ClCompile>
     <ClCompile Include="..\source\Player_AlphaBeta.cpp">
       <Filter>AI\players\search</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\Player_AttackDPS.cpp">
-      <Filter>AI\players\script</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\Player_AttackWeakest.cpp">
-      <Filter>AI\players\script</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\Player_Kiter.cpp">
-      <Filter>AI\players\script</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\Player_KiterDPS.cpp">
-      <Filter>AI\players\script</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\Player_NOKDPS.cpp">
-      <Filter>AI\players\script</Filter>
     </ClCompile>
     <ClCompile Include="..\source\Player_AttackClosest.cpp">
       <Filter>AI\players\script</Filter>
@@ -69,12 +54,6 @@
     </ClCompile>
     <ClCompile Include="..\source\MoveArray.cpp">
       <Filter>util</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\Player_Cluster.cpp">
-      <Filter>AI\players\script</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\Player_Kiter_NOKDPS.cpp">
-      <Filter>AI\players\script</Filter>
     </ClCompile>
     <ClCompile Include="..\source\Unit.cpp">
       <Filter>simulation</Filter>
@@ -130,6 +109,9 @@
     <ClCompile Include="..\source\Move.cpp">
       <Filter>simulation</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\PGSParameters.cpp">
+      <Filter>AI\search\PGS</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\AlphaBetaSearch.h">
@@ -157,7 +139,7 @@
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="..\source\PortfolioGreedySearch.h">
-      <Filter>AI\search\Greedy</Filter>
+      <Filter>AI\search\PGS</Filter>
     </ClInclude>
     <ClInclude Include="..\source\Position.hpp">
       <Filter>simulation</Filter>
@@ -175,7 +157,7 @@
       <Filter>AI\search\UCT</Filter>
     </ClInclude>
     <ClInclude Include="..\source\UnitScriptData.h">
-      <Filter>AI\search\Greedy</Filter>
+      <Filter>AI\search\PGS</Filter>
     </ClInclude>
     <ClInclude Include="..\source\GraphViz.hpp">
       <Filter>util</Filter>
@@ -187,21 +169,6 @@
       <Filter>AI\players\search</Filter>
     </ClInclude>
     <ClInclude Include="..\source\Player_AttackClosest.h">
-      <Filter>AI\players\script</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Player_AttackDPS.h">
-      <Filter>AI\players\script</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Player_AttackWeakest.h">
-      <Filter>AI\players\script</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Player_Kiter.h">
-      <Filter>AI\players\script</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Player_KiterDPS.h">
-      <Filter>AI\players\script</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Player_NOKDPS.h">
       <Filter>AI\players\script</Filter>
     </ClInclude>
     <ClInclude Include="..\source\Player_PortfolioGreedySearch.h">
@@ -230,12 +197,6 @@
     </ClInclude>
     <ClInclude Include="..\source\MoveArray.h">
       <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Player_Cluster.h">
-      <Filter>AI\players\script</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Player_Kiter_NOKDPS.h">
-      <Filter>AI\players\script</Filter>
     </ClInclude>
     <ClInclude Include="..\source\Unit.h">
       <Filter>simulation</Filter>
@@ -297,6 +258,9 @@
     <ClInclude Include="..\source\Move.h">
       <Filter>simulation</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\PGSParameters.h">
+      <Filter>AI\search\PGS</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="util">
@@ -329,9 +293,6 @@
     <Filter Include="AI\search\AlphaBeta">
       <UniqueIdentifier>{39cea388-a0ee-4dab-9c88-fc2c02a0d8c8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="AI\search\Greedy">
-      <UniqueIdentifier>{273d10ab-4a07-439d-9142-aaf654ae5feb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="AI\search\UCT">
       <UniqueIdentifier>{5d28a734-3947-4ec3-9f52-b1259520d851}</UniqueIdentifier>
     </Filter>
@@ -340,6 +301,9 @@
     </Filter>
     <Filter Include="AI\move iterators">
       <UniqueIdentifier>{ba568fcc-fb2c-4e63-bd90-7c38f763e466}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\search\PGS">
+      <UniqueIdentifier>{273d10ab-4a07-439d-9142-aaf654ae5feb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

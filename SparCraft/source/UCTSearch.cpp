@@ -12,13 +12,13 @@ UCTSearch::UCTSearch(const UCTSearchParameters & params)
         // set ordered move script player objects
         for (size_t s(0); s<_params.getOrderedMoveScripts().size(); ++s)
         {
-            _allScripts[p].push_back(AllPlayers::getPlayerPtr(p, _params.getOrderedMoveScripts()[s]));
+            // FIX _allScripts[p].push_back(AllPlayers::getPlayerPtr(p, _params.getOrderedMoveScripts()[s]));
         }
 
         // set player model objects
         if (_params.playerModel(p) != PlayerModels::None)
         {
-            _playerModels[p] = AllPlayers::getPlayerPtr(p, _params.playerModel(p));
+            // FIX _playerModels[p] = AllPlayers::getPlayerPtr(p, _params.playerModel(p));
         }
     }
 }

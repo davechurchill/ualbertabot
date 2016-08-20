@@ -29,7 +29,7 @@ void GUIGame::onFrame()
         _previousTurnTimer =  turnTimer.getElapsedTimeInMilliSec();
     }
 
-    //drawParameters(5, 15);
+    drawParameters(5, 15);
     //drawSearchResults(5, 150);
     drawInfo();
 }
@@ -120,7 +120,7 @@ void GUIGame::drawParameters(int x, int y)
     int colwidth = 175;
     int playerspacing = 350;
 
-    for (size_t pp(0); pp < 2; ++pp)
+    /*for (size_t pp(0); pp < 2; ++pp)
     {
         GUITools::DrawString(Position(x+pp*playerspacing, y), "Player 1 Settings", PlayerColors[pp]);
 
@@ -129,9 +129,18 @@ void GUIGame::drawParameters(int x, int y)
             GUITools::DrawString(Position(x+pp*playerspacing, y+((p+1)*(size+spacing))), _params[pp][0][p], White);
             GUITools::DrawString(Position(x+pp*playerspacing+colwidth, y+((p+1)*(size+spacing))), _params[pp][1][p], White);
         }
-    }
+    }*/
 
-    //// Player 1 Settings
+    // Player 1 Settings
+    std::stringstream ss1;
+    ss1 << "Player 1\n\n" << _game.getPlayer(Players::Player_One)->getDescription();
+
+    std::stringstream ss2;
+    ss2 << "Player 2\n\n" << _game.getPlayer(Players::Player_Two)->getDescription();
+
+    GUITools::DrawString(Position(x, y), ss1.str(), PlayerColors[0]);
+    GUITools::DrawString(Position(x + playerspacing, y), ss2.str(), PlayerColors[1]);
+
     //if (_params[0].size() > 0)
     //{
     //    GUITools::DrawString(Position(x, y), "Player 1 Settings", PlayerColors[0]);

@@ -3,17 +3,13 @@
 
 using namespace SparCraft;
 
-PortfolioGreedySearch::PortfolioGreedySearch(const size_t & player, const size_t & enemyScript, const size_t & iter, const size_t & responses, const size_t & timeLimit)
-	: _player(player)
-	, _enemyScript(enemyScript)
-	, _iterations(iter)
-    , _responses(responses)
-    , _totalEvals(0)
-    , _timeLimit(timeLimit)
+PortfolioGreedySearch::PortfolioGreedySearch(const PGSParameters & params)
+	: _params(params)
 {
 	_playerScriptPortfolio.push_back(PlayerModels::NOKDPS);
 	_playerScriptPortfolio.push_back(PlayerModels::KiterDPS);
 }
+
 
 Move PortfolioGreedySearch::search(const size_t & player, const GameState & state)
 {
@@ -40,7 +36,53 @@ Move PortfolioGreedySearch::search(const size_t & player, const GameState & stat
     doPortfolioSearch(player, state, currentScriptData);
 
     // iterate as many times as required
-    for (size_t i(0); i<_responses; ++i)
+    for (size_t r(0); r < _params.getResponses(); ++r)
+    {
+        // do the portfolio search to improve the enemy's scripts
+        doPortfolioSearch(enemyPlayer, state, currentScriptData);
+
+        // then do portfolio search again for us to improve vs. enemy's update
+        doPortfolioSearch(player, state, currentScriptData);
+    }
+
+    // convert the script vector into a move vector and return it
+	MoveArray moves;
+    ActionGenerators::GenerateCompassActions(state, player, moves);
+    Move move;
+    GameState copy(state);
+    currentScriptData.calculateMoves(player, moves, copy, move);
+
+    _totalEvals = 0;
+
+    return move;
+}
+
+Move PortfolioGreedySearch::searchOld(const size_t & player, const GameState & state)
+{
+    Timer t;
+    t.start();
+
+    const size_t enemyPlayer = state.getEnemy(player);
+
+    // calculate the seed scripts for each player
+    // they will be used to seed the initial root search
+    size_t seedScript = calculateInitialSeed(player, state);
+    size_t enemySeedScript = calculateInitialSeed(enemyPlayer, state);
+
+    // set up the root script data
+    UnitScriptData originalScriptData;
+    setAllScripts(player, state, originalScriptData, seedScript);
+    setAllScripts(enemyPlayer, state, originalScriptData, enemySeedScript);
+
+    double ms = t.getElapsedTimeInMilliSec();
+    //printf("\nFirst Part %lf ms\n", ms);
+
+    // do the initial root portfolio search for our player
+    UnitScriptData currentScriptData(originalScriptData);
+    doPortfolioSearch(player, state, currentScriptData);
+
+    // iterate as many times as required
+    for (size_t r(0); r < _params.getResponses(); ++r)
     {
         // do the portfolio search to improve the enemy's scripts
         doPortfolioSearch(enemyPlayer, state, currentScriptData);
@@ -69,7 +111,7 @@ void PortfolioGreedySearch::doPortfolioSearch(const size_t & player, const GameS
     // the enemy of this player
     const size_t enemyPlayer(state.getEnemy(player));
     
-    for (size_t i(0); i<_iterations; ++i)
+    for (size_t i(0); i < _params.getIterations(); ++i)
     {
         // set up data for best scripts
         size_t          bestScriptVec[Constants::Max_Units];
@@ -86,7 +128,7 @@ void PortfolioGreedySearch::doPortfolioSearch(const size_t & player, const GameS
             const Unit & unit(state.getUnit(player, unitIndex));
 
             // iterate over each script move that it can execute
-            for (size_t sIndex(0); sIndex<_playerScriptPortfolio.size(); ++sIndex)
+            for (size_t sIndex(0); sIndex < _playerScriptPortfolio.size(); ++sIndex)
             {
                 // set the current script for this unit
                 currentScriptData.setUnitScript(unit, _playerScriptPortfolio[sIndex]);
@@ -128,7 +170,7 @@ size_t PortfolioGreedySearch::calculateInitialSeed(const size_t & player, const 
         // set the enemy units script choice to NOKDPS
         for (size_t unitIndex(0); unitIndex < state.numUnits(enemyPlayer); ++unitIndex)
         {
-            currentScriptData.setUnitScript(state.getUnit(enemyPlayer, unitIndex), _enemyScript);
+            // FIX currentScriptData.setUnitScript(state.getUnit(enemyPlayer, unitIndex), _enemyScript);
         }
 
         // evaluate the current state given a playout with these unit scripts

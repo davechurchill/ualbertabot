@@ -26,10 +26,9 @@ class Player_Script : public Player
 
 public:
 
-	Player_Script (const size_t & playerID, const ScriptPlayerPolicy & policy);
-    
+	Player_Script (const size_t & playerID, const ScriptPlayerPolicy & policy);    
 	void getMove(const GameState & state, Move & move);
-	
+
     virtual PlayerPtr clone();
 
 };

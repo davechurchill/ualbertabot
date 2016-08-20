@@ -14,13 +14,13 @@ AlphaBetaSearch::AlphaBetaSearch(const AlphaBetaSearchParameters & params, TTPtr
         // set ordered move script player objects
         for (size_t s(0); s<_params.getOrderedMoveScripts().size(); ++s)
         {
-            _allScripts[p].push_back(AllPlayers::getPlayerPtr(p, _params.getOrderedMoveScripts()[s]));
+            // FIX _allScripts[p].push_back(AllPlayers::getPlayerPtr(p, _params.getOrderedMoveScripts()[s]));
         }
 
         // set player model objects
         if (_params.playerModel(p) != PlayerModels::None)
         {
-            _playerModels[p] = AllPlayers::getPlayerPtr(p, _params.playerModel(p));
+            // FIX _playerModels[p] = AllPlayers::getPlayerPtr(p, _params.playerModel(p));
         }
     }
 }
@@ -78,8 +78,8 @@ AlphaBetaValue AlphaBetaSearch::IDAlphaBeta(const GameState & initialState, cons
 			if (d == 1)
 			{
 				const size_t playerToMove = getPlayerToMove(initialState, 1, Players::Player_None, true);
-				PlayerPtr bestScript(new Player_NOKDPS(playerToMove));
-				bestScript->getMove(initialState, _results.bestMoves);
+				//PlayerPtr bestScript(new Player_NOKDPS(playerToMove));
+				//bestScript->getMove(initialState, _results.bestMoves);
 			}
 
 			break;

@@ -17,6 +17,8 @@ Player_Script::Player_Script (const size_t & playerID, const ScriptPlayerPolicy 
 void Player_Script::getMove(const GameState & state, Move & move)
 {
     move.clear();
+    _playerCentersCalculated[0] = false;
+    _playerCentersCalculated[1] = false;
     
     std::vector<size_t> enemyUnitsInAttackRange;
     const std::vector<size_t> & allEnemyUnits = state.getUnitIDs(_enemyID);
@@ -71,7 +73,7 @@ Action Player_Script::getPolicyAction(const GameState & state, const Unit & myUn
         const Position & unitPos = myUnit.currentPosition(state.getTime());
         double angleRad = policy.getAngle() * RAD;
 
-        double distance = 16.0;
+        double distance = policy.getDistance();
         double dX = targetPos.x() - unitPos.x();
         double dY = targetPos.y() - unitPos.y();
         double length = sqrt(dX*dX + dY*dY);

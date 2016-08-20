@@ -14,7 +14,7 @@ const size_t Player::ID()
 
 std::string Player::getDescription() 
 { 
-    return "Player Type:    ERROR"; 
+    return _description;
 }
 
 void Player::setDescription(const std::string & desc) 

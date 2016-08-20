@@ -72,6 +72,8 @@ PlayerPtr AIParameters::parsePlayer(const size_t & player, const std::string & p
         return getPlayer(player, playerVariable);
     }
 
+    const size_t enemyPlayerID = (player + 1) % 2;
+
     const rapidjson::Value & playerValue = findPlayer(playerVariable.c_str(), root);
 
     SPARCRAFT_ASSERT(playerValue.HasMember("Type"), "Player has no 'Type' option");
@@ -96,7 +98,30 @@ PlayerPtr AIParameters::parsePlayer(const size_t & player, const std::string & p
     }
     else if (playerTypeName == "PortfolioGreedySearch")
     {
-        playerPtr = PlayerPtr(new Player_AttackClosest(player));
+        SPARCRAFT_ASSERT(playerValue.HasMember("TimeLimit"), "No PGS TimeLimit Found");
+        SPARCRAFT_ASSERT(playerValue.HasMember("Iterations"), "No PGS Iterations Found");
+        SPARCRAFT_ASSERT(playerValue.HasMember("Responses"), "No PGS Responses Found");
+        SPARCRAFT_ASSERT(playerValue.HasMember("EnemySeedPlayer"), "No PGS EnemySeedPlayer Found");
+        SPARCRAFT_ASSERT(playerValue.HasMember("Portfolio"), "No PGS Portfolio Found");
+        
+        PGSParameters params(player);
+
+        params.setEnemySeedPlayer(getPlayer(enemyPlayerID, playerValue["EnemySeedPlayer"].GetString()));
+        params.setIterations(playerValue["Iterations"].GetInt());
+        params.setResponses(playerValue["Responses"].GetInt());
+        params.setTimeLimit(playerValue["TimeLimit"].GetInt());
+
+        const rapidjson::Value & portfolio = playerValue["Portfolio"];
+
+        SPARCRAFT_ASSERT(portfolio.IsArray() && portfolio.Size() > 0, "PGS Portfolio must be a non-empty Array");
+
+        for (size_t i(0); i < portfolio.Size(); ++i)
+        {
+            params.addPortfolioPlayer(Players::Player_Two, getPlayer(Players::Player_One, portfolio[i].GetString()));
+            params.addPortfolioPlayer(Players::Player_Two, getPlayer(Players::Player_Two, portfolio[i].GetString()));
+        }
+
+        playerPtr = PlayerPtr(new Player_PortfolioGreedySearch(player, params));
     }
     else if (playerTypeName == "UCT")  
     { 
@@ -155,7 +180,7 @@ PlayerPtr AIParameters::parsePlayer(const size_t & player, const std::string & p
     _playerParses++;
     playerPtr->setDescription(playerVariable);
 
-    _playerMap[player][playerVariable] = playerPtr;
+    _playerMap[player][playerVariable] = playerPtr->clone();
 
     return playerPtr->clone();
 }
