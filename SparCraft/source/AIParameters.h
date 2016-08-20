@@ -3,7 +3,7 @@
 #include "SparCraft.h"
 #include <vector>
 #include <map>
-#include "rapidjson\document.h"
+#include "rapidjson/document.h"
 
 namespace SparCraft
 {
