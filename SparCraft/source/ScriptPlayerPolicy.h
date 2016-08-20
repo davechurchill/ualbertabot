@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Common.h"
-#include "rapidjson\document.h"
+#include "rapidjson/document.h"
 
 namespace SparCraft
 {
