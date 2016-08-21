@@ -1,10 +1,13 @@
 Compilation Instructions:
 
-1. Install the required libraries
+1. Install the required libraries for the SparCraft GUI
 
 libsdl2-dev
 libsdl2-image-dev
 
+   If you wish to compile without the GUI enabled, #define SPARCRAFT_NOGUI in source/SparCraftExperiment.cpp
+   When you reach step 6, run 'make SparCraft_NOGUI' instead of just make
+   
 2. Clone the BWAPI github repository somewhere on your system
 
 git clone https://github.com/bwapi/bwapi.git
