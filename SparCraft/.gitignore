@@ -1,6 +1,7 @@
 VisualStudio/Release
 VisualStudio/Debug
 bin/SparCraft
+bin/SparCraft_NOGUI
 bin/*.txt
 bin/*.pdb
 bin/*.map
