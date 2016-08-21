@@ -7,3 +7,4 @@ bin/*.map
 bin/*.dll
 bin/*.exe
 source/*.o
+!bin/SparCraft_Config.txt
