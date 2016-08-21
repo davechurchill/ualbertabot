@@ -21,6 +21,6 @@ BWAPI_DIR=/where_you_cloned_to/bwapi/bwapi  (yes, bwapi/bwapi)
    
 6. Run 'make' in the SparCraft directory, the binary will go to the 'SparCraft/bin' directory
 
-7. cd to 'SparCraft/bin' and run './SparCraft ../sample_experiment/sample_exp.txt'
+7. cd to 'SparCraft/bin' and run ./SparCraft - it will read SparCraft_Config.txt from SparCraft/bin as the config file
 
 Enjoy!
