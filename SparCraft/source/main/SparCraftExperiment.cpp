@@ -1,5 +1,10 @@
 #include "SparCraftExperiment.h"
-#include "../gui/GUI.h"
+
+// #define SPARCRAFT_NOGUI
+
+#ifndef SPARCRAFT_NOGUI
+    #include "../gui/GUI.h"
+#endif
 
 using namespace SparCraft;
 
@@ -94,6 +99,7 @@ void SparCraftExperiment::parseGamesJSON(const rapidjson::Value & games, const r
 
 void SparCraftExperiment::playGame(Game & game)
 {
+#ifndef SPARCRAFT_NOGUI
     if (_showGUI)
     {
         static GUI gui(_guiWidth, _guiHeight);
@@ -105,6 +111,7 @@ void SparCraftExperiment::playGame(Game & game)
         }
     }
     else
+#endif
     {
         game.play();
     }
