@@ -5,6 +5,7 @@
 using namespace SparCraft;
 
 GLfloat White[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+GLfloat Grid[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
 
 GLfloat PlayerColors[2][4] = {{1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}};
 GLfloat PlayerColorsDark[2][4] = {{0.7f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.7f, 0.0f, 1.0f}};
@@ -12,26 +13,27 @@ GLfloat PlayerColorsDark[2][4] = {{0.7f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.7f, 0.0f, 1
 GUIGame::GUIGame(GUI & gui)
     : _game(GameState(), 0)
     , _gui(gui)
+    , _updateDelayMS(0)
+    , _drawHPBars(true)
+    , _drawCD(true)
+    , _lastGameUpdate(0)
 {
-
+    _updateTimer.start();
 }
 
 void GUIGame::onFrame()
 {
-    drawGame();
     //drawHPBars();
 
     Timer turnTimer;
     turnTimer.start();
-    if (!_game.gameOver())
+
+    if (!_game.gameOver() && (_updateTimer.getElapsedTimeInMilliSec() > _updateDelayMS))
     {
         _game.playNextTurn();
         _previousTurnTimer =  turnTimer.getElapsedTimeInMilliSec();
+        _updateTimer.start();
     }
-
-    drawParameters(5, 15);
-    //drawSearchResults(5, 150);
-    drawInfo();
 }
 
 void GUIGame::drawInfo()
@@ -50,6 +52,34 @@ void GUIGame::drawGame()
     drawGameTimer.start();
 
     const GameState & state = _game.getState();
+
+    // draw the map boundary, if the state has one
+    if (state.getMap().get() != nullptr)
+    {
+        int width = state.getMap()->getPixelWidth();
+        int height = state.getMap()->getPixelHeight();
+
+        std::stringstream ssbr;
+        ssbr << "(" << width << "," << height << ")";
+
+        GUITools::DrawString(Position(0, -10), "(0,0)", White);
+        GUITools::DrawString(Position(width-(8*ssbr.str().size()), height+15), ssbr.str(), White);
+
+        for (int x(32); x < width; x += 32)
+        {
+            GUITools::DrawLine(Position(x, 0), Position(x, height), 1, Grid);
+        }
+
+        for (int y(32); y < height; y += 32)
+        {
+            GUITools::DrawLine(Position(0, y), Position(width, y), 1, Grid);
+        }
+
+        GUITools::DrawLine(Position(0, 0), Position(width, 0), 3, White);
+        GUITools::DrawLine(Position(width, 0), Position(width, height), 3, White);
+        GUITools::DrawLine(Position(width, height), Position(0, height), 3, White);
+        GUITools::DrawLine(Position(0, height), Position(0, 0), 3, White);
+    }
 
     for (size_t p(0); p < 2; ++p)
     {
@@ -91,7 +121,11 @@ void GUIGame::drawHPBars()
 
             if (unit.isAlive())
             {
-                GUITools::DrawRectGradient(Position(xx,yy),Position(xx+cw,yy+h),PlayerColors[p], PlayerColorsDark[p]);
+                //GUITools::DrawRectGradient(Position(xx,yy),Position(xx+cw,yy+h),PlayerColors[p], PlayerColorsDark[p]);
+                
+                
+
+                
             }
 
             //if (unit.getID() < 255)
@@ -212,7 +246,12 @@ void GUIGame::drawUnit(const Unit & unit)
 	int		xx = pos.x() - (x1-x0)/2;
 	int		yy = pos.y() - healthBoxHeight - (y1-y0)/2 - 5;
 
-    GUITools::DrawRect(Position(xx, yy), Position(xx+cw, yy+healthBoxHeight), PlayerColors[unit.getPlayerID()]);
+    GUITools::DrawRect(Position(xx, yy), Position(xx + cw, yy + healthBoxHeight), PlayerColors[unit.getPlayerID()]); 
+    size_t cda = unit.nextAttackActionTime() - _game.getState().getTime();
+    size_t cdm = unit.nextMoveActionTime() - _game.getState().getTime();
+    std::stringstream cdss;
+    cdss << "(" << cdm << "," << cda << ")";
+    GUITools::DrawString(Position(xx + cw + 5, yy+2), cdss.str(), White);
 
     const Action & action = unit.previousAction();
             
@@ -252,4 +291,19 @@ void GUIGame::setResults(const size_t & player, const std::vector<std::vector<st
 void GUIGame::setParams(const size_t & player, const std::vector<std::vector<std::string> > & p)
 {
 	_params[player] = p;
+}
+
+void GUIGame::setDrawHPBars(bool draw)
+{
+    _drawHPBars = draw;
+}
+
+void GUIGame::setDrawCD(bool draw)
+{
+    _drawCD = draw;
+}
+
+void GUIGame::setUpdateDelayMS(size_t ms)
+{
+    _updateDelayMS = ms;
 }

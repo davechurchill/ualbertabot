@@ -52,7 +52,7 @@ GameState getSampleState()
     return state;
 }
 
-Map getSampleMap()
+std::shared_ptr<Map> getSampleMap()
 {
     // Maps are used to constrain the movement of Units on a battlefield
 
@@ -64,15 +64,15 @@ Map getSampleMap()
     // Example: A Map of size 32*32 BuildTiles has size 128*128 WalkTiles or 1024*1024 pixels
     
     // The Map object constructor takes in size coordinates in BWAPI BuildTile resolution    
-    Map smallMap(32, 32);
+    std::shared_ptr<Map> smallMap(new Map(32, 32));
 
     // We can set the walkable values of WalkTile resolution via
     // void setMapData(const size_t & buildTileX, const size_t & buildTileY, const bool val)
-    smallMap.setMapData(21, 98, false);
+    smallMap->setMapData(21, 98, false);
 
     // The default map sets all tiles to walkable, with an upper-left boundary of (0,0) and a lower-right boundary of (x,y)
     // We can query whether or not a unit can walk at a given position 
-    bool canWalkHere = smallMap.isWalkable(Position(100, 30));
+    bool canWalkHere = smallMap->isWalkable(Position(100, 30));
 
     // You can also construct a Map from a BWAPI::Game object, if you are using this code from within a bot
     // Map gameMap(BWAPI::BroodWar)
@@ -83,7 +83,7 @@ Map getSampleMap()
 
     // We can set the Map of a GameState via a pointer to the map, as Map objects can be quite large:
     GameState state(getSampleState());
-    state.setMap(&smallMap);
+    state.setMap(smallMap);
 
     return smallMap;
 }

@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\source\torch\main_torch.cpp" />
+    <ClCompile Include="..\source\torch\frame.cpp">
+      <Filter>torch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\torch\TorchTools.cpp">
+      <Filter>torch</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="torch">
+      <UniqueIdentifier>{6289d346-a4ff-4b79-b80b-5d4a2897abbc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\source\torch\frame.h">
+      <Filter>torch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\torch\refcount.h">
+      <Filter>torch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\torch\TorchTools.h">
+      <Filter>torch</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -3,7 +3,7 @@
 #include "Common.h"
 #include "MoveArray.h"
 #include "Hash.h"
-#include "Map.hpp"
+#include "Map.h"
 #include "Unit.h"
 #include "GraphViz.hpp"
 #include "Array.hpp"
@@ -19,7 +19,7 @@ namespace SparCraft
 {
 class GameState
 {
-    Map *                   _map;
+    std::shared_ptr<Map>    _map;
 
     GameStateUnitData       _unitData;
 
@@ -68,8 +68,8 @@ public:
     bool                    bothCanMove()                                                           const;
 
     // map-related functions
-    void                    setMap(Map * map);
-    Map *                   getMap()                                                                const;
+    void                    setMap(std::shared_ptr<Map> map);
+    std::shared_ptr<Map>    getMap()                                                                const;
     bool                    isWalkable(const Position & pos)                                        const;
     bool                    isFlyable(const Position & pos)                                         const;
 

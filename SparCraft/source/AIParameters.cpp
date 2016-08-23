@@ -26,15 +26,15 @@ void AIParameters::parseJSONValue(const rapidjson::Value & rootValue)
     Timer t;
     t.start();
     
-    std::cout << "Parsing Players...\n";
+    //std::cout << "Parsing Players...\n";
     parsePlayers("Players", rootValue);
     
-    std::cout << "Parsing Complete!\n";
+    //std::cout << "Parsing Complete!\n";
 
     double ms = t.getElapsedTimeInMilliSec();
 
-    std::cout << "Players:            " << _playerMap[0].size()        << ", parses: " << _playerParses << std::endl;
-    std::cout << "Parse Time:         " << ms << "ms"                  << std::endl;
+    //std::cout << "Players:            " << _playerMap[0].size()        << ", parses: " << _playerParses << std::endl;
+    //std::cout << "Parse Time:         " << ms << "ms"                  << std::endl;
 }
 
 void AIParameters::parsePlayers(const std::string & keyName, const rapidjson::Value & rootValue)
@@ -213,7 +213,7 @@ void AIParameters::parseJSONString(const std::string & jsonString)
 
 void AIParameters::parseFile(const std::string & filename)
 {
-    std::cout << "Reading AI Parameters File: " << filename << "\n";
+    //std::cout << "Reading AI Parameters File: " << filename << "\n";
     std::string json = FileUtils::ReadFile(filename);
     
     parseJSONString(json);

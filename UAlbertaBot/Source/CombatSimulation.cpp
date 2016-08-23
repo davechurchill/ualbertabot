@@ -28,7 +28,7 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
             continue;
         }
 
-        if (InformationManager::Instance().isCombatUnit(unit->getType()) && SparCraft::System::isSupportedUnitType(unit->getType()))
+        if (InformationManager::Instance().isCombatUnit(unit->getType()) && SparCraft::System::UnitTypeSupported(unit->getType()))
 		{
             try
             {
@@ -71,7 +71,7 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
             continue;
         }
 
-        if (!ui.type.isFlyer() && SparCraft::System::isSupportedUnitType(ui.type) && ui.completed)
+        if (!ui.type.isFlyer() && SparCraft::System::UnitTypeSupported(ui.type) && ui.completed)
 		{
             try
             {
@@ -127,9 +127,9 @@ double CombatSimulation::simulateCombat()
     {
 	    SparCraft::GameState s1(state);
 
-        SparCraft::PlayerPtr selfNOK(new SparCraft::Player_NOKDPS(getSparCraftPlayerID(BWAPI::Broodwar->self())));
+        SparCraft::PlayerPtr selfNOK(new SparCraft::Player_AttackClosest(getSparCraftPlayerID(BWAPI::Broodwar->self())));
 
-	    SparCraft::PlayerPtr enemyNOK(new SparCraft::Player_NOKDPS(getSparCraftPlayerID(BWAPI::Broodwar->enemy())));
+        SparCraft::PlayerPtr enemyNOK(new SparCraft::Player_AttackClosest(getSparCraftPlayerID(BWAPI::Broodwar->enemy())));
 
 	    SparCraft::Game g (s1, selfNOK, enemyNOK, 2000);
 

@@ -13,6 +13,12 @@
     </ClCompile>
     <ClCompile Include="..\source\main\main.cpp" />
     <ClCompile Include="..\source\main\SparCraftExperiment.cpp" />
+    <ClCompile Include="..\source\torch\frame.cpp">
+      <Filter>torch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\torch\TorchTools.cpp">
+      <Filter>torch</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\gui\GUI.h">
@@ -25,10 +31,22 @@
       <Filter>gui</Filter>
     </ClInclude>
     <ClInclude Include="..\source\main\SparCraftExperiment.h" />
+    <ClInclude Include="..\source\torch\frame.h">
+      <Filter>torch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\torch\refcount.h">
+      <Filter>torch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\torch\TorchTools.h">
+      <Filter>torch</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="gui">
       <UniqueIdentifier>{ceb05fc9-cc5d-4f5b-808d-c844862d2269}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="torch">
+      <UniqueIdentifier>{a9c12e5b-8898-4601-a48f-22c8f538a5df}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

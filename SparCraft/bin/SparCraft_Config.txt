@@ -34,11 +34,11 @@
                           "InRange"    : ["Move",   ["Self", "Center"], 0, 16], 
                           "Reload"     : ["Move",   ["Self", "Center"], 0, 16] },                      
     
-    "KiteClosest":      { "Type"       : "Script", 
+    "KiteWeakest":      { "Type"       : "Script", 
                           "NoOverkill" : false,
                           "OutOfRange" : ["Move",   ["Enemy", "Unit", "Min", "Distance"], 0, 16], 
-                          "InRange"    : ["Attack", ["Enemy", "Unit", "Min", "Distance"]], 
-                          "Reload"     : ["Move",   ["Enemy", "Unit", "Min", "Distance"], 180, 16] },
+                          "InRange"    : ["Attack", ["Enemy", "Unit", "Min", "HP"]], 
+                          "Reload"     : ["Move",   ["Enemy", "Unit", "Min", "Distance"], 160, 8] },
                           
     "KiteCenter":       { "Type"       : "Script", 
                           "NoOverkill" : false,
@@ -65,81 +65,37 @@
                           "PlayerToMove":"Alternate", "Eval":"Playout", "PlayoutPlayer":"AttackClosest" },
                           
     "PGS" :             { "Type":"PortfolioGreedySearch", "TimeLimit":40, "EnemySeedPlayer":"AttackClosest", "Iterations":1, "Responses":0,
-                          "Portfolio":["AttackClosest", "KiteClosest"] }
+                          "Portfolio":["AttackClosest", "KiteWeakest"] }
 },
 
 "Maps" :
 {
+	"Arena" :			{ "Type":"Arena", "Width":1200, "Height":640},
     "Destination" :     { "Type":"TextFile", "File":"destination.txt" }
 },
 
 "States" :
 {
-    "Sample File" :     { "Type":"DescriptionFile", "File":"../asset/config/testStateJSON.txt"},
-    "Separated":        { "Type":"Symmetric", "Border":[128,128], "Centers":[[150,180], [1050,540]], 
-                          "Units":[["Protoss_Dragoon", 16], ["Protoss_Zealot", 16]]},
-    "Symmetric D":      { "Type":"Symmetric", "Border":[128,128], "Centers":[[640,360], [640,360]], "Units":[["Protoss_Dragoon", 16]] },
-    "Frame Test" :      { "Type":"FrameFile", "File":"FrameData.txt"}
+    "SampleState" :     { "Type":"StateFile", "Map":"Arena", "File":"SampleStateFile.txt"},
+    "Separated":        { "Type":"Symmetric", "Map":"Arena", "Border":[128,128], "Centers":[[150,180], [1050,500]], "Units":[["Protoss_Dragoon", 16], ["Protoss_Zealot", 16]]},
+    "Symmetric":        { "Type":"Symmetric", "Border":[128,128], "Centers":[[640,360], [640,360]], "Units":[["Protoss_Dragoon", 16]] },
+    "TorchFrame" :      { "Type":"TorchCraftFrame", "File":"FrameData.txt"},
+	"TorchIn" :     	{ "Type":"TorchCraftStdIn", "File":"SampleTorchStdIn.txt"}
 },
 
 "Games" :
 [
-    { "Play":true,  "Name":"JSONGameTest", "Games":10, "State":"Separated", "Players":["AttackClosest", "AttackClosestOld"] },
-    { "Play":false, "name":"FrameState",   "Games":1, "State":"Frame ", "Players":["PGS", "NOKDPS"] }
+	{ "Play":true,  "Name":"Test",  "Games":10, "State":"TorchIn", "Players":["AttackClosest", "KiteWeakest"] },
+    { "Play":false, "Name":"TorchGame",  "Games":10, "State":"TorchFrame", "Players":["AttackClosest", "KiteWeakest"] }
 ],
 
 "GUI" : 
 {
-    "Enabled":true, "Width":1280, "Height":720, "FrameSkip":0
+    "Enabled":true, "Width":1600, "Height":900, "DrawHPBar":true, "DrawCD":true, "FrameDelayMS":42
 },
-
-"Comments" :
-{
-    "Actions":  ["Attack", "Move"],
-    "Movement": ["Toward", "Away", "HoldPosition"],
-    "Targets":  ["Target", "EnemyCenter", "SelfCenter", "EnemyClosest", "SelfClosest"]
-},
-
-"ScriptPolicies" :
-{
-    "ClusterUnits"   :  { "OutOfRange" : ["Move", "Self", "Center", 0], "InRange" : ["Move", "Self", "Center", 0], "Reload" : ["Move", "Self", "Center", 0] },
-    "ChaseTarget"    :  { "OutOfRange" : ["Move", "Target", 0], "InRange" : ["Attack", "Target"], "Reload" : ["None"] }, 
-    "StutterStep"    :  { "OutOfRange" : ["Move", "Target", 0], "InRange" : ["Attack", "Target"], "Reload" : ["Move", "Target", 0] },
-    "StutterStep"    :  { "OutOfRange" : ["Move", "Target", 0], "InRange" : ["Attack", "Target"], "Reload" : ["Move", "Target", 0] },
-    "KiteAwayTarget" :  { "OutOfRange" : ["Move", "Target", 0], "InRange" : ["Attack", "Target"], "Reload" : ["Move", "Target", 180] },
-    "KiteToGroup"    :  { "OutOfRange" : ["Move", "Target", 0], "InRange" : ["Attack", "Target"], "Reload" : ["Move", "Self", "Center", 0] }
-},
-
-"Experimental Players" :
-{
-
-},
-
 
 "Move Iterators" :
 {
     "SampleIterator" :  { }
-},
-
-"Benchmarks" :
-[
-    { "run":false, "name":"ChillIteratorTest", "Type":"ChillIterator", "TimeLimitMS":20000, "HistogramMinIndex":1, "HistogramMaxIndex":5, "HistogramMaxValue":4},
-    
-    { "run":false, "Type":"PlayerBenchmark", "name":"RandomB8", "PlayerOne":"RandomAI", "PlayerTwo":"RandomAI", "TimeLimitSec":60000, "RandomCards":8, "UpdateIntervalSec":5, "DoClickString":false, "DoUnitStats":true, "DoEvalStats":true, "DoPlayoutEvalStats":false, "DoSearchStats":false},
-    { "run":false, "Type":"PlayerBenchmark", "name":"PlayoutB8", "PlayerOne":"Playout", "PlayerTwo":"Playout", "TimeLimitSec":60000, "RandomCards":8, "UpdateIntervalSec":5, "DoClickString":false, "DoUnitStats":true, "DoEvalStats":true, "DoPlayoutEvalStats":false, "DoSearchStats":false},
-    { "run":true, "Type":"PlayerBenchmark", "name":"MediumAIB8", "PlayerOne":"MediumAI", "PlayerTwo":"MediumAI", "TimeLimitSec":60000, "RandomCards":8, "UpdateIntervalSec":5, "DoClickString":false, "DoUnitStats":true, "DoEvalStats":true, "DoPlayoutEvalStats":false, "DoSearchStats":false},
-    { "run":false, "Type":"PlayerBenchmark", "name":"ExpertAIB8", "PlayerOne":"ExpertAI", "PlayerTwo":"ExpertAI", "TimeLimitSec":60000, "RandomCards":8, "UpdateIntervalSec":5, "DoClickString":false, "DoUnitStats":false, "DoEvalStats":false, "DoPlayoutEvalStats":false, "DoSearchStats":false},
-    { "run":false, "Type":"PlayerBenchmark", "name":"HardAI300UCT",   "PlayerOne":"HardAI300UCT", "PlayerTwo":"HardAI300UCT", "TimeLimitSec":60000, "RandomCards":8, "UpdateIntervalSec":5, "DoClickString":false, "DoUnitStats":true, "DoEvalStats":true, "DoPlayoutEvalStats":false, "DoSearchStats":true},
-    { "run":false, "Type":"PlayerBenchmark", "name":"HardAI300",   "PlayerOne":"HardAI300", "PlayerTwo":"HardAI300", "TimeLimitSec":60000, "RandomCards":8, "UpdateIntervalSec":5, "DoClickString":false, "DoUnitStats":true, "DoEvalStats":true, "DoPlayoutEvalStats":false, "DoSearchStats":true},
-    { "run":false, "Type":"PlayerBenchmark", "name":"UCT300",   "PlayerOne":"HardAI300UCT", "PlayerTwo":"HardAI300UCT", "TimeLimitSec":60000, "RandomCards":8, "UpdateIntervalSec":5, "DoClickString":false, "DoUnitStats":false, "DoEvalStats":false, "DoPlayoutEvalStats":false, "DoSearchStats":false},
-    
-    { "run":false, "Type":"Tournament", "name":"AIDifficulties", "rounds":10000, "UpdateIntervalSec":5, "RandomCards":8, "players":[ {"name":"DocileAI","group":1}, {"name":"RandomAI","group":2}, {"name":"EasyAI","group":3}, {"name":"MediumAI","group":4}, {"name":"Playout","group":5},{"name":"ExpertAI","group":6}] },
-    { "run":false, "Type":"Tournament", "name":"HardAI", "rounds":10000, "UpdateIntervalSec":5, "RandomCards":8, "players":[ {"name":"HardAI300","group":1}, {"name":"HardAI300OrigP","group":2}, {"name":"HardAI300Eval","group":3}, {"name":"HardAI3002","group":4}] },
-    { "run":false, "Type":"Tournament", "name":"Playout", "rounds":10000, "UpdateIntervalSec":5, "RandomCards":8, "players":[ {"name":"Playout","group":1}, {"name":"PlayoutNew","group":2}] },
-    { "run":false, "Type":"Tournament", "name":"HardPlayoutTest2", "rounds":10000, "UpdateIntervalSec":5, "RandomCards":8, "players":[ {"name":"HardAI300","group":1}, {"name":"HardAI300Solver","group":2}, {"name":"HardAI300Combo","group":3}, {"name":"HardAI300SolverCombo","group":4}, {"name":"HardAI300Eval","group":5}] },
-    { "run":false, "Type":"Tournament", "name":"ExpertAI", "rounds":10000, "UpdateIntervalSec":5, "RandomCards":8, "players":[ {"name":"ExpertAI1","group":1}, {"name":"ExpertAI2","group":2}, {"name":"ExpertAI3","group":3}, {"name":"ExpertAI4","group":4},{"name":"HardAI300","group":5}, {"name":"HardAI300UCT","group":6}] },
-    { "run":false, "Type":"Tournament", "name":"HardTest", "rounds":10000, "UpdateIntervalSec":5, "RandomCards":8, "players":[ {"name":"HardAI1000","group":1}, {"name":"HardAI1000Eng","group":2}, {"name":"ExpertAI","group":3}] },
-    { "run":false, "Type":"Tournament", "name":"UCTTest", "rounds":10000, "UpdateIntervalSec":5, "RandomCards":8, "players":[ {"name":"HardAI300UCT","group":1}, {"name":"HardAI300UCTSimple","group":2}, {"name":"HardAI300UCTRand","group":3}, {"name":"ExpertAI","group":4}, {"name":"MediumAI","group":5}] }
-]
-
+}
 }

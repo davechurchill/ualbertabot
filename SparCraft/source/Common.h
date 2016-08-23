@@ -94,8 +94,7 @@ namespace SparCraft
 
     namespace System
     {
-        void checkSupportedUnitType(const BWAPI::UnitType & type);
-        bool isSupportedUnitType(const BWAPI::UnitType & type);
+        bool UnitTypeSupported(const BWAPI::UnitType & type);
     }
         
     namespace FileUtils

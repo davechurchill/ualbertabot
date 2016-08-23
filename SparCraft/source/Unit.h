@@ -44,8 +44,6 @@ public:
 	Unit(const BWAPI::UnitType unitType, const Position & pos, const size_t & unitID, const size_t & playerID, 
 		 const HealthType & hp, const HealthType & energy, const TimeType & tm, const TimeType & ta);
 
-	const bool operator < (const Unit & rhs) const;
-
     // action functions
 	void                    setPreviousAction(const Action & m, const TimeType & previousMoveTime);
 	void                    updateAttackActionTime(const TimeType & newTime);
@@ -75,8 +73,9 @@ public:
     // id related
 	void                    setUnitID(const size_t & id);
     void                    setBWAPIUnitID(const size_t & id);
-	const size_t            getID()                 const;
+	const size_t            getID()                     const;
 	const size_t		    getPlayerID()               const;
+    const size_t            getBWAPIUnitID()            const;
 
     // position related functions
 	const Position &        position()                  const;
@@ -132,12 +131,4 @@ public:
 	void                    debugHash(const size_t & hashNum, const TimeType & gameTime) const;
 };
 
-class UnitPtrCompare
-{
-public:
-	const bool operator() (Unit * u1, Unit * u2) const
-	{
-		return *u1 < *u2;
-	}
-};
 }

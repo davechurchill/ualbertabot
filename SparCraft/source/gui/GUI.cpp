@@ -9,6 +9,7 @@ const size_t MaxStarCraftTextures                   = 512;
 const int GUI::TextureFont                 = 256;
 
 GLfloat ColorWhite[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+GLfloat DarkGray[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
 
 GUI::GUI(int width, int height) 
     : _initialWidth(width)
@@ -23,6 +24,7 @@ GUI::GUI(int width, int height)
     , _currentFrame(0)
     , _previousRenderTime(0)
     , _guiGame(*this)
+	, _frameDelayMS(0)
 {
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
     {
@@ -82,6 +84,14 @@ void GUI::onStart()
 void GUI::onFrame()
 {
     SPARCRAFT_ASSERT(isStarted(), "Must initialize GUI before calling OnFrame()");
+
+	if (_frameDelayMS > 0)
+	{
+		Timer t;
+		t.start();
+
+		while (t.getElapsedTimeInMilliSec() < _frameDelayMS) {}
+	}
 
     // Handle input events
     handleEvents();
@@ -186,9 +196,16 @@ void GUI::render()
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
         {
-            glTranslatef(static_cast<float>(-_cameraX),static_cast<float>(-_cameraY),0);
+            glTranslatef(static_cast<float>(-_cameraX), static_cast<float>(-_cameraY), 0);
+
               
+            _guiGame.drawGame();
             _guiGame.onFrame();
+
+            glTranslatef(static_cast<float>(_cameraX), static_cast<float>(_cameraY), 0);
+
+            _guiGame.drawParameters(5, 15);
+            _guiGame.drawInfo();
 
             //drawAllBWAPIUnits();
             
@@ -202,6 +219,11 @@ void GUI::render()
     glPopMatrix();
 
     _currentFrame++;
+}
+
+void GUI::setUpdateDelay(const size_t & delayMS)
+{
+	_guiGame.setUpdateDelayMS(delayMS);
 }
 
 int GUI::width()
@@ -222,8 +244,8 @@ int GUI::height()
 
 void GUI::setCenter(int x, int y)
 {
-    _cameraX = -(width() - x) / 2;
-    _cameraY = -(height() - y) / 2;
+    _cameraX = -(width()/2 - x);
+    _cameraY = -(height()/2 - y);
 }
 
 void GUI::drawAllBWAPIUnits()
@@ -313,7 +335,7 @@ void GUI::loadTextures()
     
     loadTexture(TextureFont, imageDir + "fonts/alpha_trans.png");
 
-    std::cout << "\n\nSuccessfully loaded " << textureNumber << " textures\n\n";
+    //std::cout << "\n\nSuccessfully loaded " << textureNumber << " textures\n\n";
 }
 
 bool GUI::loadTexture(int textureNumber, const std::string & fileName)
@@ -414,6 +436,12 @@ std::string GUI::GetTextureFileName(const BWAPI::UpgradeType & type)
 void GUI::setGame(const Game & game)
 {
     _guiGame.setGame(game);
+    
+    const auto & map = game.getState().getMap();
+    if (map.get() != nullptr)
+    {
+        setCenter(map->getPixelWidth() / 2, map->getPixelHeight() / 2);
+    }
 }
 
 const Game & GUI::getGame() const

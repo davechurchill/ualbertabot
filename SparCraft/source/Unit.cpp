@@ -36,7 +36,7 @@ Unit::Unit(const BWAPI::UnitType unitType, const Position & pos, const size_t & 
     , _previousPosition     (pos)
     , _prevCurrentPos       (pos)
 {
-    System::checkSupportedUnitType(unitType);
+    SPARCRAFT_ASSERT(System::UnitTypeSupported(unitType), "Unit type not supported: %s", unitType.getName().c_str());
 }
 
 // constructor for units to construct basic units, sets some things automatically
@@ -56,50 +56,7 @@ Unit::Unit(const BWAPI::UnitType unitType, const size_t & playerID, const Positi
     , _previousPosition     (pos)
     , _prevCurrentPos       (pos)
 {
-    System::checkSupportedUnitType(unitType);
-}
-
-// Less than operator, used for sorting the GameState unit array.
-// Units are sorted in this order:
-//		1) alive < dead
-//		2) firstTimeFree()
-//		3) currentHP()
-//		4) pos()
-const bool Unit::operator < (const Unit & rhs) const
-{
-    if (!isAlive())
-    {
-        return false;
-    }
-    else if (!rhs.isAlive())
-    {
-        return true;
-    }
-
-    if (firstTimeFree() == rhs.firstTimeFree())
-    {
-        return getID() < rhs.getID();
-    }
-    else
-    {
-        return firstTimeFree() < rhs.firstTimeFree();
-    }
-
-    /*if (firstTimeFree() == rhs.firstTimeFree())
-    {
-        if (currentHP() == rhs.currentHP())
-        {
-            return pos() < rhs.pos();
-        }
-        else
-        {
-            return currentHP() < rhs.currentHP();
-        }
-    }
-    else
-    {
-        return firstTimeFree() < rhs.firstTimeFree();
-    }*/
+    SPARCRAFT_ASSERT(System::UnitTypeSupported(unitType), "Unit type not supported: %s", unitType.getName().c_str());
 }
 
 // compares a unit based on unit id
@@ -589,6 +546,11 @@ const std::string Unit::name() const
     std::string n(_unitType.getName());
     std::replace(n.begin(), n.end(), ' ', '_');
     return n;
+}
+
+const size_t Unit::getBWAPIUnitID() const
+{
+    return _bwapiID;
 }
 
 // calculates the hash of this unit based on a given game time

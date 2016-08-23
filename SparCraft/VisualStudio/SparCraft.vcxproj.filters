@@ -112,6 +112,9 @@
     <ClCompile Include="..\source\PGSParameters.cpp">
       <Filter>AI\search\PGS</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\Map.cpp">
+      <Filter>simulation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\AlphaBetaSearch.h">
@@ -201,9 +204,6 @@
     <ClInclude Include="..\source\Unit.h">
       <Filter>simulation</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\Map.hpp">
-      <Filter>simulation</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\UnitProperties.h">
       <Filter>simulation\properties</Filter>
     </ClInclude>
@@ -260,6 +260,9 @@
     </ClInclude>
     <ClInclude Include="..\source\PGSParameters.h">
       <Filter>AI\search\PGS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Map.h">
+      <Filter>simulation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

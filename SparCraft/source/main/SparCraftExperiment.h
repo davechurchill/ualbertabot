@@ -13,6 +13,7 @@ class SparCraftExperiment
     std::map<std::string, std::string>      _moveIteratorDescriptionMap;
 
     bool                                    _showGUI;
+	size_t									_frameDelayMS;
     int                                     _guiWidth;
     int                                     _guiHeight;
 
@@ -27,5 +28,6 @@ public:
     void playGame(Game & game);
     
     static GameState GetStateFromVariable(const std::string & stateVariable, const rapidjson::Value & root);
+    static std::shared_ptr<Map> GetMapFromVariable(const std::string & mapVariable, const rapidjson::Value & root);
 };
 }

@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{82E61B13-7AC5-447E-AD88-96D04D881F58}</ProjectGuid>
+    <ProjectGuid>{8C587A12-C011-4A0F-8C65-AE0637556C50}</ProjectGuid>
     <RootNamespace>StarcraftBuildOrderSearch</RootNamespace>
     <Keyword>Win32Proj</Keyword>
     <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath11)</VCTargetsPath>
@@ -68,10 +68,10 @@
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <TargetName>SparCraft</TargetName>
+    <TargetName>SparCraft_Torch</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <TargetName>SparCraft</TargetName>
+    <TargetName>SparCraft_Torch_d</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -123,23 +123,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\gui\GUI.h" />
-    <ClInclude Include="..\source\gui\GUIGame.h" />
-    <ClInclude Include="..\source\gui\GUITools.h" />
-    <ClInclude Include="..\source\main\SparCraftExperiment.h" />
+    <ClCompile Include="..\source\torch\frame.cpp" />
+    <ClCompile Include="..\source\torch\main_torch.cpp" />
+    <ClCompile Include="..\source\torch\TorchTools.cpp" />
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="..\source\torch\frame.h" />
     <ClInclude Include="..\source\torch\refcount.h" />
     <ClInclude Include="..\source\torch\TorchTools.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\source\gui\GUI.cpp" />
-    <ClCompile Include="..\source\gui\GUIGame.cpp" />
-    <ClCompile Include="..\source\gui\GUITools.cpp" />
-    <ClCompile Include="..\source\main\main.cpp" />
-    <ClCompile Include="..\source\main\SparCraftExperiment.cpp" />
-    <ClCompile Include="..\source\torch\frame.cpp" />
-    <ClCompile Include="..\source\torch\TorchTools.cpp" />
-    <ClCompile Include="..\source\TutorialCode.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

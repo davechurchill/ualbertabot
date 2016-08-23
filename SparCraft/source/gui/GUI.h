@@ -32,6 +32,7 @@ class GUI
     bool                _mousePressed;
     bool                _shiftPressed;
     double              _previousRenderTime;
+	size_t				_frameDelayMS;
 
     size_t              _currentFrame;
 
@@ -79,6 +80,7 @@ public:
     void setCenter(int x, int y);
     void setGame(const Game & game);
     void drawUnitType(const BWAPI::UnitType & type, const Position & p);
+	void setUpdateDelay(const size_t & delayMS);
 
     const Game & getGame() const;
 

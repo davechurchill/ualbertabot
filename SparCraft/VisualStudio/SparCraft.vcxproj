@@ -139,7 +139,7 @@
     <ClInclude Include="..\source\GameStateUnitData.h" />
     <ClInclude Include="..\source\GraphViz.hpp" />
     <ClInclude Include="..\source\Hash.h" />
-    <ClInclude Include="..\source\Map.hpp" />
+    <ClInclude Include="..\source\Map.h" />
     <ClInclude Include="..\source\Move.h" />
     <ClInclude Include="..\source\MoveArray.h" />
     <ClInclude Include="..\source\PGSParameters.h" />
@@ -187,6 +187,7 @@
     <ClCompile Include="..\source\GameState.cpp" />
     <ClCompile Include="..\source\GameStateUnitData.cpp" />
     <ClCompile Include="..\source\Hash.cpp" />
+    <ClCompile Include="..\source\Map.cpp" />
     <ClCompile Include="..\source\Move.cpp" />
     <ClCompile Include="..\source\MoveArray.cpp" />
     <ClCompile Include="..\source\PGSParameters.cpp" />

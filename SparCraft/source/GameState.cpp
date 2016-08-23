@@ -47,7 +47,39 @@ void GameState::doAction(const Action & action)
 	{
 		_numMovements[player]++;
 
-		ourUnit.move(action, getTime());
+        if (_map.get() == nullptr)
+        {
+            ourUnit.move(action, getTime());
+        }
+        else 
+        {
+            int pX = action.pos().x();
+            int pY = action.pos().y();
+
+            if (pX < ourUnit.type().dimensionLeft()) 
+            { 
+                pX = ourUnit.type().dimensionLeft(); 
+            }
+            
+            if (pY < ourUnit.type().dimensionUp())
+            { 
+                pY = ourUnit.type().dimensionUp();
+            }
+
+            if (pX > (int)_map->getPixelWidth() - ourUnit.type().dimensionRight()) 
+            { 
+                pX = _map->getPixelWidth() - ourUnit.type().dimensionRight(); 
+            }
+
+            if (pY > (int)_map->getPixelHeight() - ourUnit.type().dimensionDown())
+            { 
+                pY = _map->getPixelHeight() - ourUnit.type().dimensionDown(); 
+            }
+
+            Action newAction(action.getID(), action.getPlayerID(), ActionTypes::MOVE, 0, Position(pX, pY));
+
+            ourUnit.move(newAction, getTime());
+        }
 	}
 	else if (action.type() == ActionTypes::HEAL)
 	{
@@ -157,7 +189,10 @@ size_t GameState::getEnemy(const size_t & player) const
 // This function will give the unit a unique unitID
 void GameState::addUnit(const Unit & u)
 {
-    System::checkSupportedUnitType(u.type());
+    if (!System::UnitTypeSupported(u.type()))
+    {
+        std::cerr << "Skipping un-supported unit type: " << u.type().getName() << "\n";
+    }
 
     _unitData.addUnit(u);
 }
@@ -226,7 +261,7 @@ void GameState::updateGameTime()
     _currentTime = std::min(getTimeNextUnitCanAct(0), getTimeNextUnitCanAct(1));
 }
 
-void GameState::setMap(Map * map)
+void GameState::setMap(std::shared_ptr<Map> map)
 {
 	_map = map;
 
@@ -316,7 +351,7 @@ bool GameState::isTerminal() const
 	return true;
 }
 
-Map * GameState::getMap() const
+std::shared_ptr<Map> GameState::getMap() const
 {
 	return _map;
 }
