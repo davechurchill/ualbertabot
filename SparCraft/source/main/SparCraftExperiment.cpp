@@ -235,18 +235,11 @@ GameState SparCraftExperiment::GetStateFromVariable(const std::string & stateVar
         SPARCRAFT_ASSERT(stateValue.HasMember("File") && stateValue["File"].IsString(), "TorchCraftFrame must have 'File' String member");
 
         std::ifstream fin(stateValue["File"].GetString());
-        std::string type;
-        fin >> type;
 
-        TorchTools::PrintMoveFromFrameStream(fin);
-        fin.close();
-        
-        fin = std::ifstream(stateValue["File"].GetString());
-
-        std::string aiPlayerName;
+        std::string type, aiPlayerName;
         int playerID = 0, mapWidth = 0, mapHeight = 0;
 
-        fin >> aiPlayerName >> playerID >> mapWidth >> mapHeight;
+        fin >> type >> aiPlayerName >> playerID >> mapWidth >> mapHeight;
 
         GameState state = TorchTools::GetSparCraftStateFromTorchCraftFrameStream(fin);
         state.setMap(std::shared_ptr<Map>(new Map(mapWidth / 4, mapHeight / 4)));

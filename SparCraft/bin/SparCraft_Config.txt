@@ -85,13 +85,13 @@
 
 "Games" :
 [
-	{ "Play":true,  "Name":"Test",  "Games":10, "State":"TorchIn", "Players":["AttackClosest", "KiteWeakest"] },
+	{ "Play":true,  "Name":"Test",  "Games":10, "State":"Separated", "Players":["AttackClosest", "AttackWeakest"] },
     { "Play":false, "Name":"TorchGame",  "Games":10, "State":"TorchFrame", "Players":["AttackClosest", "KiteWeakest"] }
 ],
 
 "GUI" : 
 {
-    "Enabled":true, "Width":1600, "Height":900, "DrawHPBar":true, "DrawCD":true, "FrameDelayMS":42
+    "Enabled":true, "Width":1600, "Height":900, "DrawHPBar":true, "DrawCD":true, "FrameDelayMS":0
 },
 
 "Move Iterators" :

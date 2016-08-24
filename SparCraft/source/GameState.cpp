@@ -272,7 +272,7 @@ void GameState::setMap(std::shared_ptr<Map> map)
         {
             const Position & pos(getUnit(p, u).pos());
 
-            SPARCRAFT_ASSERT(isWalkable(pos), "Unit initial position on non-walkable map tile");
+            //SPARCRAFT_ASSERT(isWalkable(pos), "Unit initial position on non-walkable map tile");
         }
     }
 }

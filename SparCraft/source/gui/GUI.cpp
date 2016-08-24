@@ -25,6 +25,7 @@ GUI::GUI(int width, int height)
     , _previousRenderTime(0)
     , _guiGame(*this)
 	, _frameDelayMS(0)
+    , _zoom(1.0)
 {
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
     {
@@ -103,84 +104,6 @@ void GUI::onFrame()
     SDL_GL_SwapWindow(_window);
 }
 
-void GUI::handleEvents()
-{
-    // Handle SDL events
-    SDL_Event event;
-    while (SDL_PollEvent(&event))
-    {
-        const bool pressed(event.key.state == SDL_PRESSED);
-        switch (event.type)
-        {
-            case SDL_MOUSEMOTION:
-            {
-                if ((_previousMouseX != 0 || _previousMouseY != 0) && (event.motion.state & SDL_BUTTON_LEFT))
-                {
-                    _cameraX -= event.motion.xrel;
-                    _cameraY -= event.motion.yrel;
-                }
-
-                _previousMouseX = event.motion.x;
-                _previousMouseY = event.motion.y;
-                break;
-            }
-            case SDL_KEYDOWN:
-            {
-                switch (event.key.keysym.sym)
-                {
-                case SDLK_LSHIFT:
-                    _shiftPressed = pressed;
-                    break;
-                case SDLK_p:
-                {
-                    
-                }
-                }
-                break;
-            }
-            case SDL_KEYUP:
-            {
-                switch (event.key.keysym.sym)
-                {
-                case SDLK_LSHIFT:
-                    _shiftPressed = pressed;
-                    break;
-                }
-                break;
-            }
-            case SDL_MOUSEWHEEL:
-            {
-
-                break;
-            }
-            case SDL_MOUSEBUTTONDOWN:
-            {
-
-			
-                break;
-            }
-            case SDL_MOUSEBUTTONUP:
-            {
-                if (event.button.button == SDL_BUTTON_LEFT)
-                {
-
-                }
-                break;
-            }
-            case SDL_WINDOWEVENT_RESIZED:
-            {
-            
-                break;
-            }
-            case SDL_QUIT:
-            {
-                std::cerr << "SDL_QUIT caught\n\n";
-                exit(0);
-            }
-        }
-    }
-}
-
 void GUI::render()
 {
     Timer renderTimer;
@@ -196,24 +119,18 @@ void GUI::render()
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
         {
-            glTranslatef(static_cast<float>(-_cameraX), static_cast<float>(-_cameraY), 0);
-
-              
+            glScalef(_zoom, _zoom, 0.0);
+            glTranslatef(-_cameraX*_zoom, -_cameraY*_zoom, 0);
+     
             _guiGame.drawGame();
             _guiGame.onFrame();
-
-            glTranslatef(static_cast<float>(_cameraX), static_cast<float>(_cameraY), 0);
-
-            _guiGame.drawParameters(5, 15);
-            _guiGame.drawInfo();
-
-            //drawAllBWAPIUnits();
-            
-            //GUITools::DrawTexturedRect(Position(0,0), Position(200,200), TextureFont, ColorWhite);
-            //GUITools::DrawString(Position(300, 300), "Test String", ColorWhite);
         }
 
         glPopMatrix();
+
+        _guiGame.drawParameters(5, 15);
+        _guiGame.drawInfo();
+        _guiGame.drawEval(width() - 250, 30);
     }
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
@@ -447,4 +364,90 @@ void GUI::setGame(const Game & game)
 const Game & GUI::getGame() const
 {
     return _guiGame.getGame();
+}
+
+
+void GUI::handleEvents()
+{
+    // Handle SDL events
+    SDL_Event event;
+    while (SDL_PollEvent(&event))
+    {
+        const bool pressed(event.key.state == SDL_PRESSED);
+        switch (event.type)
+        {
+        case SDL_MOUSEMOTION:
+        {
+            if ((_previousMouseX != 0 || _previousMouseY != 0) && (event.motion.state & SDL_BUTTON_LEFT))
+            {
+                _cameraX -= event.motion.xrel / _zoom;
+                _cameraY -= event.motion.yrel / _zoom;
+            }
+
+            _previousMouseX = event.motion.x / _zoom;
+            _previousMouseY = event.motion.y / _zoom;
+            break;
+        }
+        case SDL_KEYDOWN:
+        {
+            switch (event.key.keysym.sym)
+            {
+            case SDLK_LSHIFT:
+                _shiftPressed = pressed;
+                break;
+            case SDLK_MINUS:
+            {
+                _zoom -= 0.1;
+                break;
+            }
+            case SDLK_EQUALS:
+            {
+                _zoom += 0.1;
+                break;
+            }
+            }
+            break;
+        }
+        case SDL_KEYUP:
+        {
+            switch (event.key.keysym.sym)
+            {
+            case SDLK_LSHIFT:
+                _shiftPressed = pressed;
+                break;
+            }
+            break;
+        }
+        case SDL_MOUSEWHEEL:
+        {
+            _zoom += 0.1;
+
+            break;
+        }
+        case SDL_MOUSEBUTTONDOWN:
+        {
+
+
+            break;
+        }
+        case SDL_MOUSEBUTTONUP:
+        {
+            if (event.button.button == SDL_BUTTON_LEFT)
+            {
+
+            }
+            break;
+        }
+        case SDL_WINDOWEVENT_RESIZED:
+        {
+
+            break;
+        }
+        case SDL_QUIT:
+        {
+            std::cerr << "SDL_QUIT caught\n\n";
+            exit(0);
+        }
+        }
+    }
 }

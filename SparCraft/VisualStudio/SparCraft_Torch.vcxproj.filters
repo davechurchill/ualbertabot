@@ -11,7 +11,7 @@
   </ItemGroup>
   <ItemGroup>
     <Filter Include="torch">
-      <UniqueIdentifier>{6289d346-a4ff-4b79-b80b-5d4a2897abbc}</UniqueIdentifier>
+      <UniqueIdentifier>{dbebbe4b-83b2-45d6-acd1-37f8d808b962}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

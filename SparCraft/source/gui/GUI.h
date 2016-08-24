@@ -24,14 +24,15 @@ class GUI
     int                 _initialWidth;
     int                 _initialHeight;
     int                 _windowSizeY;
-    int                 _cameraX;
-    int                 _cameraY;
+    double                 _cameraX;
+    double                 _cameraY;
     bool                _isStarted;
     int                 _previousMouseX;
     int                 _previousMouseY;
     bool                _mousePressed;
     bool                _shiftPressed;
     double              _previousRenderTime;
+    double              _zoom;
 	size_t				_frameDelayMS;
 
     size_t              _currentFrame;

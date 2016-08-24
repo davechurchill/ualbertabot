@@ -16,6 +16,7 @@ namespace SparCraft
         void DrawChar(const Position & tl, const Position & br, char ch, const GLfloat * rgba);
         void DrawCircle(const Position & p, float r, int num_segments);
         void DrawTexturedRect(const Position & tl, const Position & br, const int & textureID, const GLfloat * rgba); 
+        void DrawPercentageRect(const Position & tl, const Position & br, double percentage, const GLfloat * rgba, const GLfloat * bgrgba);
         void DrawRect(const Position & tl, const Position & br, const GLfloat * rgba); 
         void DrawRectGradient(const Position & tl, const Position & br, const GLfloat * rgbaLeft, const GLfloat * rgbaRight); 
         void SetColor(const GLfloat * src, GLfloat * dest);

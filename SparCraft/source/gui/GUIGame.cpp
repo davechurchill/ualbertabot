@@ -8,7 +8,7 @@ GLfloat White[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 GLfloat Grid[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
 
 GLfloat PlayerColors[2][4] = {{1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}};
-GLfloat PlayerColorsDark[2][4] = {{0.7f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.7f, 0.0f, 1.0f}};
+GLfloat PlayerColorsDark[2][4] = {{0.4f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.4f, 0.0f, 1.0f}};
 
 GUIGame::GUIGame(GUI & gui)
     : _game(GameState(), 0)
@@ -46,6 +46,39 @@ void GUIGame::drawInfo()
     GUITools::DrawString(Position(10, _gui.height()-50), ss.str(), White);
 }
 
+void GUIGame::drawEval(int x, int y)
+{
+    double ltd[2] = { Eval::LTD(_game.getState(), 0), Eval::LTD(_game.getState(), 1) };
+    double totalltd[2] = { Eval::TotalLTD(_game.getState(), 0), Eval::TotalLTD(_game.getState(), 1) };
+    double ltd2[2] = { Eval::LTD2(_game.getState(), 0), Eval::LTD2(_game.getState(), 1) };
+    double totalltd2[2] = { Eval::TotalLTD2(_game.getState(), 0), Eval::TotalLTD2(_game.getState(), 1) };
+    double ltdp[2] = { ltd[0] / totalltd[0], ltd[1] / totalltd[1] };
+    double ltd2p[2] = { ltd2[0] / totalltd2[0], ltd2[1] / totalltd2[1] };
+
+    Position barSize(150, 20);
+    int ySkip = barSize.y() + 2;
+    Position ltdpos[2] = { Position(x, y), Position(x, y + ySkip) };
+
+    y += 4*ySkip;
+    Position ltd2pos[2] = { Position(x, y), Position(x, y + ySkip) };
+
+    GUITools::DrawString(ltdpos[0] + Position(0, - 2), "LTD Evaluation", White);
+    GUITools::DrawString(ltd2pos[0] + Position(0, - 2), "LTD2 Evaluation", White);
+
+    for (size_t p(0); p < 2; ++p)
+    {
+        GUITools::DrawPercentageRect(ltdpos[p], ltdpos[p] + barSize, ltdp[p], PlayerColors[p], PlayerColorsDark[p]);
+        std::stringstream ssltd;
+        ssltd << ltd[p];
+        GUITools::DrawString(ltdpos[p] + barSize + Position(10, -barSize.y()/4), ssltd.str(), White);
+
+        GUITools::DrawPercentageRect(ltd2pos[p], ltd2pos[p] + barSize, ltd2p[p], PlayerColors[p], PlayerColorsDark[p]);
+        std::stringstream ssltd2;
+        ssltd2 << ltd2[p];
+        GUITools::DrawString(ltd2pos[p] + barSize + Position(10, -barSize.y() / 4), ssltd2.str(), White);
+    }
+}
+
 void GUIGame::drawGame()
 {
     Timer drawGameTimer;
@@ -58,6 +91,17 @@ void GUIGame::drawGame()
     {
         int width = state.getMap()->getPixelWidth();
         int height = state.getMap()->getPixelHeight();
+
+        for (size_t x(0); x < state.getMap()->getWalkTileWidth(); ++x)
+        {
+            for (size_t y(0); y < state.getMap()->getWalkTileHeight(); ++y)
+            {
+                if (!state.getMap()->isWalkable(x, y))
+                {
+                    GUITools::DrawRect(BWAPI::Position(x * 8, y * 8), BWAPI::Position((x + 1) * 8, (y + 1) * 8), White);
+                }
+            }
+        }
 
         std::stringstream ssbr;
         ssbr << "(" << width << "," << height << ")";
@@ -175,6 +219,7 @@ void GUIGame::drawParameters(int x, int y)
     GUITools::DrawString(Position(x, y), ss1.str(), PlayerColors[0]);
     GUITools::DrawString(Position(x + playerspacing, y), ss2.str(), PlayerColors[1]);
 
+
     //if (_params[0].size() > 0)
     //{
     //    GUITools::DrawString(Position(x, y), "Player 1 Settings", PlayerColors[0]);
@@ -236,22 +281,23 @@ void GUIGame::drawUnit(const Unit & unit)
 
     _gui.drawUnitType(unit.type(), pos);
 
-    const int x0(pos.x() - type.dimensionUp());
-	const int x1(pos.x() + type.dimensionDown());
+    const int x0(pos.x() - type.dimensionLeft());
+	const int x1(pos.x() + type.dimensionRight());
 	const int y0(pos.y() - type.dimensionUp());
 	const int y1(pos.y() + type.dimensionDown());
 
-    double	percHP = (double)unit.currentHP() / (double)unit.maxHP();
-	int		cw = (int)((x1-x0) * percHP);
-	int		xx = pos.x() - (x1-x0)/2;
-	int		yy = pos.y() - healthBoxHeight - (y1-y0)/2 - 5;
+    double percHP = (double)unit.currentHP() / (double)unit.maxHP();
+    int width = x1 - x0;
+	int xx = pos.x() - width/2;
+	int yy = pos.y() - healthBoxHeight - (y1-y0)/2 - 5;
 
-    GUITools::DrawRect(Position(xx, yy), Position(xx + cw, yy + healthBoxHeight), PlayerColors[unit.getPlayerID()]); 
+    GUITools::DrawPercentageRect(Position(xx, yy), Position(xx + x1 - x0, yy + healthBoxHeight), percHP, PlayerColors[unit.getPlayerID()], nullptr);
+
     size_t cda = unit.nextAttackActionTime() - _game.getState().getTime();
     size_t cdm = unit.nextMoveActionTime() - _game.getState().getTime();
     std::stringstream cdss;
     cdss << "(" << cdm << "," << cda << ")";
-    GUITools::DrawString(Position(xx + cw + 5, yy+2), cdss.str(), White);
+    //GUITools::DrawString(Position(xx + width + 5, yy+2), cdss.str(), White);
 
     const Action & action = unit.previousAction();
             

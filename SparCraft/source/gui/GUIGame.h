@@ -44,6 +44,7 @@ public:
     void drawSearchResults(int x, int y);
     void drawInfo();
     void drawGame();
+    void drawEval(int x, int y);
 };
 
 }
