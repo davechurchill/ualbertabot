@@ -124,6 +124,9 @@
     <ClCompile Include="..\source\ConfigTools.cpp">
       <Filter>util</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\MoveIterator.cpp">
+      <Filter>AI\move iterators</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\AlphaBetaSearch.h">
@@ -137,9 +140,6 @@
     </ClInclude>
     <ClInclude Include="..\source\Common.h">
       <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Array.hpp">
-      <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="..\source\Game.h">
       <Filter>simulation</Filter>
@@ -284,6 +284,9 @@
     </ClInclude>
     <ClInclude Include="..\source\ConfigTools.h">
       <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\MoveIterator.h">
+      <Filter>AI\move iterators</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -31,7 +31,7 @@ namespace SparCraft
         const TimeType Move_Penalty             = 4;
 
         // add range to units because of bounding boxes
-        const int Range_Addition       = 32;
+        const int Range_Addition       = 0;
 
 		// maximum number of moves possible for any unit
 		const size_t Max_Moves					= Max_Units + Num_Directions + 1;

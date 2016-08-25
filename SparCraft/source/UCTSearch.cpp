@@ -95,7 +95,7 @@ void UCTSearch::generateOrderedMoves(GameState & state, const size_t & playerToM
     if (_params.playerModel(playerToMove) != PlayerModels::None)
 	{
         // put the vector into the ordered moves array
-        _orderedMoves.add(Move());
+        _orderedMoves.push_back(Move());
 
         // generate the moves into that vector
 		_playerModels[playerToMove]->getMove(state, _orderedMoves[0]);
@@ -110,7 +110,7 @@ void UCTSearch::generateOrderedMoves(GameState & state, const size_t & playerToM
 	    {
             Move move;
 		    _allScripts[playerToMove][s]->getMove(state, move);
-		    _orderedMoves.add(move);
+            _orderedMoves.push_back(move);
 	    }
     }
 	

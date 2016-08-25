@@ -6,7 +6,6 @@
 #include "GameState.h"
 #include "Action.h"
 #include "GraphViz.hpp"
-#include "Array.hpp"
 #include "MoveArray.h"
 #include "UCTSearchParameters.hpp"
 #include "UCTSearchResults.hpp"
@@ -36,8 +35,7 @@ class UCTSearch
 	// we will use these as variables to save stack allocation every time
     Move                 _actionVec;
 	MoveArray                           _moveArray;
-	Array<Move,
-		 Constants::Max_Ordered_Moves>  _orderedMoves;
+	std::vector<Move>   _orderedMoves;
 
     std::vector<PlayerPtr>				_allScripts[Constants::Num_Players];
     PlayerPtr                           _playerModels[Constants::Num_Players];

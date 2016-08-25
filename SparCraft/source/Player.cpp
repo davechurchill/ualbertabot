@@ -11,6 +11,11 @@ Player::Player()
 
 }
 
+Player::~Player()
+{
+
+}
+
 void Player::getMove(const GameState & state, Move & move)
 {
 	SPARCRAFT_ASSERT(false, "Base class Player move called");

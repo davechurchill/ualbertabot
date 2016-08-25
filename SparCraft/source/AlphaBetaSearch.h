@@ -6,7 +6,6 @@
 #include "Timer.h"
 #include "GameState.h"
 #include "Action.h"
-#include "Array.hpp"
 #include "MoveArray.h"
 #include "TranspositionTable.h"
 #include "Player.h"
@@ -31,13 +30,9 @@ class AlphaBetaSearch
 
 	size_t                                  _currentRootDepth;
 
-	Array<MoveArray, 
-          Constants::Max_Search_Depth>      _allMoves;
+	std::vector<MoveArray>      _allMoves;
 
-	Array2D<Move, 
-			Constants::Max_Search_Depth, 
-			Constants::Max_Ordered_Moves>   _orderedMoves;
-
+    std::vector< std::vector<Move> >    _orderedMoves;
     std::vector<PlayerPtr>					_allScripts[Constants::Num_Players];
     PlayerPtr                               _playerModels[Constants::Num_Players];
 

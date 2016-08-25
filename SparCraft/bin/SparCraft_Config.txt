@@ -6,26 +6,32 @@
     
     "AttackClosest":    { "Type"       : "Script", 
                           "NoOverkill" : false,
-                          "OutOfRange" : ["Move",   ["Enemy", "Unit", "Min", "Distance"], 0, 16], 
-                          "InRange"    : ["Attack", ["Enemy", "Unit", "Min", "Distance"]], 
+                          "OutOfRange" : ["Move",   ["Enemy", "Unit", "Min", ["Distance"]], 0, 32], 
+                          "InRange"    : ["Attack", ["Enemy", "Unit", "Min", ["Distance"]]], 
                           "Reload"     : ["Reload"] },
                        
     "AttackDPS" :       { "Type"       : "Script", 
                           "NoOverkill" : false,
-                          "OutOfRange" : ["Move",   ["Enemy", "Unit", "Min", "Distance"], 0, 16], 
-                          "InRange"    : ["Attack", ["Enemy", "Unit", "Max", "Threat"]], 
+                          "OutOfRange" : ["Move",   ["Enemy", "Unit", "Min", ["Distance"]], 0, 16], 
+                          "InRange"    : ["Attack", ["Enemy", "Unit", "Max", ["Threat"]]], 
                           "Reload"     : ["Reload"] },
                        
     "AttackWeakest":    { "Type"       : "Script", 
                           "NoOverkill" : false,
-                          "OutOfRange" : ["Move",   ["Enemy", "Unit", "Min", "Distance"], 0, 16], 
-                          "InRange"    : ["Attack", ["Enemy", "Unit", "Min", "HP"]], 
+                          "OutOfRange" : ["Move",   ["Enemy", "Unit", "Min", ["Distance"]], 0, 32], 
+                          "InRange"    : ["Attack", ["Enemy", "Unit", "Min", ["HP"]]], 
+                          "Reload"     : ["Reload"] },
+				
+	"AttackWC":         { "Type"       : "Script", 
+                          "NoOverkill" : false,
+                          "OutOfRange" : ["Move",   ["Enemy", "Unit", "Min", ["Distance"]], 0, 32], 
+                          "InRange"    : ["Attack", ["Enemy", "Unit", "Min", ["HP", "Distance"]]], 
                           "Reload"     : ["Reload"] },
                           
     "AttackNOK":        { "Type"       : "Script", 
                           "NoOverkill" : true,
-                          "OutOfRange" : ["Move",   ["Enemy", "Unit", "Min", "Distance"], 0, 16], 
-                          "InRange"    : ["Attack", ["Enemy", "Unit", "Max", "Threat"]], 
+                          "OutOfRange" : ["Move",   ["Enemy", "Unit", "Min", ["Distance"]], 0, 16], 
+                          "InRange"    : ["Attack", ["Enemy", "Unit", "Max", ["Threat"]]], 
                           "Reload"     : ["Reload"] },
 
     "ClusterOnly" :     { "Type"       : "Script", 
@@ -36,39 +42,39 @@
 						  
     "KiteClosest":      { "Type"       : "Script", 
                           "NoOverkill" : false,
-                          "OutOfRange" : ["Move",   ["Enemy", "Unit", "Min", "Distance"], 0, 16], 
-                          "InRange"    : ["Attack", ["Enemy", "Unit", "Min", "Distance"]], 
-                          "Reload"     : ["Move",   ["Enemy", "Unit", "Min", "Distance"], 180, 8] },
+                          "OutOfRange" : ["Move",   ["Enemy", "Unit", "Min", ["Distance"]], 0, 16], 
+                          "InRange"    : ["Attack", ["Enemy", "Unit", "Min", ["Distance"]]], 
+                          "Reload"     : ["Move",   ["Enemy", "Unit", "Min", ["Distance"]], 180, 8] },
 						  
     "KiteWeakest":      { "Type"       : "Script", 
                           "NoOverkill" : false,
-                          "OutOfRange" : ["Move",   ["Enemy", "Unit", "Min", "Distance"], 0, 16], 
-                          "InRange"    : ["Attack", ["Enemy", "Unit", "Min", "HP"]], 
-                          "Reload"     : ["Move",   ["Enemy", "Unit", "Min", "Distance"], 180, 8] },
+                          "OutOfRange" : ["Move",   ["Enemy", "Unit", "Min", ["Distance"]], 0, 16], 
+                          "InRange"    : ["Attack", ["Enemy", "Unit", "Min", ["HP"]]], 
+                          "Reload"     : ["Move",   ["Enemy", "Unit", "Min", ["Distance"]], 180, 8] },
 						  
     "KiteWeakest90":    { "Type"       : "Script", 
                           "NoOverkill" : false,
-                          "OutOfRange" : ["Move",   ["Enemy", "Unit", "Min", "Distance"], 0, 16], 
-                          "InRange"    : ["Attack", ["Enemy", "Unit", "Min", "HP"]], 
-                          "Reload"     : ["Move",   ["Enemy", "Unit", "Min", "Distance"], 90, 8] },
+                          "OutOfRange" : ["Move",   ["Enemy", "Unit", "Min", ["Distance"]], 0, 16], 
+                          "InRange"    : ["Attack", ["Enemy", "Unit", "Min", ["HP"]]], 
+                          "Reload"     : ["Move",   ["Enemy", "Unit", "Min", ["Distance"]], 90, 8] },
                           
     "KiteCenter":       { "Type"       : "Script", 
                           "NoOverkill" : false,
-                          "OutOfRange" : ["Move",   ["Enemy", "Unit", "Min", "Distance"], 0, 16], 
-                          "InRange"    : ["Attack", ["Enemy", "Unit", "Min", "Distance"]], 
+                          "OutOfRange" : ["Move",   ["Enemy", "Unit", "Min", ["Distance"]], 0, 16], 
+                          "InRange"    : ["Attack", ["Enemy", "Unit", "Min", ["Distance"]]], 
                           "Reload"     : ["Move",   ["Self", "Center"], 0, 16] },                      
                           
     "Cluster":          { "Type"       : "Script", 
                           "NoOverkill" : false,
                           "OutOfRange" : ["Move",   ["Self", "Center"], 0, 16], 
-                          "InRange"    : ["Attack", ["Enemy", "Unit", "Min", "Distance"]], 
+                          "InRange"    : ["Attack", ["Enemy", "Unit", "Min", ["Distance"]]], 
                           "Reload"     : ["Reload"] },                      
                           
     "KiteNOK":          { "Type"       : "Script", 
                           "NoOverkill" : true,
-                          "OutOfRange" : ["Move",   ["Enemy", "Unit", "Min", "Distance"], 0, 16], 
-                          "InRange"    : ["Attack", ["Enemy", "Unit", "Min", "Distance"]], 
-                          "Reload"     : ["Move",   ["Enemy", "Unit", "Min", "Distance"], 180, 16] },
+                          "OutOfRange" : ["Move",   ["Enemy", "Unit", "Min", ["Distance"]], 0, 16], 
+                          "InRange"    : ["Attack", ["Enemy", "Unit", "Min", ["Distance"]]], 
+                          "Reload"     : ["Move",   ["Enemy", "Unit", "Min", ["Distance"]], 180, 16] },
     
     "AB50" :            { "Type":"AlphaBeta", "TimeLimit":50, "MaxChildren":40, "MoveIterator":"HardIterator", 
                           "PlayerToMove":"Alternate", "Eval":"Playout", "PlayoutPlayer":"AttackClosest" },
@@ -89,26 +95,26 @@
 "States" :
 {
     "SampleState" :     { "Type":"StateFile", "Map":"Arena", "File":"SampleStateFile.txt"},
-    "Separated":        { "Type":"Symmetric", "Map":"Arena", "Border":[128,128], "Centers":[[150,180], [1050,500]], "Units":[["Protoss_Dragoon", 8], ["Protoss_Zealot", 8]]},
+    "Separated":        { "Type":"Symmetric", "Map":"Arena", "Border":[128,128], "Centers":[[150,180], [1050,500]], "Units":[["Terran_Marine", 15]]},
     "Symmetric":        { "Type":"Symmetric", "Border":[128,128], "Centers":[[640,360], [640,360]], "Units":[["Protoss_Dragoon", 16]] },
     "TorchFrame" :      { "Type":"TorchCraftFrame", "File":"FrameData.txt"},
-	"TorchIn" :     	{ "Type":"TorchCraftStdIn", "File":"SampleTorchStdInMove.txt"}
+	"TorchIn" :     	{ "Type":"TorchCraftStdIn", "File":"Torch2.txt"}
 },
 
 "Games" :
 [
-	{ "Play":true,  "Name":"Test",  "Games":10, "State":"SampleState", "Players":["AttackWeakest", "PGS"] },
-    { "Play":false, "Name":"TorchGame",  "Games":10, "State":"TorchFrame", "Players":["AttackWeakest", "KiteWeakest"] }
+	{ "Play":true,  "Name":"Test",  "Games":10, "State":"Separated", "Players":["KiteWeakest", "AttackWC"] },
+    { "Play":false, "Name":"TorchGame",  "Games":10, "State":"TorchIn", "Players":["AttackWeakest", "KiteWeakest"] }
 ],
 
 "Benchmarks" :
 [   
-    { "Run":true, "Type":"Tournament", "Name":"Scripts", "Rounds":1000, "UpdateIntervalSec":5, "State":"Separated", "Players":[ {"Name":"AttackClosest","Group":1}, {"Name":"AttackWeakest","Group":2}, {"Name":"KiteWeakest","Group":3}, {"Name":"AttackDPS","Group":4}, {"Name":"AttackClosestOld","Group":6}] }
+    { "Run":true, "Type":"Tournament", "Name":"Scripts", "Rounds":10000, "UpdateIntervalSec":5, "State":"Separated", "Players":[ {"Name":"AttackWeakest","Group":1}, {"Name":"AttackWC","Group":2}] }
 ],
 
 "GUI" : 
 {
-    "Enabled":true, "Width":1600, "Height":900, "DrawHPBar":true, "DrawCD":true, "FrameDelayMS":40
+    "Enabled":true, "Width":1600, "Height":900, "DrawHPBar":true, "DrawCD":true, "FrameDelayMS":10
 },
 
 "Move Iterators" :

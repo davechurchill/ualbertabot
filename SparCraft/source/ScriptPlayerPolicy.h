@@ -2,6 +2,7 @@
 
 #include "Common.h"
 #include "rapidjson/document.h"
+#include <vector>
 
 namespace SparCraft
 {
@@ -38,7 +39,7 @@ public:
     int     targetPlayer;
     int     targetType;
     int     targetOperator;
-    int     targetOperand;
+    std::vector<int> targetOperands;
 
     ScriptPolicyTarget();
     ScriptPolicyTarget(const rapidjson::Value & value);

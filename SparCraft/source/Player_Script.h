@@ -21,7 +21,10 @@ class Player_Script : public Player
     Action   getPolicyAction        (const GameState & state, const Unit & myUnit, const ScriptPolicy & policy, const std::vector<size_t> & validUnitTargets);
     Position getPolicyTargetPosition(const GameState & state, const Unit & myUnit, const ScriptPolicy & policy, const std::vector<size_t> & validUnitTargets);
     size_t   getPolicyTargetUnitID  (const GameState & state, const Unit & myUnit, const ScriptPolicy & policy, const std::vector<size_t> & validUnitTargets);
-    double   getTargetOperandValue  (const GameState & state, const Unit & myUnit, const ScriptPolicy & policy, const Unit & targetUnit);
+    std::vector<double>   getTargetOperandValue  (const GameState & state, const Unit & myUnit, const ScriptPolicy & policy, const Unit & targetUnit);
+
+    bool greater(const std::vector<double> & v1, const std::vector<double> & v2);
+    bool less(const std::vector<double> & v1, const std::vector<double> & v2);
 
 public:
 

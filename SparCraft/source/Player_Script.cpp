@@ -146,16 +146,19 @@ size_t Player_Script::getPolicyTargetUnitID(const GameState & state, const Unit 
     SPARCRAFT_ASSERT(validUnitTargets.size() > 0, "Can't get a Unit ID if the candidate target list is empty");
 
     bool min = (target.targetOperator == PolicyOperator::Min);
-    double bestVal = min ? std::numeric_limits<double>::max() : std::numeric_limits<double>::lowest();
+
+    std::vector<double> bestVal(policy.getTarget().targetOperands.size(), min ? std::numeric_limits<double>::max() : std::numeric_limits<double>::lowest());
     size_t bestUnitID = 0;
+
+
     
     for (const size_t & unitID : validUnitTargets)
     {
         const Unit & targetUnit = state.getUnitByID(unitID);
 
-        const double val = getTargetOperandValue(state, myUnit, policy, targetUnit);
+        std::vector<double> val = getTargetOperandValue(state, myUnit, policy, targetUnit);
 
-        if ((min && (val < bestVal)) || (!min && (val > bestVal)))
+        if ((min && less(val, bestVal)) || (!min && greater(val, bestVal)))
         {
             bestVal = val;
             bestUnitID = targetUnit.getID();
@@ -166,20 +169,58 @@ size_t Player_Script::getPolicyTargetUnitID(const GameState & state, const Unit 
 
 }
 
-double Player_Script::getTargetOperandValue(const GameState & state, const Unit & myUnit, const ScriptPolicy & policy, const Unit & targetUnit)
+std::vector<double> Player_Script::getTargetOperandValue(const GameState & state, const Unit & myUnit, const ScriptPolicy & policy, const Unit & targetUnit)
 {
-    const size_t policyOperand = policy.getTarget().targetOperand;
+    const std::vector<int> & operands = policy.getTarget().targetOperands;
+    std::vector<double> values;
 
-    switch (policyOperand)
+    for (size_t i(0); i < operands.size(); ++i)
     {
-        case PolicyOperand::Distance: { return myUnit.getDistanceSqToUnit(targetUnit, state.getTime()); }
-        case PolicyOperand::HP:       { return targetUnit.currentHP(); }
-        case PolicyOperand::DPS:      { return myUnit.dpf(); }
-        case PolicyOperand::Threat:   { return myUnit.dpf() / myUnit.currentHP(); }
-        default :                     { SPARCRAFT_ASSERT(false, "Unknown policy operand: %d", policyOperand); }
+        switch (operands[i])
+        {
+            case PolicyOperand::Distance: { values.push_back(myUnit.getDistanceSqToUnit(targetUnit, state.getTime())); break; }
+            case PolicyOperand::HP:       { values.push_back(targetUnit.currentHP()); break; }
+            case PolicyOperand::DPS:      { values.push_back(myUnit.dpf()); break; }
+            case PolicyOperand::Threat:   { values.push_back(myUnit.dpf() / myUnit.currentHP()); break; }
+            default:                      { SPARCRAFT_ASSERT(false, "Unknown policy operand: %d", operands[i]); }
+        }
     }
 
-    return 0;
+    return values;
+}
+
+bool Player_Script::greater(const std::vector<double> & v1, const std::vector<double> & v2)
+{
+    for (size_t i(0); i < v1.size(); ++i)
+    {
+        if (v1[i] > v2[i])
+        {
+            return true;
+        } 
+        else if (v1[i] < v2[i])
+        {
+            return false;
+        }
+    }
+
+    return false;
+}
+
+bool Player_Script::less(const std::vector<double> & v1, const std::vector<double> & v2)
+{
+    for (size_t i(0); i < v1.size(); ++i)
+    {
+        if (v1[i] < v2[i])
+        {
+            return true;
+        }
+        else if (v1[i] > v2[i])
+        {
+            return false;
+        }
+    }
+
+    return false;
 }
 
 const Position & Player_Script::getPlayerCenter(const GameState & state, const size_t & playerID)

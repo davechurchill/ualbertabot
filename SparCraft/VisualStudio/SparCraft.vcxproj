@@ -144,6 +144,7 @@
     <ClInclude Include="..\source\Map.h" />
     <ClInclude Include="..\source\Move.h" />
     <ClInclude Include="..\source\MoveArray.h" />
+    <ClInclude Include="..\source\MoveIterator.h" />
     <ClInclude Include="..\source\PGSParameters.h" />
     <ClInclude Include="..\source\Player.h" />
     <ClInclude Include="..\source\PlayerProperties.h" />
@@ -172,7 +173,6 @@
     <ClInclude Include="..\source\UCTSearchParameters.hpp" />
     <ClInclude Include="..\source\UCTSearchResults.hpp" />
     <ClInclude Include="..\source\Unit.h" />
-    <ClInclude Include="..\source\Array.hpp" />
     <ClInclude Include="..\source\UnitProperties.h" />
     <ClInclude Include="..\source\WeaponProperties.h" />
   </ItemGroup>
@@ -196,6 +196,7 @@
     <ClCompile Include="..\source\Map.cpp" />
     <ClCompile Include="..\source\Move.cpp" />
     <ClCompile Include="..\source\MoveArray.cpp" />
+    <ClCompile Include="..\source\MoveIterator.cpp" />
     <ClCompile Include="..\source\PGSParameters.cpp" />
     <ClCompile Include="..\source\Player.cpp" />
     <ClCompile Include="..\source\PlayerProperties.cpp" />

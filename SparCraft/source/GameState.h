@@ -6,7 +6,6 @@
 #include "Map.h"
 #include "Unit.h"
 #include "GraphViz.hpp"
-#include "Array.hpp"
 #include "GameStateUnitData.h"
 
 

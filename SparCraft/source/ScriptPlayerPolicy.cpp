@@ -114,7 +114,6 @@ ScriptPolicyTarget::ScriptPolicyTarget()
     : targetPlayer          (0)
     , targetType            (0)
     , targetOperator        (0)
-    , targetOperand         (0)
 {
     
 }
@@ -135,11 +134,14 @@ ScriptPolicyTarget::ScriptPolicyTarget(const rapidjson::Value & value)
         SPARCRAFT_ASSERT(value[2].IsString(), "ScriptPolicyTarget[2] is not String");
         targetOperator = GetTargetOperator(value[2].GetString());
 
-        SPARCRAFT_ASSERT(value[3].IsString(), "ScriptPolicyTarget[3] is not String");
-        targetOperand = GetTargetOperand(value[3].GetString());
+        SPARCRAFT_ASSERT(value[3].IsArray(), "ScriptPolicyTarget[3] is not Array");
+
+        for (size_t i(0); i < value[3].Size(); ++i)
+        {
+            targetOperands.push_back(GetTargetOperand(value[3][i].GetString()));
+        }
     }
 }
-
 
 int ScriptPolicyTarget::GetTargetType(const std::string & string)
 {

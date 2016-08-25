@@ -223,7 +223,7 @@ size_t GameState::winner() const
 {
     if (playerDead(Players::Player_One) && playerDead(Players::Player_Two))
     {
-        return Players::Player_Both;
+        return Players::Player_None;
     }
     else if (playerDead(Players::Player_One))
     {

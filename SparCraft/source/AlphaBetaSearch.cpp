@@ -203,14 +203,14 @@ const AlphaBetaMove & AlphaBetaSearch::getAlphaBetaMove(const TTLookupValue & TT
 void AlphaBetaSearch::generateOrderedMoves(const GameState & state, const TTLookupValue & TTval, const size_t & playerToMove, const size_t & depth)
 {
 	// get the array where we will store the moves and clear it
-	Array<Move, Constants::Max_Ordered_Moves> & orderedMoves(_orderedMoves[depth]);
+    std::vector<Move> orderedMoves;
 	orderedMoves.clear();
 
 	// if we are using opponent modeling, get the move and then return, we don't want to put any more moves in
 	if (_params.playerModel(playerToMove) != PlayerModels::None)
 	{
         // put the vector into the ordered moves array
-        orderedMoves.add(Move());
+        orderedMoves.push_back(Move());
 
         // generate the moves into that vector
         _playerModels[playerToMove]->getMove(state, orderedMoves[0]);
@@ -254,7 +254,7 @@ void AlphaBetaSearch::generateOrderedMoves(const GameState & state, const TTLook
 	    {
             Move move;
 		    _allScripts[playerToMove][s]->getMove(state, move);
-		    orderedMoves.add(move);
+		    orderedMoves.push_back(move);
 	    }
 
         if (orderedMoves.size() < 2)
@@ -294,7 +294,7 @@ bool AlphaBetaSearch::getNextmove(size_t playerToMove, MoveArray & moves, const 
 	    }
     }
 
-	const Array<Move, Constants::Max_Ordered_Moves> & orderedMoves(_orderedMoves[depth]);
+    std::vector<Move> orderedMoves(Constants::Max_Ordered_Moves);
     move.clear();
    
 	// if this action should be from the ordered list, return it from the list

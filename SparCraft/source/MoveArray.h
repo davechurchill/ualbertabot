@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Common.h"
-#include "Array.hpp"
 #include "Unit.h"
 #include "Action.h"
 #include "Move.h"

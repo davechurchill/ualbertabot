@@ -21,14 +21,13 @@ GameState TorchTools::GetSparCraftStateFromTorchCraftFrame(const replayer::Frame
 			const size_t timeCanAttack = state.getTime() + unit.groundCD;
 
             const BWAPI::UnitType type(unit.type);
+
             if (!System::UnitTypeSupported(type))
             {
                 continue;
             }
 
-            //std::cout << type.getName() << " " << unit.type << "\n";
-
-			SparCraft::Unit u(type, Position(unit.x * 4, unit.y * 4), currentUnitID++, playerID, unit.health + unit.shield, unit.energy, timeCanMove, timeCanAttack);
+			SparCraft::Unit u(type, Position(unit.x * 4, unit.y * 4), currentUnitID++, playerID, unit.health + unit.shield, unit.energy, 0, timeCanAttack);
 			u.setBWAPIUnitID(unit.id);
 			state.addUnit(u);
 		}
@@ -87,21 +86,21 @@ Move TorchTools::GetMove(const GameState & state, const size_t & playerID, const
 std::string TorchTools::GetMoveStringLUA(const GameState & state, const Move & move)
 {
     std::stringstream ss;
-    ss << "[";
+    ss << "{";
 
     for (size_t a(0); a < move.size(); ++a)
     {
         const Action & action = move[a];
         const Unit & unit = state.getUnitByID(action.getID());
 
-        ss << "{tc.command_unit, " << unit.getBWAPIUnitID() << ", ";
+        ss << "{tc.command_unit_protected, " << unit.getBWAPIUnitID() << ", ";
         if (action.type() == ActionTypes::MOVE)
         {
             ss << "tc.cmd.Move, -1, " << (action.pos().x() / 8) << ", " << (action.pos().y() / 8) << "}";
         }
         else if (action.type() == ActionTypes::ATTACK)
         {
-            ss << "tc.cmd.AttackUnit, " << state.getUnitByID(action.getTargetID()).getBWAPIUnitID() << ", -1, -1}";
+            ss << "tc.cmd.Attack_Unit, " << state.getUnitByID(action.getTargetID()).getBWAPIUnitID() << ", -1, -1}";
         }
 
         if (a < move.size() - 1)
@@ -110,7 +109,7 @@ std::string TorchTools::GetMoveStringLUA(const GameState & state, const Move & m
         }
     }
 
-    ss << "]";
+    ss << "}";
 
     return ss.str();
 }

@@ -34,6 +34,7 @@ protected:
 public:
 
     Player();
+    virtual ~Player();
     virtual void		    getMove(const GameState & state, Move & move);
     const size_t            ID();
     virtual void            setName(const std::string & name);
