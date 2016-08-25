@@ -103,7 +103,7 @@
 
 "Games" :
 [
-	{ "Play":true,  "Name":"Test",  "Games":10, "State":"Separated", "Players":["KiteWeakest", "AttackWC"] },
+	{ "Play":true,  "Name":"Test",  "Games":10, "State":"TorchIn", "Players":["KiteWeakest", "AttackWC"] },
     { "Play":false, "Name":"TorchGame",  "Games":10, "State":"TorchIn", "Players":["AttackWeakest", "KiteWeakest"] }
 ],
 

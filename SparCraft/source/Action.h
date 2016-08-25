@@ -7,7 +7,7 @@ namespace SparCraft
 
 namespace ActionTypes
 {
-	enum {NONE, ATTACK, RELOAD, MOVE, PASS, HEAL};
+    enum { NONE, ATTACK, MOVE, RELOAD, PASS, HEAL };
 };
 
 class Action 

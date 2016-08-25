@@ -90,8 +90,14 @@ std::string TorchTools::GetMoveStringLUA(const GameState & state, const Move & m
 
     for (size_t a(0); a < move.size(); ++a)
     {
+        
         const Action & action = move[a];
         const Unit & unit = state.getUnitByID(action.getID());
+        
+        if (action.type() != ActionTypes::MOVE && action.type() != ActionTypes::ATTACK)
+        {
+            continue;
+        }
 
         ss << "{tc.command_unit_protected, " << unit.getBWAPIUnitID() << ", ";
         if (action.type() == ActionTypes::MOVE)
