@@ -103,7 +103,7 @@
 
 "Benchmarks" :
 [   
-    { "Run":true, "Type":"Tournament", "Name":"Scripts", "Rounds":1000, "UpdateIntervalSec":5, "State":"Separated", "Players":[ {"Name":"AttackClosest","Group":1}, {"Name":"AttackWeakest","Group":2}, {"Name":"KiteWeakest","Group":3}, {"Name":"AttackDPS","Group":4}, {"Name":"PGS","Group":5}, {"Name":"AttackClosestOld","Group":6}] }
+    { "Run":true, "Type":"Tournament", "Name":"Scripts", "Rounds":1000, "UpdateIntervalSec":5, "State":"Separated", "Players":[ {"Name":"AttackClosest","Group":1}, {"Name":"AttackWeakest","Group":2}, {"Name":"KiteWeakest","Group":3}, {"Name":"AttackDPS","Group":4}, {"Name":"AttackClosestOld","Group":6}] }
 ],
 
 "GUI" : 

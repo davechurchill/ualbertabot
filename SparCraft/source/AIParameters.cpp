@@ -1,7 +1,7 @@
 #include "Common.h"
 #include "AIParameters.h"
 #include "AllPlayers.h"
-#include "torch\TorchTools.h"
+#include "torch/TorchTools.h"
 
 using namespace SparCraft;
 
