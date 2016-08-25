@@ -28,9 +28,6 @@
     <ClCompile Include="..\source\UCTSearch.cpp">
       <Filter>AI\search\UCT</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\UnitScriptData.cpp">
-      <Filter>AI\search\PGS</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\Player.cpp">
       <Filter>AI\players</Filter>
     </ClCompile>
@@ -115,6 +112,18 @@
     <ClCompile Include="..\source\Map.cpp">
       <Filter>simulation</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\JSONTools.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\torch\frame.cpp">
+      <Filter>util\torch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\torch\TorchTools.cpp">
+      <Filter>util\torch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\ConfigTools.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\AlphaBetaSearch.h">
@@ -158,9 +167,6 @@
     </ClInclude>
     <ClInclude Include="..\source\UCTSearch.h">
       <Filter>AI\search\UCT</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\UnitScriptData.h">
-      <Filter>AI\search\PGS</Filter>
     </ClInclude>
     <ClInclude Include="..\source\GraphViz.hpp">
       <Filter>util</Filter>
@@ -264,6 +270,21 @@
     <ClInclude Include="..\source\Map.h">
       <Filter>simulation</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\JSONTools.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\torch\frame.h">
+      <Filter>util\torch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\torch\refcount.h">
+      <Filter>util\torch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\torch\TorchTools.h">
+      <Filter>util\torch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\ConfigTools.h">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="util">
@@ -307,6 +328,9 @@
     </Filter>
     <Filter Include="AI\search\PGS">
       <UniqueIdentifier>{273d10ab-4a07-439d-9142-aaf654ae5feb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util\torch">
+      <UniqueIdentifier>{6b6fd1a7-e8df-4f9e-8729-8bb2c61def62}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

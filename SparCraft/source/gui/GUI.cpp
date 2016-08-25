@@ -129,6 +129,7 @@ void GUI::render()
         glPopMatrix();
 
         _guiGame.drawParameters(5, 15);
+        _guiGame.drawSearchResults(5, 115);
         _guiGame.drawInfo();
         _guiGame.drawEval(width() - 250, 30);
     }

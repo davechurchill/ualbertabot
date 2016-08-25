@@ -219,6 +219,26 @@ bool GameState::playerDead(const size_t & player) const
 	return false;
 }
 
+size_t GameState::winner() const
+{
+    if (playerDead(Players::Player_One) && playerDead(Players::Player_Two))
+    {
+        return Players::Player_Both;
+    }
+    else if (playerDead(Players::Player_One))
+    {
+        return Players::Player_Two;
+    }
+    else if (playerDead(Players::Player_Two))
+    {
+        return Players::Player_One;
+    }
+    else
+    {
+        return Players::Player_None;
+    }
+}
+
 size_t GameState::whoCanMove() const
 {
 	TimeType p1Time = getTimeNextUnitCanAct(0); //getUnit(0,0).firstTimeFree();
@@ -303,7 +323,7 @@ TimeType GameState::getTime() const
 }
 
 // detect if there is a deadlock, such that no team can possibly win
-bool GameState::isTerminal() const
+bool GameState::gameOver() const
 {
     // if someone is dead, then nobody can move
     if (playerDead(Players::Player_One) || playerDead(Players::Player_Two))

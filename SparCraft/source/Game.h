@@ -4,7 +4,6 @@
 #include "Player.h"
 #include "AllPlayers.h"
 #include "Action.h"
-#include "UnitScriptData.h"
 #include <memory>
 #include "Timer.h"
 
@@ -22,17 +21,14 @@ protected:
     GameState           _state;
     PlayerPtr			_players[2];
 	size_t				_numPlayers;
+    size_t              _numMoves[2];
+    size_t              _numActions[2];
 	size_t				_playerToMoveMethod;
 	size_t				_rounds;
 	Timer				_t;
 	double				_gameTimeMS;
 	size_t				_moveLimit;
     bool                _simulateEveryFrame;
-	
-
-	// moves array to store moves in
-	//MoveArray           _moves[2];
-	//Move _scriptMoves[2];
 
 public:
 	
@@ -42,7 +38,6 @@ public:
 
 	void                play();
     void                playNextTurn();
-    void                playIndividualScripts(UnitScriptData & scriptsChosen);
 	void                storeHistory(const bool & store);
     void                setSimulateEveryFrame(bool sim);
 	bool                gameOver() const;
@@ -55,7 +50,6 @@ public:
 	double              getTime();
 	const size_t        getPlayerToMove();
     PlayerPtr           getPlayer(const size_t & player);
-
 };
 
 

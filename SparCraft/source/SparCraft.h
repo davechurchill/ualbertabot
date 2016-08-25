@@ -16,6 +16,7 @@
 #include "AIParameters.h"
 #include "Eval.h"
 #include "AITools.h"
+#include "JSONTools.h"
 
 namespace SparCraft
 {

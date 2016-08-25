@@ -75,25 +75,3 @@ const std::vector<PlayerPtr> & PGSParameters::getPortfolio(const size_t & player
 {
     return _playerPortfolio[playerID];
 }
-
-const std::string & PGSParameters::toString()
-{
-    if (_description.size() == 0)
-    {
-        std::stringstream ss;
-        ss << "Iterations: " << _iterations << "\n";
-        ss << "Responses:  " << _responses << "\n";
-        ss << "Max PTurns: " << _maxPlayoutTurns << "\n";
-        ss << "Time Limit: " << _timeLimit << "\n";
-        ss << "Portfolio:\n";
-
-        for (size_t i(0); i < _playerPortfolio[_playerID].size(); ++i)
-        {
-            ss << "  " << _playerPortfolio[_playerID][i]->getName() << "\n";
-        }
-
-        _description = ss.str();
-    }
-
-    return _description;
-}

@@ -11,7 +11,6 @@ class Player_Script : public Player
 {
     size_t              _enemyID;
     ScriptPlayerPolicy  _playerPolicy;
-    
 
     Position            _playerCenters[2];
     bool                _playerCentersCalculated[2];
@@ -28,6 +27,8 @@ public:
 
 	Player_Script (const size_t & playerID, const ScriptPlayerPolicy & policy);    
 	void getMove(const GameState & state, Move & move);
+
+    virtual const std::string & getDescription();
 
     virtual PlayerPtr clone();
 

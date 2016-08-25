@@ -40,8 +40,9 @@ public:
     // misc functions
     void                    updateGameTime();
     bool                    playerDead(const size_t & player)                                       const;
-    bool                    isTerminal()                                                            const;
+    bool                    gameOver()                                                              const;
     size_t                  getEnemy(const size_t & player)                                         const;
+    size_t                  winner()                                                                const;
 
     // unit data functions
     size_t                  numUnits(const size_t & player)                                         const;

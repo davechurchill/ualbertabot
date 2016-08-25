@@ -108,7 +108,7 @@ void ActionGenerators::GenerateCompassActions(const GameState & state, const siz
 			double chosenTime = timeUntilAttack != 0 ? std::min(timeUntilAttack, defaultMoveDuration) : defaultMoveDuration;
 
             // the chosen movement distance
-            PositionType moveDistance       = (PositionType)(chosenTime * unit.speed());
+            int moveDistance       = (int)(chosenTime * unit.speed());
 
             // DEBUG: If chosen move distance is ever 0, something is wrong
             if (moveDistance == 0)

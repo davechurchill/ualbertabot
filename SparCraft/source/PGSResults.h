@@ -15,7 +15,6 @@ class PGSParameters
     size_t                  _timeLimit;
     size_t                  _maxPlayoutTurns;
     std::vector<PlayerPtr>  _playerPortfolio[2];
-    std::string             _description;
 
 public:
 
@@ -35,8 +34,6 @@ public:
     const size_t & getTimeLimit() const;
     const size_t & getMaxPlayoutTurns() const;
     const std::vector<PlayerPtr> & getPortfolio(const size_t & playerID) const;
-
-    const std::string & toString();
 };
 
 }

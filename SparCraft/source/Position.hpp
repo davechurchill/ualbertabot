@@ -9,7 +9,7 @@ namespace SparCraft
 class Position
 {
 	// x,y location will be used for Units in a 'grid'
-	PositionType		_x, 
+	int		_x, 
 						_y;
 
 public:
@@ -20,7 +20,7 @@ public:
 	{
 	}
 
-	Position(const PositionType & x, const PositionType & y)
+	Position(const int & x, const int & y)
 		: _x(x)
 		, _y(y)
 	{
@@ -55,13 +55,13 @@ public:
 
 	const Position scale(const float & f) const
 	{
-		return Position((PositionType)(f * x()), (PositionType)(f * y()));
+		return Position((int)(f * x()), (int)(f * y()));
 	}
 
     void scalePosition(const float & f)
     {
-        _x = (PositionType)(f * _x);
-        _y = (PositionType)(f * _y);
+        _x = (int)(f * _x);
+        _y = (int)(f * _y);
     }
 
     void addPosition(const Position & rhs)
@@ -82,24 +82,24 @@ public:
 		_y = pos.y();
 	}
 
-	void addPosition(const PositionType & x, const PositionType & y)
+	void addPosition(const int & x, const int & y)
 	{
 		_x += x;
 		_y += y;
 	}
 
-	void moveTo(const PositionType & x, const PositionType & y)
+	void moveTo(const int & x, const int & y)
 	{
 		_x = x;
 		_y = y;
 	}
 
-	const PositionType x() const
+	const int x() const
 	{
 		return _x;
 	}
 
-	const PositionType y() const
+	const int y() const
 	{
 		return _y;
 	}
@@ -149,7 +149,7 @@ public:
         return sqrt(_x*_x + _y*_y);
     }
 
-	const PositionType getDistanceSq(const Position & p) const	
+	const int getDistanceSq(const Position & p) const	
 	{
         return (x()-p.x())*(x()-p.x()) + (y()-p.y())*(y()-p.y());
 	}

@@ -83,7 +83,7 @@ const bool Map::isWalkable(const SparCraft::Position & pixelPosition) const
 {
     const Position & wp(getWalkPosition(pixelPosition));
 
-    return	isWalkable(wp.x(), wp.y());
+    return isWalkable(wp.x(), wp.y());
 }
 
 const bool Map::isFlyable(const SparCraft::Position & pixelPosition) const
@@ -93,25 +93,25 @@ const bool Map::isFlyable(const SparCraft::Position & pixelPosition) const
     return isFlyable(wp.x(), wp.y());
 }
 
-const bool Map::isWalkable(const size_t & walkTileX, const size_t & walkTileY) const
+const bool Map::isWalkable(const int & walkTileX, const int & walkTileY) const
 {
-    return	walkTileX >= 0 && walkTileX < (PositionType)getWalkTileWidth() &&
-        walkTileY >= 0 && walkTileY < (PositionType)getWalkTileHeight() &&
+    return	walkTileX >= 0 && walkTileX < (int)getWalkTileWidth() &&
+        walkTileY >= 0 && walkTileY < (int)getWalkTileHeight() &&
         getMapData(walkTileX, walkTileY);
 }
 
-const bool Map::isFlyable(const size_t & walkTileX, const size_t & walkTileY) const
+const bool Map::isFlyable(const int & walkTileX, const int & walkTileY) const
 {
-    return	walkTileX >= 0 && walkTileX < (PositionType)getWalkTileWidth() &&
-        walkTileY >= 0 && walkTileY < (PositionType)getWalkTileHeight();
+    return	walkTileX >= 0 && walkTileX < (int)getWalkTileWidth() &&
+        walkTileY >= 0 && walkTileY < (int)getWalkTileHeight();
 }
 
-const bool Map::getMapData(const size_t & walkTileX, const size_t & walkTileY) const
+const bool Map::getMapData(const int & walkTileX, const int & walkTileY) const
 {
     return _mapData[walkTileX][walkTileY];
 }
 
-const bool Map::getUnitData(const size_t & buildTileX, const size_t & buildTileY) const
+const bool Map::getUnitData(const int & buildTileX, const int & buildTileY) const
 {
     return _unitData[buildTileX][buildTileY];
 }

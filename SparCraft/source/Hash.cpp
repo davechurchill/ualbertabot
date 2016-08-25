@@ -12,7 +12,7 @@ namespace SparCraft
 	}
 }
 
-const HashType Hash::HashValues::positionHash(const size_t & player, const PositionType & x, const PositionType & y) const
+const HashType Hash::HashValues::positionHash(const size_t & player, const int & x, const int & y) const
 {
 	// return hash32shift(unitPositionHash[player] ^ ((x << 16) + y))
 	return hash32shift(hash32shift(unitPositionHash[player] ^ x) ^ y);

@@ -1,4 +1,5 @@
 #include "Player_Script.h"
+#include "Timer.h"
 
 const double PI = 3.141592653589793238463;
 const double RAD = 0.01745329251;
@@ -6,6 +7,7 @@ const double RAD = 0.01745329251;
 using namespace SparCraft;
 
 Player_Script::Player_Script (const size_t & playerID, const ScriptPlayerPolicy & playerPolicy)
+    : Player()
 {
 	_playerID = playerID;
     _enemyID = (playerID + 1) % 2;
@@ -16,6 +18,8 @@ Player_Script::Player_Script (const size_t & playerID, const ScriptPlayerPolicy 
 
 void Player_Script::getMove(const GameState & state, Move & move)
 {
+    startTimer();
+
     move.clear();
     _playerCentersCalculated[0] = false;
     _playerCentersCalculated[1] = false;
@@ -63,6 +67,8 @@ void Player_Script::getMove(const GameState & state, Move & move)
 
         move.addAction(unitAction);
     }
+
+    stopTimer();
 }
 
 Action Player_Script::getPolicyAction(const GameState & state, const Unit & myUnit, const ScriptPolicy & policy, const std::vector<size_t> & validUnitTargets)
@@ -206,4 +212,14 @@ void Player_Script::getEnemyUnitsInAttackRange(const Unit & myUnit, const GameSt
 PlayerPtr Player_Script::clone()
 {
     return PlayerPtr(new Player_Script(*this));
+}
+
+const std::string & Player_Script::getDescription()
+{
+    if (_description.size() == 0)
+    {
+        _description = _name;
+    }
+
+    return _description;
 }

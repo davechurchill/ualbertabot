@@ -45,10 +45,10 @@ public:
 
     const bool isWalkable(const SparCraft::Position & pixelPosition) const;
     const bool isFlyable(const SparCraft::Position & pixelPosition) const;
-    const bool isWalkable(const size_t & walkTileX, const size_t & walkTileY) const;
-    const bool isFlyable(const size_t & walkTileX, const size_t & walkTileY) const;
-    const bool getMapData(const size_t & walkTileX, const size_t & walkTileY) const;
-    const bool getUnitData(const size_t & buildTileX, const size_t & buildTileY) const;
+    const bool isWalkable(const int & walkTileX, const int & walkTileY) const;
+    const bool isFlyable(const int & walkTileX, const int & walkTileY) const;
+    const bool getMapData(const int & walkTileX, const int & walkTileY) const;
+    const bool getUnitData(const int & buildTileX, const int & buildTileY) const;
     const bool canBuildHere(BWAPI::TilePosition pos) const;
 
     void setMapData(const size_t & walkTileX, const size_t & walkTileY, const bool val);

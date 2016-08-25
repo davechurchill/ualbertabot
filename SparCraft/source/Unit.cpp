@@ -69,7 +69,7 @@ bool Unit::canSeeTarget(const Unit & unit, const TimeType & gameTime) const
 {
 
 	// range of this unit attacking
-	PositionType r = type().sightRange();
+	int r = type().sightRange();
 
 	// return whether the target unit is in range
 	return (r * r) >= getDistanceSqToUnit(unit, gameTime);
@@ -86,7 +86,7 @@ const bool Unit::canAttackTarget(const Unit & unit, const TimeType & gameTime) c
     }
 
     // range of this unit attacking
-    PositionType r = range();
+    int r = range();
 
     // return whether the target unit is in range
     return (r * r) >= getDistanceSqToUnit(unit, gameTime);
@@ -102,7 +102,7 @@ const bool Unit::canHealTarget(const Unit & unit, const TimeType & gameTime) con
     }
 
     // range of this unit attacking
-    PositionType r = healRange();
+    int r = healRange();
 
     // return whether the target unit is in range
     return (r * r) >= getDistanceSqToUnit(unit, gameTime);
@@ -239,12 +239,12 @@ void Unit::pass(const Action & move, const TimeType & gameTime)
     setPreviousAction(move, gameTime);
 }
 
-const PositionType Unit::getDistanceSqToUnit(const Unit & u, const TimeType & gameTime) const 
+const int Unit::getDistanceSqToUnit(const Unit & u, const TimeType & gameTime) const 
 { 
     return getDistanceSqToPosition(u.currentPosition(gameTime), gameTime); 
 }
 
-const PositionType Unit::getDistanceSqToPosition(const Position & p, const TimeType & gameTime) const	
+const int Unit::getDistanceSqToPosition(const Position & p, const TimeType & gameTime) const	
 { 
     return currentPosition(gameTime).getDistanceSq(p);
 }
@@ -406,22 +406,22 @@ const Position & Unit::pos() const
     return _position; 
 }
 
-const PositionType Unit::x() const 
+const int Unit::x() const 
 { 
     return _position.x(); 
 }
 
-const PositionType Unit::y() const 
+const int Unit::y() const 
 { 
     return _position.y(); 
 }
 
-const PositionType Unit::range() const 
+const int Unit::range() const 
 { 
     return _range; 
 }
 
-const PositionType Unit::healRange() const
+const int Unit::healRange() const
 { 
     return canHeal() ? 96 : 0; 
 }

@@ -39,9 +39,9 @@ void GUIGame::onFrame()
 void GUIGame::drawInfo()
 {
     std::stringstream ss;
-    ss << "Game Time: " << _game.getState().getTime() << "\n\n";
-    ss << "Frame Draw Time: " << _previousDrawGameTimer << "ms\n\n";
-    ss << "Turn Time: " << _previousTurnTimer << "ms";
+    ss << "Game Frame:  " << _game.getState().getTime() << "\n\n";
+    ss << "Render Time: " << _previousDrawGameTimer << "ms\n\n";
+    ss << "Player Time: " << _previousTurnTimer << "ms";
 
     GUITools::DrawString(Position(10, _gui.height()-50), ss.str(), White);
 }
@@ -98,7 +98,7 @@ void GUIGame::drawGame()
             {
                 if (!state.getMap()->isWalkable(x, y))
                 {
-                    GUITools::DrawRect(BWAPI::Position(x * 8, y * 8), BWAPI::Position((x + 1) * 8, (y + 1) * 8), White);
+                    GUITools::DrawRect(BWAPI::Position(x * 8, y * 8), BWAPI::Position((x + 1) * 8, (y + 1) * 8), Grid);
                 }
             }
         }
@@ -106,8 +106,8 @@ void GUIGame::drawGame()
         std::stringstream ssbr;
         ssbr << "(" << width << "," << height << ")";
 
-        GUITools::DrawString(Position(0, -10), "(0,0)", White);
-        GUITools::DrawString(Position(width-(8*ssbr.str().size()), height+15), ssbr.str(), White);
+        GUITools::DrawString(Position(0, -10), "(0,0)", Grid);
+        GUITools::DrawString(Position(width - (8 * ssbr.str().size()), height + 15), ssbr.str(), Grid);
 
         for (int x(32); x < width; x += 32)
         {
@@ -119,10 +119,10 @@ void GUIGame::drawGame()
             GUITools::DrawLine(Position(0, y), Position(width, y), 1, Grid);
         }
 
-        GUITools::DrawLine(Position(0, 0), Position(width, 0), 3, White);
-        GUITools::DrawLine(Position(width, 0), Position(width, height), 3, White);
-        GUITools::DrawLine(Position(width, height), Position(0, height), 3, White);
-        GUITools::DrawLine(Position(0, height), Position(0, 0), 3, White);
+        GUITools::DrawLine(Position(0, 0),          Position(width, 0),      3, Grid);
+        GUITools::DrawLine(Position(width, 0),      Position(width, height), 3, Grid);
+        GUITools::DrawLine(Position(width, height), Position(0, height),     3, Grid);
+        GUITools::DrawLine(Position(0, height),     Position(0, 0),          3, Grid);
     }
 
     for (size_t p(0); p < 2; ++p)
@@ -136,115 +136,18 @@ void GUIGame::drawGame()
     _previousDrawGameTimer = drawGameTimer.getElapsedTimeInMilliSec();
 }
 
-void GUIGame::drawHPBars()
-{
-    const GameState & state = _game.getState();
-
-    for (size_t p(0); p < Constants::Num_Players; ++p)
-    {
-        for (size_t u(0); u < state.numUnits(p); ++u)
-        {
-            int barHeight = 12;
-
-            const Unit & unit = state.getUnit(p,u);
-            const Position pos = Position(1000+170*p,40+barHeight*u);
-            const BWAPI::UnitType type = unit.type();
-
-            const int x0 = pos.x();
-            const int x1 = pos.x() + 150;
-            const int y0 = pos.y();
-            const int y1 = pos.y() + 15;
-
-            // draw the unit HP box
-            double	percHP = (double)unit.currentHP() / (double)unit.maxHP();
-            int		w = 150;
-            int		h = barHeight;
-            int		cw = (int)(w * percHP);
-            int		xx = pos.x() - w/2;
-            int		yy = pos.y() - h - (y1-y0)/2;
-
-            if (unit.isAlive())
-            {
-                //GUITools::DrawRectGradient(Position(xx,yy),Position(xx+cw,yy+h),PlayerColors[p], PlayerColorsDark[p]);
-                
-                
-
-                
-            }
-
-            //if (unit.getID() < 255)
-            //{
-            //	glEnable( GL_TEXTURE_2D );
-            //		glBindTexture( GL_TEXTURE_2D, unit.type().getID() );
-
-            //		// draw the unit to the screen
-            //		glColor4f(1, 1, 1, 1);
-            //		glBegin( GL_QUADS );
-            //			glTexCoord3d(0.0,0.0,.5); glVertex2i(xx, yy);
-            //			glTexCoord3d(0.0,1.0,.5); glVertex2i(xx, yy+h);
-            //			glTexCoord3d(1.0,1.0,.5); glVertex2i(xx+h,yy+h);
-            //			glTexCoord3d(1.0,0.0,.5); glVertex2i(xx+h, yy);
-            //		glEnd();
-            //	glDisable( GL_TEXTURE_2D );
-            //}
-        }
-    }
-}
-
 void GUIGame::drawParameters(int x, int y)
 {
     int size = 11;
     int spacing = 3;
     int colwidth = 175;
-    int playerspacing = 350;
+    int playerSpacing = 200;
 
-    /*for (size_t pp(0); pp < 2; ++pp)
-    {
-        GUITools::DrawString(Position(x+pp*playerspacing, y), "Player 1 Settings", PlayerColors[pp]);
+    GUITools::DrawString(Position(x, y), "Player 1 Parameters", PlayerColors[0]);
+    GUITools::DrawString(Position(x + playerSpacing, y), "Player 2 Parameters", PlayerColors[1]);
 
-        for (size_t p(0); _params[pp].size() > 0 && p<_params[pp][0].size(); ++p)
-        {
-            GUITools::DrawString(Position(x+pp*playerspacing, y+((p+1)*(size+spacing))), _params[pp][0][p], White);
-            GUITools::DrawString(Position(x+pp*playerspacing+colwidth, y+((p+1)*(size+spacing))), _params[pp][1][p], White);
-        }
-    }*/
-
-    // Player 1 Settings
-    std::stringstream ss1;
-    ss1 << "Player 1\n\n" << _game.getPlayer(Players::Player_One)->getDescription();
-
-    std::stringstream ss2;
-    ss2 << "Player 2\n\n" << _game.getPlayer(Players::Player_Two)->getDescription();
-
-    GUITools::DrawString(Position(x, y), ss1.str(), PlayerColors[0]);
-    GUITools::DrawString(Position(x + playerspacing, y), ss2.str(), PlayerColors[1]);
-
-
-    //if (_params[0].size() > 0)
-    //{
-    //    GUITools::DrawString(Position(x, y), "Player 1 Settings", PlayerColors[0]);
-
-    //    for (size_t p(0); _params[0].size() > 0 && p<_params[0][0].size(); ++p)
-    //    {
-    //        GUITools::DrawString(Position(x, y+((p+1)*(size+spacing))), _params[0][0][p], White);
-    //        GUITools::DrawString(Position(x+colwidth, y+((p+1)*(size+spacing))), _params[0][1][p], White);
-    //    }
-    //}
-
-    //if (_params[1].size() > 0)
-    //{
-    //    // Player 2 Settings
-    //    x += playerspacing;
-    //    glColor3f(0.0, 1.0, 0.0);
-    //    DrawText(x, y , size, "Player 2 Settings");
-    //    glColor3f(1.0, 1.0, 1.0);
-
-    //    for (size_t p(0); params[1].size() > 0 && p<params[1][0].size(); ++p)
-    //    {
-    //        DrawText(x, y+((p+1)*(size+spacing)), size, params[1][0][p]);
-    //        DrawText(x+colwidth, y+((p+1)*(size+spacing)), size, params[1][1][p]);
-    //    }
-    //}
+    GUITools::DrawString(Position(x, y+12), _game.getPlayer(0)->getDescription(), White);
+    GUITools::DrawString(Position(x + playerSpacing, y + 12), _game.getPlayer(1)->getDescription(), White);
 }
 
 void GUIGame::drawSearchResults(int x, int y)
@@ -252,17 +155,12 @@ void GUIGame::drawSearchResults(int x, int y)
 	int size = 11;
     int spacing = 3;
     int colwidth = 175;
-    int playerspacing = 350;
+    int playerSpacing = 200;
 
     for (size_t pp(0); pp < 2; ++pp)
     {
-        GUITools::DrawString(Position(x+pp*playerspacing, y), "Player 1 Search Results", PlayerColors[pp]);
-
-        for (size_t p(0); _results[pp].size() > 0 && p<_results[pp][0].size(); ++p)
-        {
-            GUITools::DrawString(Position(x+pp*playerspacing, y+((p+1)*(size+spacing))), _results[pp][0][p], White);
-            GUITools::DrawString(Position(x+pp*playerspacing+colwidth, y+((p+1)*(size+spacing))), _results[pp][1][p], White);
-        }
+        GUITools::DrawString(Position(x + pp*playerSpacing, y), "Player Results", PlayerColors[pp]);
+        GUITools::DrawString(Position(x + pp*playerSpacing, y+12), _game.getPlayer(pp)->getResultString(), White);
     }
 }
 
@@ -337,11 +235,6 @@ void GUIGame::setResults(const size_t & player, const std::vector<std::vector<st
 void GUIGame::setParams(const size_t & player, const std::vector<std::vector<std::string> > & p)
 {
 	_params[player] = p;
-}
-
-void GUIGame::setDrawHPBars(bool draw)
-{
-    _drawHPBars = draw;
 }
 
 void GUIGame::setDrawCD(bool draw)

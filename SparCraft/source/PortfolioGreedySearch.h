@@ -5,7 +5,6 @@
 #include "Player.h"
 #include "Game.h"
 #include "Action.h"
-#include "UnitScriptData.h"
 #include "PGSParameters.h"
 #include <memory>
 
@@ -16,23 +15,23 @@ class PortfolioGreedySearch
 {
     PGSParameters               _params;
     PlayerPtr                   _enemySeedPlayer;
-    std::vector<PlayerPtr>      _playerPortfolio[2];
-    std::vector<size_t>			_playerScriptPortfolio;
-    size_t                      _totalEvals;
-    size_t                      _timeLimit;
+    size_t                      _seedScriptIndex[2];
+    std::vector<size_t>         _activeUnitIDs[2];
+    Timer                       _searchTimer;
 
-    void                        doPortfolioSearch(const size_t & player, const GameState & state, UnitScriptData & currentData);
-    Move                        getmove(const size_t & player, const GameState & state, const std::vector<size_t> & playerScripts);
-    StateEvalScore              eval(const size_t & player, const GameState & state, UnitScriptData & playerScriptsChosen);
-    size_t                      calculateInitialSeed(const size_t & player, const GameState & state);
-    void                        setAllScripts(const size_t & player, const GameState & state, UnitScriptData & data, const size_t & script);
+    std::vector<Move>           _portfolioScriptMoves[2];
+    std::unordered_map<size_t, size_t> _currentScriptAssignment;
+    
+    void                        doPortfolioSearch(const GameState & state, const size_t & playerID);
+    void                        calculatePortfolioScriptMoves(const GameState & state);
+    size_t                      calculateInitialSeed(const GameState & state, const size_t & playerID, const PlayerPtr & enemyPlayer);
+    StateEvalScore              eval(const GameState & state, const size_t & playerID);
 
 public:
 
     PortfolioGreedySearch(const PGSParameters & params);
 
-    Move searchOld(const size_t & player, const GameState & state);
-    Move search(const size_t & player, const GameState & state);
+    Move search(const GameState & state, const size_t & player);
 };
 
 }

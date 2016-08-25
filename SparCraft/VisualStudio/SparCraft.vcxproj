@@ -133,12 +133,14 @@
     <ClInclude Include="..\source\AlphaBetaSearchResults.hpp" />
     <ClInclude Include="..\source\AnimationFrameData.h" />
     <ClInclude Include="..\source\BaseTypes.hpp" />
+    <ClInclude Include="..\source\ConfigTools.h" />
     <ClInclude Include="..\source\Eval.h" />
     <ClInclude Include="..\source\Game.h" />
     <ClInclude Include="..\source\GameState.h" />
     <ClInclude Include="..\source\GameStateUnitData.h" />
     <ClInclude Include="..\source\GraphViz.hpp" />
     <ClInclude Include="..\source\Hash.h" />
+    <ClInclude Include="..\source\JSONTools.h" />
     <ClInclude Include="..\source\Map.h" />
     <ClInclude Include="..\source\Move.h" />
     <ClInclude Include="..\source\MoveArray.h" />
@@ -160,6 +162,9 @@
     <ClInclude Include="..\source\SparCraftAssert.h" />
     <ClInclude Include="..\source\SparCraftException.h" />
     <ClInclude Include="..\source\Timer.h" />
+    <ClInclude Include="..\source\torch\frame.h" />
+    <ClInclude Include="..\source\torch\refcount.h" />
+    <ClInclude Include="..\source\torch\TorchTools.h" />
     <ClInclude Include="..\source\TranspositionTable.h" />
     <ClInclude Include="..\source\UCTMemoryPool.hpp" />
     <ClInclude Include="..\source\UCTNode.h" />
@@ -169,7 +174,6 @@
     <ClInclude Include="..\source\Unit.h" />
     <ClInclude Include="..\source\Array.hpp" />
     <ClInclude Include="..\source\UnitProperties.h" />
-    <ClInclude Include="..\source\UnitScriptData.h" />
     <ClInclude Include="..\source\WeaponProperties.h" />
   </ItemGroup>
   <ItemGroup>
@@ -182,11 +186,13 @@
     <ClCompile Include="..\source\AlphaBetaSearch.cpp" />
     <ClCompile Include="..\source\AnimationFrameData.cpp" />
     <ClCompile Include="..\source\Common.cpp" />
+    <ClCompile Include="..\source\ConfigTools.cpp" />
     <ClCompile Include="..\source\Eval.cpp" />
     <ClCompile Include="..\source\Game.cpp" />
     <ClCompile Include="..\source\GameState.cpp" />
     <ClCompile Include="..\source\GameStateUnitData.cpp" />
     <ClCompile Include="..\source\Hash.cpp" />
+    <ClCompile Include="..\source\JSONTools.cpp" />
     <ClCompile Include="..\source\Map.cpp" />
     <ClCompile Include="..\source\Move.cpp" />
     <ClCompile Include="..\source\MoveArray.cpp" />
@@ -205,11 +211,12 @@
     <ClCompile Include="..\source\SparCraftAssert.cpp" />
     <ClCompile Include="..\source\SparCraftException.cpp" />
     <ClCompile Include="..\source\Timer.cpp" />
+    <ClCompile Include="..\source\torch\frame.cpp" />
+    <ClCompile Include="..\source\torch\TorchTools.cpp" />
     <ClCompile Include="..\source\TranspositionTable.cpp" />
     <ClCompile Include="..\source\UCTSearch.cpp" />
     <ClCompile Include="..\source\Unit.cpp" />
     <ClCompile Include="..\source\UnitProperties.cpp" />
-    <ClCompile Include="..\source\UnitScriptData.cpp" />
     <ClCompile Include="..\source\WeaponProperties.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

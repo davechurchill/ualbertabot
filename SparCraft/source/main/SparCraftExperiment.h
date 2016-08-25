@@ -26,8 +26,5 @@ public:
     void parseConfigFile(const std::string & filename);
     void parseGamesJSON(const rapidjson::Value & games, const rapidjson::Value & root);
     void playGame(Game & game);
-    
-    static GameState GetStateFromVariable(const std::string & stateVariable, const rapidjson::Value & root);
-    static std::shared_ptr<Map> GetMapFromVariable(const std::string & mapVariable, const rapidjson::Value & root);
 };
 }

@@ -16,7 +16,7 @@ namespace SparCraft
 class Unit 
 {
     BWAPI::UnitType     _unitType;				// the BWAPI unit type that we are mimicing
-    PositionType        _range;
+    int        _range;
 	
 	Position            _position;				// current location in a possibly infinite space
 	
@@ -80,12 +80,12 @@ public:
     // position related functions
 	const Position &        position()                  const;
 	const Position &        pos()                       const;
-	const PositionType      x()                         const;
-	const PositionType      y()                         const;
-	const PositionType      range()                     const;
-	const PositionType      healRange()                 const;
-	const PositionType      getDistanceSqToUnit(const Unit & u, const TimeType & gameTime) const;
-	const PositionType      getDistanceSqToPosition(const Position & p, const TimeType & gameTime) const;
+	const int      x()                         const;
+	const int      y()                         const;
+	const int      range()                     const;
+	const int      healRange()                 const;
+	const int      getDistanceSqToUnit(const Unit & u, const TimeType & gameTime) const;
+	const int      getDistanceSqToPosition(const Position & p, const TimeType & gameTime) const;
     const Position &        currentPosition(const TimeType & gameTime) const;
     void                    setPreviousPosition(const TimeType & gameTime);
 

@@ -12,7 +12,10 @@ Game::Game(const GameState & initialState, size_t turnLimit)
     , _moveLimit(turnLimit)
     , _simulateEveryFrame(false)
 {
-
+    _numMoves[0] = 0;
+    _numMoves[1] = 0;
+    _numActions[0] = 0;
+    _numActions[1] = 0;
 }
 
 Game::Game(const GameState & initialState, PlayerPtr p1, PlayerPtr p2, const size_t turnLimit)
@@ -67,8 +70,6 @@ void Game::playNextTurn()
     Move playerMove;
     Move enemyMove;
 
-    int times[2] = {_state.getTimeNextUnitCanAct(0), _state.getTimeNextUnitCanAct(1) };
-
     player->getMove(_state, playerMove);
         
     // if both players can move, generate the other player's moves
@@ -77,72 +78,9 @@ void Game::playNextTurn()
         enemy->getMove(_state, enemyMove);
     }
 
-    int times2[2] = {_state.getTimeNextUnitCanAct(0), _state.getTimeNextUnitCanAct(1) };
-
     _state.doMove(playerMove, enemyMove, !_simulateEveryFrame);
 
     _rounds++;
-}
-
-// play the game until there is a winner
-void Game::playIndividualScripts(UnitScriptData & scriptData)
-{
-    // array which will hold all the script moves for players
-    Array2D<Move, Constants::Num_Players, PlayerModels::Size> allScriptMoves;
-
-    _t.start();
-
-    // play until there is no winner
-    while (!gameOver())
-    {
-        if (_moveLimit && _rounds > _moveLimit)
-        {
-            break;
-        }
-
-        Timer frameTimer;
-        frameTimer.start();
-
-        // clear all script moves for both players
-        for (size_t p(0); p<Constants::Num_Players; p++)
-        {
-            for (size_t s(0); s<PlayerModels::Size; ++s)
-            {
-                allScriptMoves[p][s].clear();
-            }
-        }
-
-        // the playr that will move next
-        const size_t playerToMove = getPlayerToMove();
-        const size_t enemyPlayer  = _state.getEnemy(playerToMove);
-
-        MoveArray playerLegalMoves;
-        Move playerMove;
-
-        // generate the moves possible from this state
-        ActionGenerators::GenerateCompassActions(_state, playerToMove, playerLegalMoves);
-
-        // calculate the moves the unit would do given its script preferences
-        scriptData.calculateMoves(playerToMove, playerLegalMoves, _state, playerMove);
-
-        // if both players can move, generate the other player's moves
-        if (_state.bothCanMove())
-        {
-            MoveArray enemyLegalMoves;
-            Move enemyMove;
-            ActionGenerators::GenerateCompassActions(_state, enemyPlayer, enemyLegalMoves);
-
-            scriptData.calculateMoves(enemyPlayer, enemyLegalMoves, _state, enemyMove);
-
-            _state.doMove(enemyMove);
-        }
-
-        // make the moves
-        _state.doMove(playerMove);
-        _rounds++;
-    }
-
-    _gameTimeMS = _t.getElapsedTimeInMilliSec();
 }
 
 void Game::setSimulateEveryFrame(bool sim)
@@ -168,7 +106,7 @@ double Game::getTime()
 // returns whether or not the game is over
 bool Game::gameOver() const
 {
-    return _state.isTerminal(); 
+    return _state.gameOver(); 
 }
 
 const GameState & Game::getState() const

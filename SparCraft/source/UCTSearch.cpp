@@ -84,7 +84,7 @@ const bool UCTSearch::searchTimeOut()
 
 const bool UCTSearch::terminalState(GameState & state, const size_t & depth) const
 {
-	return (depth <= 0 || state.isTerminal());
+	return (depth <= 0 || state.gameOver());
 }
 
 void UCTSearch::generateOrderedMoves(GameState & state, const size_t & playerToMove)
@@ -325,7 +325,7 @@ StateEvalScore UCTSearch::traverse(UCTNode & node, GameState & currentState)
         // update the state for a non-leaf node
         updateState(node, currentState, false);
 
-        if (currentState.isTerminal())
+        if (currentState.gameOver())
         {
             playoutVal = Eval::Eval(currentState, _params.maxPlayer(), EvaluationMethods::LTD2);
         }

@@ -181,7 +181,7 @@ const bool AlphaBetaSearch::searchTimeOut()
 
 const bool AlphaBetaSearch::terminalState(const GameState & state, const size_t & depth) const
 {
-	return (depth <= 0 || state.isTerminal());
+	return (depth <= 0 || state.gameOver());
 }
 
 const AlphaBetaMove & AlphaBetaSearch::getAlphaBetaMove(const TTLookupValue & TTval, const size_t & playerToMove) const

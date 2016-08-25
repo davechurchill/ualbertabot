@@ -7,7 +7,7 @@ const Unit & AITools::GetClosestEnemyUnit(const GameState & state, const size_t 
     const size_t enemyPlayer = state.getEnemy(player);
 	const Unit & myUnit = state.getUnit(player,unitIndex);
 
-	PositionType minDist(1000000);
+	int minDist(1000000);
 	size_t minUnitInd(0);
     size_t minUnitID(0);
 
@@ -34,7 +34,7 @@ const Unit & AITools::GetClosestEnemyUnit(const GameState & state, const size_t 
 				continue;
 			}
 		}
-        PositionType distSq = myUnit.getDistanceSqToUnit(enemyUnit, state.getTime());
+        int distSq = myUnit.getDistanceSqToUnit(enemyUnit, state.getTime());
 
 		if ((distSq < minDist))// || ((distSq == minDist) && (enemyUnit.getID() < minUnitID)))
 		{
@@ -171,7 +171,7 @@ Position AITools::CalculatePlayerCenter(const GameState & state, const size_t & 
         center.addPosition(pos);
     }
 
-    center = Position((PositionType)((double)center.x() / state.numUnits(player)), (PositionType)((double)center.y() / state.numUnits(player)));
+    center = Position((int)((double)center.x() / state.numUnits(player)), (int)((double)center.y() / state.numUnits(player)));
 
     return center;
 }

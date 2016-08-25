@@ -6,264 +6,195 @@ using namespace SparCraft;
 PortfolioGreedySearch::PortfolioGreedySearch(const PGSParameters & params)
 	: _params(params)
 {
-	_playerScriptPortfolio.push_back(PlayerModels::NOKDPS);
-	_playerScriptPortfolio.push_back(PlayerModels::KiterDPS);
+	
 }
 
-
-Move PortfolioGreedySearch::search(const size_t & player, const GameState & state)
+void PortfolioGreedySearch::calculatePortfolioScriptMoves(const GameState & state)
 {
-    Timer t;
-    t.start();
+    for (size_t p(0); p < 2; ++p)
+    {
+        for (size_t i(0); i < _params.getPortfolio(p).size(); ++i)
+        {
+            PlayerPtr player = _params.getPortfolio(p)[i]->clone();
 
-    const size_t enemyPlayer = state.getEnemy(player);
+            Move m;
+            player->getMove(state, m);
+            _portfolioScriptMoves[p].push_back(m);
+        }
+
+        // set the units that can act based on the moves we just generated
+        for (size_t i(0); i < _portfolioScriptMoves[p].back().size(); ++i)
+        {
+            const Action & action = _portfolioScriptMoves[p].back()[i];
+            _activeUnitIDs[p].push_back(action.getID());
+        }
+    }
+
+}
+
+Move PortfolioGreedySearch::search(const GameState & state, const size_t & playerID)
+{
+    _searchTimer.start();
+
+    const size_t enemyID = state.getEnemy(playerID);
+
+    // pre-compute the actions done for each unit that can move for each Player in the portfolio
+    calculatePortfolioScriptMoves(state);
 
     // calculate the seed scripts for each player
     // they will be used to seed the initial root search
-    size_t seedScript = calculateInitialSeed(player, state);
-    size_t enemySeedScript = calculateInitialSeed(enemyPlayer, state);
-
-    // set up the root script data
-    UnitScriptData originalScriptData;
-    setAllScripts(player, state, originalScriptData, seedScript);
-    setAllScripts(enemyPlayer, state, originalScriptData, enemySeedScript);
-
-    double ms = t.getElapsedTimeInMilliSec();
-    //printf("\nFirst Part %lf ms\n", ms);
-
-    // do the initial root portfolio search for our player
-    UnitScriptData currentScriptData(originalScriptData);
-    doPortfolioSearch(player, state, currentScriptData);
-
-    // iterate as many times as required
-    for (size_t r(0); r < _params.getResponses(); ++r)
-    {
-        // do the portfolio search to improve the enemy's scripts
-        doPortfolioSearch(enemyPlayer, state, currentScriptData);
-
-        // then do portfolio search again for us to improve vs. enemy's update
-        doPortfolioSearch(player, state, currentScriptData);
-    }
-
-    // convert the script vector into a move vector and return it
-	MoveArray moves;
-    ActionGenerators::GenerateCompassActions(state, player, moves);
-    Move move;
-    GameState copy(state);
-    currentScriptData.calculateMoves(player, moves, copy, move);
-
-    _totalEvals = 0;
-
-    return move;
-}
-
-Move PortfolioGreedySearch::searchOld(const size_t & player, const GameState & state)
-{
-    Timer t;
-    t.start();
-
-    const size_t enemyPlayer = state.getEnemy(player);
-
-    // calculate the seed scripts for each player
-    // they will be used to seed the initial root search
-    size_t seedScript = calculateInitialSeed(player, state);
-    size_t enemySeedScript = calculateInitialSeed(enemyPlayer, state);
-
-    // set up the root script data
-    UnitScriptData originalScriptData;
-    setAllScripts(player, state, originalScriptData, seedScript);
-    setAllScripts(enemyPlayer, state, originalScriptData, enemySeedScript);
-
-    double ms = t.getElapsedTimeInMilliSec();
-    //printf("\nFirst Part %lf ms\n", ms);
-
-    // do the initial root portfolio search for our player
-    UnitScriptData currentScriptData(originalScriptData);
-    doPortfolioSearch(player, state, currentScriptData);
-
-    // iterate as many times as required
-    for (size_t r(0); r < _params.getResponses(); ++r)
-    {
-        // do the portfolio search to improve the enemy's scripts
-        doPortfolioSearch(enemyPlayer, state, currentScriptData);
-
-        // then do portfolio search again for us to improve vs. enemy's update
-        doPortfolioSearch(player, state, currentScriptData);
-    }
-
-    // convert the script vector into a move vector and return it
-	MoveArray moves;
-    ActionGenerators::GenerateCompassActions(state, player, moves);
-    Move move;
-    GameState copy(state);
-    currentScriptData.calculateMoves(player, moves, copy, move);
-
-    _totalEvals = 0;
-
-    return move;
-}
-
-void PortfolioGreedySearch::doPortfolioSearch(const size_t & player, const GameState & state, UnitScriptData & currentScriptData)
-{
-    Timer t;
-    t.start();
-
-    // the enemy of this player
-    const size_t enemyPlayer(state.getEnemy(player));
+    _seedScriptIndex[playerID] = calculateInitialSeed(state, playerID, _params.getEnemySeedPlayer());
+    _seedScriptIndex[enemyID]  = calculateInitialSeed(state, enemyID,  _params.getPortfolio(playerID)[_seedScriptIndex[playerID]]);
     
+    // set each of the current script assignments to the seed script
+    for (size_t p(0); p < 2; ++p)
+    {
+        for (size_t u(0); u < state.numUnits(p); ++u)
+        {
+            _currentScriptAssignment[state.getUnit(p, u).getID()] = _seedScriptIndex[p];
+        }
+    }
+    
+    // run the base portfolio search
+    doPortfolioSearch(state, playerID);
+
+    // iterate as many times as required
+    for (size_t r(0); r < _params.getResponses(); ++r)
+    {
+        // do the portfolio search to improve the enemy's scripts
+        doPortfolioSearch(state, enemyID);
+
+        // then do portfolio search again for us to improve vs. enemy's update
+        doPortfolioSearch(state, playerID);
+    }
+
+    // construct the return move from the script assignments
+    Move move;
+
+    // we want to populate the move with one action per active unit for this player
+    for (size_t u(0); u < _activeUnitIDs[playerID].size(); ++u)
+    {
+        // the unit ID is stored in the active unit ID vector
+        const size_t unitID = _activeUnitIDs[playerID][u];
+
+        // get the index of the script chosen for this unit from the script assignments
+        const size_t scriptIndex = _currentScriptAssignment[unitID];
+
+        // grab the action from the pre-computed moves from the portfolio
+        const Action & scriptAction = _portfolioScriptMoves[playerID][scriptIndex][u];
+
+        // add it to the move
+        move.addAction(scriptAction);
+    }
+    
+    return move;
+}
+
+void PortfolioGreedySearch::doPortfolioSearch(const GameState & state, const size_t & playerID)
+{
+    // the enemy of this player
+    const size_t enemyID = state.getEnemy(playerID);
+
     for (size_t i(0); i < _params.getIterations(); ++i)
     {
-        // set up data for best scripts
-        size_t          bestScriptVec[Constants::Max_Units];
-	    StateEvalScore  bestScoreVec[Constants::Max_Units];
-
         // for each unit that can move
-        for (size_t unitIndex(0); unitIndex<state.numUnits(player); ++unitIndex)
+        for (size_t unitIndex(0); unitIndex < _activeUnitIDs[playerID].size(); ++unitIndex)
         {
-            if (_timeLimit > 0 && t.getElapsedTimeInMilliSec() > _timeLimit)
+            if (_params.getTimeLimit() > 0 && _searchTimer.getElapsedTimeInMilliSec() > _params.getTimeLimit())
             {
-                break;
+                return;
             }
 
-            const Unit & unit(state.getUnit(player, unitIndex));
+            const Unit & unit = state.getUnitByID(_activeUnitIDs[playerID][unitIndex]);
+            size_t bestScriptIndex = 0;
+            StateEvalScore bestScriptScore;
 
             // iterate over each script move that it can execute
-            for (size_t sIndex(0); sIndex < _playerScriptPortfolio.size(); ++sIndex)
+            for (size_t sIndex(0); sIndex < _params.getPortfolio(playerID).size(); ++sIndex)
             {
                 // set the current script for this unit
-                currentScriptData.setUnitScript(unit, _playerScriptPortfolio[sIndex]);
+                _currentScriptAssignment[unit.getID()] = sIndex;
 
                 // evaluate the current state given a playout with these unit scripts
-                StateEvalScore score = eval(player, state, currentScriptData);
+                StateEvalScore score = eval(state, playerID);
 
                 // if we have a better score, set it
-                if (sIndex == 0 || score > bestScoreVec[unitIndex])
+                if (sIndex == 0 || score > bestScriptScore)
                 {
-                    bestScriptVec[unitIndex] = _playerScriptPortfolio[sIndex];
-                    bestScoreVec[unitIndex]  = score;
+                    bestScriptIndex = sIndex;
+                    bestScriptScore = score;
                 }
             }
 
             // set the current vector to the best move for use in future simulations
-            currentScriptData.setUnitScript(unit, bestScriptVec[unitIndex]);
+            _currentScriptAssignment[unit.getID()] = bestScriptIndex;
         }
-    }   
-}
-
-size_t PortfolioGreedySearch::calculateInitialSeed(const size_t & player, const GameState & state)
-{
-    size_t bestScript;
-    StateEvalScore bestScriptScore;
-    const size_t enemyPlayer(state.getEnemy(player));
-    
-    // try each script in the portfolio for each unit as an initial seed
-    for (size_t sIndex(0); sIndex<_playerScriptPortfolio.size(); ++sIndex)
-    {
-        UnitScriptData currentScriptData;
-    
-        // set the player's chosen script initially to the seed choice
-        for (size_t unitIndex(0); unitIndex < state.numUnits(player); ++unitIndex)
-        {
-            currentScriptData.setUnitScript(state.getUnit(player, unitIndex), _playerScriptPortfolio[sIndex]);
-        }
-
-        // set the enemy units script choice to NOKDPS
-        for (size_t unitIndex(0); unitIndex < state.numUnits(enemyPlayer); ++unitIndex)
-        {
-            // FIX currentScriptData.setUnitScript(state.getUnit(enemyPlayer, unitIndex), _enemyScript);
-        }
-
-        // evaluate the current state given a playout with these unit scripts
-        StateEvalScore score = eval(player, state, currentScriptData);
-
-        if (sIndex == 0 || score > bestScriptScore)
-        {
-            bestScriptScore = score;
-            bestScript = _playerScriptPortfolio[sIndex];
-        }
-    }
-
-    return bestScript;
-}
-
-StateEvalScore PortfolioGreedySearch::eval(const size_t & player, const GameState & state, UnitScriptData & playerScriptsChosen)
-{
-    const size_t enemyPlayer(state.getEnemy(player));
-
-	Game g(state, 100);
-
-    g.playIndividualScripts(playerScriptsChosen);
-
-    _totalEvals++;
-
-	return Eval::Eval(g.getState(), player, SparCraft::EvaluationMethods::LTD2);
-}
-
-void  PortfolioGreedySearch::setAllScripts(const size_t & player, const GameState & state, UnitScriptData & data, const size_t & script)
-{
-    for (size_t unitIndex(0); unitIndex < state.numUnits(player); ++unitIndex)
-    {
-        data.setUnitScript(state.getUnit(player, unitIndex), script);
     }
 }
 
-/*
-Move PortfolioGreedySparCraft::search(const size_t & player, const GameState & state)
+StateEvalScore PortfolioGreedySearch::eval(const GameState & state, const size_t & playerID)
 {
-    const size_t enemyPlayer(state.getEnemy(player));
-	GameState initialState(state);
-	MoveArray moves;
-	state.generateMoves(moves, player);
+    // Do a playout of the current state using the current script assignments
+    GameState currentState(state);
+    const size_t maxTurns = _params.getMaxPlayoutTurns();
 
-    size_t seedScript = calculateInitialSeed(player, state);
-
-    UnitScriptData currentScriptData;
-    
-    // set the player's chosen script initially to the seed choice
-    for (size_t unitIndex(0); unitIndex < state.numUnits(player); ++unitIndex)
+    for (size_t turns(0); (!maxTurns || turns < maxTurns) && !currentState.gameOver(); ++turns)
     {
-        currentScriptData.setUnitScript(state.getUnit(player, unitIndex), seedScript);
-    }
+        const size_t whoCanMove = currentState.whoCanMove();
+        const size_t playerToMove = (whoCanMove == Players::Player_Both) ? Players::Player_One : whoCanMove;
 
-    // set the enemy units script choice to the seed as well
-    for (size_t unitIndex(0); unitIndex < state.numUnits(enemyPlayer); ++unitIndex)
-    {
-        currentScriptData.setUnitScript(state.getUnit(enemyPlayer, unitIndex), _enemyScript);
-    }
-	
-    std::vector<PlayerID> bestScriptVec(moves.numUnits(), seedScript);
-	std::vector<StateEvalScore> bestScoreVec(moves.numUnits());
+        Move turnMove[2];
 
-    // the current script vector we will be working with
-    std::vector<PlayerID> currentScriptVec(moves.numUnits(), seedScript);
-
-    // for each unit that can move
-    for (size_t unitIndex(0); unitIndex<moves.numUnits(); ++unitIndex)
-    {
-        const Unit & unit(state.getUnit(player, unitIndex));
-
-        // iterate over each script move that it can execute
-        for (size_t sIndex(0); sIndex<_playerScriptPortfolio.size(); ++sIndex)
+        // compute all the portfolio player moves for this state
+        std::vector<Move> portfolioMoves[2];
+        for (size_t p(0); p < 2; ++p)
         {
-            // set the current script for this unit
-            currentScriptData.setUnitScript(unit, _playerScriptPortfolio[sIndex]);
-
-            // evaluate the current state given a playout with these unit scripts
-            StateEvalScore score = evalAfterMoves(player, state, currentScriptData);
-
-            // if we have a better score, set it
-            if (sIndex == 0 || score > bestScoreVec[unitIndex])
+            for (size_t i(0); i < _params.getPortfolio(p).size(); ++i)
             {
-                bestScriptVec[unitIndex] = _playerScriptPortfolio[sIndex];
-                bestScoreVec[unitIndex]  = score;
+                PlayerPtr player = _params.getPortfolio(p)[i]->clone();
+
+                Move m;
+                player->getMove(currentState, m);
+                portfolioMoves[p].push_back(m);
+            }
+
+            // add the actions to the player's move based on the script assignment
+            for (size_t a(0); a < portfolioMoves[p].back().size(); ++a)
+            {
+                const size_t unitID = portfolioMoves[p].back()[a].getID();
+                turnMove[p].addAction(portfolioMoves[p][_currentScriptAssignment[unitID]][a]);
             }
         }
 
-        // set the current vector to the best move for use in future simulations
-        currentScriptData.setUnitScript(unit, bestScriptVec[unitIndex]);
+        currentState.doMove(turnMove[0], turnMove[1]);
     }
-	
-    Move move;
-    currentScriptData.calculateMoves(player, moves, GameState(state), move);
-    return move;
-}*/
+
+    return Eval::Eval(currentState, playerID, EvaluationMethods::LTD2);
+}
+
+size_t PortfolioGreedySearch::calculateInitialSeed(const GameState & state, const size_t & playerID, const PlayerPtr & enemyPlayer)
+{
+    size_t bestScriptIndex = 0;
+    StateEvalScore bestScriptScore;
+    const size_t enemyPlayerID = state.getEnemy(playerID);
+    
+    PlayerPtr players[2];
+    players[enemyPlayerID] = enemyPlayer;
+
+    // evaluate every Player in this player's portfolio against the chosen enemy Player
+    for (size_t s(0); s < _params.getPortfolio(playerID).size(); ++s)
+    {
+        PlayerPtr selfPlayer = _params.getPortfolio(playerID)[s]->clone();
+        players[playerID] = selfPlayer;
+
+        StateEvalScore score = Eval::Eval(state, playerID, EvaluationMethods::Playout, players[0], players[1]);
+
+        if (s == 0 || score > bestScriptScore)
+        {
+            bestScriptScore = score;
+            bestScriptIndex = s;
+        }
+    }
+
+    return bestScriptIndex;
+}

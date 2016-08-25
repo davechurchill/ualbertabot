@@ -24,7 +24,6 @@ class GUIGame
     std::vector<std::vector<std::string> > _results[2];
     std::vector<std::vector<std::string> > _exp;
 
-    void drawHPBars();
     void drawUnit(const Unit & unit);
 
     void setResults(const size_t & player, const std::vector<std::vector<std::string> > & r);
@@ -37,7 +36,6 @@ public:
     const Game & getGame() const;
     void setGame(const Game & g);
     void onFrame();
-    void setDrawHPBars(bool draw);
     void setDrawCD(bool draw);
     void setUpdateDelayMS(size_t ms);
     void drawParameters(int x, int y);

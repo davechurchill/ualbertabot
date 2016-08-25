@@ -1,6 +1,7 @@
 #include "Common.h"
 #include "AIParameters.h"
 #include "AllPlayers.h"
+#include "torch\TorchTools.h"
 
 using namespace SparCraft;
 
@@ -28,6 +29,7 @@ void AIParameters::parseJSONValue(const rapidjson::Value & rootValue)
     
     //std::cout << "Parsing Players...\n";
     parsePlayers("Players", rootValue);
+    //parseStates("States", rootValue);
     
     //std::cout << "Parsing Complete!\n";
 
@@ -62,6 +64,128 @@ void AIParameters::parsePlayers(const std::string & keyName, const rapidjson::Va
     }
 
     std::sort(_playerNames.begin(), _playerNames.end());
+}
+
+void AIParameters::parseStates(const std::string & keyName, const rapidjson::Value & rootValue)
+{
+    if (!rootValue.HasMember(keyName.c_str()))
+    {
+        return;
+    }
+
+    const rapidjson::Value & states = rootValue[keyName.c_str()];
+    for (rapidjson::Value::ConstMemberIterator itr = states.MemberBegin(); itr != states.MemberEnd(); ++itr)
+    {
+        const std::string &         name = itr->name.GetString();
+        const rapidjson::Value &    val = itr->value;
+
+        SPARCRAFT_ASSERT(val.IsObject(), "State value must be an Object");
+
+        parseState(name, rootValue);
+        _stateNames.push_back(name);
+    }
+
+    std::sort(_stateNames.begin(), _stateNames.end());
+}
+
+void AIParameters::parseState(const std::string & stateVariable, const rapidjson::Value & root)
+{
+    SPARCRAFT_ASSERT(root["States"].HasMember(stateVariable.c_str()), "State variable not found");
+
+    const rapidjson::Value & stateValue = root["States"][stateVariable.c_str()];
+    SPARCRAFT_ASSERT(stateValue.HasMember("Type"), "State has no 'Type' option");
+    const std::string & stateType = stateValue["Type"].GetString();
+
+    GameState state;
+    if (stateType == "Symmetric")
+    {
+        SPARCRAFT_ASSERT(stateValue.HasMember("Border") && stateValue["Border"].IsArray(), "Separated State required 'Border' array");
+        SPARCRAFT_ASSERT(stateValue.HasMember("Centers") && stateValue["Centers"].IsArray(), "Separated State required 'Centers' array");
+        SPARCRAFT_ASSERT(stateValue.HasMember("Units") && stateValue["Units"].IsArray(), "Separated State required 'Units' array");
+
+        SymStateDesc desc;
+
+        // parse the border
+        const rapidjson::Value & borderValue = stateValue["Border"];
+        SPARCRAFT_ASSERT(borderValue.Size() == 2 && borderValue[0].IsInt() && borderValue[1].IsInt(), "Separated State 'Border' must be array of size 2 [int, int]");
+        
+        desc.borderSize[0] = borderValue[0].GetInt();
+        desc.borderSize[1] = borderValue[1].GetInt();
+
+        // parse the centers
+        const rapidjson::Value & centers = stateValue["Centers"];
+        SPARCRAFT_ASSERT(centers.Size() == 2 && centers[0].IsArray() && centers[1].IsArray(), "Separated State 'Centers' must be array of 2 arrays of 2 ints each [[int,int],[int][int]]");
+        
+        desc.centers[0][0] = centers[0][0].GetInt();
+        desc.centers[0][1] = centers[0][1].GetInt();
+        desc.centers[1][0] = centers[1][0].GetInt();
+        desc.centers[1][1] = centers[1][1].GetInt();
+
+        // parse the units
+        const rapidjson::Value & units = stateValue["Units"];
+        for (size_t i(0); i < units.Size(); ++i)
+        {
+            SPARCRAFT_ASSERT(units[i].IsArray() && units[i].Size() == 2, "Units array member must be array of size 2");
+            SPARCRAFT_ASSERT(units[i][0].IsString() && units[i][1].IsInt(), "Unis array member must be [UnitType (String), Number (int)]");
+
+            desc.unitNames.push_back(units[i][0].GetString());
+            desc.unitCounts.push_back(units[i][1].GetInt());
+        };
+
+        if (stateValue.HasMember("Map") && stateValue["Map"].IsString())
+        {
+            desc.mapName = stateValue["Map"].GetString();
+        }
+
+        _stateDescMap[stateVariable] = desc;
+        return;
+    }
+    else if (stateType == "StateFile")
+    {
+        SPARCRAFT_ASSERT(stateValue.HasMember("File") && stateValue["File"].IsString(), "StateFile must have 'File' String member");
+
+        std::ifstream fin(stateValue["File"].GetString());
+
+        SPARCRAFT_ASSERT(fin.good(), "Couldn't open State File: %s", stateValue["File"].GetString());
+
+        GameState state;
+        std::string unitType;
+        size_t player = 0, posX = 0, posY = 0;
+
+        while (fin >> unitType >> player >> posX >> posY)
+        {
+            Unit unit(BWAPI::UnitType::getType(unitType), player, Position(posX, posY));
+            state.addUnit(unit);
+        }
+    }
+    else if (stateType == "TorchCraftFrame")
+    {
+        SPARCRAFT_ASSERT(stateValue.HasMember("File") && stateValue["File"].IsString(), "TorchCraftFrame must have 'File' String member");
+
+        state = TorchTools::GetSparCraftStateFromTorchCraftFrameFile(stateValue["File"].GetString());
+    }
+    else if (stateType == "TorchCraftStdIn")
+    {
+        SPARCRAFT_ASSERT(stateValue.HasMember("File") && stateValue["File"].IsString(), "TorchCraftFrame must have 'File' String member");
+
+        std::ifstream fin(stateValue["File"].GetString());
+
+        SPARCRAFT_ASSERT(fin.good(), "Couldn't open file: %s", stateValue["File"].GetString());
+
+        std::string type, aiPlayerName;
+        int playerID = 0, mapWidth = 0, mapHeight = 0;
+
+        fin >> type >> aiPlayerName >> playerID >> mapWidth >> mapHeight;
+
+        GameState state = TorchTools::GetSparCraftStateFromTorchCraftFrameStream(fin);
+        state.setMap(std::shared_ptr<Map>(new Map(mapWidth / 4, mapHeight / 4)));
+    }
+    else
+    {
+        SPARCRAFT_ASSERT(false, "Unknown state type: %s", stateType.c_str());
+    }
+
+    _stateMap[stateVariable] = state;
 }
 
 PlayerPtr AIParameters::parsePlayer(const size_t & player, const std::string & playerVariable, const rapidjson::Value & root)
@@ -99,6 +223,7 @@ PlayerPtr AIParameters::parsePlayer(const size_t & player, const std::string & p
     else if (playerTypeName == "PortfolioGreedySearch")
     {
         SPARCRAFT_ASSERT(playerValue.HasMember("TimeLimit"), "No PGS TimeLimit Found");
+        SPARCRAFT_ASSERT(playerValue.HasMember("MaxPlayoutTurns"), "No PGS MaxPlayoutTurns Found");
         SPARCRAFT_ASSERT(playerValue.HasMember("Iterations"), "No PGS Iterations Found");
         SPARCRAFT_ASSERT(playerValue.HasMember("Responses"), "No PGS Responses Found");
         SPARCRAFT_ASSERT(playerValue.HasMember("EnemySeedPlayer"), "No PGS EnemySeedPlayer Found");
@@ -110,6 +235,7 @@ PlayerPtr AIParameters::parsePlayer(const size_t & player, const std::string & p
         params.setIterations(playerValue["Iterations"].GetInt());
         params.setResponses(playerValue["Responses"].GetInt());
         params.setTimeLimit(playerValue["TimeLimit"].GetInt());
+        params.setMaxPlayoutTurns(playerValue["MaxPlayoutTurns"].GetInt());
 
         const rapidjson::Value & portfolio = playerValue["Portfolio"];
 
@@ -117,7 +243,7 @@ PlayerPtr AIParameters::parsePlayer(const size_t & player, const std::string & p
 
         for (size_t i(0); i < portfolio.Size(); ++i)
         {
-            params.addPortfolioPlayer(Players::Player_Two, getPlayer(Players::Player_One, portfolio[i].GetString()));
+            params.addPortfolioPlayer(Players::Player_One, getPlayer(Players::Player_One, portfolio[i].GetString()));
             params.addPortfolioPlayer(Players::Player_Two, getPlayer(Players::Player_Two, portfolio[i].GetString()));
         }
 
@@ -178,12 +304,54 @@ PlayerPtr AIParameters::parsePlayer(const size_t & player, const std::string & p
     }
 
     _playerParses++;
-    playerPtr->setDescription(playerVariable);
+    playerPtr->setName(playerVariable);
 
     _playerMap[player][playerVariable] = playerPtr->clone();
 
     return playerPtr->clone();
 }
+
+GameState AIParameters::getState(const std::string & stateName)
+{
+    if (_stateMap.find(stateName) != _stateMap.end())
+    {
+        return _stateMap[stateName];
+    }
+    else if (_stateDescMap.find(stateName) != _stateDescMap.end())
+    {
+        return getStateFromDesc(_stateDescMap[stateName]);
+    }
+    else
+    {
+        SPARCRAFT_ASSERT(false, "Couldn't find state variable: %s", stateName.c_str());
+    }
+
+    return GameState();
+}
+
+GameState AIParameters::getStateFromDesc(const SymStateDesc & desc)
+{
+    GameState state;
+
+    for (size_t u(0); u < desc.unitNames.size(); ++u)
+    {
+        BWAPI::UnitType type = BWAPI::UnitType::getType(desc.unitNames[u]);
+
+        // add the symmetric unit for each count in the numUnits Vector
+        for (size_t n(0); n < desc.unitCounts[u]; ++n)
+        {
+            Position r((rand() % (2 * desc.borderSize[0])) - desc.borderSize[0], (rand() % (2 * desc.borderSize[1])) - desc.borderSize[1]);
+            Position u1(desc.centers[0][0] + r.x(), desc.centers[0][1] + r.y());
+            Position u2(desc.centers[1][0] - r.x(), desc.centers[1][1] - r.y());
+
+            state.addUnit(SparCraft::Unit(type, Players::Player_One, u1));
+            state.addUnit(SparCraft::Unit(type, Players::Player_Two, u2));
+        }
+    }
+
+    return state;
+}
+
 PlayerPtr AIParameters::getPlayer(const size_t & player, const std::string & playerName)
 {
     SPARCRAFT_ASSERT(_playerMap[player].find(playerName) != _playerMap[player].end(), "AIParameters::getPlayer Couldn't find player variable: %d %s", (int)_playerMap[player].size(), playerName.c_str());

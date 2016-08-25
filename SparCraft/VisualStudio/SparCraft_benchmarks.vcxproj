@@ -18,8 +18,23 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\source\benchmark\Benchmarks.cpp" />
+    <ClCompile Include="..\source\benchmark\main_benchmarks.cpp" />
+    <ClCompile Include="..\source\benchmark\Tournament.cpp" />
+    <ClCompile Include="..\source\benchmark\TournamentGame.cpp" />
+    <ClCompile Include="..\source\htmltools\HTMLChart.cpp" />
+    <ClCompile Include="..\source\htmltools\HTMLTable.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\source\benchmark\Benchmarks.h" />
+    <ClInclude Include="..\source\benchmark\Tournament.h" />
+    <ClInclude Include="..\source\benchmark\TournamentGame.h" />
+    <ClInclude Include="..\source\htmltools\HTMLChart.h" />
+    <ClInclude Include="..\source\htmltools\HTMLTable.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{82E61B13-7AC5-447E-AD88-96D04D881F58}</ProjectGuid>
+    <ProjectGuid>{4D985396-9B62-4882-A08C-B042103E2F40}</ProjectGuid>
     <RootNamespace>StarcraftBuildOrderSearch</RootNamespace>
     <Keyword>Win32Proj</Keyword>
     <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath11)</VCTargetsPath>
@@ -68,10 +83,10 @@
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <TargetName>SparCraft</TargetName>
+    <TargetName>SparCraft_benchmarks</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <TargetName>SparCraft</TargetName>
+    <TargetName>SparCraft_benchmarks_d</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -122,20 +137,6 @@
       <GenerateMapFile>true</GenerateMapFile>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="..\source\gui\GUI.h" />
-    <ClInclude Include="..\source\gui\GUIGame.h" />
-    <ClInclude Include="..\source\gui\GUITools.h" />
-    <ClInclude Include="..\source\main\SparCraftExperiment.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\source\gui\GUI.cpp" />
-    <ClCompile Include="..\source\gui\GUIGame.cpp" />
-    <ClCompile Include="..\source\gui\GUITools.cpp" />
-    <ClCompile Include="..\source\main\main.cpp" />
-    <ClCompile Include="..\source\main\SparCraftExperiment.cpp" />
-    <ClCompile Include="..\source\TutorialCode.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
