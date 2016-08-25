@@ -16,8 +16,8 @@ std::shared_ptr<Map> ConfigTools::GetMapFromVariable(const std::string & mapVari
         SPARCRAFT_ASSERT(mapValue.HasMember("Width") && mapValue["Width"].IsInt(), "Map value must have int Width member");
         SPARCRAFT_ASSERT(mapValue.HasMember("Height") && mapValue["Height"].IsInt(), "Map valuemust have int Height member");
 
-        int buildWidth = mapValue["Width"].GetInt() / 32;
-        int buildheight = mapValue["Height"].GetInt() / 32;
+        int buildWidth = mapValue["Width"].GetInt();
+        int buildheight = mapValue["Height"].GetInt();
 
         return std::shared_ptr<Map>(new Map(buildWidth, buildheight));
     }

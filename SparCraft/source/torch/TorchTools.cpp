@@ -27,7 +27,7 @@ GameState TorchTools::GetSparCraftStateFromTorchCraftFrame(const replayer::Frame
                 continue;
             }
 
-			SparCraft::Unit u(type, Position(unit.x * 4, unit.y * 4), currentUnitID++, playerID, unit.health + unit.shield, unit.energy, 0, timeCanAttack);
+			SparCraft::Unit u(type, Position(unit.x * 8, unit.y * 8), currentUnitID++, playerID, unit.health + unit.shield, unit.energy, 0, timeCanAttack);
 			u.setBWAPIUnitID(unit.id);
 			state.addUnit(u);
 		}
@@ -57,7 +57,7 @@ void TorchTools::PrintMoveFromFrameStream(std::istream & sin)
     sin >> aiPlayerName >> playerID >> mapWidth >> mapHeight;
 
     GameState state = TorchTools::GetSparCraftStateFromTorchCraftFrameStream(sin);
-    state.setMap(std::shared_ptr<Map>(new Map(mapWidth / 4, mapHeight / 4)));
+    state.setMap(std::shared_ptr<Map>(new Map(mapWidth, mapHeight)));
 
     PlayerPtr player = AIParameters::Instance().getPlayer(playerID, aiPlayerName);
     Move m;
@@ -73,7 +73,7 @@ void TorchTools::PrintStateValueFromFrameStream(std::istream & sin)
     sin >> playerNames[0] >> playerNames[1] >> mapWidth >> mapHeight;
 
     GameState state = TorchTools::GetSparCraftStateFromTorchCraftFrameStream(sin);
-    state.setMap(std::shared_ptr<Map>(new Map(mapWidth / 4, mapHeight / 4)));
+    state.setMap(std::shared_ptr<Map>(new Map(mapWidth, mapHeight)));
 
     std::cout << Eval::EvalSim(state, 0, AIParameters::Instance().getPlayer(0, playerNames[0]), AIParameters::Instance().getPlayer(1, playerNames[1]), 0).val();
 }

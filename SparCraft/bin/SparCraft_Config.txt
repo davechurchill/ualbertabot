@@ -88,14 +88,14 @@
 
 "Maps" :
 {
-	"Arena" :			{ "Type":"Arena", "Width":1200, "Height":640},
+	"Arena" :			{ "Type":"Arena", "Width":256, "Height":256},
     "Destination" :     { "Type":"TextFile", "File":"destination.txt" }
 },
 
 "States" :
 {
     "SampleState" :     { "Type":"StateFile", "Map":"Arena", "File":"SampleStateFile.txt"},
-    "Separated":        { "Type":"Symmetric", "Map":"Arena", "Border":[128,128], "Centers":[[150,180], [1050,500]], "Units":[["Terran_Marine", 15]]},
+    "Separated":        { "Type":"Symmetric", "Map":"Arena", "Border":[128,128], "Centers":[[150,180], [1050,500]], "Units":[["Zerg_Mutalisk", 8], ["Zerg_Zergling", 8]]},
     "Symmetric":        { "Type":"Symmetric", "Border":[128,128], "Centers":[[640,360], [640,360]], "Units":[["Protoss_Dragoon", 16]] },
     "TorchFrame" :      { "Type":"TorchCraftFrame", "File":"FrameData.txt"},
 	"TorchIn" :     	{ "Type":"TorchCraftStdIn", "File":"Torch2.txt"}
@@ -114,7 +114,7 @@
 
 "GUI" : 
 {
-    "Enabled":true, "Width":1600, "Height":900, "DrawHPBar":true, "DrawCD":true, "FrameDelayMS":10
+    "Enabled":true, "Width":1600, "Height":900, "DrawHPBar":true, "DrawCD":true, "FrameDelayMS":0
 },
 
 "Move Iterators" :
