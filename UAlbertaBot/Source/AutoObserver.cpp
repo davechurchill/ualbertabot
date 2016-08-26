@@ -19,7 +19,7 @@ void AutoObserver::onFrame()
     {
 	    for (auto & unit : BWAPI::Broodwar->self()->getUnits())
 	    {
-		    if (unit->isUnderAttack() || unit->isAttacking())
+		    if (unit->isUnderAttack() || unit->isAttacking() || unit->getGroundWeaponCooldown() > 0)
 		    {
 			    _cameraLastMoved = BWAPI::Broodwar->getFrameCount();
                 _unitFollowFrames = 6;

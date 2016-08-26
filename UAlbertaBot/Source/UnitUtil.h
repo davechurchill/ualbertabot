@@ -1,10 +1,16 @@
 #pragma once
 
-#include <Common.h>
 #include <BWAPI.h>
 
 namespace UAlbertaBot
 {
+
+struct Rect
+{
+    int x, y;
+    int height, width;
+};
+
 namespace UnitUtil
 {      
     bool IsCombatUnit(BWAPI::Unit unit);

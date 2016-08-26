@@ -13,7 +13,8 @@ namespace ParseUtils
     int GetIntFromString(const std::string & str);
     bool GetBoolFromString(const std::string & str);
 
-
+    std::string ReadFile(const std::string & filename);
+    
 
 
 

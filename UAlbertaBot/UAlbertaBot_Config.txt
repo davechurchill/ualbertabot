@@ -14,6 +14,13 @@
         "CompleteMapInformation"    : false
     },
     
+	"SparCraft"
+	{
+		"SparCraftConfigFile"		: "bwapi-data/AI/SparCraft_Config.txt",
+		"RetreatSimPlayerName"      : "AttackClosest",
+		"ArenaPlayerName"	    	: "AttackClosest"
+	},
+	
     "Micro" :
     {
         "UseSparcraftSimulation"    : true,

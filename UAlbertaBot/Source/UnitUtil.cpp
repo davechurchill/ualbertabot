@@ -1,4 +1,5 @@
 #include "UnitUtil.h"
+#include "UABAssert.h"
 
 using namespace UAlbertaBot;
 

@@ -12,7 +12,7 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
     BWAPI::Race race = BWAPI::Broodwar->self()->getRace();
     const char * ourRace = race.getName().c_str();
 
-    std::string config = FileUtils::ReadFile(filename);
+    std::string config = ReadFile(filename);
 
     if (config.length() == 0)
     {
@@ -131,6 +131,15 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
         const rapidjson::Value & tool = doc["Tools"];
 
         JSONTools::ReadInt("MapGridSize", tool, Config::Tools::MAP_GRID_SIZE);
+    }
+
+    // Parse the SparCraft Options
+    if (doc.HasMember("SparCraft") && doc["SparCraft"].IsObject())
+    {
+        const rapidjson::Value & sc = doc["SparCraft"];
+
+        JSONTools::ReadString("SparCraftConfigFile", sc, Config::SparCraft::SparCraftConfigFile);
+        JSONTools::ReadString("ArenaPlayerName", sc, Config::SparCraft::ArenaPlayerName);
     }
 
     // Parse the Strategy Options
@@ -349,4 +358,26 @@ bool ParseUtils::GetBoolFromString(const std::string & str)
     }
 
     return false;
+}
+
+std::string ParseUtils::ReadFile(const std::string & filename)
+{
+    std::stringstream ss;
+
+    FILE *file = fopen(filename.c_str(), "r");
+    if (file != nullptr)
+    {
+        char line[4096]; /* or other suitable maximum line size */
+        while (fgets(line, sizeof line, file) != nullptr) /* read a line */
+        {
+            ss << line;
+        }
+        fclose(file);
+    }
+    else
+    {
+        BWAPI::Broodwar->printf("Could not open file: %s", filename.c_str());
+    }
+
+    return ss.str();
 }

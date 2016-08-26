@@ -1,6 +1,8 @@
 #include "Config.h"
 #include "UABAssert.h"
 
+using namespace UAlbertaBot;
+
 namespace Config
 {
     namespace ConfigFile
@@ -52,6 +54,12 @@ namespace Config
         int SetFrameSkip                    = 0;
         bool EnableUserInput                = true;
         bool EnableCompleteMapInformation   = false;
+    }
+    
+    namespace SparCraft
+    {
+        std::string SparCraftConfigFile     = "bwapi-data/AI/SparCraft_Config.txt";
+        std::string ArenaPlayerName;
     }
     
     namespace Tournament						
@@ -115,4 +123,5 @@ namespace Config
     {
         extern int MAP_GRID_SIZE            = 320;      // size of grid spacing in MapGrid
     }
+
 }

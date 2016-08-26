@@ -2,6 +2,11 @@
 
 using namespace SparCraft;
 
+SparCraftException::SparCraftException()
+    : _s("Default")
+{
+}
+
 SparCraftException::SparCraftException(std::string ss) 
     : _s(ss) 
 {

@@ -3,6 +3,7 @@
 #include <stdarg.h>
 #include <cstdio>
 #include <sstream>
+#include "BWAPI.h"
 
 using namespace UAlbertaBot;
 
@@ -38,27 +39,4 @@ void Logger::LogOverwriteToFile(const std::string & logFile, const std::string &
     logStream << msg;
     logStream.flush();
     logStream.close();
-}
-
-
-std::string FileUtils::ReadFile(const std::string & filename)
-{
-    std::stringstream ss;
-
-    FILE *file = fopen ( filename.c_str(), "r" );
-    if ( file != nullptr )
-    {
-        char line [ 4096 ]; /* or other suitable maximum line size */
-        while ( fgets ( line, sizeof line, file ) != nullptr ) /* read a line */
-        {
-            ss << line;
-        }
-        fclose ( file );
-    }
-    else
-    {
-        BWAPI::Broodwar->printf("Could not open file: %s", filename.c_str());
-    }
-
-    return ss.str();
 }

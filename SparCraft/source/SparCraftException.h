@@ -10,6 +10,7 @@ class SparCraftException : public std::exception
 
 public :
 
+    SparCraftException();
     SparCraftException(std::string ss);
 
     ~SparCraftException() throw ();

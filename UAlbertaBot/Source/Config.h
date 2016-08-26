@@ -30,6 +30,17 @@ namespace Config
         extern bool PrintInfoOnStart;
     }
 
+    namespace SparCraft
+    {
+        extern std::string SparCraftConfigFile;
+        extern std::string ArenaPlayerName;
+    }
+
+    namespace Arena
+    {
+        extern std::string SparCraftPlayerName;
+    }
+
     namespace Strategy
     {
         extern std::string StrategyName;

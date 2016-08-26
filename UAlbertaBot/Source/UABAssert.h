@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Common.h"
 #include <cstdio>
 #include <cstdarg>
 #include "Logger.h"

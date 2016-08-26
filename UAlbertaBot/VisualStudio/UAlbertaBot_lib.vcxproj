@@ -10,29 +10,22 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\Source\Dll.cpp" />
-    <ClCompile Include="..\Source\UAlbertaBotModule.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\Source\UAlbertaBotModule.h" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>UAlbertaBot</ProjectName>
-    <ProjectGuid>{2E63AE74-758A-4607-9DE4-D28E814A6E13}</ProjectGuid>
+    <ProjectName>UAlbertaBot_lib</ProjectName>
+    <ProjectGuid>{794723EB-9296-4A38-BDE1-E09B92890E2D}</ProjectGuid>
     <RootNamespace>ExampleAIModule</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -66,6 +59,9 @@
     <CodeAnalysisIgnoreGeneratedCode Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CodeAnalysisIgnoreGeneratedCode>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectName)_d</TargetName>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <TargetName>$(ProjectName)</TargetName>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
@@ -82,7 +78,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPId.lib;$(Configuration)/SparCraft/SparCraft_d.lib;../../BOSS/bin/BOSS_d.lib;../bin/UAlbertaBot_lib_d.lib;$(BWTA_DIR)/lib/BWTAd.lib;$(BWTA_DIR)/lib/libboost_system-vc120-mt-gd-1_56.lib;$(BWTA_DIR)/lib/libboost_thread-vc120-mt-gd-1_56.lib;$(BWTA_DIR)/lib/libCGAL-vc120-mt-gd-4.4.lib;$(BWTA_DIR)/lib/libgmp-10.lib;$(BWTA_DIR)/lib/libmpfr-4.lib;$(BWTA_DIR)/lib/libboost_filesystem-vc120-mt-gd-1_56.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPId.lib;$(Configuration)/SparCraft/SparCraft_d.lib;../../BOSS/bin/BOSS_d.lib;$(BWTA_DIR)/lib/BWTAd.lib;$(BWTA_DIR)/lib/libboost_system-vc120-mt-gd-1_56.lib;$(BWTA_DIR)/lib/libboost_thread-vc120-mt-gd-1_56.lib;$(BWTA_DIR)/lib/libCGAL-vc120-mt-gd-4.4.lib;$(BWTA_DIR)/lib/libgmp-10.lib;$(BWTA_DIR)/lib/libmpfr-4.lib;$(BWTA_DIR)/lib/libboost_filesystem-vc120-mt-gd-1_56.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -111,7 +107,7 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPI.lib;$(Configuration)/SparCraft/SparCraft.lib;../../BOSS/bin/BOSS.lib;../bin/UAlbertaBot_lib.lib;$(BWTA_DIR)/lib/BWTA.lib;$(BWTA_DIR)/lib/libboost_system-vc120-mt-1_56.lib;$(BWTA_DIR)/lib/libboost_thread-vc120-mt-1_56.lib;$(BWTA_DIR)/lib/libCGAL-vc120-mt-4.4.lib;$(BWTA_DIR)/lib/libgmp-10.lib;$(BWTA_DIR)/lib/libmpfr-4.lib;$(BWTA_DIR)/lib/libboost_filesystem-vc120-mt-1_56.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPI.lib;$(Configuration)/SparCraft/SparCraft.lib;../../BOSS/bin/BOSS.lib;$(BWTA_DIR)/lib/BWTA.lib;$(BWTA_DIR)/lib/libboost_system-vc120-mt-1_56.lib;$(BWTA_DIR)/lib/libboost_thread-vc120-mt-1_56.lib;$(BWTA_DIR)/lib/libCGAL-vc120-mt-4.4.lib;$(BWTA_DIR)/lib/libgmp-10.lib;$(BWTA_DIR)/lib/libmpfr-4.lib;$(BWTA_DIR)/lib/libboost_filesystem-vc120-mt-1_56.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -120,6 +116,89 @@
       <GenerateMapFile>true</GenerateMapFile>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Source\AutoObserver.cpp" />
+    <ClCompile Include="..\Source\BOSSManager.cpp" />
+    <ClCompile Include="..\source\BuildingManager.cpp" />
+    <ClCompile Include="..\source\BuildingPlacer.cpp" />
+    <ClCompile Include="..\source\BuildOrder.cpp" />
+    <ClCompile Include="..\source\BuildOrderQueue.cpp" />
+    <ClCompile Include="..\Source\CombatSimulation.cpp" />
+    <ClCompile Include="..\Source\CombatCommander.cpp" />
+    <ClCompile Include="..\Source\Common.cpp" />
+    <ClCompile Include="..\Source\DebugTools.cpp" />
+    <ClCompile Include="..\source\DetectorManager.cpp" />
+    <ClCompile Include="..\Source\GameCommander.cpp" />
+    <ClCompile Include="..\Source\InformationManager.cpp" />
+    <ClCompile Include="..\source\JSONTools.cpp" />
+    <ClCompile Include="..\Source\Logger.cpp" />
+    <ClCompile Include="..\Source\MapGrid.cpp" />
+    <ClCompile Include="..\Source\MapTools.cpp" />
+    <ClCompile Include="..\Source\MedicManager.cpp" />
+    <ClCompile Include="..\source\MeleeManager.cpp" />
+    <ClCompile Include="..\Source\MetaType.cpp" />
+    <ClCompile Include="..\source\MicroManager.cpp" />
+    <ClCompile Include="..\Source\Config.cpp" />
+    <ClCompile Include="..\Source\Micro.cpp" />
+    <ClCompile Include="..\Source\ParseUtils.cpp" />
+    <ClCompile Include="..\source\ProductionManager.cpp" />
+    <ClCompile Include="..\source\RangedManager.cpp" />
+    <ClCompile Include="..\source\ScoutManager.cpp" />
+    <ClCompile Include="..\Source\Squad.cpp" />
+    <ClCompile Include="..\Source\SquadData.cpp" />
+    <ClCompile Include="..\Source\StrategyManager.cpp" />
+    <ClCompile Include="..\Source\TankManager.cpp" />
+    <ClCompile Include="..\source\TimerManager.cpp" />
+    <ClCompile Include="..\source\TransportManager.cpp" />
+    <ClCompile Include="..\Source\UABAssert.cpp" />
+    <ClCompile Include="..\Source\UnitData.cpp" />
+    <ClCompile Include="..\Source\UnitUtil.cpp" />
+    <ClCompile Include="..\source\WorkerData.cpp" />
+    <ClCompile Include="..\source\WorkerManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Source\AutoObserver.h" />
+    <ClInclude Include="..\Source\BOSSManager.h" />
+    <ClInclude Include="..\source\BuildingManager.h" />
+    <ClInclude Include="..\source\BuildingPlacer.h" />
+    <ClInclude Include="..\source\BuildOrder.h" />
+    <ClInclude Include="..\source\BuildOrderQueue.h" />
+    <ClInclude Include="..\Source\CombatSimulation.h" />
+    <ClInclude Include="..\Source\CombatCommander.h" />
+    <ClInclude Include="..\Source\Common.h" />
+    <ClInclude Include="..\Source\DebugTools.h" />
+    <ClInclude Include="..\source\DetectorManager.h" />
+    <ClInclude Include="..\Source\DistanceMap.hpp" />
+    <ClInclude Include="..\Source\GameCommander.h" />
+    <ClInclude Include="..\Source\GameHistory.hpp" />
+    <ClInclude Include="..\Source\InformationManager.h" />
+    <ClInclude Include="..\source\JSONTools.h" />
+    <ClInclude Include="..\Source\Logger.h" />
+    <ClInclude Include="..\Source\MapGrid.h" />
+    <ClInclude Include="..\Source\MapTools.h" />
+    <ClInclude Include="..\Source\MedicManager.h" />
+    <ClInclude Include="..\source\MeleeManager.h" />
+    <ClInclude Include="..\source\MetaType.h" />
+    <ClInclude Include="..\source\MicroManager.h" />
+    <ClInclude Include="..\Source\Config.h" />
+    <ClInclude Include="..\Source\Micro.h" />
+    <ClInclude Include="..\Source\ParseUtils.h" />
+    <ClInclude Include="..\source\ProductionManager.h" />
+    <ClInclude Include="..\source\RangedManager.h" />
+    <ClInclude Include="..\source\ScoutManager.h" />
+    <ClInclude Include="..\Source\Squad.h" />
+    <ClInclude Include="..\Source\SquadData.h" />
+    <ClInclude Include="..\Source\SquadOrder.h" />
+    <ClInclude Include="..\Source\StrategyManager.h" />
+    <ClInclude Include="..\Source\TankManager.h" />
+    <ClInclude Include="..\source\TimerManager.h" />
+    <ClInclude Include="..\source\TransportManager.h" />
+    <ClInclude Include="..\Source\UABAssert.h" />
+    <ClInclude Include="..\Source\UnitData.h" />
+    <ClInclude Include="..\Source\UnitUtil.h" />
+    <ClInclude Include="..\source\WorkerData.h" />
+    <ClInclude Include="..\source\WorkerManager.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
