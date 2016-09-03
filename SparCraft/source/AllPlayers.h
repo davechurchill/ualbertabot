@@ -5,7 +5,6 @@
 #include <memory>
 
 // search-based players
-#include "Player_AlphaBeta.h"
 #include "Player_PortfolioGreedySearch.h"
 #include "Player_UCT.h"
 

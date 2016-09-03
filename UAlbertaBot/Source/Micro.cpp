@@ -93,13 +93,13 @@ void Micro::SmartMove(BWAPI::Unit attacker, const BWAPI::Position & targetPositi
     //UAB_ASSERT(attacker, "SmartAttackMove: Attacker not valid");
     //UAB_ASSERT(targetPosition.isValid(), "SmartAttackMove: targetPosition not valid");
 
-    if (!attacker || !targetPosition.isValid())
+    if (!attacker)
     {
         return;
     }
 
     // if we have issued a command to this unit already this frame, ignore this one
-    if (attacker->getLastCommandFrame() >= BWAPI::Broodwar->getFrameCount() || attacker->isAttackFrame())
+    if (attacker->getLastCommandFrame() >= BWAPI::Broodwar->getFrameCount())
     {
         return;
     }

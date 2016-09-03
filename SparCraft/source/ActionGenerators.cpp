@@ -2,6 +2,10 @@
 
 using namespace SparCraft;
 
+const size_t Num_Directions     = 4;    // number of directions that units can move
+const size_t Max_Ordered_Moves  = 10;   // max number of ordered moves in a search depth
+const size_t Move_Distance  = 16;       // distance moved for a 'move' command
+
 void ActionGenerators::GenerateCompassActions(const GameState & state, const size_t & player, MoveArray & moves)
 {
 	moves.clear();
@@ -102,7 +106,7 @@ void ActionGenerators::GenerateCompassActions(const GameState & state, const siz
             timeUntilAttack                 = timeUntilAttack == 0 ? unit.attackCooldown() : timeUntilAttack;
 
             // the default move duration
-            double defaultMoveDuration      = (double)Constants::Move_Distance / unit.speed();
+            double defaultMoveDuration      = (double)Move_Distance / unit.speed();
 
             // if we can currently attack
 			double chosenTime = timeUntilAttack != 0 ? std::min(timeUntilAttack, defaultMoveDuration) : defaultMoveDuration;
@@ -117,7 +121,7 @@ void ActionGenerators::GenerateCompassActions(const GameState & state, const siz
             }
 
             // we are only generating moves in the cardinal direction specified in common.h
-			for (size_t d(0); d<Constants::Num_Directions; ++d)
+			for (size_t d(0); d<Num_Directions; ++d)
 			{			
                 // the direction of this movement
               	Position dir(Constants::Move_Dir[d][0], Constants::Move_Dir[d][1]);

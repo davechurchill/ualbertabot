@@ -88,14 +88,14 @@
 
 "Maps" :
 {
-	"Arena" :			{ "Type":"Arena", "Width":256, "Height":256},
+	"Arena" :			{ "Type":"Arena", "Width":32, "Height":20},
     "Destination" :     { "Type":"TextFile", "File":"destination.txt" }
 },
 
 "States" :
 {
     "SampleState" :     { "Type":"StateFile", "Map":"Arena", "File":"SampleStateFile.txt"},
-    "Separated":        { "Type":"Symmetric", "Map":"Arena", "Border":[128,128], "Centers":[[150,180], [1050,500]], "Units":[["Zerg_Mutalisk", 8], ["Zerg_Zergling", 8]]},
+    "Separated":        { "Type":"Symmetric", "Map":"Arena", "Border":[128,128], "Centers":[[150,180], [800,500]], "Units":[["Protoss_Dragoon", 16]]},
     "Symmetric":        { "Type":"Symmetric", "Border":[128,128], "Centers":[[640,360], [640,360]], "Units":[["Protoss_Dragoon", 16]] },
     "TorchFrame" :      { "Type":"TorchCraftFrame", "File":"FrameData.txt"},
 	"TorchIn" :     	{ "Type":"TorchCraftStdIn", "File":"Torch2.txt"}
@@ -103,7 +103,7 @@
 
 "Games" :
 [
-	{ "Play":true,  "Name":"Test",  "Games":10, "State":"TorchIn", "Players":["KiteWeakest", "AttackWC"] },
+	{ "Play":true,  "Name":"Test",  "Games":10, "State":"Separated", "Players":["AttackWeakest", "AttackWC"] },
     { "Play":false, "Name":"TorchGame",  "Games":10, "State":"TorchIn", "Players":["AttackWeakest", "KiteWeakest"] }
 ],
 

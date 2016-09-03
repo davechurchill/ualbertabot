@@ -36,6 +36,10 @@ public:
     void                    DrawSparCraftMove(const SparCraft::GameState & state, const SparCraft::Move & move) const;
     void                    DrawUnitHPBars() const;
 
+    int                     GetTimeSinceLastAttack(BWAPI::Unit unit) const;
+    int                     GetTimeCanAttack(BWAPI::Unit unit) const;
+    int                     GetTimeCanMove(BWAPI::Unit unit) const;
+
 	void	onStart();
 	void	onFrame();
 	void	onEnd(bool isWinner);

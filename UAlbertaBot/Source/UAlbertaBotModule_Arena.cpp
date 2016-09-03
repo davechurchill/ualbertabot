@@ -97,8 +97,8 @@ SparCraft::Unit UAlbertaBotModule_Arena::GetSparCraftUnit(BWAPI::Unit unit) cons
         GetSparCraftPlayerID(unit->getPlayer()),
         unit->getHitPoints() + unit->getShields(),
         0,
-        BWAPI::Broodwar->getFrameCount(),
-        BWAPI::Broodwar->getFrameCount());
+        BWAPI::Broodwar->getFrameCount() + GetTimeCanMove(unit),
+        BWAPI::Broodwar->getFrameCount() + GetTimeCanAttack(unit));
 
     sUnit.setBWAPIUnitID(unit->getID());
 
@@ -175,6 +175,11 @@ void UAlbertaBotModule_Arena::DoSparCraftMove(const SparCraft::GameState & state
     }
 }
 
+int UAlbertaBotModule_Arena::GetTimeSinceLastAttack(BWAPI::Unit unit) const
+{
+    return unit->getType().groundWeapon().damageCooldown() - unit->getGroundWeaponCooldown();
+}
+
 void UAlbertaBotModule_Arena::DrawSparCraftState(const SparCraft::GameState & state, int x, int y) const
 {
     size_t numUnits = 0;
@@ -200,12 +205,16 @@ void UAlbertaBotModule_Arena::DrawUnitHPBars() const
     {
         DebugTools::DrawUnitHPBar(unit->getType(), unit->getPosition(), unit->getHitPoints(), unit->getShields());
 
-        BWAPI::Broodwar->drawTextMap(unit->getPosition() - BWAPI::Position(0, -7), "%d", unit->getGroundWeaponCooldown());
+        std::stringstream ss;
+        ss << unit->getGroundWeaponCooldown() << " " << GetTimeSinceLastAttack(unit) << " " << GetTimeCanMove(unit) << " " << GetTimeCanAttack(unit);
+
+        BWAPI::Broodwar->drawTextMap(unit->getPosition() - BWAPI::Position(0, 30), ss.str().c_str());
 
         if (unit->getType().getRace() != BWAPI::Races::None && unit->getPlayer() == BWAPI::Broodwar->self())
         {
             BWAPI::Broodwar->drawLineMap(unit->getPosition() + BWAPI::Position(3, 3), unit->getOrderTargetPosition() + BWAPI::Position(3, 3), BWAPI::Colors::Red);
         }
+        
         
     }
 
@@ -213,6 +222,32 @@ void UAlbertaBotModule_Arena::DrawUnitHPBars() const
     ss << "Wins:   " << _wins[0] << "\nLosses: " << (_battles - _wins[0]) << "\nWin %%:  " << ((double)_wins[0]/_battles);
 
     BWAPI::Broodwar->drawTextScreen(BWAPI::Position(10, 200), ss.str().c_str());
+}
+
+int UAlbertaBotModule_Arena::GetTimeCanMove(BWAPI::Unit unit) const
+{
+    if (unit->getGroundWeaponCooldown() == 0)
+    {
+        return 0;
+    }
+
+    int lastAttack = GetTimeSinceLastAttack(unit);
+    int attackFrames = SparCraft::AnimationFrameData::getAttackFrames(unit->getType()).first;
+
+    return std::max(attackFrames - lastAttack, 0);
+}
+
+int UAlbertaBotModule_Arena::GetTimeCanAttack(BWAPI::Unit unit) const
+{
+    int attackTime = unit->getGroundWeaponCooldown();
+    attackTime -= 2;
+    
+    if (attackTime < 0)
+    {
+        attackTime = 0;
+    }
+
+    return attackTime;
 }
 
 void UAlbertaBotModule_Arena::onEnd(bool isWinner)

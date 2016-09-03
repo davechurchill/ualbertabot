@@ -6,6 +6,7 @@
 #include "Game.h"
 #include "Action.h"
 #include "PGSParameters.h"
+#include "Eval.h"
 #include <memory>
 
 namespace SparCraft

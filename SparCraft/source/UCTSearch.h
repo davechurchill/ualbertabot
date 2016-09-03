@@ -14,6 +14,7 @@
 #include "UCTNode.h"
 #include "GraphViz.hpp"
 #include "UCTMemoryPool.hpp"
+#include "Eval.h"
 #include <memory>
 
 namespace SparCraft

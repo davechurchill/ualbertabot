@@ -2,7 +2,6 @@
 
 #include "Common.h"
 #include "MoveArray.h"
-#include "Hash.h"
 #include "Map.h"
 #include "Unit.h"
 #include "GraphViz.hpp"
@@ -72,9 +71,6 @@ public:
     std::shared_ptr<Map>    getMap()                                                                const;
     bool                    isWalkable(const Position & pos)                                        const;
     bool                    isFlyable(const Position & pos)                                         const;
-
-    // hashing functions
-    HashType                calculateHash(const size_t & hashNum)                                   const;
     
 };
 

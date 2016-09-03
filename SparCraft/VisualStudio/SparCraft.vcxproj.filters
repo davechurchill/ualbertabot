@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\source\AlphaBetaSearch.cpp">
-      <Filter>AI\search\AlphaBeta</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\Common.cpp">
       <Filter>common</Filter>
     </ClCompile>
@@ -13,26 +10,17 @@
     <ClCompile Include="..\source\GameState.cpp">
       <Filter>simulation</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\Hash.cpp">
-      <Filter>util</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\PortfolioGreedySearch.cpp">
       <Filter>AI\search\PGS</Filter>
     </ClCompile>
     <ClCompile Include="..\source\Timer.cpp">
       <Filter>util</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\TranspositionTable.cpp">
-      <Filter>AI\search\AlphaBeta</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\UCTSearch.cpp">
       <Filter>AI\search\UCT</Filter>
     </ClCompile>
     <ClCompile Include="..\source\Player.cpp">
       <Filter>AI\players</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\Player_AlphaBeta.cpp">
-      <Filter>AI\players\search</Filter>
     </ClCompile>
     <ClCompile Include="..\source\Player_AttackClosest.cpp">
       <Filter>AI\players\script</Filter>
@@ -72,9 +60,6 @@
     </ClCompile>
     <ClCompile Include="..\source\Action.cpp">
       <Filter>simulation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\AlphaBetaMove.cpp">
-      <Filter>AI\search\AlphaBeta</Filter>
     </ClCompile>
     <ClCompile Include="..\source\SparCraftAssert.cpp">
       <Filter>common</Filter>
@@ -129,12 +114,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\AlphaBetaSearch.h">
-      <Filter>AI\search\AlphaBeta</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\AlphaBetaSearchResults.hpp">
-      <Filter>AI\search\AlphaBeta</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\BaseTypes.hpp">
       <Filter>common</Filter>
     </ClInclude>
@@ -147,9 +126,6 @@
     <ClInclude Include="..\source\GameState.h">
       <Filter>simulation</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\Hash.h">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\PortfolioGreedySearch.h">
       <Filter>AI\search\PGS</Filter>
     </ClInclude>
@@ -158,9 +134,6 @@
     </ClInclude>
     <ClInclude Include="..\source\Timer.h">
       <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\TranspositionTable.h">
-      <Filter>AI\search\AlphaBeta</Filter>
     </ClInclude>
     <ClInclude Include="..\source\UCTNode.h">
       <Filter>AI\search\UCT</Filter>
@@ -173,9 +146,6 @@
     </ClInclude>
     <ClInclude Include="..\source\Player.h">
       <Filter>AI\players</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Player_AlphaBeta.h">
-      <Filter>AI\players\search</Filter>
     </ClInclude>
     <ClInclude Include="..\source\Player_AttackClosest.h">
       <Filter>AI\players\script</Filter>
@@ -197,9 +167,6 @@
     </ClInclude>
     <ClInclude Include="..\source\UCTSearchParameters.hpp">
       <Filter>AI\search\UCT</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\AlphaBetaSearchParameters.hpp">
-      <Filter>AI\search\AlphaBeta</Filter>
     </ClInclude>
     <ClInclude Include="..\source\AllPlayers.h">
       <Filter>AI\players</Filter>
@@ -230,9 +197,6 @@
     </ClInclude>
     <ClInclude Include="..\source\Action.h">
       <Filter>simulation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\AlphaBetaMove.h">
-      <Filter>AI\search\AlphaBeta</Filter>
     </ClInclude>
     <ClInclude Include="..\source\SparCraftAssert.h">
       <Filter>common</Filter>
@@ -316,9 +280,6 @@
     </Filter>
     <Filter Include="AI\search">
       <UniqueIdentifier>{448e8c8d-4efd-44ab-9ca4-3da61d3aa047}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AI\search\AlphaBeta">
-      <UniqueIdentifier>{39cea388-a0ee-4dab-9c88-fc2c02a0d8c8}</UniqueIdentifier>
     </Filter>
     <Filter Include="AI\search\UCT">
       <UniqueIdentifier>{5d28a734-3947-4ec3-9f52-b1259520d851}</UniqueIdentifier>

@@ -89,7 +89,7 @@ const Unit & AITools::GetClosestOurUnit(const GameState & state, const size_t & 
 void AITools::StatePrint(const GameState & state, int indent)
 {
 	TABS(indent);
-	std::cout << state.calculateHash(0) << "\n";
+
 	fprintf(stderr, "State - Time: %d\n", state.getTime());
 
 	for (size_t p(0); p<Constants::Num_Players; ++p)
@@ -110,7 +110,6 @@ std::string AITools::StateToString(const GameState & state)
 
 	std::stringstream ss;
 
-	ss << state.calculateHash(0) << "\n";
 	ss << "Time: " << state.getTime() << std::endl;
 
 	for (size_t p(0); p<Constants::Num_Players; ++p)

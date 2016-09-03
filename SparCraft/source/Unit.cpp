@@ -453,12 +453,12 @@ const HealthType Unit::healCost() const
 
 const float Unit::dpf() const 
 { 
-    return (float)std::max(Constants::Min_Unit_DPF, (float)damage() / ((float)attackCooldown() + 1)); 
-}
+    if (damage() == 0 || attackCooldown() == 0)
+    {
+        return 0;
+    }
 
-const TimeType Unit::moveCooldown() const 
-{ 
-    return (TimeType)((double)Constants::Move_Distance / _unitType.topSpeed()); 
+    return (float)damage() / attackCooldown(); 
 }
 
 const TimeType Unit::attackCooldown() const 
@@ -551,34 +551,6 @@ const std::string Unit::name() const
 const size_t Unit::getBWAPIUnitID() const
 {
     return _bwapiID;
-}
-
-// calculates the hash of this unit based on a given game time
-const HashType Unit::calculateHash(const size_t & hashNum, const TimeType & gameTime) const
-{
-    Position currentPos = currentPosition(gameTime);
-
-    return	  Hash::values[hashNum].positionHash(_playerID, currentPos.x(), currentPos.y()) 
-            ^ Hash::values[hashNum].getAttackHash(_playerID, nextAttackActionTime() - gameTime) 
-            ^ Hash::values[hashNum].getMoveHash(_playerID, nextMoveActionTime() - gameTime)
-            ^ Hash::values[hashNum].getCurrentHPHash(_playerID, currentHP())
-            ^ Hash::values[hashNum].getUnitTypeHash(_playerID, typeID());
-}
-
-// calculates the hash of this unit based on a given game time, and prints debug info
-void Unit::debugHash(const size_t & hashNum, const TimeType & gameTime) const
-{
-    std::cout << " Pos   " << Hash::values[hashNum].positionHash(_playerID, position().x(), position().y());
-    std::cout << " Att   " << Hash::values[hashNum].getAttackHash(_playerID, nextAttackActionTime() - gameTime);
-    std::cout << " Mov   " << Hash::values[hashNum].getMoveHash(_playerID, nextMoveActionTime() - gameTime);
-    std::cout << " HP    " << Hash::values[hashNum].getCurrentHPHash(_playerID, currentHP());
-    std::cout << " Typ   " << Hash::values[hashNum].getUnitTypeHash(_playerID, typeID()) << "\n";;
-
-    HashType hash = Hash::values[hashNum].positionHash(_playerID, position().x(), position().y()); std::cout << hash << "\n";
-    hash ^= Hash::values[hashNum].getAttackHash(_playerID, nextAttackActionTime() - gameTime) ; std::cout << hash << "\n";
-    hash ^= Hash::values[hashNum].getMoveHash(_playerID, nextMoveActionTime() - gameTime); std::cout << hash << "\n";
-    hash ^= Hash::values[hashNum].getCurrentHPHash(_playerID, currentHP()); std::cout << hash << "\n";
-    hash ^= Hash::values[hashNum].getUnitTypeHash(_playerID, typeID()); std::cout << hash << "\n";
 }
 
 const std::string Unit::debugString() const

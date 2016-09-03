@@ -376,21 +376,6 @@ std::shared_ptr<Map> GameState::getMap() const
 	return _map;
 }
 
-HashType GameState::calculateHash(const size_t & hashNum) const
-{
-	HashType hash(0);
-
-	for (size_t p(0); p < Constants::Num_Players; ++p)
-	{
-		for (size_t u(0); u < numUnits(p); ++u)
-		{
-			hash ^= Hash::magicHash(getUnit(p,u).calculateHash(hashNum, _currentTime), p, u);
-		}
-	}
-
-	return hash;
-}
-
 const std::vector<Unit> & GameState::getAllUnits() const
 {
     return _unitData.getAllUnits();

@@ -123,14 +123,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\torch\frame.cpp" />
     <ClCompile Include="..\source\torch\main_torch.cpp" />
-    <ClCompile Include="..\source\torch\TorchTools.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\source\torch\frame.h" />
-    <ClInclude Include="..\source\torch\refcount.h" />
-    <ClInclude Include="..\source\torch\TorchTools.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

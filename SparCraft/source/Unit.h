@@ -4,7 +4,6 @@
 
 #include "Action.h"
 #include "Position.hpp"
-#include "Hash.h"
 #include "PlayerProperties.h"
 #include "UnitProperties.h"
 #include "AnimationFrameData.h"
@@ -125,10 +124,6 @@ public:
 	const std::string       name()                      const;
 	void                    print()                     const;
     const std::string       debugString()               const;
-
-	// hash functions
-	const HashType          calculateHash(const size_t & hashNum, const TimeType & gameTime) const;
-	void                    debugHash(const size_t & hashNum, const TimeType & gameTime) const;
 };
 
 }

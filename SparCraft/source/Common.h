@@ -18,26 +18,15 @@ namespace SparCraft
 		// max depth the search can ever handle
 		const size_t Max_Search_Depth			= 50;
 
-		// number of directions that units can move
-		const size_t Num_Directions				= 4;
-
-		// max number of ordered moves in a search depth
-		const size_t Max_Ordered_Moves			= 10;
-
-		// distance moved for a 'move' command
-		const size_t Move_Distance				= 16;
+		
 
         // add between a move and attack as penalty
         const TimeType Move_Penalty             = 4;
 
         // add range to units because of bounding boxes
-        const int Range_Addition       = 32;
+        const int Range_Addition                = 16;
 
-		// maximum number of moves possible for any unit
-		const size_t Max_Moves					= Max_Units + Num_Directions + 1;
-		const bool   Use_Unit_Bounding			= false;
 		const size_t Pass_Move_Duration			= 20;
-		const float  Min_Unit_DPF				= 0.1f;
 		const HealthType Starting_Energy		= 50;
 
 		// whether to use transposition table in search

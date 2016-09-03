@@ -127,10 +127,6 @@
     <ClInclude Include="..\source\AIParameters.h" />
     <ClInclude Include="..\source\AITools.h" />
     <ClInclude Include="..\source\AllPlayers.h" />
-    <ClInclude Include="..\source\AlphaBetaMove.h" />
-    <ClInclude Include="..\source\AlphaBetaSearch.h" />
-    <ClInclude Include="..\source\AlphaBetaSearchParameters.hpp" />
-    <ClInclude Include="..\source\AlphaBetaSearchResults.hpp" />
     <ClInclude Include="..\source\AnimationFrameData.h" />
     <ClInclude Include="..\source\BaseTypes.hpp" />
     <ClInclude Include="..\source\ConfigTools.h" />
@@ -139,7 +135,6 @@
     <ClInclude Include="..\source\GameState.h" />
     <ClInclude Include="..\source\GameStateUnitData.h" />
     <ClInclude Include="..\source\GraphViz.hpp" />
-    <ClInclude Include="..\source\Hash.h" />
     <ClInclude Include="..\source\JSONTools.h" />
     <ClInclude Include="..\source\Map.h" />
     <ClInclude Include="..\source\Move.h" />
@@ -148,7 +143,6 @@
     <ClInclude Include="..\source\PGSParameters.h" />
     <ClInclude Include="..\source\Player.h" />
     <ClInclude Include="..\source\PlayerProperties.h" />
-    <ClInclude Include="..\source\Player_AlphaBeta.h" />
     <ClInclude Include="..\source\Player_AttackClosest.h" />
     <ClInclude Include="..\source\Player_PortfolioGreedySearch.h" />
     <ClInclude Include="..\source\Player_Random.h" />
@@ -166,7 +160,6 @@
     <ClInclude Include="..\source\torch\frame.h" />
     <ClInclude Include="..\source\torch\refcount.h" />
     <ClInclude Include="..\source\torch\TorchTools.h" />
-    <ClInclude Include="..\source\TranspositionTable.h" />
     <ClInclude Include="..\source\UCTMemoryPool.hpp" />
     <ClInclude Include="..\source\UCTNode.h" />
     <ClInclude Include="..\source\UCTSearch.h" />
@@ -182,8 +175,6 @@
     <ClCompile Include="..\source\AIParameters.cpp" />
     <ClCompile Include="..\source\AITools.cpp" />
     <ClCompile Include="..\source\AllPlayers.cpp" />
-    <ClCompile Include="..\source\AlphaBetaMove.cpp" />
-    <ClCompile Include="..\source\AlphaBetaSearch.cpp" />
     <ClCompile Include="..\source\AnimationFrameData.cpp" />
     <ClCompile Include="..\source\Common.cpp" />
     <ClCompile Include="..\source\ConfigTools.cpp" />
@@ -191,7 +182,6 @@
     <ClCompile Include="..\source\Game.cpp" />
     <ClCompile Include="..\source\GameState.cpp" />
     <ClCompile Include="..\source\GameStateUnitData.cpp" />
-    <ClCompile Include="..\source\Hash.cpp" />
     <ClCompile Include="..\source\JSONTools.cpp" />
     <ClCompile Include="..\source\Map.cpp" />
     <ClCompile Include="..\source\Move.cpp" />
@@ -200,7 +190,6 @@
     <ClCompile Include="..\source\PGSParameters.cpp" />
     <ClCompile Include="..\source\Player.cpp" />
     <ClCompile Include="..\source\PlayerProperties.cpp" />
-    <ClCompile Include="..\source\Player_AlphaBeta.cpp" />
     <ClCompile Include="..\source\Player_AttackClosest.cpp" />
     <ClCompile Include="..\source\Player_PortfolioGreedySearch.cpp" />
     <ClCompile Include="..\source\Player_Random.cpp" />
@@ -214,7 +203,6 @@
     <ClCompile Include="..\source\Timer.cpp" />
     <ClCompile Include="..\source\torch\frame.cpp" />
     <ClCompile Include="..\source\torch\TorchTools.cpp" />
-    <ClCompile Include="..\source\TranspositionTable.cpp" />
     <ClCompile Include="..\source\UCTSearch.cpp" />
     <ClCompile Include="..\source\Unit.cpp" />
     <ClCompile Include="..\source\UnitProperties.cpp" />
