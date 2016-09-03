@@ -77,7 +77,7 @@ bool PlayerProperties::HasResearched(BWAPI::TechType tech) const
     return hasResearched[tech.getID()]; 
 }
 
-PlayerWeapon::PlayerWeapon(const PlayerProperties * player, BWAPI::WeaponType type) 
+PlayerWeapon::PlayerWeapon(const PlayerProperties & player, BWAPI::WeaponType type) 
     : player(player)
     , type(type) 
 {

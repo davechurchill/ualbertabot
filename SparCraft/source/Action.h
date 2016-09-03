@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Common.h"
 #include "Position.hpp"
 
 namespace SparCraft
@@ -12,35 +13,27 @@ namespace ActionTypes
 
 class Action 
 {
-	size_t      _unitID;
-	size_t      _playerID;
-	size_t      _actionType;
-	size_t      _targetID;
-
-    Position _p;
+	size_t          _playerID;
+	size_t          _unitID;
+    BWAPI::Order    _order;
+	size_t          _targetID;
+    Position        _position;
 
 public:
 
 
 	Action();
-    Action(const size_t & unitIndex, const size_t & player, const size_t & type, const size_t & moveIndex, const Position & dest);
-	Action(const size_t & unitIndex, const size_t & player, const size_t & type, const size_t & moveIndex);
+    Action(const size_t & playerID, const size_t & unitID, const BWAPI::Order & order, const size_t targetID = 0);
+    Action(const size_t & playerID, const size_t & unitID, const BWAPI::Order & order, const Position & pos);
 
 	bool operator == (const Action & rhs) const;
     bool operator != (const Action & rhs) const;
 
-	const size_t & getID() const;
-	const size_t & getPlayerID() const;
-	const size_t & type() const;
-	const size_t & getTargetID() const;
-    const Position & pos() const;
-
-	const std::string moveString() const;
-
-	const Position getDir() const;
-
-    const std::string debugString() const;
-
+	const size_t &          getID() const;
+	const size_t &          getPlayerID() const;
+	const BWAPI::Order &    getOrder() const;
+	const size_t &          getTargetID() const;
+    const Position &        getPosition() const;
 };
 
 }

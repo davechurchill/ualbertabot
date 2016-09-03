@@ -114,7 +114,7 @@ void GameState::doMove(const Move & moves)
         doAction(moves[m]);
     }
 
-    const TimeType nextUnitActTime = std::min(getTimeNextUnitCanAct(0), getTimeNextUnitCanAct(1));
+    const size_t nextUnitActTime = std::min(getTimeNextUnitCanAct(0), getTimeNextUnitCanAct(1));
     SPARCRAFT_ASSERT(nextUnitActTime > getTime(), "doMove didn't result in game time advancing");
 
     updateGameTime();
@@ -122,7 +122,7 @@ void GameState::doMove(const Move & moves)
 
 void GameState::doMove(const Move & m1, const Move & m2, bool advanceGameTime)
 {
-    const TimeType prevUnitActTime = std::min(getTimeNextUnitCanAct(0), getTimeNextUnitCanAct(1));
+    const size_t prevUnitActTime = std::min(getTimeNextUnitCanAct(0), getTimeNextUnitCanAct(1));
 
     for (size_t m(0); m<m1.size(); ++m)
     {
@@ -134,7 +134,7 @@ void GameState::doMove(const Move & m1, const Move & m2, bool advanceGameTime)
         doAction(m2[m]);
     }
 
-    const TimeType nextUnitActTime = std::min(getTimeNextUnitCanAct(0), getTimeNextUnitCanAct(1));
+    const size_t nextUnitActTime = std::min(getTimeNextUnitCanAct(0), getTimeNextUnitCanAct(1));
     SPARCRAFT_ASSERT(nextUnitActTime > getTime(), "doMove didn't result in game time advancing");
 
     if (advanceGameTime)
@@ -189,9 +189,9 @@ size_t GameState::getEnemy(const size_t & player) const
 // This function will give the unit a unique unitID
 void GameState::addUnit(const Unit & u)
 {
-    if (!System::UnitTypeSupported(u.type()))
+    if (!System::UnitTypeSupported(u.getType()))
     {
-        std::cerr << "Skipping un-supported unit type: " << u.type().getName() << "\n";
+        std::cerr << "Skipping un-supported unit type: " << u.getType().getName() << "\n";
     }
 
     _unitData.addUnit(u);
@@ -241,8 +241,8 @@ size_t GameState::winner() const
 
 size_t GameState::whoCanMove() const
 {
-	TimeType p1Time = getTimeNextUnitCanAct(0); //getUnit(0,0).firstTimeFree();
-	TimeType p2Time = getTimeNextUnitCanAct(1); //getUnit(1,0).firstTimeFree();
+	size_t p1Time = getTimeNextUnitCanAct(0); //getUnit(0,0).firstTimeFree();
+	size_t p2Time = getTimeNextUnitCanAct(1); //getUnit(1,0).firstTimeFree();
 
     if (p1Time > getTime() && p2Time > getTime())
     {
@@ -263,22 +263,6 @@ size_t GameState::whoCanMove() const
 	{
 		return Players::Player_Both;
 	}
-}
-
-TimeType GameState::getTimeNextUnitCanAct(const size_t & player) const
-{
-    int minTime = std::numeric_limits<int>::max();
-    for (size_t u(0); u < numUnits(player); ++u)
-    {
-        minTime = std::min(getUnit(player, u).firstTimeFree(), minTime);
-    }
-
-    return minTime;
-}
-
-void GameState::updateGameTime()
-{
-    _currentTime = std::min(getTimeNextUnitCanAct(0), getTimeNextUnitCanAct(1));
 }
 
 void GameState::setMap(std::shared_ptr<Map> map)
@@ -307,7 +291,7 @@ bool GameState::bothCanMove() const
 	return whoCanMove() == Players::Player_Both;
 }
 
-void GameState::setTime(const TimeType & time)
+void GameState::setTime(const size_t & time)
 {
 	_currentTime = time;
 }
@@ -317,7 +301,7 @@ size_t GameState::getNumMovements(const size_t & player) const
 	return _numMovements[player];
 }
 
-TimeType GameState::getTime() const
+size_t GameState::getTime() const
 {
 	return _currentTime;
 }
@@ -341,7 +325,7 @@ bool GameState::gameOver() const
 		for (size_t u(0); u<numUnits(p); ++u)
 		{
 			// if any unit on any team is a mobile attacker
-			if (getUnit(p, u).isMobile() && !getUnit(p, u).canHeal())
+			if (getUnit(p, u).getType().canMove())
 			{
 				// there is no deadlock, so return false
 				return false;

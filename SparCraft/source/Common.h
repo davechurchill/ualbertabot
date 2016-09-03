@@ -1,7 +1,6 @@
 #pragma once
 
 #include "BWAPI.h"
-#include "BaseTypes.hpp"
 #include "SparCraftAssert.h"
 
 namespace SparCraft
@@ -21,13 +20,13 @@ namespace SparCraft
 		
 
         // add between a move and attack as penalty
-        const TimeType Move_Penalty             = 4;
+        const size_t Move_Penalty             = 4;
 
         // add range to units because of bounding boxes
         const int Range_Addition                = 16;
 
 		const size_t Pass_Move_Duration			= 20;
-		const HealthType Starting_Energy		= 50;
+		const size_t Starting_Energy		= 50;
 
 		// whether to use transposition table in search
 		const bool   Use_Transposition_Table	= true;

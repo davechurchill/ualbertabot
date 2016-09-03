@@ -12,7 +12,7 @@ class PlayerProperties
 	int			upgradeLevel[NUM_UPGRADES];
 	bool		hasResearched[NUM_TECHS];
 
-    static      PlayerProperties    props[2];
+    static      PlayerProperties props[2];
 
 public:
 				PlayerProperties();
@@ -32,11 +32,11 @@ public:
 
 class PlayerWeapon
 {
-	const PlayerProperties *		player;
+	const PlayerProperties & player;
 	BWAPI::WeaponType	type;
 
 public:
-			PlayerWeapon(const PlayerProperties * player, BWAPI::WeaponType type);
+			PlayerWeapon(const PlayerProperties & player, BWAPI::WeaponType type);
 
 	int		GetDamageBase() const;
 	float	GetDamageMultiplier(BWAPI::UnitSizeType targetSize) const;

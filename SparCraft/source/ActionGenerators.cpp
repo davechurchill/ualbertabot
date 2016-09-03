@@ -22,7 +22,7 @@ void ActionGenerators::GenerateCompassActions(const GameState & state, const siz
 
 	// we are interested in all simultaneous moves
 	// so return all units which can move at the same time as the first
-	TimeType firstUnitMoveTime = state.getTimeNextUnitCanAct(player);
+	size_t firstUnitMoveTime = state.getTimeNextUnitCanAct(player);
 
 	for (size_t unitIndex(0); unitIndex < state.numUnits(player); ++unitIndex)
 	{

@@ -22,8 +22,8 @@ class GameState
     GameStateUnitData       _unitData;
 
     size_t                  _numMovements[2];
-    TimeType                _currentTime;
-    TimeType                _sameHPFrames;
+    size_t                _currentTime;
+    size_t                _sameHPFrames;
 
     void                    doAction(const Action & theMove);
 
@@ -36,7 +36,7 @@ public:
     GameState(const std::string & filename);
 
     // misc functions
-    void                    updateGameTime();
+    void                    onFrame();
     bool                    playerDead(const size_t & player)                                       const;
     bool                    gameOver()                                                              const;
     size_t                  getEnemy(const size_t & player)                                         const;
@@ -55,9 +55,8 @@ public:
     const std::vector<size_t> & getUnitIDs(const size_t & player)                                   const;
 
     // game time functions
-    void                    setTime(const TimeType & time);
-    TimeType                getTime()                                                               const;
-    TimeType                getTimeNextUnitCanAct(const size_t & player)                            const;
+    void                    setTime(const size_t & time);
+    size_t                  getTime()                                                               const;
 
     // move related functions
     void                    doMove(const Move & moves);

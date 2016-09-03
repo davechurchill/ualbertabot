@@ -5,7 +5,7 @@
 namespace SparCraft
 {
 
-typedef std::pair<TimeType,TimeType> AttackFrameData;
+typedef std::pair<size_t,size_t> AttackFrameData;
 
 class AnimationFrameData
 {
