@@ -212,7 +212,19 @@ PlayerPtr AIParameters::parsePlayer(const size_t & player, const std::string & p
     }
     else if (playerTypeName == "Script")
     { 
-        ScriptPlayerPolicy policy(playerValue);
+        SPARCRAFT_ASSERT(playerValue.HasMember("OutOfRange"), "Script Policy has no 'OutOfRange' member");
+        SPARCRAFT_ASSERT(playerValue.HasMember("InRange"), "Script Policy has no 'InRange' member");
+        SPARCRAFT_ASSERT(playerValue.HasMember("Reload"), "Script Policy has no 'Reload' member");
+        SPARCRAFT_ASSERT(playerValue.HasMember("NOK"), "Script Policy has no 'NOK' member");
+
+        ScriptPolicy oor, ir, reload;
+
+        const rapidjson::Value & oorValue = playerValue["OutOfRange"].IsString() ? findPolicy(playerValue["OutOfRange"].GetString(), root) : playerValue["OutOfRange"];
+        const rapidjson::Value & irValue = playerValue["InRange"].IsString() ? findPolicy(playerValue["InRange"].GetString(), root) : playerValue["InRange"];
+        const rapidjson::Value & reloadValue = playerValue["Reload"].IsString() ? findPolicy(playerValue["Reload"].GetString(), root) : playerValue["Reload"];
+        bool nok = !playerValue["NOK"].GetBool();
+
+        ScriptPlayerPolicy policy(ScriptPolicy(oorValue), ScriptPolicy(irValue), ScriptPolicy(reloadValue), nok);
 
         playerPtr = PlayerPtr(new Player_Script(player, policy));
     }
@@ -405,5 +417,21 @@ const rapidjson::Value & AIParameters::findPlayer(const std::string & playerName
     }
 
     SPARCRAFT_ASSERT(false, "Player not found: %s", playerName.c_str());
+    return rootValue;
+}
+
+const rapidjson::Value & AIParameters::findPolicy(const std::string & policyName, const rapidjson::Value & rootValue)
+{
+    if (rootValue.HasMember("Policies"))
+    {
+        const rapidjson::Value & policies = rootValue["Policies"];
+
+        if (policies.HasMember(policyName.c_str()))
+        {
+            return policies[policyName.c_str()];
+        }
+    }
+
+    SPARCRAFT_ASSERT(false, "Policy not found: %s", policyName.c_str());
     return rootValue;
 }

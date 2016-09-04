@@ -29,9 +29,8 @@ namespace PolicyOperator
 
 namespace PolicyOperand
 {
-    enum { Default, Distance, DPS, Threat, HP };
+    enum { Default, Distance, DPS, Threat, HP, Focus };
 }
-
 
 class ScriptPolicyTarget
 {
@@ -40,14 +39,16 @@ public:
     int     targetType;
     int     targetOperator;
     std::vector<int> targetOperands;
+    std::vector<int> targetOperandSigns;
 
     ScriptPolicyTarget();
     ScriptPolicyTarget(const rapidjson::Value & value);
 
-    static int GetTargetType    (const std::string & string);
-    static int GetTargetPlayer  (const std::string & string);
-    static int GetTargetOperator(const std::string & string);
-    static int GetTargetOperand (const std::string & string);
+    static int GetTargetType        (const std::string & string);
+    static int GetTargetPlayer      (const std::string & string);
+    static int GetTargetOperator    (const std::string & string);
+    static int GetTargetOperand     (const std::string & string);
+    static int GetTargetOperandSign (const std::string & string);
 };
 
 class ScriptPolicy
@@ -81,7 +82,7 @@ class ScriptPlayerPolicy
 public:
     
     ScriptPlayerPolicy();
-    ScriptPlayerPolicy(const rapidjson::Value & value);
+    ScriptPlayerPolicy(const ScriptPolicy & oor, const ScriptPolicy & ir, const ScriptPolicy & r, bool allowOverkill);
 
     const ScriptPolicy & getOutOfRangePolicy() const;
     const ScriptPolicy & getInRangePolicy() const;    

@@ -10,46 +10,46 @@ GameStateUnitData::GameStateUnitData()
 
 const Unit & GameStateUnitData::getUnit(const size_t & player, const size_t & index) const
 { 
-    SPARCRAFT_ASSERT(player < Constants::Num_Players, "player exceeds capacity: player=%d, total players=%d", player, Constants::Num_Players);
-    SPARCRAFT_ASSERT(index < numUnits(player), "UnitIndex exceeds live Unit capacity: UnitIndex=%d, capacity=%d", index, numUnits(player));
-    SPARCRAFT_ASSERT(index < _allUnits.size(), "UnitIndex exceeds all Unit capacity: UnitIndex=%d, capacity=%d", index, _allUnits.size());
+    //SPARCRAFT_ASSERT(player < Constants::Num_Players, "player exceeds capacity: player=%d, total players=%d", player, Constants::Num_Players);
+    //SPARCRAFT_ASSERT(index < numUnits(player), "UnitIndex exceeds live Unit capacity: UnitIndex=%d, capacity=%d", index, numUnits(player));
+    //SPARCRAFT_ASSERT(index < _allUnits.size(), "UnitIndex exceeds all Unit capacity: UnitIndex=%d, capacity=%d", index, _allUnits.size());
 
     return _allUnits[_liveUnitIDs[player][index]];
 }
 
 Unit & GameStateUnitData::getUnit(const size_t & player, const size_t & index)
 {
-    SPARCRAFT_ASSERT(player < Constants::Num_Players, "player exceeds capacity: player=%d, total players=%d", player, Constants::Num_Players);
-    SPARCRAFT_ASSERT(index < numUnits(player), "UnitIndex exceeds live Unit capacity: UnitIndex=%d, capacity=%d", index, numUnits(player));
-    SPARCRAFT_ASSERT(index < _allUnits.size(), "UnitIndex exceeds all Unit capacity: UnitIndex=%d, capacity=%d", index, _allUnits.size());
+    //SPARCRAFT_ASSERT(player < Constants::Num_Players, "player exceeds capacity: player=%d, total players=%d", player, Constants::Num_Players);
+    //SPARCRAFT_ASSERT(index < numUnits(player), "UnitIndex exceeds live Unit capacity: UnitIndex=%d, capacity=%d", index, numUnits(player));
+    //SPARCRAFT_ASSERT(index < _allUnits.size(), "UnitIndex exceeds all Unit capacity: UnitIndex=%d, capacity=%d", index, _allUnits.size());
 
     return _allUnits[_liveUnitIDs[player][index]];
 }
     
 const size_t GameStateUnitData::numUnits(const size_t & player) const
 {
-    SPARCRAFT_ASSERT(player < Constants::Num_Players, "player exceeds capacity: player=%d", player);
+    //SPARCRAFT_ASSERT(player < Constants::Num_Players, "player exceeds capacity: player=%d", player);
 
     return _liveUnitIDs[player].size();
 }
 
 const size_t GameStateUnitData::numTotalUnits(const size_t & player) const
 {
-    SPARCRAFT_ASSERT(player < Constants::Num_Players, "player exceeds capacity: player=%d", player);
+    //SPARCRAFT_ASSERT(player < Constants::Num_Players, "player exceeds capacity: player=%d", player);
 
     return _numTotalUnits[player];
 }
 
 const Unit & GameStateUnitData::getUnitByID(const size_t & id) const
 {
-    SPARCRAFT_ASSERT(id < _allUnits.size(), "id exceeds capacity: id=%d, capacity=%d", id, _allUnits.size());
+    //SPARCRAFT_ASSERT(id < _allUnits.size(), "id exceeds capacity: id=%d, capacity=%d", id, _allUnits.size());
 
     return _allUnits[id];
 }
 
 Unit & GameStateUnitData::getUnitByID(const size_t & id)
 {
-    SPARCRAFT_ASSERT(id < _allUnits.size(), "id exceeds capacity: id=%d, capacity=%d", id, _allUnits.size());
+    //SPARCRAFT_ASSERT(id < _allUnits.size(), "id exceeds capacity: id=%d, capacity=%d", id, _allUnits.size());
 
     return _allUnits[id];
 }
@@ -69,8 +69,8 @@ Unit & GameStateUnitData::addUnit(const Unit & unit)
 
 void GameStateUnitData::removeUnit(const size_t & player, const size_t & unitIndex)
 {
-    SPARCRAFT_ASSERT(player < Constants::Num_Players, "player exceeds capacity: player=%d, total players=%d", player, Constants::Num_Players);    
-    SPARCRAFT_ASSERT(unitIndex < numUnits(player), "UnitIndex=%d, size=%d", unitIndex, numUnits(player));
+    //SPARCRAFT_ASSERT(player < Constants::Num_Players, "player exceeds capacity: player=%d, total players=%d", player, Constants::Num_Players);    
+    //SPARCRAFT_ASSERT(unitIndex < numUnits(player), "UnitIndex=%d, size=%d", unitIndex, numUnits(player));
 
     _liveUnitIDs[player].erase(_liveUnitIDs[player].begin() + unitIndex);
 }

@@ -33,6 +33,10 @@ class Unit
 	TimeType            _previousActionTime;	// the time the previous move was performed
 	Position            _previousPosition;
 
+    bool                _isFlyer;
+    bool                _canAttackAir;
+    bool                _canAttackGround;
+
     mutable TimeType    _prevCurrentPosTime;
     mutable Position    _prevCurrentPos;
 
@@ -60,9 +64,12 @@ public:
 	const bool			    isOrganic()                 const;
 	const bool              isAlive()                   const;
 	const bool			    canAttackNow()              const;
+    const bool			    canAttackAir()              const;
+    const bool			    canAttackGround()           const;
 	const bool			    canMoveNow()                const;
 	const bool			    canHealNow()                const;
 	const bool			    canKite()                   const;
+    const bool			    isFlyer()                   const;
 	const bool			    canHeal()                   const;
 	const bool              equalsID(const Unit & rhs)  const;
 	bool					canSeeTarget(const Unit & unit, const TimeType & gameTime) const;
@@ -89,6 +96,7 @@ public:
     void                    setPreviousPosition(const TimeType & gameTime);
 
     // health and damage related functions
+    const HealthType        damageTakenFrom(const Unit & attacker) const;
 	const HealthType        damage()                    const;
 	const HealthType        healAmount()                const;
 	const HealthType	    maxHP()                     const;

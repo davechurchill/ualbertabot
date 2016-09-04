@@ -14,6 +14,9 @@ Unit::Unit()
     , _timeCanAttack        (0)
     , _previousActionTime   (0)
     , _prevCurrentPosTime   (0)
+    , _canAttackGround      (false)
+    , _canAttackAir         (false)
+    , _isFlyer              (false)
 {
     
 }
@@ -36,6 +39,10 @@ Unit::Unit(const BWAPI::UnitType unitType, const Position & pos, const size_t & 
     , _previousPosition     (pos)
     , _prevCurrentPos       (pos)
 {
+    _canAttackAir = unitType.airWeapon().damageAmount() > 0;
+    _canAttackGround = unitType.groundWeapon().damageAmount() > 0;
+    _isFlyer = unitType.isFlyer();
+
     SPARCRAFT_ASSERT(System::UnitTypeSupported(unitType), "Unit type not supported: %s", unitType.getName().c_str());
 }
 
@@ -56,7 +63,21 @@ Unit::Unit(const BWAPI::UnitType unitType, const size_t & playerID, const Positi
     , _previousPosition     (pos)
     , _prevCurrentPos       (pos)
 {
+    _canAttackAir = unitType.airWeapon().damageAmount() > 0;
+    _canAttackGround = unitType.groundWeapon().damageAmount() > 0;
+    _isFlyer = unitType.isFlyer();
+
     SPARCRAFT_ASSERT(System::UnitTypeSupported(unitType), "Unit type not supported: %s", unitType.getName().c_str());
+}
+
+const bool Unit::canAttackAir() const
+{
+    return _canAttackAir;
+}
+
+const bool Unit::canAttackGround() const
+{
+    return _canAttackGround;
 }
 
 // compares a unit based on unit id
@@ -78,9 +99,11 @@ bool Unit::canSeeTarget(const Unit & unit, const TimeType & gameTime) const
 // returns whether or not this unit can attack a given unit at a given time
 const bool Unit::canAttackTarget(const Unit & unit, const TimeType & gameTime) const
 {
-    BWAPI::WeaponType weapon = unit.type().isFlyer() ? type().airWeapon() : type().groundWeapon();
-
-    if (weapon.damageAmount() == 0)
+    if (unit.isFlyer() && !canAttackAir())
+    {
+        return false;
+    }
+    else if (!unit.isFlyer() && !canAttackGround())
     {
         return false;
     }
@@ -113,11 +136,10 @@ const Position & Unit::position() const
     return _position;
 }
 
-// take an attack, subtract the hp
-void Unit::takeAttack(const Unit & attacker)
+const HealthType Unit::damageTakenFrom(const Unit & attacker) const
 {
-    PlayerWeapon    weapon(attacker.getWeapon(*this));
-    HealthType      damage(weapon.GetDamageBase());
+    const PlayerWeapon & weapon = attacker.getWeapon(*this);
+    HealthType damage = weapon.GetDamageBase();
 
     // calculate the damage based on armor and damage types
     damage = std::max((int)((damage-getArmor()) * weapon.GetDamageMultiplier(getSize())), 2);
@@ -128,9 +150,13 @@ void Unit::takeAttack(const Unit & attacker)
         damage *= 2;
     }
 
-    //std::cout << type().getName() << " took " << (int)attacker.getPlayerID() << " " << damage << "\n";
+    return damage;
+}
 
-    updateCurrentHP(_currentHP - damage);
+// take an attack, subtract the hp
+void Unit::takeAttack(const Unit & attacker)
+{
+    updateCurrentHP(_currentHP - damageTakenFrom(attacker));
 }
 
 void Unit::takeHeal(const Unit & healer)
@@ -526,9 +552,14 @@ const BWAPI::UnitSizeType Unit::getSize() const
     return _unitType.size();
 }
 
+const bool Unit::isFlyer() const
+{
+    return _isFlyer;
+}
+
 const PlayerWeapon Unit::getWeapon(const Unit & target) const
 {
-    return PlayerWeapon(&PlayerProperties::Get(getPlayerID()), target.type().isFlyer() ? _unitType.airWeapon() : _unitType.groundWeapon());
+    return PlayerWeapon(&PlayerProperties::Get(getPlayerID()), target.isFlyer() ? _unitType.airWeapon() : _unitType.groundWeapon());
 }
 
 const HealthType Unit::getArmor() const

@@ -1,89 +1,49 @@
 {
 
+"Policies" :
+{
+    "M_C"   : ["Move",   ["Enemy", "Unit", "Min", ["+Distance"]], 0, 16],
+    "A_C"   : ["Attack", ["Enemy", "Unit", "Min", ["+Distance"]]], 
+    "A_D"   : ["Attack", ["Enemy", "Unit", "Min", ["+DPS"]]], 
+    "A_W"   : ["Attack", ["Enemy", "Unit", "Min", ["+HP"]]], 
+    "A_S"   : ["Attack", ["Enemy", "Unit", "Max", ["+HP"]]], 
+    "A_WC"  : ["Attack", ["Enemy", "Unit", "Min", ["+HP", "+Distance"]]],
+    "A_WF"  : ["Attack", ["Enemy", "Unit", "Min", ["+HP", "-Focus"]]],
+    "A_WFC" : ["Attack", ["Enemy", "Unit", "Min", ["+HP", "-Focus", "+Distance"]]],
+    "A_-F"  : ["Attack", ["Enemy", "Unit", "Min", ["+Focus"]]],
+    "KiteC" : ["Move",   ["Enemy", "Unit", "Min", ["+Distance"]], 180, 16],
+    "R"     : ["Reload"]
+},
+
+
 "Players" :
 {
     "AttackClosestOld": { "Type":"AttackClosest" },
     
-    "AttackClosest":    { "Type"       : "Script", 
-                          "NoOverkill" : false,
-                          "OutOfRange" : ["Move",   ["Enemy", "Unit", "Min", ["Distance"]], 0, 32], 
-                          "InRange"    : ["Attack", ["Enemy", "Unit", "Min", ["Distance"]]], 
-                          "Reload"     : ["Reload"] },
-                       
-    "AttackDPS" :       { "Type"       : "Script", 
-                          "NoOverkill" : false,
-                          "OutOfRange" : ["Move",   ["Enemy", "Unit", "Min", ["Distance"]], 0, 16], 
-                          "InRange"    : ["Attack", ["Enemy", "Unit", "Max", ["Threat"]]], 
-                          "Reload"     : ["Reload"] },
-                       
-    "AttackWeakest":    { "Type"       : "Script", 
-                          "NoOverkill" : false,
-                          "OutOfRange" : ["Move",   ["Enemy", "Unit", "Min", ["Distance"]], 0, 32], 
-                          "InRange"    : ["Attack", ["Enemy", "Unit", "Min", ["HP"]]], 
-                          "Reload"     : ["Reload"] },
-				
-	"AttackWC":         { "Type"       : "Script", 
-                          "NoOverkill" : false,
-                          "OutOfRange" : ["Move",   ["Enemy", "Unit", "Min", ["Distance"]], 0, 32], 
-                          "InRange"    : ["Attack", ["Enemy", "Unit", "Min", ["HP", "Distance"]]], 
-                          "Reload"     : ["Reload"] },
-                          
-    "AttackNOK":        { "Type"       : "Script", 
-                          "NoOverkill" : true,
-                          "OutOfRange" : ["Move",   ["Enemy", "Unit", "Min", ["Distance"]], 0, 16], 
-                          "InRange"    : ["Attack", ["Enemy", "Unit", "Max", ["Threat"]]], 
-                          "Reload"     : ["Reload"] },
-
-    "ClusterOnly" :     { "Type"       : "Script", 
-                          "NoOverkill" : false,
-                          "OutOfRange" : ["Move",   ["Self", "Center"], 0, 16], 
-                          "InRange"    : ["Move",   ["Self", "Center"], 0, 16], 
-                          "Reload"     : ["Move",   ["Self", "Center"], 0, 16] },                      
+    "AttackC"        :  { "Type":"Script", "NOK":false, "OutOfRange":"M_C", "InRange":"A_C",   "Reload":"R"      },
+    "AttackC_NOK"    :  { "Type":"Script", "NOK":true,  "OutOfRange":"M_C", "InRange":"A_C",   "Reload":"R"      },                     
+    "AttackD"        :  { "Type":"Script", "NOK":false, "OutOfRange":"M_C", "InRange":"A_D",   "Reload":"R"      },
+    "AttackW"        :  { "Type":"Script", "NOK":false, "OutOfRange":"M_C", "InRange":"A_W",   "Reload":"R"      }, 
+    "AttackW_NOK"    :  { "Type":"Script", "NOK":true,  "OutOfRange":"M_C", "InRange":"A_W",   "Reload":"R"      }, 
+    "AttackWF"       :  { "Type":"Script", "NOK":false, "OutOfRange":"M_C", "InRange":"A_WF",  "Reload":"R"      }, 
+    "AttackWF_NOK"   :  { "Type":"Script", "NOK":true,  "OutOfRange":"M_C", "InRange":"A_WF",  "Reload":"R"      }, 
+    "AttackWC"       :  { "Type":"Script", "NOK":false, "OutOfRange":"M_C", "InRange":"A_WC",  "Reload":"R"      },
+    "AttackWC_NOK"   :  { "Type":"Script", "NOK":true,  "OutOfRange":"M_C", "InRange":"A_WC",  "Reload":"R"      },
+    "AttackWFC"      :  { "Type":"Script", "NOK":false, "OutOfRange":"M_C", "InRange":"A_WFC", "Reload":"R"      },
+    "AttackWFC_NOK"  :  { "Type":"Script", "NOK":true,  "OutOfRange":"M_C", "InRange":"A_WFC", "Reload":"R"      },
+    "KiteC"          :  { "Type":"Script", "NOK":false, "OutOfRange":"M_C", "InRange":"A_C",   "Reload":"KiteC"  },
+    "KiteWC"         :  { "Type":"Script", "NOK":false, "OutOfRange":"M_C", "InRange":"A_WC",  "Reload":"KiteC"  },
+    "AttackS"        :  { "Type":"Script", "NOK":false, "OutOfRange":"M_C", "InRange":"A_S",   "Reload":"R"      },
+    "Attack-F"       :  { "Type":"Script", "NOK":false, "OutOfRange":"M_C", "InRange":"A_-F",  "Reload":"R"      },
 						  
-    "KiteClosest":      { "Type"       : "Script", 
-                          "NoOverkill" : false,
-                          "OutOfRange" : ["Move",   ["Enemy", "Unit", "Min", ["Distance"]], 0, 16], 
-                          "InRange"    : ["Attack", ["Enemy", "Unit", "Min", ["Distance"]]], 
-                          "Reload"     : ["Move",   ["Enemy", "Unit", "Min", ["Distance"]], 180, 8] },
-						  
-    "KiteWeakest":      { "Type"       : "Script", 
-                          "NoOverkill" : false,
-                          "OutOfRange" : ["Move",   ["Enemy", "Unit", "Min", ["Distance"]], 0, 16], 
-                          "InRange"    : ["Attack", ["Enemy", "Unit", "Min", ["HP"]]], 
-                          "Reload"     : ["Move",   ["Enemy", "Unit", "Min", ["Distance"]], 180, 8] },
-						  
-    "KiteWeakest90":    { "Type"       : "Script", 
-                          "NoOverkill" : false,
-                          "OutOfRange" : ["Move",   ["Enemy", "Unit", "Min", ["Distance"]], 0, 16], 
-                          "InRange"    : ["Attack", ["Enemy", "Unit", "Min", ["HP"]]], 
-                          "Reload"     : ["Move",   ["Enemy", "Unit", "Min", ["Distance"]], 90, 8] },
-                          
-    "KiteCenter":       { "Type"       : "Script", 
-                          "NoOverkill" : false,
-                          "OutOfRange" : ["Move",   ["Enemy", "Unit", "Min", ["Distance"]], 0, 16], 
-                          "InRange"    : ["Attack", ["Enemy", "Unit", "Min", ["Distance"]]], 
-                          "Reload"     : ["Move",   ["Self", "Center"], 0, 16] },                      
-                          
-    "Cluster":          { "Type"       : "Script", 
-                          "NoOverkill" : false,
-                          "OutOfRange" : ["Move",   ["Self", "Center"], 0, 16], 
-                          "InRange"    : ["Attack", ["Enemy", "Unit", "Min", ["Distance"]]], 
-                          "Reload"     : ["Reload"] },                      
-                          
-    "KiteNOK":          { "Type"       : "Script", 
-                          "NoOverkill" : true,
-                          "OutOfRange" : ["Move",   ["Enemy", "Unit", "Min", ["Distance"]], 0, 16], 
-                          "InRange"    : ["Attack", ["Enemy", "Unit", "Min", ["Distance"]]], 
-                          "Reload"     : ["Move",   ["Enemy", "Unit", "Min", ["Distance"]], 180, 16] },
-    
     "AB50" :            { "Type":"AlphaBeta", "TimeLimit":50, "MaxChildren":40, "MoveIterator":"HardIterator", 
-                          "PlayerToMove":"Alternate", "Eval":"Playout", "PlayoutPlayer":"AttackClosest" },
+                          "PlayerToMove":"Alternate", "Eval":"Playout", "PlayoutPlayer":"AttackC" },
                           
     "UCT50" :           { "Type":"UCT", "TimeLimit":50, "MaxChildren":40, "MaxTraversals":0, "MoveIterator":"HardIterator", 
-                          "PlayerToMove":"Alternate", "Eval":"Playout", "PlayoutPlayer":"AttackClosest" },
+                          "PlayerToMove":"Alternate", "Eval":"Playout", "PlayoutPlayer":"AttackC" },
                           
-    "PGS" :             { "Type":"PortfolioGreedySearch", "TimeLimit":20, "EnemySeedPlayer":"AttackClosest", "Iterations":1, "Responses":0,
-                          "MaxPlayoutTurns":50, "Portfolio":["AttackClosest", "KiteWeakest"] }
+    "PGS" :             { "Type":"PortfolioGreedySearch", "TimeLimit":20, "EnemySeedPlayer":"AttackC", "Iterations":1, "Responses":0,
+                          "MaxPlayoutTurns":50, "Portfolio":["AttackC", "KiteWC"] }
 },
 
 "Maps" :
@@ -95,7 +55,8 @@
 "States" :
 {
     "SampleState" :     { "Type":"StateFile", "Map":"Arena", "File":"SampleStateFile.txt"},
-    "Separated":        { "Type":"Symmetric", "Map":"Arena", "Border":[128,128], "Centers":[[150,180], [800,500]], "Units":[["Protoss_Dragoon", 16]]},
+    "Separated":        { "Type":"Symmetric", "Map":"Arena", "Border":[128,128], "Centers":[[150,180], [800,500]], 
+                          "Units":[["Terran_Marine", 15]]},
     "Symmetric":        { "Type":"Symmetric", "Border":[128,128], "Centers":[[640,360], [640,360]], "Units":[["Protoss_Dragoon", 16]] },
     "TorchFrame" :      { "Type":"TorchCraftFrame", "File":"FrameData.txt"},
 	"TorchIn" :     	{ "Type":"TorchCraftStdIn", "File":"Torch2.txt"}
@@ -103,18 +64,36 @@
 
 "Games" :
 [
-	{ "Play":true,  "Name":"Test",  "Games":10, "State":"Separated", "Players":["AttackWeakest", "AttackWC"] },
-    { "Play":false, "Name":"TorchGame",  "Games":10, "State":"TorchIn", "Players":["AttackWeakest", "KiteWeakest"] }
+	{ "Play":true,  "Name":"Test",  "Games":10, "State":"Separated", "Players":["AttackWF", "Attack-F"] },
+    { "Play":false, "Name":"TorchGame",  "Games":10, "State":"TorchIn", "Players":["AttackC", "AttackC"] }
 ],
 
 "Benchmarks" :
 [   
-    { "Run":true, "Type":"Tournament", "Name":"Scripts", "Rounds":10000, "UpdateIntervalSec":5, "State":"Separated", "Players":[ {"Name":"AttackWeakest","Group":1}, {"Name":"AttackWC","Group":2}] }
+    { 
+        "Run":true, "Type":"Tournament", "Name":"Scripts", "Rounds":1000, "UpdateIntervalSec":5, "State":"Separated", 
+        "Players":
+        [ 
+            {"Name":"AttackC",       "Group":1}, 
+            {"Name":"AttackC_NOK",   "Group":2},
+            {"Name":"AttackW",       "Group":3}, 
+            {"Name":"AttackW_NOK",   "Group":4},
+            {"Name":"AttackWC",      "Group":5}, 
+            {"Name":"AttackWC_NOK",  "Group":6},
+            {"Name":"AttackWF",      "Group":7}, 
+            {"Name":"AttackWF_NOK",  "Group":8},
+            {"Name":"AttackWFC",     "Group":9}, 
+            {"Name":"AttackWFC_NOK", "Group":10},
+            {"Name":"KiteC",         "Group":11}, 
+            {"Name":"AttackS",       "Group":12},
+            {"Name":"Attack-F",      "Group":13}
+        ]
+    }
 ],
 
 "GUI" : 
 {
-    "Enabled":true, "Width":1600, "Height":900, "DrawHPBar":true, "DrawCD":true, "FrameDelayMS":0
+    "Enabled":true, "Width":1600, "Height":900, "DrawHPBar":true, "DrawCD":true, "FrameDelayMS":200
 },
 
 "Move Iterators" :

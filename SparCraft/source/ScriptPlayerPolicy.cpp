@@ -8,20 +8,13 @@ ScriptPlayerPolicy::ScriptPlayerPolicy()
 
 }
 
-ScriptPlayerPolicy::ScriptPlayerPolicy(const rapidjson::Value & value)
+ScriptPlayerPolicy::ScriptPlayerPolicy(const ScriptPolicy & oor, const ScriptPolicy & ir, const ScriptPolicy & r, bool allowOverkill)
+    : _oorPolicy(oor)
+    , _irPolicy(ir)
+    , _reloadPolicy(r)
+    , _allowOverkill(allowOverkill)
 {
-    SPARCRAFT_ASSERT(value.HasMember("OutOfRange"), "Script Policy has no 'OutOfRange' member");
-    SPARCRAFT_ASSERT(value.HasMember("InRange"), "Script Policy has no 'InRange' member");
-    SPARCRAFT_ASSERT(value.HasMember("Reload"), "Script Policy has no 'Reload' member");
 
-    _oorPolicy = ScriptPolicy(value["OutOfRange"]);
-    _irPolicy = ScriptPolicy(value["InRange"]);
-    _reloadPolicy = ScriptPolicy(value["Reload"]);
-
-    if (value.HasMember("AllowOverkill") && value["AllowOverkill"].IsBool())
-    {
-        _allowOverkill = value["AllowOverkill"].GetBool();
-    }
 }
 
 const ScriptPolicy & ScriptPlayerPolicy::getOutOfRangePolicy() const
@@ -138,6 +131,7 @@ ScriptPolicyTarget::ScriptPolicyTarget(const rapidjson::Value & value)
 
         for (size_t i(0); i < value[3].Size(); ++i)
         {
+            targetOperandSigns.push_back(GetTargetOperandSign(value[3][i].GetString()));
             targetOperands.push_back(GetTargetOperand(value[3][i].GetString()));
         }
     }
@@ -199,25 +193,47 @@ int ScriptPolicyTarget::GetTargetOperator(const std::string & string)
 
 int ScriptPolicyTarget::GetTargetOperand(const std::string & string)
 {
-    if (string == "Distance")
+    if (string.substr(1) == "Distance")
     {
         return PolicyOperand::Distance;
     }
-    else if (string == "HP")
+    else if (string.substr(1) == "HP")
     {
         return PolicyOperand::HP;
     }
-    else if (string == "DPS")
+    else if (string.substr(1) == "DPS")
     {
         return PolicyOperand::DPS;
     }
-    else if (string == "Threat")
+    else if (string.substr(1) == "Threat")
     {
         return PolicyOperand::Threat;
+    }
+    else if (string.substr(1) == "Focus")
+    {
+        return PolicyOperand::Focus;
     }
     else
     {
         SPARCRAFT_ASSERT(false, "Unknown PolicyOperand String: %s", string.c_str());
+    }
+
+    return PolicyOperand::Default;
+}
+
+int ScriptPolicyTarget::GetTargetOperandSign(const std::string & string)
+{
+    if (string[0] == '+')
+    {
+        return 1;
+    }
+    else if (string[0] == '-')
+    {
+        return -1;
+    }
+    else
+    {
+        SPARCRAFT_ASSERT(false, "PolicyOperand Must begin with '+' or '-' to indicate sign: %s", string.c_str());
     }
 
     return PolicyOperand::Default;

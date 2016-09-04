@@ -248,7 +248,8 @@ void Tournament::printResults() const
         header << _players[i];
     }
 
-    header << "  TotalScore";
+    while (header.str().length() < (_players.size()+1)*colWidth) header << " ";
+    header << "TotalScore";
 
     std::cout << header.str() << std::endl;
     ss << header.str() << std::endl;
@@ -272,7 +273,7 @@ void Tournament::printResults() const
             while (line.str().length() < colWidth + (j+1)*colWidth) line << " ";
         }
 
-        line << _totalWins[i] + (0.5*_totalDraws[i]);
+        line << (_totalWins[i] + (0.5*_totalDraws[i]))/_totalGames[i];
         line << std::endl;
         ss << line.str();
         std::cout << line.str();

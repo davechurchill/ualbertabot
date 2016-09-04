@@ -151,7 +151,9 @@ public:
 
 	const int getDistanceSq(const Position & p) const	
 	{
-        return (x()-p.x())*(x()-p.x()) + (y()-p.y())*(y()-p.y());
+        int dx = x() - p.x();
+        int dy = y() - p.y();
+        return (dx*dx) + (dy*dy);
 	}
 
 	void print() const

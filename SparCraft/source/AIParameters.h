@@ -37,6 +37,7 @@ class AIParameters
 
     const rapidjson::Value & findPlayer(const std::string & playerName, const rapidjson::Value & rootValue);
     const rapidjson::Value & findState(const std::string & stateName, const rapidjson::Value & rootValue);
+    const rapidjson::Value & findPolicy(const std::string & policyName, const rapidjson::Value & rootValue);
 
     void            parsePlayers(const std::string & keyName, const rapidjson::Value & rootValue);
     void            parseStates(const std::string & keyName, const rapidjson::Value & rootValue);

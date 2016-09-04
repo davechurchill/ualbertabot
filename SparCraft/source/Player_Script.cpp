@@ -24,8 +24,10 @@ void Player_Script::getMove(const GameState & state, Move & move)
     _playerCentersCalculated[0] = false;
     _playerCentersCalculated[1] = false;
     
-    std::vector<size_t> enemyUnitsInAttackRange;
-    const std::vector<size_t> & allEnemyUnits = state.getUnitIDs(_enemyID);
+    std::vector<size_t> allEnemyUnits = state.getUnitIDs(_enemyID);
+    
+    _numTargeting.assign(state.getAllUnits().size(), 0);
+    _damageAssigned.assign(state.getAllUnits().size(), 0);
 
     for (size_t u(0); u < state.numUnits(_playerID); ++u)
     {
@@ -37,12 +39,12 @@ void Player_Script::getMove(const GameState & state, Move & move)
             continue;
         }
 
-        getEnemyUnitsInAttackRange(unit, state, enemyUnitsInAttackRange);
+        getEnemyUnitsInAttackRange(unit, state, allEnemyUnits, _enemyUnitsInAttackRange);
 
         Action unitAction;
 
         // If we can't currently attack any enemy units
-        if (enemyUnitsInAttackRange.empty())
+        if (_enemyUnitsInAttackRange.empty())
         {
             SPARCRAFT_ASSERT(_playerPolicy.getOutOfRangePolicy().getActionType() != PolicyAction::Attack, "We can only Move if out of range");
 
@@ -54,18 +56,34 @@ void Player_Script::getMove(const GameState & state, Move & move)
             // If this is not the Reload phase, implement the InRange policy
             if (unit.nextAttackActionTime() == unit.nextMoveActionTime())
             {
-                unitAction = getPolicyAction(state, unit, _playerPolicy.getInRangePolicy(), enemyUnitsInAttackRange);
+                unitAction = getPolicyAction(state, unit, _playerPolicy.getInRangePolicy(), _enemyUnitsInAttackRange);
             }
             // Otherwise this is Reload phase, so implement the Reload Policy
             else
             {
                 SPARCRAFT_ASSERT(_playerPolicy.getOutOfRangePolicy().getActionType() != PolicyAction::Attack, "We can't attack if we're currently reloading");
 
-                unitAction = getPolicyAction(state, unit, _playerPolicy.getReloadPolicy(), enemyUnitsInAttackRange);
+                unitAction = getPolicyAction(state, unit, _playerPolicy.getReloadPolicy(), _enemyUnitsInAttackRange);
             }
         }
 
         move.addAction(unitAction);
+
+        if (unitAction.type() == ActionTypes::ATTACK)
+        {
+            const Unit & attacker = state.getUnitByID(unitAction.getID());
+            const Unit & target = state.getUnitByID(unitAction.getTargetID());
+
+            _numTargeting[target.getID()]++;
+            _damageAssigned[target.getID()] += target.damageTakenFrom(attacker);
+
+            // overkill is not allowed and it has been reached
+            if (!_playerPolicy.getAllowOverkill() && allEnemyUnits.size() > 1 &&  _damageAssigned[target.getID()] >= target.currentHP())
+            {
+                allEnemyUnits.erase(std::remove(allEnemyUnits.begin(), allEnemyUnits.end(), target.getID()), allEnemyUnits.end());
+            }
+        }
+
     }
 
     stopTimer();
@@ -147,46 +165,43 @@ size_t Player_Script::getPolicyTargetUnitID(const GameState & state, const Unit 
 
     bool min = (target.targetOperator == PolicyOperator::Min);
 
-    std::vector<double> bestVal(policy.getTarget().targetOperands.size(), min ? std::numeric_limits<double>::max() : std::numeric_limits<double>::lowest());
+    _bestVals.assign(policy.getTarget().targetOperands.size(), min ? std::numeric_limits<double>::max() : std::numeric_limits<double>::lowest());
     size_t bestUnitID = 0;
 
-
-    
     for (const size_t & unitID : validUnitTargets)
     {
         const Unit & targetUnit = state.getUnitByID(unitID);
 
-        std::vector<double> val = getTargetOperandValue(state, myUnit, policy, targetUnit);
+        getTargetOperandValue(state, myUnit, policy, targetUnit, _val);
 
-        if ((min && less(val, bestVal)) || (!min && greater(val, bestVal)))
+        if ((min && less(_val, _bestVals)) || (!min && greater(_val, _bestVals)))
         {
-            bestVal = val;
+            _bestVals.assign(_val.begin(), _val.end());
             bestUnitID = targetUnit.getID();
         }
     }
 
     return bestUnitID;
-
 }
 
-std::vector<double> Player_Script::getTargetOperandValue(const GameState & state, const Unit & myUnit, const ScriptPolicy & policy, const Unit & targetUnit)
+void Player_Script::getTargetOperandValue(const GameState & state, const Unit & myUnit, const ScriptPolicy & policy, const Unit & targetUnit, std::vector<double> & val)
 {
     const std::vector<int> & operands = policy.getTarget().targetOperands;
-    std::vector<double> values;
+    const std::vector<int> & signs = policy.getTarget().targetOperandSigns;
+    val.clear();
 
     for (size_t i(0); i < operands.size(); ++i)
     {
         switch (operands[i])
         {
-            case PolicyOperand::Distance: { values.push_back(myUnit.getDistanceSqToUnit(targetUnit, state.getTime())); break; }
-            case PolicyOperand::HP:       { values.push_back(targetUnit.currentHP()); break; }
-            case PolicyOperand::DPS:      { values.push_back(myUnit.dpf()); break; }
-            case PolicyOperand::Threat:   { values.push_back(myUnit.dpf() / myUnit.currentHP()); break; }
+            case PolicyOperand::Distance: { val.push_back(signs[i] * myUnit.getDistanceSqToUnit(targetUnit, state.getTime())); break; }
+            case PolicyOperand::HP:       { val.push_back(signs[i] * targetUnit.currentHP()); break; }
+            case PolicyOperand::DPS:      { val.push_back(signs[i] * myUnit.dpf()); break; }
+            case PolicyOperand::Threat:   { val.push_back(signs[i] * myUnit.dpf() / myUnit.currentHP()); break; }
+            case PolicyOperand::Focus:    { val.push_back(signs[i] * _numTargeting[targetUnit.getID()]); break; }
             default:                      { SPARCRAFT_ASSERT(false, "Unknown policy operand: %d", operands[i]); }
         }
     }
-
-    return values;
 }
 
 bool Player_Script::greater(const std::vector<double> & v1, const std::vector<double> & v2)
@@ -234,18 +249,18 @@ const Position & Player_Script::getPlayerCenter(const GameState & state, const s
     return _playerCenters[playerID];
 }
 
-void Player_Script::getEnemyUnitsInAttackRange(const Unit & myUnit, const GameState & state, std::vector<size_t> & unitIDs)
+void Player_Script::getEnemyUnitsInAttackRange(const Unit & myUnit, const GameState & state, const std::vector<size_t> & enemyUnits, std::vector<size_t> & unitIDs)
 {
     const size_t enemy = state.getEnemy(_playerID);
     unitIDs.clear();
     
-    for (size_t u(0); u < state.numUnits(enemy); ++u)
+    for (const size_t & enemyUnitID : enemyUnits)
     {
-        const Unit & enemyUnit = state.getUnit(enemy, u);
+        const Unit & enemyUnit = state.getUnitByID(enemyUnitID);
         
         if (myUnit.canAttackTarget(enemyUnit, state.getTime()))
         {
-            unitIDs.push_back(enemyUnit.getID());
+            unitIDs.push_back(enemyUnitID);
         }
     }
 }
