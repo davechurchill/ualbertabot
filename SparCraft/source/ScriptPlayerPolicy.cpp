@@ -50,6 +50,11 @@ int ScriptPolicy::getActionType() const
     return _actionType;
 }
 
+int ScriptPolicy::getPassFrames() const
+{
+    return _passFrames;
+}
+
 int ScriptPolicy::getAngle() const
 {
     return _angle;
@@ -95,6 +100,15 @@ ScriptPolicy::ScriptPolicy(const rapidjson::Value & value)
     else if (actionString == "Reload")
     {
         _actionType = PolicyAction::Reload;
+    }
+    else if (actionString == "Pass")
+    {
+        SPARCRAFT_ASSERT(value.Size() == 2, "Pass policy must have 2 elements: [Pass, Frames (int)]");
+
+        _actionType = PolicyAction::Pass;
+
+        SPARCRAFT_ASSERT(value[1].IsInt(), "Pass frames must be an int");
+        _passFrames = value[1].GetInt();
     }
     else
     {

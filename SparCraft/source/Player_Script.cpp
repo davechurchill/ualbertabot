@@ -78,7 +78,7 @@ void Player_Script::getMove(const GameState & state, Move & move)
             _damageAssigned[target.getID()] += target.damageTakenFrom(attacker);
 
             // overkill is not allowed and it has been reached
-            if (!_playerPolicy.getAllowOverkill() && allEnemyUnits.size() > 1 &&  _damageAssigned[target.getID()] >= target.currentHP())
+            if (!_playerPolicy.getAllowOverkill() && allEnemyUnits.size() > 1 &&  (int)_damageAssigned[target.getID()] >= target.currentHP())
             {
                 allEnemyUnits.erase(std::remove(allEnemyUnits.begin(), allEnemyUnits.end(), target.getID()), allEnemyUnits.end());
             }
@@ -127,7 +127,7 @@ Action Player_Script::getPolicyAction(const GameState & state, const Unit & myUn
     }
     else if (policy.getActionType() == PolicyAction::Pass)
     {
-        return Action(myUnit.getID(), _playerID, ActionTypes::PASS, 0);
+        return Action(myUnit.getID(), _playerID, ActionTypes::PASS, policy.getPassFrames());
     }
     else
     {

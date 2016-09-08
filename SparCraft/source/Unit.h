@@ -74,6 +74,7 @@ public:
 	const bool              equalsID(const Unit & rhs)  const;
 	bool					canSeeTarget(const Unit & unit, const TimeType & gameTime) const;
 	const bool              canAttackTarget(const Unit & unit, const TimeType & gameTime) const;
+    const bool              canTarget(const Unit & unit) const;
 	const bool              canHealTarget(const Unit & unit, const TimeType & gameTime) const;
 
     // id related

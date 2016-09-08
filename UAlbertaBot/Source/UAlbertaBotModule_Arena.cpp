@@ -16,7 +16,6 @@
 #include "DebugTools.h"
 #include "Micro.h"
 
-
 using namespace UAlbertaBot;
 
 UAlbertaBotModule_Arena::UAlbertaBotModule_Arena()
@@ -239,8 +238,10 @@ int UAlbertaBotModule_Arena::GetTimeCanMove(BWAPI::Unit unit) const
 
 int UAlbertaBotModule_Arena::GetTimeCanAttack(BWAPI::Unit unit) const
 {
+    return 0;
+
     int attackTime = unit->getGroundWeaponCooldown();
-    attackTime -= 2;
+    attackTime -= 6;
     
     if (attackTime < 0)
     {

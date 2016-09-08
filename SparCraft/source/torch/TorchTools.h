@@ -3,7 +3,7 @@
 #include "../Common.h"
 #include "../GameState.h"
 
-#include "frame.h"
+#include "TorchFrame.h"
 #include <istream>
 
 namespace SparCraft

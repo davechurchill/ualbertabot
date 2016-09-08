@@ -1,4 +1,4 @@
-#include "frame.h"
+#include "TorchFrame.h"
 
 std::ostream& replayer::operator<<(std::ostream& out, const replayer::Unit& o) {
     out << o.id << " " << o.x << " " << o.y << " " << o.health << " "

@@ -7,7 +7,7 @@
 #include <sstream>
 #include <iostream>
 
-#include "refcount.h"
+#include "TorchRefcount.h"
 
 #ifdef _MSC_VER
 typedef unsigned int uint32_t;

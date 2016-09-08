@@ -24,7 +24,7 @@ namespace SparCraft
         const TimeType Move_Penalty             = 4;
 
         // add range to units because of bounding boxes
-        const int Range_Addition                = 16;
+        const int Range_Addition                = 32;
 
 		const size_t Pass_Move_Duration			= 20;
 		const HealthType Starting_Energy		= 50;

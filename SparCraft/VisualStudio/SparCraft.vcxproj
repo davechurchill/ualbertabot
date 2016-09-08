@@ -157,8 +157,8 @@
     <ClInclude Include="..\source\SparCraftAssert.h" />
     <ClInclude Include="..\source\SparCraftException.h" />
     <ClInclude Include="..\source\Timer.h" />
-    <ClInclude Include="..\source\torch\frame.h" />
-    <ClInclude Include="..\source\torch\refcount.h" />
+    <ClInclude Include="..\source\torch\TorchFrame.h" />
+    <ClInclude Include="..\source\torch\TorchRefcount.h" />
     <ClInclude Include="..\source\torch\TorchTools.h" />
     <ClInclude Include="..\source\UCTMemoryPool.hpp" />
     <ClInclude Include="..\source\UCTNode.h" />
@@ -201,7 +201,7 @@
     <ClCompile Include="..\source\SparCraftAssert.cpp" />
     <ClCompile Include="..\source\SparCraftException.cpp" />
     <ClCompile Include="..\source\Timer.cpp" />
-    <ClCompile Include="..\source\torch\frame.cpp" />
+    <ClCompile Include="..\source\torch\TorchFrame.cpp" />
     <ClCompile Include="..\source\torch\TorchTools.cpp" />
     <ClCompile Include="..\source\UCTSearch.cpp" />
     <ClCompile Include="..\source\Unit.cpp" />

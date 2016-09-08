@@ -15,26 +15,20 @@ namespace SparCraft
             {
                 return false;
             }
-
-            if (type == BWAPI::UnitTypes::Protoss_Corsair || 
-                type == BWAPI::UnitTypes::Zerg_Devourer || 
-                type == BWAPI::UnitTypes::Zerg_Scourge ||
-                type == BWAPI::UnitTypes::Terran_Valkyrie)
-            {
-                return false;
-            }
-
+            
+            // only support tower buildings
             if (type.isBuilding() && !(type == BWAPI::UnitTypes::Protoss_Photon_Cannon || type == BWAPI::UnitTypes::Zerg_Sunken_Colony || type == BWAPI::UnitTypes::Terran_Missile_Turret))
             {
                 return false;
             }
 
-            if (type.isSpellcaster())
+            // only support units that can attack
+            if (type.groundWeapon() == BWAPI::WeaponTypes::None && type.airWeapon() == BWAPI::WeaponTypes::None)
             {
                 return false;
             }
 
-            // Don't support units loading other units yet
+            // don't support units loading other units yet
             if (type == BWAPI::UnitTypes::Terran_Vulture_Spider_Mine || 
                 type == BWAPI::UnitTypes::Protoss_Carrier || 
                 type == BWAPI::UnitTypes::Protoss_Interceptor || 

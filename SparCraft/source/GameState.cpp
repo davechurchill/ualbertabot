@@ -359,7 +359,7 @@ bool GameState::gameOver() const
 			const Unit & unit2(getUnit(Players::Player_Two, u2));
 
 			// if anyone can attack anyone else
-			if (unit1.canAttackTarget(unit2, _currentTime) || unit2.canAttackTarget(unit1, _currentTime))
+			if (unit1.canTarget(unit2) || unit2.canTarget(unit1))
 			{
 				// then there is no deadlock
 				return false;

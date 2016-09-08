@@ -1,300 +1,90 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\source\Common.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\Game.cpp">
-      <Filter>simulation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\GameState.cpp">
-      <Filter>simulation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\PortfolioGreedySearch.cpp">
-      <Filter>AI\search\PGS</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\Timer.cpp">
-      <Filter>util</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\UCTSearch.cpp">
-      <Filter>AI\search\UCT</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\Player.cpp">
-      <Filter>AI\players</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\Player_AttackClosest.cpp">
-      <Filter>AI\players\script</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\Player_PortfolioGreedySearch.cpp">
-      <Filter>AI\players\search</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\Player_Random.cpp">
-      <Filter>AI\players\script</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\Player_UCT.cpp">
-      <Filter>AI\players\search</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\AllPlayers.cpp">
-      <Filter>AI\players</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\MoveArray.cpp">
-      <Filter>util</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\Unit.cpp">
-      <Filter>simulation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\UnitProperties.cpp">
-      <Filter>simulation\properties</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\WeaponProperties.cpp">
-      <Filter>simulation\properties</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\PlayerProperties.cpp">
-      <Filter>simulation\properties</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\SparCraft.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\AnimationFrameData.cpp">
-      <Filter>simulation\data</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\Action.cpp">
-      <Filter>simulation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\SparCraftAssert.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\SparCraftException.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\AIParameters.cpp">
-      <Filter>AI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\ScriptPlayerPolicy.cpp">
-      <Filter>AI\players\script</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\Player_Script.cpp">
-      <Filter>AI\players\script</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\Eval.cpp">
-      <Filter>AI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\GameStateUnitData.cpp">
-      <Filter>simulation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\ActionGenerators.cpp">
-      <Filter>AI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\AITools.cpp">
-      <Filter>AI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\Move.cpp">
-      <Filter>simulation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\PGSParameters.cpp">
-      <Filter>AI\search\PGS</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\Map.cpp">
-      <Filter>simulation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\JSONTools.cpp">
-      <Filter>util</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\torch\frame.cpp">
-      <Filter>util\torch</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\torch\TorchTools.cpp">
-      <Filter>util\torch</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\ConfigTools.cpp">
-      <Filter>util</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\MoveIterator.cpp">
-      <Filter>AI\move iterators</Filter>
-    </ClCompile>
+    <ClCompile Include="..\source\Player_AttackClosest.cpp" />
+    <ClCompile Include="..\source\Player_Random.cpp" />
+    <ClCompile Include="..\source\Player_Script.cpp" />
+    <ClCompile Include="..\source\ScriptPlayerPolicy.cpp" />
+    <ClCompile Include="..\source\Player_PortfolioGreedySearch.cpp" />
+    <ClCompile Include="..\source\Player_UCT.cpp" />
+    <ClCompile Include="..\source\ActionGenerators.cpp" />
+    <ClCompile Include="..\source\AIParameters.cpp" />
+    <ClCompile Include="..\source\AITools.cpp" />
+    <ClCompile Include="..\source\Eval.cpp" />
+    <ClCompile Include="..\source\MoveIterator.cpp" />
+    <ClCompile Include="..\source\AllPlayers.cpp" />
+    <ClCompile Include="..\source\Player.cpp" />
+    <ClCompile Include="..\source\Common.cpp" />
+    <ClCompile Include="..\source\SparCraft.cpp" />
+    <ClCompile Include="..\source\SparCraftAssert.cpp" />
+    <ClCompile Include="..\source\SparCraftException.cpp" />
+    <ClCompile Include="..\source\Action.cpp" />
+    <ClCompile Include="..\source\Game.cpp" />
+    <ClCompile Include="..\source\GameState.cpp" />
+    <ClCompile Include="..\source\GameStateUnitData.cpp" />
+    <ClCompile Include="..\source\Map.cpp" />
+    <ClCompile Include="..\source\Move.cpp" />
+    <ClCompile Include="..\source\Unit.cpp" />
+    <ClCompile Include="..\source\ConfigTools.cpp" />
+    <ClCompile Include="..\source\JSONTools.cpp" />
+    <ClCompile Include="..\source\MoveArray.cpp" />
+    <ClCompile Include="..\source\Timer.cpp" />
+    <ClCompile Include="..\source\torch\TorchFrame.cpp" />
+    <ClCompile Include="..\source\torch\TorchTools.cpp" />
+    <ClCompile Include="..\source\AnimationFrameData.cpp" />
+    <ClCompile Include="..\source\UCTSearch.cpp" />
+    <ClCompile Include="..\source\PGSParameters.cpp" />
+    <ClCompile Include="..\source\PortfolioGreedySearch.cpp" />
+    <ClCompile Include="..\source\PlayerProperties.cpp" />
+    <ClCompile Include="..\source\UnitProperties.cpp" />
+    <ClCompile Include="..\source\WeaponProperties.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\BaseTypes.hpp">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Common.h">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Game.h">
-      <Filter>simulation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\GameState.h">
-      <Filter>simulation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\PortfolioGreedySearch.h">
-      <Filter>AI\search\PGS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Position.hpp">
-      <Filter>simulation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Timer.h">
-      <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\UCTNode.h">
-      <Filter>AI\search\UCT</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\UCTSearch.h">
-      <Filter>AI\search\UCT</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\GraphViz.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Player.h">
-      <Filter>AI\players</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Player_AttackClosest.h">
-      <Filter>AI\players\script</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Player_PortfolioGreedySearch.h">
-      <Filter>AI\players\search</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Player_Random.h">
-      <Filter>AI\players\script</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Player_UCT.h">
-      <Filter>AI\players\search</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\UCTMemoryPool.hpp">
-      <Filter>AI\search\UCT</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\UCTSearchResults.hpp">
-      <Filter>AI\search\UCT</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\UCTSearchParameters.hpp">
-      <Filter>AI\search\UCT</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\AllPlayers.h">
-      <Filter>AI\players</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\MoveArray.h">
-      <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Unit.h">
-      <Filter>simulation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\UnitProperties.h">
-      <Filter>simulation\properties</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\WeaponProperties.h">
-      <Filter>simulation\properties</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\PlayerProperties.h">
-      <Filter>simulation\properties</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Random.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\SparCraft.h">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\AnimationFrameData.h">
-      <Filter>simulation\data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Action.h">
-      <Filter>simulation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\SparCraftAssert.h">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\SparCraftException.h">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\AIParameters.h">
-      <Filter>AI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\ScriptPlayerPolicy.h">
-      <Filter>AI\players\script</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Player_Script.h">
-      <Filter>AI\players\script</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Eval.h">
-      <Filter>AI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\GameStateUnitData.h">
-      <Filter>simulation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\ActionGenerators.h">
-      <Filter>AI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\AITools.h">
-      <Filter>AI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Move.h">
-      <Filter>simulation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\PGSParameters.h">
-      <Filter>AI\search\PGS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Map.h">
-      <Filter>simulation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\JSONTools.h">
-      <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\torch\frame.h">
-      <Filter>util\torch</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\torch\refcount.h">
-      <Filter>util\torch</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\torch\TorchTools.h">
-      <Filter>util\torch</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\ConfigTools.h">
-      <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\MoveIterator.h">
-      <Filter>AI\move iterators</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Filter Include="util">
-      <UniqueIdentifier>{6df7ca5f-a32b-4663-841c-e9c0167bef3b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="simulation">
-      <UniqueIdentifier>{d817d60f-8a97-41a1-af70-0d73ee979248}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="common">
-      <UniqueIdentifier>{9aa7fe21-9e2a-421d-b8e6-1b132a0a0c23}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="simulation\properties">
-      <UniqueIdentifier>{2617c193-9e36-4c48-a76e-4ffcfee4093e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AI">
-      <UniqueIdentifier>{1bb4c001-8b1e-46d3-a8db-95c27c134952}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AI\players">
-      <UniqueIdentifier>{b11ab75e-596d-49f0-b7cd-18835583746c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AI\players\script">
-      <UniqueIdentifier>{4a52919d-1927-49f9-964b-4c447699227a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AI\players\search">
-      <UniqueIdentifier>{736c4997-5d98-40e6-a72f-f9075810344b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AI\search">
-      <UniqueIdentifier>{448e8c8d-4efd-44ab-9ca4-3da61d3aa047}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AI\search\UCT">
-      <UniqueIdentifier>{5d28a734-3947-4ec3-9f52-b1259520d851}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="simulation\data">
-      <UniqueIdentifier>{c8b3aadc-390f-460b-af33-29a0570bb914}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AI\move iterators">
-      <UniqueIdentifier>{ba568fcc-fb2c-4e63-bd90-7c38f763e466}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AI\search\PGS">
-      <UniqueIdentifier>{273d10ab-4a07-439d-9142-aaf654ae5feb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="util\torch">
-      <UniqueIdentifier>{6b6fd1a7-e8df-4f9e-8729-8bb2c61def62}</UniqueIdentifier>
-    </Filter>
+    <ClInclude Include="..\source\Player_AttackClosest.h" />
+    <ClInclude Include="..\source\Player_Random.h" />
+    <ClInclude Include="..\source\Player_Script.h" />
+    <ClInclude Include="..\source\ScriptPlayerPolicy.h" />
+    <ClInclude Include="..\source\Player_PortfolioGreedySearch.h" />
+    <ClInclude Include="..\source\Player_UCT.h" />
+    <ClInclude Include="..\source\ActionGenerators.h" />
+    <ClInclude Include="..\source\AIParameters.h" />
+    <ClInclude Include="..\source\AITools.h" />
+    <ClInclude Include="..\source\Eval.h" />
+    <ClInclude Include="..\source\MoveIterator.h" />
+    <ClInclude Include="..\source\AllPlayers.h" />
+    <ClInclude Include="..\source\Player.h" />
+    <ClInclude Include="..\source\BaseTypes.hpp" />
+    <ClInclude Include="..\source\Common.h" />
+    <ClInclude Include="..\source\SparCraft.h" />
+    <ClInclude Include="..\source\SparCraftAssert.h" />
+    <ClInclude Include="..\source\SparCraftException.h" />
+    <ClInclude Include="..\source\Action.h" />
+    <ClInclude Include="..\source\Game.h" />
+    <ClInclude Include="..\source\GameState.h" />
+    <ClInclude Include="..\source\GameStateUnitData.h" />
+    <ClInclude Include="..\source\Map.h" />
+    <ClInclude Include="..\source\Move.h" />
+    <ClInclude Include="..\source\Position.hpp" />
+    <ClInclude Include="..\source\Unit.h" />
+    <ClInclude Include="..\source\ConfigTools.h" />
+    <ClInclude Include="..\source\GraphViz.hpp" />
+    <ClInclude Include="..\source\JSONTools.h" />
+    <ClInclude Include="..\source\MoveArray.h" />
+    <ClInclude Include="..\source\Random.hpp" />
+    <ClInclude Include="..\source\Timer.h" />
+    <ClInclude Include="..\source\torch\TorchFrame.h" />
+    <ClInclude Include="..\source\torch\TorchRefcount.h" />
+    <ClInclude Include="..\source\torch\TorchTools.h" />
+    <ClInclude Include="..\source\AnimationFrameData.h" />
+    <ClInclude Include="..\source\UCTMemoryPool.hpp" />
+    <ClInclude Include="..\source\UCTNode.h" />
+    <ClInclude Include="..\source\UCTSearch.h" />
+    <ClInclude Include="..\source\UCTSearchParameters.hpp" />
+    <ClInclude Include="..\source\UCTSearchResults.hpp" />
+    <ClInclude Include="..\source\PGSParameters.h" />
+    <ClInclude Include="..\source\PortfolioGreedySearch.h" />
+    <ClInclude Include="..\source\PlayerProperties.h" />
+    <ClInclude Include="..\source\UnitProperties.h" />
+    <ClInclude Include="..\source\WeaponProperties.h" />
   </ItemGroup>
 </Project>

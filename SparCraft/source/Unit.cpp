@@ -96,14 +96,24 @@ bool Unit::canSeeTarget(const Unit & unit, const TimeType & gameTime) const
 	return (r * r) >= getDistanceSqToUnit(unit, gameTime);
 }
 
-// returns whether or not this unit can attack a given unit at a given time
-const bool Unit::canAttackTarget(const Unit & unit, const TimeType & gameTime) const
+const bool Unit::canTarget(const Unit & unit) const
 {
     if (unit.isFlyer() && !canAttackAir())
     {
         return false;
     }
     else if (!unit.isFlyer() && !canAttackGround())
+    {
+        return false;
+    }
+
+    return true;
+}
+
+// returns whether or not this unit can attack a given unit at a given time
+const bool Unit::canAttackTarget(const Unit & unit, const TimeType & gameTime) const
+{
+    if (!canTarget(unit))
     {
         return false;
     }
@@ -258,11 +268,11 @@ void Unit::waitUntilAttack(const Action & move, const TimeType & gameTime)
     setPreviousAction(move, gameTime);
 }
 
-void Unit::pass(const Action & move, const TimeType & gameTime)
+void Unit::pass(const Action & action, const TimeType & gameTime)
 {
-    updateMoveActionTime(gameTime + Constants::Pass_Move_Duration);
-    updateAttackActionTime(gameTime + Constants::Pass_Move_Duration);
-    setPreviousAction(move, gameTime);
+    updateMoveActionTime(gameTime + action.getTargetID());
+    updateAttackActionTime(gameTime + action.getTargetID());
+    setPreviousAction(action, gameTime);
 }
 
 const int Unit::getDistanceSqToUnit(const Unit & u, const TimeType & gameTime) const 

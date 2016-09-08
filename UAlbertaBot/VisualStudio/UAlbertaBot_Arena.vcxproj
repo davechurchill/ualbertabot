@@ -11,10 +11,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Source\ArenaManager.cpp" />
     <ClCompile Include="..\Source\Dll_Arena.cpp" />
     <ClCompile Include="..\Source\UAlbertaBotModule_Arena.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Source\ArenaManager.h" />
     <ClInclude Include="..\Source\UAlbertaBotModule_Arena.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -56,6 +56,7 @@ class ScriptPolicy
     int                 _actionType;
     int                 _angle;
     int                 _distance;
+    int                 _passFrames;
     ScriptPolicyTarget  _target;
 
 public:
@@ -64,6 +65,7 @@ public:
     ScriptPolicy(const rapidjson::Value & value);
 
     int getActionType() const;
+    int getPassFrames() const;
     int getAngle() const;
     int getDistance() const;
     const ScriptPolicyTarget & getTarget() const;
