@@ -21,6 +21,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SparCraft_benchmarks", "Spa
 		{66236439-5968-4756-B2E7-8A29BEA99078} = {66236439-5968-4756-B2E7-8A29BEA99078}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SparCraft_StateVis", "SparCraft_StateVis.vcxproj", "{4F772654-A660-4357-BD9D-0075C0300130}"
+	ProjectSection(ProjectDependencies) = postProject
+		{66236439-5968-4756-B2E7-8A29BEA99078} = {66236439-5968-4756-B2E7-8A29BEA99078}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -61,6 +66,14 @@ Global
 		{4D985396-9B62-4882-A08C-B042103E2F40}.Release|Win32.Build.0 = Release|Win32
 		{4D985396-9B62-4882-A08C-B042103E2F40}.Release|x64.ActiveCfg = Release|x64
 		{4D985396-9B62-4882-A08C-B042103E2F40}.Release|x64.Build.0 = Release|x64
+		{4F772654-A660-4357-BD9D-0075C0300130}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4F772654-A660-4357-BD9D-0075C0300130}.Debug|Win32.Build.0 = Debug|Win32
+		{4F772654-A660-4357-BD9D-0075C0300130}.Debug|x64.ActiveCfg = Debug|x64
+		{4F772654-A660-4357-BD9D-0075C0300130}.Debug|x64.Build.0 = Debug|x64
+		{4F772654-A660-4357-BD9D-0075C0300130}.Release|Win32.ActiveCfg = Release|Win32
+		{4F772654-A660-4357-BD9D-0075C0300130}.Release|Win32.Build.0 = Release|Win32
+		{4F772654-A660-4357-BD9D-0075C0300130}.Release|x64.ActiveCfg = Release|x64
+		{4F772654-A660-4357-BD9D-0075C0300130}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

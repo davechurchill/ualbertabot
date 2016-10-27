@@ -261,6 +261,7 @@ bool GUI::loadTexture(int textureNumber, const std::string & fileName)
     struct stat buf;
     if (stat(fileName.c_str(), &buf) == -1)
     {
+
         //std::cout << "Couldn't find texture: " << fileName << std::endl;
         return false;
     }
