@@ -76,7 +76,7 @@ void DrawTorchUnit(CImg<unsigned char> & img, const replayer::Frame & frame, con
 	        }
         }
 
-        DrawLine(img, pos, Position(order.targetX * 8, order.targetY * 8), 1, White);
+        DrawLine(img, pos, Position(order.targetX * 8, order.targetY * 8), 1, PlayerColors[playerID]);
     }
 }
 
