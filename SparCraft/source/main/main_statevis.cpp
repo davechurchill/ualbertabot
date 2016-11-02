@@ -112,7 +112,7 @@ int main(int argc, char ** argv)
     int mapWidth = 2000, mapHeight = 2000;   
     int mapTLX = 0, mapTLY = 0;         
     int mapBRX = mapWidth, mapBRY = mapHeight; 
-    int finalScalingFactor = 2;
+    int finalScalingFactor = 1;
     int padding = 100;
 
     // Check to see if the file exists
@@ -197,7 +197,19 @@ int main(int argc, char ** argv)
         canvas.fill(0);
 
         DrawTorchFrame(canvas, mapWidth, mapHeight, frames[f]);
+
+        for (int x(0); x < mapBRX; x+=100)
+        {
+            canvas.draw_text(x, mapTLY+3, "| %d", White, 0, 1, 13, x);
+        }
+
+        for (int y(0); y < mapBRY; y+=100)
+        {
+            canvas.draw_text(mapTLX + 3, y-13, "%d _", White, 0, 1, 13, y);
+        }
+
         canvas.crop(mapTLX, mapTLY, mapBRX, mapBRY);
+
         canvas.resize(canvas.width() * finalScalingFactor, canvas.height() * finalScalingFactor, -1);
 
         std::stringstream name;
