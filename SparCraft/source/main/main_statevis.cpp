@@ -188,8 +188,6 @@ int main(int argc, char ** argv)
         mapTLY = std::max(0, minY - padding);
         mapBRX = mapWidth;
         mapBRY = mapHeight;
-
-        std::cout << mapWidth << " " << mapHeight << "\n";
     }
 
     // Draw the images from the frame data
