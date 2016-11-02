@@ -84,12 +84,12 @@ void DrawTorchFrame(CImg<unsigned char> & img, int width, int height, const repl
 {
     const auto & allUnits = frame.units;
 
-    for (int x(32); x < width; x += 32)
+    for (int x(8); x < width; x += 8)
     {
         DrawLine(img, Position(x, 0), Position(x, height), 1, GridColor);
     }
 
-    for (int y(32); y < height; y += 32)
+    for (int y(8); y < height; y += 8)
     {
         DrawLine(img, Position(0, y), Position(width, y), 1, GridColor);
     }
@@ -203,9 +203,19 @@ int main(int argc, char ** argv)
             canvas.draw_text(x, mapTLY+3, "| %d", White, 0, 1, 13, x);
         }
 
+        for (int x(0); x < mapBRX; x+=80)
+        {
+            canvas.draw_text(x, mapBRY - 15, "| %d", White, 0, 1, 13, x/8);
+        }
+
         for (int y(0); y < mapBRY; y+=100)
         {
-            canvas.draw_text(mapTLX + 3, y-13, "%d _", White, 0, 1, 13, y);
+            canvas.draw_text(mapTLX + 3, y-12, "%d _", White, 0, 1, 13, y);
+        }
+
+        for (int y(0); y < mapBRY; y+=80)
+        {
+            canvas.draw_text(mapBRX - 40, y - 12, "_ %d", White, 0, 1, 13, y/8);
         }
 
         canvas.crop(mapTLX, mapTLY, mapBRX, mapBRY);
