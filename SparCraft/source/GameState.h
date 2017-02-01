@@ -23,7 +23,6 @@ class GameState
 
     size_t                  _numMovements[2];
     TimeType                _currentTime;
-    TimeType                _sameHPFrames;
 
     void                    doAction(const Action & theMove);
 

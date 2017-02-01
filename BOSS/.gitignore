@@ -9,7 +9,6 @@ emscripten/*.data
 bin/*.exe
 bin/*.pdb
 bin/*.ilk
-bin/*.txt
 bin/*.map
 bin/*.bsc
 bin/*.lib

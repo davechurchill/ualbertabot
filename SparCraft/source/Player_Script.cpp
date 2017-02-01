@@ -93,6 +93,12 @@ Action Player_Script::getPolicyAction(const GameState & state, const Unit & myUn
 {
     if (policy.getActionType() == PolicyAction::Move)
     {
+        // if the unit type can't move, just let it reload
+        if (!myUnit.type().canMove())
+        {
+            return Action(myUnit.getID(), _playerID, ActionTypes::PASS, 8);
+        }
+
         const Position targetPos = getPolicyTargetPosition(state, myUnit, policy, validUnitTargets);
         const Position & unitPos = myUnit.currentPosition(state.getTime());
         double angleRad = policy.getAngle() * RAD;

@@ -2,7 +2,7 @@
 
 "Policies" :
 {
-    "M_C"   : ["Move",   ["Enemy", "Unit", "Min", ["+Distance"]], 0, 128],
+    "M_C"   : ["Move",   ["Enemy", "Unit", "Min", ["+Distance"]], 0, 16],
     "A_C"   : ["Attack", ["Enemy", "Unit", "Min", ["+Distance"]]], 
     "A_D"   : ["Attack", ["Enemy", "Unit", "Min", ["+DPS"]]], 
     "A_W"   : ["Attack", ["Enemy", "Unit", "Min", ["+HP"]]], 
@@ -11,7 +11,7 @@
     "A_WF"  : ["Attack", ["Enemy", "Unit", "Min", ["+HP", "-Focus"]]],
     "A_WFC" : ["Attack", ["Enemy", "Unit", "Min", ["+HP", "-Focus", "+Distance"]]],
     "A_-F"  : ["Attack", ["Enemy", "Unit", "Min", ["+Focus"]]],
-    "KiteC" : ["Move",   ["Enemy", "Unit", "Min", ["+Distance"]], 180, 32],
+    "KiteC" : ["Move",   ["Enemy", "Unit", "Min", ["+Distance"]], 180, 16],
     "R"     : ["Reload"],
     "Pass"  : ["Pass", 1]
 },
@@ -61,7 +61,7 @@
 {
     "SampleState" :     { "Type":"StateFile", "Map":"Arena", "File":"SampleStateFile.txt"},
     "Separated":        { "Type":"Symmetric", "Map":"Arena", "Border":[128,128], "Centers":[[150,180], [800,500]], 
-                          "Units":[["Terran_Wraith", 15]]},
+                            "Units":[["Protoss_Corsair", 2], ["Protoss_Zealot", 2]]},
     "Symmetric":        { "Type":"Symmetric", "Border":[128,128], "Centers":[[640,360], [640,360]], "Units":[["Protoss_Dragoon", 16]] },
     "TorchFrame" :      { "Type":"TorchCraftFrame", "File":"FrameData.txt"},
 	"TorchIn" :     	{ "Type":"TorchCraftStdIn", "File":"Torch2.txt"}
@@ -94,7 +94,7 @@
 
 "GUI" : 
 {
-    "Enabled":true, "Width":1600, "Height":900, "DrawHPBar":true, "DrawCD":true, "FrameDelayMS":0
+    "Enabled":true, "Width":1600, "Height":900, "DrawHPBar":true, "DrawCD":true, "FrameDelayMS":50
 },
 
 "Move Iterators" :

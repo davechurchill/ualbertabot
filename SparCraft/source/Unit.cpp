@@ -340,9 +340,9 @@ void Unit::setPreviousPosition(const TimeType & gameTime)
 // returns the damage a unit does
 const HealthType Unit::damage() const	
 { 
-    return _unitType == BWAPI::UnitTypes::Protoss_Zealot ? 
-        2 * (HealthType)_unitType.groundWeapon().damageAmount() : 
-    (HealthType)_unitType.groundWeapon().damageAmount(); 
+    HealthType damage = _unitType == BWAPI::UnitTypes::Protoss_Zealot ? (2 * (HealthType)_unitType.groundWeapon().damageAmount()) : (HealthType)_unitType.groundWeapon().damageAmount(); 
+    damage = (HealthType)_unitType.airWeapon().damageAmount();
+    return damage;
 }
 
 const HealthType Unit::healAmount() const
@@ -499,7 +499,9 @@ const float Unit::dpf() const
 
 const TimeType Unit::attackCooldown() const 
 { 
-    return (TimeType)_unitType.groundWeapon().damageCooldown(); 
+    TimeType attackCooldown = _unitType.groundWeapon().damageCooldown(); 
+    if (attackCooldown == 0) attackCooldown = _unitType.airWeapon().damageCooldown();
+    return attackCooldown;
 }
 
 const TimeType Unit::healCooldown() const 

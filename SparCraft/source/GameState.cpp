@@ -9,7 +9,6 @@ using namespace SparCraft;
 GameState::GameState()
 	: _map(NULL)
 	, _currentTime(0)
-    , _sameHPFrames(0)
 {
     _numMovements[0] = 0;
     _numMovements[1] = 0;
@@ -221,6 +220,7 @@ bool GameState::playerDead(const size_t & player) const
 
 size_t GameState::winner() const
 {
+
     if (playerDead(Players::Player_One) && playerDead(Players::Player_Two))
     {
         return Players::Player_None;
@@ -331,10 +331,10 @@ bool GameState::gameOver() const
         return true;
     }
 
-    if (_sameHPFrames > 200)
-    {
-        return true;
-    }
+    // if everyone is immobile and we can't attack anyone
+
+    // if nobody on one team has the weapon type to attack anyone on the other team
+    
 
 	for (size_t p(0); p<Constants::Num_Players; ++p)
 	{
@@ -350,25 +350,29 @@ bool GameState::gameOver() const
 	}
 
 	// at this point we know everyone must be immobile, so check for attack deadlock
-	for (size_t u1(0); u1<numUnits(Players::Player_One); ++u1)
+    bool attackDeadlock = true;
+	for (size_t u1(0); attackDeadlock && u1<numUnits(Players::Player_One); ++u1)
 	{
 		const Unit & unit1(getUnit(Players::Player_One, u1));
-
-		for (size_t u2(0); u2<numUnits(Players::Player_Two); ++u2)
+		for (size_t u2(0); attackDeadlock && u2<numUnits(Players::Player_Two); ++u2)
 		{
 			const Unit & unit2(getUnit(Players::Player_Two, u2));
 
-			// if anyone can attack anyone else
-			if (unit1.canTarget(unit2) || unit2.canTarget(unit1))
-			{
-				// then there is no deadlock
-				return false;
-			}
+            // if unit1 is mobile and can target unit2 or vice versa, there is no deadlock
+            if (unit1.type().canMove() && unit1.canTarget(unit2) || unit2.type().canMove() && unit2.canTarget(unit1))
+            {
+                attackDeadlock = false;
+                break;
+            }
 		}
 	}
 	
-	// if everyone is immobile and nobody can attack, then there is a deadlock
-	return true;
+	if (attackDeadlock)
+    {
+        printf("Attack Deadlock Detected\n");
+    }
+
+    return attackDeadlock;
 }
 
 std::shared_ptr<Map> GameState::getMap() const

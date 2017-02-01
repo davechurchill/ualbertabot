@@ -17,7 +17,10 @@ namespace SparCraft
             }
             
             // only support tower buildings
-            if (type.isBuilding() && !(type == BWAPI::UnitTypes::Protoss_Photon_Cannon || type == BWAPI::UnitTypes::Zerg_Sunken_Colony || type == BWAPI::UnitTypes::Terran_Missile_Turret))
+            if (type.isBuilding() && !(type == BWAPI::UnitTypes::Protoss_Photon_Cannon 
+                                    || type == BWAPI::UnitTypes::Zerg_Sunken_Colony 
+                                    || type == BWAPI::UnitTypes::Zerg_Spore_Colony 
+                                    || type == BWAPI::UnitTypes::Terran_Missile_Turret))
             {
                 return false;
             }
