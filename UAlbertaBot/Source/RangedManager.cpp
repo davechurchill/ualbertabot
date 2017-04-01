@@ -96,31 +96,25 @@ std::pair<BWAPI::Unit, BWAPI::Unit> RangedManager::findClosestUnitPair(const BWA
 // get a target for the zealot to attack
 BWAPI::Unit RangedManager::getTarget(BWAPI::Unit rangedUnit, const BWAPI::Unitset & targets)
 {
-	int bestPriorityDistance = 1000000;
-    int bestPriority = 0;
-    
-    double bestLTD = 0;
-
-    int highPriority = 0;
-	double closestDist = std::numeric_limits<double>::infinity();
-	BWAPI::Unit closestTarget = nullptr;
-
-    for (const auto & target : targets)
-    {
-        double distance         = rangedUnit->getDistance(target);
-        double LTD              = UnitUtil::CalculateLTD(target, rangedUnit);
-        int priority            = getAttackPriority(rangedUnit, target);
+	BWAPI::Unit chosenTarget= nullptr;
+	int highPriority = 0;
+	int lowest_hp = std::numeric_limits<int>::infinity();
+	double bestLTD = 0;
+	
+	for(const auto & target : targets){
+		int hp = target->getHitPoints();
+		double LTD = UnitUtil::CalculateLTD(target, rangedUnit);
+		int priority            = getAttackPriority(rangedUnit, target);
         bool targetIsThreat     = LTD > 0;
-        
-		if (!closestTarget || (priority > highPriority) || (priority == highPriority && distance < closestDist))
+		if (!chosenTarget || (priority > highPriority) || (priority == highPriority && hp < lowest_hp))
 		{
-			closestDist = distance;
+			lowest_hp = hp;
 			highPriority = priority;
-			closestTarget = target;
+			chosenTarget = target;
 		}       
-    }
-
-    return closestTarget;
+	}
+    BWAPI::Broodwar->printf("%d",lowest_hp);
+	return chosenTarget;
 }
 
 	// get the attack priority of a type in relation to a zergling

@@ -25,5 +25,7 @@ public:
 
     void assignTargetsNew(const BWAPI::Unitset & targets);
     void assignTargetsOld(const BWAPI::Unitset & targets);
+	
+	void moveToFront(const BWAPI::Unit & meleeUnit);
 };
 }

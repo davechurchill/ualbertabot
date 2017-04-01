@@ -46,6 +46,8 @@ public:
     int                 getReservedMinerals();
     int                 getReservedGas();
 
+	int					cannonsBuilt;
+	int					pylonAmount;
     bool                isBeingBuilt(BWAPI::UnitType type);
 
     std::vector<BWAPI::UnitType> buildingsQueued();

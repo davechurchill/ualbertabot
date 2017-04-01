@@ -31,7 +31,7 @@ void MeleeManager::assignTargetsOld(const BWAPI::Unitset & targets)
 			meleeUnitTargets.insert(target);
 		}
 	}
-
+	//blockAttack(meleeUnits,meleeUnitTargets);
 	// for each meleeUnit
 	for (auto & meleeUnit : meleeUnits)
 	{
@@ -62,6 +62,7 @@ void MeleeManager::assignTargetsOld(const BWAPI::Unitset & targets)
 				{
 					// move to it
 					Micro::SmartMove(meleeUnit, order.getPosition());
+					moveToFront(meleeUnit);
 				}
 			}
 		}
@@ -94,30 +95,41 @@ std::pair<BWAPI::Unit, BWAPI::Unit> MeleeManager::findClosestUnitPair(const BWAP
 
     return closestPair;
 }
-
+//Attempt to get Zealots to become the closest unit to enemy
+void MeleeManager::moveToFront(const BWAPI::Unit & meleeUnit)
+{
+	double pi = 3.14159265359;
+	if(meleeUnit->getType()==BWAPI::UnitTypes::Protoss_Zealot)
+	{
+		BWAPI::Position center = MicroManager::calcCenter();
+		double angle = meleeUnit->getAngle()*(180/pi);
+		center.x=center.x+(int)(5*cos(angle));
+		center.y=center.y+(int)(5*sin(angle));
+		meleeUnit->move(center);
+	}
+}
 // get a target for the meleeUnit to attack
 BWAPI::Unit MeleeManager::getTarget(BWAPI::Unit meleeUnit, const BWAPI::Unitset & targets)
 {
+	
 	int highPriority = 0;
-	double closestDist = std::numeric_limits<double>::infinity();
-	BWAPI::Unit closestTarget = nullptr;
-
+	int lowest_hp = std::numeric_limits<int>::infinity();
+	BWAPI::Unit chosenTarget = nullptr;
 	// for each target possiblity
 	for (auto & unit : targets)
 	{
 		int priority = getAttackPriority(meleeUnit, unit);
-		int distance = meleeUnit->getDistance(unit);
-
-		// if it's a higher priority, or it's closer, set it
-		if (!closestTarget || (priority > highPriority) || (priority == highPriority && distance < closestDist))
+		int hp = unit->getHitPoints();
+		// if it's a higher priority, or it's weaker, set it
+		if (!chosenTarget || (priority > highPriority) || (priority == highPriority && hp < lowest_hp))
 		{
-			closestDist = distance;
+			lowest_hp = hp;
 			highPriority = priority;
-			closestTarget = unit;
+			chosenTarget = unit;
 		}
 	}
-
-	return closestTarget;
+	//BWAPI::Broodwar->printf("%d %d",lowest_hp, chosenTarget->getHitPoints());
+	return chosenTarget;
 }
 
 	// get the attack priority of a type in relation to a zergling

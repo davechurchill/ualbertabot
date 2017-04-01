@@ -13,6 +13,7 @@ ScoutManager::ScoutManager()
     , _gasStealFinished(false)
     , _currentRegionVertexIndex(-1)
     , _previousScoutHP(0)
+	, _didExpansion(false)
 {
 }
 
@@ -77,6 +78,9 @@ void ScoutManager::moveScouts()
     int scoutHP = _workerScout->getHitPoints() + _workerScout->getShields();
     
     gasSteal();
+
+
+	stealEnemyExpansion();
 
 	// get the enemy base location, if we have one
 	BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
@@ -200,11 +204,11 @@ void ScoutManager::followPerimeter()
 
 void ScoutManager::gasSteal()
 {
-    if (!Config::Strategy::GasStealWithScout)
+   /* if (!Config::Strategy::GasStealWithScout)
     {
         _gasStealStatus = "Not using gas steal";
         return;
-    }
+    }*/
 
     if (_didGasSteal)
     {
@@ -216,7 +220,11 @@ void ScoutManager::gasSteal()
         _gasStealStatus = "No worker scout";
         return;
     }
-
+    BWAPI::Race enemyRace = BWAPI::Broodwar->enemy()->getRace();
+    if (enemyRace == BWAPI::Races::Zerg){
+        _gasStealStatus = "Enemy is zerg. Don't bother with gas steal.";
+        return;
+    }
     BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
     if (!enemyBaseLocation)
     {
@@ -235,7 +243,7 @@ void ScoutManager::gasSteal()
     {
         ProductionManager::Instance().queueGasSteal();
         _didGasSteal = true;
-        Micro::SmartMove(_workerScout, enemyGeyser->getPosition());
+        Micro::SmartMove(_workerScout, stealEnemyExpansion());
         _gasStealStatus = "Did Gas Steal";
     }
 }
@@ -538,4 +546,50 @@ void ScoutManager::calculateEnemyRegionVertices()
     }
 
     _enemyRegionVertices = sortedVertices;
+}
+
+
+BWAPI::Position ScoutManager::stealEnemyExpansion(){
+
+	
+	if (_didExpansion){
+		
+		return BWAPI::Position(0,0);
+	}
+	_didExpansion = true;
+	BWAPI::Position scoutLocation = _workerScout->getPosition();
+
+	BWTA::Region* enemyBaseRegion = BWTA::getRegion(scoutLocation.x, scoutLocation.y);
+
+	std::set<BWTA::BaseLocation*> baseLocations = BWTA::getBaseLocations();
+
+	int dist_to_enemy_base = 1000000;
+
+	BWTA::BaseLocation* enemyBase = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
+
+	BWTA::BaseLocation* bestBase;
+
+	for (auto &base : baseLocations){
+	
+		if (base == InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy())){
+			BWAPI::Broodwar->printf("I AM THE ENEMENY BASE");
+			enemyBase = base;
+		
+		}
+		else{
+			BWAPI::Broodwar->printf("I AM THE WALRUS");
+			if (enemyBase->getPosition().getApproxDistance(base->getPosition())<dist_to_enemy_base){
+
+				dist_to_enemy_base = enemyBase->getPosition().getApproxDistance(base->getPosition());
+				bestBase = base;
+
+			}
+
+		}
+	
+	
+	}//end for loop
+	return  BWAPI::Position(bestBase->getTilePosition());
+	//Micro::SmartMove(_workerScout, BWAPI::Position(bestBase->getTilePosition()));
+
 }
