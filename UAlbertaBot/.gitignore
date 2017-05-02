@@ -9,3 +9,4 @@ bin/*.exp
 bin/*.ilk
 bin/*.pdb
 source/*.o
+*.bwta
