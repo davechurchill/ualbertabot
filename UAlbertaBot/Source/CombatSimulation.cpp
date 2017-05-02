@@ -1,4 +1,6 @@
 #include "CombatSimulation.h"
+#include "Global.h"
+#include "UnitUtil.h"
 
 using namespace UAlbertaBot;
 
@@ -18,17 +20,17 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
 	BWAPI::Unitset ourCombatUnits;
 	std::vector<UnitInfo> enemyCombatUnits;
 
-	MapGrid::Instance().GetUnits(ourCombatUnits, center, Config::Micro::CombatRegroupRadius, true, false);
-	InformationManager::Instance().getNearbyForce(enemyCombatUnits, center, BWAPI::Broodwar->enemy(), Config::Micro::CombatRegroupRadius);
+	Global::Map().GetUnits(ourCombatUnits, center, Config::Micro::CombatRegroupRadius, true, false);
+	Global::Info().getNearbyForce(enemyCombatUnits, center, BWAPI::Broodwar->enemy(), Config::Micro::CombatRegroupRadius);
 
 	for (auto & unit : ourCombatUnits)
 	{
-        if (unit->getType().isWorker())
+        if (unit->getType().isWorker() || unit->getHitPoints() == 0)
         {
             continue;
         }
 
-        if (InformationManager::Instance().isCombatUnit(unit->getType()) && SparCraft::System::UnitTypeSupported(unit->getType()))
+        if (UnitUtil::IsCombatUnit(unit) && SparCraft::System::UnitTypeSupported(unit->getType()))
 		{
             try
             {
@@ -44,13 +46,13 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
 
 	for (UnitInfo & ui : enemyCombatUnits)
 	{
-        if (ui.type.isWorker())
+        if (ui.type.isWorker() || ui.lastHealth == 0 || ui.type == BWAPI::UnitTypes::Unknown)
         {
             continue;
         }
-
         
-        if (ui.type == BWAPI::UnitTypes::Terran_Bunker)
+        // if it's a bunker that has a nontrivial amount of hit points, replace it by 5 marines
+        if (ui.type == BWAPI::UnitTypes::Terran_Bunker && ui.lastHealth > 10)
         {
             double hpRatio = static_cast<double>(ui.lastHealth) / ui.type.maxHitPoints();
 
@@ -84,7 +86,7 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
 		}
 	}
 
-	state = s;
+	_state = s;
 }
 
 // Gets a SparCraft unit from a BWAPI::Unit, used for our own units since we have all their info
@@ -125,17 +127,23 @@ double CombatSimulation::simulateCombat()
 {
     try
     {
-	    SparCraft::GameState s1(state);
+	    SparCraft::GameState s1(_state);
+        size_t selfID = getSparCraftPlayerID(BWAPI::Broodwar->self());
+        size_t enemyID = getSparCraftPlayerID(BWAPI::Broodwar->enemy());
 
-        SparCraft::PlayerPtr selfNOK(new SparCraft::Player_AttackClosest(getSparCraftPlayerID(BWAPI::Broodwar->self())));
+        SparCraft::PlayerPtr selfNOK(new SparCraft::Player_AttackClosest(selfID));
+        SparCraft::PlayerPtr enemyNOK(new SparCraft::Player_AttackClosest(enemyID));
 
-        SparCraft::PlayerPtr enemyNOK(new SparCraft::Player_AttackClosest(getSparCraftPlayerID(BWAPI::Broodwar->enemy())));
+        SparCraft::PlayerPtr p1 =  SparCraft::AIParameters::Instance().getPlayer(selfID, Config::SparCraft::CombatSimPlayerName);
+        SparCraft::PlayerPtr p2 =  SparCraft::AIParameters::Instance().getPlayer(enemyID, Config::SparCraft::CombatSimPlayerName);
 
-	    SparCraft::Game g (s1, selfNOK, enemyNOK, 2000);
+
+	    SparCraft::Game g (s1, p1, p2, 2000);
 
 	    g.play();
 	
 	    double eval = SparCraft::Eval::Eval(g.getState(), SparCraft::Players::Player_One, SparCraft::EvaluationMethods::LTD2).val();
+        //std::cout << "LTD2: " << SparCraft::Eval::LTD2(g.getState(), 0) << ", " << SparCraft::Eval::LTD2(g.getState(), 1) << "\n";
 
         if (Config::Debug::DrawCombatSimulationInfo)
         {
@@ -151,7 +159,7 @@ double CombatSimulation::simulateCombat()
             BWAPI::Broodwar->drawTextScreen(150,200,"%s", ss1.str().c_str());
             BWAPI::Broodwar->drawTextScreen(300,200,"%s", ss2.str().c_str());
 
-	        BWAPI::Broodwar->drawTextScreen(240, 280, "Combat Sim : %d", eval);
+	        BWAPI::Broodwar->drawTextScreen(240, 280, "Combat Sim : %lf", eval);
         }
         
 	    return eval;
@@ -166,7 +174,7 @@ double CombatSimulation::simulateCombat()
 
 const SparCraft::GameState & CombatSimulation::getSparCraftState() const
 {
-	return state;
+	return _state;
 }
 
 const size_t CombatSimulation::getSparCraftPlayerID(BWAPI::Player player) const

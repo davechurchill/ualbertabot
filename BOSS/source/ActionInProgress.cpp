@@ -97,7 +97,7 @@ FrameCountType ActionsInProgress::nextBuildingFinishTime() const
     for (size_t i(0); i<_inProgress.size(); ++i)
 	{
         size_t ri = _inProgress.size()-1-i;
-		std::cout << _inProgress[ri]._action.getName() << std::endl;
+		//std::cout << _inProgress[ri]._action.getName() << std::endl;
 	}
 		
     BOSS_ASSERT(false, "There were no buildings in progress");

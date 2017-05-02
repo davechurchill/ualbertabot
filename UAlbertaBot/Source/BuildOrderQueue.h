@@ -11,13 +11,11 @@ struct BuildOrderItem
     MetaType			metaType;		// the thing we want to 'build'
     int					priority;	// the priority at which to place it in the queue
     bool				blocking;	// whether or not we block further items
-    bool                isGasSteal;
 
-    BuildOrderItem(MetaType m,int p,bool b,bool gasSteal = false)
+    BuildOrderItem(MetaType m, int p, bool b)
         : metaType(m)
         , priority(p)
         , blocking(b)
-        , isGasSteal(gasSteal) 
     {
     }
 
@@ -43,7 +41,7 @@ public:
 
     void clearAll();											// clears the entire build order queue
     void skipItem();											// increments skippedItems
-    void queueAsHighestPriority(MetaType m,bool blocking,bool gasSteal = false);		// queues something at the highest priority
+    void queueAsHighestPriority(MetaType m,bool blocking);		// queues something at the highest priority
     void queueAsLowestPriority(MetaType m,bool blocking);		// queues something at the lowest priority
     void queueItem(BuildOrderItem b);			// queues something with a given priority
     void removeHighestPriorityItem();								// removes the highest priority item

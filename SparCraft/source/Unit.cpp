@@ -9,7 +9,6 @@ Unit::Unit()
     , _bwapiID              (0)
     , _playerID             (0)
     , _currentHP            (0)
-    , _currentEnergy        (0)
     , _timeCanMove          (0)
     , _timeCanAttack        (0)
     , _previousActionTime   (0)
@@ -31,7 +30,6 @@ Unit::Unit(const BWAPI::UnitType unitType, const Position & pos, const size_t & 
     , _bwapiID              (0)
     , _playerID             (playerID)
     , _currentHP            (hp)
-    , _currentEnergy        (energy)
     , _timeCanMove          (tm)
     , _timeCanAttack        (ta)
     , _previousActionTime   (0)
@@ -55,7 +53,6 @@ Unit::Unit(const BWAPI::UnitType unitType, const size_t & playerID, const Positi
     , _bwapiID              (0)
     , _playerID             (playerID)
     , _currentHP            (maxHP())
-    , _currentEnergy        (unitType == BWAPI::UnitTypes::Terran_Medic ? Constants::Starting_Energy : 0)
     , _timeCanMove          (0)
     , _timeCanAttack        (0)
     , _previousActionTime   (0)
@@ -125,22 +122,6 @@ const bool Unit::canAttackTarget(const Unit & unit, const TimeType & gameTime) c
     return (r * r) >= getDistanceSqToUnit(unit, gameTime);
 }
 
-const bool Unit::canHealTarget(const Unit & unit, const TimeType & gameTime) const
-{
-    // if the unit can't heal or the target unit is not on the same team
-    if (!canHeal() || !unit.isOrganic() || !(unit.getPlayerID() == getPlayerID()) || (unit.currentHP() == unit.maxHP()))
-    {
-        // then it can't heal the target
-        return false;
-    }
-
-    // range of this unit attacking
-    int r = healRange();
-
-    // return whether the target unit is in range
-    return (r * r) >= getDistanceSqToUnit(unit, gameTime);
-}
-
 const Position & Unit::position() const
 {
     return _position;
@@ -167,11 +148,6 @@ const HealthType Unit::damageTakenFrom(const Unit & attacker) const
 void Unit::takeAttack(const Unit & attacker)
 {
     updateCurrentHP(_currentHP - damageTakenFrom(attacker));
-}
-
-void Unit::takeHeal(const Unit & healer)
-{
-    updateCurrentHP(_currentHP + healer.healAmount());
 }
 
 // returns whether or not this unit is alive
@@ -210,23 +186,6 @@ void Unit::attack(const Action & move, const Unit & target, const TimeType & gam
     if (!isMobile())
     {
         updateMoveActionTime(_timeCanAttack);
-    }
-
-    setPreviousAction(move, gameTime);
-}
-
-// attack a unit, set the times accordingly
-void Unit::heal(const Action & move, const Unit & target, const TimeType & gameTime)
-{
-    _currentEnergy -= healCost();
-
-    // can't attack again until attack cooldown is up
-    updateAttackActionTime        (gameTime + healCooldown());
-    updateMoveActionTime          (gameTime + healCooldown());
-
-    if (currentEnergy() < healCost())
-    {
-        updateAttackActionTime(1000000);
     }
 
     setPreviousAction(move, gameTime);
@@ -341,13 +300,10 @@ void Unit::setPreviousPosition(const TimeType & gameTime)
 const HealthType Unit::damage() const	
 { 
     HealthType damage = _unitType == BWAPI::UnitTypes::Protoss_Zealot ? (2 * (HealthType)_unitType.groundWeapon().damageAmount()) : (HealthType)_unitType.groundWeapon().damageAmount(); 
-    damage = (HealthType)_unitType.airWeapon().damageAmount();
+    
+    damage = std::max(damage, (HealthType)_unitType.airWeapon().damageAmount());
+    
     return damage;
-}
-
-const HealthType Unit::healAmount() const
-{
-    return canHeal() ? 6 : 0;
 }
 
 void Unit::print() const 
@@ -394,17 +350,12 @@ void Unit::setPreviousAction(const Action & m, const TimeType & previousMoveTime
 
 const bool Unit::canAttackNow() const
 { 
-    return !canHeal() && _timeCanAttack <= _timeCanMove; 
+    return _timeCanAttack <= _timeCanMove; 
 }
 
 const bool Unit::canMoveNow() const
 { 
     return isMobile() && _timeCanMove <= _timeCanAttack; 
-}
-
-const bool Unit::canHealNow() const
-{ 
-    return canHeal() && (currentEnergy() >= healCost()) && (_timeCanAttack <= _timeCanMove); 
 }
 
 const bool Unit::canKite() const
@@ -415,11 +366,6 @@ const bool Unit::canKite() const
 const bool Unit::isMobile() const
 { 
     return _unitType.canMove(); 
-}
-
-const bool Unit::canHeal() const
-{ 
-    return _unitType == BWAPI::UnitTypes::Terran_Medic; 
 }
 
 const bool Unit::isOrganic() const
@@ -457,11 +403,6 @@ const int Unit::range() const
     return _range; 
 }
 
-const int Unit::healRange() const
-{ 
-    return canHeal() ? 96 : 0; 
-}
-
 const HealthType Unit::maxHP() const 
 { 
     return (HealthType)_unitType.maxHitPoints() + (HealthType)_unitType.maxShields(); 
@@ -472,19 +413,9 @@ const HealthType Unit::currentHP() const
     return (HealthType)_currentHP; 
 }
 
-const HealthType Unit::currentEnergy() const 
-{ 
-    return (HealthType)_currentEnergy; 
-}
-
 const HealthType Unit::maxEnergy() const
 { 
     return (HealthType)_unitType.maxEnergy(); 
-}
-
-const HealthType Unit::healCost() const	
-{ 
-    return 3; 
 }
 
 const float Unit::dpf() const 

@@ -12,10 +12,8 @@ namespace UAlbertaBot
 struct BaseInfo;
 typedef std::vector<BaseInfo> BaseInfoVector;
 
-class InformationManager 
+class InfoManager 
 {
-    InformationManager();
-    
     BWAPI::Player       _self;
     BWAPI::Player       _enemy;
 
@@ -23,11 +21,8 @@ class InformationManager
     std::map<BWAPI::Player, BWTA::BaseLocation *>       _mainBaseLocations;
     std::map<BWAPI::Player, std::set<BWTA::Region *> >  _occupiedRegions;
 
-    int                     getIndex(BWAPI::Player player) const;
-
     void                    updateUnit(BWAPI::Unit unit);
     void                    initializeRegionInformation();
-    void                    initializeBaseInfoVector();
     void                    updateUnitInfo();
     void                    updateBaseLocationInfo();
     void                    updateOccupiedRegions(BWTA::Region * region,BWAPI::Player player);
@@ -35,10 +30,10 @@ class InformationManager
 
 public:
 
-    // yay for singletons!
-    static InformationManager & Instance();
+    InfoManager();
 
     void                    update();
+    void                    onStart();
 
     // event driven stuff
     void					onUnitShow(BWAPI::Unit unit)        { updateUnit(unit); }
@@ -51,8 +46,6 @@ public:
 
     bool					isEnemyBuildingInRegion(BWTA::Region * region);
     int						getNumUnits(BWAPI::UnitType type,BWAPI::Player player);
-    bool					nearbyForceHasCloaked(BWAPI::Position p,BWAPI::Player player,int radius);
-    bool					isCombatUnit(BWAPI::UnitType type) const;
 
     void                    getNearbyForce(std::vector<UnitInfo> & unitInfo,BWAPI::Position p,BWAPI::Player player,int radius);
 

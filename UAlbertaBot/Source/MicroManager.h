@@ -1,10 +1,7 @@
 #pragma once
 
 #include "Common.h"
-#include "MapGrid.h"
 #include "SquadOrder.h"
-#include "MapTools.h"
-#include "InformationManager.h"
 #include "Micro.h"
 
 namespace UAlbertaBot
@@ -12,18 +9,18 @@ namespace UAlbertaBot
 struct AirThreat
 {
 	BWAPI::Unit	unit;
-	double			weight;
+	double weight;
 };
 
 struct GroundThreat
 {
 	BWAPI::Unit	unit;
-	double			weight;
+	double weight;
 };
 
 class MicroManager
 {
-	BWAPI::Unitset  _units;
+	BWAPI::Unitset _units;
 
 protected:
 	
@@ -39,7 +36,6 @@ protected:
 
 public:
 						MicroManager();
-    virtual				~MicroManager(){}
 
 	const BWAPI::Unitset & getUnits() const;
 	BWAPI::Position     calcCenter() const;

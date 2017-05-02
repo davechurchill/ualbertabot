@@ -4,13 +4,6 @@
 
 using namespace UAlbertaBot;
 
-// get an instance of this
-BOSSManager & BOSSManager::Instance() 
-{
-	static BOSSManager instance;
-	return instance;
-}
-
 // constructor
 BOSSManager::BOSSManager() 
 	: _previousSearchStartFrame(0)
@@ -29,7 +22,7 @@ void BOSSManager::reset()
 }
 
 // start a new search for a new goal
-void BOSSManager::startNewSearch(const std::vector<MetaPair> & goalUnits)
+void BOSSManager::startNewSearch(const std::vector<MetaPair> & goalUnits, const BuildingManager & buildingManager)
 {
     size_t numWorkers   = UnitUtil::GetAllUnitCount(BWAPI::Broodwar->self()->getRace().getWorker());
     size_t numDepots    = UnitUtil::GetAllUnitCount(BWAPI::Broodwar->self()->getRace().getCenter())
@@ -53,7 +46,7 @@ void BOSSManager::startNewSearch(const std::vector<MetaPair> & goalUnits)
     {
         BOSS::BuildOrderSearchGoal goal = GetGoal(goalUnits);
 
-        BOSS::GameState initialState(BWAPI::Broodwar, BWAPI::Broodwar->self(), BuildingManager::Instance().buildingsQueued());
+        BOSS::GameState initialState(BWAPI::Broodwar, BWAPI::Broodwar->self(), buildingManager.buildingsQueued());
 
         _smartSearch = SearchPtr(new BOSS::DFBB_BuildOrderSmartSearch(initialState.getRace()));
         _smartSearch->setGoal(GetGoal(goalUnits));
@@ -102,14 +95,14 @@ void BOSSManager::drawSearchInformation(int x, int y)
     BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x, y+45), "BO Size: %d", (int)_savedSearchResults.buildOrder.size());
 }
 
-void BOSSManager::drawStateInformation(int x, int y) 
+void BOSSManager::drawStateInformation(int x, int y, const BuildingManager & buildingManager) 
 {
 	if (!Config::Debug::DrawBOSSStateInfo)
     {
         return;
     }
 
-    BOSS::GameState currentState(BWAPI::Broodwar, BWAPI::Broodwar->self(), BuildingManager::Instance().buildingsQueued());
+    BOSS::GameState currentState(BWAPI::Broodwar, BWAPI::Broodwar->self(), buildingManager.buildingsQueued());
     BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x-100, y+30), "\x04%s", currentState.getBuildingData().toString().c_str());
     BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x+150, y), "\x04%s", currentState.toString().c_str());
     

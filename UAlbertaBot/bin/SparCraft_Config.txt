@@ -1,0 +1,104 @@
+{
+
+"Policies" :
+{
+    "M_C"   : ["Move",   ["Enemy", "Unit", "Min", ["+Distance"]], 0, 16],
+    "A_C"   : ["Attack", ["Enemy", "Unit", "Min", ["+Distance"]]], 
+    "A_D"   : ["Attack", ["Enemy", "Unit", "Min", ["+DPS"]]], 
+    "A_W"   : ["Attack", ["Enemy", "Unit", "Min", ["+HP"]]], 
+    "A_S"   : ["Attack", ["Enemy", "Unit", "Max", ["+HP"]]], 
+    "A_WC"  : ["Attack", ["Enemy", "Unit", "Min", ["+HP", "+Distance"]]],
+    "A_WF"  : ["Attack", ["Enemy", "Unit", "Min", ["+HP", "-Focus"]]],
+    "A_WFC" : ["Attack", ["Enemy", "Unit", "Min", ["+HP", "-Focus", "+Distance"]]],
+    "A_-F"  : ["Attack", ["Enemy", "Unit", "Min", ["+Focus"]]],
+    "KiteC" : ["Move",   ["Enemy", "Unit", "Min", ["+Distance"]], 180, 16],
+    "R"     : ["Reload"],
+    "Pass"  : ["Pass", 1]
+},
+
+
+"Players" :
+{
+    "AttackClosestOld": { "Type":"AttackClosest" },
+    
+    "AttackC"        :  { "Type":"Script", "NOK":false, "OutOfRange":"M_C",  "InRange":"A_C",   "Reload":"R"      },
+    "AttackC_NOK"    :  { "Type":"Script", "NOK":true,  "OutOfRange":"M_C",  "InRange":"A_C",   "Reload":"R"      },                     
+    "AttackD"        :  { "Type":"Script", "NOK":false, "OutOfRange":"M_C",  "InRange":"A_D",   "Reload":"R"      },
+    "AttackW"        :  { "Type":"Script", "NOK":false, "OutOfRange":"M_C",  "InRange":"A_W",   "Reload":"R"      }, 
+    "AttackW_NOK"    :  { "Type":"Script", "NOK":true,  "OutOfRange":"M_C",  "InRange":"A_W",   "Reload":"R"      }, 
+    "AttackWF"       :  { "Type":"Script", "NOK":false, "OutOfRange":"M_C",  "InRange":"A_WF",  "Reload":"R"      }, 
+    "AttackWF_NOK"   :  { "Type":"Script", "NOK":true,  "OutOfRange":"M_C",  "InRange":"A_WF",  "Reload":"R"      }, 
+    "AttackWC"       :  { "Type":"Script", "NOK":false, "OutOfRange":"M_C",  "InRange":"A_WC",  "Reload":"R"      },
+    "AttackWC_NOK"   :  { "Type":"Script", "NOK":true,  "OutOfRange":"M_C",  "InRange":"A_WC",  "Reload":"R"      },
+    "AttackWFC"      :  { "Type":"Script", "NOK":false, "OutOfRange":"M_C",  "InRange":"A_WFC", "Reload":"R"      },
+    "AttackWFC_NOK"  :  { "Type":"Script", "NOK":true,  "OutOfRange":"M_C",  "InRange":"A_WFC", "Reload":"R"      },
+    "KiteC"          :  { "Type":"Script", "NOK":false, "OutOfRange":"M_C",  "InRange":"A_C",   "Reload":"KiteC"  },
+    "KiteWC"         :  { "Type":"Script", "NOK":false, "OutOfRange":"M_C",  "InRange":"A_WC",  "Reload":"KiteC"  },
+    "KiteWC_NOK"     :  { "Type":"Script", "NOK":true,  "OutOfRange":"M_C",  "InRange":"A_WC",  "Reload":"KiteC"  },
+    "AttackS"        :  { "Type":"Script", "NOK":false, "OutOfRange":"M_C",  "InRange":"A_S",   "Reload":"R"      },
+    "Attack-F"       :  { "Type":"Script", "NOK":false, "OutOfRange":"M_C",  "InRange":"A_-F",  "Reload":"R"      },
+	
+    "HoldC"          :  { "Type":"Script", "NOK":false, "OutOfRange":"Pass", "InRange":"A_C",   "Reload":"R"      },
+    "HoldWC_NOK"     :  { "Type":"Script", "NOK":true,  "OutOfRange":"Pass", "InRange":"A_WC",  "Reload":"R"      },
+    
+    "AB50" :            { "Type":"AlphaBeta", "TimeLimit":50, "MaxChildren":40, "MoveIterator":"HardIterator", 
+                          "PlayerToMove":"Alternate", "Eval":"Playout", "PlayoutPlayer":"AttackC" },
+                          
+    "UCT50" :           { "Type":"UCT", "TimeLimit":50, "MaxChildren":40, "MaxTraversals":0, "MoveIterator":"HardIterator", 
+                          "PlayerToMove":"Alternate", "Eval":"Playout", "PlayoutPlayer":"AttackC" },
+                          
+    "PGS" :             { "Type":"PortfolioGreedySearch", "TimeLimit":10, "EnemySeedPlayer":"AttackC", "Iterations":1, "Responses":0,
+                          "MaxPlayoutTurns":50, "Portfolio":["AttackWC_NOK", "KiteWC"] }
+},
+
+"Maps" :
+{
+	"Arena" :			{ "Type":"Arena", "Width":32, "Height":20},
+    "Destination" :     { "Type":"TextFile", "File":"destination.txt" }
+},
+
+"States" :
+{
+    "SampleState" :     { "Type":"StateFile", "Map":"Arena", "File":"SampleStateFile.txt"},
+    "Separated":        { "Type":"Symmetric", "Map":"Arena", "Border":[128,128], "Centers":[[150,180], [800,500]], 
+                            "Units":[["Protoss_Corsair", 2], ["Protoss_Zealot", 2]]},
+    "Symmetric":        { "Type":"Symmetric", "Border":[128,128], "Centers":[[640,360], [640,360]], "Units":[["Protoss_Dragoon", 16]] },
+    "TorchFrame" :      { "Type":"TorchCraftFrame", "File":"FrameData.txt"},
+	"TorchIn" :     	{ "Type":"TorchCraftStdIn", "File":"Torch2.txt"}
+},
+
+"Games" :
+[
+	{ "Play":true,  "Name":"Test",  "Games":10, "State":"Separated", "Players":["AttackC", "KiteWC_NOK"] },
+    { "Play":false, "Name":"TorchGame",  "Games":10, "State":"TorchIn", "Players":["AttackC", "AttackC"] }
+],
+
+"Benchmarks" :
+[   
+    { 
+        "Run":true, "Type":"Tournament", "Name":"Scripts", "Rounds":1000, "UpdateIntervalSec":5, "State":"Separated", 
+        "Players":
+        [ 
+            {"Name":"AttackC",       "Group":1}, 
+            {"Name":"AttackC_NOK",   "Group":2},
+            {"Name":"AttackW",       "Group":3}, 
+            {"Name":"AttackW_NOK",   "Group":4},
+            {"Name":"AttackWC",      "Group":5}, 
+            {"Name":"AttackWC_NOK",  "Group":6},
+            {"Name":"AttackWFC",     "Group":9}, 
+            {"Name":"AttackWFC_NOK", "Group":10},
+            {"Name":"PGS",           "Group":11}
+        ]
+    }
+],
+
+"GUI" : 
+{
+    "Enabled":true, "Width":1600, "Height":900, "DrawHPBar":true, "DrawCD":true, "FrameDelayMS":50
+},
+
+"Move Iterators" :
+{
+    "SampleIterator" :  { }
+}
+}

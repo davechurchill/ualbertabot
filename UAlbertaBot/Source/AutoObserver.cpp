@@ -1,5 +1,5 @@
 #include "AutoObserver.h"
-#include "WorkerManager.h"
+#include "Global.h"
 
 using namespace UAlbertaBot;
 
@@ -49,7 +49,7 @@ void AutoObserver::onFrame()
     {
 	    for (auto & unit : BWAPI::Broodwar->self()->getUnits())
 	    {
-		    if (WorkerManager::Instance().isWorkerScout(unit))
+		    if (Global::Workers().isWorkerScout(unit))
 		    {
 			    _cameraLastMoved = BWAPI::Broodwar->getFrameCount();
                 _unitFollowFrames = 6;

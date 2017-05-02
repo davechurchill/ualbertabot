@@ -8,18 +8,18 @@
         
     "BWAPI" : 
     {
-        "SetLocalSpeed"             : 5,
+        "SetLocalSpeed"             : 0,
         "SetFrameSkip"              : 0,
         "UserInput"                 : true,
         "CompleteMapInformation"    : false
     },
     
-	"SparCraft"
-	{
-		"SparCraftConfigFile"		: "bwapi-data/AI/SparCraft_Config.txt",
-		"RetreatSimPlayerName"      : "AttackClosest",
-		"ArenaPlayerName"	    	: "AttackClosest"
-	},
+    "SparCraft" :
+    {
+        "SparCraftConfigFile"       : "SparCraft_Config.txt",
+        "CombatSimPlayerName"       : "AttackC",
+        "ArenaPlayerName"           : "AttackC"
+    },
 	
     "Micro" :
     {
@@ -58,7 +58,7 @@
         "DrawCombatSimInfo"         : false,
         "DrawUnitTargetInfo"        : false,
         "DrawBWTAInfo"              : false,
-        "DrawMapGrid"               : false,
+        "DrawLastSeenTileInfo"      : false,
         "DrawSquadInfo"             : false,
         "DrawWorkerInfo"            : false,
         "DrawMouseCursorInfo"       : false,
@@ -89,7 +89,6 @@
         "Terran"                    : "Terran_MarineRush",
         "Zerg"                      : "Zerg_ZerglingRush",
         
-        "ScoutGasSteal"             : false,
         "ScoutHarassEnemy"          : true,
         
         "ReadDirectory"             : "bwapi-data/read/",

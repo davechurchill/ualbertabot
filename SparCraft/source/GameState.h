@@ -32,7 +32,6 @@ class GameState
 public:
 
     GameState();
-    GameState(const std::string & filename);
 
     // misc functions
     void                    updateGameTime();
@@ -43,8 +42,6 @@ public:
 
     // unit data functions
     size_t                  numUnits(const size_t & player)                                         const;
-    size_t                  numTotalUnits(const size_t & player)                                    const;
-    size_t                  prevNumUnits(const size_t & player)                                     const;
 
     // Unit functions
     void                    addUnit(const Unit & u);

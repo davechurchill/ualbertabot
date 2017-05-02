@@ -2,7 +2,7 @@
 #include "rapidjson\document.h"
 #include "JSONTools.h"
 #include "BuildOrder.h"
-#include "StrategyManager.h"
+#include "Global.h"
 
 using namespace UAlbertaBot;
 
@@ -88,27 +88,27 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
     if (doc.HasMember("Debug") && doc["Debug"].IsObject())
     {
         const rapidjson::Value & debug = doc["Debug"];
-        JSONTools::ReadString("ErrorLogFilename", debug, Config::Debug::ErrorLogFilename);
-        JSONTools::ReadBool("LogAssertToErrorFile", debug, Config::Debug::LogAssertToErrorFile);
-        JSONTools::ReadBool("DrawGameInfo", debug, Config::Debug::DrawGameInfo);
+        JSONTools::ReadString("ErrorLogFilename",       debug, Config::Debug::ErrorLogFilename);
+        JSONTools::ReadBool("LogAssertToErrorFile",     debug, Config::Debug::LogAssertToErrorFile);
+        JSONTools::ReadBool("DrawGameInfo",             debug, Config::Debug::DrawGameInfo);
         JSONTools::ReadBool("DrawBuildOrderSearchInfo", debug, Config::Debug::DrawBuildOrderSearchInfo);
-        JSONTools::ReadBool("DrawUnitHealthBars", debug, Config::Debug::DrawUnitHealthBars);
-        JSONTools::ReadBool("DrawResourceInfo", debug, Config::Debug::DrawResourceInfo);
-        JSONTools::ReadBool("DrawWorkerInfo", debug, Config::Debug::DrawWorkerInfo);
-        JSONTools::ReadBool("DrawProductionInfo", debug, Config::Debug::DrawProductionInfo);
-        JSONTools::ReadBool("DrawScoutInfo", debug, Config::Debug::DrawScoutInfo);
-        JSONTools::ReadBool("DrawSquadInfo", debug, Config::Debug::DrawSquadInfo);
-        JSONTools::ReadBool("DrawCombatSimInfo", debug, Config::Debug::DrawCombatSimulationInfo);
-        JSONTools::ReadBool("DrawBuildingInfo", debug, Config::Debug::DrawBuildingInfo);
-        JSONTools::ReadBool("DrawModuleTimers", debug, Config::Debug::DrawModuleTimers);
-        JSONTools::ReadBool("DrawMouseCursorInfo", debug, Config::Debug::DrawMouseCursorInfo);
-        JSONTools::ReadBool("DrawEnemyUnitInfo", debug, Config::Debug::DrawEnemyUnitInfo);
-        JSONTools::ReadBool("DrawBWTAInfo", debug, Config::Debug::DrawBWTAInfo);
-        JSONTools::ReadBool("DrawMapGrid", debug, Config::Debug::DrawMapGrid);
-        JSONTools::ReadBool("DrawUnitTargetInfo", debug, Config::Debug::DrawUnitTargetInfo);
-        JSONTools::ReadBool("DrawReservedBuildingTiles", debug, Config::Debug::DrawReservedBuildingTiles);
-        JSONTools::ReadBool("DrawBOSSStateInfo", debug, Config::Debug::DrawBOSSStateInfo); 
-        JSONTools::ReadBool("PrintModuleTimeout", debug, Config::Debug::PrintModuleTimeout);
+        JSONTools::ReadBool("DrawUnitHealthBars",       debug, Config::Debug::DrawUnitHealthBars);
+        JSONTools::ReadBool("DrawResourceInfo",         debug, Config::Debug::DrawResourceInfo);
+        JSONTools::ReadBool("DrawWorkerInfo",           debug, Config::Debug::DrawWorkerInfo);
+        JSONTools::ReadBool("DrawProductionInfo",       debug, Config::Debug::DrawProductionInfo);
+        JSONTools::ReadBool("DrawScoutInfo",            debug, Config::Debug::DrawScoutInfo);
+        JSONTools::ReadBool("DrawSquadInfo",            debug, Config::Debug::DrawSquadInfo);
+        JSONTools::ReadBool("DrawCombatSimInfo",        debug, Config::Debug::DrawCombatSimulationInfo);
+        JSONTools::ReadBool("DrawBuildingInfo",         debug, Config::Debug::DrawBuildingInfo);
+        JSONTools::ReadBool("DrawModuleTimers",         debug, Config::Debug::DrawModuleTimers);
+        JSONTools::ReadBool("DrawMouseCursorInfo",      debug, Config::Debug::DrawMouseCursorInfo);
+        JSONTools::ReadBool("DrawEnemyUnitInfo",        debug, Config::Debug::DrawEnemyUnitInfo);
+        JSONTools::ReadBool("DrawBWTAInfo",             debug, Config::Debug::DrawBWTAInfo);
+        JSONTools::ReadBool("DrawLastSeenTileInfo",     debug, Config::Debug::DrawLastSeenTileInfo);
+        JSONTools::ReadBool("DrawUnitTargetInfo",       debug, Config::Debug::DrawUnitTargetInfo);
+        JSONTools::ReadBool("DrawReservedBuildingTiles",debug, Config::Debug::DrawReservedBuildingTiles);
+        JSONTools::ReadBool("DrawBOSSStateInfo",        debug, Config::Debug::DrawBOSSStateInfo); 
+        JSONTools::ReadBool("PrintModuleTimeout",       debug, Config::Debug::PrintModuleTimeout);
     }
 
     // Parse the Module Options
@@ -139,6 +139,7 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
         const rapidjson::Value & sc = doc["SparCraft"];
 
         JSONTools::ReadString("SparCraftConfigFile", sc, Config::SparCraft::SparCraftConfigFile);
+        JSONTools::ReadString("CombatSimPlayerName", sc, Config::SparCraft::CombatSimPlayerName);
         JSONTools::ReadString("ArenaPlayerName", sc, Config::SparCraft::ArenaPlayerName);
     }
 
@@ -148,7 +149,6 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
         const rapidjson::Value & strategy = doc["Strategy"];
 
         // read in the various strategic elements
-        JSONTools::ReadBool("ScoutGasSteal", strategy, Config::Strategy::GasStealWithScout);
         JSONTools::ReadBool("ScoutHarassEnemy", strategy, Config::Strategy::ScoutHarassEnemy);
         JSONTools::ReadString("ReadDirectory", strategy, Config::Strategy::ReadDir);
         JSONTools::ReadString("WriteDirectory", strategy, Config::Strategy::WriteDir);
@@ -225,7 +225,7 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
                     }
                 }
 
-                StrategyManager::Instance().addStrategy(name, Strategy(name, strategyRace, buildOrder));
+                Global::Strategy().addStrategy(name, Strategy(name, strategyRace, buildOrder));
             }
         }
     }
@@ -250,59 +250,7 @@ void ParseUtils::ParseTextCommand(const std::string & commandString)
     ss >> variableName;
     ss >> val;
 
-    if (command == "/set")
-    {
-        // BWAPI options
-        if (variableName == "setlocalspeed") { Config::BWAPIOptions::SetLocalSpeed = GetIntFromString(val); BWAPI::Broodwar->setLocalSpeed(Config::BWAPIOptions::SetLocalSpeed); }
-        else if (variableName == "setframeskip") { Config::BWAPIOptions::SetFrameSkip = GetIntFromString(val); BWAPI::Broodwar->setFrameSkip(Config::BWAPIOptions::SetFrameSkip); }
-        else if (variableName == "userinput") { Config::BWAPIOptions::EnableUserInput = GetBoolFromString(val); if (Config::BWAPIOptions::EnableUserInput) BWAPI::Broodwar->enableFlag(BWAPI::Flag::UserInput); }
-        else if (variableName == "completemapinformation") { Config::BWAPIOptions::EnableCompleteMapInformation = GetBoolFromString(val); if (Config::BWAPIOptions::EnableCompleteMapInformation) BWAPI::Broodwar->enableFlag(BWAPI::Flag::UserInput); }
-        
-        // Micro Options
-        else if (variableName == "usesparcraftsimulation") { Config::Micro::UseSparcraftSimulation = GetBoolFromString(val); }
-        else if (variableName == "workersdefendrush") { Config::Micro::WorkersDefendRush = GetBoolFromString(val); }
-        else if (variableName == "incombatradius") { Config::Micro::CombatRadius = GetIntFromString(val); }
-        else if (variableName == "regroupradius") { Config::Micro::CombatRegroupRadius = GetIntFromString(val); }
-        else if (variableName == "unitnearenemyradius") { Config::Micro::UnitNearEnemyRadius = GetIntFromString(val); }
-
-        // Macro Options
-        else if (variableName == "buildingspacing") { Config::Macro::BuildingSpacing = GetIntFromString(val); }
-        else if (variableName == "pylonspacing") { Config::Macro::PylonSpacing = GetIntFromString(val); }
-
-        // Debug Options
-        else if (variableName == "errorlogfilename") { Config::Debug::ErrorLogFilename = val; }
-        else if (variableName == "printmoduletimeout") { Config::Debug::PrintModuleTimeout = GetBoolFromString(val); }
-        else if (variableName == "drawbuildordersearchinfo") { Config::Debug::DrawBuildOrderSearchInfo = GetBoolFromString(val); }
-        else if (variableName == "drawunithealthbars") { Config::Debug::DrawUnitHealthBars = GetBoolFromString(val); }
-        else if (variableName == "drawproductioninfo") { Config::Debug::DrawProductionInfo = GetBoolFromString(val); }
-        else if (variableName == "drawenemyunitinfo") { Config::Debug::DrawEnemyUnitInfo = GetBoolFromString(val); }
-        else if (variableName == "drawmoduletimers") { Config::Debug::DrawModuleTimers = GetBoolFromString(val); }
-        else if (variableName == "drawresourceinfo") { Config::Debug::DrawResourceInfo = GetBoolFromString(val); }
-        else if (variableName == "drawcombatsiminfo") { Config::Debug::DrawCombatSimulationInfo = GetBoolFromString(val); }
-        else if (variableName == "drawunittargetinfo") { Config::Debug::DrawUnitTargetInfo = GetBoolFromString(val); }
-        else if (variableName == "drawbwtainfo") { Config::Debug::DrawBWTAInfo = GetBoolFromString(val); }
-        else if (variableName == "drawmapgrid") { Config::Debug::DrawMapGrid = GetBoolFromString(val); }
-        else if (variableName == "drawsquadinfo") { Config::Debug::DrawSquadInfo = GetBoolFromString(val); }
-        else if (variableName == "drawworkerinfo") { Config::Debug::DrawWorkerInfo = GetBoolFromString(val); }
-        else if (variableName == "drawmousecursorinfo") { Config::Debug::DrawMouseCursorInfo = GetBoolFromString(val); }
-        else if (variableName == "drawbuildinginfo") { Config::Debug::DrawBuildingInfo = GetBoolFromString(val); }
-        else if (variableName == "drawreservedbuildingtiles") { Config::Debug::DrawReservedBuildingTiles = GetBoolFromString(val); }
-
-        // Module Options
-        else if (variableName == "usegamecommander") { Config::Modules::UsingGameCommander = GetBoolFromString(val); }
-        else if (variableName == "usescoutmanager") { Config::Modules::UsingScoutManager = GetBoolFromString(val); }
-        else if (variableName == "usecombatcommander") { Config::Modules::UsingCombatCommander = GetBoolFromString(val); }
-        else if (variableName == "usebuildordersearch") { Config::Modules::UsingBuildOrderSearch = GetBoolFromString(val); }
-        else if (variableName == "useautoobserver") { Config::Modules::UsingAutoObserver = GetBoolFromString(val); }
-        else if (variableName == "usestrategyio") { Config::Modules::UsingStrategyIO = GetBoolFromString(val); }
-        else if (variableName == "useunitcommandmanager") { Config::Modules::UsingUnitCommandManager = GetBoolFromString(val); }
-
-        else { UAB_ASSERT_WARNING(false, "Unknown variable name for /set: %s", variableName.c_str()); }
-    }
-    else
-    {
-        UAB_ASSERT_WARNING(false, "Unknown command: %s", command.c_str());
-    }
+    
 }
 
 BWAPI::Race ParseUtils::GetRace(const std::string & raceName)

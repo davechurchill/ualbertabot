@@ -3,15 +3,13 @@
 #include <Common.h>
 #include "WorkerManager.h"
 #include "BuildingPlacer.h"
-#include "InformationManager.h"
 #include "MapTools.h"
 
 namespace UAlbertaBot
 {
 class BuildingManager
 {
-    BuildingManager();
-
+    BuildingPlacer  _buildingPlacer;
     std::vector<Building> _buildings;
 
     bool            _debugMode;
@@ -30,16 +28,14 @@ class BuildingManager
     void            checkForCompletedBuildings();			// STEP 6
 
     char            getBuildingWorkerCode(const Building & b) const;
-    
+              
 
 public:
     
-    static BuildingManager &	Instance();
+    BuildingManager();
 
     void                update();
-    void                onUnitMorph(BWAPI::Unit unit);
-    void                onUnitDestroy(BWAPI::Unit unit);
-    void                addBuildingTask(BWAPI::UnitType type,BWAPI::TilePosition desiredLocation,bool isGasSteal);
+    void                addBuildingTask(BWAPI::UnitType type,BWAPI::TilePosition desiredLocation);
     void                drawBuildingInformation(int x,int y);
     BWAPI::TilePosition getBuildingLocation(const Building & b);
 
@@ -48,6 +44,9 @@ public:
 
     bool                isBeingBuilt(BWAPI::UnitType type);
 
-    std::vector<BWAPI::UnitType> buildingsQueued();
+    std::vector<BWAPI::Unit> & getFinishedWorkers();
+    std::vector<BWAPI::Unit> & getFinishedScouts();
+
+    std::vector<BWAPI::UnitType> buildingsQueued() const;
 };
 }

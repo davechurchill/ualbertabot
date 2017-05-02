@@ -2,20 +2,15 @@
 
 using namespace UAlbertaBot;
 
-MapTools & MapTools::Instance()
-{
-    static MapTools instance;
-    return instance;
-}
-
 // constructor for MapTools
 MapTools::MapTools()
     : _rows(BWAPI::Broodwar->mapHeight())
     , _cols(BWAPI::Broodwar->mapWidth())
 {
-    _map    = std::vector<bool>(_rows*_cols,false);
-    _units  = std::vector<bool>(_rows*_cols,false);
-    _fringe = std::vector<int>(_rows*_cols,0);
+    _map        = std::vector<bool>(_rows*_cols, false);
+    _units      = std::vector<bool>(_rows*_cols, false);
+    _fringe     = std::vector<int>(_rows*_cols, 0);
+    _lastSeen   = std::vector<int>(_rows*_cols, 0);
 
     setBWAPIMapData();
 }
@@ -105,7 +100,7 @@ int MapTools::getGroundDistance(BWAPI::Position origin,BWAPI::Position destinati
 }
 
 // computes walk distance from Position P to all other points on the map
-void MapTools::computeDistance(DistanceMap & dmap,const BWAPI::Position p)
+void MapTools::computeDistance(DistanceMap & dmap, const BWAPI::Position p)
 {
     search(dmap,p.y / 32,p.x / 32);
 }
@@ -196,10 +191,16 @@ void MapTools::search(DistanceMap & dmap,const int sR,const int sC)
     }
 }
 
+// returns a list of all tiles on the map, sorted by 4-direcitonal walk distance from the given position
 const std::vector<BWAPI::TilePosition> & MapTools::getClosestTilesTo(BWAPI::Position pos)
 {
-    // make sure the distance map is calculated with pos as a destination
-    int a = getGroundDistance(BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation()),pos);
+    // if we haven't yet computed the distance map to the position (as a destination), do it
+    if (_allMaps.find(pos) == _allMaps.end())
+    {
+        // add the map and compute it
+        _allMaps.insert(std::pair<BWAPI::Position,DistanceMap>(pos, DistanceMap()));
+        computeDistance(_allMaps[pos], pos);
+    }
 
     return _allMaps[pos].getSortedTiles();
 }
@@ -226,6 +227,24 @@ void MapTools::drawHomeDistanceMap()
             int dist = getGroundDistance(pos, homePosition);
 
             BWAPI::Broodwar->drawTextMap(pos + BWAPI::Position(16,16), "%d", dist);
+        }
+    }
+}
+
+void MapTools::drawLastSeen()
+{
+    if (!Config::Debug::DrawLastSeenTileInfo)
+    {
+        return;
+    }
+
+    for (int x = 0; x < BWAPI::Broodwar->mapWidth(); ++x)
+    {
+        for (int y = 0; y < BWAPI::Broodwar->mapHeight(); ++y)
+        {
+            BWAPI::Position pos(x*32, y*32);
+
+            BWAPI::Broodwar->drawTextMap(pos + BWAPI::Position(16,16), "%d", BWAPI::Broodwar->getFrameCount() - _lastSeen[getIndex(y, x)]);
         }
     }
 }
@@ -272,7 +291,7 @@ BWAPI::TilePosition MapTools::getNextExpansion(BWAPI::Player player)
             // the base's distance from our main nexus
             BWAPI::Position myBasePosition(player->getStartLocation());
             BWAPI::Position thisTile = BWAPI::Position(tile);
-            double distanceFromHome = MapTools::Instance().getGroundDistance(thisTile,myBasePosition);
+            double distanceFromHome = getGroundDistance(thisTile,myBasePosition);
 
             // if it is not connected, continue
             if (!BWTA::isConnected(homeTile,tile) || distanceFromHome < 0)
@@ -329,4 +348,82 @@ void MapTools::parseMap()
     BWAPI::Broodwar->printf(file.c_str());
 
     mapFile.close();
+}
+
+// get units within radius of center and add to units
+void MapTools::GetUnits(BWAPI::Unitset & units, BWAPI::Position center, int radius, bool ourUnits, bool oppUnits)
+{
+    const int radiusSquared = radius * radius;
+
+    if (ourUnits)
+    {
+        for (const BWAPI::Unit & unit : BWAPI::Broodwar->self()->getUnits())
+        {
+            if (unit->getPosition().getDistance(center) <= radius)
+            {
+                units.insert(unit);
+            }
+        }
+    }
+
+    if (oppUnits)
+    {
+        for (const BWAPI::Unit & unit : BWAPI::Broodwar->enemy()->getUnits())
+        {
+            if (unit->getPosition().getDistance(center) <= radius)
+            {
+                units.insert(unit);
+            }
+        }
+    }
+}
+
+void MapTools::update()
+{
+    // update all the tiles that we see this frame
+    for (int r=0; r<_rows; ++r)
+    {
+        for (int c=0; c<_cols; ++c)
+        {
+            if (BWAPI::Broodwar->isVisible(BWAPI::TilePosition(c, r)))
+            {
+                _lastSeen[getIndex(r,c)] = BWAPI::Broodwar->getFrameCount();
+            }
+        }
+    }
+
+    drawLastSeen();
+}
+
+BWAPI::Position MapTools::getLeastRecentlySeenPosition() 
+{
+	int minSeen = 1000000;
+	double minSeenDist = 0;
+	BWAPI::TilePosition leastSeen(0,0);
+
+	for (int r=0; r<_rows; ++r)
+	{
+		for (int c=0; c<_cols; ++c)
+		{
+			// get the center of this cell
+			BWAPI::TilePosition tile(c, r);
+
+			// don't worry about places that aren't connected to our start locatin
+			if (!BWTA::isConnected(tile, BWAPI::Broodwar->self()->getStartLocation()))
+			{
+				continue;
+			}
+
+            double dist = BWAPI::Broodwar->self()->getStartLocation().getDistance(tile);
+            int lastSeen = _lastSeen[getIndex(r,c)];
+			if (lastSeen < minSeen || ((lastSeen == minSeen) && (dist > minSeenDist)))
+			{
+				minSeen = lastSeen;
+				minSeenDist = dist;
+                leastSeen = tile;
+			}
+		}
+	}
+
+	return BWAPI::Position(leastSeen);
 }

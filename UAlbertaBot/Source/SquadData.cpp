@@ -1,4 +1,5 @@
 #include "SquadData.h"
+#include "Global.h"
 
 using namespace UAlbertaBot;
 
@@ -26,7 +27,7 @@ void SquadData::clearSquadData()
         {
             if (unit->getType().isWorker())
             {
-                WorkerManager::Instance().finishedWithWorker(unit);
+                Global::Workers().finishedWithWorker(unit);
             }
         }
 	}
@@ -48,7 +49,7 @@ void SquadData::removeSquad(const std::string & squadName)
     {
         if (unit->getType().isWorker())
         {
-            WorkerManager::Instance().finishedWithWorker(unit);
+            Global::Workers().finishedWithWorker(unit);
         }
     }
 

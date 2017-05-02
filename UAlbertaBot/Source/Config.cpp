@@ -9,7 +9,7 @@ namespace Config
     {
         bool ConfigFileFound                = false;
         bool ConfigFileParsed               = false;
-        std::string ConfigFileLocation      = "bwapi-data/AI/UAlbertaBot_Config.txt";
+        std::string ConfigFileLocation      = "UAlbertaBot_Config.txt";
     }
 
     namespace Strategy
@@ -20,7 +20,6 @@ namespace Config
         std::string StrategyName            = "Protoss_ZealotRush";
         std::string ReadDir                 = "bwapi-data/read/";
         std::string WriteDir                = "bwapi-data/write/";
-        bool GasStealWithScout              = false;
         bool ScoutHarassEnemy               = true;
         bool UseEnemySpecificStrategy       = false;
         bool FoundEnemySpecificStrategy     = false;
@@ -58,7 +57,8 @@ namespace Config
     
     namespace SparCraft
     {
-        std::string SparCraftConfigFile     = "bwapi-data/AI/SparCraft_Config.txt";
+        std::string SparCraftConfigFile     = "SparCraft_Config.txt";
+        std::string CombatSimPlayerName     = "AttackC";
         std::string ArenaPlayerName;
     }
     
@@ -83,7 +83,7 @@ namespace Config
         bool DrawMouseCursorInfo            = false;
         bool DrawEnemyUnitInfo              = false;
         bool DrawBWTAInfo                   = false;
-        bool DrawMapGrid                    = false;
+        bool DrawLastSeenTileInfo           = false;
         bool DrawUnitTargetInfo             = false;
         bool DrawSquadInfo                  = false;
         bool DrawBOSSStateInfo              = false;

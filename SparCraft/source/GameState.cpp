@@ -52,45 +52,14 @@ void GameState::doAction(const Action & action)
         }
         else 
         {
-            int pX = action.pos().x();
-            int pY = action.pos().y();
-
-            if (pX < ourUnit.type().dimensionLeft()) 
-            { 
-                pX = ourUnit.type().dimensionLeft(); 
-            }
-            
-            if (pY < ourUnit.type().dimensionUp())
-            { 
-                pY = ourUnit.type().dimensionUp();
-            }
-
-            if (pX > (int)_map->getPixelWidth() - ourUnit.type().dimensionRight()) 
-            { 
-                pX = _map->getPixelWidth() - ourUnit.type().dimensionRight(); 
-            }
-
-            if (pY > (int)_map->getPixelHeight() - ourUnit.type().dimensionDown())
-            { 
-                pY = _map->getPixelHeight() - ourUnit.type().dimensionDown(); 
-            }
+            int pX = std::max(action.pos().x(), ourUnit.type().dimensionLeft());
+            int pY = std::max(action.pos().y(), ourUnit.type().dimensionUp());
+            pX = std::min(pX, (int)_map->getPixelWidth() - ourUnit.type().dimensionRight());
+            pY = std::min(pY, (int)_map->getPixelHeight() - ourUnit.type().dimensionDown());
 
             Action newAction(action.getID(), action.getPlayerID(), ActionTypes::MOVE, 0, Position(pX, pY));
-
             ourUnit.move(newAction, getTime());
         }
-	}
-	else if (action.type() == ActionTypes::HEAL)
-	{
-		Unit & ourOtherUnit = _getUnitByID(action.getTargetID());
-			
-		// attack the unit
-		ourUnit.heal(action, ourOtherUnit, _currentTime);
-			
-		if (ourOtherUnit.isAlive())
-		{
-			ourOtherUnit.takeHeal(ourUnit);
-		}
 	}
 	else if (action.type() == ActionTypes::RELOAD)
 	{
@@ -159,24 +128,12 @@ Unit & GameState::_getUnitByID(const size_t & unitID)
 
 bool GameState::isWalkable(const Position & pos) const
 {
-	if (_map)
-	{
-		return _map->isWalkable(pos);
-	}
-
-	// if there is no map, then return true
-	return true;
+    return _map ? _map->isWalkable(pos) : true;
 }
 
 bool GameState::isFlyable(const Position & pos) const
 {
-	if (_map)
-	{
-		return _map->isFlyable(pos);
-	}
-
-	// if there is no map, then return true
-	return true;
+    return _map ? _map->isFlyable(pos) : true;
 }
 
 size_t GameState::getEnemy(const size_t & player) const
@@ -203,6 +160,13 @@ Unit & GameState::_getUnit(const size_t & player, const size_t & unitIndex)
 
 const Unit & GameState::getUnit(const size_t & player, const size_t & unitIndex) const
 {
+    const Unit & unit = _unitData.getUnit(player, unitIndex);
+
+    if (!unit.isAlive())
+    {
+        std::cout << "Returning a dead unit: Player=" << player << " Index=" << unitIndex << " Unit Type: " << unit.type().getName() << "\n";
+    }
+
     SPARCRAFT_ASSERT(_unitData.getUnit(player, unitIndex).isAlive(), "Trying to get dead unit");
 
     return _unitData.getUnit(player, unitIndex);
@@ -210,17 +174,11 @@ const Unit & GameState::getUnit(const size_t & player, const size_t & unitIndex)
 
 bool GameState::playerDead(const size_t & player) const
 {
-	if (numUnits(player) <= 0)
-	{
-		return true;
-	}
-
-	return false;
+    return numUnits(player) <= 0;
 }
 
 size_t GameState::winner() const
 {
-
     if (playerDead(Players::Player_One) && playerDead(Players::Player_Two))
     {
         return Players::Player_None;
@@ -249,12 +207,10 @@ size_t GameState::whoCanMove() const
         return Players::Player_None;
     }
 
-	// if player one is to move first
 	if (p1Time < p2Time)
 	{
 		return Players::Player_One;
 	}
-	// if player two is to move first
 	else if (p1Time > p2Time)
 	{
 		return Players::Player_Two;
@@ -331,17 +287,13 @@ bool GameState::gameOver() const
         return true;
     }
 
-    // if everyone is immobile and we can't attack anyone
-
-    // if nobody on one team has the weapon type to attack anyone on the other team
-    
-
+    // If any unit on any player's side is a mobile attacker, then there is no deadlock
 	for (size_t p(0); p<Constants::Num_Players; ++p)
 	{
 		for (size_t u(0); u<numUnits(p); ++u)
 		{
 			// if any unit on any team is a mobile attacker
-			if (getUnit(p, u).isMobile() && !getUnit(p, u).canHeal())
+			if (getUnit(p, u).isMobile())
 			{
 				// there is no deadlock, so return false
 				return false;
@@ -366,11 +318,6 @@ bool GameState::gameOver() const
             }
 		}
 	}
-	
-	if (attackDeadlock)
-    {
-        printf("Attack Deadlock Detected\n");
-    }
 
     return attackDeadlock;
 }

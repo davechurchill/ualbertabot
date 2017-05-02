@@ -33,6 +33,7 @@ namespace Config
     namespace SparCraft
     {
         extern std::string SparCraftConfigFile;
+        extern std::string CombatSimPlayerName;
         extern std::string ArenaPlayerName;
     }
 
@@ -46,7 +47,6 @@ namespace Config
         extern std::string StrategyName;
         extern std::string ReadDir;
         extern std::string WriteDir;
-        extern bool GasStealWithScout;
         extern bool ScoutHarassEnemy;
         extern bool UseEnemySpecificStrategy;
         extern bool FoundEnemySpecificStrategy;
@@ -81,7 +81,7 @@ namespace Config
         extern bool DrawMouseCursorInfo;
         extern bool DrawEnemyUnitInfo;
         extern bool DrawBWTAInfo;
-        extern bool DrawMapGrid;
+        extern bool DrawLastSeenTileInfo;
         extern bool DrawUnitTargetInfo;
         extern bool DrawSquadInfo;
         extern bool DrawBOSSStateInfo;

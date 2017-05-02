@@ -14,17 +14,16 @@ struct Rect
 namespace UnitUtil
 {      
     bool IsCombatUnit(BWAPI::Unit unit);
+    bool IsCombatUnitType(BWAPI::UnitType unit);
     bool IsValidUnit(BWAPI::Unit unit);
     bool CanAttackAir(BWAPI::Unit unit);
     bool CanAttackGround(BWAPI::Unit unit);
-    bool IsGroundTarget(BWAPI::Unit unit);
-    bool IsAirTarget(BWAPI::Unit unit);
     bool CanAttack(BWAPI::Unit attacker, BWAPI::Unit target);
-    bool CanAttack(BWAPI::UnitType attacker, BWAPI::UnitType target);
+    bool IsMorphedBuildingType(BWAPI::UnitType type);
     double CalculateLTD(BWAPI::Unit attacker, BWAPI::Unit target);
     int GetAttackRange(BWAPI::Unit attacker, BWAPI::Unit target);
     int GetAttackRange(BWAPI::UnitType attacker, BWAPI::UnitType target);
-    int GetTransportSize(BWAPI::UnitType type);
+    
 
     size_t GetAllUnitCount(BWAPI::UnitType type);
 

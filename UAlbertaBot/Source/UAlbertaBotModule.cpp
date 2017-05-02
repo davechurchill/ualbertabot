@@ -1,31 +1,34 @@
-/* 
- +----------------------------------------------------------------------+
- | UAlbertaBot                                                          |
- +----------------------------------------------------------------------+
- | University of Alberta - AIIDE StarCraft Competition                  |
- +----------------------------------------------------------------------+
- |                                                                      |
- +----------------------------------------------------------------------+
- | Author: David Churchill <dave.churchill@gmail.com>                   |
- +----------------------------------------------------------------------+
-*/
-
 #include "Common.h"
 #include "UAlbertaBotModule.h"
 #include "JSONTools.h"
 #include "ParseUtils.h"
 #include "UnitUtil.h"
+#include "Global.h"
 
 using namespace UAlbertaBot;
+
+UAlbertaBotModule::UAlbertaBotModule()
+{
+
+}
+
+UAlbertaBotModule::~UAlbertaBotModule()
+{
+    Global::SetModule(nullptr);
+}
 
 // This gets called when the bot starts!
 void UAlbertaBotModule::onStart()
 {
     // Initialize SparCraft, the combat simulation package
     SparCraft::init();
+    SparCraft::AIParameters::Instance().parseFile(Config::SparCraft::SparCraftConfigFile);
 
     // Initialize BOSS, the Build Order Search System
     BOSS::init();
+
+    // Initialize all the global classes in UAlbertaBot 
+    Global::SetModule(this);
 
     // Parse the bot's configuration file if it has one, change this file path to where your config file is
     // Any relative path name will be relative to Starcraft installation folder
@@ -53,14 +56,16 @@ void UAlbertaBotModule::onStart()
     // Call BWTA to read and analyze the current map
     if (Config::Modules::UsingGameCommander)
 	{
-		BWTA::readMap();
+        BWTA::readMap();
 		BWTA::analyze();
 
         if (Config::Modules::UsingStrategyIO)
         {
-            StrategyManager::Instance().readResults();
-            StrategyManager::Instance().setLearnedStrategy();
+            _strategyManager.readResults();
+            _strategyManager.setLearnedStrategy();
         }
+
+        _gameCommander.onStart();
 	}
 }
 
@@ -68,8 +73,28 @@ void UAlbertaBotModule::onEnd(bool isWinner)
 {
 	if (Config::Modules::UsingGameCommander)
 	{
-		StrategyManager::Instance().onEnd(isWinner);
+		_strategyManager.onEnd(isWinner);
 	}	
+}
+
+WorkerManager & UAlbertaBotModule::getWorkerManager()
+{
+    return _workerManager;
+}
+
+InfoManager & UAlbertaBotModule::getInfoManager()
+{
+    return _infoManager;
+}
+
+StrategyManager & UAlbertaBotModule::getStrategyManager()
+{
+    return _strategyManager;
+}
+
+MapTools & UAlbertaBotModule::getMapTools()
+{
+    return _mapTools;
 }
 
 void UAlbertaBotModule::onFrame()

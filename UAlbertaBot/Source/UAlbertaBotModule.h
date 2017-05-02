@@ -5,22 +5,30 @@
 #include <iostream>
 #include <fstream>
 #include "Logger.h"
-#include "MapTools.h"
 #include "HardCodedInfo.h"
 #include "Config.h"
 #include "AutoObserver.h"
-
 #include "rapidjson\document.h"
+#include "Global.h"
+#include "MapTools.h"
+#include "InfoManager.h"
 
 namespace UAlbertaBot
 {
 
-class UAlbertaBotModule : public BWAPI::AIModule
+class UAlbertaBotModule
 {
 	GameCommander   _gameCommander;
     AutoObserver    _autoObserver;
+    WorkerManager   _workerManager;
+    InfoManager     _infoManager;
+    StrategyManager _strategyManager;
+    MapTools        _mapTools;
 
 public:
+
+            UAlbertaBotModule();
+            ~UAlbertaBotModule();
 
 	void	onStart();
 	void	onFrame();
@@ -33,6 +41,11 @@ public:
 	void	onUnitShow(BWAPI::Unit unit);
 	void	onUnitHide(BWAPI::Unit unit);
 	void	onUnitRenegade(BWAPI::Unit unit);
+
+    WorkerManager & getWorkerManager();
+    InfoManager & getInfoManager();
+    StrategyManager & getStrategyManager();
+    MapTools & getMapTools();
 };
 
 }

@@ -1,13 +1,17 @@
 #include "ProductionManager.h"
+#include "Global.h"
+#include "UnitUtil.h"
 
 using namespace UAlbertaBot;
 
-ProductionManager::ProductionManager() 
-	: _assignedWorkerForThisBuilding (false)
+ProductionManager::ProductionManager( BOSSManager & bossManager) 
+	: _bossManager(bossManager)
+    , _buildingManager()
+    , _assignedWorkerForThisBuilding (false)
 	, _haveLocationForThisBuilding   (false)
 	, _enemyCloakedDetected          (false)
 {
-    setBuildOrder(StrategyManager::Instance().getOpeningBookBuildOrder());
+    
 }
 
 void ProductionManager::setBuildOrder(const BuildOrder & buildOrder)
@@ -27,20 +31,25 @@ void ProductionManager::performBuildOrderSearch()
         return;
     }
 
-	BuildOrder & buildOrder = BOSSManager::Instance().getBuildOrder();
+	BuildOrder & buildOrder = _bossManager.getBuildOrder();
 
     if (buildOrder.size() > 0)
     {
 	    setBuildOrder(buildOrder);
-        BOSSManager::Instance().reset();
+        _bossManager.reset();
     }
     else
     {
-        if (!BOSSManager::Instance().isSearchInProgress())
+        if (!_bossManager.isSearchInProgress())
         {
-			BOSSManager::Instance().startNewSearch(StrategyManager::Instance().getBuildOrderGoal());
+			_bossManager.startNewSearch(Global::Strategy().getBuildOrderGoal(), _buildingManager);
         }
     }
+}
+
+void ProductionManager::onStart()
+{
+    setBuildOrder(Global::Strategy().getOpeningBookBuildOrder());
 }
 
 void ProductionManager::update() 
@@ -70,7 +79,7 @@ void ProductionManager::update()
 	}
 
 	// if they have cloaked units get a new goal asap
-	if (!_enemyCloakedDetected && InformationManager::Instance().enemyHasCloakedUnits())
+	if (!_enemyCloakedDetected && Global::Info().enemyHasCloakedUnits())
 	{
         if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Protoss)
         {
@@ -106,6 +115,8 @@ void ProductionManager::update()
 
 		_enemyCloakedDetected = true;
 	}
+
+    _buildingManager.update();
 }
 
 // on unit destroy
@@ -120,7 +131,7 @@ void ProductionManager::onUnitDestroy(BWAPI::Unit unit)
 	if (Config::Modules::UsingBuildOrderSearch)
 	{
 		// if it's a worker or a building, we need to re-search for the current goal
-		if ((unit->getType().isWorker() && !WorkerManager::Instance().isWorkerScout(unit)) || unit->getType().isBuilding())
+		if ((unit->getType().isWorker() && !Global::Workers().isWorkerScout(unit)) || unit->getType().isBuilding())
 		{
 			if (unit->getType() != BWAPI::UnitTypes::Zerg_Drone)
 			{
@@ -162,10 +173,9 @@ void ProductionManager::manageBuildOrderQueue()
 		{
 			// construct a temporary building object
 			Building b(currentItem.metaType.getUnitType(), BWAPI::Broodwar->self()->getStartLocation());
-            b.isGasSteal = currentItem.isGasSteal;
 
 			// set the producer as the closest worker, but do not set its job yet
-			producer = WorkerManager::Instance().getBuilder(b, false);
+			producer = Global::Workers().getBuilder(b, false);
 
 			// predict the worker movement to that building location
 			predictWorkerMovement(b);
@@ -336,13 +346,11 @@ void ProductionManager::create(BWAPI::Unit producer, BuildOrderItem & item)
 
     // if we're dealing with a building
     if (t.isUnit() && t.getUnitType().isBuilding() 
-        && t.getUnitType() != BWAPI::UnitTypes::Zerg_Lair 
-        && t.getUnitType() != BWAPI::UnitTypes::Zerg_Hive
-        && t.getUnitType() != BWAPI::UnitTypes::Zerg_Greater_Spire
+        && !UnitUtil::IsMorphedBuildingType(t.getUnitType()) 
         && !t.getUnitType().isAddon())
     {
         // send the building task to the building manager
-        BuildingManager::Instance().addBuildingTask(t.getUnitType(), BWAPI::Broodwar->self()->getStartLocation(), item.isGasSteal);
+        _buildingManager.addBuildingTask(t.getUnitType(), BWAPI::Broodwar->self()->getStartLocation());
     }
     else if (t.getUnitType().isAddon())
     {
@@ -415,56 +423,56 @@ bool ProductionManager::detectBuildOrderDeadlock()
 		return false;
 	}
 
-	// are any supply providers being built currently
-	bool supplyInProgress =	BuildingManager::Instance().isBeingBuilt(BWAPI::Broodwar->self()->getRace().getSupplyProvider());
-
-    for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+    // If supply is being built now, there's no block. Return right away.
+    // Terran and protoss calculation:
+    if (_buildingManager.isBeingBuilt(BWAPI::Broodwar->self()->getRace().getSupplyProvider()))
     {
-        if (unit->getType() == BWAPI::UnitTypes::Zerg_Egg)
+        return false;
+    }
+
+    // Terran and protoss calculation:
+    int supplyAvailable = BWAPI::Broodwar->self()->supplyTotal() - BWAPI::Broodwar->self()->supplyUsed();
+
+    // Zerg calculation:
+    // Zerg can create an overlord that doesn't count toward supply until the next check.
+    // To work around it, add up the supply by hand, including hatcheries.
+    if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Zerg) 
+    {
+        supplyAvailable = -BWAPI::Broodwar->self()->supplyUsed();
+        for (auto & unit : BWAPI::Broodwar->self()->getUnits())
         {
-            if (unit->getBuildType() == BWAPI::UnitTypes::Zerg_Overlord)
+            if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord)
             {
-                supplyInProgress = true;
-                break;
+                supplyAvailable += 16;
+            }
+            else if (unit->getType() == BWAPI::UnitTypes::Zerg_Egg &&
+                unit->getBuildType() == BWAPI::UnitTypes::Zerg_Overlord)
+            {
+                return false;    // supply is building, return immediately
+                                // supplyAvailable += 16;
+            }
+            else if ((unit->getType() == BWAPI::UnitTypes::Zerg_Hatchery && unit->isCompleted()) ||
+                unit->getType() == BWAPI::UnitTypes::Zerg_Lair ||
+                unit->getType() == BWAPI::UnitTypes::Zerg_Hive)
+            {
+                supplyAvailable += 2;
             }
         }
     }
 
-	// does the current item being built require more supply
-    
-	int supplyCost			= _queue.getHighestPriorityItem().metaType.supplyRequired();
-	int supplyAvailable		= std::max(0, BWAPI::Broodwar->self()->supplyTotal() - BWAPI::Broodwar->self()->supplyUsed());
+	int supplyCost = _queue.getHighestPriorityItem().metaType.supplyRequired();
 
-	// if we don't have enough supply and none is being built, there's a deadlock
-	if ((supplyAvailable < supplyCost) && !supplyInProgress)
-	{
-        // if we're zerg, check to see if a building is planned to be built
-        if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Zerg && BuildingManager::Instance().buildingsQueued().size() > 0)
-        {
-            return false;
-        }
-        else
-        {
-		    return true;
-        }
-	}
-
-	return false;
+    return supplyAvailable < supplyCost;
 }
 
 // When the next item in the _queue is a building, this checks to see if we should move to it
 // This function is here as it needs to access prodction manager's reserved resources info
 void ProductionManager::predictWorkerMovement(const Building & b)
 {
-    if (b.isGasSteal)
-    {
-        return;
-    }
-
 	// get a possible building location for the building
 	if (!_haveLocationForThisBuilding)
 	{
-		_predictedTilePosition = BuildingManager::Instance().getBuildingLocation(b);
+		_predictedTilePosition = _buildingManager.getBuildingLocation(b);
 	}
 
 	if (_predictedTilePosition != BWAPI::TilePositions::None)
@@ -494,7 +502,7 @@ void ProductionManager::predictWorkerMovement(const Building & b)
 	int gasRequired						= std::max(0, b.type.gasPrice() - getFreeGas());
 
 	// get a candidate worker to move to this location
-	BWAPI::Unit moveWorker			= WorkerManager::Instance().getMoveWorker(walkToPosition);
+	BWAPI::Unit moveWorker			= Global::Workers().getMoveWorker(walkToPosition);
 
 	// Conditions under which to move the worker: 
 	//		- there's a valid worker to move
@@ -502,13 +510,13 @@ void ProductionManager::predictWorkerMovement(const Building & b)
 	//		- the build position is valid
 	//		- we will have the required resources by the time the worker gets there
 	if (moveWorker && _haveLocationForThisBuilding && !_assignedWorkerForThisBuilding && (_predictedTilePosition != BWAPI::TilePositions::None) &&
-		WorkerManager::Instance().willHaveResources(mineralsRequired, gasRequired, moveWorker->getDistance(walkToPosition)) )
+		Global::Workers().willHaveResources(mineralsRequired, gasRequired, moveWorker->getDistance(walkToPosition)) )
 	{
 		// we have assigned a worker
 		_assignedWorkerForThisBuilding = true;
 
 		// tell the worker manager to move this worker
-		WorkerManager::Instance().setMoveWorker(mineralsRequired, gasRequired, walkToPosition);
+		Global::Workers().setMoveWorker(mineralsRequired, gasRequired, walkToPosition);
 	}
 }
 
@@ -535,12 +543,12 @@ void ProductionManager::performCommand(BWAPI::UnitCommandType t)
 
 int ProductionManager::getFreeMinerals()
 {
-	return BWAPI::Broodwar->self()->minerals() - BuildingManager::Instance().getReservedMinerals();
+	return BWAPI::Broodwar->self()->minerals() - _buildingManager.getReservedMinerals();
 }
 
 int ProductionManager::getFreeGas()
 {
-	return BWAPI::Broodwar->self()->gas() - BuildingManager::Instance().getReservedGas();
+	return BWAPI::Broodwar->self()->gas() - _buildingManager.getReservedGas();
 }
 
 // return whether or not we meet resources, including building reserves
@@ -614,6 +622,10 @@ BWAPI::Unit ProductionManager::selectUnitOfType(BWAPI::UnitType type, BWAPI::Pos
 
 void ProductionManager::drawProductionInformation(int x, int y)
 {
+    _buildingManager.drawBuildingInformation(200,50);
+	_bossManager.drawSearchInformation(490, 100);
+    _bossManager.drawStateInformation(250, 0, _buildingManager);
+
     if (!Config::Debug::DrawProductionInfo)
     {
         return;
@@ -660,17 +672,6 @@ void ProductionManager::drawProductionInformation(int x, int y)
 	}
 
 	_queue.drawQueueInformation(x, yy+10);
-}
-
-ProductionManager & ProductionManager::Instance()
-{
-	static ProductionManager instance;
-	return instance;
-}
-
-void ProductionManager::queueGasSteal()
-{
-    _queue.queueAsHighestPriority(MetaType(BWAPI::Broodwar->self()->getRace().getRefinery()), true, true);
 }
 
 // this will return true if any unit is on the first frame if it's training time remaining

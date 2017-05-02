@@ -1,4 +1,5 @@
 #include "MicroManager.h"
+#include "Global.h"
 
 using namespace UAlbertaBot;
 
@@ -47,17 +48,17 @@ void MicroManager::execute(const SquadOrder & inputOrder)
 	// if the order is to defend, we only care about units in the radius of the defense
 	if (order.getType() == SquadOrderTypes::Defend)
 	{
-		MapGrid::Instance().GetUnits(nearbyEnemies, order.getPosition(), order.getRadius(), false, true);
+		Global::Map().GetUnits(nearbyEnemies, order.getPosition(), order.getRadius(), false, true);
 	
 	} // otherwise we want to see everything on the way
 	else if (order.getType() == SquadOrderTypes::Attack) 
 	{
-		MapGrid::Instance().GetUnits(nearbyEnemies, order.getPosition(), order.getRadius(), false, true);
+		Global::Map().GetUnits(nearbyEnemies, order.getPosition(), order.getRadius(), false, true);
 		for (auto & unit : _units) 
 		{
 			BWAPI::Unit u = unit;
 			BWAPI::UnitType t = u->getType();
-			MapGrid::Instance().GetUnits(nearbyEnemies, unit->getPosition(), order.getRadius(), false, true);
+			Global::Map().GetUnits(nearbyEnemies, unit->getPosition(), order.getRadius(), false, true);
 		}
 	}
 
@@ -94,7 +95,7 @@ void MicroManager::execute(const SquadOrder & inputOrder)
                     // if it is a worker
                     else
                     {
-                        for (BWTA::Region * enemyRegion : InformationManager::Instance().getOccupiedRegions(BWAPI::Broodwar->enemy()))
+                        for (BWTA::Region * enemyRegion : Global::Info().getOccupiedRegions(BWAPI::Broodwar->enemy()))
                         {
                             // only add it if it's in their region
                             if (BWTA::getRegion(BWAPI::TilePosition(enemyUnit->getPosition())) == enemyRegion)
@@ -120,12 +121,12 @@ const BWAPI::Unitset & MicroManager::getUnits() const
 void MicroManager::regroup(const BWAPI::Position & regroupPosition) const
 {
     BWAPI::Position ourBasePosition = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
-    int regroupDistanceFromBase = MapTools::Instance().getGroundDistance(regroupPosition, ourBasePosition);
+    int regroupDistanceFromBase = Global::Map().getGroundDistance(regroupPosition, ourBasePosition);
 
 	// for each of the units we have
 	for (auto & unit : _units)
 	{
-        int unitDistanceFromBase = MapTools::Instance().getGroundDistance(unit->getPosition(), ourBasePosition);
+        int unitDistanceFromBase = Global::Map().getGroundDistance(unit->getPosition(), ourBasePosition);
 
 		// if the unit is outside the regroup area
         if (unitDistanceFromBase > regroupDistanceFromBase)
@@ -150,7 +151,7 @@ bool MicroManager::unitNearEnemy(BWAPI::Unit unit)
 
 	BWAPI::Unitset enemyNear;
 
-	MapGrid::Instance().GetUnits(enemyNear, unit->getPosition(), 800, false, true);
+	Global::Map().GetUnits(enemyNear, unit->getPosition(), 800, false, true);
 
 	return enemyNear.size() > 0;
 }

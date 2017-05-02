@@ -2,14 +2,9 @@
 
 #include "Common.h"
 #include "CombatCommander.h"
-#include "InformationManager.h"
-#include "MapGrid.h"
-#include "WorkerManager.h"
 #include "ProductionManager.h"
-#include "BuildingManager.h"
 #include "ScoutManager.h"
-#include "StrategyManager.h"
-#include "TimerManager.h"
+#include "Timer.hpp"
 
 namespace UAlbertaBot
 {
@@ -31,8 +26,11 @@ public:
 
 class GameCommander 
 {
+    Timer                   _timer;
 	CombatCommander		    _combatCommander;
-	TimerManager		    _timerManager;
+    BOSSManager             _bossManager;
+    ProductionManager       _productionManager;
+    ScoutManager            _scoutManager;
 
 	BWAPI::Unitset          _validUnits;
 	BWAPI::Unitset          _combatUnits;
@@ -46,8 +44,8 @@ class GameCommander
 public:
 
 	GameCommander();
-	~GameCommander() {};
 
+    void onStart();
 	void update();
 
 	void handleUnitAssignments();
@@ -61,6 +59,8 @@ public:
 	BWAPI::Unit getFirstSupplyProvider();
 	BWAPI::Unit getClosestUnitToTarget(BWAPI::UnitType type, BWAPI::Position target);
 	BWAPI::Unit getClosestWorkerToTarget(BWAPI::Position target);
+
+    ProductionManager & getProductionManager();
 
 	void onUnitShow(BWAPI::Unit unit);
 	void onUnitHide(BWAPI::Unit unit);

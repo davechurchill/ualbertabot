@@ -6,7 +6,6 @@
 #include "DetectorManager.h"
 #include "TransportManager.h"
 #include "SquadOrder.h"
-#include "DistanceMap.hpp"
 #include "StrategyManager.h"
 #include "CombatSimulation.h"
 #include "TankManager.h"

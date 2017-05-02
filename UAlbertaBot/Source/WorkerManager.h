@@ -14,7 +14,6 @@ class WorkerManager
     BWAPI::Unit previousClosestWorker;
 
     void        setMineralWorker(BWAPI::Unit unit);
-    bool        isGasStealRefinery(BWAPI::Unit unit);
     
     void        handleIdleWorkers();
     void        handleGasWorkers();
@@ -22,15 +21,14 @@ class WorkerManager
     void        handleCombatWorkers();
     void        handleRepairWorkers();
 
-    WorkerManager();
-
 public:
+
+    WorkerManager();
 
     void        update();
     void        onUnitDestroy(BWAPI::Unit unit);
     void        onUnitMorph(BWAPI::Unit unit);
     void        onUnitShow(BWAPI::Unit unit);
-    void        onUnitRenegade(BWAPI::Unit unit);
     void        finishedWithWorker(BWAPI::Unit unit);
 
     void        finishedWithCombatWorkers();
@@ -65,6 +63,6 @@ public:
     bool        willHaveResources(int mineralsRequired,int gasRequired,double distance);
     void        rebalanceWorkers();
 
-    static WorkerManager &  Instance();
 };
+
 }

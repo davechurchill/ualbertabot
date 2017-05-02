@@ -88,10 +88,6 @@ const std::string Action::moveString() const
 	{
 		return "PASS";
 	}
-	else if (_actionType == ActionTypes::HEAL)
-	{
-		return "HEAL";
-	}
 
 	return "NONE";
 }

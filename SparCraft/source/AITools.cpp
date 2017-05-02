@@ -64,7 +64,7 @@ const Unit & AITools::GetClosestOurUnit(const GameState & state, const size_t & 
 
 	for (size_t u(0); u < state.numUnits(player); ++u)
 	{
-		if (u == unitIndex || state.getUnit(player, u).canHeal())
+		if (u == unitIndex)
 		{
 			continue;
 		}

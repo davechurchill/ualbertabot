@@ -87,7 +87,7 @@ double Eval::LTD2(const GameState & state, const size_t & player)
     for (size_t u(0); u<state.numUnits(player); ++u)
     {
         const Unit & unit = state.getUnit(player,u);
-
+        
         sum += sqrtf(unit.currentHP()) * unit.dpf();
     }
 

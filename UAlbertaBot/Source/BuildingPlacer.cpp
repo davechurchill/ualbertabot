@@ -1,6 +1,6 @@
 #include "Common.h"
 #include "BuildingPlacer.h"
-#include "MapGrid.h"
+#include "Global.h"
 
 using namespace UAlbertaBot;
 
@@ -13,12 +13,6 @@ BuildingPlacer::BuildingPlacer()
     _reserveMap = std::vector< std::vector<bool> >(BWAPI::Broodwar->mapWidth(),std::vector<bool>(BWAPI::Broodwar->mapHeight(),false));
 
     computeResourceBox();
-}
-
-BuildingPlacer & BuildingPlacer::Instance() 
-{
-    static BuildingPlacer instance;
-    return instance;
 }
 
 bool BuildingPlacer::isInResourceBox(int x, int y) const
@@ -65,7 +59,7 @@ void BuildingPlacer::computeResourceBox()
 // makes final checks to see if a building can be built at a certain location
 bool BuildingPlacer::canBuildHere(BWAPI::TilePosition position,const Building & b) const
 {
-    /*if (!b.type.isRefinery() && !InformationManager::Instance().tileContainsUnit(position))
+    /*if (!b.type.isRefinery() && !Global::Info().tileContainsUnit(position))
     {
     return false;
     }*/
@@ -201,7 +195,7 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b,int 
     t.start();
 
     // get the precomputed vector of tile positions which are sorted closes to this location
-    const std::vector<BWAPI::TilePosition> & closestToBuilding = MapTools::Instance().getClosestTilesTo(BWAPI::Position(b.desiredPosition));
+    const std::vector<BWAPI::TilePosition> & closestToBuilding = Global::Map().getClosestTilesTo(BWAPI::Position(b.desiredPosition));
 
     double ms1 = t.getElapsedTimeInMilliSec();
 

@@ -1,26 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UAlbertaBot", "UAlbertaBot.vcxproj", "{2E63AE74-758A-4607-9DE4-D28E814A6E13}"
 	ProjectSection(ProjectDependencies) = postProject
 		{66236439-5968-4756-B2E7-8A29BEA99078} = {66236439-5968-4756-B2E7-8A29BEA99078}
 		{9F8709E3-AC4F-45F2-8105-4A99D8E2A127} = {9F8709E3-AC4F-45F2-8105-4A99D8E2A127}
-		{794723EB-9296-4A38-BDE1-E09B92890E2D} = {794723EB-9296-4A38-BDE1-E09B92890E2D}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SparCraft", "..\..\SparCraft\VisualStudio\SparCraft.vcxproj", "{66236439-5968-4756-B2E7-8A29BEA99078}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BOSS", "..\..\BOSS\VisualStudio\BOSS.vcxproj", "{9F8709E3-AC4F-45F2-8105-4A99D8E2A127}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UAlbertaBot_Arena", "UAlbertaBot_Arena.vcxproj", "{82F37540-2170-4174-9E7A-CCF3F00515CE}"
-	ProjectSection(ProjectDependencies) = postProject
-		{66236439-5968-4756-B2E7-8A29BEA99078} = {66236439-5968-4756-B2E7-8A29BEA99078}
-		{794723EB-9296-4A38-BDE1-E09B92890E2D} = {794723EB-9296-4A38-BDE1-E09B92890E2D}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UAlbertaBot_lib", "UAlbertaBot_lib.vcxproj", "{794723EB-9296-4A38-BDE1-E09B92890E2D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -58,22 +49,6 @@ Global
 		{9F8709E3-AC4F-45F2-8105-4A99D8E2A127}.Release|Win32.ActiveCfg = Release|Win32
 		{9F8709E3-AC4F-45F2-8105-4A99D8E2A127}.Release|Win32.Build.0 = Release|Win32
 		{9F8709E3-AC4F-45F2-8105-4A99D8E2A127}.Release|x64.ActiveCfg = Release|Win32
-		{82F37540-2170-4174-9E7A-CCF3F00515CE}.Debug|Itanium.ActiveCfg = Debug|Win32
-		{82F37540-2170-4174-9E7A-CCF3F00515CE}.Debug|Win32.ActiveCfg = Debug|Win32
-		{82F37540-2170-4174-9E7A-CCF3F00515CE}.Debug|Win32.Build.0 = Debug|Win32
-		{82F37540-2170-4174-9E7A-CCF3F00515CE}.Debug|x64.ActiveCfg = Debug|Win32
-		{82F37540-2170-4174-9E7A-CCF3F00515CE}.Release|Itanium.ActiveCfg = Release|Win32
-		{82F37540-2170-4174-9E7A-CCF3F00515CE}.Release|Win32.ActiveCfg = Release|Win32
-		{82F37540-2170-4174-9E7A-CCF3F00515CE}.Release|Win32.Build.0 = Release|Win32
-		{82F37540-2170-4174-9E7A-CCF3F00515CE}.Release|x64.ActiveCfg = Release|Win32
-		{794723EB-9296-4A38-BDE1-E09B92890E2D}.Debug|Itanium.ActiveCfg = Debug|Win32
-		{794723EB-9296-4A38-BDE1-E09B92890E2D}.Debug|Win32.ActiveCfg = Debug|Win32
-		{794723EB-9296-4A38-BDE1-E09B92890E2D}.Debug|Win32.Build.0 = Debug|Win32
-		{794723EB-9296-4A38-BDE1-E09B92890E2D}.Debug|x64.ActiveCfg = Debug|Win32
-		{794723EB-9296-4A38-BDE1-E09B92890E2D}.Release|Itanium.ActiveCfg = Release|Win32
-		{794723EB-9296-4A38-BDE1-E09B92890E2D}.Release|Win32.ActiveCfg = Release|Win32
-		{794723EB-9296-4A38-BDE1-E09B92890E2D}.Release|Win32.Build.0 = Release|Win32
-		{794723EB-9296-4A38-BDE1-E09B92890E2D}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

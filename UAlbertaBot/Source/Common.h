@@ -23,8 +23,6 @@
 #include "Config.h"
 #include "UABAssert.h"
 
-BWAPI::AIModule * __NewAIModule();
-
 #define UALBERTABOT_PROJECT
 
 struct double2

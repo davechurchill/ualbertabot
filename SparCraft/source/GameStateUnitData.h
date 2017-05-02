@@ -9,9 +9,8 @@ namespace SparCraft
 
 class GameStateUnitData 
 {
-    std::vector<Unit>       _allUnits;         
-    std::vector<size_t>     _liveUnitIDs[2];
-    size_t                  _numTotalUnits[2];
+    std::vector<Unit>       _allUnits;          // vector where all Unit objects live
+    std::vector<size_t>     _liveUnitIDs[2];    // vectors of IDs of live units for each player, ID indexes into _allUnits
     
     void                    removeUnit(const size_t & player, const size_t & UnitIndex);
     void                    removeUnitByID(const size_t & unitID);
@@ -27,7 +26,6 @@ public:
           Unit &            getUnitByID(const size_t & id);
 
     const size_t            numUnits(const size_t & player) const;
-    const size_t            numTotalUnits(const size_t & player) const;
 
     const std::vector<Unit> & getAllUnits() const;
     const std::vector<size_t> & getUnitIDs(const size_t & player) const;

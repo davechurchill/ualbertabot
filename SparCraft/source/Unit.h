@@ -15,7 +15,7 @@ namespace SparCraft
 class Unit 
 {
     BWAPI::UnitType     _unitType;				// the BWAPI unit type that we are mimicing
-    int        _range;
+    int                 _range;
 	
 	Position            _position;				// current location in a possibly infinite space
 	
@@ -24,7 +24,6 @@ class Unit
     size_t              _playerID;				// the player who controls the unit
 	
 	HealthType          _currentHP;				// current HP of the unit
-	HealthType          _currentEnergy;
 
 	TimeType            _timeCanMove;			// time the unit can next move
 	TimeType            _timeCanAttack;			// time the unit can next attack
@@ -52,12 +51,10 @@ public:
 	void                    updateAttackActionTime(const TimeType & newTime);
 	void                    updateMoveActionTime(const TimeType & newTime);
 	void                    attack(const Action & move, const Unit & target, const TimeType & gameTime);
-	void                    heal(const Action & move, const Unit & target, const TimeType & gameTime);
 	void                    move(const Action & move, const TimeType & gameTime) ;
 	void                    waitUntilAttack(const Action & move, const TimeType & gameTime);
 	void                    pass(const Action & move, const TimeType & gameTime);
 	void                    takeAttack(const Unit & attacker);
-	void                    takeHeal(const Unit & healer);
 
 	// conditional functions
 	const bool			    isMobile()                  const;
@@ -67,15 +64,12 @@ public:
     const bool			    canAttackAir()              const;
     const bool			    canAttackGround()           const;
 	const bool			    canMoveNow()                const;
-	const bool			    canHealNow()                const;
 	const bool			    canKite()                   const;
     const bool			    isFlyer()                   const;
-	const bool			    canHeal()                   const;
 	const bool              equalsID(const Unit & rhs)  const;
 	bool					canSeeTarget(const Unit & unit, const TimeType & gameTime) const;
 	const bool              canAttackTarget(const Unit & unit, const TimeType & gameTime) const;
     const bool              canTarget(const Unit & unit) const;
-	const bool              canHealTarget(const Unit & unit, const TimeType & gameTime) const;
 
     // id related
 	void                    setUnitID(const size_t & id);
@@ -99,22 +93,17 @@ public:
     // health and damage related functions
     const HealthType        damageTakenFrom(const Unit & attacker) const;
 	const HealthType        damage()                    const;
-	const HealthType        healAmount()                const;
 	const HealthType	    maxHP()                     const;
 	const HealthType	    currentHP()                 const;
-	const HealthType	    currentEnergy()             const;
 	const HealthType	    maxEnergy()                 const;
-	const HealthType	    healCost()                  const;
     const HealthType        getArmor()                  const;
 	const float			    dpf()                       const;
 	void                    updateCurrentHP(const HealthType & newHP);
     const BWAPI::UnitSizeType getSize()                 const;
     const BWAPI::WeaponType getWeapon(BWAPI::UnitType target) const;
-    const HealthType        getDamageTo(const Unit & unit) const;
     const PlayerWeapon      getWeapon(const Unit & target) const;
 
     // time and cooldown related functions
-	const TimeType		    moveCooldown()              const;
 	const TimeType		    attackCooldown()            const;
 	const TimeType		    healCooldown()              const;
 	const TimeType		    nextAttackActionTime()      const;

@@ -1,10 +1,263 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\Source\Dll.cpp" />
+    <ClCompile Include="..\Source\GameCommander.cpp" />
+    <ClCompile Include="..\Source\main.cpp" />
     <ClCompile Include="..\Source\UAlbertaBotModule.cpp" />
+    <ClCompile Include="..\Source\AutoObserver.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\BuildingManager.cpp">
+      <Filter>macro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\BuildingPlacer.cpp">
+      <Filter>macro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\BuildOrder.cpp">
+      <Filter>macro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\BuildOrderQueue.cpp">
+      <Filter>macro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\BOSSManager.cpp">
+      <Filter>macro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\CombatCommander.cpp">
+      <Filter>micro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\CombatSimulation.cpp">
+      <Filter>micro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Common.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Config.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DebugTools.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Global.cpp">
+      <Filter>global</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\InfoManager.cpp">
+      <Filter>global</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\DetectorManager.cpp">
+      <Filter>micro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\JSONTools.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Logger.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\MetaType.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\MedicManager.cpp">
+      <Filter>micro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MeleeManager.cpp">
+      <Filter>micro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Micro.cpp">
+      <Filter>micro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MicroManager.cpp">
+      <Filter>micro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\ProductionManager.cpp">
+      <Filter>macro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\RangedManager.cpp">
+      <Filter>micro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\ScoutManager.cpp">
+      <Filter>micro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\ParseUtils.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Squad.cpp">
+      <Filter>micro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\SquadData.cpp">
+      <Filter>micro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\StrategyManager.cpp">
+      <Filter>global</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\TankManager.cpp">
+      <Filter>micro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\WorkerData.cpp">
+      <Filter>macro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\TransportManager.cpp">
+      <Filter>micro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\UABAssert.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\UnitData.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\UnitUtil.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\WorkerManager.cpp">
+      <Filter>global</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DistanceMap.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\MapTools.cpp">
+      <Filter>global</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Source\GameCommander.h" />
     <ClInclude Include="..\Source\UAlbertaBotModule.h" />
+    <ClInclude Include="..\Source\AutoObserver.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\BOSSManager.h">
+      <Filter>macro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\BuildingManager.h">
+      <Filter>macro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\BuildingPlacer.h">
+      <Filter>macro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\BuildOrder.h">
+      <Filter>macro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\BuildOrderQueue.h">
+      <Filter>macro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\CombatCommander.h">
+      <Filter>micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\CombatSimulation.h">
+      <Filter>micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Config.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DebugTools.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Global.h">
+      <Filter>global</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\InfoManager.h">
+      <Filter>global</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\DetectorManager.h">
+      <Filter>micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\JSONTools.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Logger.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\MetaType.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\MedicManager.h">
+      <Filter>micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\MeleeManager.h">
+      <Filter>micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Micro.h">
+      <Filter>micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\MicroManager.h">
+      <Filter>micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\ProductionManager.h">
+      <Filter>macro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\RangedManager.h">
+      <Filter>micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\ScoutManager.h">
+      <Filter>micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\ParseUtils.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\GameHistory.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Squad.h">
+      <Filter>micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\SquadData.h">
+      <Filter>micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\SquadOrder.h">
+      <Filter>micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\StrategyManager.h">
+      <Filter>global</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\TankManager.h">
+      <Filter>micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Timer.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\WorkerData.h">
+      <Filter>macro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\TransportManager.h">
+      <Filter>micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\UABAssert.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\UnitUtil.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\UnitData.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\WorkerManager.h">
+      <Filter>global</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DistanceMap.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\MapTools.h">
+      <Filter>global</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="macro">
+      <UniqueIdentifier>{94d335ad-0c53-41d4-b51e-316b05b8d3e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="micro">
+      <UniqueIdentifier>{b7281bec-6d52-4101-83ce-f53ef3386367}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="global">
+      <UniqueIdentifier>{68d3d7a0-a16e-428e-94fd-7ad7af4f2b42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{44850a94-17ae-4bb4-8f61-383142334d55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util">
+      <UniqueIdentifier>{69f2e672-0695-4f10-b1ff-ad3b767a51a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="map">
+      <UniqueIdentifier>{2bb01634-08bb-41b5-8a87-7b196d9f44e1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

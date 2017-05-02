@@ -1,5 +1,5 @@
 #include "ScoutManager.h"
-#include "ProductionManager.h"
+#include "Global.h"
 
 using namespace UAlbertaBot;
 
@@ -7,19 +7,10 @@ ScoutManager::ScoutManager()
     : _workerScout(nullptr)
     , _numWorkerScouts(0)
     , _scoutUnderAttack(false)
-    , _gasStealStatus("None")
     , _scoutStatus("None")
-    , _didGasSteal(false)
-    , _gasStealFinished(false)
     , _currentRegionVertexIndex(-1)
     , _previousScoutHP(0)
 {
-}
-
-ScoutManager & ScoutManager::Instance() 
-{
-	static ScoutManager instance;
-	return instance;
 }
 
 void ScoutManager::update()
@@ -44,11 +35,11 @@ void ScoutManager::setWorkerScout(BWAPI::Unit unit)
     // if we have a previous worker scout, release it back to the worker manager
     if (_workerScout)
     {
-        WorkerManager::Instance().finishedWithWorker(_workerScout);
+        Global::Workers().finishedWithWorker(_workerScout);
     }
 
     _workerScout = unit;
-    WorkerManager::Instance().setScoutWorker(_workerScout);
+    Global::Workers().setScoutWorker(_workerScout);
 }
 
 void ScoutManager::drawScoutInformation(int x, int y)
@@ -59,7 +50,6 @@ void ScoutManager::drawScoutInformation(int x, int y)
     }
 
     BWAPI::Broodwar->drawTextScreen(x, y, "ScoutInfo: %s", _scoutStatus.c_str());
-    BWAPI::Broodwar->drawTextScreen(x, y+10, "GasSteal: %s", _gasStealStatus.c_str());
     for (size_t i(0); i < _enemyRegionVertices.size(); ++i)
     {
         BWAPI::Broodwar->drawCircleMap(_enemyRegionVertices[i], 4, BWAPI::Colors::Green, false);
@@ -76,10 +66,8 @@ void ScoutManager::moveScouts()
 
     int scoutHP = _workerScout->getHitPoints() + _workerScout->getShields();
     
-    gasSteal();
-
 	// get the enemy base location, if we have one
-	BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
+	BWTA::BaseLocation * enemyBaseLocation = Global::Info().getMainBaseLocation(BWAPI::Broodwar->enemy());
 
     int scoutDistanceThreshold = 30;
 
@@ -87,23 +75,11 @@ void ScoutManager::moveScouts()
     {
         BWAPI::Broodwar->drawCircleMap(_workerScout->getPosition(), 10, BWAPI::Colors::Purple, true);
     }
-
-    // if we initiated a gas steal and the worker isn't idle, 
-    bool finishedConstructingGasSteal = _workerScout->isIdle() || _workerScout->isCarryingGas();
-    if (!_gasStealFinished && _didGasSteal && !finishedConstructingGasSteal)
-    {
-        return;
-    }
-    // check to see if the gas steal is completed
-    else if (_didGasSteal && finishedConstructingGasSteal)
-    {
-        _gasStealFinished = true;
-    }
-    
+        
 	// if we know where the enemy region is and where our scout is
 	if (_workerScout && enemyBaseLocation)
 	{
-        int scoutDistanceToEnemy = MapTools::Instance().getGroundDistance(_workerScout->getPosition(), enemyBaseLocation->getPosition());
+        int scoutDistanceToEnemy = Global::Map().getGroundDistance(_workerScout->getPosition(), enemyBaseLocation->getPosition());
         bool scoutInRangeOfenemy = scoutDistanceToEnemy <= scoutDistanceThreshold;
         
         // we only care if the scout is under attack within the enemy region
@@ -128,7 +104,7 @@ void ScoutManager::moveScouts()
 			if (!_scoutUnderAttack)
 			{
 				// if there is a worker nearby, harass it
-				if (Config::Strategy::ScoutHarassEnemy && (!Config::Strategy::GasStealWithScout || _gasStealFinished) && closestWorker && (_workerScout->getDistance(closestWorker) < 800))
+				if (Config::Strategy::ScoutHarassEnemy && closestWorker && (_workerScout->getDistance(closestWorker) < 800))
 				{
                     _scoutStatus = "Harass enemy worker";
                     _currentRegionVertexIndex = -1;
@@ -198,48 +174,6 @@ void ScoutManager::followPerimeter()
 	Micro::SmartMove(_workerScout, fleeTo);
 }
 
-void ScoutManager::gasSteal()
-{
-    if (!Config::Strategy::GasStealWithScout)
-    {
-        _gasStealStatus = "Not using gas steal";
-        return;
-    }
-
-    if (_didGasSteal)
-    {
-        return;
-    }
-
-    if (!_workerScout)
-    {
-        _gasStealStatus = "No worker scout";
-        return;
-    }
-
-    BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
-    if (!enemyBaseLocation)
-    {
-        _gasStealStatus = "No enemy base location found";
-        return;
-    }
-
-    BWAPI::Unit enemyGeyser = getEnemyGeyser();
-    if (!enemyGeyser)
-    {
-        _gasStealStatus = "No enemy geyser found";
-        false;
-    }
-
-    if (!_didGasSteal)
-    {
-        ProductionManager::Instance().queueGasSteal();
-        _didGasSteal = true;
-        Micro::SmartMove(_workerScout, enemyGeyser->getPosition());
-        _gasStealStatus = "Did Gas Steal";
-    }
-}
-
 BWAPI::Unit ScoutManager::closestEnemyWorker()
 {
 	BWAPI::Unit enemyWorker = nullptr;
@@ -277,7 +211,7 @@ BWAPI::Unit ScoutManager::closestEnemyWorker()
 BWAPI::Unit ScoutManager::getEnemyGeyser()
 {
 	BWAPI::Unit geyser = nullptr;
-	BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
+	BWTA::BaseLocation * enemyBaseLocation = Global::Info().getMainBaseLocation(BWAPI::Broodwar->enemy());
 
 	for (auto & unit : enemyBaseLocation->getGeysers())
 	{
@@ -352,7 +286,7 @@ BWAPI::Position ScoutManager::getFleePosition()
 {
     UAB_ASSERT_WARNING(!_enemyRegionVertices.empty(), "We should have an enemy region vertices if we are fleeing");
     
-    BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
+    BWTA::BaseLocation * enemyBaseLocation = Global::Info().getMainBaseLocation(BWAPI::Broodwar->enemy());
 
     // if this is the first flee, we will not have a previous perimeter index
     if (_currentRegionVertexIndex == -1)
@@ -393,7 +327,7 @@ BWAPI::Position ScoutManager::getFleePosition()
 
 void ScoutManager::calculateEnemyRegionVertices()
 {
-    BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
+    BWTA::BaseLocation * enemyBaseLocation = Global::Info().getMainBaseLocation(BWAPI::Broodwar->enemy());
     //UAB_ASSERT_WARNING(enemyBaseLocation, "We should have an enemy base location if we are fleeing");
 
     if (!enemyBaseLocation)
@@ -410,7 +344,7 @@ void ScoutManager::calculateEnemyRegionVertices()
     }
 
     const BWAPI::Position basePosition = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
-    const std::vector<BWAPI::TilePosition> & closestTobase = MapTools::Instance().getClosestTilesTo(basePosition);
+    const std::vector<BWAPI::TilePosition> & closestTobase = Global::Map().getClosestTilesTo(basePosition);
 
     std::set<BWAPI::Position> unsortedVertices;
 
@@ -446,7 +380,7 @@ void ScoutManager::calculateEnemyRegionVertices()
                 int x2 = (tp.x+1) * 32 - 2;
                 int y2 = (tp.y+1) * 32 - 2;
         
-                BWAPI::Broodwar->drawTextMap(x1+3, y1+2, "%d", MapTools::Instance().getGroundDistance(BWAPI::Position(tp), basePosition));
+                BWAPI::Broodwar->drawTextMap(x1+3, y1+2, "%d", Global::Map().getGroundDistance(BWAPI::Position(tp), basePosition));
                 BWAPI::Broodwar->drawBoxMap(x1, y1, x2, y2, BWAPI::Colors::Green, false);
             }
             

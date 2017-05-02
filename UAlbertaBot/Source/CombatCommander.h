@@ -3,8 +3,6 @@
 #include "Common.h"
 #include "Squad.h"
 #include "SquadData.h"
-#include "InformationManager.h"
-#include "StrategyManager.h"
 
 namespace UAlbertaBot
 {

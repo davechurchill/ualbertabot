@@ -1,4 +1,5 @@
 #include "DetectorManager.h"
+#include "Global.h"
 
 using namespace UAlbertaBot;
 
@@ -49,7 +50,7 @@ void DetectorManager::executeMicro(const BWAPI::Unitset & targets)
 		// send him to scout around the map
 		else
 		{
-			BWAPI::Position explorePosition = MapGrid::Instance().getLeastExplored();
+			BWAPI::Position explorePosition = Global::Map().getLeastRecentlySeenPosition();
 			Micro::SmartMove(detectorUnit, explorePosition);
 		}
 	}

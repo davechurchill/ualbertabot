@@ -9,12 +9,6 @@ WorkerManager::WorkerManager()
     previousClosestWorker = nullptr;
 }
 
-WorkerManager & WorkerManager::Instance() 
-{
-	static WorkerManager instance;
-	return instance;
-}
-
 void WorkerManager::update() 
 {
 	updateWorkerStatus();
@@ -80,7 +74,7 @@ void WorkerManager::handleGasWorkers()
 	for (auto & unit : BWAPI::Broodwar->self()->getUnits())
 	{
 		// if that unit is a refinery
-		if (unit->getType().isRefinery() && unit->isCompleted() && !isGasStealRefinery(unit))
+		if (unit->getType().isRefinery() && unit->isCompleted())
 		{
 			// get the number of workers currently assigned to it
 			int numAssigned = workerData.getNumAssignedWorkers(unit);
@@ -97,30 +91,6 @@ void WorkerManager::handleGasWorkers()
 		}
 	}
 
-}
-
-bool WorkerManager::isGasStealRefinery(BWAPI::Unit unit)
-{
-    BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
-    if (!enemyBaseLocation)
-    {
-        return false;
-    }
-    
-    if (enemyBaseLocation->getGeysers().empty())
-    {
-        return false;
-    }
-    
-	for (auto & u : enemyBaseLocation->getGeysers())
-	{
-        if (unit->getTilePosition() == u->getTilePosition())
-        {
-            return true;
-        }
-	}
-
-    return false;
 }
 
 void WorkerManager::handleIdleWorkers() 
@@ -319,7 +289,7 @@ BWAPI::Unit WorkerManager::getClosestDepot(BWAPI::Unit worker)
 	{
         UAB_ASSERT(unit != nullptr, "Unit was null");
 
-		if (unit->getType().isResourceDepot() && (unit->isCompleted() || unit->getType() == BWAPI::UnitTypes::Zerg_Lair) && !workerData.depotIsFull(unit))
+		if (unit->getType().isResourceDepot() && (unit->isCompleted() || unit->getType() == BWAPI::UnitTypes::Zerg_Lair || unit->getType() == BWAPI::UnitTypes::Zerg_Hive) && !workerData.depotIsFull(unit))
 		{
 			double distance = unit->getDistance(worker);
 			if (!closestDepot || distance < closestDistance)
@@ -393,17 +363,7 @@ BWAPI::Unit WorkerManager::getBuilder(Building & b, bool setJobAsBuilder)
 	for (auto & unit : workerData.getWorkers())
 	{
         UAB_ASSERT(unit != nullptr, "Unit was null");
-
-        // gas steal building uses scout worker
-        if (b.isGasSteal && (workerData.getWorkerJob(unit) == WorkerData::Scout))
-        {
-            if (setJobAsBuilder)
-            {
-                workerData.setWorkerJob(unit, WorkerData::Build, b.type);
-            }
-            return unit;
-        }
-
+        
 		// mining worker check
 		if (unit->isCompleted() && (workerData.getWorkerJob(unit) == WorkerData::Minerals))
 		{

@@ -1,29 +1,30 @@
 #include "Common.h"
-#include "InformationManager.h"
+#include "InfoManager.h"
 #include "DebugTools.h"
+#include "Global.h"
+#include "UnitUtil.h"
 
 using namespace UAlbertaBot;
 
-InformationManager::InformationManager()
+InfoManager::InfoManager()
     : _self(BWAPI::Broodwar->self())
     , _enemy(BWAPI::Broodwar->enemy())
 {
-	initializeRegionInformation();
+	
 }
 
-InformationManager & InformationManager::Instance() 
+void InfoManager::onStart()
 {
-	static InformationManager instance;
-	return instance;
+    initializeRegionInformation();
 }
 
-void InformationManager::update() 
+void InfoManager::update() 
 {
 	updateUnitInfo();
 	updateBaseLocationInfo();
 }
 
-void InformationManager::updateUnitInfo() 
+void InfoManager::updateUnitInfo() 
 {
 	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
 	{
@@ -40,7 +41,7 @@ void InformationManager::updateUnitInfo()
 	_unitData[_self].removeBadUnits();
 }
 
-void InformationManager::initializeRegionInformation() 
+void InfoManager::initializeRegionInformation() 
 {
 	// set initial pointers to null
 	_mainBaseLocations[_self] = BWTA::getStartLocation(BWAPI::Broodwar->self());
@@ -51,7 +52,7 @@ void InformationManager::initializeRegionInformation()
 }
 
 
-void InformationManager::updateBaseLocationInfo() 
+void InfoManager::updateBaseLocationInfo() 
 {
 	_occupiedRegions[_self].clear();
 	_occupiedRegions[_enemy].clear();
@@ -140,7 +141,7 @@ void InformationManager::updateBaseLocationInfo()
 	}
 }
 
-void InformationManager::updateOccupiedRegions(BWTA::Region * region, BWAPI::Player player) 
+void InfoManager::updateOccupiedRegions(BWTA::Region * region, BWAPI::Player player) 
 {
 	// if the region is valid (flying buildings may be in nullptr regions)
 	if (region)
@@ -150,7 +151,7 @@ void InformationManager::updateOccupiedRegions(BWTA::Region * region, BWAPI::Pla
 	}
 }
 
-bool InformationManager::isEnemyBuildingInRegion(BWTA::Region * region) 
+bool InfoManager::isEnemyBuildingInRegion(BWTA::Region * region) 
 {
 	// invalid regions aren't considered the same, but they will both be null
 	if (!region)
@@ -173,22 +174,22 @@ bool InformationManager::isEnemyBuildingInRegion(BWTA::Region * region)
 	return false;
 }
 
-const UIMap & InformationManager::getUnitInfo(BWAPI::Player player) const
+const UIMap & InfoManager::getUnitInfo(BWAPI::Player player) const
 {
 	return getUnitData(player).getUnits();
 }
 
-std::set<BWTA::Region *> & InformationManager::getOccupiedRegions(BWAPI::Player player)
+std::set<BWTA::Region *> & InfoManager::getOccupiedRegions(BWAPI::Player player)
 {
 	return _occupiedRegions[player];
 }
 
-BWTA::BaseLocation * InformationManager::getMainBaseLocation(BWAPI::Player player) 
+BWTA::BaseLocation * InfoManager::getMainBaseLocation(BWAPI::Player player) 
 {
 	return _mainBaseLocations[player];
 }
 
-void InformationManager::drawExtendedInterface()
+void InfoManager::drawExtendedInterface()
 {
     if (!Config::Debug::DrawUnitHealthBars)
     {
@@ -218,7 +219,7 @@ void InformationManager::drawExtendedInterface()
     }
 }
 
-void InformationManager::drawUnitInformation(int x, int y) 
+void InfoManager::drawUnitInformation(int x, int y) 
 {
 	if (!Config::Debug::DrawEnemyUnitInfo)
     {
@@ -257,7 +258,7 @@ void InformationManager::drawUnitInformation(int x, int y)
 	}
 }
 
-void InformationManager::drawMapInformation()
+void InfoManager::drawMapInformation()
 {
     if (!Config::Debug::DrawBWTAInfo)
     {
@@ -316,7 +317,7 @@ void InformationManager::drawMapInformation()
 	}
 }
 
-void InformationManager::updateUnit(BWAPI::Unit unit)
+void InfoManager::updateUnit(BWAPI::Unit unit)
 {
     if (!(unit->getPlayer() == _self || unit->getPlayer() == _enemy))
     {
@@ -327,7 +328,7 @@ void InformationManager::updateUnit(BWAPI::Unit unit)
 }
 
 // is the unit valid?
-bool InformationManager::isValidUnit(BWAPI::Unit unit) 
+bool InfoManager::isValidUnit(BWAPI::Unit unit) 
 {
 	// we only care about our units and enemy units
 	if (unit->getPlayer() != BWAPI::Broodwar->self() && unit->getPlayer() != BWAPI::Broodwar->enemy()) 
@@ -352,7 +353,7 @@ bool InformationManager::isValidUnit(BWAPI::Unit unit)
 	return true;
 }
 
-void InformationManager::onUnitDestroy(BWAPI::Unit unit) 
+void InfoManager::onUnitDestroy(BWAPI::Unit unit) 
 { 
     if (unit->getType().isNeutral())
     {
@@ -362,26 +363,7 @@ void InformationManager::onUnitDestroy(BWAPI::Unit unit)
     _unitData[unit->getPlayer()].removeUnit(unit);
 }
 
-bool InformationManager::isCombatUnit(BWAPI::UnitType type) const
-{
-	if (type == BWAPI::UnitTypes::Zerg_Lurker/* || type == BWAPI::UnitTypes::Protoss_Dark_Templar*/)
-	{
-		return false;
-	}
-
-	// check for various types of combat units
-	if (type.canAttack() || 
-		type == BWAPI::UnitTypes::Terran_Medic || 
-		type == BWAPI::UnitTypes::Protoss_Observer ||
-        type == BWAPI::UnitTypes::Terran_Bunker)
-	{
-		return true;
-	}
-		
-	return false;
-}
-
-void InformationManager::getNearbyForce(std::vector<UnitInfo> & unitInfo, BWAPI::Position p, BWAPI::Player player, int radius) 
+void InfoManager::getNearbyForce(std::vector<UnitInfo> & unitInfo, BWAPI::Position p, BWAPI::Player player, int radius) 
 {
 	bool hasBunker = false;
 	// for each unit we know about for that player
@@ -391,7 +373,7 @@ void InformationManager::getNearbyForce(std::vector<UnitInfo> & unitInfo, BWAPI:
 
 		// if it's a combat unit we care about
 		// and it's finished! 
-		if (isCombatUnit(ui.type) && ui.completed)
+		if (UnitUtil::IsCombatUnitType(ui.type) && ui.completed)
 		{
 			// determine its attack range
 			int range = 0;
@@ -415,17 +397,17 @@ void InformationManager::getNearbyForce(std::vector<UnitInfo> & unitInfo, BWAPI:
 	}
 }
 
-int InformationManager::getNumUnits(BWAPI::UnitType t, BWAPI::Player player)
+int InfoManager::getNumUnits(BWAPI::UnitType t, BWAPI::Player player)
 {
 	return getUnitData(player).getNumUnits(t);
 }
 
-const UnitData & InformationManager::getUnitData(BWAPI::Player player) const
+const UnitData & InfoManager::getUnitData(BWAPI::Player player) const
 {
     return _unitData.find(player)->second;
 }
 
-bool InformationManager::enemyHasCloakedUnits()
+bool InfoManager::enemyHasCloakedUnits()
 {
     for (const auto & kv : getUnitData(_enemy).getUnits())
 	{

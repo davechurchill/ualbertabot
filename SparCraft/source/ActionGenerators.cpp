@@ -69,31 +69,10 @@ void ActionGenerators::GenerateCompassActions(const GameState & state, const siz
 				}
 			}
 		}
-		else if (unit.canHealNow())
-		{
-			for (size_t u(0); u< state.numUnits(player); ++u)
-			{
-				// units cannot heal themselves in broodwar
-				if (u == unitIndex)
-				{
-					continue;
-				}
-
-				const Unit & ourUnit = state.getUnit(player, u);
-				if (unit.canHealTarget(ourUnit, state.getTime()) && ourUnit.isAlive())
-				{
-					moves.add(Action(unit.getID(), player, ActionTypes::HEAL, ourUnit.getID()));
-                    //moves.add(Action(unitIndex, player, ActionTypes::HEAL, unit.getID()));
-				}
-			}
-		}
 		// generate the wait move if it can't attack yet
 		else
 		{
-			if (!unit.canHeal())
-			{
-				moves.add(Action(unit.getID(), player, ActionTypes::RELOAD, 0));
-			}
+            moves.add(Action(unit.getID(), player, ActionTypes::RELOAD, 0));
 		}
 		
 		// generate movement moves

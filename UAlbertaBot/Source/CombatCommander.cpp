@@ -1,5 +1,6 @@
 #include "CombatCommander.h"
 #include "UnitUtil.h"
+#include "Global.h"
 
 using namespace UAlbertaBot;
 
@@ -180,7 +181,7 @@ void CombatCommander::updateScoutDefenseSquad()
   
     // get the region that our base is located in
     BWTA::Region * myRegion = BWTA::getRegion(BWAPI::Broodwar->self()->getStartLocation());
-    if (!myRegion && myRegion->getCenter().isValid())
+    if (!myRegion || myRegion->getCenter().isValid())
     {
         return;
     }
@@ -212,7 +213,7 @@ void CombatCommander::updateScoutDefenseSquad()
 			// grab it from the worker manager and put it in the squad
             if (_squadData.canAssignUnitToSquad(workerDefender, scoutDefenseSquad))
             {
-			    WorkerManager::Instance().setCombatWorker(workerDefender);
+			    Global::Workers().setCombatWorker(workerDefender);
                 _squadData.assignUnitToSquad(workerDefender, scoutDefenseSquad);
             }
 		}
@@ -225,7 +226,7 @@ void CombatCommander::updateScoutDefenseSquad()
             unit->stop();
             if (unit->getType().isWorker())
             {
-                WorkerManager::Instance().finishedWithWorker(unit);
+                Global::Workers().finishedWithWorker(unit);
             }
         }
 
@@ -240,7 +241,7 @@ void CombatCommander::updateDefenseSquads()
         return; 
     }
     
-    BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
+    BWTA::BaseLocation * enemyBaseLocation = Global::Info().getMainBaseLocation(BWAPI::Broodwar->enemy());
     BWTA::Region * enemyRegion = nullptr;
     if (enemyBaseLocation)
     {
@@ -248,7 +249,7 @@ void CombatCommander::updateDefenseSquads()
     }
 
 	// for each of our occupied regions
-	for (BWTA::Region * myRegion : InformationManager::Instance().getOccupiedRegions(BWAPI::Broodwar->self()))
+	for (BWTA::Region * myRegion : Global::Info().getOccupiedRegions(BWAPI::Broodwar->self()))
 	{
         // don't defend inside the enemy region, this will end badly when we are stealing gas
         if (myRegion == enemyRegion)
@@ -466,37 +467,35 @@ void CombatCommander::drawSquadInformation(int x, int y)
 
 BWAPI::Position CombatCommander::getMainAttackLocation()
 {
-    BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
+    BWTA::BaseLocation * enemyBaseLocation = Global::Info().getMainBaseLocation(BWAPI::Broodwar->enemy());
 
     // First choice: Attack an enemy region if we can see units inside it
     if (enemyBaseLocation)
     {
         BWAPI::Position enemyBasePosition = enemyBaseLocation->getPosition();
 
+        // If the enemy base hasn't been seen yet, go there.
+        if (!BWAPI::Broodwar->isExplored(BWAPI::TilePosition(enemyBasePosition)))
+        {
+            return enemyBasePosition;
+        }
+
         // get all known enemy units in the area
         BWAPI::Unitset enemyUnitsInArea;
-		MapGrid::Instance().GetUnits(enemyUnitsInArea, enemyBasePosition, 800, false, true);
+        Global::Map().GetUnits(enemyUnitsInArea, enemyBasePosition, 800, false, true);
 
-        bool onlyOverlords = true;
         for (auto & unit : enemyUnitsInArea)
         {
             if (unit->getType() != BWAPI::UnitTypes::Zerg_Overlord)
             {
-                onlyOverlords = false;
-            }
-        }
-
-        if (!BWAPI::Broodwar->isExplored(BWAPI::TilePosition(enemyBasePosition)) || !enemyUnitsInArea.empty())
-        {
-            if (!onlyOverlords)
-            {
-                return enemyBaseLocation->getPosition();
+                // Enemy base is not empty: It's not only overlords in the enemy base area.
+                return enemyBasePosition;
             }
         }
     }
 
     // Second choice: Attack known enemy buildings
-    for (const auto & kv : InformationManager::Instance().getUnitInfo(BWAPI::Broodwar->enemy()))
+    for (const auto & kv : Global::Info().getUnitInfo(BWAPI::Broodwar->enemy()))
     {
         const UnitInfo & ui = kv.second;
 
@@ -521,7 +520,7 @@ BWAPI::Position CombatCommander::getMainAttackLocation()
 	}
 
     // Fourth choice: We can't see anything so explore the map attacking along the way
-    return MapGrid::Instance().getLeastExplored();
+    return Global::Map().getLeastRecentlySeenPosition();
 }
 
 BWAPI::Unit CombatCommander::findClosestWorkerToTarget(BWAPI::Unitset & unitsToAssign, BWAPI::Unit target)
@@ -545,7 +544,7 @@ BWAPI::Unit CombatCommander::findClosestWorkerToTarget(BWAPI::Unitset & unitsToA
         }
 
 		// if it is a move worker
-        if (WorkerManager::Instance().isFree(unit)) 
+        if (Global::Workers().isFree(unit)) 
 		{
 			double dist = unit->getDistance(target);
 
@@ -615,13 +614,12 @@ int CombatCommander::numZerglingsInOurBase()
 
 bool CombatCommander::beingBuildingRushed()
 {
-    int concernRadius = 1200;
-    BWAPI::Position ourBasePosition = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
-    
-    // check to see if the enemy has zerglings as the only attackers in our base
+    BWAPI::Position myBasePosition(BWAPI::Broodwar->self()->getStartLocation());
+
+    // check to see if the enemy has buildings near our base
     for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
     {
-        if (unit->getType().isBuilding())
+        if (unit->getType().isBuilding() && unit->getDistance(myBasePosition) < 1200)
         {
             return true;
         }

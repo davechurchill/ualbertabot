@@ -24,26 +24,13 @@ void Player_AttackClosest::getMove(const GameState & state, Move & move)
         SPARCRAFT_ASSERT(moves.numMoves(u) > 0, "0 moves found for unit");
 
         const Unit & ourUnit = state.getUnitByID(moves.getMove(u, 0).getID());
-        const Unit & closestUnit = ourUnit.canHeal() ? AITools::GetClosestOurUnit(state, _playerID, u) : AITools::GetClosestEnemyUnit(state, _playerID, u);
+        const Unit & closestUnit = AITools::GetClosestEnemyUnit(state, _playerID, u);
 
         for (size_t m(0); m<moves.numMoves(u); ++m)
         {
             const Action action = moves.getMove(u, m);
 
             if (action.type() == ActionTypes::ATTACK)
-            {
-                const Unit & target = state.getUnitByID(action.getTargetID());
-                size_t dist = ourUnit.getDistanceSqToUnit(target,state.getTime());
-
-                if (dist < actionDistance)
-                {
-                    actionDistance = dist;
-                    actionMoveIndex = m;
-                    foundAction = true;
-                }
-            }
-
-            if (action.type() == ActionTypes::HEAL)
             {
                 const Unit & target = state.getUnitByID(action.getTargetID());
                 size_t dist = ourUnit.getDistanceSqToUnit(target,state.getTime());

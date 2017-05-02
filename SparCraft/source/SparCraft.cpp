@@ -2,13 +2,22 @@
 
 namespace SparCraft
 {
+    bool isInit = false;
+
     void init()
     {
-        // Initialize Data for Attack Frame Animations
-        SparCraft::AnimationFrameData::init();
+        if (!isInit)
+        {
+            std::cout << "Initializing SparCraft...\n";
 
-        // Initialize Weapon and Unit Property Data
-        SparCraft::WeaponProperties::Init();
-	    SparCraft::UnitProperties::Init();
+            // Initialize Data for Attack Frame Animations
+            SparCraft::AnimationFrameData::init();
+
+            // Initialize Weapon and Unit Property Data
+            SparCraft::WeaponProperties::Init();
+	        SparCraft::UnitProperties::Init();
+
+            isInit = true;
+        }
     }
 }

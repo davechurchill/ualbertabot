@@ -104,7 +104,7 @@ void WorkerData::setWorkerJob(BWAPI::Unit unit, enum WorkerJob job, BWAPI::Unit 
 		workerDepotMap[unit] = jobUnit;
 
         BWAPI::Unit mineralToMine = getMineralToMine(unit);
-        workerMineralAssignment[unit] = mineralToMine;
+        workerMineralMap[unit] = mineralToMine;
         addToMineralPatch(mineralToMine, 1);
 
 		// right click the mineral to start mining
@@ -190,10 +190,10 @@ void WorkerData::clearPreviousJob(BWAPI::Unit unit)
 		workerDepotMap.erase(unit);
 
         // remove a worker from this unit's assigned mineral patch
-        addToMineralPatch(workerMineralAssignment[unit], -1);
+        addToMineralPatch(workerMineralMap[unit], -1);
 
         // erase the association from the map
-        workerMineralAssignment.erase(unit);
+        workerMineralMap.erase(unit);
 	}
 	else if (previousJob == Gas)
 	{
@@ -263,7 +263,7 @@ int WorkerData::getNumIdleWorkers() const
 
 enum WorkerData::WorkerJob WorkerData::getWorkerJob(BWAPI::Unit unit)
 {
-	if (!unit) { return Default; }
+	if (!unit || workerJobMap.size() == 0) { return Default; }
 
 	std::map<BWAPI::Unit, enum WorkerJob>::iterator it = workerJobMap.find(unit);
 

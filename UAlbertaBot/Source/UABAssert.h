@@ -40,8 +40,6 @@ namespace UAlbertaBot
 {
     namespace Assert
     {
-        void ShutDown();
-
         extern std::string lastErrorMessage;
 
         const std::string currentDateTime();

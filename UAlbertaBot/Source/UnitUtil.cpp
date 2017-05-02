@@ -11,23 +11,39 @@ bool UnitUtil::IsCombatUnit(BWAPI::Unit unit)
         return false;
     }
 
+    return IsCombatUnitType(unit->getType());
+
+}
+
+bool UnitUtil::IsCombatUnitType(BWAPI::UnitType type)
+{
     // no workers or buildings allowed
-    if (unit && unit->getType().isWorker() || unit->getType().isBuilding())
+    if (type.isWorker() || type.isBuilding())
     {
         return false;
     }
 
     // check for various types of combat units
-    if (unit->getType().canAttack() || 
-        unit->getType() == BWAPI::UnitTypes::Terran_Medic ||
-        unit->getType() == BWAPI::UnitTypes::Protoss_High_Templar ||
-        unit->getType() == BWAPI::UnitTypes::Protoss_Observer ||
-        unit->isFlying() && unit->getType().spaceProvided() > 0)
+    if (type.canAttack() || 
+        type == BWAPI::UnitTypes::Terran_Medic ||
+        type == BWAPI::UnitTypes::Protoss_High_Templar ||
+        type == BWAPI::UnitTypes::Protoss_Observer ||
+        type == BWAPI::UnitTypes::Zerg_Overlord ||
+        type == BWAPI::UnitTypes::Protoss_Observer)
     {
         return true;
     }
 		
     return false;
+}
+
+bool UnitUtil::IsMorphedBuildingType(BWAPI::UnitType type)
+{
+    return  type == BWAPI::UnitTypes::Zerg_Sunken_Colony ||
+            type == BWAPI::UnitTypes::Zerg_Spore_Colony ||
+            type == BWAPI::UnitTypes::Zerg_Lair ||
+            type == BWAPI::UnitTypes::Zerg_Hive ||
+            type == BWAPI::UnitTypes::Zerg_Greater_Spire;
 }
 
 bool UnitUtil::IsValidUnit(BWAPI::Unit unit)

@@ -3,7 +3,6 @@
 #include "Common.h"
 #include "BuildingData.h"
 #include "MetaType.h"
-#include "InformationManager.h"
 
 namespace UAlbertaBot
 {
@@ -11,7 +10,7 @@ namespace UAlbertaBot
 
 class BuildingPlacer
 {
-    BuildingPlacer();
+    
 
     std::vector< std::vector<bool> > _reserveMap;
 
@@ -23,8 +22,8 @@ class BuildingPlacer
     void    computeBuildableTileDistance(BWAPI::TilePosition tp);
 
 public:
-
-    static BuildingPlacer & Instance();
+    
+    BuildingPlacer();
 
     // queries for various BuildingPlacer data
     bool					buildable(const Building & b,int x,int y) const;
