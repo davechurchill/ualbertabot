@@ -103,6 +103,8 @@ void InfoManager::updateBaseLocationInfo()
             }
 			
 			_mainBaseLocations[_enemy] = unexplored;
+
+            std::cout << "About to dereference a null pointer\n";
 			updateOccupiedRegions(BWTA::getRegion(unexplored->getTilePosition()), BWAPI::Broodwar->enemy());
 		}
 	// otherwise we do know it, so push it back
@@ -266,37 +268,37 @@ void InfoManager::drawMapInformation()
     }
 
 	//we will iterate through all the base locations, and draw their outlines.
-	for (std::set<BWTA::BaseLocation*>::const_iterator i = BWTA::getBaseLocations().begin(); i != BWTA::getBaseLocations().end(); i++)
+	for (const auto & baseLocation : BWTA::getBaseLocations())
 	{
-		BWAPI::TilePosition p = (*i)->getTilePosition();
-		BWAPI::Position c = (*i)->getPosition();
+		BWAPI::TilePosition p = baseLocation->getTilePosition();
+		BWAPI::Position c = baseLocation->getPosition();
 
 		//draw outline of center location
 		BWAPI::Broodwar->drawBoxMap(p.x * 32, p.y * 32, p.x * 32 + 4 * 32, p.y * 32 + 3 * 32, BWAPI::Colors::Blue);
 
 		//draw a circle at each mineral patch
-		for (BWAPI::Unitset::iterator j = (*i)->getStaticMinerals().begin(); j != (*i)->getStaticMinerals().end(); j++)
+		for (const auto & mineral : baseLocation->getStaticMinerals())
 		{
-			BWAPI::Position q = (*j)->getInitialPosition();
+			BWAPI::Position q = mineral->getInitialPosition();
 			BWAPI::Broodwar->drawCircleMap(q.x, q.y, 30, BWAPI::Colors::Cyan);
 		}
 
 		//draw the outlines of vespene geysers
-		for (BWAPI::Unitset::iterator j = (*i)->getGeysers().begin(); j != (*i)->getGeysers().end(); j++)
+		for (const auto & geyser : baseLocation->getGeysers())
 		{
-			BWAPI::TilePosition q = (*j)->getInitialTilePosition();
+			BWAPI::TilePosition q = geyser->getInitialTilePosition();
 			BWAPI::Broodwar->drawBoxMap(q.x * 32, q.y * 32, q.x * 32 + 4 * 32, q.y * 32 + 2 * 32, BWAPI::Colors::Orange);
 		}
 
 		//if this is an island expansion, draw a yellow circle around the base location
-		if ((*i)->isIsland())
+		if (baseLocation->isIsland())
 			BWAPI::Broodwar->drawCircleMap(c, 80, BWAPI::Colors::Yellow);
 	}
 
 	//we will iterate through all the regions and draw the polygon outline of it in green.
-	for (std::set<BWTA::Region*>::const_iterator r = BWTA::getRegions().begin(); r != BWTA::getRegions().end(); r++)
+	for (const auto & region : BWTA::getRegions())
 	{
-		BWTA::Polygon p = (*r)->getPolygon();
+		BWTA::Polygon p = region->getPolygon();
 		for (int j = 0; j<(int)p.size(); j++)
 		{
 			BWAPI::Position point1 = p[j];
@@ -306,12 +308,12 @@ void InfoManager::drawMapInformation()
 	}
 
 	//we will visualize the chokepoints with red lines
-	for (std::set<BWTA::Region*>::const_iterator r = BWTA::getRegions().begin(); r != BWTA::getRegions().end(); r++)
+	for (const auto & region : BWTA::getRegions())
 	{
-		for (std::set<BWTA::Chokepoint*>::const_iterator c = (*r)->getChokepoints().begin(); c != (*r)->getChokepoints().end(); c++)
+		for (const auto & choke : region->getChokepoints())
 		{
-			BWAPI::Position point1 = (*c)->getSides().first;
-			BWAPI::Position point2 = (*c)->getSides().second;
+			BWAPI::Position point1 = choke->getSides().first;
+			BWAPI::Position point2 = choke->getSides().second;
 			BWAPI::Broodwar->drawLineMap(point1, point2, BWAPI::Colors::Red);
 		}
 	}

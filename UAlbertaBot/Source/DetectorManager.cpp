@@ -3,7 +3,10 @@
 
 using namespace UAlbertaBot;
 
-DetectorManager::DetectorManager() : unitClosestToEnemy(nullptr) { }
+DetectorManager::DetectorManager() 
+    : unitClosestToEnemy(nullptr) 
+{ 
+}
 
 void DetectorManager::executeMicro(const BWAPI::Unitset & targets) 
 {
@@ -55,7 +58,6 @@ void DetectorManager::executeMicro(const BWAPI::Unitset & targets)
 		}
 	}
 }
-
 
 BWAPI::Unit DetectorManager::closestCloakedUnit(const BWAPI::Unitset & cloakedUnits, BWAPI::Unit detectorUnit)
 {

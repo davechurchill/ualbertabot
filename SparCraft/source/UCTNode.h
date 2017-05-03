@@ -85,26 +85,27 @@ public:
 
     UCTNode & mostVisitedChild() 
     {
-        UCTNode * mostVisitedChild = NULL;
+        UCTNode * mostVisitedChild = nullptr;
         size_t mostVisits = 0;
 
-       for (size_t c(0); c < numChildren(); ++c)
-       {
-           UCTNode & child = getChild(c);
+        for (size_t c(0); c < numChildren(); ++c)
+        {
+            UCTNode & child = getChild(c);
 
-           if (!mostVisitedChild || (child.numVisits() > mostVisits))
-           {
-               mostVisitedChild = &child;
-               mostVisits = child.numVisits();
-           }
-       }
+            if (!mostVisitedChild || (child.numVisits() > mostVisits))
+            {
+                mostVisitedChild = &child;
+                mostVisits = child.numVisits();
+            }
+        }
 
-       return *mostVisitedChild;
+        SPARCRAFT_ASSERT(mostVisitedChild != nullptr, "Most visit child is a null pointer");
+        return *mostVisitedChild;
     }
 
     UCTNode & bestUCTValueChild(const bool maxPlayer, const UCTSearchParameters & params) 
     {
-        UCTNode * bestChild = NULL;
+        UCTNode * bestChild = nullptr;
         double bestVal = maxPlayer ? std::numeric_limits<double>::min() : std::numeric_limits<double>::max();
 
         for (size_t c(0); c < numChildren(); ++c)
@@ -130,6 +131,7 @@ public:
             }
         }
 
+        SPARCRAFT_ASSERT(bestChild != nullptr, "Best child is a null pointer");
         return *bestChild;
     }
 };

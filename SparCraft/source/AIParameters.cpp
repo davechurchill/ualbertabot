@@ -47,7 +47,7 @@ void AIParameters::parsePlayers(const std::string & keyName, const rapidjson::Va
     }
 
     const rapidjson::Value & players = rootValue[keyName.c_str()];
-    for (rapidjson::Value::ConstMemberIterator itr = players.MemberBegin(); itr != players.MemberEnd(); ++itr)
+    for (auto itr = players.MemberBegin(); itr != players.MemberEnd(); ++itr)
     {
         const std::string &         name = itr->name.GetString();
         const rapidjson::Value &    val  = itr->value;
@@ -74,7 +74,7 @@ void AIParameters::parseStates(const std::string & keyName, const rapidjson::Val
     }
 
     const rapidjson::Value & states = rootValue[keyName.c_str()];
-    for (rapidjson::Value::ConstMemberIterator itr = states.MemberBegin(); itr != states.MemberEnd(); ++itr)
+    for (auto itr = states.MemberBegin(); itr != states.MemberEnd(); ++itr)
     {
         const std::string &         name = itr->name.GetString();
         const rapidjson::Value &    val = itr->value;

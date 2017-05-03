@@ -29,8 +29,6 @@ protected:
 	virtual void        executeMicro(const BWAPI::Unitset & targets) = 0;
 	bool                checkPositionWalkable(BWAPI::Position pos);
 	void                drawOrderText();
-	bool                unitNearEnemy(BWAPI::Unit unit);
-	bool                unitNearChokepoint(BWAPI::Unit unit) const;
 	void                trainSubUnits(BWAPI::Unit unit) const;
     
 
@@ -38,7 +36,6 @@ public:
 						MicroManager();
 
 	const BWAPI::Unitset & getUnits() const;
-	BWAPI::Position     calcCenter() const;
 
 	void				setUnits(const BWAPI::Unitset & u);
 	void				execute(const SquadOrder & order);

@@ -12,25 +12,6 @@ void MicroManager::setUnits(const BWAPI::Unitset & u)
 	_units = u; 
 }
 
-BWAPI::Position MicroManager::calcCenter() const
-{
-    if (_units.empty())
-    {
-        if (Config::Debug::DrawSquadInfo)
-        {
-            BWAPI::Broodwar->printf("Squad::calcCenter() called on empty squad");
-        }
-        return BWAPI::Position(0,0);
-    }
-
-	BWAPI::Position accum(0,0);
-	for (auto & unit : _units)
-	{
-		accum += unit->getPosition();
-	}
-	return BWAPI::Position(accum.x / _units.size(), accum.y / _units.size());
-}
-
 void MicroManager::execute(const SquadOrder & inputOrder)
 {
 	// Nothing to do if we have no units
@@ -145,17 +126,6 @@ void MicroManager::regroup(const BWAPI::Position & regroupPosition) const
 	}
 }
 
-bool MicroManager::unitNearEnemy(BWAPI::Unit unit)
-{
-	assert(unit);
-
-	BWAPI::Unitset enemyNear;
-
-	Global::Map().GetUnits(enemyNear, unit->getPosition(), 800, false, true);
-
-	return enemyNear.size() > 0;
-}
-
 // returns true if position:
 // a) is walkable
 // b) doesn't have buildings on it
@@ -195,19 +165,6 @@ void MicroManager::trainSubUnits(BWAPI::Unit unit) const
 	{
 		unit->train(BWAPI::UnitTypes::Protoss_Interceptor);
 	}
-}
-
-bool MicroManager::unitNearChokepoint(BWAPI::Unit unit) const
-{
-	for (BWTA::Chokepoint * choke : BWTA::getChokepoints())
-	{
-		if (unit->getDistance(choke->getCenter()) < 80)
-		{
-			return true;
-		}
-	}
-
-	return false;
 }
 
 void MicroManager::drawOrderText() 

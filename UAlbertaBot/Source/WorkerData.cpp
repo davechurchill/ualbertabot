@@ -265,7 +265,7 @@ enum WorkerData::WorkerJob WorkerData::getWorkerJob(BWAPI::Unit unit)
 {
 	if (!unit || workerJobMap.size() == 0) { return Default; }
 
-	std::map<BWAPI::Unit, enum WorkerJob>::iterator it = workerJobMap.find(unit);
+	auto it = workerJobMap.find(unit);
 
 	if (it != workerJobMap.end())
 	{
@@ -343,13 +343,9 @@ BWAPI::Unit WorkerData::getWorkerResource(BWAPI::Unit unit)
 {
 	if (!unit) { return nullptr; }
 
-	// create the iterator
-	std::map<BWAPI::Unit, BWAPI::Unit>::iterator it;
-	
-	// if the worker is mining, set the iterator to the mineral map
 	if (getWorkerJob(unit) == Minerals)
 	{
-		it = workerMineralMap.find(unit);
+		auto it = workerMineralMap.find(unit);
 		if (it != workerMineralMap.end())
 		{
 			return it->second;
@@ -357,7 +353,7 @@ BWAPI::Unit WorkerData::getWorkerResource(BWAPI::Unit unit)
 	}
 	else if (getWorkerJob(unit) == Gas)
 	{
-		it = workerRefineryMap.find(unit);
+		auto it = workerRefineryMap.find(unit);
 		if (it != workerRefineryMap.end())
 		{
 			return it->second;
@@ -443,7 +439,7 @@ BWAPI::Unit WorkerData::getWorkerRepairUnit(BWAPI::Unit unit)
 {
 	if (!unit) { return nullptr; }
 
-	std::map<BWAPI::Unit, BWAPI::Unit>::iterator it = workerRepairMap.find(unit);
+	auto it = workerRepairMap.find(unit);
 
 	if (it != workerRepairMap.end())
 	{
@@ -457,7 +453,7 @@ BWAPI::Unit WorkerData::getWorkerDepot(BWAPI::Unit unit)
 {
 	if (!unit) { return nullptr; }
 
-	std::map<BWAPI::Unit, BWAPI::Unit>::iterator it = workerDepotMap.find(unit);
+	auto it = workerDepotMap.find(unit);
 
 	if (it != workerDepotMap.end())
 	{
@@ -471,7 +467,7 @@ BWAPI::UnitType	WorkerData::getWorkerBuildingType(BWAPI::Unit unit)
 {
 	if (!unit) { return BWAPI::UnitTypes::None; }
 
-	std::map<BWAPI::Unit, BWAPI::UnitType>::iterator it = workerBuildingTypeMap.find(unit);
+	auto it = workerBuildingTypeMap.find(unit);
 
 	if (it != workerBuildingTypeMap.end())
 	{
@@ -483,7 +479,7 @@ BWAPI::UnitType	WorkerData::getWorkerBuildingType(BWAPI::Unit unit)
 
 WorkerMoveData WorkerData::getWorkerMoveData(BWAPI::Unit unit)
 {
-	std::map<BWAPI::Unit, WorkerMoveData>::iterator it = workerMoveMap.find(unit);
+	auto it = workerMoveMap.find(unit);
 
 	assert(it != workerMoveMap.end());
 	
@@ -494,12 +490,9 @@ int WorkerData::getNumAssignedWorkers(BWAPI::Unit unit)
 {
 	if (!unit) { return 0; }
 
-	std::map<BWAPI::Unit, int>::iterator it;
-	
-	// if the worker is mining, set the iterator to the mineral map
 	if (unit->getType().isResourceDepot())
 	{
-		it = depotWorkerCount.find(unit);
+		auto it = depotWorkerCount.find(unit);
 
 		// if there is an entry, return it
 		if (it != depotWorkerCount.end())
@@ -509,7 +502,7 @@ int WorkerData::getNumAssignedWorkers(BWAPI::Unit unit)
 	}
 	else if (unit->getType().isRefinery())
 	{
-		it = refineryWorkerCount.find(unit);
+		auto it = refineryWorkerCount.find(unit);
 
 		// if there is an entry, return it
 		if (it != refineryWorkerCount.end())

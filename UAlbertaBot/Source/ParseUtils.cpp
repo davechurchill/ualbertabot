@@ -184,12 +184,11 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
         if (strategy.HasMember("Strategies") && strategy["Strategies"].IsObject())
         {
             const rapidjson::Value & strategies = strategy["Strategies"];
-            for (rapidjson::Value::ConstMemberIterator itr = strategies.MemberBegin(); itr != strategies.MemberEnd(); ++itr)
+            for (auto itr = strategies.MemberBegin(); itr != strategies.MemberEnd(); ++itr)
             {
                 const std::string &         name = itr->name.GetString();
                 const rapidjson::Value &    val  = itr->value;
         
-
                 BWAPI::Race strategyRace;
                 if (val.HasMember("Race") && val["Race"].IsString())
                 {
