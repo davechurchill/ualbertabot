@@ -21,10 +21,10 @@ class ScoutManager
     BWAPI::Position getFleePosition();
 	BWAPI::Unit     getEnemyGeyser();
 	BWAPI::Unit     closestEnemyWorker();
-    void            followPerimeter();
+    //void            followPerimeter();
 	void            moveScouts();
     void            drawScoutInformation(int x, int y);
-    void            calculateEnemyRegionVertices();
+    //void            calculateEnemyRegionVertices();
 
 
 public:
@@ -32,8 +32,6 @@ public:
 	ScoutManager();
 
 	void update();
-    bool shouldGastSteal();
-
     void setWorkerScout(BWAPI::Unit unit);
 
 };

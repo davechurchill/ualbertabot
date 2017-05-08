@@ -21,10 +21,10 @@ void ScoutManager::update()
     }
 
     // calculate enemy region vertices if we haven't yet
-    if (_enemyRegionVertices.empty())
+    /*if (_enemyRegionVertices.empty())
     {
         calculateEnemyRegionVertices();
-    }
+    }*/
 
 	moveScouts();
     drawScoutInformation(200, 320);
@@ -67,7 +67,7 @@ void ScoutManager::moveScouts()
     int scoutHP = _workerScout->getHitPoints() + _workerScout->getShields();
     
 	// get the enemy base location, if we have one
-	BWTA::BaseLocation * enemyBaseLocation = Global::Info().getMainBaseLocation(BWAPI::Broodwar->enemy());
+	const BaseLocation * enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
 
     int scoutDistanceThreshold = 30;
 
@@ -77,7 +77,7 @@ void ScoutManager::moveScouts()
     }
         
 	// if we know where the enemy region is and where our scout is
-	if (_workerScout && enemyBaseLocation)
+	if (_workerScout && (enemyBaseLocation != nullptr))
 	{
         int scoutDistanceToEnemy = Global::Map().getGroundDistance(_workerScout->getPosition(), enemyBaseLocation->getPosition());
         bool scoutInRangeOfenemy = scoutDistanceToEnemy <= scoutDistanceThreshold;
@@ -110,19 +110,18 @@ void ScoutManager::moveScouts()
                     _currentRegionVertexIndex = -1;
 					Micro::SmartAttackUnit(_workerScout, closestWorker);
 				}
-				// otherwise keep moving to the enemy region
+				// otherwise keep moving to the enemy base location
 				else
 				{
                     _scoutStatus = "Following perimeter";
-                    followPerimeter();  
+                    Micro::SmartMove(_workerScout, enemyBaseLocation->getPosition());  
                 }
-				
 			}
 			// if the worker scout is under attack
 			else
 			{
                 _scoutStatus = "Under attack inside, fleeing";
-                followPerimeter();
+                Micro::SmartMove(_workerScout, getFleePosition());
 			}
 		}
 		// if the scout is not in the enemy region
@@ -130,14 +129,14 @@ void ScoutManager::moveScouts()
 		{
             _scoutStatus = "Under attack inside, fleeing";
 
-            followPerimeter();
+            Micro::SmartMove(_workerScout, getFleePosition());
 		}
 		else
 		{
             _scoutStatus = "Enemy region known, going there";
 
 			// move to the enemy region
-			followPerimeter();
+			Micro::SmartMove(_workerScout, enemyBaseLocation->getPosition());
         }
 		
 	}
@@ -147,7 +146,7 @@ void ScoutManager::moveScouts()
 	{
         _scoutStatus = "Enemy base unknown, exploring";
 
-		for (BWTA::BaseLocation * startLocation : BWTA::getStartLocations()) 
+		for (const BaseLocation * startLocation : Global::Bases().getStartingBaseLocations()) 
 		{
 			// if we haven't explored it yet
 			if (!BWAPI::Broodwar->isExplored(startLocation->getTilePosition())) 
@@ -162,24 +161,11 @@ void ScoutManager::moveScouts()
     _previousScoutHP = scoutHP;
 }
 
-void ScoutManager::followPerimeter()
-{
-    BWAPI::Position fleeTo = getFleePosition();
-
-    if (Config::Debug::DrawScoutInfo)
-    {
-        BWAPI::Broodwar->drawCircleMap(fleeTo, 5, BWAPI::Colors::Red, true);
-    }
-
-	Micro::SmartMove(_workerScout, fleeTo);
-}
-
 BWAPI::Unit ScoutManager::closestEnemyWorker()
 {
 	BWAPI::Unit enemyWorker = nullptr;
 	double maxDist = 0;
 
-	
 	BWAPI::Unit geyser = getEnemyGeyser();
 	
 	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
@@ -211,7 +197,7 @@ BWAPI::Unit ScoutManager::closestEnemyWorker()
 BWAPI::Unit ScoutManager::getEnemyGeyser()
 {
 	BWAPI::Unit geyser = nullptr;
-	BWTA::BaseLocation * enemyBaseLocation = Global::Info().getMainBaseLocation(BWAPI::Broodwar->enemy());
+	const BaseLocation * enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
 
 	for (auto & unit : enemyBaseLocation->getGeysers())
 	{
@@ -236,12 +222,12 @@ bool ScoutManager::enemyWorkerInRadius()
 
 bool ScoutManager::immediateThreat()
 {
-	BWAPI::Unitset enemyAttackingWorkers;
+	std::vector<BWAPI::Unit> enemyAttackingWorkers;
 	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
 	{
 		if (unit->getType().isWorker() && unit->isAttacking())
 		{
-			enemyAttackingWorkers.insert(unit);
+			enemyAttackingWorkers.push_back(unit);
 		}
 	}
 	
@@ -282,194 +268,208 @@ int ScoutManager::getClosestVertexIndex(BWAPI::Unit unit)
     return closestIndex;
 }
 
+//void ScoutManager::followPerimeter()
+//{
+//    BWAPI::Position fleeTo = getFleePosition();
+//
+//    if (Config::Debug::DrawScoutInfo)
+//    {
+//        BWAPI::Broodwar->drawCircleMap(fleeTo, 5, BWAPI::Colors::Red, true);
+//    }
+//
+//	Micro::SmartMove(_workerScout, fleeTo);
+//}
+
 BWAPI::Position ScoutManager::getFleePosition()
 {
-    UAB_ASSERT_WARNING(!_enemyRegionVertices.empty(), "We should have an enemy region vertices if we are fleeing");
-    
-    BWTA::BaseLocation * enemyBaseLocation = Global::Info().getMainBaseLocation(BWAPI::Broodwar->enemy());
+    // TODO: make this follow the perimeter of the enemy base again, but for now just use home base as flee direction
+    return Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->self())->getPosition();
 
-    // if this is the first flee, we will not have a previous perimeter index
-    if (_currentRegionVertexIndex == -1)
-    {
-        // so return the closest position in the polygon
-        int closestPolygonIndex = getClosestVertexIndex(_workerScout);
+    //UAB_ASSERT_WARNING(!_enemyRegionVertices.empty(), "We should have an enemy region vertices if we are fleeing");
+    //
+    //const BaseLocation * enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
 
-        UAB_ASSERT_WARNING(closestPolygonIndex != -1, "Couldn't find a closest vertex");
+    //// if this is the first flee, we will not have a previous perimeter index
+    //if (_currentRegionVertexIndex == -1)
+    //{
+    //    // so return the closest position in the polygon
+    //    int closestPolygonIndex = getClosestVertexIndex(_workerScout);
 
-        if (closestPolygonIndex == -1)
-        {
-            return BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
-        }
-        else
-        {
-            // set the current index so we know how to iterate if we are still fleeing later
-            _currentRegionVertexIndex = closestPolygonIndex;
-            return _enemyRegionVertices[closestPolygonIndex];
-        }
-    }
-    // if we are still fleeing from the previous frame, get the next location if we are close enough
-    else
-    {
-        double distanceFromCurrentVertex = _enemyRegionVertices[_currentRegionVertexIndex].getDistance(_workerScout->getPosition());
+    //    UAB_ASSERT_WARNING(closestPolygonIndex != -1, "Couldn't find a closest vertex");
 
-        // keep going to the next vertex in the perimeter until we get to one we're far enough from to issue another move command
-        while (distanceFromCurrentVertex < 128)
-        {
-            _currentRegionVertexIndex = (_currentRegionVertexIndex + 1) % _enemyRegionVertices.size();
+    //    if (closestPolygonIndex == -1)
+    //    {
+    //        return BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
+    //    }
+    //    else
+    //    {
+    //        // set the current index so we know how to iterate if we are still fleeing later
+    //        _currentRegionVertexIndex = closestPolygonIndex;
+    //        return _enemyRegionVertices[closestPolygonIndex];
+    //    }
+    //}
+    //// if we are still fleeing from the previous frame, get the next location if we are close enough
+    //else
+    //{
+    //    double distanceFromCurrentVertex = _enemyRegionVertices[_currentRegionVertexIndex].getDistance(_workerScout->getPosition());
 
-            distanceFromCurrentVertex = _enemyRegionVertices[_currentRegionVertexIndex].getDistance(_workerScout->getPosition());
-        }
+    //    // keep going to the next vertex in the perimeter until we get to one we're far enough from to issue another move command
+    //    while (distanceFromCurrentVertex < 128)
+    //    {
+    //        _currentRegionVertexIndex = (_currentRegionVertexIndex + 1) % _enemyRegionVertices.size();
 
-        return _enemyRegionVertices[_currentRegionVertexIndex];
-    }
+    //        distanceFromCurrentVertex = _enemyRegionVertices[_currentRegionVertexIndex].getDistance(_workerScout->getPosition());
+    //    }
 
+    //    return _enemyRegionVertices[_currentRegionVertexIndex];
+    //}
 }
 
-void ScoutManager::calculateEnemyRegionVertices()
-{
-    BWTA::BaseLocation * enemyBaseLocation = Global::Info().getMainBaseLocation(BWAPI::Broodwar->enemy());
-    //UAB_ASSERT_WARNING(enemyBaseLocation, "We should have an enemy base location if we are fleeing");
-
-    if (!enemyBaseLocation)
-    {
-        return;
-    }
-
-    BWTA::Region * enemyRegion = enemyBaseLocation->getRegion();
-    //UAB_ASSERT_WARNING(enemyRegion, "We should have an enemy region if we are fleeing");
-
-    if (!enemyRegion)
-    {
-        return;
-    }
-
-    const BWAPI::Position basePosition = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
-    const std::vector<BWAPI::TilePosition> & closestTobase = Global::Map().getClosestTilesTo(basePosition);
-
-    std::set<BWAPI::Position> unsortedVertices;
-
-    // check each tile position
-    for (size_t i(0); i < closestTobase.size(); ++i)
-    {
-        const BWAPI::TilePosition & tp = closestTobase[i];
-
-        if (BWTA::getRegion(tp) != enemyRegion)
-        {
-            continue;
-        }
-
-        // a tile is 'surrounded' if
-        // 1) in all 4 directions there's a tile position in the current region
-        // 2) in all 4 directions there's a buildable tile
-        bool surrounded = true;
-        if (BWTA::getRegion(BWAPI::TilePosition(tp.x+1, tp.y)) != enemyRegion || !BWAPI::Broodwar->isBuildable(BWAPI::TilePosition(tp.x+1, tp.y))
-            || BWTA::getRegion(BWAPI::TilePosition(tp.x, tp.y+1)) != enemyRegion || !BWAPI::Broodwar->isBuildable(BWAPI::TilePosition(tp.x, tp.y+1))
-            || BWTA::getRegion(BWAPI::TilePosition(tp.x-1, tp.y)) != enemyRegion || !BWAPI::Broodwar->isBuildable(BWAPI::TilePosition(tp.x-1, tp.y))
-            || BWTA::getRegion(BWAPI::TilePosition(tp.x, tp.y-1)) != enemyRegion || !BWAPI::Broodwar->isBuildable(BWAPI::TilePosition(tp.x, tp.y -1))) 
-        { 
-            surrounded = false; 
-        }
-        
-        // push the tiles that aren't surrounded
-        if (!surrounded && BWAPI::Broodwar->isBuildable(tp))
-        {
-            if (Config::Debug::DrawScoutInfo)
-            {
-                int x1 = tp.x * 32 + 2;
-                int y1 = tp.y * 32 + 2;
-                int x2 = (tp.x+1) * 32 - 2;
-                int y2 = (tp.y+1) * 32 - 2;
-        
-                BWAPI::Broodwar->drawTextMap(x1+3, y1+2, "%d", Global::Map().getGroundDistance(BWAPI::Position(tp), basePosition));
-                BWAPI::Broodwar->drawBoxMap(x1, y1, x2, y2, BWAPI::Colors::Green, false);
-            }
-            
-            unsortedVertices.insert(BWAPI::Position(tp) + BWAPI::Position(16, 16));
-        }
-    }
-
-
-    std::vector<BWAPI::Position> sortedVertices;
-    BWAPI::Position current = *unsortedVertices.begin();
-
-    _enemyRegionVertices.push_back(current);
-    unsortedVertices.erase(current);
-
-    // while we still have unsorted vertices left, find the closest one remaining to current
-    while (!unsortedVertices.empty())
-    {
-        double bestDist = 1000000;
-        BWAPI::Position bestPos;
-
-        for (const BWAPI::Position & pos : unsortedVertices)
-        {
-            double dist = pos.getDistance(current);
-
-            if (dist < bestDist)
-            {
-                bestDist = dist;
-                bestPos = pos;
-            }
-        }
-
-        current = bestPos;
-        sortedVertices.push_back(bestPos);
-        unsortedVertices.erase(bestPos);
-    }
-
-    // let's close loops on a threshold, eliminating death grooves
-    int distanceThreshold = 100;
-
-    while (true)
-    {
-        // find the largest index difference whose distance is less than the threshold
-        int maxFarthest = 0;
-        int maxFarthestStart = 0;
-        int maxFarthestEnd = 0;
-
-        // for each starting vertex
-        for (int i(0); i < (int)sortedVertices.size(); ++i)
-        {
-            int farthest = 0;
-            int farthestIndex = 0;
-
-            // only test half way around because we'll find the other one on the way back
-            for (size_t j(1); j < sortedVertices.size()/2; ++j)
-            {
-                int jindex = (i + j) % sortedVertices.size();
-            
-                if (sortedVertices[i].getDistance(sortedVertices[jindex]) < distanceThreshold)
-                {
-                    farthest = j;
-                    farthestIndex = jindex;
-                }
-            }
-
-            if (farthest > maxFarthest)
-            {
-                maxFarthest = farthest;
-                maxFarthestStart = i;
-                maxFarthestEnd = farthestIndex;
-            }
-        }
-        
-        // stop when we have no long chains within the threshold
-        if (maxFarthest < 4)
-        {
-            break;
-        }
-
-        double dist = sortedVertices[maxFarthestStart].getDistance(sortedVertices[maxFarthestEnd]);
-
-        std::vector<BWAPI::Position> temp;
-
-        for (size_t s(maxFarthestEnd); s != maxFarthestStart; s = (s+1) % sortedVertices.size())
-        {
-            temp.push_back(sortedVertices[s]);
-        }
-
-        sortedVertices = temp;
-    }
-
-    _enemyRegionVertices = sortedVertices;
-}
+//void ScoutManager::calculateEnemyRegionVertices()
+//{
+//    const BaseLocation * enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
+//    //UAB_ASSERT_WARNING(enemyBaseLocation, "We should have an enemy base location if we are fleeing");
+//
+//    if (!enemyBaseLocation)
+//    {
+//        return;
+//    }
+//
+//    BWTA::Region * enemyRegion = enemyBaseLocation->getRegion();
+//    //UAB_ASSERT_WARNING(enemyRegion, "We should have an enemy region if we are fleeing");
+//
+//    if (!enemyRegion)
+//    {
+//        return;
+//    }
+//
+//    const BWAPI::Position basePosition = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
+//    const std::vector<BWAPI::TilePosition> & closestTobase = Global::Map().getClosestTilesTo(basePosition);
+//
+//    std::set<BWAPI::Position> unsortedVertices;
+//
+//    // check each tile position
+//    for (size_t i(0); i < closestTobase.size(); ++i)
+//    {
+//        const BWAPI::TilePosition & tp = closestTobase[i];
+//
+//        if (BWTA::getRegion(tp) != enemyRegion)
+//        {
+//            continue;
+//        }
+//
+//        // a tile is 'surrounded' if
+//        // 1) in all 4 directions there's a tile position in the current region
+//        // 2) in all 4 directions there's a buildable tile
+//        bool surrounded = true;
+//        if (BWTA::getRegion(BWAPI::TilePosition(tp.x+1, tp.y)) != enemyRegion || !BWAPI::Broodwar->isBuildable(BWAPI::TilePosition(tp.x+1, tp.y))
+//            || BWTA::getRegion(BWAPI::TilePosition(tp.x, tp.y+1)) != enemyRegion || !BWAPI::Broodwar->isBuildable(BWAPI::TilePosition(tp.x, tp.y+1))
+//            || BWTA::getRegion(BWAPI::TilePosition(tp.x-1, tp.y)) != enemyRegion || !BWAPI::Broodwar->isBuildable(BWAPI::TilePosition(tp.x-1, tp.y))
+//            || BWTA::getRegion(BWAPI::TilePosition(tp.x, tp.y-1)) != enemyRegion || !BWAPI::Broodwar->isBuildable(BWAPI::TilePosition(tp.x, tp.y -1))) 
+//        { 
+//            surrounded = false; 
+//        }
+//        
+//        // push the tiles that aren't surrounded
+//        if (!surrounded && BWAPI::Broodwar->isBuildable(tp))
+//        {
+//            if (Config::Debug::DrawScoutInfo)
+//            {
+//                int x1 = tp.x * 32 + 2;
+//                int y1 = tp.y * 32 + 2;
+//                int x2 = (tp.x+1) * 32 - 2;
+//                int y2 = (tp.y+1) * 32 - 2;
+//        
+//                BWAPI::Broodwar->drawTextMap(x1+3, y1+2, "%d", Global::Map().getGroundDistance(BWAPI::Position(tp), basePosition));
+//                BWAPI::Broodwar->drawBoxMap(x1, y1, x2, y2, BWAPI::Colors::Green, false);
+//            }
+//            
+//            unsortedVertices.insert(BWAPI::Position(tp) + BWAPI::Position(16, 16));
+//        }
+//    }
+//
+//
+//    std::vector<BWAPI::Position> sortedVertices;
+//    BWAPI::Position current = *unsortedVertices.begin();
+//
+//    _enemyRegionVertices.push_back(current);
+//    unsortedVertices.erase(current);
+//
+//    // while we still have unsorted vertices left, find the closest one remaining to current
+//    while (!unsortedVertices.empty())
+//    {
+//        double bestDist = 1000000;
+//        BWAPI::Position bestPos;
+//
+//        for (const BWAPI::Position & pos : unsortedVertices)
+//        {
+//            double dist = pos.getDistance(current);
+//
+//            if (dist < bestDist)
+//            {
+//                bestDist = dist;
+//                bestPos = pos;
+//            }
+//        }
+//
+//        current = bestPos;
+//        sortedVertices.push_back(bestPos);
+//        unsortedVertices.erase(bestPos);
+//    }
+//
+//    // let's close loops on a threshold, eliminating death grooves
+//    int distanceThreshold = 100;
+//
+//    while (true)
+//    {
+//        // find the largest index difference whose distance is less than the threshold
+//        int maxFarthest = 0;
+//        int maxFarthestStart = 0;
+//        int maxFarthestEnd = 0;
+//
+//        // for each starting vertex
+//        for (int i(0); i < (int)sortedVertices.size(); ++i)
+//        {
+//            int farthest = 0;
+//            int farthestIndex = 0;
+//
+//            // only test half way around because we'll find the other one on the way back
+//            for (size_t j(1); j < sortedVertices.size()/2; ++j)
+//            {
+//                int jindex = (i + j) % sortedVertices.size();
+//            
+//                if (sortedVertices[i].getDistance(sortedVertices[jindex]) < distanceThreshold)
+//                {
+//                    farthest = j;
+//                    farthestIndex = jindex;
+//                }
+//            }
+//
+//            if (farthest > maxFarthest)
+//            {
+//                maxFarthest = farthest;
+//                maxFarthestStart = i;
+//                maxFarthestEnd = farthestIndex;
+//            }
+//        }
+//        
+//        // stop when we have no long chains within the threshold
+//        if (maxFarthest < 4)
+//        {
+//            break;
+//        }
+//
+//        double dist = sortedVertices[maxFarthestStart].getDistance(sortedVertices[maxFarthestEnd]);
+//
+//        std::vector<BWAPI::Position> temp;
+//
+//        for (size_t s(maxFarthestEnd); s != maxFarthestStart; s = (s+1) % sortedVertices.size())
+//        {
+//            temp.push_back(sortedVertices[s]);
+//        }
+//
+//        sortedVertices = temp;
+//    }
+//
+//    _enemyRegionVertices = sortedVertices;
+//}

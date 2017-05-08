@@ -7,12 +7,12 @@ TankManager::TankManager()
 { 
 }
 
-void TankManager::executeMicro(const BWAPI::Unitset & targets) 
+void TankManager::executeMicro(const std::vector<BWAPI::Unit> & targets) 
 {
-	const BWAPI::Unitset & tanks = getUnits();
+	const std::vector<BWAPI::Unit> & tanks = getUnits();
 
 	// figure out targets
-	BWAPI::Unitset tankTargets;
+	std::vector<BWAPI::Unit> tankTargets;
     std::copy_if(targets.begin(), targets.end(), std::inserter(tankTargets, tankTargets.end()), 
                  [](BWAPI::Unit u){ return u->isVisible() && !u->isFlying(); });
     
@@ -27,15 +27,8 @@ void TankManager::executeMicro(const BWAPI::Unitset & targets)
 		// train sub units such as scarabs or interceptors
 		//trainSubUnits(rangedUnit);
 
+        // TODO:: fix this
         bool tankNearChokepoint = false; 
-        for (auto & choke : BWTA::getChokepoints())
-        {
-            if (choke->getCenter().getDistance(tank->getPosition()) < 64)
-            {
-                tankNearChokepoint = true;
-                break;
-            }
-        }
 
 		// if the order is to attack or defend
 		if (order.getType() == SquadOrderTypes::Attack || order.getType() == SquadOrderTypes::Defend) 
@@ -61,7 +54,6 @@ void TankManager::executeMicro(const BWAPI::Unitset & targets)
                 {
                     tank->unsiege();
                 }
-
 
                 // if we're in siege mode just attack the target
                 if (tank->isSieged())
@@ -96,7 +88,7 @@ void TankManager::executeMicro(const BWAPI::Unitset & targets)
 }
 
 // get a target for the zealot to attack
-BWAPI::Unit TankManager::getTarget(BWAPI::Unit tank, const BWAPI::Unitset & targets)
+BWAPI::Unit TankManager::getTarget(BWAPI::Unit tank, const std::vector<BWAPI::Unit> & targets)
 {
 	int bestPriorityDistance = 1000000;
     int bestPriority = 0;
@@ -111,16 +103,16 @@ BWAPI::Unit TankManager::getTarget(BWAPI::Unit tank, const BWAPI::Unitset & targ
 	BWAPI::Unit closestTarget = nullptr;
 
     int siegeTankRange = BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode.groundWeapon().maxRange() - 32;
-    BWAPI::Unitset targetsInSiegeRange;
+    std::vector<BWAPI::Unit> targetsInSiegeRange;
     for (auto & target : targets)
     {
         if (target->getDistance(tank) < siegeTankRange && UnitUtil::CanAttack(tank, target))
         {
-            targetsInSiegeRange.insert(target);
+            targetsInSiegeRange.push_back(target);
         }
     }
 
-    const BWAPI::Unitset & newTargets = targetsInSiegeRange.empty() ? targets : targetsInSiegeRange;
+    const std::vector<BWAPI::Unit> & newTargets = targetsInSiegeRange.empty() ? targets : targetsInSiegeRange;
 
     // check first for units that are in range of our attack that can cause damage
     // choose the highest priority one from them at the lowest health

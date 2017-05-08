@@ -7,7 +7,7 @@ MicroManager::MicroManager()
 {
 }
 
-void MicroManager::setUnits(const BWAPI::Unitset & u) 
+void MicroManager::setUnits(const std::vector<BWAPI::Unit> & u) 
 { 
 	_units = u; 
 }
@@ -24,22 +24,22 @@ void MicroManager::execute(const SquadOrder & inputOrder)
 	drawOrderText();
 
 	// Discover enemies within region of interest
-	BWAPI::Unitset nearbyEnemies;
+	std::vector<BWAPI::Unit> nearbyEnemies;
 
 	// if the order is to defend, we only care about units in the radius of the defense
 	if (order.getType() == SquadOrderTypes::Defend)
 	{
-		Global::Map().GetUnits(nearbyEnemies, order.getPosition(), order.getRadius(), false, true);
+		Global::Map().GetUnitsInRadius(nearbyEnemies, order.getPosition(), order.getRadius(), false, true);
 	
 	} // otherwise we want to see everything on the way
 	else if (order.getType() == SquadOrderTypes::Attack) 
 	{
-		Global::Map().GetUnits(nearbyEnemies, order.getPosition(), order.getRadius(), false, true);
+		Global::Map().GetUnitsInRadius(nearbyEnemies, order.getPosition(), order.getRadius(), false, true);
 		for (auto & unit : _units) 
 		{
 			BWAPI::Unit u = unit;
 			BWAPI::UnitType t = u->getType();
-			Global::Map().GetUnits(nearbyEnemies, unit->getPosition(), order.getRadius(), false, true);
+			Global::Map().GetUnitsInRadius(nearbyEnemies, unit->getPosition(), order.getRadius(), false, true);
 		}
 	}
 
@@ -64,24 +64,24 @@ void MicroManager::execute(const SquadOrder & inputOrder)
             else
             {
                  // if this is the an attack squad
-                BWAPI::Unitset workersRemoved;
+                std::vector<BWAPI::Unit> workersRemoved;
 
                 for (auto & enemyUnit : nearbyEnemies) 
 		        {
                     // if its not a worker add it to the targets
 			        if (!enemyUnit->getType().isWorker())
                     {
-                        workersRemoved.insert(enemyUnit);
+                        workersRemoved.push_back(enemyUnit);
                     }
                     // if it is a worker
                     else
                     {
-                        for (BWTA::Region * enemyRegion : Global::Info().getOccupiedRegions(BWAPI::Broodwar->enemy()))
+                        for (const BaseLocation * enemyBaseLocation : Global::Bases().getOccupiedBaseLocations(BWAPI::Broodwar->enemy()))
                         {
                             // only add it if it's in their region
-                            if (BWTA::getRegion(BWAPI::TilePosition(enemyUnit->getPosition())) == enemyRegion)
+                            if (enemyBaseLocation->containsPosition(enemyUnit->getPosition()))
                             {
-                                workersRemoved.insert(enemyUnit);
+                                workersRemoved.push_back(enemyUnit);
                             }
                         }
                     }
@@ -94,7 +94,7 @@ void MicroManager::execute(const SquadOrder & inputOrder)
 	}	
 }
 
-const BWAPI::Unitset & MicroManager::getUnits() const 
+const std::vector<BWAPI::Unit> & MicroManager::getUnits() const 
 { 
     return _units; 
 }

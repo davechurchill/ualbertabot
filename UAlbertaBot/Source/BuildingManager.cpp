@@ -379,7 +379,7 @@ BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
     if (b.type.isResourceDepot())
     {
         // get the location 
-        BWAPI::TilePosition tile = Global::Map().getNextExpansion();
+        BWAPI::TilePosition tile = Global::Bases().getNextExpansion(BWAPI::Broodwar->self());
 
         return tile;
     }

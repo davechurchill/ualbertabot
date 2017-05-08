@@ -17,8 +17,8 @@ BuildingPlacer::BuildingPlacer()
 
 bool BuildingPlacer::isInResourceBox(int x, int y) const
 {
-    int posX(x * 32);
-    int posY(y * 32);
+    int posX = x * 32;
+    int posY = y * 32;
 
     return (posX >= _boxLeft) && (posX < _boxRight) && (posY >= _boxTop) && (posY < _boxBottom);
 }
@@ -26,14 +26,14 @@ bool BuildingPlacer::isInResourceBox(int x, int y) const
 void BuildingPlacer::computeResourceBox()
 {
     BWAPI::Position start(BWAPI::Broodwar->self()->getStartLocation());
-    BWAPI::Unitset unitsAroundNexus;
+    std::vector<BWAPI::Unit> unitsAroundNexus;
 
     for (auto & unit : BWAPI::Broodwar->getAllUnits())
     {
         // if the units are less than 400 away add them if they are resources
-        if (unit->getDistance(start) < 300 && unit->getType().isMineralField())
+        if (unit->getDistance(start) < 300 && unit->getType().isResourceContainer())
         {
-            unitsAroundNexus.insert(unit);
+            unitsAroundNexus.push_back(unit);
         }
     }
 
@@ -59,7 +59,7 @@ void BuildingPlacer::computeResourceBox()
 // makes final checks to see if a building can be built at a certain location
 bool BuildingPlacer::canBuildHere(BWAPI::TilePosition position,const Building & b) const
 {
-    /*if (!b.type.isRefinery() && !Global::Info().tileContainsUnit(position))
+    /*if (!b.type.isRefinery() && !Global::UnitInfo().tileContainsUnit(position))
     {
     return false;
     }*/
@@ -112,20 +112,19 @@ bool BuildingPlacer::tileBlocksAddon(BWAPI::TilePosition position) const
 }
 
 //returns true if we can build this type of unit here with the specified amount of space.
-//space value is stored in this->buildDistance.
 bool BuildingPlacer::canBuildHereWithSpace(BWAPI::TilePosition position,const Building & b,int buildDist,bool horizontalOnly) const
 {
     BWAPI::UnitType type = b.type;
 
     //if we can't build here, we of course can't build here with space
-    if (!canBuildHere(position,b))
+    if (!canBuildHere(position, b))
     {
         return false;
     }
 
     // height and width of the building
-    int width(b.type.tileWidth());
-    int height(b.type.tileHeight());
+    int width  = b.type.tileWidth();
+    int height = b.type.tileHeight();
 
     //make sure we leave space for add-ons. These types of units can have addons:
     if (b.type==BWAPI::UnitTypes::Terran_Command_Center ||
@@ -239,7 +238,7 @@ bool BuildingPlacer::tileOverlapsBaseLocation(BWAPI::TilePosition tile,BWAPI::Un
     int ty2 = ty1 + type.tileHeight();
 
     // for each base location
-    for (BWTA::BaseLocation * base : BWTA::getBaseLocations())
+    for (const BaseLocation * base : Global::Bases().getBaseLocations())
     {
         // dimensions of the base location
         int bx1 = base->getTilePosition().x;

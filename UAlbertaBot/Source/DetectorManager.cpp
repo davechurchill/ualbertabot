@@ -8,9 +8,9 @@ DetectorManager::DetectorManager()
 { 
 }
 
-void DetectorManager::executeMicro(const BWAPI::Unitset & targets) 
+void DetectorManager::executeMicro(const std::vector<BWAPI::Unit> & targets) 
 {
-	const BWAPI::Unitset & detectorUnits = getUnits();
+	const std::vector<BWAPI::Unit> & detectorUnits = getUnits();
 
 	if (detectorUnits.empty())
 	{
@@ -23,7 +23,7 @@ void DetectorManager::executeMicro(const BWAPI::Unitset & targets)
 	}
 
 	cloakedUnitMap.clear();
-	BWAPI::Unitset cloakedUnits;
+	std::vector<BWAPI::Unit> cloakedUnits;
 
 	// figure out targets
 	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
@@ -33,7 +33,7 @@ void DetectorManager::executeMicro(const BWAPI::Unitset & targets)
 			unit->getType() == BWAPI::UnitTypes::Protoss_Dark_Templar ||
 			unit->getType() == BWAPI::UnitTypes::Terran_Wraith) 
 		{
-			cloakedUnits.insert(unit);
+			cloakedUnits.push_back(unit);
 			cloakedUnitMap[unit] = false;
 		}
 	}
@@ -59,7 +59,7 @@ void DetectorManager::executeMicro(const BWAPI::Unitset & targets)
 	}
 }
 
-BWAPI::Unit DetectorManager::closestCloakedUnit(const BWAPI::Unitset & cloakedUnits, BWAPI::Unit detectorUnit)
+BWAPI::Unit DetectorManager::closestCloakedUnit(const std::vector<BWAPI::Unit> & cloakedUnits, BWAPI::Unit detectorUnit)
 {
 	BWAPI::Unit closestCloaked = nullptr;
 	double closestDist = 100000;

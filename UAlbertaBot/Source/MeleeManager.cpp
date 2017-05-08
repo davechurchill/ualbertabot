@@ -8,17 +8,17 @@ MeleeManager::MeleeManager()
 
 }
 
-void MeleeManager::executeMicro(const BWAPI::Unitset & targets) 
+void MeleeManager::executeMicro(const std::vector<BWAPI::Unit> & targets) 
 {
 	assignTargets(targets);
 }
 
-void MeleeManager::assignTargets(const BWAPI::Unitset & targets)
+void MeleeManager::assignTargets(const std::vector<BWAPI::Unit> & targets)
 {
-    const BWAPI::Unitset & meleeUnits = getUnits();
+    const std::vector<BWAPI::Unit> & meleeUnits = getUnits();
 
 	// figure out targets
-	BWAPI::Unitset meleeUnitTargets;
+	std::vector<BWAPI::Unit> meleeUnitTargets;
 	for (auto & target : targets) 
 	{
 		// conditions for targeting
@@ -28,7 +28,7 @@ void MeleeManager::assignTargets(const BWAPI::Unitset & targets)
 			!(target->getType() == BWAPI::UnitTypes::Zerg_Egg) &&
 			target->isVisible()) 
 		{
-			meleeUnitTargets.insert(target);
+			meleeUnitTargets.push_back(target);
 		}
 	}
 
@@ -74,7 +74,7 @@ void MeleeManager::assignTargets(const BWAPI::Unitset & targets)
 	}
 }
 
-std::pair<BWAPI::Unit, BWAPI::Unit> MeleeManager::findClosestUnitPair(const BWAPI::Unitset & attackers, const BWAPI::Unitset & targets)
+std::pair<BWAPI::Unit, BWAPI::Unit> MeleeManager::findClosestUnitPair(const std::vector<BWAPI::Unit> & attackers, const std::vector<BWAPI::Unit> & targets)
 {
     std::pair<BWAPI::Unit, BWAPI::Unit> closestPair(nullptr, nullptr);
     double closestDistance = std::numeric_limits<double>::max();
@@ -96,7 +96,7 @@ std::pair<BWAPI::Unit, BWAPI::Unit> MeleeManager::findClosestUnitPair(const BWAP
 }
 
 // get a target for the meleeUnit to attack
-BWAPI::Unit MeleeManager::getTarget(BWAPI::Unit meleeUnit, const BWAPI::Unitset & targets)
+BWAPI::Unit MeleeManager::getTarget(BWAPI::Unit meleeUnit, const std::vector<BWAPI::Unit> & targets)
 {
 	int highPriority = 0;
 	double closestDist = std::numeric_limits<double>::infinity();
@@ -181,7 +181,7 @@ int MeleeManager::getAttackPriority(BWAPI::Unit attacker, BWAPI::Unit unit)
 	}
 }
 
-bool MeleeManager::meleeUnitShouldRetreat(BWAPI::Unit meleeUnit, const BWAPI::Unitset & targets)
+bool MeleeManager::meleeUnitShouldRetreat(BWAPI::Unit meleeUnit, const std::vector<BWAPI::Unit> & targets)
 {
     // terran don't regen so it doesn't make any sense to retreat
     if (meleeUnit->getType().getRace() == BWAPI::Races::Terran)

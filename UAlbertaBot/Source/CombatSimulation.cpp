@@ -17,11 +17,11 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
 
 	BWAPI::Broodwar->drawCircleMap(center.x, center.y, 10, BWAPI::Colors::Red, true);
 
-	BWAPI::Unitset ourCombatUnits;
+	std::vector<BWAPI::Unit> ourCombatUnits;
 	std::vector<UnitInfo> enemyCombatUnits;
 
-	Global::Map().GetUnits(ourCombatUnits, center, Config::Micro::CombatRegroupRadius, true, false);
-	Global::Info().getNearbyForce(enemyCombatUnits, center, BWAPI::Broodwar->enemy(), Config::Micro::CombatRegroupRadius);
+	Global::Map().GetUnitsInRadius(ourCombatUnits, center, Config::Micro::CombatRegroupRadius, true, false);
+	Global::UnitInfo().getNearbyForce(enemyCombatUnits, center, BWAPI::Broodwar->enemy(), Config::Micro::CombatRegroupRadius);
 
 	for (auto & unit : ourCombatUnits)
 	{

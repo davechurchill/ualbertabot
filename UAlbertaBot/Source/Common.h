@@ -17,7 +17,6 @@
 #include <array>
 
 #include <BWAPI.h>
-#include <BWTA.h>
 #include "Logger.h"
 
 #include "Config.h"

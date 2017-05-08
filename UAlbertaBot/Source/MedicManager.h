@@ -10,6 +10,6 @@ class MedicManager : public MicroManager
 public:
 
 	MedicManager();
-	void executeMicro(const BWAPI::Unitset & targets);
+	void executeMicro(const std::vector<BWAPI::Unit> & targets);
 };
 }

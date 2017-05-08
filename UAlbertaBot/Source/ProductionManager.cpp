@@ -79,7 +79,7 @@ void ProductionManager::update()
 	}
 
 	// if they have cloaked units get a new goal asap
-	if (!_enemyCloakedDetected && Global::Info().enemyHasCloakedUnits())
+	if (!_enemyCloakedDetected && Global::UnitInfo().enemyHasCloakedUnits())
 	{
         if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Protoss)
         {
@@ -218,7 +218,7 @@ BWAPI::Unit ProductionManager::getProducer(MetaType t, BWAPI::Position closestTo
     BWAPI::UnitType producerType = t.whatBuilds();
 
     // make a set of all candidate producers
-    BWAPI::Unitset candidateProducers;
+    std::vector<BWAPI::Unit> candidateProducers;
     for (auto & unit : BWAPI::Broodwar->self()->getUnits())
     {
         UAB_ASSERT(unit != nullptr, "Unit was null");
@@ -267,7 +267,7 @@ BWAPI::Unit ProductionManager::getProducer(MetaType t, BWAPI::Position closestTo
                     }
 
                     // if there are any units on the addon tile, we can't build it
-                    BWAPI::Unitset uot = BWAPI::Broodwar->getUnitsOnTile(tilePos.x, tilePos.y);
+                    auto uot = BWAPI::Broodwar->getUnitsOnTile(tilePos.x, tilePos.y);
                     if (uot.size() > 0 && !(uot.size() == 1 && *(uot.begin()) == unit))
                     {
                         isBlocked = true;;
@@ -297,13 +297,13 @@ BWAPI::Unit ProductionManager::getProducer(MetaType t, BWAPI::Position closestTo
         }
 
         // if we haven't cut it, add it to the set of candidates
-        candidateProducers.insert(unit);
+        candidateProducers.push_back(unit);
     }
 
     return getClosestUnitToPosition(candidateProducers, closestTo);
 }
 
-BWAPI::Unit ProductionManager::getClosestUnitToPosition(const BWAPI::Unitset & units, BWAPI::Position closestTo)
+BWAPI::Unit ProductionManager::getClosestUnitToPosition(const std::vector<BWAPI::Unit> & units, BWAPI::Position closestTo)
 {
     if (units.size() == 0)
     {

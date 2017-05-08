@@ -7,21 +7,21 @@ MedicManager::MedicManager()
 { 
 }
 
-void MedicManager::executeMicro(const BWAPI::Unitset & targets) 
+void MedicManager::executeMicro(const std::vector<BWAPI::Unit> & targets) 
 {
-	const BWAPI::Unitset & medics = getUnits();
+	const std::vector<BWAPI::Unit> & medics = getUnits();
     
 	// create a set of all medic targets
-	BWAPI::Unitset medicTargets;
+	std::vector<BWAPI::Unit> medicTargets;
     for (auto & unit : BWAPI::Broodwar->self()->getUnits())
     {
         if (unit->getHitPoints() < unit->getInitialHitPoints() && !unit->getType().isMechanical() && !unit->getType().isBuilding())
         {
-            medicTargets.insert(unit);
+            medicTargets.push_back(unit);
         }
     }
     
-    BWAPI::Unitset availableMedics(medics);
+    std::vector<BWAPI::Unit> availableMedics(medics);
 
     // for each target, send the closest medic to heal it
     for (auto & target : medicTargets)
@@ -51,7 +51,7 @@ void MedicManager::executeMicro(const BWAPI::Unitset & targets)
         {
             closestMedic->useTech(BWAPI::TechTypes::Healing, target);
 
-            availableMedics.erase(closestMedic);
+            availableMedics.erase(std::remove(availableMedics.begin(), availableMedics.end(), closestMedic), availableMedics.end());
         }
         // otherwise we didn't find a medic which means they're all in use so break
         else

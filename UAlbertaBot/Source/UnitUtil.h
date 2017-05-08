@@ -24,9 +24,8 @@ namespace UnitUtil
     int GetAttackRange(BWAPI::Unit attacker, BWAPI::Unit target);
     int GetAttackRange(BWAPI::UnitType attacker, BWAPI::UnitType target);
     
-
     size_t GetAllUnitCount(BWAPI::UnitType type);
-
+    BWAPI::Position GetUnitsetCenter(const std::vector<BWAPI::Unit> & cluster);
     
     BWAPI::Unit GetClosestUnitTypeToTarget(BWAPI::UnitType type, BWAPI::Position target);
     BWAPI::WeaponType GetWeapon(BWAPI::Unit attacker, BWAPI::Unit target);

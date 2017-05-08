@@ -7,18 +7,18 @@ RangedManager::RangedManager()
 { 
 }
 
-void RangedManager::executeMicro(const BWAPI::Unitset & targets) 
+void RangedManager::executeMicro(const std::vector<BWAPI::Unit> & targets) 
 {
 	assignTargets(targets);
 }
 
 
-void RangedManager::assignTargets(const BWAPI::Unitset & targets)
+void RangedManager::assignTargets(const std::vector<BWAPI::Unit> & targets)
 {
-    const BWAPI::Unitset & rangedUnits = getUnits();
+    const std::vector<BWAPI::Unit> & rangedUnits = getUnits();
 
 	// figure out targets
-	BWAPI::Unitset rangedUnitTargets;
+	std::vector<BWAPI::Unit> rangedUnitTargets;
     std::copy_if(targets.begin(), targets.end(), std::inserter(rangedUnitTargets, rangedUnitTargets.end()), [](BWAPI::Unit u){ return u->isVisible(); });
 
     for (auto & rangedUnit : rangedUnits)
@@ -73,7 +73,7 @@ void RangedManager::assignTargets(const BWAPI::Unitset & targets)
 }
 
 // get a target for the zealot to attack
-BWAPI::Unit RangedManager::getTarget(BWAPI::Unit rangedUnit, const BWAPI::Unitset & targets)
+BWAPI::Unit RangedManager::getTarget(BWAPI::Unit rangedUnit, const std::vector<BWAPI::Unit> & targets)
 {
 	int bestPriorityDistance = 1000000;
     int bestPriority = 0;

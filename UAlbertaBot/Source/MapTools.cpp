@@ -15,6 +15,28 @@ MapTools::MapTools()
     setBWAPIMapData();
 }
 
+void MapTools::onStart()
+{
+    
+}
+
+void MapTools::update()
+{
+    // update all the tiles that we see this frame
+    for (int r=0; r<_rows; ++r)
+    {
+        for (int c=0; c<_cols; ++c)
+        {
+            if (BWAPI::Broodwar->isVisible(BWAPI::TilePosition(c, r)))
+            {
+                _lastSeen[getIndex(r,c)] = BWAPI::Broodwar->getFrameCount();
+            }
+        }
+    }
+
+    drawLastSeen();
+}
+
 // return the index of the 1D array from (row,col)
 inline int MapTools::getIndex(int row,int col)
 {
@@ -69,6 +91,25 @@ void MapTools::setBWAPIMapData()
 void MapTools::resetFringe()
 {
     std::fill(_fringe.begin(),_fringe.end(),0);
+}
+
+bool MapTools::IsPotentialBaseLocation(BWAPI::TilePosition tile)
+{
+    int sizeX = 4;
+    int sizeY = 3;
+
+    // check to see if we can build a depot on that tile of the map
+    for (int sx = 0; sx < sizeX; sx++)
+    {
+        for (int sy=0; sy < sizeY; sy++)
+        {
+            if (!BWAPI::Broodwar->isBuildable(tile.x+sx, tile.y+sy))
+            {
+                return false;
+            }
+        }
+    }
+     
 }
 
 int MapTools::getGroundDistance(BWAPI::Position origin,BWAPI::Position destination)
@@ -210,27 +251,6 @@ BWAPI::TilePosition MapTools::getTilePosition(int index)
     return BWAPI::TilePosition(index % _cols,index / _cols);
 }
 
-BWAPI::TilePosition MapTools::getNextExpansion()
-{
-    return getNextExpansion(BWAPI::Broodwar->self());
-}
-
-void MapTools::drawHomeDistanceMap()
-{
-    BWAPI::Position homePosition = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
-    for (int x = 0; x < BWAPI::Broodwar->mapWidth(); ++x)
-    {
-        for (int y = 0; y < BWAPI::Broodwar->mapHeight(); ++y)
-        {
-            BWAPI::Position pos(x*32, y*32);
-
-            int dist = getGroundDistance(pos, homePosition);
-
-            BWAPI::Broodwar->drawTextMap(pos + BWAPI::Position(16,16), "%d", dist);
-        }
-    }
-}
-
 void MapTools::drawLastSeen()
 {
     if (!Config::Debug::DrawLastSeenTileInfo)
@@ -238,84 +258,48 @@ void MapTools::drawLastSeen()
         return;
     }
 
-    for (int x = 0; x < BWAPI::Broodwar->mapWidth(); ++x)
+    
+    bool rMouseState = BWAPI::Broodwar->getMouseState(BWAPI::MouseButton::M_RIGHT);
+    if (!rMouseState)
     {
-        for (int y = 0; y < BWAPI::Broodwar->mapHeight(); ++y)
+        return;
+    }
+
+    // draw the least recently seen position tile as a yellow circle on the map
+    BWAPI::Position lrsp = getLeastRecentlySeenPosition();
+    BWAPI::Broodwar->drawCircleMap(lrsp, 32, BWAPI::Colors::Yellow, true);
+
+
+    int size = 4;
+    BWAPI::Position homePosition(BWAPI::Broodwar->self()->getStartLocation());
+    BWAPI::Position mPos = BWAPI::Broodwar->getMousePosition() + BWAPI::Broodwar->getScreenPosition();
+    BWAPI::TilePosition mTile(mPos);
+
+    int xStart  = std::max(mTile.x - size, 0);
+    int xEnd    = std::min(mTile.x + size, BWAPI::Broodwar->mapWidth());
+    int yStart  = std::max(mTile.y - size, 0);
+    int yEnd    = std::min(mTile.y + size, BWAPI::Broodwar->mapHeight());
+
+    for (int x = xStart; x < xEnd; ++x)
+    {
+        for (int y = yStart; y < yEnd; ++y)
         {
             BWAPI::Position pos(x*32, y*32);
+            BWAPI::Position diag(32, 32);
+            int homeDist = getGroundDistance(pos, homePosition);
 
-            BWAPI::Broodwar->drawTextMap(pos + BWAPI::Position(16,16), "%d", BWAPI::Broodwar->getFrameCount() - _lastSeen[getIndex(y, x)]);
+            BWAPI::Color boxColor = BWAPI::Colors::Green;
+            if (!BWAPI::Broodwar->isBuildable(BWAPI::TilePosition(x,y), true))
+            {
+                boxColor = BWAPI::Colors::Red;
+            }
+
+            BWAPI::Broodwar->drawBoxMap(pos, pos + diag, boxColor, false);
+            BWAPI::Broodwar->drawTextMap(pos + BWAPI::Position(2,2), "%d", BWAPI::Broodwar->getFrameCount() - _lastSeen[getIndex(y, x)]);
+            BWAPI::Broodwar->drawTextMap(pos + BWAPI::Position(2,12), "%d", homeDist);
         }
     }
-}
 
-BWAPI::TilePosition MapTools::getNextExpansion(BWAPI::Player player)
-{
-    BWTA::BaseLocation * closestBase = nullptr;
-    double minDistance = 100000;
-
-    BWAPI::TilePosition homeTile = player->getStartLocation();
-
-    // for each base location
-    for (BWTA::BaseLocation * base : BWTA::getBaseLocations())
-    {
-        // if the base has gas
-        if (!base->isMineralOnly() && !(base == BWTA::getStartLocation(player)))
-        {
-            // get the tile position of the base
-            BWAPI::TilePosition tile = base->getTilePosition();
-            bool buildingInTheWay = false;
-
-            for (int x = 0; x < BWAPI::Broodwar->self()->getRace().getCenter().tileWidth(); ++x)
-            {
-                for (int y = 0; y < BWAPI::Broodwar->self()->getRace().getCenter().tileHeight(); ++y)
-                {
-                    BWAPI::TilePosition tp(tile.x + x, tile.y + y);
-
-                    for (auto & unit : BWAPI::Broodwar->getUnitsOnTile(tp))
-                    {
-                        if (unit->getType().isBuilding() && !unit->isFlying())
-                        {
-                            buildingInTheWay = true;
-                            break;
-                        }
-                    }
-                }
-            }
-            
-            if (buildingInTheWay)
-            {
-                continue;
-            }
-
-            // the base's distance from our main nexus
-            BWAPI::Position myBasePosition(player->getStartLocation());
-            BWAPI::Position thisTile = BWAPI::Position(tile);
-            double distanceFromHome = getGroundDistance(thisTile,myBasePosition);
-
-            // if it is not connected, continue
-            if (!BWTA::isConnected(homeTile,tile) || distanceFromHome < 0)
-            {
-                continue;
-            }
-
-            if (!closestBase || distanceFromHome < minDistance)
-            {
-                closestBase = base;
-                minDistance = distanceFromHome;
-            }
-        }
-
-    }
-
-    if (closestBase)
-    {
-        return closestBase->getTilePosition();
-    }
-    else
-    {
-        return BWAPI::TilePositions::None;
-    }
 }
 
 void MapTools::parseMap()
@@ -351,7 +335,7 @@ void MapTools::parseMap()
 }
 
 // get units within radius of center and add to units
-void MapTools::GetUnits(BWAPI::Unitset & units, BWAPI::Position center, int radius, bool ourUnits, bool oppUnits)
+void MapTools::GetUnitsInRadius(std::vector<BWAPI::Unit> & units, BWAPI::Position center, int radius, bool ourUnits, bool oppUnits)
 {
     const int radiusSquared = radius * radius;
 
@@ -361,7 +345,7 @@ void MapTools::GetUnits(BWAPI::Unitset & units, BWAPI::Position center, int radi
         {
             if (unit->getPosition().getDistance(center) <= radius)
             {
-                units.insert(unit);
+                units.push_back(unit);
             }
         }
     }
@@ -372,57 +356,37 @@ void MapTools::GetUnits(BWAPI::Unitset & units, BWAPI::Position center, int radi
         {
             if (unit->getPosition().getDistance(center) <= radius)
             {
-                units.insert(unit);
+                units.push_back(unit);
             }
         }
     }
 }
 
-void MapTools::update()
+bool MapTools::isConnected(BWAPI::Position from, BWAPI::Position to)
 {
-    // update all the tiles that we see this frame
-    for (int r=0; r<_rows; ++r)
-    {
-        for (int c=0; c<_cols; ++c)
-        {
-            if (BWAPI::Broodwar->isVisible(BWAPI::TilePosition(c, r)))
-            {
-                _lastSeen[getIndex(r,c)] = BWAPI::Broodwar->getFrameCount();
-            }
-        }
-    }
-
-    drawLastSeen();
+    return getGroundDistance(from, to) != -1;
 }
 
 BWAPI::Position MapTools::getLeastRecentlySeenPosition() 
 {
-	int minSeen = 1000000;
-	double minSeenDist = 0;
+	int minSeen = std::numeric_limits<int>::max();
 	BWAPI::TilePosition leastSeen(0,0);
+    BWAPI::Position myBasePosition(BWAPI::Broodwar->self()->getStartLocation());
 
-	for (int r=0; r<_rows; ++r)
-	{
-		for (int c=0; c<_cols; ++c)
+    for (auto & tile : getClosestTilesTo(myBasePosition))
+    {
+		// don't worry about places that aren't connected to our start locatin
+		if (!isConnected(BWAPI::Position(tile), myBasePosition))
 		{
-			// get the center of this cell
-			BWAPI::TilePosition tile(c, r);
-
-			// don't worry about places that aren't connected to our start locatin
-			if (!BWTA::isConnected(tile, BWAPI::Broodwar->self()->getStartLocation()))
-			{
-				continue;
-			}
-
-            double dist = BWAPI::Broodwar->self()->getStartLocation().getDistance(tile);
-            int lastSeen = _lastSeen[getIndex(r,c)];
-			if (lastSeen < minSeen || ((lastSeen == minSeen) && (dist > minSeenDist)))
-			{
-				minSeen = lastSeen;
-				minSeenDist = dist;
-                leastSeen = tile;
-			}
+			continue;
 		}
+
+        int lastSeen = _lastSeen[getIndex(tile.y,tile.x)];
+		if (lastSeen < minSeen)
+		{
+			minSeen = lastSeen;
+            leastSeen = tile;
+		}	
 	}
 
 	return BWAPI::Position(leastSeen);

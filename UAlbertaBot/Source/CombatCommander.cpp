@@ -46,7 +46,7 @@ bool CombatCommander::isSquadUpdateFrame()
 	return BWAPI::Broodwar->getFrameCount() % 10 == 0;
 }
 
-void CombatCommander::update(const BWAPI::Unitset & combatUnits)
+void CombatCommander::update(const std::vector<BWAPI::Unit> & combatUnits)
 {
     if (!Config::Modules::UsingCombatCommander)
     {
@@ -59,7 +59,6 @@ void CombatCommander::update(const BWAPI::Unitset & combatUnits)
     }
 
     _combatUnits = combatUnits;
-
 
 	if (isSquadUpdateFrame())
 	{
@@ -180,19 +179,19 @@ void CombatCommander::updateScoutDefenseSquad()
     Squad & scoutDefenseSquad = _squadData.getSquad("ScoutDefense");
   
     // get the region that our base is located in
-    BWTA::Region * myRegion = BWTA::getRegion(BWAPI::Broodwar->self()->getStartLocation());
-    if (!myRegion || myRegion->getCenter().isValid())
+    const BaseLocation * myBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->self());
+    if (myBaseLocation == nullptr)
     {
         return;
     }
 
     // get all of the enemy units in this region
-	BWAPI::Unitset enemyUnitsInRegion;
+	std::vector<BWAPI::Unit> enemyUnitsInRegion;
     for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
     {
-        if (BWTA::getRegion(BWAPI::TilePosition(unit->getPosition())) == myRegion)
+        if (myBaseLocation->containsPosition(unit->getPosition()))
         {
-            enemyUnitsInRegion.insert(unit);
+            enemyUnitsInRegion.push_back(unit);
         }
     }
 
@@ -241,33 +240,24 @@ void CombatCommander::updateDefenseSquads()
         return; 
     }
     
-    BWTA::BaseLocation * enemyBaseLocation = Global::Info().getMainBaseLocation(BWAPI::Broodwar->enemy());
-    BWTA::Region * enemyRegion = nullptr;
-    if (enemyBaseLocation)
-    {
-        enemyRegion = BWTA::getRegion(enemyBaseLocation->getPosition());
-    }
+    const BaseLocation * enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
 
 	// for each of our occupied regions
-	for (BWTA::Region * myRegion : Global::Info().getOccupiedRegions(BWAPI::Broodwar->self()))
+	for (const BaseLocation * myBaseLocation : Global::Bases().getOccupiedBaseLocations(BWAPI::Broodwar->self()))
 	{
         // don't defend inside the enemy region, this will end badly when we are stealing gas
-        if (myRegion == enemyRegion)
+        if (myBaseLocation == enemyBaseLocation)
         {
             continue;
         }
 
-		BWAPI::Position regionCenter = myRegion->getCenter();
-		if (!regionCenter.isValid())
-		{
-			continue;
-		}
+		BWAPI::Position basePosition = myBaseLocation->getPosition();
 
 		// start off assuming all enemy units in region are just workers
 		int numDefendersPerEnemyUnit = 2;
 
 		// all of the enemy units in this region
-		BWAPI::Unitset enemyUnitsInRegion;
+		std::vector<BWAPI::Unit> enemyUnitsInRegion;
         for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
         {
             // if it's an overlord, don't worry about it for defense, we don't care what they see
@@ -276,9 +266,9 @@ void CombatCommander::updateDefenseSquads()
                 continue;
             }
 
-            if (BWTA::getRegion(BWAPI::TilePosition(unit->getPosition())) == myRegion)
+            if (myBaseLocation->containsPosition(unit->getPosition()))
             {
-                enemyUnitsInRegion.insert(unit);
+                enemyUnitsInRegion.push_back(unit);
             }
         }
 
@@ -287,7 +277,7 @@ void CombatCommander::updateDefenseSquads()
         {
             if (unit->getType().isWorker())
             {
-                enemyUnitsInRegion.erase(unit);
+                enemyUnitsInRegion.erase(std::remove(enemyUnitsInRegion.begin(), enemyUnitsInRegion.end(), unit), enemyUnitsInRegion.end());
                 break;
             }
         }
@@ -296,7 +286,7 @@ void CombatCommander::updateDefenseSquads()
         int numEnemyGroundInRegion = std::count_if(enemyUnitsInRegion.begin(), enemyUnitsInRegion.end(), [](BWAPI::Unit u) { return !u->isFlying(); });
 
         std::stringstream squadName;
-        squadName << "Base Defense " << regionCenter.x << " " << regionCenter.y; 
+        squadName << "Base Defense " << basePosition.x << " " << basePosition.y; 
         
         // if there's nothing in this region to worry about
         if (enemyUnitsInRegion.empty())
@@ -315,7 +305,7 @@ void CombatCommander::updateDefenseSquads()
             // if we don't have a squad assigned to this region already, create one
             if (!_squadData.squadExists(squadName.str()))
             {
-                SquadOrder defendRegion(SquadOrderTypes::Defend, regionCenter, 32 * 25, "Defend Region!");
+                SquadOrder defendRegion(SquadOrderTypes::Defend, basePosition, 32 * 25, "Defend Region!");
                 _squadData.addSquad(squadName.str(), Squad(squadName.str(), defendRegion, BaseDefensePriority));
             }
         }
@@ -368,7 +358,7 @@ void CombatCommander::updateDefenseSquads()
 
 void CombatCommander::updateDefenseSquadUnits(Squad & defenseSquad, const size_t & flyingDefendersNeeded, const size_t & groundDefendersNeeded)
 {
-    const BWAPI::Unitset & squadUnits = defenseSquad.getUnits();
+    const std::vector<BWAPI::Unit> & squadUnits = defenseSquad.getUnits();
     size_t flyingDefendersInSquad = std::count_if(squadUnits.begin(), squadUnits.end(), UnitUtil::CanAttackAir);
     size_t groundDefendersInSquad = std::count_if(squadUnits.begin(), squadUnits.end(), UnitUtil::CanAttackGround);
 
@@ -457,7 +447,7 @@ BWAPI::Unit CombatCommander::findClosestDefender(const Squad & defenseSquad, BWA
 
 BWAPI::Position CombatCommander::getDefendLocation()
 {
-	return BWTA::getRegion(BWTA::getStartLocation(BWAPI::Broodwar->self())->getTilePosition())->getCenter();
+	return Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->self())->getPosition();
 }
 
 void CombatCommander::drawSquadInformation(int x, int y)
@@ -467,7 +457,7 @@ void CombatCommander::drawSquadInformation(int x, int y)
 
 BWAPI::Position CombatCommander::getMainAttackLocation()
 {
-    BWTA::BaseLocation * enemyBaseLocation = Global::Info().getMainBaseLocation(BWAPI::Broodwar->enemy());
+    const BaseLocation * enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
 
     // First choice: Attack an enemy region if we can see units inside it
     if (enemyBaseLocation)
@@ -481,8 +471,8 @@ BWAPI::Position CombatCommander::getMainAttackLocation()
         }
 
         // get all known enemy units in the area
-        BWAPI::Unitset enemyUnitsInArea;
-        Global::Map().GetUnits(enemyUnitsInArea, enemyBasePosition, 800, false, true);
+        std::vector<BWAPI::Unit> enemyUnitsInArea;
+        Global::Map().GetUnitsInRadius(enemyUnitsInArea, enemyBasePosition, 800, false, true);
 
         for (auto & unit : enemyUnitsInArea)
         {
@@ -495,7 +485,7 @@ BWAPI::Position CombatCommander::getMainAttackLocation()
     }
 
     // Second choice: Attack known enemy buildings
-    for (const auto & kv : Global::Info().getUnitInfo(BWAPI::Broodwar->enemy()))
+    for (const auto & kv : Global::UnitInfo().getUnitInfoMap(BWAPI::Broodwar->enemy()))
     {
         const UnitInfo & ui = kv.second;
 
@@ -523,7 +513,7 @@ BWAPI::Position CombatCommander::getMainAttackLocation()
     return Global::Map().getLeastRecentlySeenPosition();
 }
 
-BWAPI::Unit CombatCommander::findClosestWorkerToTarget(BWAPI::Unitset & unitsToAssign, BWAPI::Unit target)
+BWAPI::Unit CombatCommander::findClosestWorkerToTarget(std::vector<BWAPI::Unit> & unitsToAssign, BWAPI::Unit target)
 {
     UAB_ASSERT(target != nullptr, "target was null");
 
@@ -564,7 +554,7 @@ BWAPI::Unit CombatCommander::findClosestWorkerToTarget(BWAPI::Unitset & unitsToA
 int CombatCommander::defendWithWorkers()
 {
 	// our home nexus position
-	BWAPI::Position homePosition = BWTA::getStartLocation(BWAPI::Broodwar->self())->getPosition();;
+	BWAPI::Position homePosition = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->self())->getPosition();
 
 	// enemy units near our workers
 	int enemyUnitsNearWorkers = 0;

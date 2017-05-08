@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Common.h"
-#include "BWTA.h"
 #include "BuildOrderQueue.h"
 #include "BuildOrder.h"
 

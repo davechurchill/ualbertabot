@@ -10,20 +10,19 @@
 #include "AutoObserver.h"
 #include "rapidjson\document.h"
 #include "Global.h"
-#include "MapTools.h"
-#include "InfoManager.h"
 
 namespace UAlbertaBot
 {
 
 class UAlbertaBotModule
 {
-	GameCommander   _gameCommander;
-    AutoObserver    _autoObserver;
-    WorkerManager   _workerManager;
-    InfoManager     _infoManager;
-    StrategyManager _strategyManager;
-    MapTools        _mapTools;
+	GameCommander       _gameCommander;
+    AutoObserver        _autoObserver;
+    WorkerManager       _workerManager;
+    UnitInfoManager     _unitInfoManager;
+    StrategyManager     _strategyManager;
+    MapTools            _mapTools;
+    BaseLocationManager _baseLocationManager;
 
 public:
 
@@ -43,9 +42,10 @@ public:
 	void	onUnitRenegade(BWAPI::Unit unit);
 
     WorkerManager & getWorkerManager();
-    InfoManager & getInfoManager();
+    UnitInfoManager & getUnitInfoManager();
     StrategyManager & getStrategyManager();
     MapTools & getMapTools();
+    BaseLocationManager & getBaseLocationManager();
 };
 
 }

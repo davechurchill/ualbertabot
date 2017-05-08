@@ -56,8 +56,8 @@ void UAlbertaBotModule::onStart()
     // Call BWTA to read and analyze the current map
     if (Config::Modules::UsingGameCommander)
 	{
-        BWTA::readMap();
-		BWTA::analyze();
+        //BWTA::readMap();
+		//BWTA::analyze();
 
         if (Config::Modules::UsingStrategyIO)
         {
@@ -82,14 +82,19 @@ WorkerManager & UAlbertaBotModule::getWorkerManager()
     return _workerManager;
 }
 
-InfoManager & UAlbertaBotModule::getInfoManager()
+UnitInfoManager & UAlbertaBotModule::getUnitInfoManager()
 {
-    return _infoManager;
+    return _unitInfoManager;
 }
 
 StrategyManager & UAlbertaBotModule::getStrategyManager()
 {
     return _strategyManager;
+}
+
+BaseLocationManager & UAlbertaBotModule::getBaseLocationManager()
+{
+    return _baseLocationManager;
 }
 
 MapTools & UAlbertaBotModule::getMapTools()

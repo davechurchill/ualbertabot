@@ -20,12 +20,17 @@ int DistanceMap::getIndex(const BWAPI::Position & p) const
 	return getIndex(p.y / 32, p.x / 32);
 }
 
+const int & DistanceMap::operator [] (const int index) const
+{ 
+    return dist[index]; 
+}
+
 int & DistanceMap::operator [] (const int index)
 { 
     return dist[index]; 
 }
 
-int & DistanceMap::operator [] (const BWAPI::Position & pos)
+const int & DistanceMap::operator [] (const BWAPI::Position & pos) const
 { 
     return dist[getIndex(pos.y / 32, pos.x / 32)]; 
 }

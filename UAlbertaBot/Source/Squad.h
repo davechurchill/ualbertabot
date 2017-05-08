@@ -17,7 +17,7 @@ namespace UAlbertaBot
 class Squad
 {
     std::string         _name;
-	BWAPI::Unitset      _units;
+	std::vector<BWAPI::Unit>      _units;
 	std::string         _regroupStatus;
     int                 _lastRetreatSwitch;
     bool                _lastRetreatSwitchVal;
@@ -66,7 +66,7 @@ public:
 	BWAPI::Position     calcCenter();
 	BWAPI::Position     calcRegroupPosition();
 
-	const BWAPI::Unitset &  getUnits() const;
+	const std::vector<BWAPI::Unit> &  getUnits() const;
 	const SquadOrder &  getSquadOrder()	const;
 };
 }

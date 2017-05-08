@@ -32,8 +32,8 @@ public:
 
 private:
 
-    BWAPI::Unitset workers;
-    BWAPI::Unitset depots;
+    std::vector<BWAPI::Unit> workers;
+    std::vector<BWAPI::Unit> depots;
 
     std::map<BWAPI::Unit,enum WorkerJob>    workerJobMap;
     std::map<BWAPI::Unit,BWAPI::Unit>       workerMineralMap;
@@ -88,11 +88,11 @@ public:
     BWAPI::UnitType			getWorkerBuildingType(BWAPI::Unit unit);
     WorkerMoveData			getWorkerMoveData(BWAPI::Unit unit);
 
-    BWAPI::Unitset          getMineralPatchesNearDepot(BWAPI::Unit depot);
+    std::vector<BWAPI::Unit>          getMineralPatchesNearDepot(BWAPI::Unit depot);
     void                    addToMineralPatch(BWAPI::Unit unit,int num);
     void					drawDepotDebugInfo();
 
-    const BWAPI::Unitset & getWorkers() const { return workers; }
+    const std::vector<BWAPI::Unit> & getWorkers() const { return workers; }
 
 };
 }

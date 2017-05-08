@@ -32,13 +32,13 @@ class GameCommander
     ProductionManager       _productionManager;
     ScoutManager            _scoutManager;
 
-	BWAPI::Unitset          _validUnits;
-	BWAPI::Unitset          _combatUnits;
-	BWAPI::Unitset          _scoutUnits;
+	std::vector<BWAPI::Unit>          _validUnits;
+	std::vector<BWAPI::Unit>          _combatUnits;
+	std::vector<BWAPI::Unit>          _scoutUnits;
 
     bool                    _initialScoutSet;
 
-    void                    assignUnit(BWAPI::Unit unit, BWAPI::Unitset & set);
+    void                    assignUnit(BWAPI::Unit unit, std::vector<BWAPI::Unit> & set);
 	bool                    isAssigned(BWAPI::Unit unit) const;
 
 public:

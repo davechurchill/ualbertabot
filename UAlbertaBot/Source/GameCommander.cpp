@@ -15,7 +15,9 @@ GameCommander::GameCommander()
 
 void GameCommander::onStart()
 {
-    Global::Info().onStart();
+    Global::UnitInfo().onStart();
+    Global::Map().onStart();
+    Global::Bases().onStart();
     _productionManager.onStart();
 }
 
@@ -26,9 +28,10 @@ void GameCommander::update()
 	handleUnitAssignments();
 
     Global::Strategy().update();
-	Global::Info().update();
+	Global::UnitInfo().update();
 	Global::Map().update();
     Global::Workers().update();
+    Global::Bases().update();
 
 	_bossManager.update(35 - _timer.getElapsedTimeInMilliSec());
 
@@ -46,9 +49,8 @@ ProductionManager & GameCommander::getProductionManager()
 
 void GameCommander::drawDebugInterface()
 {
-	Global::Info().drawExtendedInterface();
-	Global::Info().drawUnitInformation(425,30);
-	Global::Info().drawMapInformation();
+	Global::UnitInfo().drawExtendedInterface();
+	Global::UnitInfo().drawUnitInformation(425,30);
 	_productionManager.drawProductionInformation(30, 50);
 	_combatCommander.drawSquadInformation(200, 30);
     
@@ -100,7 +102,8 @@ void GameCommander::handleUnitAssignments()
 
 bool GameCommander::isAssigned(BWAPI::Unit unit) const
 {
-	return _combatUnits.contains(unit) || _scoutUnits.contains(unit);
+    return     (std::find(_combatUnits.begin(), _combatUnits.end(), unit) != _combatUnits.end())
+            || (std::find(_scoutUnits.begin(),  _scoutUnits.end(),  unit) != _scoutUnits.end());
 }
 
 // validates units as usable for distribution to various managers
@@ -111,7 +114,7 @@ void GameCommander::setValidUnits()
 	{
 		if (UnitUtil::IsValidUnit(unit))
 		{	
-			_validUnits.insert(unit);
+			_validUnits.push_back(unit);
 		}
 	}
 }
@@ -183,40 +186,40 @@ BWAPI::Unit GameCommander::getFirstSupplyProvider()
 
 void GameCommander::onUnitShow(BWAPI::Unit unit)			
 { 
-	Global::Info().onUnitShow(unit); 
+	Global::UnitInfo().onUnitShow(unit); 
 	Global::Workers().onUnitShow(unit);
 }
 
 void GameCommander::onUnitHide(BWAPI::Unit unit)			
 { 
-	Global::Info().onUnitHide(unit); 
+	Global::UnitInfo().onUnitHide(unit); 
 }
 
 void GameCommander::onUnitCreate(BWAPI::Unit unit)		
 { 
-	Global::Info().onUnitCreate(unit); 
+	Global::UnitInfo().onUnitCreate(unit); 
 }
 
 void GameCommander::onUnitComplete(BWAPI::Unit unit)
 {
-	Global::Info().onUnitComplete(unit);
+	Global::UnitInfo().onUnitComplete(unit);
 }
 
 void GameCommander::onUnitRenegade(BWAPI::Unit unit)		
 { 
-	Global::Info().onUnitRenegade(unit); 
+	Global::UnitInfo().onUnitRenegade(unit); 
 }
 
 void GameCommander::onUnitDestroy(BWAPI::Unit unit)		
 { 	
 	_productionManager.onUnitDestroy(unit);
 	Global::Workers().onUnitDestroy(unit);
-	Global::Info().onUnitDestroy(unit); 
+	Global::UnitInfo().onUnitDestroy(unit); 
 }
 
 void GameCommander::onUnitMorph(BWAPI::Unit unit)		
 { 
-	Global::Info().onUnitMorph(unit);
+	Global::UnitInfo().onUnitMorph(unit);
 	Global::Workers().onUnitMorph(unit);
 }
 
@@ -262,10 +265,16 @@ BWAPI::Unit GameCommander::getClosestWorkerToTarget(BWAPI::Position target)
 	return closestUnit;
 }
 
-void GameCommander::assignUnit(BWAPI::Unit unit, BWAPI::Unitset & set)
+void GameCommander::assignUnit(BWAPI::Unit unit, std::vector<BWAPI::Unit> & set)
 {
-    if (_scoutUnits.contains(unit)) { _scoutUnits.erase(unit); }
-    else if (_combatUnits.contains(unit)) { _combatUnits.erase(unit); }
+    if (std::find(_scoutUnits.begin(), _scoutUnits.end(), unit) != _scoutUnits.end())
+    {
+        _scoutUnits.erase(std::remove(_scoutUnits.begin(), _scoutUnits.end(), unit), _scoutUnits.end());
+    }
+    else if (std::find(_combatUnits.begin(), _combatUnits.end(), unit) != _combatUnits.end())
+    {
+        _combatUnits.erase(std::remove(_combatUnits.begin(), _combatUnits.end(), unit), _combatUnits.end());
+    }
 
-    set.insert(unit);
+    set.push_back(unit);
 }

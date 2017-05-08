@@ -2,8 +2,9 @@
 
 #include "StrategyManager.h"
 #include "WorkerManager.h"
-#include "InfoManager.h"
+#include "UnitInfoManager.h"
 #include "MapTools.h"
+#include "BaseLocationManager.h"
 
 namespace UAlbertaBot
 {
@@ -14,9 +15,10 @@ namespace Global
 {      
     void SetModule(UAlbertaBotModule * module);
         
+    BaseLocationManager & Bases();
     StrategyManager & Strategy();
     WorkerManager & Workers();
-    InfoManager & Info();
+    UnitInfoManager & UnitInfo();
     MapTools & Map();
 };
 }

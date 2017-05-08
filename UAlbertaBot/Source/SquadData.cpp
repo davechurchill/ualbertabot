@@ -21,7 +21,7 @@ void SquadData::clearSquadData()
 	{
         Squad & squad = kv.second;
 
-        const BWAPI::Unitset & units = squad.getUnits();
+        const std::vector<BWAPI::Unit> & units = squad.getUnits();
 
         for (auto & unit : units)
         {
@@ -97,7 +97,7 @@ void SquadData::drawSquadInformation(int x, int y)
 	{
         const Squad & squad = kv.second;
 
-		const BWAPI::Unitset & units = squad.getUnits();
+		const std::vector<BWAPI::Unit> & units = squad.getUnits();
 		const SquadOrder & order = squad.getSquadOrder();
 
 		BWAPI::Broodwar->drawTextScreen(x, y+40+((yspace)*10), "\x03%s", squad.getName().c_str());
@@ -117,18 +117,18 @@ void SquadData::drawSquadInformation(int x, int y)
 
 void SquadData::verifySquadUniqueMembership()
 {
-    BWAPI::Unitset assigned;
+    std::vector<BWAPI::Unit> assigned;
 
     for (const auto & kv : _squads)
     {
         for (auto & unit : kv.second.getUnits())
         {
-            if (assigned.contains(unit))
+            if (std::find(assigned.begin(), assigned.end(), unit) != assigned.end())
             {
                 BWAPI::Broodwar->printf("Unit is in at least two squads: %s", unit->getType().getName().c_str());
             }
 
-            assigned.insert(unit);
+            assigned.push_back(unit);
         }
     }
 }
@@ -142,7 +142,7 @@ const Squad * SquadData::getUnitSquad(BWAPI::Unit unit) const
 {
     for (const auto & kv : _squads)
     {
-        if (kv.second.getUnits().contains(unit))
+        if (kv.second.containsUnit(unit))
         {
             return &kv.second;
         }
@@ -155,7 +155,7 @@ Squad * SquadData::getUnitSquad(BWAPI::Unit unit)
 {
     for (auto & kv : _squads)
     {
-        if (kv.second.getUnits().contains(unit))
+        if (kv.second.containsUnit(unit))
         {
             return &kv.second;
         }

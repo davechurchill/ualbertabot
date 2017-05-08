@@ -37,6 +37,20 @@ bool UnitUtil::IsCombatUnitType(BWAPI::UnitType type)
     return false;
 }
 
+BWAPI::Position UnitUtil::GetUnitsetCenter(const std::vector<BWAPI::Unit> & cluster)
+{
+    int sumX = 0;
+    int sumY = 0;
+
+    for (const auto & resource : cluster)
+    {
+        sumX += resource->getPosition().x;
+        sumY += resource->getPosition().y;
+    }
+
+    return BWAPI::Position(sumX / cluster.size(), sumY / cluster.size());
+}
+
 bool UnitUtil::IsMorphedBuildingType(BWAPI::UnitType type)
 {
     return  type == BWAPI::UnitTypes::Zerg_Sunken_Colony ||

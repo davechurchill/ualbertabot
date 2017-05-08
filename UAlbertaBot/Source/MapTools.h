@@ -4,6 +4,7 @@
 #include <vector>
 #include "BWAPI.h"
 #include "DistanceMap.h"
+#include "BaseLocation.h"
 
 namespace UAlbertaBot
 {
@@ -25,27 +26,30 @@ class MapTools
     void                    reset();                           // resets the distance and fringe vectors, call before each search    
     void                    setBWAPIMapData();                 // reads in the map data from bwapi and stores it in our map format
     void                    resetFringe();
-    void                    computeDistance(DistanceMap & dmap,const BWAPI::Position p); // computes walk distance from Position P to all other points on the map
+    
     BWAPI::TilePosition     getTilePosition(int index);
+    void                    search(DistanceMap & dmap,const int sR,const int sC);
 
 public:
 
     MapTools();
 
+    void                    onStart();
     void                    update();
     void                    parseMap();
-    void                    search(DistanceMap & dmap,const int sR,const int sC);
+    
     int                     getGroundDistance(BWAPI::Position from, BWAPI::Position to);
-    BWAPI::TilePosition     getNextExpansion();
-    BWAPI::TilePosition     getNextExpansion(BWAPI::Player player);
-    void                    drawHomeDistanceMap();
+    bool                    isConnected(BWAPI::Position from, BWAPI::Position to);
     void                    drawLastSeen();
     BWAPI::Position         getLeastRecentlySeenPosition();
-    static void             GetUnits(BWAPI::Unitset & units, BWAPI::Position center, int radius, bool ourUnits, bool oppUnits);
+    void                    computeDistance(DistanceMap & dmap, const BWAPI::Position p); // computes walk distance from Position P to all other points on the map
+
+    // static helper functions
+    static void             GetUnitsInRadius(std::vector<BWAPI::Unit> & units, BWAPI::Position center, int radius, bool ourUnits, bool oppUnits);
+    static bool             IsPotentialBaseLocation(BWAPI::TilePosition tile);
 
     // returns a list of all tiles on the map, sorted by 4-direcitonal walk distance from the given position
     const std::vector<BWAPI::TilePosition> & getClosestTilesTo(BWAPI::Position pos);
-
 };
 
 }

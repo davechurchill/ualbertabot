@@ -23,8 +23,9 @@ public:
 
     DistanceMap();
 
-    int & operator [] (const int index);
-    int & operator [] (const BWAPI::Position & pos);
+    const int & operator [] (const int index) const;
+          int & operator [] (const int index);
+    const int & operator [] (const BWAPI::Position & pos) const;
     void setMoveTo(const int index,const char val);
     void setDistance(const int index,const int val);
     void setStartPosition(const int sr,const int sc);

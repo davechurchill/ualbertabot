@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Common.h"
-#include "BWTA.h"
 
 #include "UnitData.h"
+#include "BaseLocation.h"
 
 #include "..\..\SparCraft\source\SparCraft.h"
 
@@ -12,25 +12,20 @@ namespace UAlbertaBot
 struct BaseInfo;
 typedef std::vector<BaseInfo> BaseInfoVector;
 
-class InfoManager 
+class UnitInfoManager 
 {
-    BWAPI::Player       _self;
-    BWAPI::Player       _enemy;
-
-    std::map<BWAPI::Player, UnitData>                   _unitData;
-    std::map<BWAPI::Player, BWTA::BaseLocation *>       _mainBaseLocations;
-    std::map<BWAPI::Player, std::set<BWTA::Region *> >  _occupiedRegions;
+    std::map<BWAPI::Player, UnitData> _unitData;
+    std::map<BWAPI::Player, std::set<const BaseLocation *> >  _occupiedBaseLocations;
 
     void                    updateUnit(BWAPI::Unit unit);
-    void                    initializeRegionInformation();
     void                    updateUnitInfo();
-    void                    updateBaseLocationInfo();
-    void                    updateOccupiedRegions(BWTA::Region * region,BWAPI::Player player);
     bool                    isValidUnit(BWAPI::Unit unit);
+    
+    const UnitData &        getUnitData(BWAPI::Player player) const;
 
 public:
 
-    InfoManager();
+    UnitInfoManager();
 
     void                    update();
     void                    onStart();
@@ -44,22 +39,13 @@ public:
     void					onUnitRenegade(BWAPI::Unit unit)    { updateUnit(unit); }
     void					onUnitDestroy(BWAPI::Unit unit);
 
-    bool					isEnemyBuildingInRegion(BWTA::Region * region);
-    int						getNumUnits(BWAPI::UnitType type,BWAPI::Player player);
-
     void                    getNearbyForce(std::vector<UnitInfo> & unitInfo,BWAPI::Position p,BWAPI::Player player,int radius);
 
-    const UIMap &           getUnitInfo(BWAPI::Player player) const;
-
-    std::set<BWTA::Region *> &  getOccupiedRegions(BWAPI::Player player);
-    BWTA::BaseLocation *    getMainBaseLocation(BWAPI::Player player);
+    const std::map<int, UnitInfo> & getUnitInfoMap(BWAPI::Player player) const;
 
     bool                    enemyHasCloakedUnits();
-
     void                    drawExtendedInterface();
     void                    drawUnitInformation(int x,int y);
-    void                    drawMapInformation();
 
-    const UnitData &        getUnitData(BWAPI::Player player) const;
 };
 }

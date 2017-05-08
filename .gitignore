@@ -14,3 +14,5 @@ BOSS/VisualStudio/BOSS.VC.db
 *.vspx
 *.png
 *.zip
+*.ipdb
+UAlbertaBot/bin/UAlbertaBot.iobj

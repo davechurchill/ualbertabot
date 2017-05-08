@@ -33,7 +33,7 @@ public:
 
 	TransportManager();
 
-	void							executeMicro(const BWAPI::Unitset & targets);
+	void							executeMicro(const std::vector<BWAPI::Unit> & targets);
 	void							update();
 	void							setTransportShip(BWAPI::UnitInterface * unit);
 	void							setFrom(BWAPI::Position from);

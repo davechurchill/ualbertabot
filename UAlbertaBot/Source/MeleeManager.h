@@ -13,13 +13,13 @@ class MeleeManager : public MicroManager
 public:
 
 	MeleeManager();
-	void executeMicro(const BWAPI::Unitset & targets);
+	void executeMicro(const std::vector<BWAPI::Unit> & targets);
 
 	int getAttackPriority(BWAPI::Unit attacker, BWAPI::Unit unit);
-	BWAPI::Unit getTarget(BWAPI::Unit meleeUnit, const BWAPI::Unitset & targets);
-    bool meleeUnitShouldRetreat(BWAPI::Unit meleeUnit, const BWAPI::Unitset & targets);
-    std::pair<BWAPI::Unit, BWAPI::Unit> findClosestUnitPair(const BWAPI::Unitset & attackers, const BWAPI::Unitset & targets);
+	BWAPI::Unit getTarget(BWAPI::Unit meleeUnit, const std::vector<BWAPI::Unit> & targets);
+    bool meleeUnitShouldRetreat(BWAPI::Unit meleeUnit, const std::vector<BWAPI::Unit> & targets);
+    std::pair<BWAPI::Unit, BWAPI::Unit> findClosestUnitPair(const std::vector<BWAPI::Unit> & attackers, const std::vector<BWAPI::Unit> & targets);
 
-    void assignTargets(const BWAPI::Unitset & targets);
+    void assignTargets(const std::vector<BWAPI::Unit> & targets);
 };
 }

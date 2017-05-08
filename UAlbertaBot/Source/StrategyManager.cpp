@@ -43,7 +43,7 @@ const BuildOrder & StrategyManager::getOpeningBookBuildOrder() const
 const bool StrategyManager::shouldExpandNow() const
 {
 	// if there is no place to expand to, we can't expand
-	if (Global::Map().getNextExpansion() == BWAPI::TilePositions::None)
+	if (Global::Bases().getNextExpansion(BWAPI::Broodwar->self()) == BWAPI::TilePositions::None)
 	{
         BWAPI::Broodwar->printf("No valid expansion location");
 		return false;
@@ -173,7 +173,7 @@ const MetaPairVector StrategyManager::getProtossBuildOrderGoal() const
     }
     
     // add observer to the goal if the enemy has cloaked units
-	if (Global::Info().enemyHasCloakedUnits())
+	if (Global::UnitInfo().enemyHasCloakedUnits())
 	{
 		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Robotics_Facility, 1));
 		

@@ -21,7 +21,7 @@ class ProductionManager
     bool                _assignedWorkerForThisBuilding;
     bool                _haveLocationForThisBuilding;
     
-    BWAPI::Unit         getClosestUnitToPosition(const BWAPI::Unitset & units,BWAPI::Position closestTo);
+    BWAPI::Unit         getClosestUnitToPosition(const std::vector<BWAPI::Unit> & units,BWAPI::Position closestTo);
     BWAPI::Unit         selectUnitOfType(BWAPI::UnitType type,BWAPI::Position closestTo = BWAPI::Position(0,0));
 
     bool                meetsReservedResources(MetaType type);

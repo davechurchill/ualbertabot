@@ -98,7 +98,7 @@ void Squad::updateUnits()
 void Squad::setAllUnits()
 {
 	// clean up the _units vector just in case one of them died
-	BWAPI::Unitset goodUnits;
+	std::vector<BWAPI::Unit> goodUnits;
 	for (auto & unit : _units)
 	{
 		if( unit->isCompleted() && 
@@ -107,7 +107,7 @@ void Squad::setAllUnits()
 			unit->getPosition().isValid() &&
 			unit->getType() != BWAPI::UnitTypes::Unknown)
 		{
-			goodUnits.insert(unit);
+			goodUnits.push_back(unit);
 		}
 	}
 	_units = goodUnits;
@@ -140,12 +140,12 @@ void Squad::setNearEnemyUnits()
 
 void Squad::addUnitsToMicroManagers()
 {
-	BWAPI::Unitset meleeUnits;
-	BWAPI::Unitset rangedUnits;
-	BWAPI::Unitset detectorUnits;
-	BWAPI::Unitset transportUnits;
-    BWAPI::Unitset tankUnits;
-    BWAPI::Unitset medicUnits;
+	std::vector<BWAPI::Unit> meleeUnits;
+	std::vector<BWAPI::Unit> rangedUnits;
+	std::vector<BWAPI::Unit> detectorUnits;
+	std::vector<BWAPI::Unit> transportUnits;
+    std::vector<BWAPI::Unit> tankUnits;
+    std::vector<BWAPI::Unit> medicUnits;
 
 	// add _units to micro managers
 	for (auto & unit : _units)
@@ -155,30 +155,30 @@ void Squad::addUnitsToMicroManagers()
 			// select dector _units
             if (unit->getType() == BWAPI::UnitTypes::Terran_Medic)
             {
-                medicUnits.insert(unit);
+                medicUnits.push_back(unit);
             }
             else if (unit->getType() == BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode || unit->getType() == BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode)
             {
-                tankUnits.insert(unit);
+                tankUnits.push_back(unit);
             }   
 			else if (unit->getType().isDetector() && !unit->getType().isBuilding())
 			{
-				detectorUnits.insert(unit);
+				detectorUnits.push_back(unit);
 			}
 			// select transport _units
 			else if (unit->getType() == BWAPI::UnitTypes::Protoss_Shuttle || unit->getType() == BWAPI::UnitTypes::Terran_Dropship)
 			{
-				transportUnits.insert(unit);
+				transportUnits.push_back(unit);
 			}
 			// select ranged _units
 			else if ((unit->getType().groundWeapon().maxRange() > 32) || (unit->getType() == BWAPI::UnitTypes::Protoss_Reaver) || (unit->getType() == BWAPI::UnitTypes::Zerg_Scourge))
 			{
-				rangedUnits.insert(unit);
+				rangedUnits.push_back(unit);
 			}
 			// select melee _units
 			else if (unit->getType().groundWeapon().maxRange() <= 32)
 			{
-				meleeUnits.insert(unit);
+				meleeUnits.push_back(unit);
 			}
 		}
 	}
@@ -216,7 +216,7 @@ bool Squad::needsToRegroup()
 
     // if none of our units are in attack range of any enemy units, don't retreat
     std::vector<UnitInfo> enemyCombatUnits;
-    const auto & enemyUnitInfo = Global::Info().getUnitInfo(BWAPI::Broodwar->enemy());
+    const auto & enemyUnitInfo = Global::UnitInfo().getUnitInfoMap(BWAPI::Broodwar->enemy());
 
     bool anyInRange = false;
     for (const auto & eui : enemyUnitInfo)
@@ -298,7 +298,7 @@ void Squad::setSquadOrder(const SquadOrder & so)
 
 bool Squad::containsUnit(BWAPI::Unit u) const
 {
-    return _units.contains(u);
+    return std::find(_units.begin(), _units.end(), u) != _units.end();
 }
 
 void Squad::clear()
@@ -319,9 +319,9 @@ bool Squad::unitNearEnemy(BWAPI::Unit unit)
 {
 	assert(unit);
 
-	BWAPI::Unitset enemyNear;
+	std::vector<BWAPI::Unit> enemyNear;
 
-	Global::Map().GetUnits(enemyNear, unit->getPosition(), 400, false, true);
+	Global::Map().GetUnitsInRadius(enemyNear, unit->getPosition(), 400, false, true);
 
 	return enemyNear.size() > 0;
 }
@@ -366,7 +366,7 @@ BWAPI::Position Squad::calcRegroupPosition()
 
 	if (regroup == BWAPI::Position(0,0))
 	{
-		return BWTA::getRegion(BWTA::getStartLocation(BWAPI::Broodwar->self())->getTilePosition())->getCenter();
+		return BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
 	}
 	else
 	{
@@ -434,7 +434,7 @@ int Squad::squadUnitsNear(BWAPI::Position p)
 	return numUnits;
 }
 
-const BWAPI::Unitset & Squad::getUnits() const	
+const std::vector<BWAPI::Unit> & Squad::getUnits() const	
 { 
 	return _units; 
 } 
@@ -446,12 +446,12 @@ const SquadOrder & Squad::getSquadOrder()	const
 
 void Squad::addUnit(BWAPI::Unit u)
 {
-	_units.insert(u);
+	_units.push_back(u);
 }
 
 void Squad::removeUnit(BWAPI::Unit u)
 {
-    _units.erase(u);
+    _units.push_back(u);
 }
 
 const std::string & Squad::getName() const

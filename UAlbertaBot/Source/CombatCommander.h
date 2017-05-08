@@ -9,7 +9,7 @@ namespace UAlbertaBot
 class CombatCommander
 {
 	SquadData       _squadData;
-    BWAPI::Unitset  _combatUnits;
+    std::vector<BWAPI::Unit>  _combatUnits;
     bool            _initialized;
 
     void            updateScoutDefenseSquad();
@@ -18,10 +18,10 @@ class CombatCommander
     void            updateDropSquads();
 	void            updateIdleSquad();
 	bool            isSquadUpdateFrame();
-	int             getNumType(BWAPI::Unitset & units, BWAPI::UnitType type);
+	int             getNumType(std::vector<BWAPI::Unit> & units, BWAPI::UnitType type);
 
 	BWAPI::Unit     findClosestDefender(const Squad & defenseSquad, BWAPI::Position pos, bool flyingDefender);
-    BWAPI::Unit     findClosestWorkerToTarget(BWAPI::Unitset & unitsToAssign, BWAPI::Unit target);
+    BWAPI::Unit     findClosestWorkerToTarget(std::vector<BWAPI::Unit> & unitsToAssign, BWAPI::Unit target);
 
 	BWAPI::Position getDefendLocation();
     BWAPI::Position getMainAttackLocation();
@@ -29,7 +29,7 @@ class CombatCommander
     void            initializeSquads();
     void            verifySquadUniqueMembership();
     void            assignFlyingDefender(Squad & squad);
-    void            emptySquad(Squad & squad, BWAPI::Unitset & unitsToAssign);
+    void            emptySquad(Squad & squad, std::vector<BWAPI::Unit> & unitsToAssign);
     int             getNumGroundDefendersInSquad(Squad & squad);
     int             getNumAirDefendersInSquad(Squad & squad);
 
@@ -43,7 +43,7 @@ public:
 
 	CombatCommander();
 
-	void update(const BWAPI::Unitset & combatUnits);
+	void update(const std::vector<BWAPI::Unit> & combatUnits);
     
 	void drawSquadInformation(int x, int y);
 };

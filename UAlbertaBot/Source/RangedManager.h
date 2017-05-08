@@ -10,11 +10,11 @@ class RangedManager : public MicroManager
 public:
 
 	RangedManager();
-	void executeMicro(const BWAPI::Unitset & targets);
+	void executeMicro(const std::vector<BWAPI::Unit> & targets);
 
 	int getAttackPriority(BWAPI::Unit rangedUnit, BWAPI::Unit target);
-	BWAPI::Unit getTarget(BWAPI::Unit rangedUnit, const BWAPI::Unitset & targets);
+	BWAPI::Unit getTarget(BWAPI::Unit rangedUnit, const std::vector<BWAPI::Unit> & targets);
 
-    void assignTargets(const BWAPI::Unitset & targets);
+    void assignTargets(const std::vector<BWAPI::Unit> & targets);
 };
 }

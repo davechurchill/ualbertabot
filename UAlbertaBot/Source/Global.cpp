@@ -15,14 +15,19 @@ StrategyManager & Global::Strategy()
     return uabModule->getStrategyManager();
 }
 
+BaseLocationManager & Global::Bases()
+{
+    return uabModule->getBaseLocationManager();
+}
+
 WorkerManager & Global::Workers()
 {
     return uabModule->getWorkerManager();
 }
 
-InfoManager & Global::Info()
+UnitInfoManager & Global::UnitInfo()
 {
-    return uabModule->getInfoManager();
+    return uabModule->getUnitInfoManager();
 }
 
 MapTools & Global::Map()
