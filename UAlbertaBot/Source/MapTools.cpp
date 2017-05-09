@@ -1,4 +1,5 @@
 #include "MapTools.h"
+#include "Global.h"
 
 using namespace UAlbertaBot;
 
@@ -11,6 +12,8 @@ MapTools::MapTools()
     _units      = std::vector<bool>(_rows*_cols, false);
     _fringe     = std::vector<int>(_rows*_cols, 0);
     _lastSeen   = std::vector<int>(_rows*_cols, 0);
+    _buildable  = std::vector<bool>(_rows*_cols, true);
+    _depotBuildable = std::vector<bool>(_rows*_cols, true);
 
     setBWAPIMapData();
 }
@@ -38,9 +41,13 @@ void MapTools::update()
 }
 
 // return the index of the 1D array from (row,col)
-inline int MapTools::getIndex(int row,int col)
+int MapTools::getIndex(int row,int col)
 {
-    return row * _cols + col;
+    int index = row * _cols + col;
+
+    UAB_ASSERT(index < _map.size(), "getIndex returning larger index than possible: %d", index);
+
+    return index;
 }
 
 bool MapTools::unexplored(DistanceMap & dmap,const int index) const
@@ -84,8 +91,89 @@ void MapTools::setBWAPIMapData()
 
             // set the map as binary clear or not
             _map[getIndex(r,c)] = clear;
+
+            // set whether this tile is buildable
+            _buildable[getIndex(r,c)] = BWAPI::Broodwar->isBuildable(BWAPI::TilePosition(c,r), false);
+            _depotBuildable[getIndex(r,c)] = BWAPI::Broodwar->isBuildable(BWAPI::TilePosition(c,r), false);
         }
     }
+
+    // set tiles that static resources are on as unbuildable
+    for (auto & resource : BWAPI::Broodwar->getStaticNeutralUnits())
+    {
+        if (!resource->getType().isResourceContainer())
+        {
+            continue;
+        }
+
+        int tileX = resource->getTilePosition().x;
+        int tileY = resource->getTilePosition().y;
+
+        for (int x=tileX; x<tileX+resource->getType().tileWidth(); ++x)
+        {
+            for (int y=tileY; y<tileY+resource->getType().tileHeight(); ++y)
+            {
+                _buildable[getIndex(y,x)] = false;
+
+                // depots can't be built within 3 tiles of any resource
+                for (int rx=-3; rx<=3; rx++)
+                {
+                    for (int ry=-3; ry<=3; ry++)
+                    {
+                        if (!BWAPI::TilePosition(x+rx, y+ry).isValid())
+                        {
+                            continue;
+                        }
+
+                        _depotBuildable[getIndex(y+ry,x+rx)] = false;
+                    }
+                }
+            }
+        }
+    }
+}
+
+bool MapTools::isBuildable(BWAPI::TilePosition tile, BWAPI::UnitType type)
+{
+    int startX = tile.x;
+    int endX = tile.x + type.tileWidth();
+    int startY = tile.y;
+    int endY = tile.y + type.tileHeight();
+
+    for (int x=startX; x<endX; ++x)
+    {
+        for (int y=startY; y<endY; ++y)
+        {
+            BWAPI::TilePosition tile(x,y);
+
+            if (!isBuildableTile(tile) || (type.isResourceDepot() && !isDepotBuildableTile(tile)))
+            {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+bool MapTools::isBuildableTile(BWAPI::TilePosition tile)
+{
+    if (!tile.isValid())
+    {
+        return false;
+    }
+
+    return _buildable[getIndex(tile.y, tile.x)];
+}
+
+bool MapTools::isDepotBuildableTile(BWAPI::TilePosition tile)
+{
+    if (!tile.isValid())
+    {
+        return false;
+    }
+
+    return _depotBuildable[getIndex(tile.y, tile.x)];
 }
 
 void MapTools::resetFringe()
@@ -93,29 +181,10 @@ void MapTools::resetFringe()
     std::fill(_fringe.begin(),_fringe.end(),0);
 }
 
-bool MapTools::IsPotentialBaseLocation(BWAPI::TilePosition tile)
-{
-    int sizeX = 4;
-    int sizeY = 3;
-
-    // check to see if we can build a depot on that tile of the map
-    for (int sx = 0; sx < sizeX; sx++)
-    {
-        for (int sy=0; sy < sizeY; sy++)
-        {
-            if (!BWAPI::Broodwar->isBuildable(tile.x+sx, tile.y+sy))
-            {
-                return false;
-            }
-        }
-    }
-     
-}
-
 int MapTools::getGroundDistance(BWAPI::Position origin,BWAPI::Position destination)
 {
     // if we have too many maps, reset our stored maps in case we run out of memory
-    if (_allMaps.size() > 20)
+    if (_allMaps.size() > 50)
     {
         _allMaps.clear();
 
@@ -371,10 +440,13 @@ BWAPI::Position MapTools::getLeastRecentlySeenPosition()
 {
 	int minSeen = std::numeric_limits<int>::max();
 	BWAPI::TilePosition leastSeen(0,0);
-    BWAPI::Position myBasePosition(BWAPI::Broodwar->self()->getStartLocation());
+    const BaseLocation * myBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->self());
+    BWAPI::Position myBasePosition = myBaseLocation->getPosition();
 
-    for (auto & tile : getClosestTilesTo(myBasePosition))
+    for (auto & tile : myBaseLocation->getClosestTiles())
     {
+        UAB_ASSERT(tile.isValid(), "How is this tile not valid?");
+
 		// don't worry about places that aren't connected to our start locatin
 		if (!isConnected(BWAPI::Position(tile), myBasePosition))
 		{

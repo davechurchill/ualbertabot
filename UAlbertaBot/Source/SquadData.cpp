@@ -21,7 +21,7 @@ void SquadData::clearSquadData()
 	{
         Squad & squad = kv.second;
 
-        const std::vector<BWAPI::Unit> & units = squad.getUnits();
+        auto & units = squad.getUnits();
 
         for (auto & unit : units)
         {
@@ -97,7 +97,7 @@ void SquadData::drawSquadInformation(int x, int y)
 	{
         const Squad & squad = kv.second;
 
-		const std::vector<BWAPI::Unit> & units = squad.getUnits();
+		auto & units = squad.getUnits();
 		const SquadOrder & order = squad.getSquadOrder();
 
 		BWAPI::Broodwar->drawTextScreen(x, y+40+((yspace)*10), "\x03%s", squad.getName().c_str());
@@ -121,6 +121,7 @@ void SquadData::verifySquadUniqueMembership()
 
     for (const auto & kv : _squads)
     {
+        //std::cout << "Squad: "kv.second.getName()
         for (auto & unit : kv.second.getUnits())
         {
             if (std::find(assigned.begin(), assigned.end(), unit) != assigned.end())

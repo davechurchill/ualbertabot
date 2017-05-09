@@ -12,9 +12,9 @@ class DistanceMap
     int _startRow;
     int _startCol;
 
-    std::vector<int>	dist;
-    std::vector<char>	moveTo;
-    std::vector<BWAPI::TilePosition>    sorted;
+    std::vector<int>	_dist;
+    std::vector<char>	_moveTo;
+    std::vector<BWAPI::TilePosition>    _sorted;
 
     int getIndex(const int row,const int col) const;
     int getIndex(const BWAPI::Position & p) const;

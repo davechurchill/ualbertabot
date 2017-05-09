@@ -104,6 +104,11 @@ MapTools & UAlbertaBotModule::getMapTools()
 
 void UAlbertaBotModule::onFrame()
 {
+    if (BWAPI::Broodwar->getFrameCount() > 10000)
+    {
+        BWAPI::Broodwar->restartGame();
+    }
+
     char red = '\x08';
     char green = '\x07';
     char white = '\x04';

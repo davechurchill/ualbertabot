@@ -106,7 +106,7 @@ int main(int argc, const char * argv[])
             // If we are successfully in a game, call the module to play the game
             if (BWAPI::Broodwar->isInGame())
             {
-                std::cout << "Playing game " << gameCount++ << "\n";
+                std::cout << "Playing game " << gameCount++ << " on map " << BWAPI::Broodwar->mapFileName() << "\n";
 
                 UAlbertaBot_PlayGame();
             }

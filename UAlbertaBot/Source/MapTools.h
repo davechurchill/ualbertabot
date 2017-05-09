@@ -18,6 +18,9 @@ class MapTools
     std::vector<bool>       _units;     // map that stores whether a unit is on this position
     std::vector<int>        _fringe;    // the fringe vector which is used as a sort of 'open list'
     std::vector<int>        _lastSeen;  // the last time any of our units has seen this position on the map
+    std::vector<bool>       _buildable;
+    std::vector<bool>       _depotBuildable;
+    std::vector<bool>       _resourceWithinThree;
     int                     _rows;
     int                     _cols;
 
@@ -42,11 +45,13 @@ public:
     bool                    isConnected(BWAPI::Position from, BWAPI::Position to);
     void                    drawLastSeen();
     BWAPI::Position         getLeastRecentlySeenPosition();
+    bool                    isBuildable(BWAPI::TilePosition tile, BWAPI::UnitType type);
+    bool                    isBuildableTile(BWAPI::TilePosition tile);
+    bool                    isDepotBuildableTile(BWAPI::TilePosition tile);
     void                    computeDistance(DistanceMap & dmap, const BWAPI::Position p); // computes walk distance from Position P to all other points on the map
 
     // static helper functions
     static void             GetUnitsInRadius(std::vector<BWAPI::Unit> & units, BWAPI::Position center, int radius, bool ourUnits, bool oppUnits);
-    static bool             IsPotentialBaseLocation(BWAPI::TilePosition tile);
 
     // returns a list of all tiles on the map, sorted by 4-direcitonal walk distance from the given position
     const std::vector<BWAPI::TilePosition> & getClosestTilesTo(BWAPI::Position pos);

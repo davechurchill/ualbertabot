@@ -98,7 +98,7 @@ void Squad::updateUnits()
 void Squad::setAllUnits()
 {
 	// clean up the _units vector just in case one of them died
-	std::vector<BWAPI::Unit> goodUnits;
+	std::set<BWAPI::Unit> goodUnits;
 	for (auto & unit : _units)
 	{
 		if( unit->isCompleted() && 
@@ -107,7 +107,7 @@ void Squad::setAllUnits()
 			unit->getPosition().isValid() &&
 			unit->getType() != BWAPI::UnitTypes::Unknown)
 		{
-			goodUnits.push_back(unit);
+			goodUnits.insert(unit);
 		}
 	}
 	_units = goodUnits;
@@ -434,7 +434,7 @@ int Squad::squadUnitsNear(BWAPI::Position p)
 	return numUnits;
 }
 
-const std::vector<BWAPI::Unit> & Squad::getUnits() const	
+const std::set<BWAPI::Unit> & Squad::getUnits() const	
 { 
 	return _units; 
 } 
@@ -446,12 +446,12 @@ const SquadOrder & Squad::getSquadOrder()	const
 
 void Squad::addUnit(BWAPI::Unit u)
 {
-	_units.push_back(u);
+	_units.insert(u);
 }
 
 void Squad::removeUnit(BWAPI::Unit u)
 {
-    _units.push_back(u);
+    _units.erase(u);
 }
 
 const std::string & Squad::getName() const

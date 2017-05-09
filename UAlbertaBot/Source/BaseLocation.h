@@ -10,16 +10,17 @@ namespace UAlbertaBot
 
 class BaseLocation
 {
-    BWAPI::Position     _position;
-    BWAPI::TilePosition _tile;
-    BWAPI::Position     _resourceCenter;
-    std::vector<BWAPI::Unit>      _geysers;
-    std::vector<BWAPI::Unit>      _minerals;
+    BWAPI::Position                 _position;
+    BWAPI::TilePosition             _tile;
+    BWAPI::Position                 _resourceCenter;
+    std::vector<BWAPI::Unit>        _geysers;
+    std::vector<BWAPI::Unit>        _minerals;
 
-    std::vector<BWAPI::Position> _mineralPositions;
-    std::vector<BWAPI::Position> _geyserPositions;
+    std::vector<BWAPI::Position>    _mineralPositions;
+    std::vector<BWAPI::Position>    _geyserPositions;
 
-    std::set<BWAPI::Player> _playersOccupying;
+    std::map<BWAPI::Player, bool>   _isPlayerOccupying;
+    std::map<BWAPI::Player, bool>   _isPlayerStartLocation;
         
     DistanceMap         _distanceMap;
     int                 _baseID;
@@ -28,27 +29,28 @@ class BaseLocation
     int                 _top;
     int                 _bottom;
     bool                _isStartLocation;
-    bool                _isSelfStartLocation;
-    bool                _isEnemyStartLocation;
     
 public:
 
     BaseLocation(int baseID = 0);
     BaseLocation(int baseID, const std::vector<BWAPI::Unit> & resources);
-
+    
     int getGroundTileDistance(const BWAPI::Position & pos) const;
     bool isStartLocation() const;
-    bool isSelfStartLocation() const;
+    bool isPlayerStartLocation(BWAPI::Player player) const;
     bool isMineralOnly() const;
     bool containsPosition(const BWAPI::Position & pos) const;
     const BWAPI::TilePosition & getTilePosition() const;
     const BWAPI::Position & getPosition() const;
     const std::vector<BWAPI::Unit> & getGeysers() const;
     const std::vector<BWAPI::Unit> & getMinerals() const;
+    bool isOccupiedByPlayer(BWAPI::Player player) const;
 
-    void update();
+    void setPlayerOccupying(BWAPI::Player player, bool occupying);
 
-    void draw() const;
+    const std::vector<BWAPI::TilePosition> & getClosestTiles() const;
+
+    void draw();
 };
 
 

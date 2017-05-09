@@ -21,11 +21,9 @@ public:
     void            assignUnitToSquad(BWAPI::Unit unit, Squad & squad);
     void            addSquad(const std::string & squadName, const Squad & squad);
     void            removeSquad(const std::string & squadName);
-    void            clearSquad(const std::string & squadName);
 	void            drawSquadInformation(int x, int y);
 
     void            update();
-    void            setRegroup();
 
     bool            squadExists(const std::string & squadName);
     bool            unitIsInSquad(BWAPI::Unit unit) const;

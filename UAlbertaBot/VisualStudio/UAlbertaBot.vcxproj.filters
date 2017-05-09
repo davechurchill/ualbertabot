@@ -115,10 +115,10 @@
     <ClCompile Include="..\Source\BaseLocation.cpp">
       <Filter>map</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\BaseLocationManager.cpp">
-      <Filter>map</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\UnitInfoManager.cpp">
+      <Filter>global</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\BaseLocationManager.cpp">
       <Filter>global</Filter>
     </ClCompile>
   </ItemGroup>
@@ -265,10 +265,10 @@
     <ClInclude Include="..\Source\BaseLocation.h">
       <Filter>map</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\BaseLocationManager.h">
-      <Filter>map</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\UnitInfoManager.h">
+      <Filter>global</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\BaseLocationManager.h">
       <Filter>global</Filter>
     </ClInclude>
   </ItemGroup>
