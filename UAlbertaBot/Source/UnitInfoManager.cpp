@@ -165,7 +165,7 @@ void UnitInfoManager::getNearbyForce(std::vector<UnitInfo> & unitInfo, BWAPI::Po
 	for (const auto & kv : getUnitData(player).getUnitInfoMap())
 	{
 		const UnitInfo & ui(kv.second);
-
+        
 		// if it's a combat unit we care about
 		// and it's finished! 
 		if (UnitUtil::IsCombatUnitType(ui.type) && ui.completed)
@@ -208,6 +208,11 @@ bool UnitInfoManager::enemyHasCloakedUnits()
             return true;
         }
 
+        if (ui.type == BWAPI::UnitTypes::Zerg_Lurker || ui.type == BWAPI::UnitTypes::Zerg_Lurker_Egg)
+        {
+            return true;
+        }
+
         // assume they're going dts
         if (ui.type == BWAPI::UnitTypes::Protoss_Citadel_of_Adun)
         {
@@ -220,5 +225,6 @@ bool UnitInfoManager::enemyHasCloakedUnits()
         }
     }
 
+    
 	return false;
 }

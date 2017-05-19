@@ -138,10 +138,10 @@ void BaseLocationManager::update()
     }
 
     // for each unit on the map, update which base location it may be occupying
-    for (auto & unit : BWAPI::Broodwar->getAllUnits())
+    for (auto & unit : BWAPI::Broodwar->self()->getUnits())
     {
         // we only care about buildings on the ground
-        if (!unit->getType().isBuilding() || unit->isLifted() || unit->getPlayer()->isNeutral())
+        if (!unit->getType().isBuilding() || unit->isLifted())
         {
             continue;
         }
@@ -154,7 +154,28 @@ void BaseLocationManager::update()
         }
     }
 
+    // update enemy base occupations
+    for (const auto & kv : Global::UnitInfo().getUnitInfoMap(BWAPI::Broodwar->enemy()))
+    {
+        const UnitInfo & ui = kv.second;
+
+        if (!ui.type.isBuilding())
+        {
+            continue;
+        }
+
+        BaseLocation * baseLocation = _getBaseLocation(ui.lastPosition);
+
+        if (baseLocation != nullptr)
+        {
+            baseLocation->setPlayerOccupying(BWAPI::Broodwar->enemy(), true);
+        }
+    }
+
     // update the starting locations of the enemy player
+    // this will happen one of two ways:
+    
+    // 1. we've seen the enemy base directly, so the baselocation will know
     if (_playerStartingBaseLocations[BWAPI::Broodwar->enemy()] == nullptr)
     {
         for (auto & baseLocation : _baseLocationData)
@@ -163,6 +184,38 @@ void BaseLocationManager::update()
             {
                 _playerStartingBaseLocations[BWAPI::Broodwar->enemy()] = &baseLocation;
             }
+        }
+    }
+    
+    // 2. we've explored every other start location and haven't seen the enemy yet
+    if (_playerStartingBaseLocations[BWAPI::Broodwar->enemy()] == nullptr)
+    {
+        int numStartLocations = getStartingBaseLocations().size();
+        int numExploredLocations = 0;
+        BaseLocation * unexplored = nullptr;
+
+        for (auto & baseLocation : _baseLocationData)
+        {
+            if (!baseLocation.isStartLocation())
+            {
+                continue;
+            }
+
+            if (baseLocation.isExplored())
+            {
+                numExploredLocations++;
+            }
+            else
+            {
+                unexplored = &baseLocation;
+            }
+        }
+
+        // if we have explored all but one location, then the unexplored one is the enemy start location
+        if (numExploredLocations == numStartLocations - 1 && unexplored != nullptr)
+        {
+            _playerStartingBaseLocations[BWAPI::Broodwar->enemy()] = unexplored;
+            unexplored->setPlayerOccupying(BWAPI::Broodwar->enemy(), true);
         }
     }
 
@@ -192,6 +245,10 @@ void BaseLocationManager::drawBaseLocations()
     {
         baseLocation.draw();
     }
+
+    BWAPI::Position nextExpansionPosition(getNextExpansion(BWAPI::Broodwar->self()));
+
+    BWAPI::Broodwar->drawCircleMap(nextExpansionPosition, 16, BWAPI::Colors::Orange, true);
 }
 
 const std::vector<const BaseLocation *> & BaseLocationManager::getBaseLocations() const
@@ -256,13 +313,14 @@ const BaseLocation * BaseLocationManager::getBaseLocation(BWAPI::Position pos) c
 
 BWAPI::TilePosition BaseLocationManager::getNextExpansion(BWAPI::Player player)
 {
+    const BaseLocation * homeBase = getPlayerStartingBaseLocation(player);
     const BaseLocation * closestBase = nullptr;
     int minDistance = std::numeric_limits<int>::max();
 
-    BWAPI::TilePosition homeTile = player->getStartLocation();
+    BWAPI::TilePosition homeTile = homeBase->getTilePosition();
     
     // for each base location
-    for (const BaseLocation * base : getBaseLocations())
+    for (auto & base : getBaseLocations())
     {
         // skip mineral only and starting locations (TODO: fix this)
         if (base->isMineralOnly() || base->isStartLocation())
@@ -297,12 +355,10 @@ BWAPI::TilePosition BaseLocationManager::getNextExpansion(BWAPI::Player player)
         }
 
         // the base's distance from our main nexus
-        BWAPI::Position myBasePosition(player->getStartLocation());
-        BWAPI::Position thisTile = BWAPI::Position(tile);
-        double distanceFromHome = Global::Map().getGroundDistance(thisTile, myBasePosition);
+        double distanceFromHome = homeBase->getGroundTileDistance(BWAPI::Position(tile));
 
         // if it is not connected, continue
-        if (Global::Map().isConnected(BWAPI::Position(tile), BWAPI::Position(homeTile)) || distanceFromHome < 0)
+        if (distanceFromHome < 0)
         {
             continue;
         }

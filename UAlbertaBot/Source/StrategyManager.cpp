@@ -175,16 +175,7 @@ const MetaPairVector StrategyManager::getProtossBuildOrderGoal() const
     // add observer to the goal if the enemy has cloaked units
 	if (Global::UnitInfo().enemyHasCloakedUnits())
 	{
-		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Robotics_Facility, 1));
-		
-		if (BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Robotics_Facility) > 0)
-		{
-			goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Observatory, 1));
-		}
-		if (BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Observatory) > 0)
-		{
-			goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Observer, 1));
-		}
+		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Observer, 1));
 	}
 
     // if we want to expand, insert a nexus into the build order
@@ -253,6 +244,11 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
         goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Command_Center, numCC + 1));
         goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_SCV, numWorkers + 10));
     }
+
+    if (Global::UnitInfo().enemyHasCloakedUnits())
+	{
+		goal.push_back(MetaPair(BWAPI::UnitTypes::Terran_Science_Vessel, 1));
+	}
 
 	return goal;
 }

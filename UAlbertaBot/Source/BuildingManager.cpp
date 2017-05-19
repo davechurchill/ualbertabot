@@ -391,6 +391,8 @@ BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
         distance = Config::Macro::PylonSpacing;
     }
 
+    std::cout << b.type.getName() << " space " << distance << "\n";
+
     // get a position within our region
     return _buildingPlacer.getBuildLocationNear(b,distance,false);
 }

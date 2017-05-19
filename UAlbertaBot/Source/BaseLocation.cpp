@@ -114,11 +114,22 @@ const std::vector<BWAPI::TilePosition> & BaseLocation::getClosestTiles() const
 void BaseLocation::setPlayerOccupying(BWAPI::Player player, bool occupying)
 {
     _isPlayerOccupying[player] = occupying;
+
+    // if this base is a start location that's occupied by the enemy, it's that enemy's start location
+    if (occupying && player == BWAPI::Broodwar->enemy() && isStartLocation() && _isPlayerStartLocation[player] == false)
+    {
+        _isPlayerStartLocation[player] = true;
+    }
 }
 
 bool BaseLocation::isOccupiedByPlayer(BWAPI::Player player) const
 {
     return _isPlayerOccupying.at(player);
+}
+
+bool BaseLocation::isExplored() const
+{
+    return BWAPI::Broodwar->isExplored(getTilePosition());
 }
 
 bool BaseLocation::isPlayerStartLocation(BWAPI::Player player) const

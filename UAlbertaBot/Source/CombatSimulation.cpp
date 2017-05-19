@@ -25,7 +25,7 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
 
 	for (auto & unit : ourCombatUnits)
 	{
-        if (unit->getType().isWorker() || unit->getHitPoints() == 0)
+        if (unit->getType().isWorker() || unit->getHitPoints() == 0 || unit->getType().isBuilding())
         {
             continue;
         }
@@ -45,7 +45,7 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
 	}
 
 	for (UnitInfo & ui : enemyCombatUnits)
-	{
+	{ 
         if (ui.type.isWorker() || ui.lastHealth == 0 || ui.type == BWAPI::UnitTypes::Unknown)
         {
             continue;

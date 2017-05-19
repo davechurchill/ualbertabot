@@ -59,14 +59,10 @@ void BuildingPlacer::computeResourceBox()
 // makes final checks to see if a building can be built at a certain location
 bool BuildingPlacer::canBuildHere(BWAPI::TilePosition position,const Building & b) const
 {
-    /*if (!b.type.isRefinery() && !Global::UnitInfo().tileContainsUnit(position))
-    {
-    return false;
-    }*/
-
     //returns true if we can build this type of unit here. Takes into account reserved tiles.
     if (!BWAPI::Broodwar->canBuildHere(position,b.type,b.builderUnit))
     {
+        //BWAPI::Broodwar->drawCircleMap(BWAPI::Position(position), 8, BWAPI::Colors::Red, true);
         return false;
     }
 
@@ -77,6 +73,7 @@ bool BuildingPlacer::canBuildHere(BWAPI::TilePosition position,const Building & 
         {
             if (_reserveMap[x][y])
             {
+                //BWAPI::Broodwar->drawCircleMap(BWAPI::Position(position), 8, BWAPI::Colors::Blue, true);
                 return false;
             }
         }
@@ -85,9 +82,17 @@ bool BuildingPlacer::canBuildHere(BWAPI::TilePosition position,const Building & 
     // if it overlaps a base location return false
     if (tileOverlapsBaseLocation(position,b.type))
     {
+        //BWAPI::Broodwar->drawCircleMap(BWAPI::Position(position), 8, BWAPI::Colors::Yellow, true);
         return false;
     }
 
+    if (isInResourceBox(position.x,position.y))
+    {
+        //BWAPI::Broodwar->drawCircleMap(BWAPI::Position(position), 8, BWAPI::Colors::Orange, true);
+        return false;
+    }
+
+    //BWAPI::Broodwar->drawCircleMap(BWAPI::Position(position), 8, BWAPI::Colors::Green, true);
     return true;
 }
 
@@ -172,7 +177,7 @@ bool BuildingPlacer::canBuildHereWithSpace(BWAPI::TilePosition position,const Bu
         {
             if (!b.type.isRefinery())
             {
-                if (!buildable(b,x,y) || _reserveMap[x][y] || ((b.type != BWAPI::UnitTypes::Protoss_Photon_Cannon) && isInResourceBox(x,y)))
+                if (!buildable(b,x,y) || _reserveMap[x][y])
                 {
                     return false;
                 }
@@ -265,25 +270,12 @@ bool BuildingPlacer::buildable(const Building & b,int x,int y) const
     BWAPI::TilePosition tp(x,y);
 
     //returns true if this tile is currently buildable, takes into account units on tile
-    if (!BWAPI::Broodwar->isBuildable(x,y))
+    if (!tp.isValid() || !BWAPI::Broodwar->isBuildable(x,y, true))
     {
         return false;
     }
 
     if ((BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran) && tileBlocksAddon(BWAPI::TilePosition(x,y)))
-    {
-        return false;
-    }
-
-    for (auto & unit : BWAPI::Broodwar->getUnitsOnTile(x,y))
-    {
-        if ((b.builderUnit != nullptr) && (unit != b.builderUnit))
-        {
-            return false;
-        }
-    }
-
-    if (!tp.isValid())
     {
         return false;
     }

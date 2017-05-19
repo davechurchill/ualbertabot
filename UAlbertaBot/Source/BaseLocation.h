@@ -45,6 +45,7 @@ public:
     const std::vector<BWAPI::Unit> & getGeysers() const;
     const std::vector<BWAPI::Unit> & getMinerals() const;
     bool isOccupiedByPlayer(BWAPI::Player player) const;
+    bool isExplored() const;
 
     void setPlayerOccupying(BWAPI::Player player, bool occupying);
 

@@ -188,7 +188,7 @@ int MapTools::getGroundDistance(BWAPI::Position origin,BWAPI::Position destinati
     {
         _allMaps.clear();
 
-        BWAPI::Broodwar->printf("Cleared stored distance map cache");
+        //BWAPI::Broodwar->printf("Cleared stored distance map cache");
     }
 
     // if we haven't yet computed the distance map to the destination

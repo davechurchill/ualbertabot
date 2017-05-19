@@ -17,12 +17,6 @@ bool UnitUtil::IsCombatUnit(BWAPI::Unit unit)
 
 bool UnitUtil::IsCombatUnitType(BWAPI::UnitType type)
 {
-    // no workers or buildings allowed
-    if (type.isWorker() || type.isBuilding())
-    {
-        return false;
-    }
-
     // check for various types of combat units
     if (type.canAttack() || 
         type == BWAPI::UnitTypes::Terran_Medic ||
@@ -33,7 +27,13 @@ bool UnitUtil::IsCombatUnitType(BWAPI::UnitType type)
     {
         return true;
     }
-		
+
+    // no workers or buildings allowed
+    if (type.isWorker() || type.isBuilding())
+    {
+        return false;
+    }
+
     return false;
 }
 
