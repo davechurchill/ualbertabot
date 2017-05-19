@@ -24,6 +24,8 @@ class UAlbertaBotModule
     MapTools            _mapTools;
     BaseLocationManager _baseLocationManager;
 
+    void drawErrorMessages() const;
+
 public:
 
             UAlbertaBotModule();
@@ -41,11 +43,11 @@ public:
 	void	onUnitHide(BWAPI::Unit unit);
 	void	onUnitRenegade(BWAPI::Unit unit);
 
-    WorkerManager & getWorkerManager();
-    UnitInfoManager & getUnitInfoManager();
-    StrategyManager & getStrategyManager();
-    MapTools & getMapTools();
-    BaseLocationManager & getBaseLocationManager();
+    WorkerManager & Workers();
+    const UnitInfoManager & UnitInfo() const;
+    const StrategyManager & Strategy() const;
+    const BaseLocationManager & Bases() const;
+    const MapTools & Map() const;
 };
 
 }

@@ -39,13 +39,13 @@ public:
     void					onUnitRenegade(BWAPI::Unit unit)    { updateUnit(unit); }
     void					onUnitDestroy(BWAPI::Unit unit);
 
-    void                    getNearbyForce(std::vector<UnitInfo> & unitInfo,BWAPI::Position p,BWAPI::Player player,int radius);
+    void                    getNearbyForce(std::vector<UnitInfo> & unitInfo,BWAPI::Position p,BWAPI::Player player,int radius) const;
 
     const std::map<int, UnitInfo> & getUnitInfoMap(BWAPI::Player player) const;
 
-    bool                    enemyHasCloakedUnits();
-    void                    drawExtendedInterface();
-    void                    drawUnitInformation(int x,int y);
+    bool                    enemyHasCloakedUnits() const;
+    void                    drawExtendedInterface() const;
+    void                    drawUnitInformation(int x,int y) const;
 
 };
 }

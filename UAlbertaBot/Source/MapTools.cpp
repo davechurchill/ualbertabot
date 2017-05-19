@@ -10,7 +10,6 @@ MapTools::MapTools()
 {
     _map        = std::vector<bool>(_rows*_cols, false);
     _units      = std::vector<bool>(_rows*_cols, false);
-    _fringe     = std::vector<int>(_rows*_cols, 0);
     _lastSeen   = std::vector<int>(_rows*_cols, 0);
     _buildable  = std::vector<bool>(_rows*_cols, true);
     _depotBuildable = std::vector<bool>(_rows*_cols, true);
@@ -41,7 +40,7 @@ void MapTools::update()
 }
 
 // return the index of the 1D array from (row,col)
-int MapTools::getIndex(int row,int col)
+int MapTools::getIndex(int row,int col) const
 {
     int index = row * _cols + col;
 
@@ -53,12 +52,6 @@ int MapTools::getIndex(int row,int col)
 bool MapTools::unexplored(DistanceMap & dmap,const int index) const
 {
     return (index != -1) && dmap[index] == -1 && _map[index];
-}
-
-// resets the distance and fringe vectors, call before each search
-void MapTools::reset()
-{
-    std::fill(_fringe.begin(),_fringe.end(),0);
 }
 
 // reads in the map data from bwapi and stores it in our map format
@@ -133,7 +126,7 @@ void MapTools::setBWAPIMapData()
     }
 }
 
-bool MapTools::isBuildable(BWAPI::TilePosition tile, BWAPI::UnitType type)
+bool MapTools::isBuildable(BWAPI::TilePosition tile, BWAPI::UnitType type) const
 {
     int startX = tile.x;
     int endX = tile.x + type.tileWidth();
@@ -156,7 +149,7 @@ bool MapTools::isBuildable(BWAPI::TilePosition tile, BWAPI::UnitType type)
     return true;
 }
 
-bool MapTools::isBuildableTile(BWAPI::TilePosition tile)
+bool MapTools::isBuildableTile(BWAPI::TilePosition tile) const
 {
     if (!tile.isValid())
     {
@@ -166,7 +159,7 @@ bool MapTools::isBuildableTile(BWAPI::TilePosition tile)
     return _buildable[getIndex(tile.y, tile.x)];
 }
 
-bool MapTools::isDepotBuildableTile(BWAPI::TilePosition tile)
+bool MapTools::isDepotBuildableTile(BWAPI::TilePosition tile) const
 {
     if (!tile.isValid())
     {
@@ -176,12 +169,7 @@ bool MapTools::isDepotBuildableTile(BWAPI::TilePosition tile)
     return _depotBuildable[getIndex(tile.y, tile.x)];
 }
 
-void MapTools::resetFringe()
-{
-    std::fill(_fringe.begin(),_fringe.end(),0);
-}
-
-int MapTools::getGroundDistance(BWAPI::Position origin,BWAPI::Position destination)
+int MapTools::getGroundDistance(BWAPI::Position origin,BWAPI::Position destination) const
 {
     // if we have too many maps, reset our stored maps in case we run out of memory
     if (_allMaps.size() > 50)
@@ -210,17 +198,14 @@ int MapTools::getGroundDistance(BWAPI::Position origin,BWAPI::Position destinati
 }
 
 // computes walk distance from Position P to all other points on the map
-void MapTools::computeDistance(DistanceMap & dmap, const BWAPI::Position p)
+void MapTools::computeDistance(DistanceMap & dmap, const BWAPI::Position p) const
 {
     search(dmap,p.y / 32,p.x / 32);
 }
 
 // does the dynamic programming search
-void MapTools::search(DistanceMap & dmap,const int sR,const int sC)
+void MapTools::search(DistanceMap & dmap,const int sR,const int sC) const
 {
-    // reset the internal variables
-    resetFringe();
-
     // set the starting position for this search
     dmap.setStartPosition(sR,sC);
 
@@ -230,8 +215,9 @@ void MapTools::search(DistanceMap & dmap,const int sR,const int sC)
     // set the fringe variables accordingly
     int fringeSize(1);
     int fringeIndex(0);
-    _fringe[0] = getIndex(sR,sC);
-    dmap.addSorted(getTilePosition(_fringe[0]));
+    std::vector<int> fringe(_rows*_cols, 0);
+    fringe[0] = getIndex(sR,sC);
+    dmap.addSorted(getTilePosition(fringe[0]));
 
     // temporary variables used in search loop
     int currentIndex,nextIndex;
@@ -244,7 +230,7 @@ void MapTools::search(DistanceMap & dmap,const int sR,const int sC)
     while (fringeIndex < fringeSize)
     {
         // grab the current index to expand from the fringe
-        currentIndex = _fringe[fringeIndex++];
+        currentIndex = fringe[fringeIndex++];
         newDist = dmap[currentIndex] + 1;
 
         // search up
@@ -257,7 +243,7 @@ void MapTools::search(DistanceMap & dmap,const int sR,const int sC)
             dmap.addSorted(getTilePosition(nextIndex));
 
             // put it in the fringe
-            _fringe[fringeSize++] = nextIndex;
+            fringe[fringeSize++] = nextIndex;
         }
 
         // search down
@@ -270,7 +256,7 @@ void MapTools::search(DistanceMap & dmap,const int sR,const int sC)
             dmap.addSorted(getTilePosition(nextIndex));
 
             // put it in the fringe
-            _fringe[fringeSize++] = nextIndex;
+            fringe[fringeSize++] = nextIndex;
         }
 
         // search left
@@ -283,7 +269,7 @@ void MapTools::search(DistanceMap & dmap,const int sR,const int sC)
             dmap.addSorted(getTilePosition(nextIndex));
 
             // put it in the fringe
-            _fringe[fringeSize++] = nextIndex;
+            fringe[fringeSize++] = nextIndex;
         }
 
         // search right
@@ -296,13 +282,13 @@ void MapTools::search(DistanceMap & dmap,const int sR,const int sC)
             dmap.addSorted(getTilePosition(nextIndex));
 
             // put it in the fringe
-            _fringe[fringeSize++] = nextIndex;
+            fringe[fringeSize++] = nextIndex;
         }
     }
 }
 
 // returns a list of all tiles on the map, sorted by 4-direcitonal walk distance from the given position
-const std::vector<BWAPI::TilePosition> & MapTools::getClosestTilesTo(BWAPI::Position pos)
+const std::vector<BWAPI::TilePosition> & MapTools::getClosestTilesTo(BWAPI::Position pos) const
 {
     // if we haven't yet computed the distance map to the position (as a destination), do it
     if (_allMaps.find(pos) == _allMaps.end())
@@ -315,12 +301,12 @@ const std::vector<BWAPI::TilePosition> & MapTools::getClosestTilesTo(BWAPI::Posi
     return _allMaps[pos].getSortedTiles();
 }
 
-BWAPI::TilePosition MapTools::getTilePosition(int index)
+BWAPI::TilePosition MapTools::getTilePosition(int index) const
 {
     return BWAPI::TilePosition(index % _cols,index / _cols);
 }
 
-void MapTools::drawLastSeen()
+void MapTools::drawLastSeen() const
 {
     if (!Config::Debug::DrawLastSeenTileInfo)
     {
@@ -431,12 +417,12 @@ void MapTools::GetUnitsInRadius(std::vector<BWAPI::Unit> & units, BWAPI::Positio
     }
 }
 
-bool MapTools::isConnected(BWAPI::Position from, BWAPI::Position to)
+bool MapTools::isConnected(BWAPI::Position from, BWAPI::Position to) const
 {
     return getGroundDistance(from, to) != -1;
 }
 
-BWAPI::Position MapTools::getLeastRecentlySeenPosition() 
+BWAPI::Position MapTools::getLeastRecentlySeenPosition() const
 {
 	int minSeen = std::numeric_limits<int>::max();
 	BWAPI::TilePosition leastSeen(0,0);

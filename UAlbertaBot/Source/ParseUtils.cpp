@@ -6,7 +6,7 @@
 
 using namespace UAlbertaBot;
 
-void ParseUtils::ParseConfigFile(const std::string & filename)
+void ParseUtils::ParseConfigFile(const std::string & filename, StrategyManager & strategyManager)
 {
     rapidjson::Document doc;
     BWAPI::Race race = BWAPI::Broodwar->self()->getRace();
@@ -116,12 +116,8 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
     {
         const rapidjson::Value & module = doc["Modules"];
 
-        JSONTools::ReadBool("UseGameCommander", module, Config::Modules::UsingGameCommander);
-        JSONTools::ReadBool("UseScoutManager", module, Config::Modules::UsingScoutManager);
-        JSONTools::ReadBool("UseCombatCommander", module, Config::Modules::UsingCombatCommander);
         JSONTools::ReadBool("UseBuildOrderSearch", module, Config::Modules::UsingBuildOrderSearch);
         JSONTools::ReadBool("UseStrategyIO", module, Config::Modules::UsingStrategyIO);
-        JSONTools::ReadBool("UseUnitCommandManager", module, Config::Modules::UsingUnitCommandManager);
         JSONTools::ReadBool("UseAutoObserver", module, Config::Modules::UsingAutoObserver);
     }
 
@@ -224,7 +220,7 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
                     }
                 }
 
-                Global::Strategy().addStrategy(name, Strategy(name, strategyRace, buildOrder));
+                strategyManager.addStrategy(name, Strategy(name, strategyRace, buildOrder));
             }
         }
     }

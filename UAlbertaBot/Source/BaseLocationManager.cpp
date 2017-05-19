@@ -261,14 +261,14 @@ const std::vector<const BaseLocation *> & BaseLocationManager::getStartingBaseLo
     return _startingBaseLocations;
 }
 
-const BaseLocation * BaseLocationManager::getPlayerStartingBaseLocation(BWAPI::Player player)
+const BaseLocation * BaseLocationManager::getPlayerStartingBaseLocation(BWAPI::Player player) const
 {
-    return _playerStartingBaseLocations[player];
+    return _playerStartingBaseLocations.at(player);
 }
 
-const std::set<const BaseLocation *> & BaseLocationManager::getOccupiedBaseLocations(BWAPI::Player player)
+const std::set<const BaseLocation *> & BaseLocationManager::getOccupiedBaseLocations(BWAPI::Player player) const
 {
-    return _occupiedBaseLocations[player];
+    return _occupiedBaseLocations.at(player);
 }
 
 const BaseLocation * BaseLocationManager::getBaseLocation(BWAPI::TilePosition pos) const
@@ -311,7 +311,7 @@ const BaseLocation * BaseLocationManager::getBaseLocation(BWAPI::Position pos) c
     return getBaseLocation(BWAPI::TilePosition(pos));
 }
 
-BWAPI::TilePosition BaseLocationManager::getNextExpansion(BWAPI::Player player)
+BWAPI::TilePosition BaseLocationManager::getNextExpansion(BWAPI::Player player) const
 {
     const BaseLocation * homeBase = getPlayerStartingBaseLocation(player);
     const BaseLocation * closestBase = nullptr;

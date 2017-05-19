@@ -43,7 +43,7 @@ const std::map<int, UnitInfo> & UnitInfoManager::getUnitInfoMap(BWAPI::Player pl
 	return getUnitData(player).getUnitInfoMap();
 }
 
-void UnitInfoManager::drawExtendedInterface()
+void UnitInfoManager::drawExtendedInterface() const
 {
     if (!Config::Debug::DrawUnitHealthBars)
     {
@@ -73,7 +73,7 @@ void UnitInfoManager::drawExtendedInterface()
     }
 }
 
-void UnitInfoManager::drawUnitInformation(int x, int y) 
+void UnitInfoManager::drawUnitInformation(int x, int y) const
 {
 	if (!Config::Debug::DrawEnemyUnitInfo)
     {
@@ -82,8 +82,8 @@ void UnitInfoManager::drawUnitInformation(int x, int y)
 
 	std::string prefix = "\x04";
 
-	BWAPI::Broodwar->drawTextScreen(x, y-10, "\x03 Self Loss:\x04 Minerals: \x1f%d \x04Gas: \x07%d", _unitData[BWAPI::Broodwar->self()].getMineralsLost(), _unitData[BWAPI::Broodwar->self()].getGasLost());
-    BWAPI::Broodwar->drawTextScreen(x, y, "\x03 Enemy Loss:\x04 Minerals: \x1f%d \x04Gas: \x07%d", _unitData[BWAPI::Broodwar->enemy()].getMineralsLost(), _unitData[BWAPI::Broodwar->enemy()].getGasLost());
+	BWAPI::Broodwar->drawTextScreen(x, y-10, "\x03 Self Loss:\x04 Minerals: \x1f%d \x04Gas: \x07%d", _unitData.at(BWAPI::Broodwar->self()).getMineralsLost(), _unitData.at(BWAPI::Broodwar->self()).getGasLost());
+    BWAPI::Broodwar->drawTextScreen(x, y, "\x03 Enemy Loss:\x04 Minerals: \x1f%d \x04Gas: \x07%d", _unitData.at(BWAPI::Broodwar->enemy()).getMineralsLost(), _unitData.at(BWAPI::Broodwar->enemy()).getGasLost());
 	BWAPI::Broodwar->drawTextScreen(x, y+10, "\x04 Enemy: %s", BWAPI::Broodwar->enemy()->getName().c_str());
 	BWAPI::Broodwar->drawTextScreen(x, y+20, "\x04 UNIT NAME");
 	BWAPI::Broodwar->drawTextScreen(x+140, y+20, "\x04#");
@@ -94,8 +94,8 @@ void UnitInfoManager::drawUnitInformation(int x, int y)
 	// for each unit in the queue
 	for (BWAPI::UnitType t : BWAPI::UnitTypes::allUnitTypes()) 
 	{
-		int numUnits = _unitData[BWAPI::Broodwar->enemy()].getNumUnits(t);
-		int numDeadUnits = _unitData[BWAPI::Broodwar->enemy()].getNumDeadUnits(t);
+		int numUnits = _unitData.at(BWAPI::Broodwar->enemy()).getNumUnits(t);
+		int numDeadUnits = _unitData.at(BWAPI::Broodwar->enemy()).getNumDeadUnits(t);
 
 		// if there exist units in the vector
 		if (numUnits > 0) 
@@ -158,7 +158,7 @@ void UnitInfoManager::onUnitDestroy(BWAPI::Unit unit)
     _unitData[unit->getPlayer()].removeUnit(unit);
 }
 
-void UnitInfoManager::getNearbyForce(std::vector<UnitInfo> & unitInfo, BWAPI::Position p, BWAPI::Player player, int radius) 
+void UnitInfoManager::getNearbyForce(std::vector<UnitInfo> & unitInfo, BWAPI::Position p, BWAPI::Player player, int radius) const
 {
 	bool hasBunker = false;
 	// for each unit we know about for that player
@@ -197,7 +197,7 @@ const UnitData & UnitInfoManager::getUnitData(BWAPI::Player player) const
     return _unitData.find(player)->second;
 }
 
-bool UnitInfoManager::enemyHasCloakedUnits()
+bool UnitInfoManager::enemyHasCloakedUnits() const
 {
     for (const auto & kv : getUnitData(BWAPI::Broodwar->enemy()).getUnitInfoMap())
 	{

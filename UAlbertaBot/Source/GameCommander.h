@@ -9,66 +9,54 @@
 namespace UAlbertaBot
 {
 
+class UAlbertaBotModule;
 
-class UnitToAssign
+class GameCommander
 {
-public:
+    Timer                       _timer;
+    CombatCommander             _combatCommander;
+    BOSSManager                 _bossManager;
+    ProductionManager           _productionManager;
+    ScoutManager                _scoutManager;
+    UAlbertaBotModule &         _module;
 
-	BWAPI::Unit unit;
-	bool isAssigned;
+    std::vector<BWAPI::Unit>    _validUnits;
+    std::vector<BWAPI::Unit>    _combatUnits;
+    std::vector<BWAPI::Unit>    _scoutUnits;
 
-	UnitToAssign(BWAPI::Unit u)
-	{
-		unit = u;
-		isAssigned = false;
-	}
-};
+    bool                        _initialScoutSet;
 
-class GameCommander 
-{
-    Timer                   _timer;
-	CombatCommander		    _combatCommander;
-    BOSSManager             _bossManager;
-    ProductionManager       _productionManager;
-    ScoutManager            _scoutManager;
-
-	std::vector<BWAPI::Unit>          _validUnits;
-	std::vector<BWAPI::Unit>          _combatUnits;
-	std::vector<BWAPI::Unit>          _scoutUnits;
-
-    bool                    _initialScoutSet;
-
-    void                    assignUnit(BWAPI::Unit unit, std::vector<BWAPI::Unit> & set);
-	bool                    isAssigned(BWAPI::Unit unit) const;
+    void assignUnit(BWAPI::Unit unit,std::vector<BWAPI::Unit> & set);
+    bool isAssigned(BWAPI::Unit unit) const;
 
 public:
 
-	GameCommander();
+    GameCommander(UAlbertaBotModule & uabModule);
 
     void onStart();
-	void update();
+    void update();
 
-	void handleUnitAssignments();
-	void setValidUnits();
-	void setScoutUnits();
-	void setCombatUnits();
+    void handleUnitAssignments();
+    void setValidUnits();
+    void setScoutUnits();
+    void setCombatUnits();
 
-	void drawDebugInterface();
-    void drawGameInformation(int x, int y);
+    void drawDebugInterface();
+    void drawGameInformation(int x,int y);
 
-	BWAPI::Unit getFirstSupplyProvider();
-	BWAPI::Unit getClosestUnitToTarget(BWAPI::UnitType type, BWAPI::Position target);
-	BWAPI::Unit getClosestWorkerToTarget(BWAPI::Position target);
+    BWAPI::Unit getFirstSupplyProvider();
+    BWAPI::Unit getClosestUnitToTarget(BWAPI::UnitType type,BWAPI::Position target);
+    BWAPI::Unit getClosestWorkerToTarget(BWAPI::Position target);
 
     ProductionManager & getProductionManager();
 
-	void onUnitShow(BWAPI::Unit unit);
-	void onUnitHide(BWAPI::Unit unit);
-	void onUnitCreate(BWAPI::Unit unit);
-	void onUnitComplete(BWAPI::Unit unit);
-	void onUnitRenegade(BWAPI::Unit unit);
-	void onUnitDestroy(BWAPI::Unit unit);
-	void onUnitMorph(BWAPI::Unit unit);
+    void onUnitShow(BWAPI::Unit unit);
+    void onUnitHide(BWAPI::Unit unit);
+    void onUnitCreate(BWAPI::Unit unit);
+    void onUnitComplete(BWAPI::Unit unit);
+    void onUnitRenegade(BWAPI::Unit unit);
+    void onUnitDestroy(BWAPI::Unit unit);
+    void onUnitMorph(BWAPI::Unit unit);
 };
 
 }

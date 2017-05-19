@@ -8,6 +8,7 @@
 using namespace UAlbertaBot;
 
 UAlbertaBotModule::UAlbertaBotModule()
+    : _gameCommander(*this)
 {
 
 }
@@ -32,7 +33,7 @@ void UAlbertaBotModule::onStart()
 
     // Parse the bot's configuration file if it has one, change this file path to where your config file is
     // Any relative path name will be relative to Starcraft installation folder
-    ParseUtils::ParseConfigFile(Config::ConfigFile::ConfigFileLocation);
+    ParseUtils::ParseConfigFile(Config::ConfigFile::ConfigFileLocation, _strategyManager);
 
     // Set our BWAPI options here    
 	BWAPI::Broodwar->setLocalSpeed(Config::BWAPIOptions::SetLocalSpeed);
@@ -53,62 +54,71 @@ void UAlbertaBotModule::onStart()
         BWAPI::Broodwar->printf("Hello! I am %s, written by %s", Config::BotInfo::BotName.c_str(), Config::BotInfo::Authors.c_str());
     }
 
-    // Call BWTA to read and analyze the current map
-    if (Config::Modules::UsingGameCommander)
-	{
-        //BWTA::readMap();
-		//BWTA::analyze();
+    if (Config::Modules::UsingStrategyIO)
+    {
+        _strategyManager.readResults();
+        _strategyManager.setLearnedStrategy();
+    }
 
-        if (Config::Modules::UsingStrategyIO)
-        {
-            _strategyManager.readResults();
-            _strategyManager.setLearnedStrategy();
-        }
-
-        _gameCommander.onStart();
-	}
+    _unitInfoManager.onStart();
+    _mapTools.onStart();
+    _baseLocationManager.onStart();
+    _gameCommander.onStart();
 }
 
 void UAlbertaBotModule::onEnd(bool isWinner) 
 {
-	if (Config::Modules::UsingGameCommander)
-	{
-		_strategyManager.onEnd(isWinner);
-	}	
+	_strategyManager.onEnd(isWinner);
 }
 
-WorkerManager & UAlbertaBotModule::getWorkerManager()
+WorkerManager & UAlbertaBotModule::Workers()
 {
     return _workerManager;
 }
 
-UnitInfoManager & UAlbertaBotModule::getUnitInfoManager()
+const UnitInfoManager & UAlbertaBotModule::UnitInfo() const
 {
     return _unitInfoManager;
 }
 
-StrategyManager & UAlbertaBotModule::getStrategyManager()
+const StrategyManager & UAlbertaBotModule::Strategy() const
 {
     return _strategyManager;
 }
 
-BaseLocationManager & UAlbertaBotModule::getBaseLocationManager()
+const BaseLocationManager & UAlbertaBotModule::Bases() const
 {
     return _baseLocationManager;
 }
 
-MapTools & UAlbertaBotModule::getMapTools()
+const MapTools & UAlbertaBotModule::Map() const
 {
     return _mapTools;
 }
 
 void UAlbertaBotModule::onFrame()
 {
-    if (BWAPI::Broodwar->getFrameCount() > 20000)
+    // update all of the internal information managers
+    _mapTools.update();
+    _strategyManager.update();
+    _unitInfoManager.update();
+    _workerManager.update();
+    _baseLocationManager.update();
+
+    // update the game commander
+	_gameCommander.update(); 
+  
+
+    if (Config::Modules::UsingAutoObserver)
     {
-        //BWAPI::Broodwar->restartGame();
+        _autoObserver.onFrame();
     }
 
+    drawErrorMessages();
+}
+
+void UAlbertaBotModule::drawErrorMessages() const
+{
     char red = '\x08';
     char green = '\x07';
     char white = '\x04';
@@ -136,26 +146,20 @@ void UAlbertaBotModule::onFrame()
         BWAPI::Broodwar->drawTextScreen(10, 60, "%cFile Not Parsed: %c %s", white, green, Config::ConfigFile::ConfigFileLocation.c_str());
         return;
     }
-
-	if (Config::Modules::UsingGameCommander) 
-	{ 
-		_gameCommander.update(); 
-	}
-
-    if (Config::Modules::UsingAutoObserver)
-    {
-        _autoObserver.onFrame();
-    }
 }
 
 void UAlbertaBotModule::onUnitDestroy(BWAPI::Unit unit)
 {
-	if (Config::Modules::UsingGameCommander) { _gameCommander.onUnitDestroy(unit); }
+	_workerManager.onUnitDestroy(unit);
+	_unitInfoManager.onUnitDestroy(unit); 
+    _gameCommander.onUnitDestroy(unit);
 }
 
 void UAlbertaBotModule::onUnitMorph(BWAPI::Unit unit)
 {
-	if (Config::Modules::UsingGameCommander) { _gameCommander.onUnitMorph(unit); }
+	_unitInfoManager.onUnitMorph(unit);
+	_workerManager.onUnitMorph(unit);
+    _gameCommander.onUnitMorph(unit);
 }
 
 void UAlbertaBotModule::onSendText(std::string text) 
@@ -165,25 +169,31 @@ void UAlbertaBotModule::onSendText(std::string text)
 
 void UAlbertaBotModule::onUnitCreate(BWAPI::Unit unit)
 { 
-	if (Config::Modules::UsingGameCommander) { _gameCommander.onUnitCreate(unit); }
+	_unitInfoManager.onUnitCreate(unit); 
+    _gameCommander.onUnitCreate(unit);
 }
 
 void UAlbertaBotModule::onUnitComplete(BWAPI::Unit unit)
 {
-	if (Config::Modules::UsingGameCommander) { _gameCommander.onUnitComplete(unit); }
+	_unitInfoManager.onUnitComplete(unit);
+    _gameCommander.onUnitComplete(unit);
 }
 
 void UAlbertaBotModule::onUnitShow(BWAPI::Unit unit)
 { 
-	if (Config::Modules::UsingGameCommander) { _gameCommander.onUnitShow(unit); }
+	_unitInfoManager.onUnitShow(unit); 
+	_workerManager.onUnitShow(unit);
+    _gameCommander.onUnitShow(unit);
 }
 
 void UAlbertaBotModule::onUnitHide(BWAPI::Unit unit)
 { 
-	if (Config::Modules::UsingGameCommander) { _gameCommander.onUnitHide(unit); }
+	_unitInfoManager.onUnitHide(unit); 
+    _gameCommander.onUnitHide(unit);
 }
 
 void UAlbertaBotModule::onUnitRenegade(BWAPI::Unit unit)
 { 
-	if (Config::Modules::UsingGameCommander) { _gameCommander.onUnitRenegade(unit); }
+	_unitInfoManager.onUnitRenegade(unit); 
+    _gameCommander.onUnitRenegade(unit);
 }

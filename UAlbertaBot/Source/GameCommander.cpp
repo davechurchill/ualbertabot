@@ -3,21 +3,21 @@
 #include "UnitUtil.h"
 #include "Timer.hpp"
 #include "Global.h"
+#include "UAlbertaBotModule.h"
 
 using namespace UAlbertaBot;
 
-GameCommander::GameCommander() 
+GameCommander::GameCommander(UAlbertaBotModule & uabModule) 
     : _productionManager(_bossManager)
     , _initialScoutSet(false)
+    , _module(uabModule)
 {
 
 }
 
 void GameCommander::onStart()
 {
-    Global::UnitInfo().onStart();
-    Global::Map().onStart();
-    Global::Bases().onStart();
+
     _productionManager.onStart();
 }
 
@@ -26,13 +26,7 @@ void GameCommander::update()
     _timer.start();
 
 	handleUnitAssignments();
-
-    Global::Strategy().update();
-	Global::UnitInfo().update();
-	Global::Map().update();
-    Global::Workers().update();
-    Global::Bases().update();
-
+    
 	_bossManager.update(35 - _timer.getElapsedTimeInMilliSec());
 
 	_productionManager.update();
@@ -186,41 +180,36 @@ BWAPI::Unit GameCommander::getFirstSupplyProvider()
 
 void GameCommander::onUnitShow(BWAPI::Unit unit)			
 { 
-	Global::UnitInfo().onUnitShow(unit); 
-	Global::Workers().onUnitShow(unit);
+	
 }
 
 void GameCommander::onUnitHide(BWAPI::Unit unit)			
 { 
-	Global::UnitInfo().onUnitHide(unit); 
+	
 }
 
 void GameCommander::onUnitCreate(BWAPI::Unit unit)		
 { 
-	Global::UnitInfo().onUnitCreate(unit); 
+	
 }
 
 void GameCommander::onUnitComplete(BWAPI::Unit unit)
 {
-	Global::UnitInfo().onUnitComplete(unit);
+	
 }
 
 void GameCommander::onUnitRenegade(BWAPI::Unit unit)		
 { 
-	Global::UnitInfo().onUnitRenegade(unit); 
-}
+	}
 
 void GameCommander::onUnitDestroy(BWAPI::Unit unit)		
 { 	
 	_productionManager.onUnitDestroy(unit);
-	Global::Workers().onUnitDestroy(unit);
-	Global::UnitInfo().onUnitDestroy(unit); 
 }
 
 void GameCommander::onUnitMorph(BWAPI::Unit unit)		
 { 
-	Global::UnitInfo().onUnitMorph(unit);
-	Global::Workers().onUnitMorph(unit);
+	
 }
 
 BWAPI::Unit GameCommander::getClosestUnitToTarget(BWAPI::UnitType type, BWAPI::Position target)

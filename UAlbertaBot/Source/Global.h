@@ -15,10 +15,10 @@ namespace Global
 {      
     void SetModule(UAlbertaBotModule * module);
         
-    BaseLocationManager & Bases();
-    StrategyManager & Strategy();
+    const BaseLocationManager & Bases();
+    const StrategyManager & Strategy();
     WorkerManager & Workers();
-    UnitInfoManager & UnitInfo();
-    MapTools & Map();
+    const UnitInfoManager & UnitInfo();
+    const MapTools & Map();
 };
 }

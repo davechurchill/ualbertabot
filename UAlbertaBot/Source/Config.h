@@ -15,10 +15,6 @@ namespace Config
 
     namespace Modules
     {
-        extern bool UsingGameCommander;			
-        extern bool UsingScoutManager;
-        extern bool UsingCombatCommander;
-        extern bool UsingUnitCommandManager;
         extern bool UsingBuildOrderSearch;  
         extern bool UsingAutoObserver;
         extern bool UsingStrategyIO;			

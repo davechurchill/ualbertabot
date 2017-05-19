@@ -15,11 +15,6 @@ ScoutManager::ScoutManager()
 
 void ScoutManager::update()
 {
-    if (!Config::Modules::UsingScoutManager)
-    {
-        return;
-    }
-
     // calculate enemy region vertices if we haven't yet
     /*if (_enemyRegionVertices.empty())
     {

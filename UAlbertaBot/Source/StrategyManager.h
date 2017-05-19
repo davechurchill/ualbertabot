@@ -61,7 +61,7 @@ public:
             void                    addStrategy(const std::string & name, Strategy & strategy);
             void                    setLearnedStrategy();
             void	                readResults();
-	const	MetaPairVector		    getBuildOrderGoal();
+	const	MetaPairVector		    getBuildOrderGoal() const;
 	const	BuildOrder &            getOpeningBookBuildOrder() const;
 };
 }

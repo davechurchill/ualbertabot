@@ -48,11 +48,6 @@ bool CombatCommander::isSquadUpdateFrame()
 
 void CombatCommander::update(const std::vector<BWAPI::Unit> & combatUnits)
 {
-    if (!Config::Modules::UsingCombatCommander)
-    {
-        return;
-    }
-
     if (!_initialized)
     {
         initializeSquads();

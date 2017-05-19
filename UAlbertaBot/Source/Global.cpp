@@ -10,27 +10,27 @@ void Global::SetModule(UAlbertaBotModule * module)
     uabModule = module;
 }
 
-StrategyManager & Global::Strategy()
+const StrategyManager & Global::Strategy()
 {
-    return uabModule->getStrategyManager();
+    return uabModule->Strategy();
 }
 
-BaseLocationManager & Global::Bases()
+const BaseLocationManager & Global::Bases()
 {
-    return uabModule->getBaseLocationManager();
+    return uabModule->Bases();
 }
 
 WorkerManager & Global::Workers()
 {
-    return uabModule->getWorkerManager();
+    return uabModule->Workers();
 }
 
-UnitInfoManager & Global::UnitInfo()
+const UnitInfoManager & Global::UnitInfo()
 {
-    return uabModule->getUnitInfoManager();
+    return uabModule->UnitInfo();
 }
 
-MapTools & Global::Map()
+const MapTools & Global::Map()
 {
-    return uabModule->getMapTools();
+    return uabModule->Map();
 }

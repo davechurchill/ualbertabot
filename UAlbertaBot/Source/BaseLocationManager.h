@@ -32,9 +32,9 @@ public:
 
     const std::vector<const BaseLocation *> & getBaseLocations() const;
     const std::vector<const BaseLocation *> & getStartingBaseLocations() const;
-    const std::set<const BaseLocation *> & getOccupiedBaseLocations(BWAPI::Player player);
-    const BaseLocation * getPlayerStartingBaseLocation(BWAPI::Player player);
-    BWAPI::TilePosition getNextExpansion(BWAPI::Player player);
+    const std::set<const BaseLocation *> & getOccupiedBaseLocations(BWAPI::Player player) const;
+    const BaseLocation * getPlayerStartingBaseLocation(BWAPI::Player player) const;
+    BWAPI::TilePosition getNextExpansion(BWAPI::Player player) const;
 
     const BaseLocation * getBaseLocation(BWAPI::TilePosition pos) const;
     const BaseLocation * getBaseLocation(BWAPI::Position pos) const;

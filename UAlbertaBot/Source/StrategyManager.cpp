@@ -88,7 +88,7 @@ void StrategyManager::addStrategy(const std::string & name, Strategy & strategy)
     _strategies[name] = strategy;
 }
 
-const MetaPairVector StrategyManager::getBuildOrderGoal()
+const MetaPairVector StrategyManager::getBuildOrderGoal() const
 {
     BWAPI::Race myRace = BWAPI::Broodwar->self()->getRace();
 
