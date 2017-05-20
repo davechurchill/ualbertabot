@@ -220,6 +220,7 @@ void BaseLocation::draw()
     }
 
     auto & closestTiles = getClosestTiles();
+    if (false) for (size_t i=0; i<200 && i < closestTiles.size(); ++i)
     {
         const BWAPI::TilePosition & tile = closestTiles[i];
 
