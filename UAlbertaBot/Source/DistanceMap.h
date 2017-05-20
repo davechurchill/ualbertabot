@@ -5,35 +5,28 @@
 
 namespace UAlbertaBot
 {
+    
 class DistanceMap
 {
-    int _rows;
-    int _cols;
-    int _startRow;
-    int _startCol;
+    int _width;
+    int _height;
+    BWAPI::TilePosition _startTile;
 
-    std::vector<int>	_dist;
-    std::vector<char>	_moveTo;
-    std::vector<BWAPI::TilePosition>    _sorted;
+    std::vector<std::vector<int>> _dist;
+    std::vector<BWAPI::TilePosition> _sortedTilePositions;
 
-    int getIndex(const int row,const int col) const;
-    int getIndex(const BWAPI::Position & p) const;
+    void computeDistanceMap(const BWAPI::TilePosition & startTile);
 
 public:
 
     DistanceMap();
+    DistanceMap(const BWAPI::TilePosition & startTile);
 
-    const int & operator [] (const int index) const;
-          int & operator [] (const int index);
-    const int & operator [] (const BWAPI::Position & pos) const;
-    void setMoveTo(const int index,const char val);
-    void setDistance(const int index,const int val);
-    void setStartPosition(const int sr,const int sc);
-    bool isConnected(const BWAPI::Position p) const;
-    void addSorted(const BWAPI::TilePosition & tp);
+    const int & getDistance(const int & tileX, const int & tileY) const;
+    const int & getDistance(const BWAPI::Position & pos) const;
+    const int & getDistance(const BWAPI::TilePosition & pos) const;
 
     // given a position, get the position we should move to to minimize distance
-    BWAPI::Position getMoveTo(const BWAPI::Position p, const int lookAhead = 1) const;
     const std::vector<BWAPI::TilePosition> & getSortedTiles() const;
 };
 }

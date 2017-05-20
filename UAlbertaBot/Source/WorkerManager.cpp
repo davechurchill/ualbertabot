@@ -221,25 +221,6 @@ BWAPI::Unit WorkerManager::getClosestMineralWorkerTo(BWAPI::Unit enemyUnit)
     return closestMineralWorker;
 }
 
-BWAPI::Unit WorkerManager::getWorkerScout()
-{
-    // for each of our workers
-	for (auto & worker : workerData.getWorkers())
-	{
-        UAB_ASSERT(worker != nullptr, "Worker was null");
-		if (!worker)
-		{
-			continue;
-		}
-		// if it is a move worker
-        if (workerData.getWorkerJob(worker) == WorkerData::Scout) 
-		{
-			return worker;
-		}
-	}
-
-    return nullptr;
-}
 
 void WorkerManager::handleMoveWorkers() 
 {
@@ -647,21 +628,21 @@ void WorkerManager::drawWorkerInformation(int x, int y)
 	}
 }
 
-bool WorkerManager::isFree(BWAPI::Unit worker)
+bool WorkerManager::isFree(BWAPI::Unit worker) const
 {
     UAB_ASSERT(worker != nullptr, "Worker was null");
 
 	return workerData.getWorkerJob(worker) == WorkerData::Minerals || workerData.getWorkerJob(worker) == WorkerData::Idle;
 }
 
-bool WorkerManager::isWorkerScout(BWAPI::Unit worker)
+bool WorkerManager::isWorkerScout(BWAPI::Unit worker) const
 {
     UAB_ASSERT(worker != nullptr, "Worker was null");
 
 	return (workerData.getWorkerJob(worker) == WorkerData::Scout);
 }
 
-bool WorkerManager::isBuilder(BWAPI::Unit worker)
+bool WorkerManager::isBuilder(BWAPI::Unit worker) const
 {
     UAB_ASSERT(worker != nullptr, "Worker was null");
 

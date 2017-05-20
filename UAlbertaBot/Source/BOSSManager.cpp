@@ -239,7 +239,7 @@ BOSS::BuildOrderSearchGoal BOSSManager::GetGoal(const std::vector<MetaPair> & go
 
 	for (size_t i=0; i<goalUnits.size(); ++i)
 	{
-		goal.setGoal(GetActionType(goalUnits[i].first), goalUnits[i].second);
+		goal.setGoal(GetActionType(goalUnits[i].first), (BOSS::UnitCountType)goalUnits[i].second);
 	}
 
 	return goal;

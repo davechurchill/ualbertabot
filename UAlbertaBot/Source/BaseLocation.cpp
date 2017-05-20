@@ -65,7 +65,7 @@ BaseLocation::BaseLocation(int baseID, const std::vector<BWAPI::Unit> & resource
 
     // compute this BaseLocation's DistanceMap, which will compute the ground distance
     // from the center of its recourses to every other tile on the map
-    Global::Map().computeDistance(_distanceMap, _resourceCenter);
+    _distanceMap = Global::Map().getDistanceMap(_resourceCenter);
 
     // check to see if this is a start location for the map
     for (auto & tilePos : BWAPI::Broodwar->getStartLocations())
@@ -164,7 +164,7 @@ const BWAPI::Position & BaseLocation::getPosition() const
 
 int BaseLocation::getGroundTileDistance(const BWAPI::Position & pos) const
 {
-    return _distanceMap[pos];
+    return _distanceMap.getDistance(pos);
 }
 
 bool BaseLocation::isStartLocation() const
@@ -220,7 +220,6 @@ void BaseLocation::draw()
     }
 
     auto & closestTiles = getClosestTiles();
-    if (false) for (int i=0; i<200 && i < closestTiles.size(); ++i)
     {
         const BWAPI::TilePosition & tile = closestTiles[i];
 

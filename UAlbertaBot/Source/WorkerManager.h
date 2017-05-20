@@ -42,9 +42,9 @@ public:
     int         getNumIdleWorkers();
     void        setScoutWorker(BWAPI::Unit worker);
 
-    bool        isWorkerScout(BWAPI::Unit worker);
-    bool        isFree(BWAPI::Unit worker);
-    bool        isBuilder(BWAPI::Unit worker);
+    bool        isWorkerScout(BWAPI::Unit worker) const;
+    bool        isFree(BWAPI::Unit worker) const;
+    bool        isBuilder(BWAPI::Unit worker) const;
 
     BWAPI::Unit getBuilder(Building & b,bool setJobAsBuilder = true);
     BWAPI::Unit getMoveWorker(BWAPI::Position p);
@@ -52,7 +52,6 @@ public:
     BWAPI::Unit getGasWorker(BWAPI::Unit refinery);
     BWAPI::Unit getClosestEnemyUnit(BWAPI::Unit worker);
     BWAPI::Unit getClosestMineralWorkerTo(BWAPI::Unit enemyUnit);
-    BWAPI::Unit getWorkerScout();
 
     void        setBuildingWorker(BWAPI::Unit worker,Building & b);
     void        setRepairWorker(BWAPI::Unit worker,BWAPI::Unit unitToRepair);

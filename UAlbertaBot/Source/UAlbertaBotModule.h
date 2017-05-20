@@ -16,7 +16,7 @@ namespace UAlbertaBot
 
 class UAlbertaBotModule
 {
-	GameCommander       _gameCommander;
+    GameCommander       _gameCommander;
     AutoObserver        _autoObserver;
     WorkerManager       _workerManager;
     UnitInfoManager     _unitInfoManager;
@@ -28,20 +28,20 @@ class UAlbertaBotModule
 
 public:
 
-            UAlbertaBotModule();
-            ~UAlbertaBotModule();
+    UAlbertaBotModule();
+    ~UAlbertaBotModule();
 
-	void	onStart();
-	void	onFrame();
-	void	onEnd(bool isWinner);
-	void	onUnitDestroy(BWAPI::Unit unit);
-	void	onUnitMorph(BWAPI::Unit unit);
-	void	onSendText(std::string text);
-	void	onUnitCreate(BWAPI::Unit unit);
-	void	onUnitComplete(BWAPI::Unit unit);
-	void	onUnitShow(BWAPI::Unit unit);
-	void	onUnitHide(BWAPI::Unit unit);
-	void	onUnitRenegade(BWAPI::Unit unit);
+    void	onStart();
+    void	onFrame();
+    void	onEnd(bool isWinner);
+    void	onUnitDestroy(BWAPI::Unit unit);
+    void	onUnitMorph(BWAPI::Unit unit);
+    void	onSendText(std::string text);
+    void	onUnitCreate(BWAPI::Unit unit);
+    void	onUnitComplete(BWAPI::Unit unit);
+    void	onUnitShow(BWAPI::Unit unit);
+    void	onUnitHide(BWAPI::Unit unit);
+    void	onUnitRenegade(BWAPI::Unit unit);
 
     WorkerManager & Workers();
     const UnitInfoManager & UnitInfo() const;

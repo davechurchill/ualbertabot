@@ -1,114 +1,78 @@
 #include "DistanceMap.h"
 #include "UABAssert.h"
+#include "Global.h"
+#include "Timer.hpp"
 
 using namespace UAlbertaBot;
 
-DistanceMap::DistanceMap() 
-	: _dist(std::vector<int>(BWAPI::Broodwar->mapWidth() * BWAPI::Broodwar->mapHeight(), -1))
-	, _moveTo(std::vector<char>(BWAPI::Broodwar->mapWidth() * BWAPI::Broodwar->mapHeight(), 'X'))
-	, _rows(BWAPI::Broodwar->mapHeight()), _cols(BWAPI::Broodwar->mapWidth()), _startRow(-1), _startCol(-1) 
+const size_t LegalActions = 4;
+const int actionX[LegalActions] = {1, -1, 0, 0};
+const int actionY[LegalActions] = {0, 0, 1, -1};
+
+DistanceMap::DistanceMap()
 {
-	//BWAPI::Broodwar->printf("New Distance Map With Dimensions (%d, %d)", _rows, _cols);
+
 }
 
-int DistanceMap::getIndex(const int row, const int col) const
+DistanceMap::DistanceMap(const BWAPI::TilePosition & startTile) 
+    : _width    (BWAPI::Broodwar->mapWidth())
+    , _height   (BWAPI::Broodwar->mapHeight())
+    , _startTile(startTile)
+    , _dist     (BWAPI::Broodwar->mapWidth(), std::vector<int>(BWAPI::Broodwar->mapHeight(), -1))
 {
-	return row * _cols + col;
+    computeDistanceMap(_startTile);
+    _sortedTilePositions.reserve(_width * _height);
 }
 
-int DistanceMap::getIndex(const BWAPI::Position & p) const
-{
-    UAB_ASSERT(p.isValid(), "Getting the Index of a position not in the map bounds: Position = (%d, %d)", p.x, p.y);
-    
-	return getIndex(p.y / 32, p.x / 32);
-}
-
-const int & DistanceMap::operator [] (const int index) const
+const int & DistanceMap::getDistance(const int & tileX, const int & tileY) const
 { 
-    UAB_ASSERT(index < _dist.size(), "Index out of range: Index = %d, Size = %d", index, _dist.size());
-
-    return _dist[index]; 
+    UAB_ASSERT(tileX < _width && tileY < _height, "Index out of range: X = %d, Y = %d", tileX, tileY);
+    return _dist[tileX][tileY]; 
 }
 
-int & DistanceMap::operator [] (const int index)
+const int & DistanceMap::getDistance(const BWAPI::Position & pos) const
 { 
-    UAB_ASSERT(index < _dist.size(), "Index out of range: Index = %d, Size = %d", index, _dist.size());
-
-    return _dist[index]; 
+    return getDistance(BWAPI::TilePosition(pos)); 
 }
 
-const int & DistanceMap::operator [] (const BWAPI::Position & pos) const
+const int & DistanceMap::getDistance(const BWAPI::TilePosition & pos) const
 { 
-    return (*this)[getIndex(pos)]; 
-}
-
-void DistanceMap::setMoveTo(const int index, const char val)
-{ 
-    UAB_ASSERT(index < _dist.size(), "Index out of range: Index = %d, Size = %d", index, _dist.size());
-
-    _moveTo[index] = val; 
-}
-
-void DistanceMap::setDistance(const int index, const int val)
-{ 
-    UAB_ASSERT(index < _dist.size(), "Index out of range: Index = %d, Size = %d", index, _dist.size());
-
-    _dist[index] = val; 
-}
-
-void DistanceMap::setStartPosition(const int sr, const int sc)
-{ 
-    _startRow = sr; 
-    _startCol = sc; 
+    return getDistance(pos.x, pos.y); 
 }
 
 const std::vector<BWAPI::TilePosition> & DistanceMap::getSortedTiles() const
 {
-    return _sorted;
+    return _sortedTilePositions;
 }
 
-bool DistanceMap::isConnected(const BWAPI::Position p) const
+// Computes _dist[x][y] = ground distance from (startX, startY) to (x,y)
+// Uses BFS, since the map is quite large and DFS may cause a stack overflow
+void DistanceMap::computeDistanceMap(const BWAPI::TilePosition & startTile)
 {
-	return (*this)[p] != -1;
-}
+    // the fringe for the BFS we will perform to calculate distances
+    std::vector<BWAPI::TilePosition> fringe;
+    fringe.reserve(_width * _height);
+    fringe.push_back(startTile);
+    _sortedTilePositions.push_back(startTile);
 
-void DistanceMap::addSorted(const BWAPI::TilePosition & tp)
-{
-    _sorted.push_back(tp);
-}
+    _dist[startTile.x][startTile.y] = 0;
 
-// given a position, get the position we should move to to minimize distance
-BWAPI::Position DistanceMap::getMoveTo(const BWAPI::Position p, const int lookAhead) const
-{
-	// the initial row an column
-	int row = p.y / 32;
-	int col = p.x / 32;
-		
-	// for each lookahead
-	for (int i=0; i<lookAhead; ++i)
-	{
-		// get the index
-		int index = getIndex(row,col);
+    for (size_t fringeIndex=0; fringeIndex<fringe.size(); ++fringeIndex)
+    {
+        const BWAPI::TilePosition & tile = fringe[fringeIndex];
 
-		// adjust the row and column accordingly
-		if (_moveTo[index] == 'L')
-		{
-			col -= 1;
-		} 
-		else if (_moveTo[index] == 'R')
-		{
-			col += 1;
-		} 
-		else if (_moveTo[index] == 'U')
-		{
-			row -= 1;
-		} 
-		else
-		{
-			row += 1;
-		}
-	}
+        // check every possible child of this tile
+        for (size_t a=0; a<LegalActions; ++a)
+        {
+            BWAPI::TilePosition nextTile(tile.x + actionX[a], tile.y + actionY[a]);
 
-	// return the position
-	return BWAPI::Position(col * 32 + 16, row * 32 + 16);
+            // if the new tile is inside the map bounds, is walkable, and has not been visited yet, set the distance of its parent + 1
+            if (nextTile.isValid() && Global::Map().isWalkable(nextTile) && getDistance(nextTile) == -1)
+            {
+                _dist[nextTile.x][nextTile.y] = _dist[tile.x][tile.y] + 1;
+                fringe.push_back(nextTile);
+                _sortedTilePositions.push_back(nextTile);
+            }
+        }
+    }
 }

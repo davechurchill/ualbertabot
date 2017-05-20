@@ -57,12 +57,6 @@ const bool StrategyManager::shouldExpandNow() const
 	int frame           = BWAPI::Broodwar->getFrameCount();
     int minute          = frame / (24*60);
 
-	// if we have a ton of idle workers then we need a new expansion
-	if (Global::Workers().getNumIdleWorkers() > 10)
-	{
-		return true;
-	}
-
     // if we have a ridiculous stockpile of minerals, expand
     if (BWAPI::Broodwar->self()->minerals() > 3000)
     {
