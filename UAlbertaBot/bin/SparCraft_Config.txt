@@ -12,6 +12,7 @@
     "A_WFC" : ["Attack", ["Enemy", "Unit", "Min", ["+HP", "-Focus", "+Distance"]]],
     "A_-F"  : ["Attack", ["Enemy", "Unit", "Min", ["+Focus"]]],
     "KiteC" : ["Move",   ["Enemy", "Unit", "Min", ["+Distance"]], 180, 16],
+    "KiteA" : ["Move",   ["Enemy", "Unit", "Min", ["+Distance"]], 150, 16],
     "R"     : ["Reload"],
     "Pass"  : ["Pass", 1]
 },
@@ -35,6 +36,7 @@
     "KiteC"          :  { "Type":"Script", "NOK":false, "OutOfRange":"M_C",  "InRange":"A_C",   "Reload":"KiteC"  },
     "KiteWC"         :  { "Type":"Script", "NOK":false, "OutOfRange":"M_C",  "InRange":"A_WC",  "Reload":"KiteC"  },
     "KiteWC_NOK"     :  { "Type":"Script", "NOK":true,  "OutOfRange":"M_C",  "InRange":"A_WC",  "Reload":"KiteC"  },
+    "KiteAngle"      :  { "Type":"Script", "NOK":true,  "OutOfRange":"M_C",  "InRange":"A_WC",  "Reload":"KiteA"  },
     "AttackS"        :  { "Type":"Script", "NOK":false, "OutOfRange":"M_C",  "InRange":"A_S",   "Reload":"R"      },
     "Attack-F"       :  { "Type":"Script", "NOK":false, "OutOfRange":"M_C",  "InRange":"A_-F",  "Reload":"R"      },
 	
@@ -48,7 +50,7 @@
                           "PlayerToMove":"Alternate", "Eval":"Playout", "PlayoutPlayer":"AttackC" },
                           
     "PGS" :             { "Type":"PortfolioGreedySearch", "TimeLimit":10, "EnemySeedPlayer":"AttackC", "Iterations":1, "Responses":0,
-                          "MaxPlayoutTurns":50, "Portfolio":["AttackWC_NOK", "KiteWC"] }
+                          "MaxPlayoutTurns":50, "Portfolio":["AttackWC_NOK", "HoldWC_NOK", "KiteWC_NOK"] }
 },
 
 "Maps" :

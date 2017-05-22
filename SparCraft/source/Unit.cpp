@@ -207,8 +207,10 @@ void Unit::move(const Action & action, const TimeType & gameTime)
     // update the next time we can move, make sure a move always takes 1 time step
     updateMoveActionTime(gameTime + std::max(moveDuration, 1));
 
+    int movePenalty = isFlyer() ? 0 : 8;
+
     // assume we need 4 frames to turn around after moving
-    updateAttackActionTime(std::max(nextAttackActionTime(), nextMoveActionTime()));
+    updateAttackActionTime(movePenalty + std::max(nextAttackActionTime(), nextMoveActionTime()));
 
     // update the position
     //_position.addPosition(dist * dir.x(), dist * dir.y());

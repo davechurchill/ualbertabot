@@ -14,7 +14,10 @@ class UAlbertaBot_Arena : public BotModule
     SparCraft::SparCraftException   _lastSparCraftException;
 
     std::vector<size_t>             _wins;
+    std::vector<size_t>             _simWins;
     size_t                          _battles;
+
+    int                             _prevNumUnits;
 
     bool                            _battleEnded;
 
@@ -31,6 +34,7 @@ class UAlbertaBot_Arena : public BotModule
     int                     GetTimeCanAttack(BWAPI::Unit unit) const;
     int                     GetTimeCanMove(BWAPI::Unit unit) const;
 
+    void                    PlaySparCraftSimulation(const SparCraft::GameState & state);
 
 public:
 

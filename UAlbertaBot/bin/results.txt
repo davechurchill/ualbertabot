@@ -1,0 +1,16 @@
+PGS Portfolio = ["AttackWC_NOK", "HoldWC_NOK", "KiteWC_NOK"]
+
+Map                 Player          BWWin   SimWin
+---------------------------------------------------
+dragoon_zeal        PGS             972     1000 
+dragoons_zeals      PGS             709     1000
+vult_zeal           PGS             1000    1000
+w15v15_c_far        PGS             1000    1000
+w15v17_c_far        PGS             838     1000
+w18v20_c_far        PGS             993     1000
+m5v5_c_far_arena    PGS             929     1000
+m5v5_c_far_arena    AttackWC_NOK    848     1000
+m5v5_c_far_arena    AttackC         773     1000
+m15v15_c_far        PGS             529     1000
+m18v18_c_far        PGS             547     1000
+m15v16_c_far        PGS             172     1000

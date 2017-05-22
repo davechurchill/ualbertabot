@@ -16,8 +16,10 @@ using namespace UAlbertaBot;
 UAlbertaBot_Arena::UAlbertaBot_Arena()
     : _isSparCraftInitialized(false)
     , _wins(3, 0)
+    , _simWins(3, 0)
     , _battles(0)
     , _battleEnded(true)
+    , _prevNumUnits(0)
 {
 
 }
@@ -59,10 +61,25 @@ void UAlbertaBot_Arena::onFrame()
     printInfo();
     DrawUnitHPBars();
 
+    int numUnits = 0;
+    for (auto & unit : BWAPI::Broodwar->getAllUnits())
+    {
+        if (unit->getType() == BWAPI::UnitTypes::Terran_Marine)
+        {
+            numUnits++;
+        }
+    }
+
     SparCraft::GameState state = GetSparCraftState();
+    
+    if (_prevNumUnits < 3 && numUnits == 3)
+    {
+        PlaySparCraftSimulation(state);
+    }
 
     if (!state.gameOver())
     {
+
         //DrawSparCraftState(state, 10, 10);
         auto move = GetSparCraftPlayerMove(state, GetSparCraftPlayerID(BWAPI::Broodwar->self()));
         DoSparCraftMove(state, move);
@@ -77,8 +94,21 @@ void UAlbertaBot_Arena::onFrame()
             _wins[state.winner()]++;
         }
     }
+
+    _prevNumUnits = numUnits;
 }
 
+
+void UAlbertaBot_Arena::PlaySparCraftSimulation(const SparCraft::GameState & state)
+{
+    SparCraft::PlayerPtr player = SparCraft::AIParameters::Instance().getPlayer(GetSparCraftPlayerID(BWAPI::Broodwar->self()), Config::SparCraft::ArenaPlayerName);
+    SparCraft::PlayerPtr enemy =  SparCraft::AIParameters::Instance().getPlayer(GetSparCraftPlayerID(BWAPI::Broodwar->enemy()), "AttackC");
+
+    SparCraft::Game g(state, player, enemy);
+    g.play();
+
+    _simWins[g.getState().winner()]++;
+}
 
 SparCraft::Move UAlbertaBot_Arena::GetSparCraftPlayerMove(const SparCraft::GameState & state, const size_t & playerID) const
 {
@@ -91,7 +121,6 @@ SparCraft::Move UAlbertaBot_Arena::GetSparCraftPlayerMove(const SparCraft::GameS
 
     return move;
 }
-
 
 SparCraft::GameState UAlbertaBot_Arena::GetSparCraftState() const
 {
@@ -178,8 +207,11 @@ void UAlbertaBot_Arena::DoSparCraftMove(const SparCraft::GameState & state, cons
         if (action.type() == SparCraft::ActionTypes::MOVE)
         {
             BWAPI::Position dest(action.pos().x(), action.pos().y());
+            BWAPI::Position delta = dest - unit->getPosition();
+            delta = BWAPI::Position(delta.x * 5, delta.y * 5);
+
             
-            unit->rightClick(dest);
+            unit->rightClick(unit->getPosition() + delta);
             //Micro::SmartMove(unit, dest);
             
             BWAPI::Broodwar->drawLineMap(unit->getPosition(), dest, BWAPI::Colors::Yellow);
@@ -242,9 +274,10 @@ void UAlbertaBot_Arena::DrawUnitHPBars() const
     }
 
     std::stringstream ss;
+    ss << BWAPI::Broodwar->mapFileName() << "\nPlayer: " << Config::SparCraft::ArenaPlayerName << "\n\n";
     ss << "Wins:   " << _wins[0] << "\nLosses: " << (_battles - _wins[0]) << "\nWin %%:  " << ((double)_wins[0]/_battles);
 
-    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(10, 200), ss.str().c_str());
+    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(10, 50), ss.str().c_str());
 }
 
 int UAlbertaBot_Arena::GetTimeCanMove(BWAPI::Unit unit) const
@@ -270,8 +303,15 @@ int UAlbertaBot_Arena::GetTimeCanMove(BWAPI::Unit unit) const
 int UAlbertaBot_Arena::GetTimeCanAttack(BWAPI::Unit unit) const
 {
     int attackTime = unit->getGroundWeaponCooldown();
-    attackTime -= 2;
-    
+
+    // some slight tweaks on a unitType basis
+    switch (unit->getType())
+    {
+        case BWAPI::UnitTypes::Terran_Wraith:   { attackTime -= 13; break; }
+        case BWAPI::UnitTypes::Terran_Vulture:  { attackTime -= 1;  break; } 
+        default:                                { attackTime -= 2;  break; }
+    }
+        
     if (attackTime < 0)
     {
         attackTime = 0;

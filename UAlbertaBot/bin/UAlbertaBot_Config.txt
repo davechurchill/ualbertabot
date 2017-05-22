@@ -4,12 +4,12 @@
         "BotName"                   : "UAlbertaBot",
         "Authors"                   : "David Churchill",
         "PrintInfoOnStart"          : false,
-        "BotMode"                   : "Tournament"
+        "BotMode"                   : "Arena"
     },
         
     "BWAPI" : 
     {
-        "SetLocalSpeed"             : 5,
+        "SetLocalSpeed"             : 0,
         "SetFrameSkip"              : 0,
         "UserInput"                 : true,
         "CompleteMapInformation"    : false
@@ -19,7 +19,7 @@
     {
         "SparCraftConfigFile"       : "SparCraft_Config.txt",
         "CombatSimPlayerName"       : "AttackC",
-        "ArenaPlayerName"           : "AttackC"
+        "ArenaPlayerName"           : "PGS"
     },
 	
     "Micro" :
