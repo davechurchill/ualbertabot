@@ -19,6 +19,7 @@ void GameState::doAction(const Action & action)
 	Unit & ourUnit		= _getUnitByID(action.getID());
 	size_t player		= ourUnit.getPlayerID();
 	size_t enemyPlayer  = getEnemy(player);
+    TimeType gameTime   = getTime();
 
     SPARCRAFT_ASSERT(ourUnit.firstTimeFree() == getTime(), "Trying to take an action at a different frame than a unit is ready");
 
@@ -63,16 +64,18 @@ void GameState::doAction(const Action & action)
 	}
 	else if (action.type() == ActionTypes::RELOAD)
 	{
-		ourUnit.waitUntilAttack(action, _currentTime);
+		ourUnit.reload(action, getTime());
 	}
 	else if (action.type() == ActionTypes::PASS)
 	{
-		ourUnit.pass(action, _currentTime);
+		ourUnit.pass(action, getTime());
 	}
     else
     {
         SPARCRAFT_ASSERT(false, "Invalid Action Type: %d", (int)action.type());
     }
+
+    SPARCRAFT_ASSERT(ourUnit.firstTimeFree() > gameTime, "Action did not increase unit cooldown, Game Time is: %d\n\n%s", gameTime, ourUnit.debugString().c_str());
 }
 
 void GameState::doMove(const Move & moves)
@@ -103,7 +106,7 @@ void GameState::doMove(const Move & m1, const Move & m2, bool advanceGameTime)
     }
 
     const TimeType nextUnitActTime = std::min(getTimeNextUnitCanAct(0), getTimeNextUnitCanAct(1));
-    SPARCRAFT_ASSERT(nextUnitActTime > getTime(), "doMove didn't result in game time advancing");
+    SPARCRAFT_ASSERT(nextUnitActTime > getTime(), "doMove didn't result in game time advancing: %d %d", m1.size(), m2.size());
 
     if (advanceGameTime)
     {

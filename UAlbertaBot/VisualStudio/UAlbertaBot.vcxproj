@@ -15,6 +15,7 @@
     <ClCompile Include="..\Source\BaseLocation.cpp" />
     <ClCompile Include="..\Source\BaseLocationManager.cpp" />
     <ClCompile Include="..\Source\BOSSManager.cpp" />
+    <ClCompile Include="..\Source\BotModule.cpp" />
     <ClCompile Include="..\source\BuildingManager.cpp" />
     <ClCompile Include="..\source\BuildingPlacer.cpp" />
     <ClCompile Include="..\source\BuildOrder.cpp" />
@@ -28,6 +29,8 @@
     <ClCompile Include="..\Source\DistanceMap.cpp" />
     <ClCompile Include="..\Source\GameCommander.cpp" />
     <ClCompile Include="..\Source\Global.cpp" />
+    <ClCompile Include="..\Source\UAlbertaBot_Arena.cpp" />
+    <ClCompile Include="..\Source\UAlbertaBot_Tournament.cpp" />
     <ClCompile Include="..\Source\UnitInfoManager.cpp" />
     <ClCompile Include="..\source\JSONTools.cpp" />
     <ClCompile Include="..\Source\Logger.cpp" />
@@ -48,7 +51,6 @@
     <ClCompile Include="..\Source\TankManager.cpp" />
     <ClCompile Include="..\source\TransportManager.cpp" />
     <ClCompile Include="..\Source\UABAssert.cpp" />
-    <ClCompile Include="..\Source\UAlbertaBotModule.cpp" />
     <ClCompile Include="..\Source\UnitData.cpp" />
     <ClCompile Include="..\Source\UnitUtil.cpp" />
     <ClCompile Include="..\source\WorkerData.cpp" />
@@ -59,6 +61,7 @@
     <ClInclude Include="..\Source\BaseLocation.h" />
     <ClInclude Include="..\Source\BaseLocationManager.h" />
     <ClInclude Include="..\Source\BOSSManager.h" />
+    <ClInclude Include="..\Source\BotModule.h" />
     <ClInclude Include="..\source\BuildingManager.h" />
     <ClInclude Include="..\source\BuildingPlacer.h" />
     <ClInclude Include="..\source\BuildOrder.h" />
@@ -73,6 +76,8 @@
     <ClInclude Include="..\Source\GameCommander.h" />
     <ClInclude Include="..\Source\GameHistory.hpp" />
     <ClInclude Include="..\Source\Global.h" />
+    <ClInclude Include="..\Source\UAlbertaBot_Arena.h" />
+    <ClInclude Include="..\Source\UAlbertaBot_Tournament.h" />
     <ClInclude Include="..\Source\UnitInfoManager.h" />
     <ClInclude Include="..\source\JSONTools.h" />
     <ClInclude Include="..\Source\Logger.h" />
@@ -94,7 +99,6 @@
     <ClInclude Include="..\Source\Timer.hpp" />
     <ClInclude Include="..\source\TransportManager.h" />
     <ClInclude Include="..\Source\UABAssert.h" />
-    <ClInclude Include="..\Source\UAlbertaBotModule.h" />
     <ClInclude Include="..\Source\UnitData.h" />
     <ClInclude Include="..\Source\UnitUtil.h" />
     <ClInclude Include="..\source\WorkerData.h" />

@@ -7,9 +7,15 @@ namespace Config
 {
     namespace ConfigFile
     {
-        bool ConfigFileFound                = false;
-        bool ConfigFileParsed               = false;
         std::string ConfigFileLocation      = "UAlbertaBot_Config.txt";
+    }
+    
+    namespace BotInfo
+    {
+        std::string BotName                 = "UAlbertaBot";
+        std::string Authors                 = "Dave Churchill";
+        bool PrintInfoOnStart               = false;
+        std::string BotMode                 = "Tournament"; // must be 'Tournament' or 'Arena'
     }
 
     namespace Strategy
@@ -33,13 +39,6 @@ namespace Config
 		
         // extra things, don't enable unless you know what they are
         bool UsingBuildOrderDemo            = false;
-    }
-
-    namespace BotInfo
-    {
-        std::string BotName                 = "UAlbertaBot";
-        std::string Authors                 = "Dave Churchill";
-        bool PrintInfoOnStart               = false;
     }
 
     namespace BWAPIOptions

@@ -2,7 +2,7 @@
 
 "Policies" :
 {
-    "M_C"   : ["Move",   ["Enemy", "Unit", "Min", ["+Distance"]], 0, 16],
+    "M_C"   : ["Move",   ["Enemy", "Unit", "Min", ["+Distance"]], 0, 32],
     "A_C"   : ["Attack", ["Enemy", "Unit", "Min", ["+Distance"]]], 
     "A_D"   : ["Attack", ["Enemy", "Unit", "Min", ["+DPS"]]], 
     "A_W"   : ["Attack", ["Enemy", "Unit", "Min", ["+HP"]]], 

@@ -1,5 +1,9 @@
 #pragma once
 
+#include <functional>
+#include <thread>
+#include <chrono>
+
 #ifdef WIN32   // Windows system specific
 	#include <windows.h>
 #else          // Unix based system specific
@@ -96,11 +100,23 @@ public:
 		return this->getElapsedTimeInMicroSec() * 0.000001;
 	}
 
-
-
 	double getElapsedTime()
 	{
 		return this->getElapsedTimeInSec();
 	}
+
+    template <class T>
+    static void TimeFunction(std::function<T> function, ...)
+    {
+        Timer t;
+        t.start();
+        va_list args;
+        va_start(args, function);
+        va_end(args);
+
+        double ms = t.getElapsedTimeInMilliSec();
+        std::cout << "Function ran in " << ms << "ms\n";
+    }
 };
+
 }

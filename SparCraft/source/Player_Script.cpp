@@ -67,6 +67,32 @@ void Player_Script::getMove(const GameState & state, Move & move)
             }
         }
 
+        if (unitAction.type() == ActionTypes::RELOAD && unit.nextAttackActionTime() == state.getTime())
+        {
+            int a = 6;
+            if (_enemyUnitsInAttackRange.empty())
+            {
+                SPARCRAFT_ASSERT(_playerPolicy.getOutOfRangePolicy().getActionType() != PolicyAction::Attack, "We can only Move if out of range");
+
+                unitAction = getPolicyAction(state, unit, _playerPolicy.getOutOfRangePolicy(), allEnemyUnits);
+            }
+            // We are able to attack at least one enemy unit
+            else
+            {
+                // If this is not the Reload phase, implement the InRange policy
+                if (unit.nextAttackActionTime() == unit.nextMoveActionTime())
+                {
+                    unitAction = getPolicyAction(state, unit, _playerPolicy.getInRangePolicy(), _enemyUnitsInAttackRange);
+                }
+                // Otherwise this is Reload phase, so implement the Reload Policy
+                else
+                {
+                    SPARCRAFT_ASSERT(_playerPolicy.getOutOfRangePolicy().getActionType() != PolicyAction::Attack, "We can't attack if we're currently reloading");
+
+                    unitAction = getPolicyAction(state, unit, _playerPolicy.getReloadPolicy(), _enemyUnitsInAttackRange);
+                }
+            }
+        }
         move.addAction(unitAction);
 
         if (unitAction.type() == ActionTypes::ATTACK)

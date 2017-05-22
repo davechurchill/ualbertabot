@@ -1,6 +1,7 @@
 #pragma once
 
 #include <BWAPI.h>
+#include "BotModule.h"
 #include "GameCommander.h"
 #include <iostream>
 #include <fstream>
@@ -14,7 +15,7 @@
 namespace UAlbertaBot
 {
 
-class UAlbertaBotModule
+class UAlbertaBot_Tournament : public BotModule
 {
     GameCommander       _gameCommander;
     AutoObserver        _autoObserver;
@@ -28,8 +29,8 @@ class UAlbertaBotModule
 
 public:
 
-    UAlbertaBotModule();
-    ~UAlbertaBotModule();
+    UAlbertaBot_Tournament();
+    ~UAlbertaBot_Tournament();
 
     void	onStart();
     void	onFrame();

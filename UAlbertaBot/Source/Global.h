@@ -9,11 +9,11 @@
 namespace UAlbertaBot
 {
 
-class UAlbertaBotModule;
+class UAlbertaBot_Tournament;
 
 namespace Global
 {      
-    void SetModule(UAlbertaBotModule * module);
+    void SetModule(UAlbertaBot_Tournament * module);
         
     const BaseLocationManager & Bases();
     const StrategyManager & Strategy();

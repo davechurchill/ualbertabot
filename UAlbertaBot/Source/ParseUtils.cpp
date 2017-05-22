@@ -6,24 +6,30 @@
 
 using namespace UAlbertaBot;
 
-void ParseUtils::ParseConfigFile(const std::string & filename, StrategyManager & strategyManager)
+void ParseUtils::ParseConfigFile(const std::string & filename)
 {
     rapidjson::Document doc;
-    BWAPI::Race race = BWAPI::Broodwar->self()->getRace();
-    const char * ourRace = race.getName().c_str();
 
     std::string config = ReadFile(filename);
 
     if (config.length() == 0)
     {
+        std::cerr << "Error: Config File Not Found or is Empty\n";
+        std::cerr << "Config Filename: " << Config::ConfigFile::ConfigFileLocation << "\n";
+        std::cerr << "The bot will not run without its configuration file\n";
+        std::cerr << "Please check that the file exists and is not empty. Incomplete paths are relative to the bot .exe file\n";
+        std::cerr << "You can change the config file location in Config::ConfigFile::ConfigFileLocation\n";
         return;
     }
-
-    Config::ConfigFile::ConfigFileFound = true;
 
     bool parsingFailed = doc.Parse(config.c_str()).HasParseError();
     if (parsingFailed)
     {
+        std::cerr << "Error: Config File Found, but could not be parsed\n";
+        std::cerr << "Config Filename: " << Config::ConfigFile::ConfigFileLocation << "\n";
+        std::cerr << "The bot will not run without its configuration file\n";
+        std::cerr << "Please check that the file exists, is not empty, and is valid JSON. Incomplete paths are relative to the bot .exe file\n";
+        std::cerr << "You can change the config file location in Config::ConfigFile::ConfigFileLocation\n";
         return;
     }
 
@@ -34,6 +40,7 @@ void ParseUtils::ParseConfigFile(const std::string & filename, StrategyManager &
         JSONTools::ReadString("BotName", info, Config::BotInfo::BotName);
         JSONTools::ReadString("Authors", info, Config::BotInfo::Authors);
         JSONTools::ReadBool("PrintInfoOnStart", info, Config::BotInfo::PrintInfoOnStart);
+        JSONTools::ReadString("BotMode", info, Config::BotInfo::BotMode);
     }
 
     // Parse the BWAPI Options
@@ -138,6 +145,20 @@ void ParseUtils::ParseConfigFile(const std::string & filename, StrategyManager &
         JSONTools::ReadString("CombatSimPlayerName", sc, Config::SparCraft::CombatSimPlayerName);
         JSONTools::ReadString("ArenaPlayerName", sc, Config::SparCraft::ArenaPlayerName);
     }
+}
+
+void ParseUtils::ParseStrategy(const std::string & filename, StrategyManager & strategyManager)
+{
+    BWAPI::Race race = BWAPI::Broodwar->self()->getRace();
+    const char * ourRace = race.getName().c_str();
+    std::string config = ReadFile(filename);
+    rapidjson::Document doc;
+    bool parsingFailed = doc.Parse(config.c_str()).HasParseError();
+    if (parsingFailed)
+    {
+        std::cerr << "ParseStrategy could not find file: " << filename << ", shutting down.\n";
+        return;
+    }
 
     // Parse the Strategy Options
     if (doc.HasMember("Strategy") && doc["Strategy"].IsObject())
@@ -224,10 +245,7 @@ void ParseUtils::ParseConfigFile(const std::string & filename, StrategyManager &
             }
         }
     }
-
-    Config::ConfigFile::ConfigFileParsed = true;
 }
-
 
 void ParseUtils::ParseTextCommand(const std::string & commandString)
 {

@@ -3,7 +3,8 @@
     {
         "BotName"                   : "UAlbertaBot",
         "Authors"                   : "David Churchill",
-        "PrintInfoOnStart"          : false
+        "PrintInfoOnStart"          : false,
+        "BotMode"                   : "Tournament"
     },
         
     "BWAPI" : 

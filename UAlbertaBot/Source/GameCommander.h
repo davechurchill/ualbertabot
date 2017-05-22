@@ -9,7 +9,7 @@
 namespace UAlbertaBot
 {
 
-class UAlbertaBotModule;
+class UAlbertaBot_Tournament;
 
 class GameCommander
 {
@@ -18,7 +18,7 @@ class GameCommander
     BOSSManager                 _bossManager;
     ProductionManager           _productionManager;
     ScoutManager                _scoutManager;
-    UAlbertaBotModule &         _module;
+    UAlbertaBot_Tournament &     _module;
 
     std::vector<BWAPI::Unit>    _validUnits;
     std::vector<BWAPI::Unit>    _combatUnits;
@@ -31,7 +31,7 @@ class GameCommander
 
 public:
 
-    GameCommander(UAlbertaBotModule & uabModule);
+    GameCommander(UAlbertaBot_Tournament & uabModule);
 
     void onStart();
     void update();

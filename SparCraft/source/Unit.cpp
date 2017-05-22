@@ -220,11 +220,13 @@ void Unit::move(const Action & action, const TimeType & gameTime)
 }
 
 // unit is commanded to wait until his attack cooldown is up
-void Unit::waitUntilAttack(const Action & move, const TimeType & gameTime)
+void Unit::reload(const Action & action, const TimeType & gameTime)
 {
+    SPARCRAFT_ASSERT(_timeCanAttack > gameTime, "Attempting to reload when we can attack this frame\n\n%s", debugString().c_str());
+
     // do nothing until we can attack again
     updateMoveActionTime(_timeCanAttack);
-    setPreviousAction(move, gameTime);
+    setPreviousAction(action, gameTime);
 }
 
 void Unit::pass(const Action & action, const TimeType & gameTime)

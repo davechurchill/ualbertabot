@@ -1,14 +1,14 @@
 #pragma once
 
 #include <BWAPI.h>
-
+#include "BotModule.h"
 #include "../../SparCraft/source/SparCraft.h"
 #include "AutoObserver.h"
 
 namespace UAlbertaBot
 {
 
-class UAlbertaBotModule_Arena : public BWAPI::AIModule
+class UAlbertaBot_Arena : public BotModule
 {
     bool                            _isSparCraftInitialized;
     SparCraft::SparCraftException   _lastSparCraftException;
@@ -17,15 +17,6 @@ class UAlbertaBotModule_Arena : public BWAPI::AIModule
     size_t                          _battles;
 
     bool                            _battleEnded;
-
-    AutoObserver                    _oberver;
-
-public:
-
-    UAlbertaBotModule_Arena();
-
-    void    initializeSparCraft();
-    void    printInfo();
 
     SparCraft::GameState    GetSparCraftState() const;
     SparCraft::Unit         GetSparCraftUnit(BWAPI::Unit unit) const;
@@ -39,6 +30,14 @@ public:
     int                     GetTimeSinceLastAttack(BWAPI::Unit unit) const;
     int                     GetTimeCanAttack(BWAPI::Unit unit) const;
     int                     GetTimeCanMove(BWAPI::Unit unit) const;
+
+
+public:
+
+    UAlbertaBot_Arena();
+
+    void    initializeSparCraft();
+    void    printInfo();
 
 	void	onStart();
 	void	onFrame();

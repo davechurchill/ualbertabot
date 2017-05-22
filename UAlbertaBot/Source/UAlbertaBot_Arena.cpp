@@ -5,7 +5,7 @@
  +----------------------------------------------------------------------+
  */
 
-#include "UAlbertaBotModule_Arena.h"
+#include "UAlbertaBot_Arena.h"
 #include "Config.h"
 #include "ParseUtils.h"
 #include "DebugTools.h"
@@ -13,7 +13,7 @@
 
 using namespace UAlbertaBot;
 
-UAlbertaBotModule_Arena::UAlbertaBotModule_Arena()
+UAlbertaBot_Arena::UAlbertaBot_Arena()
     : _isSparCraftInitialized(false)
     , _wins(3, 0)
     , _battles(0)
@@ -23,7 +23,7 @@ UAlbertaBotModule_Arena::UAlbertaBotModule_Arena()
 }
 
 // This gets called when the bot starts!
-void UAlbertaBotModule_Arena::onStart()
+void UAlbertaBot_Arena::onStart()
 {
     // Parse the bot's configuration file if it has one, change this file path to where your config file is
     // Any relative path name will be relative to Starcraft installation folder
@@ -52,7 +52,48 @@ void UAlbertaBotModule_Arena::onStart()
     }
 }
 
-SparCraft::GameState UAlbertaBotModule_Arena::GetSparCraftState() const
+
+
+void UAlbertaBot_Arena::onFrame()
+{
+    printInfo();
+    DrawUnitHPBars();
+
+    SparCraft::GameState state = GetSparCraftState();
+
+    if (!state.gameOver())
+    {
+        //DrawSparCraftState(state, 10, 10);
+        auto move = GetSparCraftPlayerMove(state, GetSparCraftPlayerID(BWAPI::Broodwar->self()));
+        DoSparCraftMove(state, move);
+        _battleEnded = false;
+    }
+    else
+    {
+        if (!_battleEnded)
+        {
+            _battleEnded = true;
+            _battles++;
+            _wins[state.winner()]++;
+        }
+    }
+}
+
+
+SparCraft::Move UAlbertaBot_Arena::GetSparCraftPlayerMove(const SparCraft::GameState & state, const size_t & playerID) const
+{
+    SparCraft::PlayerPtr player = SparCraft::AIParameters::Instance().getPlayer(playerID, Config::SparCraft::ArenaPlayerName);
+
+    SparCraft::Move move;
+    player->getMove(state, move);
+
+    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(100, 10), "%d", move.size());
+
+    return move;
+}
+
+
+SparCraft::GameState UAlbertaBot_Arena::GetSparCraftState() const
 {
     SparCraft::GameState state;
 
@@ -71,19 +112,7 @@ SparCraft::GameState UAlbertaBotModule_Arena::GetSparCraftState() const
     return state;
 }
 
-SparCraft::Move UAlbertaBotModule_Arena::GetSparCraftPlayerMove(const SparCraft::GameState & state, const size_t & playerID) const
-{
-    SparCraft::PlayerPtr player = SparCraft::AIParameters::Instance().getPlayer(playerID, Config::SparCraft::ArenaPlayerName);
-
-    SparCraft::Move move;
-    player->getMove(state, move);
-
-    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(100, 10), "%d", move.size());
-
-    return move;
-}
-
-SparCraft::Unit UAlbertaBotModule_Arena::GetSparCraftUnit(BWAPI::Unit unit) const
+SparCraft::Unit UAlbertaBot_Arena::GetSparCraftUnit(BWAPI::Unit unit) const
 {
     SparCraft::Unit sUnit(unit->getType(),
         SparCraft::Position(unit->getPosition()),
@@ -99,7 +128,7 @@ SparCraft::Unit UAlbertaBotModule_Arena::GetSparCraftUnit(BWAPI::Unit unit) cons
     return sUnit;
 }
 
-size_t UAlbertaBotModule_Arena::GetSparCraftPlayerID(BWAPI::Player player) const
+size_t UAlbertaBot_Arena::GetSparCraftPlayerID(BWAPI::Player player) const
 {
     if (player == BWAPI::Broodwar->self())
     {
@@ -113,7 +142,7 @@ size_t UAlbertaBotModule_Arena::GetSparCraftPlayerID(BWAPI::Player player) const
     return SparCraft::Players::Player_None;
 }
 
-void UAlbertaBotModule_Arena::DrawSparCraftMove(const SparCraft::GameState & state, const SparCraft::Move & move) const
+void UAlbertaBot_Arena::DrawSparCraftMove(const SparCraft::GameState & state, const SparCraft::Move & move) const
 {
     for (size_t a(0); a < move.size(); ++a)
     {
@@ -138,7 +167,7 @@ void UAlbertaBotModule_Arena::DrawSparCraftMove(const SparCraft::GameState & sta
     }
 }
 
-void UAlbertaBotModule_Arena::DoSparCraftMove(const SparCraft::GameState & state, const SparCraft::Move & move) const
+void UAlbertaBot_Arena::DoSparCraftMove(const SparCraft::GameState & state, const SparCraft::Move & move) const
 {
     for (size_t a(0); a < move.size(); ++a)
     {
@@ -169,12 +198,12 @@ void UAlbertaBotModule_Arena::DoSparCraftMove(const SparCraft::GameState & state
     }
 }
 
-int UAlbertaBotModule_Arena::GetTimeSinceLastAttack(BWAPI::Unit unit) const
+int UAlbertaBot_Arena::GetTimeSinceLastAttack(BWAPI::Unit unit) const
 {
     return unit->getType().groundWeapon().damageCooldown() - unit->getGroundWeaponCooldown();
 }
 
-void UAlbertaBotModule_Arena::DrawSparCraftState(const SparCraft::GameState & state, int x, int y) const
+void UAlbertaBot_Arena::DrawSparCraftState(const SparCraft::GameState & state, int x, int y) const
 {
     size_t numUnits = 0;
     std::stringstream ss;
@@ -191,7 +220,7 @@ void UAlbertaBotModule_Arena::DrawSparCraftState(const SparCraft::GameState & st
     BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x, y), ss.str().c_str());
 }
 
-void UAlbertaBotModule_Arena::DrawUnitHPBars() const
+void UAlbertaBot_Arena::DrawUnitHPBars() const
 {
     if (!Config::Debug::DrawUnitHealthBars) { return; }
 
@@ -218,25 +247,30 @@ void UAlbertaBotModule_Arena::DrawUnitHPBars() const
     BWAPI::Broodwar->drawTextScreen(BWAPI::Position(10, 200), ss.str().c_str());
 }
 
-int UAlbertaBotModule_Arena::GetTimeCanMove(BWAPI::Unit unit) const
+int UAlbertaBot_Arena::GetTimeCanMove(BWAPI::Unit unit) const
 {
-    if (unit->getGroundWeaponCooldown() == 0)
+    int groundCooldown = unit->getGroundWeaponCooldown();
+    if (groundCooldown == 0)
     {
         return 0;
     }
 
     int lastAttack = GetTimeSinceLastAttack(unit);
     int attackFrames = SparCraft::AnimationFrameData::getAttackFrames(unit->getType()).first;
+    int time = std::max(attackFrames - lastAttack, 0);
 
-    return std::max(attackFrames - lastAttack, 0);
+    if (time > 6)
+    {
+        int a = 6;
+    }
+
+    return time;
 }
 
-int UAlbertaBotModule_Arena::GetTimeCanAttack(BWAPI::Unit unit) const
+int UAlbertaBot_Arena::GetTimeCanAttack(BWAPI::Unit unit) const
 {
-    return 0;
-
     int attackTime = unit->getGroundWeaponCooldown();
-    attackTime -= 6;
+    attackTime -= 2;
     
     if (attackTime < 0)
     {
@@ -246,78 +280,52 @@ int UAlbertaBotModule_Arena::GetTimeCanAttack(BWAPI::Unit unit) const
     return attackTime;
 }
 
-void UAlbertaBotModule_Arena::onEnd(bool isWinner)
+void UAlbertaBot_Arena::onEnd(bool isWinner)
 {
 
 }
 
-void UAlbertaBotModule_Arena::onFrame()
-{
-    printInfo();
-    DrawUnitHPBars();
-    _oberver.onFrame();
-
-    SparCraft::GameState state = GetSparCraftState();
-
-    if (!state.gameOver())
-    {
-        //DrawSparCraftState(state, 10, 10);
-        auto move = GetSparCraftPlayerMove(state, GetSparCraftPlayerID(BWAPI::Broodwar->self()));
-        DoSparCraftMove(state, move);
-        _battleEnded = false;
-    }
-    else
-    {
-        if (!_battleEnded)
-        {
-            _battleEnded = true;
-            _battles++;
-            _wins[state.winner()]++;
-        }
-    }
-}
-
-void UAlbertaBotModule_Arena::onUnitDestroy(BWAPI::Unit unit)
+void UAlbertaBot_Arena::onUnitDestroy(BWAPI::Unit unit)
 {
 
 }
 
-void UAlbertaBotModule_Arena::onUnitMorph(BWAPI::Unit unit)
+void UAlbertaBot_Arena::onUnitMorph(BWAPI::Unit unit)
 {
 
 }
 
-void UAlbertaBotModule_Arena::onSendText(std::string text)
+void UAlbertaBot_Arena::onSendText(std::string text)
 {
 
 }
 
-void UAlbertaBotModule_Arena::onUnitCreate(BWAPI::Unit unit)
+void UAlbertaBot_Arena::onUnitCreate(BWAPI::Unit unit)
 {
 
 }
 
-void UAlbertaBotModule_Arena::onUnitComplete(BWAPI::Unit unit)
+void UAlbertaBot_Arena::onUnitComplete(BWAPI::Unit unit)
 {
 
 }
 
-void UAlbertaBotModule_Arena::onUnitShow(BWAPI::Unit unit)
+void UAlbertaBot_Arena::onUnitShow(BWAPI::Unit unit)
 {
 
 }
 
-void UAlbertaBotModule_Arena::onUnitHide(BWAPI::Unit unit)
+void UAlbertaBot_Arena::onUnitHide(BWAPI::Unit unit)
 {
 
 }
 
-void UAlbertaBotModule_Arena::onUnitRenegade(BWAPI::Unit unit)
+void UAlbertaBot_Arena::onUnitRenegade(BWAPI::Unit unit)
 {
 
 }
 
-void UAlbertaBotModule_Arena::initializeSparCraft()
+void UAlbertaBot_Arena::initializeSparCraft()
 {
     try
     {
@@ -327,52 +335,19 @@ void UAlbertaBotModule_Arena::initializeSparCraft()
         // Read the SparCraft configuration file
         SparCraft::AIParameters::Instance().parseFile(Config::SparCraft::SparCraftConfigFile);
         _isSparCraftInitialized = true;
+
+        std::cout << "SparCraft initialized\n";
     }
     catch (SparCraft::SparCraftException e)
     {
         _lastSparCraftException = e;
         _isSparCraftInitialized = false;
+
+        std::cout << "Error: SparCraft not initialized properly\n";
     }
 }
 
-void UAlbertaBotModule_Arena::printInfo()
+void UAlbertaBot_Arena::printInfo()
 {
-    char red = '\x08';
-    char green = '\x07';
-    char white = '\x04';
 
-    if (!Config::ConfigFile::ConfigFileFound)
-    {
-        BWAPI::Broodwar->drawBoxScreen(0, 0, 450, 100, BWAPI::Colors::Black, true);
-        BWAPI::Broodwar->setTextSize(BWAPI::Text::Size::Huge);
-        BWAPI::Broodwar->drawTextScreen(10, 5, "%c%s Config File Not Found", red, Config::BotInfo::BotName.c_str());
-        BWAPI::Broodwar->setTextSize(BWAPI::Text::Size::Default);
-        BWAPI::Broodwar->drawTextScreen(10, 30, "%c%s will not run without its configuration file", white, Config::BotInfo::BotName.c_str());
-        BWAPI::Broodwar->drawTextScreen(10, 45, "%cCheck that the file below exists. Incomplete paths are relative to Starcraft directory", white);
-        BWAPI::Broodwar->drawTextScreen(10, 60, "%cYou can change this file location in Config::ConfigFile::ConfigFileLocation", white);
-        BWAPI::Broodwar->drawTextScreen(10, 75, "%cFile Not Found (or is empty): %c %s", white, green, Config::ConfigFile::ConfigFileLocation.c_str());
-        return;
-    }
-    else if (!Config::ConfigFile::ConfigFileParsed)
-    {
-        BWAPI::Broodwar->drawBoxScreen(0, 0, 450, 100, BWAPI::Colors::Black, true);
-        BWAPI::Broodwar->setTextSize(BWAPI::Text::Size::Huge);
-        BWAPI::Broodwar->drawTextScreen(10, 5, "%c%s Config File Parse Error", red, Config::BotInfo::BotName.c_str());
-        BWAPI::Broodwar->setTextSize(BWAPI::Text::Size::Default);
-        BWAPI::Broodwar->drawTextScreen(10, 30, "%c%s will not run without a properly formatted configuration file", white, Config::BotInfo::BotName.c_str());
-        BWAPI::Broodwar->drawTextScreen(10, 45, "%cThe configuration file was found, but could not be parsed. Check that it is valid JSON", white);
-        BWAPI::Broodwar->drawTextScreen(10, 60, "%cFile Not Parsed: %c %s", white, green, Config::ConfigFile::ConfigFileLocation.c_str());
-        return;
-    }
-    else if (!_isSparCraftInitialized)
-    {
-        BWAPI::Broodwar->drawBoxScreen(0, 0, 450, 100, BWAPI::Colors::Black, true);
-        BWAPI::Broodwar->setTextSize(BWAPI::Text::Size::Huge);
-        BWAPI::Broodwar->drawTextScreen(10, 5, "%c%s SparCraft Init Error", red, Config::BotInfo::BotName.c_str());
-        BWAPI::Broodwar->setTextSize(BWAPI::Text::Size::Default);
-        BWAPI::Broodwar->drawTextScreen(10, 30, "%c%s will not run without SparCraft successfully initialized", white, Config::BotInfo::BotName.c_str());
-        BWAPI::Broodwar->drawTextScreen(10, 45, "%cThe Exception thrown by SparCraft was:", white);
-        BWAPI::Broodwar->drawTextScreen(10, 60, "%c%s", red, _lastSparCraftException.what());
-        return;
-    }
 }

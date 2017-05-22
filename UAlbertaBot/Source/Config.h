@@ -8,11 +8,9 @@ namespace Config
 {
     namespace ConfigFile
     {
-        extern bool ConfigFileFound;
-        extern bool ConfigFileParsed;
         extern std::string ConfigFileLocation;
     }
-
+    
     namespace Modules
     {
         extern bool UsingBuildOrderSearch;  
@@ -25,6 +23,7 @@ namespace Config
         extern std::string BotName;
         extern std::string Authors;
         extern bool PrintInfoOnStart;
+        extern std::string BotMode;
     }
 
     namespace SparCraft

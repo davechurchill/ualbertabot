@@ -20,7 +20,9 @@
 #include "rapidjson\document.h"
 
 // UAlbertaBot Libraries
-#include "UAlbertaBotModule.h"
+#include "BotModule.h"
+#include "UAlbertaBot_Arena.h"
+#include "UAlbertaBot_Tournament.h"
 #include "JSONTools.h"
 #include "ParseUtils.h"
 #include "UnitUtil.h"
@@ -39,7 +41,22 @@ void UAlbertaBot_PlayGame()
 {
     // The UAlbertaBot module which will handle all the game logic
     // All Starcraft logic is in this object, when it destructs it's all cleaned up for the next game
-    UAlbertaBotModule m;
+    std::shared_ptr<BotModule>  m;
+    
+    if (Config::BotInfo::BotMode == "Tournament")
+    {
+        m = std::shared_ptr<BotModule>(new UAlbertaBot_Tournament());
+    }
+    else if (Config::BotInfo::BotMode == "Arena")
+    {
+        m = std::shared_ptr<BotModule>(new UAlbertaBot_Arena());
+    }
+    else
+    {
+        std::cerr << "Unknown bot module selected: " << Config::BotInfo::BotMode << "\n";
+        exit(-1);
+    }
+    
 
     // The main game loop, which continues while we are connected to BWAPI and in a game
 	while (BWAPI::BWAPIClient.isConnected() && BWAPI::Broodwar->isInGame()) 
@@ -49,17 +66,17 @@ void UAlbertaBot_PlayGame()
         {
 			switch (e.getType()) 
             {
-                case BWAPI::EventType::MatchStart:      { m.onStart(); break; }
-                case BWAPI::EventType::MatchEnd:        { m.onEnd(e.isWinner()); break; }
-			    case BWAPI::EventType::MatchFrame:      { m.onFrame(); break; }
-			    case BWAPI::EventType::UnitShow:        { m.onUnitShow(e.getUnit()); break; }
-			    case BWAPI::EventType::UnitHide:        { m.onUnitHide(e.getUnit()); break; }
-			    case BWAPI::EventType::UnitCreate:      { m.onUnitCreate(e.getUnit()); break; }
-			    case BWAPI::EventType::UnitMorph:       { m.onUnitMorph(e.getUnit()); break; }
-			    case BWAPI::EventType::UnitDestroy:     { m.onUnitDestroy(e.getUnit()); break; }
-			    case BWAPI::EventType::UnitRenegade:    { m.onUnitRenegade(e.getUnit()); break; }
-			    case BWAPI::EventType::UnitComplete:    { m.onUnitComplete(e.getUnit()); break; }
-			    case BWAPI::EventType::SendText:        { BWAPI::Broodwar->sendText("%s", e.getText().c_str()); break; }
+                case BWAPI::EventType::MatchStart:      { m->onStart();                      break; }
+                case BWAPI::EventType::MatchEnd:        { m->onEnd(e.isWinner());            break; }
+			    case BWAPI::EventType::MatchFrame:      { m->onFrame();                      break; }
+			    case BWAPI::EventType::UnitShow:        { m->onUnitShow(e.getUnit());        break; }
+			    case BWAPI::EventType::UnitHide:        { m->onUnitHide(e.getUnit());        break; }
+			    case BWAPI::EventType::UnitCreate:      { m->onUnitCreate(e.getUnit());      break; }
+			    case BWAPI::EventType::UnitMorph:       { m->onUnitMorph(e.getUnit());       break; }
+			    case BWAPI::EventType::UnitDestroy:     { m->onUnitDestroy(e.getUnit());     break; }
+			    case BWAPI::EventType::UnitRenegade:    { m->onUnitRenegade(e.getUnit());    break; }
+			    case BWAPI::EventType::UnitComplete:    { m->onUnitComplete(e.getUnit());    break; }
+			    case BWAPI::EventType::SendText:        { m->onSendText(e.getText());        break; }
 			}
 		}
 
@@ -77,6 +94,9 @@ void UAlbertaBot_PlayGame()
 int main(int argc, const char * argv[]) 
 {
     bool exitIfStarcraftShutdown = true;
+
+    // parse the bot's configuration file, if it is not found or isn't valid, the program will exit
+    ParseUtils::ParseConfigFile(Config::ConfigFile::ConfigFileLocation);
 
     size_t gameCount = 0;
 	while (true)

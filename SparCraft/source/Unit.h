@@ -52,7 +52,7 @@ public:
 	void                    updateMoveActionTime(const TimeType & newTime);
 	void                    attack(const Action & move, const Unit & target, const TimeType & gameTime);
 	void                    move(const Action & move, const TimeType & gameTime) ;
-	void                    waitUntilAttack(const Action & move, const TimeType & gameTime);
+	void                    reload(const Action & move, const TimeType & gameTime);
 	void                    pass(const Action & move, const TimeType & gameTime);
 	void                    takeAttack(const Unit & attacker);
 

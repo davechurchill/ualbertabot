@@ -1,6 +1,8 @@
 #include "MapTools.h"
 #include "Global.h"
 #include "Timer.hpp"
+#include <utility>
+#include <type_traits>
 
 using namespace UAlbertaBot;
 
@@ -19,6 +21,7 @@ MapTools::MapTools()
     , _sectorNumber     (BWAPI::Broodwar->mapWidth(), std::vector<int> (BWAPI::Broodwar->mapHeight(), 0))
 {
     setBWAPIMapData();
+
     computeConnectivity();
 }
 
@@ -46,9 +49,6 @@ void MapTools::update()
 
 void MapTools::computeConnectivity()
 {
-    Timer t;
-    t.start();
-
     // the fringe data structe we will use to do our BFS searches
     std::vector<BWAPI::TilePosition> fringe;
     fringe.reserve(_width*_height);
@@ -93,9 +93,6 @@ void MapTools::computeConnectivity()
             }
         }
     }
-
-    double ms = t.getElapsedTimeInMilliSec();
-    std::cout << "Connectivity computation took " << ms << "ms\n";
 }
 
 // reads in the map data from bwapi and stores it in our map format

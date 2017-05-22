@@ -1,11 +1,11 @@
 #include "Global.h"
-#include "UAlbertaBotModule.h"
+#include "UAlbertaBot_Tournament.h"
 
 using namespace UAlbertaBot;
 
-UAlbertaBotModule * uabModule = nullptr;
+UAlbertaBot_Tournament * uabModule = nullptr;
 
-void Global::SetModule(UAlbertaBotModule * module)
+void Global::SetModule(UAlbertaBot_Tournament * module)
 {
     uabModule = module;
 }

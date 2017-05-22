@@ -3,11 +3,11 @@
 #include "UnitUtil.h"
 #include "Timer.hpp"
 #include "Global.h"
-#include "UAlbertaBotModule.h"
+#include "UAlbertaBot_Tournament.h"
 
 using namespace UAlbertaBot;
 
-GameCommander::GameCommander(UAlbertaBotModule & uabModule) 
+GameCommander::GameCommander(UAlbertaBot_Tournament & uabModule) 
     : _productionManager(_bossManager)
     , _initialScoutSet(false)
     , _module(uabModule)

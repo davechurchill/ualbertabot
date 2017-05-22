@@ -2,6 +2,7 @@
 #include "StrategyManager.h"
 #include "UnitUtil.h"
 #include "Global.h"
+#include "ParseUtils.h"
 
 using namespace UAlbertaBot;
 
@@ -11,7 +12,8 @@ StrategyManager::StrategyManager()
 	, _enemyRace(BWAPI::Broodwar->enemy()->getRace())
     , _emptyBuildOrder(BWAPI::Broodwar->self()->getRace())
 {
-	
+    // parse the configuration file for the bot's strategies
+	ParseUtils::ParseStrategy(Config::ConfigFile::ConfigFileLocation, *this);
 }
 
 void StrategyManager::update()
