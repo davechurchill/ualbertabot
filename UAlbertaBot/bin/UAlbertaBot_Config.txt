@@ -4,7 +4,7 @@
         "BotName"                   : "UAlbertaBot",
         "Authors"                   : "David Churchill",
         "PrintInfoOnStart"          : false,
-        "BotMode"                   : "Arena"
+        "BotMode"                   : "Tournament"
     },
         
     "BWAPI" : 
@@ -53,13 +53,13 @@
         "DrawProductionInfo"        : true, 
         "DrawBuildOrderSearchInfo"  : false,
         "DrawScoutInfo"             : false,
-        "DrawEnemyUnitInfo"         : true,
+        "DrawEnemyUnitInfo"         : false,
         "DrawModuleTimers"          : false,
         "DrawResourceInfo"          : false,
-        "DrawCombatSimInfo"         : true,
+        "DrawCombatSimInfo"         : false,
         "DrawUnitTargetInfo"        : false,
         "DrawBWTAInfo"              : false,
-        "DrawLastSeenTileInfo"      : true,
+        "DrawLastSeenTileInfo"      : false,
         "DrawSquadInfo"             : false,
         "DrawWorkerInfo"            : false,
         "DrawMouseCursorInfo"       : false,
