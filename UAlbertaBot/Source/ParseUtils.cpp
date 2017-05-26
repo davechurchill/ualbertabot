@@ -19,6 +19,7 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
         std::cerr << "The bot will not run without its configuration file\n";
         std::cerr << "Please check that the file exists and is not empty. Incomplete paths are relative to the bot .exe file\n";
         std::cerr << "You can change the config file location in Config::ConfigFile::ConfigFileLocation\n";
+        Config::ConfigFile::ConfigFileFound = false;
         return;
     }
 
@@ -30,6 +31,7 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
         std::cerr << "The bot will not run without its configuration file\n";
         std::cerr << "Please check that the file exists, is not empty, and is valid JSON. Incomplete paths are relative to the bot .exe file\n";
         std::cerr << "You can change the config file location in Config::ConfigFile::ConfigFileLocation\n";
+        Config::ConfigFile::ConfigFileParsed = false;
         return;
     }
 
@@ -143,7 +145,14 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
 
         JSONTools::ReadString("SparCraftConfigFile", sc, Config::SparCraft::SparCraftConfigFile);
         JSONTools::ReadString("CombatSimPlayerName", sc, Config::SparCraft::CombatSimPlayerName);
-        JSONTools::ReadString("ArenaPlayerName", sc, Config::SparCraft::ArenaPlayerName);
+    }
+
+    if (doc.HasMember("Arena") && doc["Arena"].IsObject())
+    {
+        const rapidjson::Value & arena = doc["Arena"];
+        JSONTools::ReadString("ArenaPlayerName", arena, Config::Arena::ArenaPlayerName);
+        JSONTools::ReadInt("ArenaBattles", arena, Config::Arena::ArenaBattles);
+        JSONTools::ReadInt("ArenaOutputResults", arena, Config::Arena::ArenaOutputResults);
     }
 }
 

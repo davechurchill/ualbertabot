@@ -128,7 +128,7 @@
     <ClInclude Include="..\source\AIParameters.h" />
     <ClInclude Include="..\source\AITools.h" />
     <ClInclude Include="..\source\AllPlayers.h" />
-    <ClInclude Include="..\source\AnimationFrameData.h" />
+    <ClInclude Include="..\source\Config.h" />
     <ClInclude Include="..\source\BaseTypes.hpp" />
     <ClInclude Include="..\source\ConfigTools.h" />
     <ClInclude Include="..\source\Eval.h" />
@@ -176,7 +176,7 @@
     <ClCompile Include="..\source\AIParameters.cpp" />
     <ClCompile Include="..\source\AITools.cpp" />
     <ClCompile Include="..\source\AllPlayers.cpp" />
-    <ClCompile Include="..\source\AnimationFrameData.cpp" />
+    <ClCompile Include="..\source\Config.cpp" />
     <ClCompile Include="..\source\Common.cpp" />
     <ClCompile Include="..\source\ConfigTools.cpp" />
     <ClCompile Include="..\source\Eval.cpp" />

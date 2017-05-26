@@ -12,6 +12,8 @@ class UAlbertaBot_Arena : public BotModule
 {
     bool                            _isSparCraftInitialized;
     SparCraft::SparCraftException   _lastSparCraftException;
+    std::string                     _startDate;
+    std::string                     _resultString;
 
     std::vector<size_t>             _wins;
     std::vector<size_t>             _simWins;

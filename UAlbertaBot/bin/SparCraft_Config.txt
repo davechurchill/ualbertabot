@@ -1,5 +1,13 @@
 {
 
+"Engine" :
+{
+    "GroundUnitMovePenalty" : 8,
+    "AirUnitMovePenalty" : 0,
+    "UnitRangeAddition" : 32,
+    "UnitMoveAfterAttackBuffer" : 2
+},
+
 "Policies" :
 {
     "M_C"   : ["Move",   ["Enemy", "Unit", "Min", ["+Distance"]], 0, 32],
@@ -50,7 +58,7 @@
                           "PlayerToMove":"Alternate", "Eval":"Playout", "PlayoutPlayer":"AttackC" },
                           
     "PGS" :             { "Type":"PortfolioGreedySearch", "TimeLimit":10, "EnemySeedPlayer":"AttackC", "Iterations":1, "Responses":0,
-                          "MaxPlayoutTurns":50, "Portfolio":["AttackWC_NOK", "HoldWC_NOK", "KiteWC_NOK"] }
+                          "MaxPlayoutTurns":100, "Portfolio":["AttackWC_NOK", "KiteWC_NOK", "HoldWC_NOK"] }
 },
 
 "Maps" :

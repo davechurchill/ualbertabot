@@ -6,7 +6,6 @@
 #include "Position.hpp"
 #include "PlayerProperties.h"
 #include "UnitProperties.h"
-#include "AnimationFrameData.h"
 #include <iostream>
 
 namespace SparCraft

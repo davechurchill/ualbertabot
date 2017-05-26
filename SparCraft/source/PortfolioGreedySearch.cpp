@@ -169,7 +169,7 @@ StateEvalScore PortfolioGreedySearch::eval(const GameState & state, const size_t
         currentState.doMove(turnMove[0], turnMove[1]);
     }
 
-    return Eval::Eval(currentState, playerID, EvaluationMethods::LTD2);
+    return Eval::Eval(currentState, playerID, EvaluationMethods::LTD);
 }
 
 size_t PortfolioGreedySearch::calculateInitialSeed(const GameState & state, const size_t & playerID, const PlayerPtr & enemyPlayer)

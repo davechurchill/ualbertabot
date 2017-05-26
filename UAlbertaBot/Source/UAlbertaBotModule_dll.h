@@ -1,13 +1,15 @@
 #pragma once
 
 #include <BWAPI.h>
-#include "UAlbertaBotModule.h"
+#include <memory>
+#include "BotModule.h"
 
 namespace UAlbertaBot
 {
 
 class UAlbertaBotModule_dll : public BWAPI::AIModule
 {
+    std::shared_ptr<BotModule> _module;
 
 public:
 

@@ -245,7 +245,7 @@ void GameState::setMap(std::shared_ptr<Map> map)
 	_map = map;
 
     // check to see if all units are on walkable tiles
-    for (size_t p(0); p<Constants::Num_Players; ++p)
+    for (size_t p(0); p<Players::Num_Players; ++p)
     {
         for (size_t u(0); u<numUnits(p); ++u)
         {
@@ -291,7 +291,7 @@ bool GameState::gameOver() const
     }
 
     // If any unit on any player's side is a mobile attacker, then there is no deadlock
-	for (size_t p(0); p<Constants::Num_Players; ++p)
+	for (size_t p(0); p<Players::Num_Players; ++p)
 	{
 		for (size_t u(0); u<numUnits(p); ++u)
 		{

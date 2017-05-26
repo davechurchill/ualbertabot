@@ -7,6 +7,8 @@ namespace Config
 {
     namespace ConfigFile
     {
+        bool ConfigFileFound                = true;
+        bool ConfigFileParsed               = true;
         std::string ConfigFileLocation      = "UAlbertaBot_Config.txt";
     }
     
@@ -48,12 +50,18 @@ namespace Config
         bool EnableUserInput                = true;
         bool EnableCompleteMapInformation   = false;
     }
+
+    namespace Arena
+    {
+        std::string ArenaPlayerName         = "AttackWC_NOK";
+        int ArenaOutputResults              = 10;
+        int ArenaBattles                    = 1000;
+    }
     
     namespace SparCraft
     {
         std::string SparCraftConfigFile     = "SparCraft_Config.txt";
         std::string CombatSimPlayerName     = "AttackC";
-        std::string ArenaPlayerName;
     }
     
     namespace Tournament						

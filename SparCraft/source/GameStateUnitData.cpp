@@ -58,7 +58,7 @@ Unit & GameStateUnitData::addUnit(const Unit & unit)
 
 void GameStateUnitData::removeUnit(const size_t & player, const size_t & unitIndex)
 {
-    SPARCRAFT_ASSERT(player < Constants::Num_Players, "player exceeds capacity: player=%d, total players=%d", player, Constants::Num_Players);    
+    SPARCRAFT_ASSERT(player < Players::Num_Players, "player exceeds capacity: player=%d, total players=%d", player, Players::Num_Players);    
     SPARCRAFT_ASSERT(unitIndex < numUnits(player), "UnitIndex=%d, size=%d", unitIndex, numUnits(player));
 
     _liveUnitIDs[player].erase(_liveUnitIDs[player].begin() + unitIndex);

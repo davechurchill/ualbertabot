@@ -15,11 +15,17 @@
         "CompleteMapInformation"    : false
     },
     
+    "Arena" :
+    {
+        "ArenaPlayerName"           : "PGS",
+        "ArenaOutputResults"        : 10,
+        "ArenaBattles"              : 1000
+    },
+    
     "SparCraft" :
     {
         "SparCraftConfigFile"       : "SparCraft_Config.txt",
-        "CombatSimPlayerName"       : "AttackC",
-        "ArenaPlayerName"           : "PGS"
+        "CombatSimPlayerName"       : "AttackC"
     },
 	
     "Micro" :

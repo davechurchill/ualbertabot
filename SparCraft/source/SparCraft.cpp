@@ -11,7 +11,7 @@ namespace SparCraft
             std::cout << "Initializing SparCraft...\n";
 
             // Initialize Data for Attack Frame Animations
-            SparCraft::AnimationFrameData::init();
+            SparCraft::Config::InitAttackFrames();
 
             // Initialize Weapon and Unit Property Data
             SparCraft::WeaponProperties::Init();

@@ -8,6 +8,8 @@ namespace Config
 {
     namespace ConfigFile
     {
+        extern bool ConfigFileFound;
+        extern bool ConfigFileParsed;
         extern std::string ConfigFileLocation;
     }
     
@@ -26,11 +28,17 @@ namespace Config
         extern std::string BotMode;
     }
 
+    namespace Arena
+    {
+        extern std::string ArenaPlayerName;
+        extern int ArenaOutputResults;
+        extern int ArenaBattles;
+    }
+
     namespace SparCraft
     {
         extern std::string SparCraftConfigFile;
         extern std::string CombatSimPlayerName;
-        extern std::string ArenaPlayerName;
     }
 
     namespace Arena

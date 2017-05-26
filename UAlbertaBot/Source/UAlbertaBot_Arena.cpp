@@ -15,8 +15,8 @@ using namespace UAlbertaBot;
 
 UAlbertaBot_Arena::UAlbertaBot_Arena()
     : _isSparCraftInitialized(false)
-    , _wins(3, 0)
-    , _simWins(3, 0)
+    , _wins(SparCraft::Players::Size, 0)
+    , _simWins(SparCraft::Players::Size, 0)
     , _battles(0)
     , _battleEnded(true)
     , _prevNumUnits(0)
@@ -38,6 +38,9 @@ void UAlbertaBot_Arena::onStart()
     BWAPI::Broodwar->setLocalSpeed(Config::BWAPIOptions::SetLocalSpeed);
     BWAPI::Broodwar->setFrameSkip(Config::BWAPIOptions::SetFrameSkip);
 
+    // Set the starting date
+    _startDate = Assert::currentDateTime();
+
     if (Config::BWAPIOptions::EnableCompleteMapInformation)
     {
         BWAPI::Broodwar->enableFlag(BWAPI::Flag::CompleteMapInformation);
@@ -53,8 +56,6 @@ void UAlbertaBot_Arena::onStart()
         BWAPI::Broodwar->printf("Hello! I am %s, written by %s", Config::BotInfo::BotName.c_str(), Config::BotInfo::Authors.c_str());
     }
 }
-
-
 
 void UAlbertaBot_Arena::onFrame()
 {
@@ -76,11 +77,21 @@ void UAlbertaBot_Arena::onFrame()
     {
         PlaySparCraftSimulation(state);
     }
+    
+  
+    std::string resultsDir = "C:/Libraries/ualbertabot/UAlbertaBot/bin/results/";
+
+    std::stringstream filenamess;
+    filenamess << _startDate << "___" << BWAPI::Broodwar->mapFileName() << "_" << Config::Arena::ArenaPlayerName << "_MP" << SparCraft::Config::Units::GroundUnitMovePenalty << ".txt";
+    std::string filename = filenamess.str();
+
+    for (size_t i=0; i<filename.size(); ++i)
+    {
+        if (filename[i] == ':') filename[i] = '-';
+    }
 
     if (!state.gameOver())
     {
-
-        //DrawSparCraftState(state, 10, 10);
         auto move = GetSparCraftPlayerMove(state, GetSparCraftPlayerID(BWAPI::Broodwar->self()));
         DoSparCraftMove(state, move);
         _battleEnded = false;
@@ -92,6 +103,32 @@ void UAlbertaBot_Arena::onFrame()
             _battleEnded = true;
             _battles++;
             _wins[state.winner()]++;
+        
+            int wins = _wins[SparCraft::Players::Player_One];
+            int losses = _wins[SparCraft::Players::Player_Two];
+            int draws = _wins[SparCraft::Players::Player_None];
+
+            std::stringstream ss;
+            ss << filename << " \x04\n\n";
+            ss << BWAPI::Broodwar->mapFileName() << "\nPlayer: " << Config::Arena::ArenaPlayerName << "\n";
+            ss << "MovePenalty: " << SparCraft::Config::Units::GroundUnitMovePenalty << "\n\n";
+            ss << SparCraft::AIParameters::Instance().getPlayer(0, "PGS")->getDescription() << "\n";
+            ss << "Battles: " << _battles << "\nWins:   " << wins << "\nLosses: " << losses << "\nDraws:  " << draws << "\nScore:  " << ((double)(wins + (double)draws/2)/_battles);
+    
+            _resultString = ss.str();
+
+            // output results to file every 10 battles
+            if (_battles % Config::Arena::ArenaOutputResults == 0)
+            {
+                std::ofstream out(resultsDir + filename);
+                out << ss.str();
+                out.close();
+            }
+
+            if (_battles == Config::Arena::ArenaBattles)
+            {
+                exit(0);
+            }
         }
     }
 
@@ -101,7 +138,7 @@ void UAlbertaBot_Arena::onFrame()
 
 void UAlbertaBot_Arena::PlaySparCraftSimulation(const SparCraft::GameState & state)
 {
-    SparCraft::PlayerPtr player = SparCraft::AIParameters::Instance().getPlayer(GetSparCraftPlayerID(BWAPI::Broodwar->self()), Config::SparCraft::ArenaPlayerName);
+    SparCraft::PlayerPtr player = SparCraft::AIParameters::Instance().getPlayer(GetSparCraftPlayerID(BWAPI::Broodwar->self()), Config::Arena::ArenaPlayerName);
     SparCraft::PlayerPtr enemy =  SparCraft::AIParameters::Instance().getPlayer(GetSparCraftPlayerID(BWAPI::Broodwar->enemy()), "AttackC");
 
     SparCraft::Game g(state, player, enemy);
@@ -112,12 +149,10 @@ void UAlbertaBot_Arena::PlaySparCraftSimulation(const SparCraft::GameState & sta
 
 SparCraft::Move UAlbertaBot_Arena::GetSparCraftPlayerMove(const SparCraft::GameState & state, const size_t & playerID) const
 {
-    SparCraft::PlayerPtr player = SparCraft::AIParameters::Instance().getPlayer(playerID, Config::SparCraft::ArenaPlayerName);
+    SparCraft::PlayerPtr player = SparCraft::AIParameters::Instance().getPlayer(playerID, Config::Arena::ArenaPlayerName);
 
     SparCraft::Move move;
     player->getMove(state, move);
-
-    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(100, 10), "%d", move.size());
 
     return move;
 }
@@ -261,7 +296,7 @@ void UAlbertaBot_Arena::DrawUnitHPBars() const
         DebugTools::DrawUnitHPBar(unit->getType(), unit->getPosition(), unit->getHitPoints(), unit->getShields());
 
         std::stringstream ss;
-        ss << unit->getGroundWeaponCooldown() << " " << GetTimeSinceLastAttack(unit) << " " << GetTimeCanMove(unit) << " " << GetTimeCanAttack(unit);
+        ss << unit->getID() << " " << unit->getGroundWeaponCooldown() << " " << GetTimeSinceLastAttack(unit) << " " << GetTimeCanMove(unit) << " " << GetTimeCanAttack(unit);
 
         BWAPI::Broodwar->drawTextMap(unit->getPosition() - BWAPI::Position(0, 30), ss.str().c_str());
 
@@ -269,15 +304,9 @@ void UAlbertaBot_Arena::DrawUnitHPBars() const
         {
             BWAPI::Broodwar->drawLineMap(unit->getPosition() + BWAPI::Position(3, 3), unit->getOrderTargetPosition() + BWAPI::Position(3, 3), BWAPI::Colors::Red);
         }
-        
-        
     }
 
-    std::stringstream ss;
-    ss << BWAPI::Broodwar->mapFileName() << "\nPlayer: " << Config::SparCraft::ArenaPlayerName << "\n\n";
-    ss << "Wins:   " << _wins[0] << "\nLosses: " << (_battles - _wins[0]) << "\nWin %%:  " << ((double)_wins[0]/_battles);
-
-    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(10, 50), ss.str().c_str());
+    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(10, 10), _resultString.c_str());
 }
 
 int UAlbertaBot_Arena::GetTimeCanMove(BWAPI::Unit unit) const
@@ -289,7 +318,7 @@ int UAlbertaBot_Arena::GetTimeCanMove(BWAPI::Unit unit) const
     }
 
     int lastAttack = GetTimeSinceLastAttack(unit);
-    int attackFrames = SparCraft::AnimationFrameData::getAttackFrames(unit->getType()).first;
+    int attackFrames = SparCraft::Config::Units::GetAttackFrames(unit->getType()).first;
     int time = std::max(attackFrames - lastAttack, 0);
 
     if (time > 6)

@@ -7,7 +7,7 @@ UCTSearch::UCTSearch(const UCTSearchParameters & params)
 	: _params(params)
     , _memoryPool(NULL)
 {
-    for (size_t p(0); p<Constants::Num_Players; ++p)
+    for (size_t p(0); p<Players::Num_Players; ++p)
     {
         // set ordered move script player objects
         for (size_t s(0); s<_params.getOrderedMoveScripts().size(); ++s)

@@ -24,7 +24,7 @@ Unit::Unit()
 Unit::Unit(const BWAPI::UnitType unitType, const Position & pos, const size_t & unitID, const size_t & playerID, 
            const HealthType & hp, const HealthType & energy, const TimeType & tm, const TimeType & ta) 
     : _unitType             (unitType)
-    , _range                (PlayerWeapon(&PlayerProperties::Get(playerID), unitType.groundWeapon()).GetMaxRange() + Constants::Range_Addition)
+    , _range                (PlayerWeapon(&PlayerProperties::Get(playerID), unitType.groundWeapon()).GetMaxRange() + Config::Units::UnitRangeAddition)
     , _position             (pos)
     , _unitID               (unitID)
     , _bwapiID              (0)
@@ -47,7 +47,7 @@ Unit::Unit(const BWAPI::UnitType unitType, const Position & pos, const size_t & 
 // constructor for units to construct basic units, sets some things automatically
 Unit::Unit(const BWAPI::UnitType unitType, const size_t & playerID, const Position & pos) 
     : _unitType             (unitType)
-    , _range                (PlayerWeapon(&PlayerProperties::Get(playerID), unitType.groundWeapon()).GetMaxRange() + Constants::Range_Addition)
+    , _range                (PlayerWeapon(&PlayerProperties::Get(playerID), unitType.groundWeapon()).GetMaxRange() + Config::Units::UnitRangeAddition)
     , _position             (pos)
     , _unitID               (0)
     , _bwapiID              (0)
@@ -169,16 +169,16 @@ void Unit::attack(const Action & move, const Unit & target, const TimeType & gam
         updateMoveActionTime      (gameTime + attackRepeatFrameTime());
         updateAttackActionTime    (gameTime + attackCooldown());
     }
-    // if there previous action was a MOVE action, add the move penalty
+    // if there previous action was a MOVE action
     else if (_previousAction.type() == ActionTypes::MOVE)
     {
-        updateMoveActionTime      (gameTime + attackInitFrameTime() + 2);
-        updateAttackActionTime    (gameTime + attackCooldown() + Constants::Move_Penalty);
+        updateMoveActionTime      (gameTime + attackInitFrameTime() + Config::Units::UnitMoveAfterAttackBuffer);
+        updateAttackActionTime    (gameTime + attackCooldown());
     }
     else
     {
         // add the initial attack animation duration
-        updateMoveActionTime      (gameTime + attackInitFrameTime() + 2);
+        updateMoveActionTime      (gameTime + attackInitFrameTime());
         updateAttackActionTime    (gameTime + attackCooldown());
     }
 
@@ -207,7 +207,7 @@ void Unit::move(const Action & action, const TimeType & gameTime)
     // update the next time we can move, make sure a move always takes 1 time step
     updateMoveActionTime(gameTime + std::max(moveDuration, 1));
 
-    int movePenalty = isFlyer() ? 0 : 8;
+    const int movePenalty = isFlyer() ? Config::Units::AirUnitMovePenalty : Config::Units::GroundUnitMovePenalty;
 
     // assume we need 4 frames to turn around after moving
     updateAttackActionTime(movePenalty + std::max(nextAttackActionTime(), nextMoveActionTime()));
@@ -466,12 +466,12 @@ const TimeType Unit::firstTimeFree() const
 
 const TimeType Unit::attackInitFrameTime() const	
 { 
-    return AnimationFrameData::getAttackFrames(_unitType).first; 
+    return Config::Units::GetAttackFrames(_unitType).first; 
 }
 
 const TimeType Unit::attackRepeatFrameTime() const	
 {
-    return AnimationFrameData::getAttackFrames(_unitType).second; 
+    return Config::Units::GetAttackFrames(_unitType).second; 
 }
 
 const int Unit::typeID() const	

@@ -92,7 +92,7 @@ void AITools::StatePrint(const GameState & state, int indent)
 
 	fprintf(stderr, "State - Time: %d\n", state.getTime());
 
-	for (size_t p(0); p<Constants::Num_Players; ++p)
+	for (size_t p(0); p<Players::Num_Players; ++p)
 	{
 		for (size_t u(0); u < state.numUnits(p); ++u)
 		{
@@ -112,7 +112,7 @@ std::string AITools::StateToString(const GameState & state)
 
 	ss << "Time: " << state.getTime() << std::endl;
 
-	for (size_t p(0); p<Constants::Num_Players; ++p)
+	for (size_t p(0); p<Players::Num_Players; ++p)
 	{
 		for (size_t u(0); u < state.numUnits(p); ++u)
 		{
@@ -130,7 +130,7 @@ std::string AITools::StateToStringCompact(const GameState & state)
 {
 	std::stringstream ss;
 
-	for (size_t p(0); p<Constants::Num_Players; ++p)
+	for (size_t p(0); p<Players::Num_Players; ++p)
 	{
         std::map<BWAPI::UnitType, size_t> typeCount;
 

@@ -31,13 +31,13 @@
     <ClCompile Include="..\source\Timer.cpp" />
     <ClCompile Include="..\source\torch\TorchFrame.cpp" />
     <ClCompile Include="..\source\torch\TorchTools.cpp" />
-    <ClCompile Include="..\source\AnimationFrameData.cpp" />
     <ClCompile Include="..\source\UCTSearch.cpp" />
     <ClCompile Include="..\source\PGSParameters.cpp" />
     <ClCompile Include="..\source\PortfolioGreedySearch.cpp" />
     <ClCompile Include="..\source\PlayerProperties.cpp" />
     <ClCompile Include="..\source\UnitProperties.cpp" />
     <ClCompile Include="..\source\WeaponProperties.cpp" />
+    <ClCompile Include="..\source\Config.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\Player_AttackClosest.h" />
@@ -75,7 +75,6 @@
     <ClInclude Include="..\source\torch\TorchFrame.h" />
     <ClInclude Include="..\source\torch\TorchRefcount.h" />
     <ClInclude Include="..\source\torch\TorchTools.h" />
-    <ClInclude Include="..\source\AnimationFrameData.h" />
     <ClInclude Include="..\source\UCTMemoryPool.hpp" />
     <ClInclude Include="..\source\UCTNode.h" />
     <ClInclude Include="..\source\UCTSearch.h" />
@@ -86,5 +85,6 @@
     <ClInclude Include="..\source\PlayerProperties.h" />
     <ClInclude Include="..\source\UnitProperties.h" />
     <ClInclude Include="..\source\WeaponProperties.h" />
+    <ClInclude Include="..\source\Config.h" />
   </ItemGroup>
 </Project>

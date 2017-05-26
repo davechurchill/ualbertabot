@@ -22,11 +22,23 @@ void AIParameters::parseJSONValue(const rapidjson::Value & rootValue)
     Instance() = AIParameters();
 
     //SPARCRAFT_ASSERT(rootValue.HasMember("Move Iterators"),   "AIParameters: No 'Move Iterators' Options Found");
-    SPARCRAFT_ASSERT(rootValue.HasMember("Players"),          "AIParameters: No 'Players' Options Found");
+    SPARCRAFT_ASSERT(rootValue.HasMember("Engine"),  "AIParameters: No 'Engine' Options Found");
+    SPARCRAFT_ASSERT(rootValue.HasMember("Players"), "AIParameters: No 'Players' Options Found");
 
     Timer t;
     t.start();
     
+    const rapidjson::Value & engine = rootValue["Engine"];
+    SPARCRAFT_ASSERT(engine.HasMember("GroundUnitMovePenalty") && engine["GroundUnitMovePenalty"].IsInt(), "Engine params need GroundUnitMovePenalty int");
+    SPARCRAFT_ASSERT(engine.HasMember("AirUnitMovePenalty") && engine["AirUnitMovePenalty"].IsInt(), "Engine params need GroundUnitMovePenalty int");
+    SPARCRAFT_ASSERT(engine.HasMember("UnitRangeAddition") && engine["UnitRangeAddition"].IsInt(), "Engine params need UnitRangeAddition int");
+    SPARCRAFT_ASSERT(engine.HasMember("UnitMoveAfterAttackBuffer") && engine["UnitMoveAfterAttackBuffer"].IsInt(), "Engine params need UnitMoveAfterAttackBuffer int");
+
+    Config::Units::GroundUnitMovePenalty        = engine["GroundUnitMovePenalty"].GetInt();
+    Config::Units::AirUnitMovePenalty           = engine["AirUnitMovePenalty"].GetInt();
+    Config::Units::UnitRangeAddition            = engine["UnitRangeAddition"].GetInt();
+    Config::Units::UnitMoveAfterAttackBuffer    = engine["UnitMoveAfterAttackBuffer"].GetInt();
+
     //std::cout << "Parsing Players...\n";
     parsePlayers("Players", rootValue);
     //parseStates("States", rootValue);

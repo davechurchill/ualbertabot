@@ -38,8 +38,8 @@ class UCTSearch
 	MoveArray                           _moveArray;
 	std::vector<Move>   _orderedMoves;
 
-    std::vector<PlayerPtr>				_allScripts[Constants::Num_Players];
-    PlayerPtr                           _playerModels[Constants::Num_Players];
+    std::vector<PlayerPtr>				_allScripts[Players::Num_Players];
+    PlayerPtr                           _playerModels[Players::Num_Players];
 
 public:
 
