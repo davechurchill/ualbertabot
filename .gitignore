@@ -5,6 +5,8 @@
 *.dll
 *.exe
 *.o
+.vs
+
 UAlbertaBot/UAB_ErrorLog.txt
 UAlbertaBot/UAB_ErrorLog.txt
 *.pd_
