@@ -144,10 +144,10 @@ void ScoutManager::moveScouts()
 		for (const BaseLocation * startLocation : Global::Bases().getStartingBaseLocations()) 
 		{
 			// if we haven't explored it yet
-			if (!BWAPI::Broodwar->isExplored(startLocation->getTilePosition())) 
+			if (!BWAPI::Broodwar->isExplored(startLocation->getDepotTilePosition())) 
 			{
 				// assign a zergling to go scout it
-				Micro::SmartMove(_workerScout, BWAPI::Position(startLocation->getTilePosition()));			
+				Micro::SmartMove(_workerScout, BWAPI::Position(startLocation->getDepotTilePosition()));			
 				return;
 			}
 		}

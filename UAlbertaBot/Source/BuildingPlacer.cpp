@@ -246,8 +246,8 @@ bool BuildingPlacer::tileOverlapsBaseLocation(BWAPI::TilePosition tile,BWAPI::Un
     for (const BaseLocation * base : Global::Bases().getBaseLocations())
     {
         // dimensions of the base location
-        int bx1 = base->getTilePosition().x;
-        int by1 = base->getTilePosition().y;
+        int bx1 = base->getDepotTilePosition().x;
+        int by1 = base->getDepotTilePosition().y;
         int bx2 = bx1 + BWAPI::Broodwar->self()->getRace().getResourceDepot().tileWidth();
         int by2 = by1 + BWAPI::Broodwar->self()->getRace().getResourceDepot().tileHeight();
 

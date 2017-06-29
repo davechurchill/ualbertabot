@@ -8,5 +8,6 @@ bin/*.lib
 bin/*.exp
 bin/*.ilk
 bin/*.pdb
+bin/results/*
 source/*.o
 *.bwta

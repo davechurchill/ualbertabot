@@ -11,8 +11,8 @@ namespace UAlbertaBot
 class BaseLocation
 {
     BWAPI::Position                 _position;
-    BWAPI::TilePosition             _tile;
-    BWAPI::Position                 _resourceCenter;
+    BWAPI::TilePosition             _depotTile;
+    BWAPI::Position                 _centerOfResources;
     std::vector<BWAPI::Unit>        _geysers;
     std::vector<BWAPI::Unit>        _minerals;
 
@@ -40,7 +40,7 @@ public:
     bool isPlayerStartLocation(BWAPI::Player player) const;
     bool isMineralOnly() const;
     bool containsPosition(const BWAPI::Position & pos) const;
-    const BWAPI::TilePosition & getTilePosition() const;
+    const BWAPI::TilePosition & getDepotTilePosition() const;
     const BWAPI::Position & getPosition() const;
     const std::vector<BWAPI::Unit> & getGeysers() const;
     const std::vector<BWAPI::Unit> & getMinerals() const;

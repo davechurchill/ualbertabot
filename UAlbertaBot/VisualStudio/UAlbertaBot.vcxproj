@@ -11,6 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Source\ArenaPlayer.cpp" />
+    <ClCompile Include="..\Source\ArenaPlayer_AttackClosest.cpp" />
+    <ClCompile Include="..\Source\ArenaPlayer_SparCraft.cpp" />
     <ClCompile Include="..\Source\AutoObserver.cpp" />
     <ClCompile Include="..\Source\BaseLocation.cpp" />
     <ClCompile Include="..\Source\BaseLocationManager.cpp" />
@@ -56,6 +59,9 @@
     <ClCompile Include="..\source\WorkerManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Source\ArenaPlayer.h" />
+    <ClInclude Include="..\Source\ArenaPlayer_AttackClosest.h" />
+    <ClInclude Include="..\Source\ArenaPlayer_SparCraft.h" />
     <ClInclude Include="..\Source\AutoObserver.h" />
     <ClInclude Include="..\Source\BaseLocation.h" />
     <ClInclude Include="..\Source\BaseLocationManager.h" />

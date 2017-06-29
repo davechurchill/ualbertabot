@@ -57,15 +57,15 @@ BaseLocation::BaseLocation(int baseID, const std::vector<BWAPI::Unit> & resource
 
     // calculate the center of the resources
     size_t numResources = _minerals.size() + _geysers.size();
-    _resourceCenter = BWAPI::Position(resourceCenterX / numResources, resourceCenterY / numResources);
+    //_resourceCenter = BWAPI::Position(resourceCenterX / numResources, resourceCenterY / numResources);
 
-    _resourceCenter = BWAPI::Position(_left + (_right-_left)/2, _top + (_bottom-_top)/2);
+    _centerOfResources = BWAPI::Position(_left + (_right-_left)/2, _top + (_bottom-_top)/2);
 
-    UAB_ASSERT(_resourceCenter.isValid(), "Found an invalid resource center");
+    UAB_ASSERT(_centerOfResources.isValid(), "Found an invalid resource center");
 
     // compute this BaseLocation's DistanceMap, which will compute the ground distance
     // from the center of its recourses to every other tile on the map
-    _distanceMap = Global::Map().getDistanceMap(_resourceCenter);
+    _distanceMap = Global::Map().getDistanceMap(_centerOfResources);
 
     // check to see if this is a start location for the map
     for (auto & tilePos : BWAPI::Broodwar->getStartLocations())
@@ -76,12 +76,12 @@ BaseLocation::BaseLocation(int baseID, const std::vector<BWAPI::Unit> & resource
         {
             _isStartLocation = true;
             _position = pos;
-            _tile = tilePos;
+            _depotTile = tilePos;
         }
     }
 
     // if it's our starting location, set the pointer
-    if (getTilePosition() == BWAPI::Broodwar->self()->getStartLocation())
+    if (getDepotTilePosition() == BWAPI::Broodwar->self()->getStartLocation())
     {
         _isPlayerStartLocation[BWAPI::Broodwar->self()] = true;
     }
@@ -98,7 +98,7 @@ BaseLocation::BaseLocation(int baseID, const std::vector<BWAPI::Unit> & resource
 
             if (Global::Map().isBuildable(buildTile, BWAPI::Broodwar->self()->getRace().getResourceDepot()))
             {
-                _tile = buildTile;
+                _depotTile = buildTile;
                 _position = BWAPI::Position(buildTile);
                 break;
             }
@@ -129,7 +129,7 @@ bool BaseLocation::isOccupiedByPlayer(BWAPI::Player player) const
 
 bool BaseLocation::isExplored() const
 {
-    return BWAPI::Broodwar->isExplored(getTilePosition());
+    return BWAPI::Broodwar->isExplored(getDepotTilePosition());
 }
 
 bool BaseLocation::isPlayerStartLocation(BWAPI::Player player) const
@@ -174,7 +174,7 @@ bool BaseLocation::isStartLocation() const
 
 void BaseLocation::draw()
 {
-    BWAPI::Broodwar->drawCircleMap(_resourceCenter, 16, BWAPI::Colors::Yellow);
+    BWAPI::Broodwar->drawCircleMap(_centerOfResources, 16, BWAPI::Colors::Yellow);
 
     std::stringstream ss;
     ss << "BaseLocation: " << _baseID << "\n";
@@ -250,9 +250,9 @@ void BaseLocation::draw()
     BWAPI::Broodwar->drawBoxMap(_position, _position + BWAPI::Position(ccWidth, ccHeight), BWAPI::Colors::Red, false);
 }
 
-const BWAPI::TilePosition & BaseLocation::getTilePosition() const
+const BWAPI::TilePosition & BaseLocation::getDepotTilePosition() const
 {
-    return _tile;
+    return _depotTile;
 }
 
 bool BaseLocation::isMineralOnly() const

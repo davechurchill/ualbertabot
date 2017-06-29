@@ -58,7 +58,7 @@
                           "PlayerToMove":"Alternate", "Eval":"Playout", "PlayoutPlayer":"AttackC" },
                           
     "PGS" :             { "Type":"PortfolioGreedySearch", "TimeLimit":10, "EnemySeedPlayer":"AttackC", "Iterations":1, "Responses":0,
-                          "MaxPlayoutTurns":100, "Portfolio":["AttackWC_NOK", "KiteWC_NOK", "HoldWC_NOK"] }
+                          "MaxPlayoutTurns":100, "Portfolio":["AttackC", "KiteC", "HoldC"] }
 },
 
 "Maps" :

@@ -317,7 +317,7 @@ BWAPI::TilePosition BaseLocationManager::getNextExpansion(BWAPI::Player player) 
     const BaseLocation * closestBase = nullptr;
     int minDistance = std::numeric_limits<int>::max();
 
-    BWAPI::TilePosition homeTile = homeBase->getTilePosition();
+    BWAPI::TilePosition homeTile = homeBase->getDepotTilePosition();
     
     // for each base location
     for (auto & base : getBaseLocations())
@@ -329,7 +329,7 @@ BWAPI::TilePosition BaseLocationManager::getNextExpansion(BWAPI::Player player) 
         }
 
         // get the tile position of the base
-        BWAPI::TilePosition tile = base->getTilePosition();
+        BWAPI::TilePosition tile = base->getDepotTilePosition();
         bool buildingInTheWay = false;
 
         for (int x = 0; x < BWAPI::Broodwar->self()->getRace().getResourceDepot().tileWidth(); ++x)
@@ -372,7 +372,7 @@ BWAPI::TilePosition BaseLocationManager::getNextExpansion(BWAPI::Player player) 
 
     if (closestBase)
     {
-        return closestBase->getTilePosition();
+        return closestBase->getDepotTilePosition();
     }
     else
     {

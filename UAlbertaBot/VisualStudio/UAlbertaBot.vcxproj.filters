@@ -122,6 +122,15 @@
     <ClCompile Include="..\Source\BotModule.cpp" />
     <ClCompile Include="..\Source\UAlbertaBot_Arena.cpp" />
     <ClCompile Include="..\Source\UAlbertaBot_Tournament.cpp" />
+    <ClCompile Include="..\Source\ArenaPlayer_SparCraft.cpp">
+      <Filter>arena</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\ArenaPlayer_AttackClosest.cpp">
+      <Filter>arena</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\ArenaPlayer.cpp">
+      <Filter>arena</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="common">
@@ -141,6 +150,9 @@
     </Filter>
     <Filter Include="util">
       <UniqueIdentifier>{bf6d7494-4372-49e0-bb4c-49f18c0ed36d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="arena">
+      <UniqueIdentifier>{cbfed59a-0e98-454a-95c8-66cec39afce4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -274,5 +286,14 @@
     <ClInclude Include="..\Source\BotModule.h" />
     <ClInclude Include="..\Source\UAlbertaBot_Arena.h" />
     <ClInclude Include="..\Source\UAlbertaBot_Tournament.h" />
+    <ClInclude Include="..\Source\ArenaPlayer_SparCraft.h">
+      <Filter>arena</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\ArenaPlayer_AttackClosest.h">
+      <Filter>arena</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\ArenaPlayer.h">
+      <Filter>arena</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
