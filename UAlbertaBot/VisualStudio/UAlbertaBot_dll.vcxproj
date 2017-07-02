@@ -68,7 +68,7 @@
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">UAlbertaBot_d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <TargetName>UAlbertaBot</TargetName>
+    <TargetName>AKBot</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

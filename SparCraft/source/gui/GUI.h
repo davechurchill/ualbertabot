@@ -8,11 +8,11 @@
 #include "GUIGame.h"
 #include <vector>
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #undef main
 
-#include <SDL_opengl.h>
-#include <SDL_image.h>
+#include <SDL2/SDL_opengl.h>
+#include <SDL2/SDL_image.h>
 #include "GUITools.h"
 #include <sys/stat.h>
 

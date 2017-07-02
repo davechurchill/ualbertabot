@@ -1,8 +1,8 @@
 {
     "Bot Info" :
     {
-        "BotName"                   : "UAlbertaBot",
-        "Authors"                   : "David Churchill",
+        "BotName"                   : "Andrey Kurdiumov",
+        "Authors"                   : "Andrey Kurdiumov, David Churchill",
         "PrintInfoOnStart"          : false,
         "BotMode"                   : "Arena"
     },

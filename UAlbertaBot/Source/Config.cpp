@@ -9,13 +9,13 @@ namespace Config
     {
         bool ConfigFileFound                = true;
         bool ConfigFileParsed               = true;
-        std::string ConfigFileLocation      = "UAlbertaBot_Config.txt";
+        std::string ConfigFileLocation      = "bwapi-data/AI/AK_Config.txt";
     }
     
     namespace BotInfo
     {
-        std::string BotName                 = "UAlbertaBot";
-        std::string Authors                 = "Dave Churchill";
+        std::string BotName                 = "Andrey Kurdiumov";
+        std::string Authors                 = "Andrey Kurdiumov, Dave Churchill";
         bool PrintInfoOnStart               = false;
         std::string BotMode                 = "Tournament"; // must be 'Tournament' or 'Arena'
     }
