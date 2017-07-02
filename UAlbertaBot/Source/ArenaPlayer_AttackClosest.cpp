@@ -1,5 +1,6 @@
 #include "ArenaPlayer_AttackClosest.h"
 #include "Micro.h"
+#include "UnitUtil.h"
 
 using namespace UAlbertaBot;
 
@@ -30,7 +31,7 @@ BWAPI::Unit ArenaPlayer_AttackClosest::getClosestEnemyUnit(BWAPI::Unit ourUnit) 
     BWAPI::Unit closestUnit = nullptr;
 	double closestDist = std::numeric_limits<double>::max();
 
-	for (auto unit : BWAPI::Broodwar->enemy()->getUnits())
+	for (auto unit : UnitUtil::getEnemyUnits())
 	{
 		double dist = unit->getDistance(ourUnit);
 		if (!closestUnit || dist < closestDist)

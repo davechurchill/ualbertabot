@@ -1,5 +1,6 @@
 #include "DetectorManager.h"
 #include "Global.h"
+#include "UnitUtil.h"
 
 using namespace UAlbertaBot;
 
@@ -26,7 +27,7 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::Unit> & targets)
 	std::vector<BWAPI::Unit> cloakedUnits;
 
 	// figure out targets
-	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
+	for (auto & unit : UnitUtil::getEnemyUnits())
 	{
 		// conditions for targeting
 		if (unit->getType() == BWAPI::UnitTypes::Zerg_Lurker ||
@@ -53,7 +54,7 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::Unit> & targets)
 		// send him to scout around the map
 		else
 		{
-			BWAPI::Position explorePosition = Global::Map().getLeastRecentlySeenPosition();
+			auto explorePosition = Global::Map().getLeastRecentlySeenPosition(Global::Bases());
 			Micro::SmartMove(detectorUnit, explorePosition);
 		}
 	}

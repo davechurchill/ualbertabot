@@ -23,7 +23,7 @@ void UnitInfoManager::update()
 
 void UnitInfoManager::updateUnitInfo() 
 {
-	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
+	for (auto & unit : UnitUtil::getEnemyUnits())
 	{
 		updateUnit(unit);
 	}
@@ -35,7 +35,10 @@ void UnitInfoManager::updateUnitInfo()
 
 	// remove bad enemy units
 	_unitData[BWAPI::Broodwar->self()].removeBadUnits();
-	_unitData[BWAPI::Broodwar->enemy()].removeBadUnits();
+	for (const auto& enemyPlayer : BWAPI::Broodwar->enemies())
+	{
+		_unitData[enemyPlayer].removeBadUnits();
+	}
 }
 
 const std::map<int, UnitInfo> & UnitInfoManager::getUnitInfoMap(BWAPI::Player player) const
@@ -51,7 +54,7 @@ void UnitInfoManager::drawExtendedInterface() const
     }
 
     // draw enemy units
-    for (const auto & kv : getUnitData(BWAPI::Broodwar->enemy()).getUnitInfoMap())
+    for (const auto & kv : getUnitData(Global::getEnemy()).getUnitInfoMap())
 	{
         const UnitInfo & ui(kv.second);
 
@@ -64,7 +67,7 @@ void UnitInfoManager::drawExtendedInterface() const
     // draw neutral units and our units
     for (auto & unit : BWAPI::Broodwar->getAllUnits())
     {
-        if (unit->getPlayer() == BWAPI::Broodwar->enemy())
+        if (unit->getPlayer() == Global::getEnemy())
         {
             continue;
         }
@@ -83,8 +86,8 @@ void UnitInfoManager::drawUnitInformation(int x, int y) const
 	std::string prefix = "\x04";
 
 	BWAPI::Broodwar->drawTextScreen(x, y-10, "\x03 Self Loss:\x04 Minerals: \x1f%d \x04Gas: \x07%d", _unitData.at(BWAPI::Broodwar->self()).getMineralsLost(), _unitData.at(BWAPI::Broodwar->self()).getGasLost());
-    BWAPI::Broodwar->drawTextScreen(x, y, "\x03 Enemy Loss:\x04 Minerals: \x1f%d \x04Gas: \x07%d", _unitData.at(BWAPI::Broodwar->enemy()).getMineralsLost(), _unitData.at(BWAPI::Broodwar->enemy()).getGasLost());
-	BWAPI::Broodwar->drawTextScreen(x, y+10, "\x04 Enemy: %s", BWAPI::Broodwar->enemy()->getName().c_str());
+    BWAPI::Broodwar->drawTextScreen(x, y, "\x03 Enemy Loss:\x04 Minerals: \x1f%d \x04Gas: \x07%d", _unitData.at(Global::getEnemy()).getMineralsLost(), _unitData.at(Global::getEnemy()).getGasLost());
+	BWAPI::Broodwar->drawTextScreen(x, y+10, "\x04 Enemy: %s", Global::getEnemy()->getName().c_str());
 	BWAPI::Broodwar->drawTextScreen(x, y+20, "\x04 UNIT NAME");
 	BWAPI::Broodwar->drawTextScreen(x+140, y+20, "\x04#");
 	BWAPI::Broodwar->drawTextScreen(x+160, y+20, "\x04X");
@@ -94,8 +97,8 @@ void UnitInfoManager::drawUnitInformation(int x, int y) const
 	// for each unit in the queue
 	for (BWAPI::UnitType t : BWAPI::UnitTypes::allUnitTypes()) 
 	{
-		int numUnits = _unitData.at(BWAPI::Broodwar->enemy()).getNumUnits(t);
-		int numDeadUnits = _unitData.at(BWAPI::Broodwar->enemy()).getNumDeadUnits(t);
+		int numUnits = _unitData.at(Global::getEnemy()).getNumUnits(t);
+		int numDeadUnits = _unitData.at(Global::getEnemy()).getNumDeadUnits(t);
 
 		// if there exist units in the vector
 		if (numUnits > 0) 
@@ -112,9 +115,14 @@ void UnitInfoManager::drawUnitInformation(int x, int y) const
 	}
 }
 
+bool UnitInfoManager::isEnemyUnit(BWAPI::Unit unit)
+{
+	return unit->getPlayer() == Global::getEnemy();
+}
+
 void UnitInfoManager::updateUnit(BWAPI::Unit unit)
 {
-    if (!(unit->getPlayer() == BWAPI::Broodwar->self() || unit->getPlayer() == BWAPI::Broodwar->enemy()))
+    if (!(unit->getPlayer() == BWAPI::Broodwar->self() || isEnemyUnit(unit)))
     {
         return;
     }
@@ -126,7 +134,7 @@ void UnitInfoManager::updateUnit(BWAPI::Unit unit)
 bool UnitInfoManager::isValidUnit(BWAPI::Unit unit) 
 {
 	// we only care about our units and enemy units
-	if (unit->getPlayer() != BWAPI::Broodwar->self() && unit->getPlayer() != BWAPI::Broodwar->enemy()) 
+	if (unit->getPlayer() != BWAPI::Broodwar->self() && !isEnemyUnit(unit))
 	{
 		return false;
 	}
@@ -199,7 +207,7 @@ const UnitData & UnitInfoManager::getUnitData(BWAPI::Player player) const
 
 bool UnitInfoManager::enemyHasCloakedUnits() const
 {
-    for (const auto & kv : getUnitData(BWAPI::Broodwar->enemy()).getUnitInfoMap())
+    for (const auto & kv : getUnitData(Global::getEnemy()).getUnitInfoMap())
 	{
 		const UnitInfo & ui(kv.second);
 

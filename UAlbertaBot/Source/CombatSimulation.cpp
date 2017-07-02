@@ -21,7 +21,10 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
 	std::vector<UnitInfo> enemyCombatUnits;
 
 	Global::Map().GetUnitsInRadius(ourCombatUnits, center, Config::Micro::CombatRegroupRadius, true, false);
-	Global::UnitInfo().getNearbyForce(enemyCombatUnits, center, BWAPI::Broodwar->enemy(), Config::Micro::CombatRegroupRadius);
+	for (auto& enemyPlayer : BWAPI::Broodwar->enemies())
+	{
+		Global::UnitInfo().getNearbyForce(enemyCombatUnits, center, enemyPlayer, Config::Micro::CombatRegroupRadius);
+	}
 
 	for (auto & unit : ourCombatUnits)
 	{
@@ -129,7 +132,7 @@ double CombatSimulation::simulateCombat()
     {
 	    SparCraft::GameState s1(_state);
         size_t selfID = getSparCraftPlayerID(BWAPI::Broodwar->self());
-        size_t enemyID = getSparCraftPlayerID(BWAPI::Broodwar->enemy());
+        size_t enemyID = getSparCraftPlayerID(Global::getEnemy());
 
         SparCraft::PlayerPtr selfNOK(new SparCraft::Player_AttackClosest(selfID));
         SparCraft::PlayerPtr enemyNOK(new SparCraft::Player_AttackClosest(enemyID));
@@ -183,7 +186,7 @@ const size_t CombatSimulation::getSparCraftPlayerID(BWAPI::Player player) const
 	{
 		return SparCraft::Players::Player_One;
 	}
-	else if (player == BWAPI::Broodwar->enemy())
+	else if (player == Global::getEnemy())
 	{
 		return SparCraft::Players::Player_Two;
 	}

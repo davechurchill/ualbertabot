@@ -63,7 +63,7 @@ void GameCommander::drawGameInformation(int x, int y)
 {
     BWAPI::Broodwar->drawTextScreen(x, y, "\x04Players:");
 	BWAPI::Broodwar->drawTextScreen(x+50, y, "%c%s \x04vs. %c%s", BWAPI::Broodwar->self()->getTextColor(), BWAPI::Broodwar->self()->getName().c_str(), 
-                                                                  BWAPI::Broodwar->enemy()->getTextColor(), BWAPI::Broodwar->enemy()->getName().c_str());
+                                                                  Global::getEnemy()->getTextColor(), Global::getEnemy()->getName().c_str());
 	y += 12;
 		
     BWAPI::Broodwar->drawTextScreen(x, y, "\x04Strategy:");

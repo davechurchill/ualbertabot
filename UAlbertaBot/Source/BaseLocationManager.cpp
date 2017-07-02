@@ -8,10 +8,13 @@ BaseLocationManager::BaseLocationManager()
     : _tileBaseLocations(BWAPI::Broodwar->mapWidth(), std::vector<BaseLocation *>(BWAPI::Broodwar->mapHeight(), nullptr))
 {
     _playerStartingBaseLocations[BWAPI::Broodwar->self()]  = nullptr;
-    _playerStartingBaseLocations[BWAPI::Broodwar->enemy()] = nullptr;
+	for (const auto& enemyPlayer : BWAPI::Broodwar->enemies())
+	{
+		_playerStartingBaseLocations[enemyPlayer] = nullptr;
+	}
 }
 
-void BaseLocationManager::onStart()
+void BaseLocationManager::onStart(const MapTools& map)
 {
     // a BaseLocation will be anything where there are minerals to mine
     // so we will first look over all minerals and cluster them based on some distance
@@ -31,7 +34,7 @@ void BaseLocationManager::onStart()
         bool foundCluster = false;
         for (std::vector<BWAPI::Unit> & cluster : resourceClusters)
         {
-            int groundDist = Global::Map().getGroundDistance(mineral->getPosition(), UnitUtil::GetUnitsetCenter(cluster));
+            int groundDist = map.getGroundDistance(mineral->getPosition(), UnitUtil::GetUnitsetCenter(cluster));
 
             if (groundDist >= 0 && groundDist < clusterDistance)
             {
@@ -58,7 +61,7 @@ void BaseLocationManager::onStart()
 
         for (std::vector<BWAPI::Unit> & cluster : resourceClusters)
         {
-            int groundDist = Global::Map().getGroundDistance(geyser->getPosition(), UnitUtil::GetUnitsetCenter(cluster));
+            int groundDist = map.getGroundDistance(geyser->getPosition(), UnitUtil::GetUnitsetCenter(cluster));
 
             if (groundDist >= 0 && groundDist < clusterDistance)
             {
@@ -95,9 +98,9 @@ void BaseLocationManager::onStart()
             _playerStartingBaseLocations[BWAPI::Broodwar->self()] = &baseLocation;
         }
 
-        if (baseLocation.isPlayerStartLocation(BWAPI::Broodwar->enemy()))
+        if (baseLocation.isPlayerStartLocation(Global::getEnemy()))
         {
-            _playerStartingBaseLocations[BWAPI::Broodwar->enemy()] = &baseLocation;
+            _playerStartingBaseLocations[Global::getEnemy()] = &baseLocation;
         }
     }
 
@@ -122,20 +125,16 @@ void BaseLocationManager::onStart()
 
     // construct the sets of occupied base locations
     _occupiedBaseLocations[BWAPI::Broodwar->self()] = std::set<const BaseLocation *>();
-    _occupiedBaseLocations[BWAPI::Broodwar->enemy()] = std::set<const BaseLocation *>();
+    _occupiedBaseLocations[Global::getEnemy()] = std::set<const BaseLocation *>();
 
     // check to see that we have set a base location for ourself
     UAB_ASSERT(_playerStartingBaseLocations[BWAPI::Broodwar->self()] != nullptr, "We didn't set a valid selfStartLocation in BaseLocations");
 }
 
-void BaseLocationManager::update()
+void BaseLocationManager::update(const UnitInfoManager & unitManager)
 {   
     // reset the player occupation information for each location
-    for (auto & baseLocation : _baseLocationData)
-    {
-        baseLocation.setPlayerOccupying(BWAPI::Broodwar->self(), false);
-        baseLocation.setPlayerOccupying(BWAPI::Broodwar->enemy(), false);
-    }
+	resetPlayerOccupation();
 
     // for each unit on the map, update which base location it may be occupying
     for (auto & unit : BWAPI::Broodwar->self()->getUnits())
@@ -155,7 +154,7 @@ void BaseLocationManager::update()
     }
 
     // update enemy base occupations
-    for (const auto & kv : Global::UnitInfo().getUnitInfoMap(BWAPI::Broodwar->enemy()))
+    for (const auto & kv : unitManager.getUnitInfoMap(Global::getEnemy()))
     {
         const UnitInfo & ui = kv.second;
 
@@ -168,7 +167,7 @@ void BaseLocationManager::update()
 
         if (baseLocation != nullptr)
         {
-            baseLocation->setPlayerOccupying(BWAPI::Broodwar->enemy(), true);
+            baseLocation->setPlayerOccupying(Global::getEnemy(), true);
         }
     }
 
@@ -176,19 +175,20 @@ void BaseLocationManager::update()
     // this will happen one of two ways:
     
     // 1. we've seen the enemy base directly, so the baselocation will know
-    if (_playerStartingBaseLocations[BWAPI::Broodwar->enemy()] == nullptr)
+	auto enemyPlayer = Global::getEnemy();
+    if (_playerStartingBaseLocations[enemyPlayer] == nullptr)
     {
         for (auto & baseLocation : _baseLocationData)
         {
-            if (baseLocation.isPlayerStartLocation(BWAPI::Broodwar->enemy()))
+            if (baseLocation.isPlayerStartLocation(enemyPlayer))
             {
-                _playerStartingBaseLocations[BWAPI::Broodwar->enemy()] = &baseLocation;
+                _playerStartingBaseLocations[enemyPlayer] = &baseLocation;
             }
         }
     }
     
     // 2. we've explored every other start location and haven't seen the enemy yet
-    if (_playerStartingBaseLocations[BWAPI::Broodwar->enemy()] == nullptr)
+    if (_playerStartingBaseLocations[Global::getEnemy()] == nullptr)
     {
         int numStartLocations = getStartingBaseLocations().size();
         int numExploredLocations = 0;
@@ -214,14 +214,18 @@ void BaseLocationManager::update()
         // if we have explored all but one location, then the unexplored one is the enemy start location
         if (numExploredLocations == numStartLocations - 1 && unexplored != nullptr)
         {
-            _playerStartingBaseLocations[BWAPI::Broodwar->enemy()] = unexplored;
-            unexplored->setPlayerOccupying(BWAPI::Broodwar->enemy(), true);
+            _playerStartingBaseLocations[Global::getEnemy()] = unexplored;
+            unexplored->setPlayerOccupying(Global::getEnemy(), true);
         }
     }
 
     // update the occupied base locations for each player
     _occupiedBaseLocations[BWAPI::Broodwar->self()] = std::set<const BaseLocation *>();
-    _occupiedBaseLocations[BWAPI::Broodwar->enemy()] = std::set<const BaseLocation *>();
+	for (const auto& enemyPlayer : BWAPI::Broodwar->enemies())
+	{
+		_occupiedBaseLocations[enemyPlayer] = std::set<const BaseLocation *>();
+	}
+
     for (auto & baseLocation : _baseLocationData)
     {
         if (baseLocation.isOccupiedByPlayer(BWAPI::Broodwar->self()))
@@ -229,21 +233,40 @@ void BaseLocationManager::update()
             _occupiedBaseLocations[BWAPI::Broodwar->self()].insert(&baseLocation);
         }
 
-        if (baseLocation.isOccupiedByPlayer(BWAPI::Broodwar->enemy()))
-        {
-            _occupiedBaseLocations[BWAPI::Broodwar->enemy()].insert(&baseLocation);
-        }
+		for (const auto& enemyPlayer : BWAPI::Broodwar->enemies())
+		{
+			if (baseLocation.isOccupiedByPlayer(enemyPlayer))
+			{
+				_occupiedBaseLocations[enemyPlayer].insert(&baseLocation);
+			}
+		}
     }
 
     // draw the debug information for each base location
     drawBaseLocations();
 }
 
+void UAlbertaBot::BaseLocationManager::resetPlayerOccupation()
+{
+	for (auto & baseLocation : _baseLocationData)
+	{
+		baseLocation.setPlayerOccupying(BWAPI::Broodwar->self(), false);
+		for (const auto& enemyPlayer : BWAPI::Broodwar->enemies())
+		{
+			baseLocation.setPlayerOccupying(enemyPlayer, false);
+		}
+	}
+}
+
 void BaseLocationManager::drawBaseLocations()
 {
+	auto isBuildableTileCheck = [](BWAPI::TilePosition tile)
+	{
+		return Global::Map().isBuildableTile(tile);
+	};
     for (auto & baseLocation : _baseLocationData)
     {
-        baseLocation.draw();
+        baseLocation.draw(isBuildableTileCheck);
     }
 
     BWAPI::Position nextExpansionPosition(getNextExpansion(BWAPI::Broodwar->self()));

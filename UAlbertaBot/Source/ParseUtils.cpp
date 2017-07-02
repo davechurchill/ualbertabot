@@ -16,6 +16,26 @@ inline bool exists_test1(const std::string& name) {
 	}
 }
 
+std::pair<bool, std::string> findPlayerSpecificStrategy(const rapidjson::Value & strategy, const char * ourRace, const BWAPI::Player& player)
+{
+	const auto enemyName = player->getName().c_str();
+	const auto & specific = strategy["EnemySpecificStrategy"];
+
+	// check to see if our current enemy name is listed anywhere in the specific strategies
+	if (specific.HasMember(enemyName) && specific[enemyName].IsObject())
+	{
+		const auto & enemyStrategies = specific[enemyName];
+
+		// if that enemy has a strategy listed for our current race, use it
+		if (enemyStrategies.HasMember(ourRace) && enemyStrategies[ourRace].IsString())
+		{
+			return std::make_pair(true, enemyStrategies[ourRace].GetString());
+		}
+	}
+
+	return std::make_pair(false, std::string());
+}
+
 std::string ParseUtils::FindConfigurationLocation(const std::string & filename)
 {
 	auto bwapiAILocation = "bwapi-data/AI/" + filename;
@@ -209,21 +229,16 @@ void ParseUtils::ParseStrategy(const std::string & filename, StrategyManager & s
         JSONTools::ReadBool("UseEnemySpecificStrategy", strategy, Config::Strategy::UseEnemySpecificStrategy);
         if (Config::Strategy::UseEnemySpecificStrategy && strategy.HasMember("EnemySpecificStrategy") && strategy["EnemySpecificStrategy"].IsObject())
         {
-            const std::string enemyName = BWAPI::Broodwar->enemy()->getName();
-            const rapidjson::Value & specific = strategy["EnemySpecificStrategy"];
-
-            // check to see if our current enemy name is listed anywhere in the specific strategies
-            if (specific.HasMember(enemyName.c_str()) && specific[enemyName.c_str()].IsObject())
-            {
-                const rapidjson::Value & enemyStrategies = specific[enemyName.c_str()];
-
-                // if that enemy has a strategy listed for our current race, use it
-                if (enemyStrategies.HasMember(ourRace) && enemyStrategies[ourRace].IsString())
-                {
-                    Config::Strategy::StrategyName = enemyStrategies[ourRace].GetString();
-                    Config::Strategy::FoundEnemySpecificStrategy = true;
-                }
-            }
+			for (const auto& enemy : BWAPI::Broodwar->enemies())
+			{
+				auto searchResult = findPlayerSpecificStrategy(strategy, ourRace, enemy);
+				if (searchResult.first)
+				{
+					Config::Strategy::StrategyName = searchResult.second;
+					Config::Strategy::FoundEnemySpecificStrategy = true;
+					break;
+				}
+			}
         }
 
         // Parse all the Strategies

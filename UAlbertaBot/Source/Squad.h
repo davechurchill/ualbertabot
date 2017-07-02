@@ -33,7 +33,7 @@ class Squad
 
 	std::map<BWAPI::Unit, bool>	_nearEnemy;
 
-	BWAPI::Unit		unitClosestToEnemy();
+	BWAPI::Unit		unitClosestToEnemy(std::function<int(const BWAPI::Position & src, const BWAPI::Position & dest)> distance);
     
 	void                        updateUnits();
 	void                        addUnitsToMicroManagers();
@@ -50,7 +50,7 @@ public:
 	Squad();
     ~Squad();
 
-	void                update();
+	void                update(const MapTools& map);
 	void                setSquadOrder(const SquadOrder & so);
 	void                addUnit(BWAPI::Unit u);
 	void                removeUnit(BWAPI::Unit u);
@@ -61,6 +61,9 @@ public:
     void                setPriority(const size_t & priority);
     const std::string & getName() const;
     
+	/*
+	 Calculate center of the squad.
+	*/
 	BWAPI::Position     calcCenter();
 	BWAPI::Position     calcRegroupPosition();
 

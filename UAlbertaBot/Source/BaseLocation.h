@@ -51,7 +51,7 @@ public:
 
     const std::vector<BWAPI::TilePosition> & getClosestTiles() const;
 
-    void draw();
+    void draw(std::function<bool(BWAPI::TilePosition tile)> isBuildableTile);
 };
 
 

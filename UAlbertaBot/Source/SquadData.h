@@ -8,7 +8,7 @@ class SquadData
 {
 	std::map<std::string, Squad> _squads;
 
-    void    updateAllSquads();
+    void    updateAllSquads(const MapTools& map);
     void    verifySquadUniqueMembership();
 
 public:
@@ -23,7 +23,7 @@ public:
     void            removeSquad(const std::string & squadName);
 	void            drawSquadInformation(int x, int y);
 
-    void            update();
+    void            update(const MapTools& map);
 
     bool            squadExists(const std::string & squadName);
     bool            unitIsInSquad(BWAPI::Unit unit) const;

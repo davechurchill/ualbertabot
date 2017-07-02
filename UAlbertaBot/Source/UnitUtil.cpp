@@ -94,6 +94,17 @@ Rect UnitUtil::GetRect(BWAPI::Unit unit)
     return r;
 }
 
+std::experimental::generator<BWAPI::Unit> UAlbertaBot::UnitUtil::getEnemyUnits()
+{
+	for (const auto& enemy : BWAPI::Broodwar->enemies())
+	{
+		for (const auto & unit : enemy->getUnits())
+		{
+			co_yield unit;
+		}
+	}
+}
+
 double UnitUtil::GetDistanceBetweenTwoRectangles(Rect & rect1, Rect & rect2)
 {
     Rect & mostLeft = rect1.x < rect2.x ? rect1 : rect2;

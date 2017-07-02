@@ -1,6 +1,7 @@
 #include "Common.h"
 #include "WorkerManager.h"
 #include "Micro.h"
+#include "UnitUtil.h"
 
 using namespace UAlbertaBot;
 
@@ -154,7 +155,7 @@ BWAPI::Unit WorkerManager::getClosestEnemyUnit(BWAPI::Unit worker)
 	BWAPI::Unit closestUnit = nullptr;
 	double closestDist = 10000;
 
-	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
+	for (auto & unit : UnitUtil::getEnemyUnits())
 	{
 		double dist = unit->getDistance(worker);
 

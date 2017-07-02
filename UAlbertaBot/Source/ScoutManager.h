@@ -5,6 +5,8 @@
 
 namespace UAlbertaBot
 {
+	class BaseLocation;
+
 class ScoutManager 
 {
 	BWAPI::Unit     _workerScout;
@@ -23,6 +25,9 @@ class ScoutManager
 	BWAPI::Unit     closestEnemyWorker();
     //void            followPerimeter();
 	void            moveScouts();
+	bool exploreEnemyBases();
+	bool allEnemyBasesExplored() const;
+	void harrasEnemyBaseIfPossible(const BaseLocation * enemyBaseLocation, int scoutHP);
     void            drawScoutInformation(int x, int y);
     //void            calculateEnemyRegionVertices();
 

@@ -2,6 +2,7 @@
 #include "UABAssert.h"
 #include "Global.h"
 #include "Timer.hpp"
+#include <functional>
 
 using namespace UAlbertaBot;
 
@@ -20,7 +21,9 @@ DistanceMap::DistanceMap(const BWAPI::TilePosition & startTile)
     , _startTile(startTile)
     , _dist     (BWAPI::Broodwar->mapWidth(), std::vector<int>(BWAPI::Broodwar->mapHeight(), -1))
 {
-    computeDistanceMap(_startTile);
+	auto& map = Global::Map();
+	auto isWalkable = [map](const BWAPI::TilePosition& tile) { return map.isWalkable(tile); };
+	computeDistanceMap(_startTile, isWalkable);
     _sortedTilePositions.reserve(_width * _height);
 }
 
@@ -47,7 +50,7 @@ const std::vector<BWAPI::TilePosition> & DistanceMap::getSortedTiles() const
 
 // Computes _dist[x][y] = ground distance from (startX, startY) to (x,y)
 // Uses BFS, since the map is quite large and DFS may cause a stack overflow
-void DistanceMap::computeDistanceMap(const BWAPI::TilePosition & startTile)
+void DistanceMap::computeDistanceMap(const BWAPI::TilePosition & startTile, std::function<bool(BWAPI::TilePosition)> isWalkable)
 {
     // the fringe for the BFS we will perform to calculate distances
     std::vector<BWAPI::TilePosition> fringe;
@@ -67,7 +70,7 @@ void DistanceMap::computeDistanceMap(const BWAPI::TilePosition & startTile)
             BWAPI::TilePosition nextTile(tile.x + actionX[a], tile.y + actionY[a]);
 
             // if the new tile is inside the map bounds, is walkable, and has not been visited yet, set the distance of its parent + 1
-            if (nextTile.isValid() && Global::Map().isWalkable(nextTile) && getDistance(nextTile) == -1)
+            if (nextTile.isValid() && isWalkable(nextTile) && getDistance(nextTile) == -1)
             {
                 _dist[nextTile.x][nextTile.y] = _dist[tile.x][tile.y] + 1;
                 fringe.push_back(nextTile);

@@ -8,9 +8,9 @@ SquadData::SquadData()
 	
 }
 
-void SquadData::update()
+void SquadData::update(const MapTools& map)
 {
-	updateAllSquads();
+	updateAllSquads(map);
     verifySquadUniqueMembership();
 }
 
@@ -71,11 +71,11 @@ void SquadData::addSquad(const std::string & squadName, const Squad & squad)
 	_squads[squadName] = squad;
 }
 
-void SquadData::updateAllSquads()
+void SquadData::updateAllSquads(const MapTools& map)
 {
 	for (auto & kv : _squads)
 	{
-		kv.second.update();
+		kv.second.update(map);
 	}
 }
 

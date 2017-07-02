@@ -1,6 +1,7 @@
 #pragma once
 
 #include <BWAPI.h>
+#include <experimental/generator>
 
 namespace UAlbertaBot
 {
@@ -33,5 +34,7 @@ namespace UnitUtil
 
     double GetDistanceBetweenTwoRectangles(Rect & rect1, Rect & rect2);
     Rect GetRect(BWAPI::Unit unit);
+
+	std::experimental::generator<BWAPI::Unit> getEnemyUnits();
 };
 }

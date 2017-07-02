@@ -49,6 +49,7 @@ public:
     void        drawProductionInformation(int x,int y);
 
     BWAPI::Unit getProducer(MetaType t,BWAPI::Position closestTo = BWAPI::Positions::None);
+	const StrategyManager& getStrategyManager() const;
 };
 
 

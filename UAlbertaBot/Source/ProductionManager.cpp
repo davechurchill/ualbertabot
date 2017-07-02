@@ -42,14 +42,21 @@ void ProductionManager::performBuildOrderSearch()
     {
         if (!_bossManager.isSearchInProgress())
         {
-			_bossManager.startNewSearch(Global::Strategy().getBuildOrderGoal(), _buildingManager);
+			auto strategyManager = this->getStrategyManager();
+			_bossManager.startNewSearch(strategyManager.getBuildOrderGoal(), _buildingManager);
         }
     }
 }
 
+const StrategyManager& ProductionManager::getStrategyManager() const
+{
+	return Global::Strategy();
+}
+
 void ProductionManager::onStart()
 {
-    setBuildOrder(Global::Strategy().getOpeningBookBuildOrder());
+	auto strategyManager = this->getStrategyManager();
+	setBuildOrder(strategyManager.getOpeningBookBuildOrder());
 }
 
 void ProductionManager::update() 
@@ -81,7 +88,8 @@ void ProductionManager::update()
 	// if they have cloaked units get a new goal asap
 	if (!_enemyCloakedDetected && Global::UnitInfo().enemyHasCloakedUnits())
 	{
-        if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Protoss)
+		auto ourRace = BWAPI::Broodwar->self()->getRace();
+        if (ourRace == BWAPI::Races::Protoss)
         {
 		    if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Photon_Cannon) < 2)
 		    {
@@ -94,7 +102,7 @@ void ProductionManager::update()
 			    _queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Protoss_Forge), true);
 		    }
         }
-        else if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran)
+        else if (ourRace == BWAPI::Races::Terran)
         {
             if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Missile_Turret) < 2)
 		    {
@@ -162,7 +170,8 @@ void ProductionManager::manageBuildOrderQueue()
 		bool canMake = canMakeNow(producer, currentItem.metaType);
 
 		// if we try to build too many refineries manually remove it
-		if (currentItem.metaType.isRefinery() && (BWAPI::Broodwar->self()->allUnitCount(BWAPI::Broodwar->self()->getRace().getRefinery() >= 3)))
+		auto self = BWAPI::Broodwar->self();
+		if (currentItem.metaType.isRefinery() && (self->allUnitCount(self->getRace().getRefinery() >= 3)))
 		{
 			_queue.removeCurrentHighestPriorityItem();
 			break;

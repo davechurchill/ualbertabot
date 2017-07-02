@@ -59,7 +59,7 @@ void UAlbertaBot_Tournament::onStart()
 
     _unitInfoManager.onStart();
     _mapTools.onStart();
-    _baseLocationManager.onStart();
+    _baseLocationManager.onStart(_mapTools);
     _gameCommander.onStart();
 }
 
@@ -100,7 +100,7 @@ void UAlbertaBot_Tournament::onFrame()
     _strategyManager.update();
     _unitInfoManager.update();
     _workerManager.update();
-    _baseLocationManager.update();
+    _baseLocationManager.update(Global::UnitInfo());
 
     // update the game commander
 	_gameCommander.update(); 

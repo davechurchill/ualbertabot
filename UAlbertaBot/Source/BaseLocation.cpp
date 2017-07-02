@@ -15,9 +15,12 @@ BaseLocation::BaseLocation(int baseID)
     , _bottom               (std::numeric_limits<int>::min())
 {
     _isPlayerStartLocation[BWAPI::Broodwar->self()] = false;
-    _isPlayerStartLocation[BWAPI::Broodwar->enemy()] = false;
     _isPlayerOccupying[BWAPI::Broodwar->self()] = false;
-    _isPlayerOccupying[BWAPI::Broodwar->enemy()] = false;
+	for (const auto& enemyPlayer : BWAPI::Broodwar->enemies())
+	{
+		_isPlayerStartLocation[enemyPlayer] = false;
+		_isPlayerOccupying[enemyPlayer] = false;
+	}
 }
 
 BaseLocation::BaseLocation(int baseID, const std::vector<BWAPI::Unit> & resources)
@@ -116,7 +119,8 @@ void BaseLocation::setPlayerOccupying(BWAPI::Player player, bool occupying)
     _isPlayerOccupying[player] = occupying;
 
     // if this base is a start location that's occupied by the enemy, it's that enemy's start location
-    if (occupying && player == BWAPI::Broodwar->enemy() && isStartLocation() && _isPlayerStartLocation[player] == false)
+	bool isEnemyPlayer = player == Global::getEnemy();
+    if (occupying && isEnemyPlayer && isStartLocation() && _isPlayerStartLocation[player] == false)
     {
         _isPlayerStartLocation[player] = true;
     }
@@ -172,7 +176,7 @@ bool BaseLocation::isStartLocation() const
     return _isStartLocation;
 }
 
-void BaseLocation::draw()
+void BaseLocation::draw(std::function<bool(BWAPI::TilePosition tile)> isBuildableTile)
 {
     BWAPI::Broodwar->drawCircleMap(_centerOfResources, 16, BWAPI::Colors::Yellow);
 
@@ -188,7 +192,7 @@ void BaseLocation::draw()
         ss << "Self ";
     }
 
-    if (isOccupiedByPlayer(BWAPI::Broodwar->enemy()))
+    if (isOccupiedByPlayer(Global::getEnemy()))
     {
         ss << "Enemy ";
     }
@@ -231,12 +235,13 @@ void BaseLocation::draw()
             continue;
         }
 
-        BWAPI::Color color = Global::Map().isBuildableTile(tile) ? BWAPI::Colors::Green : BWAPI::Colors::Red;
-        if (Global::Map().isBuildableTile(tile) && !Global::Map().isDepotBuildableTile(tile))
+        BWAPI::Color color = isBuildableTile(tile) ? BWAPI::Colors::Green : BWAPI::Colors::Red;
+        if (isBuildableTile(tile) && !Global::Map().isDepotBuildableTile(tile))
         {
             color = BWAPI::Colors::Blue;
         }
-        if (Global::Map().isBuildable(tile, BWAPI::UnitTypes::Terran_Command_Center))
+
+		if (Global::Map().isBuildable(tile, BWAPI::UnitTypes::Terran_Command_Center))
         {
             color = BWAPI::Colors::Purple;
         }

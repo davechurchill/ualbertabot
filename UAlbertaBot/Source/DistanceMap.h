@@ -15,7 +15,7 @@ class DistanceMap
     std::vector<std::vector<int>> _dist;
     std::vector<BWAPI::TilePosition> _sortedTilePositions;
 
-    void computeDistanceMap(const BWAPI::TilePosition & startTile);
+    void computeDistanceMap(const BWAPI::TilePosition & startTile, std::function<bool(BWAPI::TilePosition)> isWalkable);
 
 public:
 

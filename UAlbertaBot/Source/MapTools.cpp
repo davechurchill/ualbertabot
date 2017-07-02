@@ -1,6 +1,7 @@
 #include "MapTools.h"
 #include "Global.h"
 #include "Timer.hpp"
+#include "UnitUtil.h"
 #include <utility>
 #include <type_traits>
 
@@ -266,7 +267,7 @@ void MapTools::drawLastSeen() const
     }
 
     // draw the least recently seen position tile as a yellow circle on the map
-    BWAPI::Position lrsp = getLeastRecentlySeenPosition();
+    BWAPI::Position lrsp = getLeastRecentlySeenPosition(Global::Bases());
     BWAPI::Broodwar->drawCircleMap(lrsp, 32, BWAPI::Colors::Yellow, true);
 
 
@@ -352,7 +353,7 @@ void MapTools::GetUnitsInRadius(std::vector<BWAPI::Unit> & units, BWAPI::Positio
 
     if (oppUnits)
     {
-        for (const BWAPI::Unit & unit : BWAPI::Broodwar->enemy()->getUnits())
+        for (const auto & unit : UnitUtil::getEnemyUnits())
         {
             if (unit->getPosition().getDistance(center) <= radius)
             {
@@ -401,15 +402,16 @@ bool MapTools::isConnected(const BWAPI::Position & from, const BWAPI::Position &
     return isConnected(BWAPI::TilePosition(from), BWAPI::TilePosition(to));
 }
 
-BWAPI::Position MapTools::getLeastRecentlySeenPosition() const
+BWAPI::Position MapTools::getLeastRecentlySeenPosition(const BaseLocationManager & bases) const
 {
 	int minSeen = std::numeric_limits<int>::max();
 	BWAPI::TilePosition leastSeen(0,0);
-    const BaseLocation * baseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->self());
+    const BaseLocation * baseLocation = bases.getPlayerStartingBaseLocation(BWAPI::Broodwar->self());
 
-    if (Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy()) != nullptr)
+	const auto enemyStartLocation = bases.getPlayerStartingBaseLocation(Global::getEnemy());
+    if (enemyStartLocation != nullptr)
     {
-        baseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
+        baseLocation = enemyStartLocation;
     }
 
     BWAPI::Position myBasePosition = baseLocation->getPosition();

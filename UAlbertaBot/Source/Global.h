@@ -20,5 +20,6 @@ namespace Global
     WorkerManager & Workers();
     const UnitInfoManager & UnitInfo();
     const MapTools & Map();
+	BWAPI::Player getEnemy();
 };
 }

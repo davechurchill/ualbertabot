@@ -9,7 +9,7 @@ using namespace UAlbertaBot;
 // constructor
 StrategyManager::StrategyManager() 
 	: _selfRace(BWAPI::Broodwar->self()->getRace())
-	, _enemyRace(BWAPI::Broodwar->enemy()->getRace())
+	, _enemyRace(Global::getEnemy()->getRace())
     , _emptyBuildOrder(BWAPI::Broodwar->self()->getRace())
 {
     // parse the configuration file for the bot's strategies
@@ -315,7 +315,7 @@ void StrategyManager::readResults()
         return;
     }
 
-    std::string enemyName = BWAPI::Broodwar->enemy()->getName();
+    std::string enemyName = Global::getEnemy()->getName();
     std::replace(enemyName.begin(), enemyName.end(), ' ', '_');
 
     std::string enemyResultsFile = Config::Strategy::ReadDir + enemyName + ".txt";
@@ -364,7 +364,7 @@ void StrategyManager::writeResults()
         return;
     }
 
-    std::string enemyName = BWAPI::Broodwar->enemy()->getName();
+    std::string enemyName = Global::getEnemy()->getName();
     std::replace(enemyName.begin(), enemyName.end(), ' ', '_');
 
     std::string enemyResultsFile = Config::Strategy::WriteDir + enemyName + ".txt";

@@ -64,7 +64,7 @@ void CombatCommander::update(const std::vector<BWAPI::Unit> & combatUnits)
 		updateAttackSquads();
 	}
 
-	_squadData.update();
+	_squadData.update(Global::Map());
 }
 
 void CombatCommander::updateIdleSquad()
@@ -182,7 +182,7 @@ void CombatCommander::updateScoutDefenseSquad()
 
     // get all of the enemy units in this region
 	std::vector<BWAPI::Unit> enemyUnitsInRegion;
-    for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
+    for (auto & unit : UnitUtil::getEnemyUnits())
     {
         if (myBaseLocation->containsPosition(unit->getPosition()))
         {
@@ -235,7 +235,7 @@ void CombatCommander::updateDefenseSquads()
         return; 
     }
     
-    const BaseLocation * enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
+    const BaseLocation * enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(Global::getEnemy());
 
 	// for each of our occupied regions
 	for (const BaseLocation * myBaseLocation : Global::Bases().getOccupiedBaseLocations(BWAPI::Broodwar->self()))
@@ -253,7 +253,7 @@ void CombatCommander::updateDefenseSquads()
 
 		// all of the enemy units in this region
 		std::vector<BWAPI::Unit> enemyUnitsInRegion;
-        for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
+        for (auto & unit : UnitUtil::getEnemyUnits())
         {
             // if it's an overlord, don't worry about it for defense, we don't care what they see
             if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord)
@@ -335,7 +335,7 @@ void CombatCommander::updateDefenseSquads()
         }
 
         bool enemyUnitInRange = false;
-        for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
+        for (auto & unit : UnitUtil::getEnemyUnits())
         {
             if (unit->getPosition().getDistance(order.getPosition()) < order.getRadius())
             {
@@ -452,46 +452,51 @@ void CombatCommander::drawSquadInformation(int x, int y)
 
 BWAPI::Position CombatCommander::getMainAttackLocation()
 {
-    const BaseLocation * enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
-
     // First choice: Attack an enemy region if we can see units inside it
-    if (enemyBaseLocation)
-    {
-        BWAPI::Position enemyBasePosition = enemyBaseLocation->getPosition();
+	for (auto& enemyPlayer : BWAPI::Broodwar->enemies())
+	{
+		const BaseLocation * enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(enemyPlayer);
+		if (enemyBaseLocation)
+		{
+			BWAPI::Position enemyBasePosition = enemyBaseLocation->getPosition();
 
-        // If the enemy base hasn't been seen yet, go there.
-        if (!BWAPI::Broodwar->isExplored(BWAPI::TilePosition(enemyBasePosition)))
-        {
-            return enemyBasePosition;
-        }
+			// If the enemy base hasn't been seen yet, go there.
+			if (!BWAPI::Broodwar->isExplored(BWAPI::TilePosition(enemyBasePosition)))
+			{
+				return enemyBasePosition;
+			}
 
-        // get all known enemy units in the area
-        std::vector<BWAPI::Unit> enemyUnitsInArea;
-        Global::Map().GetUnitsInRadius(enemyUnitsInArea, enemyBasePosition, 800, false, true);
+			// get all known enemy units in the area
+			std::vector<BWAPI::Unit> enemyUnitsInArea;
+			Global::Map().GetUnitsInRadius(enemyUnitsInArea, enemyBasePosition, 800, false, true);
 
-        for (auto & unit : enemyUnitsInArea)
-        {
-            if (unit->getType() != BWAPI::UnitTypes::Zerg_Overlord)
-            {
-                // Enemy base is not empty: It's not only overlords in the enemy base area.
-                return enemyBasePosition;
-            }
-        }
-    }
+			for (auto & unit : enemyUnitsInArea)
+			{
+				if (unit->getType() != BWAPI::UnitTypes::Zerg_Overlord)
+				{
+					// Enemy base is not empty: It's not only overlords in the enemy base area.
+					return enemyBasePosition;
+				}
+			}
+		}
+	}
 
     // Second choice: Attack known enemy buildings
-    for (const auto & kv : Global::UnitInfo().getUnitInfoMap(BWAPI::Broodwar->enemy()))
-    {
-        const UnitInfo & ui = kv.second;
-
-        if (ui.type.isBuilding() && ui.lastPosition != BWAPI::Positions::None)
+	for (auto& enemyPlayer : BWAPI::Broodwar->enemies())
+	{
+		for (const auto & kv : Global::UnitInfo().getUnitInfoMap(enemyPlayer))
 		{
-			return ui.lastPosition;	
+			const UnitInfo & ui = kv.second;
+
+			if (ui.type.isBuilding() && ui.lastPosition != BWAPI::Positions::None)
+			{
+				return ui.lastPosition;
+			}
 		}
-    }
+	}
 
     // Third choice: Attack visible enemy units that aren't overlords
-    for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
+    for (auto & unit : UnitUtil::getEnemyUnits())
 	{
         if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord)
         {
@@ -505,7 +510,7 @@ BWAPI::Position CombatCommander::getMainAttackLocation()
 	}
 
     // Fourth choice: We can't see anything so explore the map attacking along the way
-    return Global::Map().getLeastRecentlySeenPosition();
+    return Global::Map().getLeastRecentlySeenPosition(Global::Bases());
 }
 
 BWAPI::Unit CombatCommander::findClosestWorkerToTarget(std::vector<BWAPI::Unit> & unitsToAssign, BWAPI::Unit target)
@@ -558,7 +563,7 @@ int CombatCommander::defendWithWorkers()
 	int defenseRadius = 300;
 
 	// fill the set with the types of units we're concerned about
-	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
+	for (auto & unit : UnitUtil::getEnemyUnits())
 	{
 		// if it's a zergling or a worker we want to defend
 		if (unit->getType() == BWAPI::UnitTypes::Zerg_Zergling)
@@ -581,7 +586,7 @@ int CombatCommander::numZerglingsInOurBase()
     BWAPI::Position ourBasePosition = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
     
     // check to see if the enemy has zerglings as the only attackers in our base
-    for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
+    for (auto & unit : UnitUtil::getEnemyUnits())
     {
         if (unit->getType() != BWAPI::UnitTypes::Zerg_Zergling)
         {
@@ -602,7 +607,7 @@ bool CombatCommander::beingBuildingRushed()
     BWAPI::Position myBasePosition(BWAPI::Broodwar->self()->getStartLocation());
 
     // check to see if the enemy has buildings near our base
-    for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
+    for (auto & unit : UnitUtil::getEnemyUnits())
     {
         if (unit->getType().isBuilding() && unit->getDistance(myBasePosition) < 1200)
         {

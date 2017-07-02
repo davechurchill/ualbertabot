@@ -8,6 +8,8 @@
 
 namespace UAlbertaBot
 {
+
+	class BaseLocationManager;
     
 class MapTools
 {
@@ -46,13 +48,17 @@ public:
     bool                    isWalkable(const BWAPI::TilePosition & tile) const;
     bool                    isWalkable(const BWAPI::Position & pos) const;
     void                    drawLastSeen() const;
-    BWAPI::Position         getLeastRecentlySeenPosition() const;
+    BWAPI::Position         getLeastRecentlySeenPosition(const BaseLocationManager & bases) const;
     bool                    isBuildable(BWAPI::TilePosition tile, BWAPI::UnitType type) const;
     bool                    isBuildableTile(BWAPI::TilePosition tile) const;
     bool                    isDepotBuildableTile(BWAPI::TilePosition tile) const;
     
 
     // static helper functions
+
+	/*
+		Get units within radius of center and add to units
+	*/
     static void             GetUnitsInRadius(std::vector<BWAPI::Unit> & units, BWAPI::Position center, int radius, bool ourUnits, bool oppUnits);
 
     // returns a list of all tiles on the map, sorted by 4-direcitonal walk distance from the given position

@@ -38,6 +38,11 @@ public:
     void					onUnitMorph(BWAPI::Unit unit)       { updateUnit(unit); }
     void					onUnitRenegade(BWAPI::Unit unit)    { updateUnit(unit); }
     void					onUnitDestroy(BWAPI::Unit unit);
+	
+	/*
+		Checks whether unit is enemy unit or not.
+	*/
+	bool isEnemyUnit(BWAPI::Unit unit);
 
     void                    getNearbyForce(std::vector<UnitInfo> & unitInfo,BWAPI::Position p,BWAPI::Player player,int radius) const;
 

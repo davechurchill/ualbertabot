@@ -18,6 +18,8 @@ struct GroundThreat
 	double weight;
 };
 
+class MapTools;
+
 class MicroManager
 {
 	std::vector<BWAPI::Unit> _units;
@@ -38,8 +40,8 @@ public:
 	const std::vector<BWAPI::Unit> & getUnits() const;
 
 	void				setUnits(const std::vector<BWAPI::Unit> & u);
-	void				execute(const SquadOrder & order);
-	void				regroup(const BWAPI::Position & regroupPosition) const;
+	void				execute(const MapTools & map, const SquadOrder & order);
+	void				regroup(const MapTools & map, const BWAPI::Position & regroupPosition) const;
 
 };
 }
