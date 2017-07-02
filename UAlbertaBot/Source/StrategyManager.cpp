@@ -13,7 +13,8 @@ StrategyManager::StrategyManager()
     , _emptyBuildOrder(BWAPI::Broodwar->self()->getRace())
 {
     // parse the configuration file for the bot's strategies
-	ParseUtils::ParseStrategy(Config::ConfigFile::ConfigFileLocation, *this);
+	auto configurationFile = ParseUtils::FindConfigurationLocation(Config::ConfigFile::ConfigFileLocation);
+	ParseUtils::ParseStrategy(configurationFile, *this);
 }
 
 void StrategyManager::update()

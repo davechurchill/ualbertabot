@@ -4,7 +4,7 @@
         "BotName"                   : "Andrey Kurdiumov",
         "Authors"                   : "Andrey Kurdiumov, David Churchill",
         "PrintInfoOnStart"          : false,
-        "BotMode"                   : "Arena"
+        "BotMode"                   : "Tournament"
     },
         
     "BWAPI" : 

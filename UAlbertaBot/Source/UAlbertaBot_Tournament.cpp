@@ -23,7 +23,8 @@ void UAlbertaBot_Tournament::onStart()
 {
     // Initialize SparCraft, the combat simulation package
     SparCraft::init();
-    SparCraft::AIParameters::Instance().parseFile(Config::SparCraft::SparCraftConfigFile);
+	auto configurationFile = ParseUtils::FindConfigurationLocation(Config::SparCraft::SparCraftConfigFile);
+	SparCraft::AIParameters::Instance().parseFile(configurationFile);
 
     // Initialize BOSS, the Build Order Search System
     BOSS::init();

@@ -6,6 +6,26 @@
 
 using namespace UAlbertaBot;
 
+inline bool exists_test1(const std::string& name) {
+	if (FILE *file = fopen(name.c_str(), "r")) {
+		fclose(file);
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+std::string ParseUtils::FindConfigurationLocation(const std::string & filename)
+{
+	auto bwapiAILocation = "bwapi-data/AI/" + filename;
+	if (exists_test1(bwapiAILocation)) {
+		return bwapiAILocation;
+	}
+
+	return filename;
+}
+
 void ParseUtils::ParseConfigFile(const std::string & filename)
 {
     rapidjson::Document doc;

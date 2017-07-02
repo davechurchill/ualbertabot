@@ -96,7 +96,8 @@ int main(int argc, const char * argv[])
     bool exitIfStarcraftShutdown = true;
 
     // parse the bot's configuration file, if it is not found or isn't valid, the program will exit
-    ParseUtils::ParseConfigFile(Config::ConfigFile::ConfigFileLocation);
+	auto configurationFile = ParseUtils::FindConfigurationLocation(Config::ConfigFile::ConfigFileLocation);
+	ParseUtils::ParseConfigFile(configurationFile);
 
     size_t gameCount = 0;
 	while (true)

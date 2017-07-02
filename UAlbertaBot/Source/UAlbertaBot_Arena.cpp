@@ -27,7 +27,8 @@ void UAlbertaBot_Arena::onStart()
 {
     // Parse the bot's configuration file if it has one, change this file path to where your config file is
     // Any relative path name will be relative to Starcraft installation folder
-    ParseUtils::ParseConfigFile(Config::ConfigFile::ConfigFileLocation);
+	auto configurationFile = ParseUtils::FindConfigurationLocation(Config::ConfigFile::ConfigFileLocation);
+    ParseUtils::ParseConfigFile(configurationFile);
     
     // Set our BWAPI options here    
     BWAPI::Broodwar->setLocalSpeed(Config::BWAPIOptions::SetLocalSpeed);
@@ -108,7 +109,7 @@ size_t UAlbertaBot_Arena::numUnits(BWAPI::Player player) const
 
 bool UAlbertaBot_Arena::isBattle()
 {
-    return numUnits(BWAPI::Broodwar->self()) > 0 && numUnits(BWAPI::Broodwar->enemy()) > 0;
+	return numUnits(BWAPI::Broodwar->self()) > 0 || numUnits(BWAPI::Broodwar->enemy()) > 0;
 }
 
 int UAlbertaBot_Arena::winner()

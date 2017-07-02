@@ -17,7 +17,11 @@ void ArenaPlayer_AttackClosest::onFrame()
 {
     for (auto unit : BWAPI::Broodwar->self()->getUnits())
     {
-        Micro::SmartAttackUnit(unit, getClosestEnemyUnit(unit));
+		auto closestUnit = getClosestEnemyUnit(unit);
+		if (closestUnit != nullptr)
+		{
+			Micro::SmartAttackUnit(unit, closestUnit);
+		}
     }
 }
 

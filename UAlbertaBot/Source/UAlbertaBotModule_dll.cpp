@@ -8,7 +8,8 @@ using namespace UAlbertaBot;
 UAlbertaBotModule_dll::UAlbertaBotModule_dll()
 {
     // parse the bot's configuration file, if it is not found or isn't valid, the program will exit
-    ParseUtils::ParseConfigFile(Config::ConfigFile::ConfigFileLocation);
+	auto configurationFile = ParseUtils::FindConfigurationLocation(Config::ConfigFile::ConfigFileLocation);
+    ParseUtils::ParseConfigFile(configurationFile);
 
     if (!Config::ConfigFile::ConfigFileFound || !Config::ConfigFile::ConfigFileParsed)
     {
