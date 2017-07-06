@@ -176,6 +176,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/await %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPId.lib;$(Configuration)/SparCraft/SparCraft_d.lib;../../BOSS/bin/BOSS_d.lib;$(BWTA_DIR)/lib/BWTAd.lib;$(BWTA_DIR)/lib/libboost_system-vc141-mt-gd-1_64.lib;$(BWTA_DIR)/lib/libboost_thread-vc141-mt-gd-1_64.lib;$(BWTA_DIR)/lib/libboost_filesystem-vc141-mt-gd-1_64.lib;%(AdditionalDependencies)</AdditionalDependencies>
