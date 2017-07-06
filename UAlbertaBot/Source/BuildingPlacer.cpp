@@ -1,6 +1,7 @@
 #include "Common.h"
 #include "BuildingPlacer.h"
 #include "Global.h"
+#include "UnitUtil.h"
 
 using namespace UAlbertaBot;
 
@@ -248,8 +249,9 @@ bool BuildingPlacer::tileOverlapsBaseLocation(BWAPI::TilePosition tile,BWAPI::Un
         // dimensions of the base location
         int bx1 = base->getDepotTilePosition().x;
         int by1 = base->getDepotTilePosition().y;
-        int bx2 = bx1 + BWAPI::Broodwar->self()->getRace().getResourceDepot().tileWidth();
-        int by2 = by1 + BWAPI::Broodwar->self()->getRace().getResourceDepot().tileHeight();
+		auto resourceDepot = UnitUtil::getResourceDepot(BWAPI::Broodwar->self()->getRace());
+        int bx2 = bx1 + resourceDepot.tileWidth();
+        int by2 = by1 + resourceDepot.tileHeight();
 
         // conditions for non-overlap are easy
         bool noOverlap = (tx2 < bx1) || (tx1 > bx2) || (ty2 < by1) || (ty1 > by2);

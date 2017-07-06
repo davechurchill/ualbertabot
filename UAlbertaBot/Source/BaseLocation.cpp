@@ -98,8 +98,8 @@ BaseLocation::BaseLocation(int baseID, const std::vector<BWAPI::Unit> & resource
             // the build position will be up-left of where this tile is
             // this means we are positioning the center of the resouce depot
             BWAPI::TilePosition buildTile(tile.x - 1, tile.y - 1);
-
-            if (Global::Map().isBuildable(buildTile, BWAPI::Broodwar->self()->getRace().getResourceDepot()))
+			auto resourceDepot = UnitUtil::getResourceDepot(BWAPI::Broodwar->self()->getRace());
+            if (Global::Map().isBuildable(buildTile, resourceDepot))
             {
                 _depotTile = buildTile;
                 _position = BWAPI::Position(buildTile);

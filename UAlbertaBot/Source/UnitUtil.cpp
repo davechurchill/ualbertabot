@@ -94,15 +94,26 @@ Rect UnitUtil::GetRect(BWAPI::Unit unit)
     return r;
 }
 
-std::experimental::generator<BWAPI::Unit> UAlbertaBot::UnitUtil::getEnemyUnits()
+UnitCollection UAlbertaBot::UnitUtil::getEnemyUnits()
 {
+#if _MSC_VER < 1900
+	UnitCollection result;
+#endif
 	for (const auto& enemy : BWAPI::Broodwar->enemies())
 	{
 		for (const auto & unit : enemy->getUnits())
 		{
+#if _MSC_VER < 1900
+			result.push_back(unit);
+#else
 			co_yield unit;
+#endif
 		}
 	}
+
+#if _MSC_VER < 1900
+	return result;
+#endif
 }
 
 double UnitUtil::GetDistanceBetweenTwoRectangles(Rect & rect1, Rect & rect2)
@@ -240,4 +251,16 @@ BWAPI::Unit UnitUtil::GetClosestUnitTypeToTarget(BWAPI::UnitType type, BWAPI::Po
 	}
 
 	return closestUnit;
+}
+
+const BWAPI::UnitType UnitUtil::getResourceDepot(const BWAPI::Race& race)
+{
+	using namespace BWAPI::UnitTypes::Enum;
+	static const int baseTypes[BWAPI::Races::Enum::MAX] =
+	{
+		Zerg_Hatchery, Terran_Command_Center, Protoss_Nexus,
+		None, None, None, // unused
+		Unknown, None, Unknown // random, none, unk
+	};
+	return baseTypes[race.getID()];
 }

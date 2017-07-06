@@ -224,8 +224,8 @@ int ArenaPlayer_SparCraft::GetTimeCanAttack(BWAPI::Unit unit) const
     // some slight tweaks on a unitType basis
     switch (unit->getType())
     {
-        case BWAPI::UnitTypes::Terran_Wraith:   { attackTime -= 13; break; }
-        case BWAPI::UnitTypes::Terran_Vulture:  { attackTime -= 1;  break; } 
+		case BWAPI::UnitTypes::Enum::Terran_Wraith:   { attackTime -= 13; break; }
+        case BWAPI::UnitTypes::Enum::Terran_Vulture:  { attackTime -= 1;  break; }
         default:                                { attackTime -= 2;  break; }
     }
         

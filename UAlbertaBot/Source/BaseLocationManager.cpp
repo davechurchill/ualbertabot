@@ -355,9 +355,10 @@ BWAPI::TilePosition BaseLocationManager::getNextExpansion(BWAPI::Player player) 
         BWAPI::TilePosition tile = base->getDepotTilePosition();
         bool buildingInTheWay = false;
 
-        for (int x = 0; x < BWAPI::Broodwar->self()->getRace().getResourceDepot().tileWidth(); ++x)
+		auto resourceDepot = UnitUtil::getResourceDepot(BWAPI::Broodwar->self()->getRace());
+        for (int x = 0; x < resourceDepot.tileWidth(); ++x)
         {
-            for (int y = 0; y < BWAPI::Broodwar->self()->getRace().getResourceDepot().tileHeight(); ++y)
+            for (int y = 0; y < resourceDepot.tileHeight(); ++y)
             {
                 BWAPI::TilePosition tp(tile.x + x, tile.y + y);
 

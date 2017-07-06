@@ -1,7 +1,13 @@
 #pragma once
 
 #include <BWAPI.h>
+#if _MSC_VER >= 1900
 #include <experimental/generator>
+typedef std::experimental::generator<BWAPI::Unit> UnitCollection;
+#else
+#include <vector>
+typedef std::vector<BWAPI::Unit> UnitCollection;
+#endif
 
 namespace UAlbertaBot
 {
@@ -35,6 +41,7 @@ namespace UnitUtil
     double GetDistanceBetweenTwoRectangles(Rect & rect1, Rect & rect2);
     Rect GetRect(BWAPI::Unit unit);
 
-	std::experimental::generator<BWAPI::Unit> getEnemyUnits();
+	UnitCollection getEnemyUnits();
+	const BWAPI::UnitType getResourceDepot(const BWAPI::Race& race);
 };
 }
