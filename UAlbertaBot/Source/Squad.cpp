@@ -36,7 +36,7 @@ void Squad::update(const MapTools& map)
 	bool needToRegroup = needsToRegroup();
     
 	// draw some debug info
-	auto distanceFunction = [map](const BWAPI::Position & src, const BWAPI::Position & dest)
+	auto distanceFunction = [&map](const BWAPI::Position & src, const BWAPI::Position & dest)
 	{
 		return map.getGroundDistance(src, dest);
 	};

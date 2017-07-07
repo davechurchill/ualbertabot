@@ -22,7 +22,7 @@ DistanceMap::DistanceMap(const BWAPI::TilePosition & startTile)
     , _dist     (BWAPI::Broodwar->mapWidth(), std::vector<int>(BWAPI::Broodwar->mapHeight(), -1))
 {
 	auto& map = Global::Map();
-	auto isWalkable = [map](const BWAPI::TilePosition& tile) { return map.isWalkable(tile); };
+	auto isWalkable = [&map](const BWAPI::TilePosition& tile) { return map.isWalkable(tile); };
 	computeDistanceMap(_startTile, isWalkable);
     _sortedTilePositions.reserve(_width * _height);
 }
