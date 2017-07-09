@@ -1,6 +1,6 @@
 #pragma once
 
-#include <BWAPI.h>
+#include <BWAPI/Unit.h>
 #if _MSC_VER >= 1900
 #include <experimental/generator>
 typedef std::experimental::generator<BWAPI::Unit> UnitCollection;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <BWAPI.h>
+#include <BWAPI/Player.h>
 #include "BotModule.h"
 #include "AutoObserver.h"
 #include "ArenaPlayer.h"

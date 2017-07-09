@@ -1,5 +1,7 @@
 #include "WorkerData.h"
 #include "Micro.h"
+#include <BWAPI/Game.h>
+#include <BWAPI/Unitset.h>
 
 using namespace UAlbertaBot;
 

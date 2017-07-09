@@ -1,5 +1,7 @@
 #include "MeleeManager.h"
 #include "UnitUtil.h"
+#include <BWAPI/Game.h>
+#include <BWAPI/Player.h>
 
 using namespace UAlbertaBot;
 

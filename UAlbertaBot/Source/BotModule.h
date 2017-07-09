@@ -1,6 +1,6 @@
 #pragma once
 
-#include <BWAPI.h>
+#include <BWAPI/Unit.h>
 
 namespace UAlbertaBot
 {

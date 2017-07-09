@@ -1,7 +1,8 @@
 #pragma once
 
 #include <vector>
-#include "BWAPI.h"
+#include <functional>
+#include <BWAPI/Position.h>
 
 namespace UAlbertaBot
 {

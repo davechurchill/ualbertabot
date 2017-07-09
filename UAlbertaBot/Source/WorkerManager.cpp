@@ -2,6 +2,9 @@
 #include "WorkerManager.h"
 #include "Micro.h"
 #include "UnitUtil.h"
+#include <BWAPI/Game.h>
+#include <BWAPI/Player.h>
+#include <BWAPI/Unitset.h>
 
 using namespace UAlbertaBot;
 

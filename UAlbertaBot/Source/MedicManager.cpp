@@ -1,5 +1,9 @@
 #include "MedicManager.h"
 #include "UnitUtil.h"
+#include <BWAPI/Game.h>
+#include <BWAPI/Player.h>
+#include <BWAPI/TechType.h>
+#include <BWAPI/Unitset.h>
 
 using namespace UAlbertaBot;
 

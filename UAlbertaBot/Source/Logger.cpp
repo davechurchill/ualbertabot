@@ -3,7 +3,6 @@
 #include <stdarg.h>
 #include <cstdio>
 #include <sstream>
-#include "BWAPI.h"
 
 using namespace UAlbertaBot;
 

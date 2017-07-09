@@ -1,5 +1,9 @@
 #include "Micro.h"
 #include "UnitUtil.h"
+#include <BWAPI/UnitCommand.h>
+#include <BWAPI/Game.h>
+#include <BWAPI/Player.h>
+#include <BWAPI/TechType.h>
 
 using namespace UAlbertaBot;
 

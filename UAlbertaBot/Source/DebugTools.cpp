@@ -1,4 +1,5 @@
 #include "DebuGtools.h"
+#include <BWAPI/Game.h>
 
 using namespace UAlbertaBot;
 

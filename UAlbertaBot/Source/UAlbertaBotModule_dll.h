@@ -1,6 +1,6 @@
 #pragma once
 
-#include <BWAPI.h>
+#include <BWAPI/AIModule.h>
 #include <memory>
 #include "BotModule.h"
 

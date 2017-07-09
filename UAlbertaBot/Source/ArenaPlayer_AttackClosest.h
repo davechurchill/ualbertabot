@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ArenaPlayer.h"
+#include <BWAPI/Unit.h>
 
 namespace UAlbertaBot
 {

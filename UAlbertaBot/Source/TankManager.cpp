@@ -1,5 +1,8 @@
 #include "TankManager.h"
 #include "UnitUtil.h"
+#include <BWAPI/Game.h>
+#include <BWAPI/Player.h>
+#include <BWAPI/TechType.h>
 
 using namespace UAlbertaBot;
 

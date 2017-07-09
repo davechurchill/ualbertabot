@@ -1,6 +1,5 @@
 #pragma once
 
-#include <BWAPI.h>
 #include "BotModule.h"
 #include "GameCommander.h"
 #include <iostream>

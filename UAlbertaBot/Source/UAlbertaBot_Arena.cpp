@@ -11,6 +11,9 @@
 #include "DebugTools.h"
 #include "Micro.h"
 #include "ArenaPlayer_AttackClosest.h"
+#include <BWAPI/Game.h>
+#include <BWAPI/Flag.h>
+#include <BWAPI/Unitset.h>
 
 using namespace UAlbertaBot;
 

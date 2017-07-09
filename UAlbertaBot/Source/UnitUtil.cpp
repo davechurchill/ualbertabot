@@ -1,5 +1,10 @@
 #include "UnitUtil.h"
 #include "UABAssert.h"
+#include <BWAPI/Game.h>
+#include <BWAPI/Player.h>
+#include <BWAPI/Playerset.h>
+#include <BWAPI/Unitset.h>
+#include <BWAPI/UnitCommand.h>
 
 using namespace UAlbertaBot;
 
