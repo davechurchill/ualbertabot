@@ -9,7 +9,7 @@ namespace Config
     {
         bool ConfigFileFound                = true;
         bool ConfigFileParsed               = true;
-        std::string ConfigFileLocation      = "AK_Config.txt";
+        std::string ConfigFileLocation      = "AK_Config.json";
     }
     
     namespace BotInfo
