@@ -8,9 +8,7 @@ using namespace UAlbertaBot;
 
 // constructor
 StrategyManager::StrategyManager() 
-	: _selfRace(BWAPI::Broodwar->self()->getRace())
-	, _enemyRace(Global::getEnemy()->getRace())
-    , _emptyBuildOrder(BWAPI::Broodwar->self()->getRace())
+	: _emptyBuildOrder(BWAPI::Broodwar->self()->getRace())
 {
 }
 

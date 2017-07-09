@@ -39,8 +39,6 @@ struct Strategy
 
 class StrategyManager
 {
-    BWAPI::Race					    _selfRace;
-    BWAPI::Race					    _enemyRace;
     std::map<std::string,Strategy> _strategies;
     int                             _totalGamesPlayed;
     BuildOrder                      _emptyBuildOrder;
