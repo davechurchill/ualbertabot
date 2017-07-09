@@ -10,7 +10,9 @@ using namespace UAlbertaBot;
 UAlbertaBot_Tournament::UAlbertaBot_Tournament()
     : _gameCommander(*this)
 {
-
+	// parse the configuration file for the bot's strategies
+	auto configurationFile = ParseUtils::FindConfigurationLocation(Config::ConfigFile::ConfigFileLocation);
+	ParseUtils::ParseStrategy(configurationFile, this->_strategyManager);
 }
 
 UAlbertaBot_Tournament::~UAlbertaBot_Tournament()
