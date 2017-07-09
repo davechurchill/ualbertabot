@@ -7,6 +7,7 @@ namespace UAlbertaBot
 class SquadData
 {
 	std::map<std::string, Squad> _squads;
+	UnitHandler onRemoveHandler;
 
     void    updateAllSquads(const MapTools& map);
     void    verifySquadUniqueMembership();
@@ -19,7 +20,7 @@ public:
 
     bool            canAssignUnitToSquad(BWAPI::Unit unit, const Squad & squad) const;
     void            assignUnitToSquad(BWAPI::Unit unit, Squad & squad);
-    void            addSquad(const std::string & squadName, const Squad & squad);
+    void            addSquad(const std::string & squadName, Squad & squad);
 	void            addSquad(const std::string & squadName, const SquadOrder & squadOrder, size_t priority);
     void            removeSquad(const std::string & squadName);
 	void            drawSquadInformation(AKBot::ScreenCanvas& canvas, int x, int y);
@@ -33,5 +34,7 @@ public:
 
     Squad &         getSquad(const std::string & squadName);
     const std::map<std::string, Squad> & getSquads() const;
+
+	void onUnitRemoved(UnitHandler handler);
 };
 }

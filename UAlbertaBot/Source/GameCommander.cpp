@@ -13,12 +13,19 @@ GameCommander::GameCommander(UAlbertaBot_Tournament & uabModule)
     , _initialScoutSet(false)
     , _module(uabModule)
 {
-
+	auto& workerManager = uabModule.Workers();
+	_scoutManager.onScoutAssigned([&workerManager](const BWAPI::Unit &unit)
+	{
+		workerManager.setScoutWorker(unit);
+	});
+	_scoutManager.onScoutReleased([&workerManager](const BWAPI::Unit &unit)
+	{
+		workerManager.finishedWithWorker(unit);
+	});
 }
 
 void GameCommander::onStart()
 {
-
     _productionManager.onStart();
 }
 

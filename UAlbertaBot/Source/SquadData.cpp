@@ -2,6 +2,7 @@
 #include "Global.h"
 
 using namespace UAlbertaBot;
+using namespace AKBot;
 
 SquadData::SquadData() 
 {
@@ -20,16 +21,7 @@ void SquadData::clearSquadData()
     for (auto & kv : _squads)
 	{
         Squad & squad = kv.second;
-
-        auto & units = squad.getUnits();
-
-        for (auto & unit : units)
-        {
-            if (unit->getType().isWorker())
-            {
-                Global::Workers().finishedWithWorker(unit);
-            }
-        }
+		squad.clear();
 	}
 
 	_squads.clear();
@@ -45,13 +37,8 @@ void SquadData::removeSquad(const std::string & squadName)
         return;
     }
 
-    for (auto & unit : squadPtr->second.getUnits())
-    {
-        if (unit->getType().isWorker())
-        {
-            Global::Workers().finishedWithWorker(unit);
-        }
-    }
+	auto& squad = squadPtr->second;
+	squad.clear();
 
     _squads.erase(squadName);
 }
@@ -61,19 +48,25 @@ const std::map<std::string, Squad> & SquadData::getSquads() const
     return _squads;
 }
 
+void UAlbertaBot::SquadData::onUnitRemoved(UnitHandler handler)
+{
+	onRemoveHandler = handler;
+}
+
 bool SquadData::squadExists(const std::string & squadName)
 {
     return _squads.find(squadName) != _squads.end();
 }
 
-void SquadData::addSquad(const std::string & squadName, const Squad & squad)
+void SquadData::addSquad(const std::string & squadName, Squad & squad)
 {
-	_squads[squadName] = squad;
+	squad.onUnitRemoved(onRemoveHandler);
+	_squads.insert(std::make_pair(squadName, squad));
 }
 
 void SquadData::addSquad(const std::string & squadName, const SquadOrder & squadOrder, size_t priority)
 {
-	_squads[squadName] = Squad(squadName, squadOrder, priority);
+	addSquad(squadName, Squad(squadName, squadOrder, priority));
 }
 
 void SquadData::updateAllSquads(const MapTools& map)
@@ -200,5 +193,5 @@ Squad & SquadData::getSquad(const std::string & squadName)
         int a = 10;
     }
 
-    return _squads[squadName];
+    return _squads.find(squadName)->second;
 }

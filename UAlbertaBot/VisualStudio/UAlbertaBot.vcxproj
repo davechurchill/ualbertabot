@@ -95,6 +95,7 @@
     <ClInclude Include="..\Source\ScreenCanvas.h" />
     <ClInclude Include="..\Source\UAlbertaBot_Arena.h" />
     <ClInclude Include="..\Source\UAlbertaBot_Tournament.h" />
+    <ClInclude Include="..\Source\UnitHandler.h" />
     <ClInclude Include="..\Source\UnitInfoManager.h" />
     <ClInclude Include="..\source\JSONTools.h" />
     <ClInclude Include="..\Source\Logger.h" />

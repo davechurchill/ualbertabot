@@ -13,7 +13,13 @@ const size_t DropPriority = 4;
 CombatCommander::CombatCommander() 
     : _initialized(false)
 {
-
+	_squadData.onUnitRemoved([](const BWAPI::Unit& unit)
+	{
+		if (unit->getType().isWorker())
+		{
+			Global::Workers().finishedWithWorker(unit);
+		}
+	});
 }
 
 void CombatCommander::initializeSquads()
@@ -307,7 +313,7 @@ void CombatCommander::updateDefenseSquads()
             if (!_squadData.squadExists(squadName.str()))
             {
                 SquadOrder defendRegion(SquadOrderTypes::Defend, basePosition, 32 * 25, "Defend Region!");
-                _squadData.addSquad(squadName.str(), Squad(squadName.str(), defendRegion, BaseDefensePriority));
+                _squadData.addSquad(squadName.str(), defendRegion, BaseDefensePriority);
             }
         }
 

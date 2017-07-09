@@ -2,9 +2,11 @@
 
 #include "Common.h"
 #include "MicroManager.h"
+#include "UnitHandler.h"
 
 namespace UAlbertaBot
 {
+	using namespace AKBot;
 	class BaseLocation;
 	class BaseLocationManager;
 
@@ -18,6 +20,8 @@ class ScoutManager
     int             _currentRegionVertexIndex;
     int             _previousScoutHP;
 	std::vector<BWAPI::Position>    _enemyRegionVertices;
+	UnitHandler     _onScoutReleased;
+	UnitHandler     _onScoutAssigned;
 
 	bool            enemyWorkerInRadius();
     bool            immediateThreat();
@@ -40,5 +44,7 @@ public:
 	void update();
     void setWorkerScout(BWAPI::Unit unit);
 	void drawScoutInformation(AKBot::ScreenCanvas& canvas, int x, int y);
+	void onScoutReleased(UnitHandler handler);
+	void onScoutAssigned(UnitHandler handler);
 };
 }

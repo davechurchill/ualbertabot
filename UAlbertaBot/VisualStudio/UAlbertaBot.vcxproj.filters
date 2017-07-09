@@ -307,5 +307,8 @@
     <ClInclude Include="..\Source\ScreenCanvas.h">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\UnitHandler.h">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

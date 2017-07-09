@@ -10,9 +10,11 @@
 #include "CombatSimulation.h"
 #include "TankManager.h"
 #include "MedicManager.h"
+#include "UnitHandler.h"
 
 namespace UAlbertaBot
 {
+	using namespace AKBot;
     
 class Squad
 {
@@ -22,6 +24,7 @@ class Squad
     int                 _lastRetreatSwitch;
     bool                _lastRetreatSwitchVal;
     size_t              _priority;
+	UnitHandler			_onRemoveHandler;
 	
 	SquadOrder          _order;
 	MeleeManager        _meleeManager;
@@ -47,7 +50,6 @@ class Squad
 public:
 
 	Squad(const std::string & name, SquadOrder order, size_t priority);
-	Squad();
     ~Squad();
 
 	void                update(const MapTools& map);
@@ -69,5 +71,6 @@ public:
 
 	const std::set<BWAPI::Unit> &  getUnits() const;
 	const SquadOrder &  getSquadOrder()	const;
+	void onUnitRemoved(UnitHandler handler);
 };
 }

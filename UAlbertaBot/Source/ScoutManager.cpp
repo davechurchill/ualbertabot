@@ -31,11 +31,17 @@ void ScoutManager::setWorkerScout(BWAPI::Unit unit)
     // if we have a previous worker scout, release it back to the worker manager
     if (_workerScout)
     {
-        Global::Workers().finishedWithWorker(_workerScout);
+		if (_onScoutReleased)
+		{
+			_onScoutReleased(_workerScout);
+		}
     }
 
     _workerScout = unit;
-    Global::Workers().setScoutWorker(_workerScout);
+	if (_onScoutAssigned)
+	{
+		_onScoutAssigned(_workerScout);
+	}
 }
 
 void ScoutManager::drawScoutInformation(AKBot::ScreenCanvas& canvas, int x, int y)
@@ -51,6 +57,16 @@ void ScoutManager::drawScoutInformation(AKBot::ScreenCanvas& canvas, int x, int 
         canvas.drawCircleMap(_enemyRegionVertices[i], 4, BWAPI::Colors::Green, false);
         canvas.drawTextMap(_enemyRegionVertices[i], "%d", i);
     }
+}
+
+void UAlbertaBot::ScoutManager::onScoutReleased(UnitHandler handler)
+{
+	_onScoutReleased = handler;
+}
+
+void UAlbertaBot::ScoutManager::onScoutAssigned(UnitHandler handler)
+{
+	_onScoutAssigned = handler;
 }
 
 void ScoutManager::moveScouts()

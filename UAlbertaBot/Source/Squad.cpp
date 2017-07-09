@@ -4,15 +4,6 @@
 
 using namespace UAlbertaBot;
 
-Squad::Squad()
-    : _lastRetreatSwitch(0)
-    , _lastRetreatSwitchVal(false)
-    , _priority(0)
-    , _name("Default")
-{
-    int a = 10;
-}
-
 Squad::Squad(const std::string & name, SquadOrder order, size_t priority) 
 	: _name(name)
 	, _order(order)
@@ -319,12 +310,13 @@ bool Squad::containsUnit(BWAPI::Unit u) const
 
 void Squad::clear()
 {
+	auto handler = _onRemoveHandler;
     for (auto & unit : getUnits())
     {
-        if (unit->getType().isWorker())
-        {
-            Global::Workers().finishedWithWorker(unit);
-        }
+		if (handler)
+		{
+			handler(unit);
+		}
     }
 
     _units.clear();
@@ -459,6 +451,11 @@ const std::set<BWAPI::Unit> & Squad::getUnits() const
 const SquadOrder & Squad::getSquadOrder()	const			
 { 
 	return _order; 
+}
+
+void UAlbertaBot::Squad::onUnitRemoved(UnitHandler handler)
+{
+	_onRemoveHandler = handler;
 }
 
 void Squad::addUnit(BWAPI::Unit u)
