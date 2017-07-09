@@ -6,9 +6,11 @@
 namespace UAlbertaBot
 {
 	class BaseLocation;
+	class BaseLocationManager;
 
 class ScoutManager 
 {
+	const BaseLocationManager& _baseLocationManager;
 	BWAPI::Unit     _workerScout;
     std::string     _scoutStatus;
 	int             _numWorkerScouts;
@@ -34,7 +36,7 @@ class ScoutManager
 
 public:
     
-	ScoutManager();
+	ScoutManager(const BaseLocationManager& baseLocationManager);
 
 	void update();
     void setWorkerScout(BWAPI::Unit unit);

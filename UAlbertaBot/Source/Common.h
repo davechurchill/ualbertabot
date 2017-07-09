@@ -16,7 +16,7 @@
 #include <map>
 #include <array>
 
-#include <BWAPI.h>
+#include <BWAPI/Position.h>
 #include "Logger.h"
 
 #include "Config.h"

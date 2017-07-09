@@ -1,6 +1,7 @@
 #pragma once
 
-#include "BWAPI.h"
+#include <BWAPI/UnitType.h>
+#include <BWAPI/Color.h>
 #include <cassert>
 #include <set>
 

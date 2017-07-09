@@ -1,5 +1,6 @@
 #include "UABAssert.h"
 #include "Config.h"
+#include <BWAPI/Game.h>
 
 using namespace UAlbertaBot;
 

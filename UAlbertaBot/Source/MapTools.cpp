@@ -12,14 +12,14 @@ const int actionX[LegalActions] = {1, -1, 0, 0};
 const int actionY[LegalActions] = {0, 0, 1, -1};
 
 // constructor for MapTools
-MapTools::MapTools()
-    : _width            (BWAPI::Broodwar->mapWidth())
-    , _height           (BWAPI::Broodwar->mapHeight())
-    , _walkable         (BWAPI::Broodwar->mapWidth(), std::vector<bool>(BWAPI::Broodwar->mapHeight(), false))
-    , _buildable        (BWAPI::Broodwar->mapWidth(), std::vector<bool>(BWAPI::Broodwar->mapHeight(), true))
-    , _depotBuildable   (BWAPI::Broodwar->mapWidth(), std::vector<bool>(BWAPI::Broodwar->mapHeight(), true))
-    , _lastSeen         (BWAPI::Broodwar->mapWidth(), std::vector<int> (BWAPI::Broodwar->mapHeight(), 0))
-    , _sectorNumber     (BWAPI::Broodwar->mapWidth(), std::vector<int> (BWAPI::Broodwar->mapHeight(), 0))
+MapTools::MapTools(int width, int height)
+    : _width            (width)
+    , _height           (height)
+    , _walkable         (width, std::vector<bool>(height, false))
+    , _buildable        (width, std::vector<bool>(height, true))
+    , _depotBuildable   (width, std::vector<bool>(height, true))
+    , _lastSeen         (width, std::vector<int> (height, 0))
+    , _sectorNumber     (width, std::vector<int> (height, 0))
 {
     setBWAPIMapData();
 
@@ -34,18 +34,21 @@ void MapTools::onStart()
 void MapTools::update()
 {
     // update all the tiles that we see this frame
-    for (size_t x=0; x<_width; ++x)
-    {
-        for (size_t y=0; y<_height; ++y)
-        {
-            if (BWAPI::Broodwar->isVisible(BWAPI::TilePosition(x, y)))
-            {
-                _lastSeen[x][y] = BWAPI::Broodwar->getFrameCount();
-            }
-        }
-    }
+	for (size_t x = 0; x < _width; ++x)
+	{
+		for (size_t y = 0; y < _height; ++y)
+		{
+			if (BWAPI::Broodwar->isVisible(BWAPI::TilePosition(x, y)))
+			{
+				_lastSeen[x][y] = BWAPI::Broodwar->getFrameCount();
+			}
+		}
+	}
 
-    drawLastSeen();
+	if (Config::Debug::DrawLastSeenTileInfo)
+	{
+		drawLastSeen();
+	}
 }
 
 void MapTools::computeConnectivity()
@@ -255,11 +258,6 @@ const std::vector<BWAPI::TilePosition> & MapTools::getClosestTilesTo(BWAPI::Posi
 
 void MapTools::drawLastSeen() const
 {
-    if (!Config::Debug::DrawLastSeenTileInfo)
-    {
-        return;
-    }
-
     bool rMouseState = BWAPI::Broodwar->getMouseState(BWAPI::MouseButton::M_RIGHT);
     if (!rMouseState)
     {

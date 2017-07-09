@@ -3,6 +3,8 @@
 #include "Common.h"
 #include "BuildOrderQueue.h"
 #include "BuildOrder.h"
+#include <BWAPI/Race.h>
+#include <BWAPI/Player.h>
 
 namespace UAlbertaBot
 {

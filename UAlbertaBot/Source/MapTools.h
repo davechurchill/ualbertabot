@@ -2,7 +2,7 @@
 
 #include "Common.h"
 #include <vector>
-#include "BWAPI.h"
+#include <BWAPI/Position.h>
 #include "DistanceMap.h"
 #include "BaseLocation.h"
 
@@ -33,7 +33,7 @@ class MapTools
     
 public:
 
-    MapTools();
+    MapTools(int width, int height);
 
     void                    onStart();
     void                    update();

@@ -9,6 +9,7 @@ using namespace UAlbertaBot;
 
 UAlbertaBot_Tournament::UAlbertaBot_Tournament()
     : _gameCommander(*this)
+	, _mapTools(BWAPI::Broodwar->mapWidth(), BWAPI::Broodwar->mapHeight())
 {
 	// parse the configuration file for the bot's strategies
 	auto configurationFile = ParseUtils::FindConfigurationLocation(Config::ConfigFile::ConfigFileLocation);

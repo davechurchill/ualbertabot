@@ -1,5 +1,6 @@
 #include "Common.h"
 #include "UnitData.h"
+#include <BWAPI/Game.h>
 
 using namespace UAlbertaBot;
 

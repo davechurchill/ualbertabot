@@ -9,6 +9,7 @@ using namespace UAlbertaBot;
 
 GameCommander::GameCommander(UAlbertaBot_Tournament & uabModule) 
     : _productionManager(_bossManager)
+	, _scoutManager(uabModule.Bases())
     , _initialScoutSet(false)
     , _module(uabModule)
 {

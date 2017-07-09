@@ -4,13 +4,14 @@
 
 using namespace UAlbertaBot;
 
-ScoutManager::ScoutManager() 
+ScoutManager::ScoutManager(const BaseLocationManager& baseLocationManager)
     : _workerScout(nullptr)
     , _numWorkerScouts(0)
     , _scoutUnderAttack(false)
     , _scoutStatus("None")
     , _currentRegionVertexIndex(-1)
     , _previousScoutHP(0)
+	, _baseLocationManager(baseLocationManager)
 {
 }
 
@@ -63,7 +64,7 @@ void ScoutManager::moveScouts()
     int scoutHP = _workerScout->getHitPoints() + _workerScout->getShields();
     
 	// get the enemy base location, if we have one
-	const BaseLocation * enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(Global::getEnemy());
+	const BaseLocation * enemyBaseLocation = _baseLocationManager.getPlayerStartingBaseLocation(Global::getEnemy());
 
     if (_workerScout->isCarryingGas())
     {
@@ -90,10 +91,9 @@ void ScoutManager::moveScouts()
 
 bool ScoutManager::allEnemyBasesExplored() const
 {
-	const auto& bases = Global::Bases();
 	for (const auto& enemy : BWAPI::Broodwar->enemies())
 	{
-		const auto enemyBaseLocation = bases.getPlayerStartingBaseLocation(enemy);
+		const auto enemyBaseLocation = _baseLocationManager.getPlayerStartingBaseLocation(enemy);
 		if (enemyBaseLocation == nullptr)
 		{
 			return false;
@@ -108,7 +108,7 @@ bool ScoutManager::exploreEnemyBases()
 	_scoutStatus = "Enemy base unknown, exploring";
 
 	// for each start location in the level
-	for (const auto startLocation : Global::Bases().getStartingBaseLocations())
+	for (const auto startLocation : _baseLocationManager.getStartingBaseLocations())
 	{
 		// if we haven't explored it yet
 		if (!BWAPI::Broodwar->isExplored(startLocation->getDepotTilePosition()))
@@ -223,7 +223,7 @@ BWAPI::Unit ScoutManager::closestEnemyWorker()
 BWAPI::Unit ScoutManager::getEnemyGeyser()
 {
 	BWAPI::Unit geyser = nullptr;
-	const BaseLocation * enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(Global::getEnemy());
+	const BaseLocation * enemyBaseLocation = _baseLocationManager.getPlayerStartingBaseLocation(Global::getEnemy());
 
 	for (auto & unit : enemyBaseLocation->getGeysers())
 	{
@@ -309,11 +309,11 @@ int ScoutManager::getClosestVertexIndex(BWAPI::Unit unit)
 BWAPI::Position ScoutManager::getFleePosition()
 {
     // TODO: make this follow the perimeter of the enemy base again, but for now just use home base as flee direction
-    return Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->self())->getPosition();
+    return _baseLocationManager.getPlayerStartingBaseLocation(BWAPI::Broodwar->self())->getPosition();
 
     //UAB_ASSERT_WARNING(!_enemyRegionVertices.empty(), "We should have an enemy region vertices if we are fleeing");
     //
-    //const BaseLocation * enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
+    //const BaseLocation * enemyBaseLocation = _baseLocationManager.getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
 
     //// if this is the first flee, we will not have a previous perimeter index
     //if (_currentRegionVertexIndex == -1)
@@ -353,7 +353,7 @@ BWAPI::Position ScoutManager::getFleePosition()
 
 //void ScoutManager::calculateEnemyRegionVertices()
 //{
-//    const BaseLocation * enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
+//    const BaseLocation * enemyBaseLocation = _baseLocationManager.getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
 //    //UAB_ASSERT_WARNING(enemyBaseLocation, "We should have an enemy base location if we are fleeing");
 //
 //    if (!enemyBaseLocation)
