@@ -160,76 +160,79 @@ void BaseLocationManager::update(const UnitInfoManager & unitManager)
         }
     }
 
-    // update enemy base occupations
-	auto enemyPlayer = Global::getEnemy();
+    auto enemyPlayer = Global::getEnemy();
 	if (enemyPlayer == nullptr)
 	{
 		return;
 	}
 
-    for (const auto & kv : unitManager.getUnitInfoMap(enemyPlayer))
-    {
-        const UnitInfo & ui = kv.second;
+	// update enemy base occupations
+	for (const auto& enemyPlayer : BWAPI::Broodwar->enemies())
+	{
+		for (const auto & kv : unitManager.getUnitInfoMap(enemyPlayer))
+		{
+			const UnitInfo & ui = kv.second;
 
-        if (!ui.type.isBuilding())
-        {
-            continue;
-        }
+			if (!ui.type.isBuilding())
+			{
+				continue;
+			}
 
-        BaseLocation * baseLocation = _getBaseLocation(ui.lastPosition);
+			BaseLocation * baseLocation = _getBaseLocation(ui.lastPosition);
 
-        if (baseLocation != nullptr)
-        {
-            baseLocation->setPlayerOccupying(enemyPlayer, true);
-        }
-    }
+			if (baseLocation != nullptr)
+			{
+				baseLocation->setPlayerOccupying(enemyPlayer, true);
+			}
+		}
 
-    // update the starting locations of the enemy player
-    // this will happen one of two ways:
-    
-    // 1. we've seen the enemy base directly, so the baselocation will know
-    if (_playerStartingBaseLocations[enemyPlayer] == nullptr)
-    {
-        for (auto & baseLocation : _baseLocationData)
-        {
-            if (baseLocation.isPlayerStartLocation(enemyPlayer))
-            {
-                _playerStartingBaseLocations[enemyPlayer] = &baseLocation;
-            }
-        }
-    }
-    
-    // 2. we've explored every other start location and haven't seen the enemy yet
-    if (_playerStartingBaseLocations[enemyPlayer] == nullptr)
-    {
-        int numStartLocations = getStartingBaseLocations().size();
-        int numExploredLocations = 0;
-        BaseLocation * unexplored = nullptr;
+		// update the starting locations of the enemy player
+		// this will happen one of two ways:
 
-        for (auto & baseLocation : _baseLocationData)
-        {
-            if (!baseLocation.isStartLocation())
-            {
-                continue;
-            }
+		// 1. we've seen the enemy base directly, so the baselocation will know
+		if (_playerStartingBaseLocations[enemyPlayer] == nullptr)
+		{
+			for (auto & baseLocation : _baseLocationData)
+			{
+				if (baseLocation.isPlayerStartLocation(enemyPlayer))
+				{
+					_playerStartingBaseLocations[enemyPlayer] = &baseLocation;
+				}
+			}
+		}
 
-            if (baseLocation.isExplored())
-            {
-                numExploredLocations++;
-            }
-            else
-            {
-                unexplored = &baseLocation;
-            }
-        }
+		// 2. we've explored every other start location and haven't seen the enemy yet
+		if (_playerStartingBaseLocations[enemyPlayer] == nullptr)
+		{
+			int numStartLocations = getStartingBaseLocations().size();
+			int numExploredLocations = 0;
+			BaseLocation * unexplored = nullptr;
 
-        // if we have explored all but one location, then the unexplored one is the enemy start location
-        if (numExploredLocations == numStartLocations - 1 && unexplored != nullptr)
-        {
-            _playerStartingBaseLocations[enemyPlayer] = unexplored;
-            unexplored->setPlayerOccupying(enemyPlayer, true);
-        }
-    }
+			for (auto & baseLocation : _baseLocationData)
+			{
+				if (!baseLocation.isStartLocation())
+				{
+					continue;
+				}
+
+				if (baseLocation.isExplored())
+				{
+					numExploredLocations++;
+				}
+				else
+				{
+					unexplored = &baseLocation;
+				}
+			}
+
+			// if we have explored all but one location, then the unexplored one is the enemy start location
+			if (numExploredLocations == numStartLocations - 1 && unexplored != nullptr)
+			{
+				_playerStartingBaseLocations[enemyPlayer] = unexplored;
+				unexplored->setPlayerOccupying(enemyPlayer, true);
+			}
+		}
+	}
 
     // update the occupied base locations for each player
     _occupiedBaseLocations[BWAPI::Broodwar->self()] = std::set<const BaseLocation *>();

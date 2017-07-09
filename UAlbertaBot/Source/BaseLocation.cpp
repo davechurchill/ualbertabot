@@ -192,10 +192,14 @@ void BaseLocation::draw(AKBot::ScreenCanvas& canvas, std::function<bool(BWAPI::T
         ss << "Self ";
     }
 
-    if (isOccupiedByPlayer(Global::getEnemy()))
-    {
-        ss << "Enemy ";
-    }
+	for (auto& enemy : BWAPI::Broodwar->enemies())
+	{
+		if (isOccupiedByPlayer(enemy))
+		{
+			ss << "Enemy " << enemy->getName() << " ";
+			break;
+		}
+	}
 
     canvas.drawTextMap(_left, _top-60, ss.str().c_str());
     canvas.drawTextMap(_left, _bottom, ss.str().c_str());
