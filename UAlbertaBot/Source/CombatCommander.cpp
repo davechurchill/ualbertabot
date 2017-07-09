@@ -234,8 +234,14 @@ void CombatCommander::updateDefenseSquads()
     { 
         return; 
     }
-    
-    const BaseLocation * enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(Global::getEnemy());
+
+	auto enemy = Global::getEnemy();
+	if (enemy == nullptr)
+	{
+		return;
+	}
+
+    const BaseLocation * enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(enemy);
 
 	// for each of our occupied regions
 	for (const BaseLocation * myBaseLocation : Global::Bases().getOccupiedBaseLocations(BWAPI::Broodwar->self()))

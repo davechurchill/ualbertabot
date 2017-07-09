@@ -61,9 +61,15 @@ void GameCommander::drawDebugInterface()
 
 void GameCommander::drawGameInformation(int x, int y)
 {
+	auto enemy = Global::getEnemy();
+	auto self = BWAPI::Broodwar->self();
     BWAPI::Broodwar->drawTextScreen(x, y, "\x04Players:");
-	BWAPI::Broodwar->drawTextScreen(x+50, y, "%c%s \x04vs. %c%s", BWAPI::Broodwar->self()->getTextColor(), BWAPI::Broodwar->self()->getName().c_str(), 
-                                                                  Global::getEnemy()->getTextColor(), Global::getEnemy()->getName().c_str());
+	if (enemy != nullptr)
+	{
+		BWAPI::Broodwar->drawTextScreen(x + 50, y, "%c%s \x04vs. %c%s", self->getTextColor(), self->getName().c_str(),
+			enemy->getTextColor(), enemy->getName().c_str());
+	}
+
 	y += 12;
 		
     BWAPI::Broodwar->drawTextScreen(x, y, "\x04Strategy:");

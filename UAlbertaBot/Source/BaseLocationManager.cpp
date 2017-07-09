@@ -82,7 +82,14 @@ void BaseLocationManager::onStart(const MapTools& map)
     }
 
     // construct the vectors of base location pointers, this is safe since they will never change
-    for (auto & baseLocation : _baseLocationData)
+	auto self = BWAPI::Broodwar->self();
+	auto enemy = Global::getEnemy();
+	if (enemy == nullptr)
+	{
+		return;
+	}
+
+	for (auto & baseLocation : _baseLocationData)
     {
         _baseLocationPtrs.push_back(&baseLocation);
 
@@ -93,14 +100,14 @@ void BaseLocationManager::onStart(const MapTools& map)
         }
 
         // if it's our starting location, set the pointer
-        if (baseLocation.isPlayerStartLocation(BWAPI::Broodwar->self()))
+        if (baseLocation.isPlayerStartLocation(self))
         {
-            _playerStartingBaseLocations[BWAPI::Broodwar->self()] = &baseLocation;
+            _playerStartingBaseLocations[self] = &baseLocation;
         }
 
-        if (baseLocation.isPlayerStartLocation(Global::getEnemy()))
+        if (baseLocation.isPlayerStartLocation(enemy))
         {
-            _playerStartingBaseLocations[Global::getEnemy()] = &baseLocation;
+            _playerStartingBaseLocations[enemy] = &baseLocation;
         }
     }
 
@@ -124,8 +131,8 @@ void BaseLocationManager::onStart(const MapTools& map)
     }
 
     // construct the sets of occupied base locations
-    _occupiedBaseLocations[BWAPI::Broodwar->self()] = std::set<const BaseLocation *>();
-    _occupiedBaseLocations[Global::getEnemy()] = std::set<const BaseLocation *>();
+    _occupiedBaseLocations[self] = std::set<const BaseLocation *>();
+    _occupiedBaseLocations[enemy] = std::set<const BaseLocation *>();
 
     // check to see that we have set a base location for ourself
     UAB_ASSERT(_playerStartingBaseLocations[BWAPI::Broodwar->self()] != nullptr, "We didn't set a valid selfStartLocation in BaseLocations");
@@ -154,7 +161,13 @@ void BaseLocationManager::update(const UnitInfoManager & unitManager)
     }
 
     // update enemy base occupations
-    for (const auto & kv : unitManager.getUnitInfoMap(Global::getEnemy()))
+	auto enemyPlayer = Global::getEnemy();
+	if (enemyPlayer == nullptr)
+	{
+		return;
+	}
+
+    for (const auto & kv : unitManager.getUnitInfoMap(enemyPlayer))
     {
         const UnitInfo & ui = kv.second;
 
@@ -167,7 +180,7 @@ void BaseLocationManager::update(const UnitInfoManager & unitManager)
 
         if (baseLocation != nullptr)
         {
-            baseLocation->setPlayerOccupying(Global::getEnemy(), true);
+            baseLocation->setPlayerOccupying(enemyPlayer, true);
         }
     }
 
@@ -175,7 +188,6 @@ void BaseLocationManager::update(const UnitInfoManager & unitManager)
     // this will happen one of two ways:
     
     // 1. we've seen the enemy base directly, so the baselocation will know
-	auto enemyPlayer = Global::getEnemy();
     if (_playerStartingBaseLocations[enemyPlayer] == nullptr)
     {
         for (auto & baseLocation : _baseLocationData)
@@ -188,7 +200,7 @@ void BaseLocationManager::update(const UnitInfoManager & unitManager)
     }
     
     // 2. we've explored every other start location and haven't seen the enemy yet
-    if (_playerStartingBaseLocations[Global::getEnemy()] == nullptr)
+    if (_playerStartingBaseLocations[enemyPlayer] == nullptr)
     {
         int numStartLocations = getStartingBaseLocations().size();
         int numExploredLocations = 0;
@@ -214,8 +226,8 @@ void BaseLocationManager::update(const UnitInfoManager & unitManager)
         // if we have explored all but one location, then the unexplored one is the enemy start location
         if (numExploredLocations == numStartLocations - 1 && unexplored != nullptr)
         {
-            _playerStartingBaseLocations[Global::getEnemy()] = unexplored;
-            unexplored->setPlayerOccupying(Global::getEnemy(), true);
+            _playerStartingBaseLocations[enemyPlayer] = unexplored;
+            unexplored->setPlayerOccupying(enemyPlayer, true);
         }
     }
 

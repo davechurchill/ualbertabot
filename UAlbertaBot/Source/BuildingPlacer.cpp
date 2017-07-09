@@ -26,6 +26,12 @@ bool BuildingPlacer::isInResourceBox(int x, int y) const
 
 void BuildingPlacer::computeResourceBox()
 {
+	auto self = BWAPI::Broodwar->self();
+	if (self == nullptr)
+	{
+		return;
+	}
+
     BWAPI::Position start(BWAPI::Broodwar->self()->getStartLocation());
     std::vector<BWAPI::Unit> unitsAroundNexus;
 
