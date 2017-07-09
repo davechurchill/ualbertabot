@@ -23,7 +23,14 @@ void GameCommander::onStart()
 
 void GameCommander::update()
 {
-    _timer.start();
+	_timer.start();
+
+	// Do nothing if we don't have any enemy.
+	auto enemy = Global::getEnemy();
+	if (enemy == nullptr)
+	{
+		return;
+	}
 
 	handleUnitAssignments();
     

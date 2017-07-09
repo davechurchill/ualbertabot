@@ -310,7 +310,14 @@ void StrategyManager::readResults()
         return;
     }
 
-    std::string enemyName = Global::getEnemy()->getName();
+	// If we don't have any enemy
+	auto enemy = Global::getEnemy();
+	if (enemy == nullptr)
+	{
+		return;
+	}
+
+    std::string enemyName = enemy->getName();
     std::replace(enemyName.begin(), enemyName.end(), ' ', '_');
 
     std::string enemyResultsFile = Config::Strategy::ReadDir + enemyName + ".txt";
@@ -359,7 +366,13 @@ void StrategyManager::writeResults()
         return;
     }
 
-    std::string enemyName = Global::getEnemy()->getName();
+	auto enemy = Global::getEnemy();
+	if (enemy == nullptr)
+	{
+		return;
+	}
+
+	std::string enemyName = Global::getEnemy()->getName();
     std::replace(enemyName.begin(), enemyName.end(), ' ', '_');
 
     std::string enemyResultsFile = Config::Strategy::WriteDir + enemyName + ".txt";

@@ -408,7 +408,8 @@ BWAPI::Position MapTools::getLeastRecentlySeenPosition(const BaseLocationManager
 	BWAPI::TilePosition leastSeen(0,0);
     const BaseLocation * baseLocation = bases.getPlayerStartingBaseLocation(BWAPI::Broodwar->self());
 
-	const auto enemyStartLocation = bases.getPlayerStartingBaseLocation(Global::getEnemy());
+	const auto enemy = Global::getEnemy();
+	const auto enemyStartLocation = enemy == nullptr ? nullptr : bases.getPlayerStartingBaseLocation(enemy);
     if (enemyStartLocation != nullptr)
     {
         baseLocation = enemyStartLocation;

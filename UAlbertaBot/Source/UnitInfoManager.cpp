@@ -207,7 +207,13 @@ const UnitData & UnitInfoManager::getUnitData(BWAPI::Player player) const
 
 bool UnitInfoManager::enemyHasCloakedUnits() const
 {
-    for (const auto & kv : getUnitData(Global::getEnemy()).getUnitInfoMap())
+	auto enemy = Global::getEnemy();
+	if (enemy == nullptr)
+	{
+		return false;
+	}
+
+    for (const auto & kv : getUnitData(enemy).getUnitInfoMap())
 	{
 		const UnitInfo & ui(kv.second);
 
