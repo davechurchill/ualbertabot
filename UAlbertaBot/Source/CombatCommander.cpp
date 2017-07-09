@@ -19,23 +19,23 @@ CombatCommander::CombatCommander()
 void CombatCommander::initializeSquads()
 {
     SquadOrder idleOrder(SquadOrderTypes::Idle, BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation()), 100, "Chill Out");
-	_squadData.addSquad("Idle", Squad("Idle", idleOrder, IdlePriority));
+	_squadData.addSquad("Idle", idleOrder, IdlePriority);
 
     // the main attack squad that will pressure the enemy's closest base location
     SquadOrder mainAttackOrder(SquadOrderTypes::Attack, getMainAttackLocation(), 800, "Attack Enemy Base");
-	_squadData.addSquad("MainAttack", Squad("MainAttack", mainAttackOrder, AttackPriority));
+	_squadData.addSquad("MainAttack", mainAttackOrder, AttackPriority);
 
     BWAPI::Position ourBasePosition = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
 
     // the scout defense squad will handle chasing the enemy worker scout
     SquadOrder enemyScoutDefense(SquadOrderTypes::Defend, ourBasePosition, 900, "Get the scout");
-    _squadData.addSquad("ScoutDefense", Squad("ScoutDefense", enemyScoutDefense, ScoutDefensePriority));
+    _squadData.addSquad("ScoutDefense", enemyScoutDefense, ScoutDefensePriority);
 
     // add a drop squad if we are using a drop strategy
     if (Config::Strategy::StrategyName == "Protoss_Drop")
     {
         SquadOrder zealotDrop(SquadOrderTypes::Drop, ourBasePosition, 900, "Wait for transport");
-        _squadData.addSquad("Drop", Squad("Drop", zealotDrop, DropPriority));
+        _squadData.addSquad("Drop", zealotDrop, DropPriority);
     }
 
     _initialized = true;
@@ -451,9 +451,9 @@ BWAPI::Position CombatCommander::getDefendLocation()
 	return Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->self())->getPosition();
 }
 
-void CombatCommander::drawSquadInformation(int x, int y)
+void CombatCommander::drawSquadInformation(AKBot::ScreenCanvas& canvas, int x, int y)
 {
-	_squadData.drawSquadInformation(x, y);
+	_squadData.drawSquadInformation(canvas, x, y);
 }
 
 BWAPI::Position CombatCommander::getMainAttackLocation()

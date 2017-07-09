@@ -1,9 +1,9 @@
 #include "DebuGtools.h"
-#include <BWAPI/Game.h>
 
 using namespace UAlbertaBot;
+using namespace AKBot;
 
-void DebugTools::DrawUnitHPBar(const BWAPI::UnitType & type, const BWAPI::Position & pos, const int & hitPoints, const int & shields)
+void DebugTools::DrawUnitHPBar(ScreenCanvas& canvas, const BWAPI::UnitType & type, const BWAPI::Position & pos, const int & hitPoints, const int & shields)
 {
     int verticalOffset = -10;
     int left = pos.x - type.dimensionLeft();
@@ -23,15 +23,15 @@ void DebugTools::DrawUnitHPBar(const BWAPI::UnitType & type, const BWAPI::Positi
         int hpTop = top + verticalOffset;
         int hpBottom = top + 4 + verticalOffset;
 
-        BWAPI::Broodwar->drawBoxMap(BWAPI::Position(left, hpTop), BWAPI::Position(right, hpBottom), BWAPI::Colors::Grey, true);
-        BWAPI::Broodwar->drawBoxMap(BWAPI::Position(left, hpTop), BWAPI::Position(ratioRight, hpBottom), hpColor, true);
-        BWAPI::Broodwar->drawBoxMap(BWAPI::Position(left, hpTop), BWAPI::Position(right, hpBottom), BWAPI::Colors::Black, false);
+        canvas.drawBoxMap(BWAPI::Position(left, hpTop), BWAPI::Position(right, hpBottom), BWAPI::Colors::Grey, true);
+        canvas.drawBoxMap(BWAPI::Position(left, hpTop), BWAPI::Position(ratioRight, hpBottom), hpColor, true);
+        canvas.drawBoxMap(BWAPI::Position(left, hpTop), BWAPI::Position(right, hpBottom), BWAPI::Colors::Black, false);
 
         int ticWidth = 3;
 
         for (int i(left); i < right - 1; i += ticWidth)
         {
-            BWAPI::Broodwar->drawLineMap(BWAPI::Position(i, hpTop), BWAPI::Position(i, hpBottom), BWAPI::Colors::Black);
+			canvas.drawLineMap(BWAPI::Position(i, hpTop), BWAPI::Position(i, hpBottom), BWAPI::Colors::Black);
         }
     }
 
@@ -43,15 +43,15 @@ void DebugTools::DrawUnitHPBar(const BWAPI::UnitType & type, const BWAPI::Positi
         int hpTop = top - 3 + verticalOffset;
         int hpBottom = top + 1 + verticalOffset;
 
-        BWAPI::Broodwar->drawBoxMap(BWAPI::Position(left, hpTop), BWAPI::Position(right, hpBottom), BWAPI::Colors::Grey, true);
-        BWAPI::Broodwar->drawBoxMap(BWAPI::Position(left, hpTop), BWAPI::Position(ratioRight, hpBottom), BWAPI::Colors::Blue, true);
-        BWAPI::Broodwar->drawBoxMap(BWAPI::Position(left, hpTop), BWAPI::Position(right, hpBottom), BWAPI::Colors::Black, false);
+        canvas.drawBoxMap(BWAPI::Position(left, hpTop), BWAPI::Position(right, hpBottom), BWAPI::Colors::Grey, true);
+        canvas.drawBoxMap(BWAPI::Position(left, hpTop), BWAPI::Position(ratioRight, hpBottom), BWAPI::Colors::Blue, true);
+        canvas.drawBoxMap(BWAPI::Position(left, hpTop), BWAPI::Position(right, hpBottom), BWAPI::Colors::Black, false);
 
         int ticWidth = 3;
 
         for (int i(left); i < right - 1; i += ticWidth)
         {
-            BWAPI::Broodwar->drawLineMap(BWAPI::Position(i, hpTop), BWAPI::Position(i, hpBottom), BWAPI::Colors::Black);
+			canvas.drawLineMap(BWAPI::Position(i, hpTop), BWAPI::Position(i, hpBottom), BWAPI::Colors::Black);
         }
     }
 }

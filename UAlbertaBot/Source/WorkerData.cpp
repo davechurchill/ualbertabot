@@ -511,15 +511,22 @@ char WorkerData::getJobCode(BWAPI::Unit unit)
     return 'X';
 }
 
-void WorkerData::drawDepotDebugInfo()
+void WorkerData::drawDepotDebugInfo(AKBot::ScreenCanvas& canvas)
 {
     for (auto & depot : _depots)
     {
         int x = depot->getPosition().x - 64;
         int y = depot->getPosition().y - 32;
 
-        if (Config::Debug::DrawWorkerInfo) BWAPI::Broodwar->drawBoxMap(x-2,y-1,x+75,y+14,BWAPI::Colors::Black,true);
-        if (Config::Debug::DrawWorkerInfo) BWAPI::Broodwar->drawTextMap(x,y,"\x04 Workers: %d",getNumAssignedWorkers(depot));
+		if (Config::Debug::DrawWorkerInfo)
+		{
+			canvas.drawBoxMap(x - 2, y - 1, x + 75, y + 14, BWAPI::Colors::Black, true);
+		}
+
+		if (Config::Debug::DrawWorkerInfo)
+		{
+			canvas.drawTextMap(x, y, "\x04 Workers: %d", getNumAssignedWorkers(depot));
+		}
 
         std::vector<BWAPI::Unit> minerals = getMineralPatchesNearDepot(depot);
 
@@ -530,8 +537,8 @@ void WorkerData::drawDepotDebugInfo()
 
             if (_workersOnMineralPatch.find(mineral) != _workersOnMineralPatch.end())
             {
-                //if (Config::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawBoxMap(x-2, y-1, x+75, y+14, BWAPI::Colors::Black, true);
-                //if (Config::Debug::DRAW_UALBERTABOT_DEBUG) BWAPI::Broodwar->drawTextMap(x, y, "\x04 Workers: %d", workersOnMineralPatch[mineral]);
+                //if (Config::Debug::DRAW_UALBERTABOT_DEBUG) canvas.drawBoxMap(x-2, y-1, x+75, y+14, BWAPI::Colors::Black, true);
+                //if (Config::Debug::DRAW_UALBERTABOT_DEBUG) canvas.drawTextMap(x, y, "\x04 Workers: %d", workersOnMineralPatch[mineral]);
             }
         }
     }

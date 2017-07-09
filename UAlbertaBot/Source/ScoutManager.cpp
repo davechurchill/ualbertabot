@@ -24,7 +24,6 @@ void ScoutManager::update()
     }*/
 
 	moveScouts();
-    drawScoutInformation(200, 320);
 }
 
 void ScoutManager::setWorkerScout(BWAPI::Unit unit)
@@ -39,18 +38,18 @@ void ScoutManager::setWorkerScout(BWAPI::Unit unit)
     Global::Workers().setScoutWorker(_workerScout);
 }
 
-void ScoutManager::drawScoutInformation(int x, int y)
+void ScoutManager::drawScoutInformation(AKBot::ScreenCanvas& canvas, int x, int y)
 {
     if (!Config::Debug::DrawScoutInfo)
     {
         return;
     }
 
-    BWAPI::Broodwar->drawTextScreen(x, y, "ScoutInfo: %s", _scoutStatus.c_str());
+	canvas.drawTextScreen(x, y, "ScoutInfo: %s", _scoutStatus.c_str());
     for (size_t i(0); i < _enemyRegionVertices.size(); ++i)
     {
-        BWAPI::Broodwar->drawCircleMap(_enemyRegionVertices[i], 4, BWAPI::Colors::Green, false);
-        BWAPI::Broodwar->drawTextMap(_enemyRegionVertices[i], "%d", i);
+        canvas.drawCircleMap(_enemyRegionVertices[i], 4, BWAPI::Colors::Green, false);
+        canvas.drawTextMap(_enemyRegionVertices[i], "%d", i);
     }
 }
 

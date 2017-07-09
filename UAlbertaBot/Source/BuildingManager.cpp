@@ -299,9 +299,9 @@ int BuildingManager::getReservedGas()
     return _reservedGas;
 }
 
-void BuildingManager::drawBuildingInformation(int x,int y)
+void BuildingManager::drawBuildingInformation(AKBot::ScreenCanvas& canvas, int x,int y)
 {
-    _buildingPlacer.drawReservedTiles();
+    _buildingPlacer.drawReservedTiles(canvas);
 
     if (!Config::Debug::DrawBuildingInfo)
     {
@@ -310,12 +310,12 @@ void BuildingManager::drawBuildingInformation(int x,int y)
 
     for (auto & unit : BWAPI::Broodwar->self()->getUnits())
     {
-        BWAPI::Broodwar->drawTextMap(unit->getPosition().x,unit->getPosition().y+5,"\x07%d",unit->getID());
+        canvas.drawTextMap(unit->getPosition().x,unit->getPosition().y+5,"\x07%d",unit->getID());
     }
 
-    BWAPI::Broodwar->drawTextScreen(x,y,"\x04 Building Information:");
-    BWAPI::Broodwar->drawTextScreen(x,y+20,"\x04 Name");
-    BWAPI::Broodwar->drawTextScreen(x+150,y+20,"\x04 State");
+    canvas.drawTextScreen(x,y,"\x04 Building Information:");
+    canvas.drawTextScreen(x,y+20,"\x04 Name");
+    canvas.drawTextScreen(x+150,y+20,"\x04 State");
 
     int yspace = 0;
 
@@ -323,26 +323,26 @@ void BuildingManager::drawBuildingInformation(int x,int y)
     {
         if (b.status == BuildingStatus::Unassigned)
         {
-            BWAPI::Broodwar->drawTextScreen(x,y+40+((yspace)*10),"\x03 %s",b.type.getName().c_str());
-            BWAPI::Broodwar->drawTextScreen(x+150,y+40+((yspace++)*10),"\x03 Need %c",getBuildingWorkerCode(b));
+            canvas.drawTextScreen(x,y+40+((yspace)*10),"\x03 %s",b.type.getName().c_str());
+            canvas.drawTextScreen(x+150,y+40+((yspace++)*10),"\x03 Need %c",getBuildingWorkerCode(b));
         }
         else if (b.status == BuildingStatus::Assigned)
         {
-            BWAPI::Broodwar->drawTextScreen(x,y+40+((yspace)*10),"\x03 %s %d",b.type.getName().c_str(),b.builderUnit->getID());
-            BWAPI::Broodwar->drawTextScreen(x+150,y+40+((yspace++)*10),"\x03 A %c (%d,%d)",getBuildingWorkerCode(b),b.finalPosition.x,b.finalPosition.y);
+            canvas.drawTextScreen(x,y+40+((yspace)*10),"\x03 %s %d",b.type.getName().c_str(),b.builderUnit->getID());
+            canvas.drawTextScreen(x+150,y+40+((yspace++)*10),"\x03 A %c (%d,%d)",getBuildingWorkerCode(b),b.finalPosition.x,b.finalPosition.y);
 
             int x1 = b.finalPosition.x*32;
             int y1 = b.finalPosition.y*32;
             int x2 = (b.finalPosition.x + b.type.tileWidth())*32;
             int y2 = (b.finalPosition.y + b.type.tileHeight())*32;
 
-            BWAPI::Broodwar->drawLineMap(b.builderUnit->getPosition().x,b.builderUnit->getPosition().y,(x1+x2)/2,(y1+y2)/2,BWAPI::Colors::Orange);
-            BWAPI::Broodwar->drawBoxMap(x1,y1,x2,y2,BWAPI::Colors::Red,false);
+            canvas.drawLineMap(b.builderUnit->getPosition().x,b.builderUnit->getPosition().y,(x1+x2)/2,(y1+y2)/2,BWAPI::Colors::Orange);
+            canvas.drawBoxMap(x1,y1,x2,y2,BWAPI::Colors::Red,false);
         }
         else if (b.status == BuildingStatus::UnderConstruction)
         {
-            BWAPI::Broodwar->drawTextScreen(x,y+40+((yspace)*10),"\x03 %s %d",b.type.getName().c_str(),b.buildingUnit->getID());
-            BWAPI::Broodwar->drawTextScreen(x+150,y+40+((yspace++)*10),"\x03 Const %c",getBuildingWorkerCode(b));
+            canvas.drawTextScreen(x,y+40+((yspace)*10),"\x03 %s %d",b.type.getName().c_str(),b.buildingUnit->getID());
+            canvas.drawTextScreen(x+150,y+40+((yspace++)*10),"\x03 Const %c",getBuildingWorkerCode(b));
         }
     }
 }

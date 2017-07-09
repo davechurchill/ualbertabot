@@ -304,7 +304,7 @@ void BuildingPlacer::reserveTiles(BWAPI::TilePosition position,int width,int hei
     }
 }
 
-void BuildingPlacer::drawReservedTiles()
+void BuildingPlacer::drawReservedTiles(AKBot::ScreenCanvas& canvas)
 {
     if (!Config::Debug::DrawReservedBuildingTiles)
     {
@@ -325,7 +325,7 @@ void BuildingPlacer::drawReservedTiles()
                 int x2 = (x+1)*32 - 8;
                 int y2 = (y+1)*32 - 8;
 
-                BWAPI::Broodwar->drawBoxMap(x1,y1,x2,y2,BWAPI::Colors::Yellow,false);
+                canvas.drawBoxMap(x1,y1,x2,y2,BWAPI::Colors::Yellow,false);
             }
         }
     }

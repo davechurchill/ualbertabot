@@ -8,7 +8,7 @@
 using namespace UAlbertaBot;
 
 UAlbertaBot_Tournament::UAlbertaBot_Tournament()
-    : _gameCommander(*this)
+	: _gameCommander(*this)
 	, _mapTools(BWAPI::Broodwar->mapWidth(), BWAPI::Broodwar->mapHeight())
 {
 	// parse the configuration file for the bot's strategies
@@ -18,52 +18,78 @@ UAlbertaBot_Tournament::UAlbertaBot_Tournament()
 
 UAlbertaBot_Tournament::~UAlbertaBot_Tournament()
 {
-    Global::SetModule(nullptr);
+	Global::SetModule(nullptr);
 }
 
 // This gets called when the bot starts!
 void UAlbertaBot_Tournament::onStart()
 {
-    // Initialize SparCraft, the combat simulation package
-    SparCraft::init();
+	// Initialize SparCraft, the combat simulation package
+	SparCraft::init();
 	auto configurationFile = ParseUtils::FindConfigurationLocation(Config::SparCraft::SparCraftConfigFile);
 	SparCraft::AIParameters::Instance().parseFile(configurationFile);
 
-    // Initialize BOSS, the Build Order Search System
-    BOSS::init();
+	// Initialize BOSS, the Build Order Search System
+	BOSS::init();
 
-    // Initialize all the global classes in UAlbertaBot 
-    Global::SetModule(this);
+	// Initialize all the global classes in UAlbertaBot 
+	Global::SetModule(this);
 
-    // Set our BWAPI options here    
+	// Set our BWAPI options here    
 	BWAPI::Broodwar->setLocalSpeed(Config::BWAPIOptions::SetLocalSpeed);
 	BWAPI::Broodwar->setFrameSkip(Config::BWAPIOptions::SetFrameSkip);
-    
-    if (Config::BWAPIOptions::EnableCompleteMapInformation)
-    {
-        BWAPI::Broodwar->enableFlag(BWAPI::Flag::CompleteMapInformation);
-    }
 
-    if (Config::BWAPIOptions::EnableUserInput)
-    {
-        BWAPI::Broodwar->enableFlag(BWAPI::Flag::UserInput);
-    }
+	if (Config::BWAPIOptions::EnableCompleteMapInformation)
+	{
+		BWAPI::Broodwar->enableFlag(BWAPI::Flag::CompleteMapInformation);
+	}
 
-    if (Config::BotInfo::PrintInfoOnStart)
-    {
-        BWAPI::Broodwar->printf("Hello! I am %s, written by %s", Config::BotInfo::BotName.c_str(), Config::BotInfo::Authors.c_str());
-    }
+	if (Config::BWAPIOptions::EnableUserInput)
+	{
+		BWAPI::Broodwar->enableFlag(BWAPI::Flag::UserInput);
+	}
 
-    if (Config::Modules::UsingStrategyIO)
-    {
-        _strategyManager.readResults();
-        _strategyManager.setLearnedStrategy();
-    }
+	if (Config::BotInfo::PrintInfoOnStart)
+	{
+		BWAPI::Broodwar->printf("Hello! I am %s, written by %s", Config::BotInfo::BotName.c_str(), Config::BotInfo::Authors.c_str());
+	}
 
-    _unitInfoManager.onStart();
-    _mapTools.onStart();
-    _baseLocationManager.onStart(_mapTools);
-    _gameCommander.onStart();
+	if (Config::Modules::UsingStrategyIO)
+	{
+		_strategyManager.readResults();
+		_strategyManager.setLearnedStrategy();
+	}
+
+	_unitInfoManager.onStart();
+	_mapTools.onStart();
+	_baseLocationManager.onStart(_mapTools);
+	_gameCommander.onStart();
+
+	Micro::SetOnAttackUnit([this](const BWAPI::Unit&attacker, const BWAPI::Unit&target)
+	{
+		auto& canvas = this->getCanvas();
+		Micro::drawAction(canvas, attacker->getPosition(), target->getPosition(), Micro::AttackUnitColor);
+	});
+	Micro::SetOnAttackMove([this](const BWAPI::Unit&attacker, const BWAPI::Position &targetPosition)
+	{
+		auto& canvas = this->getCanvas();
+		Micro::drawAction(canvas, attacker->getPosition(), targetPosition, Micro::AttackMoveColor);
+	});
+	Micro::SetOnMove([this](const BWAPI::Unit&attacker, const BWAPI::Position &targetPosition)
+	{
+		auto& canvas = this->getCanvas();
+		Micro::drawAction(canvas, attacker->getPosition(), targetPosition, Micro::MoveColor);
+	});
+	Micro::SetOnRepair([this](const BWAPI::Unit& unit, const BWAPI::Unit& target)
+	{
+		auto& canvas = this->getCanvas();
+		Micro::drawAction(canvas, unit->getPosition(), target->getPosition(), Micro::RepairColor);
+	});
+	Micro::SetOnRightClick([this](const BWAPI::Unit& unit, const BWAPI::Unit& target)
+	{
+		auto& canvas = this->getCanvas();
+		Micro::drawAction(canvas, unit->getPosition(), target->getPosition(), Micro::RightClickColor);
+	});
 }
 
 void UAlbertaBot_Tournament::onEnd(bool isWinner) 
@@ -96,14 +122,27 @@ const MapTools & UAlbertaBot_Tournament::Map() const
     return _mapTools;
 }
 
+AKBot::ScreenCanvas & UAlbertaBot::UAlbertaBot_Tournament::getCanvas()
+{
+	return _canvas;
+}
+
 void UAlbertaBot_Tournament::onFrame()
 {
     // update all of the internal information managers
     _mapTools.update();
-    _strategyManager.update();
+	if (Config::Debug::DrawLastSeenTileInfo)
+	{
+		_mapTools.drawLastSeen(_canvas);
+	}
+    
+	_strategyManager.update();
     _unitInfoManager.update();
-    _workerManager.update();
-    _baseLocationManager.update(Global::UnitInfo());
+    _workerManager.update(_canvas);
+    _baseLocationManager.update(_unitInfoManager);
+
+	// draw the debug information for each base location
+	_baseLocationManager.drawBaseLocations(_canvas);
 
     // update the game commander
 	_gameCommander.update(); 

@@ -5,6 +5,7 @@
 #include <BWAPI/Position.h>
 #include "DistanceMap.h"
 #include "BaseLocation.h"
+#include "ScreenCanvas.h"
 
 namespace UAlbertaBot
 {
@@ -47,7 +48,7 @@ public:
     bool                    isConnected(const BWAPI::Position & from, const BWAPI::Position & to) const;
     bool                    isWalkable(const BWAPI::TilePosition & tile) const;
     bool                    isWalkable(const BWAPI::Position & pos) const;
-    void                    drawLastSeen() const;
+    void                    drawLastSeen(AKBot::ScreenCanvas& canvas) const;
     BWAPI::Position         getLeastRecentlySeenPosition(const BaseLocationManager & bases) const;
     bool                    isBuildable(BWAPI::TilePosition tile, BWAPI::UnitType type) const;
     bool                    isBuildableTile(BWAPI::TilePosition tile) const;

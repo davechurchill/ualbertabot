@@ -1,10 +1,11 @@
 #pragma once
 
 #include <BWAPI/Player.h>
+#include <memory>
 #include "BotModule.h"
 #include "AutoObserver.h"
 #include "ArenaPlayer.h"
-#include <memory>
+#include "BWAPIScreenCanvas.h"
 
 namespace UAlbertaBot
 {
@@ -17,8 +18,9 @@ class UAlbertaBot_Arena : public BotModule
     std::vector<size_t>             _results;       // 0 = wins, 1 = losses, 2 = draws
     size_t                          _battles;
     bool                            _prevIsBattle;
+	AKBot::BWAPIScreenCanvas		_canvas;
     
-    void drawUnitHPBars() const;
+    void drawUnitHPBars(AKBot::ScreenCanvas& canvas) const;
     size_t numUnits(BWAPI::Player player) const;
     bool isBattle();
     int winner();

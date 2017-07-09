@@ -1,11 +1,10 @@
 #pragma once
 
 #include "Common.h"
-
 #include "UnitData.h"
 #include "BaseLocation.h"
-
 #include "..\..\SparCraft\source\SparCraft.h"
+#include "ScreenCanvas.h"
 
 namespace UAlbertaBot
 {
@@ -49,8 +48,8 @@ public:
     const std::map<int, UnitInfo> & getUnitInfoMap(BWAPI::Player player) const;
 
     bool                    enemyHasCloakedUnits() const;
-    void                    drawExtendedInterface() const;
-    void                    drawUnitInformation(int x,int y) const;
+    void                    drawExtendedInterface(AKBot::ScreenCanvas& canvas) const;
+    void                    drawUnitInformation(AKBot::ScreenCanvas& canvas, int x,int y) const;
 
 };
 }

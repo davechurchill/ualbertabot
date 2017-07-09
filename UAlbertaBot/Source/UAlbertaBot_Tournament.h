@@ -10,6 +10,7 @@
 #include "AutoObserver.h"
 #include "rapidjson\document.h"
 #include "Global.h"
+#include "BWAPIScreenCanvas.h"
 
 namespace UAlbertaBot
 {
@@ -23,6 +24,7 @@ class UAlbertaBot_Tournament : public BotModule
     StrategyManager     _strategyManager;
     MapTools            _mapTools;
     BaseLocationManager _baseLocationManager;
+	AKBot::BWAPIScreenCanvas _canvas;
 
     void drawErrorMessages() const;
 
@@ -48,6 +50,7 @@ public:
     const StrategyManager & Strategy() const;
     const BaseLocationManager & Bases() const;
     const MapTools & Map() const;
+	AKBot::ScreenCanvas& getCanvas();
 };
 
 }

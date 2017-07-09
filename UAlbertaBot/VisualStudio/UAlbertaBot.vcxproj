@@ -31,6 +31,7 @@
     <ClCompile Include="..\source\BuildingPlacer.cpp" />
     <ClCompile Include="..\source\BuildOrder.cpp" />
     <ClCompile Include="..\source\BuildOrderQueue.cpp" />
+    <ClCompile Include="..\Source\BWAPIScreenCanvas.cpp" />
     <ClCompile Include="..\Source\CombatCommander.cpp" />
     <ClCompile Include="..\Source\CombatSimulation.cpp" />
     <ClCompile Include="..\Source\Common.cpp" />
@@ -40,6 +41,7 @@
     <ClCompile Include="..\Source\DistanceMap.cpp" />
     <ClCompile Include="..\Source\GameCommander.cpp" />
     <ClCompile Include="..\Source\Global.cpp" />
+    <ClCompile Include="..\Source\ScreenCanvas.cpp" />
     <ClCompile Include="..\Source\UAlbertaBot_Arena.cpp" />
     <ClCompile Include="..\Source\UAlbertaBot_Tournament.cpp" />
     <ClCompile Include="..\Source\UnitInfoManager.cpp" />
@@ -79,6 +81,7 @@
     <ClInclude Include="..\source\BuildingPlacer.h" />
     <ClInclude Include="..\source\BuildOrder.h" />
     <ClInclude Include="..\source\BuildOrderQueue.h" />
+    <ClInclude Include="..\Source\BWAPIScreenCanvas.h" />
     <ClInclude Include="..\Source\CombatCommander.h" />
     <ClInclude Include="..\Source\CombatSimulation.h" />
     <ClInclude Include="..\Source\Common.h" />
@@ -89,6 +92,7 @@
     <ClInclude Include="..\Source\GameCommander.h" />
     <ClInclude Include="..\Source\GameHistory.hpp" />
     <ClInclude Include="..\Source\Global.h" />
+    <ClInclude Include="..\Source\ScreenCanvas.h" />
     <ClInclude Include="..\Source\UAlbertaBot_Arena.h" />
     <ClInclude Include="..\Source\UAlbertaBot_Tournament.h" />
     <ClInclude Include="..\Source\UnitInfoManager.h" />

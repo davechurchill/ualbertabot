@@ -36,7 +36,7 @@ public:
 
     void                update();
     void                addBuildingTask(BWAPI::UnitType type,BWAPI::TilePosition desiredLocation);
-    void                drawBuildingInformation(int x,int y);
+    void                drawBuildingInformation(AKBot::ScreenCanvas& canvas, int x,int y);
     BWAPI::TilePosition getBuildingLocation(const Building & b);
 
     int                 getReservedMinerals();

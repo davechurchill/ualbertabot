@@ -152,7 +152,7 @@ BuildOrderItem BuildOrderQueue::operator [] (int i)
 	return queue[i];
 }
 
-void BuildOrderQueue::drawQueueInformation(int x, int y) 
+void BuildOrderQueue::drawQueueInformation(AKBot::ScreenCanvas& canvas, int x, int y)
 {
 	//x = x + 25;
 
@@ -196,6 +196,6 @@ void BuildOrderQueue::drawQueueInformation(int x, int y)
             }
         }
 
-		BWAPI::Broodwar->drawTextScreen(x, y+(i*10), " %s%s", prefix.c_str(), type.getName().c_str());
+		canvas.drawTextScreen(x, y+(i*10), " %s%s", prefix.c_str(), type.getName().c_str());
 	}
 }

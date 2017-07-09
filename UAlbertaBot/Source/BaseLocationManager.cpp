@@ -253,9 +253,6 @@ void BaseLocationManager::update(const UnitInfoManager & unitManager)
 			}
 		}
     }
-
-    // draw the debug information for each base location
-    drawBaseLocations();
 }
 
 void UAlbertaBot::BaseLocationManager::resetPlayerOccupation()
@@ -270,7 +267,7 @@ void UAlbertaBot::BaseLocationManager::resetPlayerOccupation()
 	}
 }
 
-void BaseLocationManager::drawBaseLocations()
+void BaseLocationManager::drawBaseLocations(AKBot::ScreenCanvas& canvas)
 {
 	auto isBuildableTileCheck = [](BWAPI::TilePosition tile)
 	{
@@ -278,12 +275,12 @@ void BaseLocationManager::drawBaseLocations()
 	};
     for (auto & baseLocation : _baseLocationData)
     {
-        baseLocation.draw(isBuildableTileCheck);
+        baseLocation.draw(canvas, isBuildableTileCheck);
     }
 
     BWAPI::Position nextExpansionPosition(getNextExpansion(BWAPI::Broodwar->self()));
 
-    BWAPI::Broodwar->drawCircleMap(nextExpansionPosition, 16, BWAPI::Colors::Orange, true);
+    canvas.drawCircleMap(nextExpansionPosition, 16, BWAPI::Colors::Orange, true);
 }
 
 const std::vector<const BaseLocation *> & BaseLocationManager::getBaseLocations() const

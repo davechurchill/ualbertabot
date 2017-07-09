@@ -63,7 +63,7 @@ void BOSSManager::startNewSearch(const std::vector<MetaPair> & goalUnits, const 
     }
 }
 
-void BOSSManager::drawSearchInformation(int x, int y) 
+void BOSSManager::drawSearchInformation(AKBot::ScreenCanvas& canvas, int x, int y)
 {
 	if (!Config::Debug::DrawBuildOrderSearchInfo)
     {
@@ -73,29 +73,29 @@ void BOSSManager::drawSearchInformation(int x, int y)
     // draw the background
     int width = 155;
     int height = 80;
-    BWAPI::Broodwar->drawBoxScreen(BWAPI::Position(x-5,y), BWAPI::Position(x+width, y+height), BWAPI::Colors::Black, true);
+    canvas.drawBoxScreen(BWAPI::Position(x-5,y), BWAPI::Position(x+width, y+height), BWAPI::Colors::Black, true);
 
     x += 5; y+=3;
 
-    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x, y), "%cBuildOrderSearch:", '\x04');
+    canvas.drawTextScreen(BWAPI::Position(x, y), "%cBuildOrderSearch:", '\x04');
     y += 10;
-    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x, y), "%s", _previousStatus.c_str());
+    canvas.drawTextScreen(BWAPI::Position(x, y), "%s", _previousStatus.c_str());
 
     for (size_t i(0); i < _previousGoalUnits.size(); ++i)
     {
         if (_previousGoalUnits[i].second > 0)
         {
             y += 10;
-            BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x,y), "%d %s", _previousGoalUnits[i].second, _previousGoalUnits[i].first.getName().c_str());
+            canvas.drawTextScreen(BWAPI::Position(x,y), "%d %s", _previousGoalUnits[i].second, _previousGoalUnits[i].first.getName().c_str());
         }
     }
     
-    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x, y+25), "Time (ms): %.3lf", _totalPreviousSearchTime);
-    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x, y+35), "Nodes: %d", _savedSearchResults.nodesExpanded);
-    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x, y+45), "BO Size: %d", (int)_savedSearchResults.buildOrder.size());
+    canvas.drawTextScreen(BWAPI::Position(x, y+25), "Time (ms): %.3lf", _totalPreviousSearchTime);
+    canvas.drawTextScreen(BWAPI::Position(x, y+35), "Nodes: %d", _savedSearchResults.nodesExpanded);
+    canvas.drawTextScreen(BWAPI::Position(x, y+45), "BO Size: %d", (int)_savedSearchResults.buildOrder.size());
 }
 
-void BOSSManager::drawStateInformation(int x, int y, const BuildingManager & buildingManager) 
+void BOSSManager::drawStateInformation(AKBot::ScreenCanvas& canvas, int x, int y, const BuildingManager & buildingManager)
 {
 	if (!Config::Debug::DrawBOSSStateInfo)
     {
@@ -103,8 +103,8 @@ void BOSSManager::drawStateInformation(int x, int y, const BuildingManager & bui
     }
 
     BOSS::GameState currentState(BWAPI::Broodwar, BWAPI::Broodwar->self(), buildingManager.buildingsQueued());
-    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x-100, y+30), "\x04%s", currentState.getBuildingData().toString().c_str());
-    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x+150, y), "\x04%s", currentState.toString().c_str());
+    canvas.drawTextScreen(BWAPI::Position(x-100, y+30), "\x04%s", currentState.getBuildingData().toString().c_str());
+    canvas.drawTextScreen(BWAPI::Position(x+150, y), "\x04%s", currentState.toString().c_str());
     
 }
 

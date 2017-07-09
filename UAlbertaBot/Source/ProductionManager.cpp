@@ -629,11 +629,11 @@ BWAPI::Unit ProductionManager::selectUnitOfType(BWAPI::UnitType type, BWAPI::Pos
 	return nullptr;
 }
 
-void ProductionManager::drawProductionInformation(int x, int y)
+void ProductionManager::drawProductionInformation(AKBot::ScreenCanvas& canvas, int x, int y)
 {
-    _buildingManager.drawBuildingInformation(200,50);
-	_bossManager.drawSearchInformation(490, 100);
-    _bossManager.drawStateInformation(250, 0, _buildingManager);
+    _buildingManager.drawBuildingInformation(canvas, 200,50);
+	_bossManager.drawSearchInformation(canvas, 490, 100);
+    _bossManager.drawStateInformation(canvas, 250, 0, _buildingManager);
 
     if (!Config::Debug::DrawProductionInfo)
     {
@@ -655,8 +655,8 @@ void ProductionManager::drawProductionInformation(int x, int y)
 	// sort it based on the time it was started
 	std::sort(prod.begin(), prod.end(), CompareWhenStarted());
 
-    BWAPI::Broodwar->drawTextScreen(x-30, y+20, "\x04 TIME");
-	BWAPI::Broodwar->drawTextScreen(x, y+20, "\x04 UNIT NAME");
+    canvas.drawTextScreen(x-30, y+20, "\x04 TIME");
+	canvas.drawTextScreen(x, y+20, "\x04 UNIT NAME");
 
 	size_t reps = prod.size() < 10 ? prod.size() : 10;
 
@@ -676,11 +676,11 @@ void ProductionManager::drawProductionInformation(int x, int y)
             t = unit->getBuildType();
         }
 
-		BWAPI::Broodwar->drawTextScreen(x, yy, " %s%s", prefix.c_str(), t.getName().c_str());
-		BWAPI::Broodwar->drawTextScreen(x - 35, yy, "%s%6d", prefix.c_str(), unit->getRemainingBuildTime());
+		canvas.drawTextScreen(x, yy, " %s%s", prefix.c_str(), t.getName().c_str());
+		canvas.drawTextScreen(x - 35, yy, "%s%6d", prefix.c_str(), unit->getRemainingBuildTime());
 	}
 
-	_queue.drawQueueInformation(x, yy+10);
+	_queue.drawQueueInformation(canvas, x, yy+10);
 }
 
 // this will return true if any unit is on the first frame if it's training time remaining

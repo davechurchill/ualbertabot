@@ -30,7 +30,6 @@ class ScoutManager
 	bool exploreEnemyBases();
 	bool allEnemyBasesExplored() const;
 	void harrasEnemyBaseIfPossible(const BaseLocation * enemyBaseLocation, int scoutHP);
-    void            drawScoutInformation(int x, int y);
     //void            calculateEnemyRegionVertices();
 
 
@@ -40,6 +39,6 @@ public:
 
 	void update();
     void setWorkerScout(BWAPI::Unit unit);
-
+	void drawScoutInformation(AKBot::ScreenCanvas& canvas, int x, int y);
 };
 }

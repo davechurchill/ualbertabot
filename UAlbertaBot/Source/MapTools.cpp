@@ -44,11 +44,6 @@ void MapTools::update()
 			}
 		}
 	}
-
-	if (Config::Debug::DrawLastSeenTileInfo)
-	{
-		drawLastSeen();
-	}
 }
 
 void MapTools::computeConnectivity()
@@ -256,7 +251,7 @@ const std::vector<BWAPI::TilePosition> & MapTools::getClosestTilesTo(BWAPI::Posi
     return getClosestTilesTo(BWAPI::TilePosition(pos));
 }
 
-void MapTools::drawLastSeen() const
+void MapTools::drawLastSeen(AKBot::ScreenCanvas& canvas) const
 {
     bool rMouseState = BWAPI::Broodwar->getMouseState(BWAPI::MouseButton::M_RIGHT);
     if (!rMouseState)
@@ -266,7 +261,7 @@ void MapTools::drawLastSeen() const
 
     // draw the least recently seen position tile as a yellow circle on the map
     BWAPI::Position lrsp = getLeastRecentlySeenPosition(Global::Bases());
-    BWAPI::Broodwar->drawCircleMap(lrsp, 32, BWAPI::Colors::Yellow, true);
+    canvas.drawCircleMap(lrsp, 32, BWAPI::Colors::Yellow, true);
 
 
     int size = 4;
@@ -293,9 +288,9 @@ void MapTools::drawLastSeen() const
                 boxColor = BWAPI::Colors::Red;
             }
 
-            BWAPI::Broodwar->drawBoxMap(pos, pos + diag, boxColor, false);
-            BWAPI::Broodwar->drawTextMap(pos + BWAPI::Position(2,2), "%d", BWAPI::Broodwar->getFrameCount() - _lastSeen[x][y]);
-            BWAPI::Broodwar->drawTextMap(pos + BWAPI::Position(2,12), "%d", homeDist);
+            canvas.drawBoxMap(pos, pos + diag, boxColor, false);
+            canvas.drawTextMap(pos + BWAPI::Position(2,2), "%d", BWAPI::Broodwar->getFrameCount() - _lastSeen[x][y]);
+            canvas.drawTextMap(pos + BWAPI::Position(2,12), "%d", homeDist);
         }
     }
 

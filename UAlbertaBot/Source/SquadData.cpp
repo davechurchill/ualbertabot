@@ -71,6 +71,11 @@ void SquadData::addSquad(const std::string & squadName, const Squad & squad)
 	_squads[squadName] = squad;
 }
 
+void SquadData::addSquad(const std::string & squadName, const SquadOrder & squadOrder, size_t priority)
+{
+	_squads[squadName] = Squad(squadName, squadOrder, priority);
+}
+
 void SquadData::updateAllSquads(const MapTools& map)
 {
 	for (auto & kv : _squads)
@@ -79,17 +84,17 @@ void SquadData::updateAllSquads(const MapTools& map)
 	}
 }
 
-void SquadData::drawSquadInformation(int x, int y) 
+void SquadData::drawSquadInformation(AKBot::ScreenCanvas& canvas, int x, int y)
 {
     if (!Config::Debug::DrawSquadInfo)
     {
         return;
     }
 
-	BWAPI::Broodwar->drawTextScreen(x, y, "\x04Squads");
-	BWAPI::Broodwar->drawTextScreen(x, y+20, "\x04NAME");
-	BWAPI::Broodwar->drawTextScreen(x+150, y+20, "\x04SIZE");
-	BWAPI::Broodwar->drawTextScreen(x+200, y+20, "\x04LOCATION");
+	canvas.drawTextScreen(x, y, "\x04Squads");
+	canvas.drawTextScreen(x, y+20, "\x04NAME");
+	canvas.drawTextScreen(x+150, y+20, "\x04SIZE");
+	canvas.drawTextScreen(x+200, y+20, "\x04LOCATION");
 
 	int yspace = 0;
 
@@ -100,17 +105,17 @@ void SquadData::drawSquadInformation(int x, int y)
 		auto & units = squad.getUnits();
 		const SquadOrder & order = squad.getSquadOrder();
 
-		BWAPI::Broodwar->drawTextScreen(x, y+40+((yspace)*10), "\x03%s", squad.getName().c_str());
-		BWAPI::Broodwar->drawTextScreen(x+150, y+40+((yspace)*10), "\x03%d", units.size());
-		BWAPI::Broodwar->drawTextScreen(x+200, y+40+((yspace++)*10), "\x03(%d,%d)", order.getPosition().x, order.getPosition().y);
+		canvas.drawTextScreen(x, y+40+((yspace)*10), "\x03%s", squad.getName().c_str());
+		canvas.drawTextScreen(x+150, y+40+((yspace)*10), "\x03%d", units.size());
+		canvas.drawTextScreen(x+200, y+40+((yspace++)*10), "\x03(%d,%d)", order.getPosition().x, order.getPosition().y);
 
-		BWAPI::Broodwar->drawCircleMap(order.getPosition(), 10, BWAPI::Colors::Green, true);
-        BWAPI::Broodwar->drawCircleMap(order.getPosition(), order.getRadius(), BWAPI::Colors::Red, false);
-        BWAPI::Broodwar->drawTextMap(order.getPosition() + BWAPI::Position(0, 12), "%s", squad.getName().c_str());
+		canvas.drawCircleMap(order.getPosition(), 10, BWAPI::Colors::Green, true);
+        canvas.drawCircleMap(order.getPosition(), order.getRadius(), BWAPI::Colors::Red, false);
+        canvas.drawTextMap(order.getPosition() + BWAPI::Position(0, 12), "%s", squad.getName().c_str());
 
         for (const BWAPI::Unit unit : units)
         {
-            BWAPI::Broodwar->drawTextMap(unit->getPosition() + BWAPI::Position(0, 10), "%s", squad.getName().c_str());
+            canvas.drawTextMap(unit->getPosition() + BWAPI::Position(0, 10), "%s", squad.getName().c_str());
         }
 	}
 }

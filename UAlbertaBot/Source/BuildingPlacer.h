@@ -3,6 +3,7 @@
 #include "Common.h"
 #include "BuildingData.h"
 #include "MetaType.h"
+#include "ScreenCanvas.h"
 
 namespace UAlbertaBot
 {
@@ -44,7 +45,7 @@ public:
     void					reserveTiles(BWAPI::TilePosition position,int width,int height);
     void					freeTiles(BWAPI::TilePosition position,int width,int height);
 
-    void					drawReservedTiles();
+    void					drawReservedTiles(AKBot::ScreenCanvas& canvas);
     void					computeResourceBox();
 
     BWAPI::TilePosition		getRefineryPosition();

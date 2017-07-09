@@ -5,6 +5,7 @@
 #include "ProductionManager.h"
 #include "ScoutManager.h"
 #include "Timer.hpp"
+#include "ScreenCanvas.h"
 
 namespace UAlbertaBot
 {
@@ -41,8 +42,8 @@ public:
     void setScoutUnits();
     void setCombatUnits();
 
-    void drawDebugInterface();
-    void drawGameInformation(int x,int y);
+    void drawDebugInterface(AKBot::ScreenCanvas& canvas);
+    void drawGameInformation(AKBot::ScreenCanvas& canvas, int x,int y);
 
     BWAPI::Unit getFirstSupplyProvider();
     BWAPI::Unit getClosestUnitToTarget(BWAPI::UnitType type,BWAPI::Position target);

@@ -45,6 +45,6 @@ public:
 
 	void update(const std::vector<BWAPI::Unit> & combatUnits);
     
-	void drawSquadInformation(int x, int y);
+	void drawSquadInformation(AKBot::ScreenCanvas& canvas, int x, int y);
 };
 }

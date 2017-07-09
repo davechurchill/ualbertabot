@@ -11,11 +11,56 @@ size_t TotalCommands = 0;
 
 const int dotRadius = 2;
 
-void Micro::drawAPM(int x, int y)
+std::function<void(const BWAPI::Unit& attacker, const BWAPI::Unit& target)> onAttackHandler;
+std::function<void(const BWAPI::Unit& attacker, const BWAPI::Position & targetPosition)> onAttackMoveHandler;
+std::function<void(const BWAPI::Unit& attacker, const BWAPI::Position & targetPosition)> onMoveHandler;
+std::function<void(const BWAPI::Unit& unit, const BWAPI::Unit& target)> onRepairHandler;
+std::function<void(const BWAPI::Unit& unit, const BWAPI::Unit& target)> onRightClickHandler;
+
+void Micro::drawAPM(AKBot::ScreenCanvas& canvas, int x, int y)
 {
     int bwapiAPM = BWAPI::Broodwar->getAPM();
     int myAPM = (int)(TotalCommands / ((double)BWAPI::Broodwar->getFrameCount() / (24*60)));
-    BWAPI::Broodwar->drawTextScreen(x, y, "%d %d", bwapiAPM, myAPM);
+    canvas.drawTextScreen(x, y, "%d %d", bwapiAPM, myAPM);
+}
+
+void Micro::drawAction(
+	AKBot::ScreenCanvas& canvas,
+	const BWAPI::Position& attackerPostion,
+	const BWAPI::Position & targetPosition,
+	const BWAPI::Color color)
+{
+	if (Config::Debug::DrawUnitTargetInfo)
+	{
+		canvas.drawCircleMap(attackerPostion, dotRadius, color, true);
+		canvas.drawCircleMap(targetPosition, dotRadius, color, true);
+		canvas.drawLineMap(attackerPostion, targetPosition, color);
+	}
+}
+
+void UAlbertaBot::Micro::SetOnAttackUnit(std::function<void(const BWAPI::Unit&attacker, const BWAPI::Unit&target)> handler)
+{
+	onAttackHandler = handler;
+}
+
+void UAlbertaBot::Micro::SetOnAttackMove(std::function<void(const BWAPI::Unit&attacker, const BWAPI::Position&targetPosition)> handler)
+{
+	onAttackMoveHandler = handler;
+}
+
+void UAlbertaBot::Micro::SetOnMove(std::function<void(const BWAPI::Unit&attacker, const BWAPI::Position&targetPosition)> handler)
+{
+	onMoveHandler = handler;
+}
+
+void UAlbertaBot::Micro::SetOnRepair(std::function<void(const BWAPI::Unit&unit, const BWAPI::Unit&target)> handler)
+{
+	onRepairHandler = handler;
+}
+
+void UAlbertaBot::Micro::SetOnRightClick(std::function<void(const BWAPI::Unit&unit, const BWAPI::Unit&target)> handler)
+{
+	onRightClickHandler = handler;
 }
 
 void Micro::SmartAttackUnit(BWAPI::Unit attacker, BWAPI::Unit target)
@@ -47,12 +92,10 @@ void Micro::SmartAttackUnit(BWAPI::Unit attacker, BWAPI::Unit target)
     attacker->attack(target);
     TotalCommands++;
 
-    if (Config::Debug::DrawUnitTargetInfo) 
-    {
-        BWAPI::Broodwar->drawCircleMap(attacker->getPosition(), dotRadius, BWAPI::Colors::Red, true);
-        BWAPI::Broodwar->drawCircleMap(target->getPosition(), dotRadius, BWAPI::Colors::Red, true);
-        BWAPI::Broodwar->drawLineMap( attacker->getPosition(), target->getPosition(), BWAPI::Colors::Red );
-    }
+	if (onAttackHandler)
+	{
+		onAttackHandler(attacker, target);
+	}
 }
 
 void Micro::SmartAttackMove(BWAPI::Unit attacker, const BWAPI::Position & targetPosition)
@@ -84,12 +127,10 @@ void Micro::SmartAttackMove(BWAPI::Unit attacker, const BWAPI::Position & target
     attacker->attack(targetPosition);
     TotalCommands++;
 
-    if (Config::Debug::DrawUnitTargetInfo) 
-    {
-        BWAPI::Broodwar->drawCircleMap(attacker->getPosition(), dotRadius, BWAPI::Colors::Orange, true);
-        BWAPI::Broodwar->drawCircleMap(targetPosition, dotRadius, BWAPI::Colors::Orange, true);
-        BWAPI::Broodwar->drawLineMap(attacker->getPosition(), targetPosition, BWAPI::Colors::Orange);
-    }
+	if (onAttackMoveHandler)
+	{
+		onAttackMoveHandler(attacker, targetPosition);
+	}
 }
 
 void Micro::SmartMove(BWAPI::Unit attacker, const BWAPI::Position & targetPosition)
@@ -121,12 +162,10 @@ void Micro::SmartMove(BWAPI::Unit attacker, const BWAPI::Position & targetPositi
     attacker->move(targetPosition);
     TotalCommands++;
 
-    if (Config::Debug::DrawUnitTargetInfo) 
-    {
-        BWAPI::Broodwar->drawCircleMap(attacker->getPosition(), dotRadius, BWAPI::Colors::White, true);
-        BWAPI::Broodwar->drawCircleMap(targetPosition, dotRadius, BWAPI::Colors::White, true);
-        BWAPI::Broodwar->drawLineMap(attacker->getPosition(), targetPosition, BWAPI::Colors::White);
-    }
+	if (onMoveHandler)
+	{
+		onMoveHandler(attacker, targetPosition);
+	}
 }
 
 void Micro::SmartRightClick(BWAPI::Unit unit, BWAPI::Unit target)
@@ -158,12 +197,10 @@ void Micro::SmartRightClick(BWAPI::Unit unit, BWAPI::Unit target)
     unit->rightClick(target);
     TotalCommands++;
 
-    if (Config::Debug::DrawUnitTargetInfo) 
-    {
-        BWAPI::Broodwar->drawCircleMap(unit->getPosition(), dotRadius, BWAPI::Colors::Cyan, true);
-        BWAPI::Broodwar->drawCircleMap(target->getPosition(), dotRadius, BWAPI::Colors::Cyan, true);
-        BWAPI::Broodwar->drawLineMap(unit->getPosition(), target->getPosition(), BWAPI::Colors::Cyan);
-    }
+	if (onRightClickHandler)
+	{
+		onRightClickHandler(unit, target);
+	}
 }
 
 void Micro::SmartLaySpiderMine(BWAPI::Unit unit, BWAPI::Position pos)
@@ -218,14 +255,11 @@ void Micro::SmartRepair(BWAPI::Unit unit, BWAPI::Unit target)
     unit->repair(target);
     TotalCommands++;
 
-    if (Config::Debug::DrawUnitTargetInfo) 
-    {
-        BWAPI::Broodwar->drawCircleMap(unit->getPosition(), dotRadius, BWAPI::Colors::Cyan, true);
-        BWAPI::Broodwar->drawCircleMap(target->getPosition(), dotRadius, BWAPI::Colors::Cyan, true);
-        BWAPI::Broodwar->drawLineMap(unit->getPosition(), target->getPosition(), BWAPI::Colors::Cyan);
-    }
+	if (onRepairHandler)
+	{
+		onRepairHandler(unit, target);
+	}
 }
-
 
 void Micro::SmartKiteTarget(BWAPI::Unit rangedUnit, BWAPI::Unit target)
 {
@@ -287,7 +321,6 @@ void Micro::SmartKiteTarget(BWAPI::Unit rangedUnit, BWAPI::Unit target)
 		Micro::SmartAttackUnit(rangedUnit, target);
 	}
 }
-
 
 void Micro::MutaDanceTarget(BWAPI::Unit muta, BWAPI::Unit target)
 {

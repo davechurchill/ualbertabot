@@ -114,7 +114,7 @@ size_t ArenaPlayer_SparCraft::GetSparCraftPlayerID(BWAPI::Player player) const
     return SparCraft::Players::Player_None;
 }
 
-void ArenaPlayer_SparCraft::DrawSparCraftMove(const SparCraft::GameState & state, const SparCraft::Move & move) const
+void ArenaPlayer_SparCraft::DrawSparCraftMove(AKBot::ScreenCanvas& canvas, const SparCraft::GameState & state, const SparCraft::Move & move) const
 {
     for (size_t a(0); a < move.size(); ++a)
     {
@@ -126,7 +126,7 @@ void ArenaPlayer_SparCraft::DrawSparCraftMove(const SparCraft::GameState & state
         {
             BWAPI::Position dest(action.pos().x(), action.pos().y());
 
-            BWAPI::Broodwar->drawLineMap(unit->getPosition(), dest, BWAPI::Colors::White);
+            canvas.drawLineMap(unit->getPosition(), dest, BWAPI::Colors::White);
         }
         else if (action.type() == SparCraft::ActionTypes::ATTACK)
         {
@@ -134,12 +134,12 @@ void ArenaPlayer_SparCraft::DrawSparCraftMove(const SparCraft::GameState & state
             const BWAPI::Unit & targetUnit = BWAPI::Broodwar->getUnit(sTargetUnit.getBWAPIUnitID());
             const BWAPI::Position & dest = targetUnit->getPosition();
 
-            BWAPI::Broodwar->drawLineMap(unit->getPosition(), dest, BWAPI::Colors::Red);
+            canvas.drawLineMap(unit->getPosition(), dest, BWAPI::Colors::Red);
         }
     }
 }
 
-void ArenaPlayer_SparCraft::DoSparCraftMove(const SparCraft::GameState & state, const SparCraft::Move & move) const
+void ArenaPlayer_SparCraft::DoSparCraftMove(AKBot::ScreenCanvas& canvas, const SparCraft::GameState & state, const SparCraft::Move & move) const
 {
     for (size_t a(0); a < move.size(); ++a)
     {
@@ -157,7 +157,7 @@ void ArenaPlayer_SparCraft::DoSparCraftMove(const SparCraft::GameState & state, 
             unit->rightClick(unit->getPosition() + delta);
             //Micro::SmartMove(unit, dest);
             
-            BWAPI::Broodwar->drawLineMap(unit->getPosition(), dest, BWAPI::Colors::Yellow);
+            canvas.drawLineMap(unit->getPosition(), dest, BWAPI::Colors::Yellow);
         }
         else if (action.type() == SparCraft::ActionTypes::ATTACK)
         {
@@ -168,7 +168,7 @@ void ArenaPlayer_SparCraft::DoSparCraftMove(const SparCraft::GameState & state, 
             //unit->rightClick(targetUnit);
             Micro::SmartAttackUnit(unit, targetUnit);
 
-            BWAPI::Broodwar->drawLineMap(unit->getPosition(), dest, BWAPI::Colors::Green);
+            canvas.drawLineMap(unit->getPosition(), dest, BWAPI::Colors::Green);
         }
     }
 }
@@ -179,7 +179,7 @@ int ArenaPlayer_SparCraft::GetTimeSinceLastAttack(BWAPI::Unit unit) const
     return unit->getType().groundWeapon().damageCooldown() - unit->getGroundWeaponCooldown();
 }
 
-void ArenaPlayer_SparCraft::DrawSparCraftState(const SparCraft::GameState & state, int x, int y) const
+void ArenaPlayer_SparCraft::DrawSparCraftState(AKBot::ScreenCanvas& canvas, const SparCraft::GameState & state, int x, int y) const
 {
     size_t numUnits = 0;
     std::stringstream ss;
@@ -193,7 +193,7 @@ void ArenaPlayer_SparCraft::DrawSparCraftState(const SparCraft::GameState & stat
         }
     }
 
-    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x, y), ss.str().c_str());
+    canvas.drawTextScreen(BWAPI::Position(x, y), ss.str().c_str());
 }
 
 

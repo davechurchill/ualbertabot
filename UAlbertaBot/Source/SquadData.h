@@ -20,8 +20,9 @@ public:
     bool            canAssignUnitToSquad(BWAPI::Unit unit, const Squad & squad) const;
     void            assignUnitToSquad(BWAPI::Unit unit, Squad & squad);
     void            addSquad(const std::string & squadName, const Squad & squad);
+	void            addSquad(const std::string & squadName, const SquadOrder & squadOrder, size_t priority);
     void            removeSquad(const std::string & squadName);
-	void            drawSquadInformation(int x, int y);
+	void            drawSquadInformation(AKBot::ScreenCanvas& canvas, int x, int y);
 
     void            update(const MapTools& map);
 

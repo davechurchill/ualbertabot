@@ -131,6 +131,12 @@
     <ClCompile Include="..\Source\ArenaPlayer.cpp">
       <Filter>arena</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\BWAPIScreenCanvas.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\ScreenCanvas.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="common">
@@ -294,6 +300,12 @@
     </ClInclude>
     <ClInclude Include="..\Source\ArenaPlayer.h">
       <Filter>arena</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\BWAPIScreenCanvas.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\ScreenCanvas.h">
+      <Filter>util</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

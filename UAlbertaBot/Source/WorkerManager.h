@@ -3,6 +3,7 @@
 #include <Common.h>
 #include "BuildingManager.h"
 #include "WorkerData.h"
+#include "ScreenCanvas.h"
 
 namespace UAlbertaBot
 {
@@ -25,7 +26,7 @@ public:
 
     WorkerManager();
 
-    void        update();
+    void        update(AKBot::ScreenCanvas& canvas);
     void        onUnitDestroy(BWAPI::Unit unit);
     void        onUnitMorph(BWAPI::Unit unit);
     void        onUnitShow(BWAPI::Unit unit);
@@ -33,9 +34,9 @@ public:
 
     void        finishedWithCombatWorkers();
 
-    void        drawResourceDebugInfo();
+    void        drawResourceDebugInfo(AKBot::ScreenCanvas& canvas);
     void        updateWorkerStatus();
-    void        drawWorkerInformation(int x,int y);
+    void        drawWorkerInformation(AKBot::ScreenCanvas& canvas, int x,int y);
 
     int         getNumMineralWorkers();
     int         getNumGasWorkers();

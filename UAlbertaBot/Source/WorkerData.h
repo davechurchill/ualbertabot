@@ -3,6 +3,7 @@
 #include "Common.h"
 #include <BWAPI/Unit.h>
 #include <BWAPI/UnitType.h>
+#include "ScreenCanvas.h"
 
 namespace UAlbertaBot
 {
@@ -66,7 +67,7 @@ public:
     void    setWorkerJob(BWAPI::Unit unit,WorkerJob job,WorkerMoveData wmd);
     void    setWorkerJob(BWAPI::Unit unit,WorkerJob job,BWAPI::UnitType jobUnitType);
     void    addToMineralPatch(BWAPI::Unit unit,int num);
-    void    drawDepotDebugInfo();
+    void    drawDepotDebugInfo(AKBot::ScreenCanvas& canvas);
 
     int     getNumWorkers() const;
     int     getNumMineralWorkers() const;

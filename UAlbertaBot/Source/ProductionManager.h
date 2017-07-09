@@ -46,7 +46,7 @@ public:
     void        update();
     void        onUnitDestroy(BWAPI::Unit unit);
     void        performBuildOrderSearch();
-    void        drawProductionInformation(int x,int y);
+    void        drawProductionInformation(AKBot::ScreenCanvas& canvas, int x,int y);
 
     BWAPI::Unit getProducer(MetaType t,BWAPI::Position closestTo = BWAPI::Positions::None);
 	const StrategyManager& getStrategyManager() const;

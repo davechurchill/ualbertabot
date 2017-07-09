@@ -16,6 +16,7 @@
 #include <BWAPI/Unitset.h>
 
 using namespace UAlbertaBot;
+using namespace AKBot;
 
 UAlbertaBot_Arena::UAlbertaBot_Arena()
     : _results      (3, 0)  // 0 = wins, 1 = losses, 2 = draws
@@ -61,7 +62,7 @@ void UAlbertaBot_Arena::onStart()
 
 void UAlbertaBot_Arena::onFrame()
 {
-    drawUnitHPBars();
+    drawUnitHPBars(_canvas);
 
     // if there is a battle ongoing
     if (isBattle())
@@ -90,7 +91,7 @@ void UAlbertaBot_Arena::onFrame()
     ss << BWAPI::Broodwar->mapFileName() << "\nPlayer: " << _arenaPlayer->getName() << "\n";
     ss << "Battles: " << _battles << "\nWins:   " << _results[0] << "\nLosses: " << _results[1] << "\nDraws:  " << _results[2] << "\nScore:  " << ((double)(_results[0] + (double)_results[2]/2)/_battles);
     _resultString = ss.str();
-    BWAPI::Broodwar->drawTextScreen(10, 10, _resultString.c_str());
+    _canvas.drawTextScreen(10, 10, _resultString.c_str());
 
     _prevIsBattle = isBattle();
 }
@@ -130,17 +131,17 @@ int UAlbertaBot_Arena::winner()
     return 2;
 }
 
-void UAlbertaBot_Arena::drawUnitHPBars() const
+void UAlbertaBot_Arena::drawUnitHPBars(ScreenCanvas& canvas) const
 {
     if (!Config::Debug::DrawUnitHealthBars) { return; }
 
     for (const auto & unit : BWAPI::Broodwar->getAllUnits())
     {
-        DebugTools::DrawUnitHPBar(unit->getType(), unit->getPosition(), unit->getHitPoints(), unit->getShields());
+        DebugTools::DrawUnitHPBar(canvas, unit->getType(), unit->getPosition(), unit->getHitPoints(), unit->getShields());
 
         if (unit->getType().getRace() != BWAPI::Races::None && unit->getPlayer() == BWAPI::Broodwar->self())
         {
-            BWAPI::Broodwar->drawLineMap(unit->getPosition() + BWAPI::Position(3, 3), unit->getOrderTargetPosition() + BWAPI::Position(3, 3), BWAPI::Colors::Red);
+            canvas.drawLineMap(unit->getPosition() + BWAPI::Position(3, 3), unit->getOrderTargetPosition() + BWAPI::Position(3, 3), BWAPI::Colors::Red);
         }
     }
 

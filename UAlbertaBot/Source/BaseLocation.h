@@ -4,6 +4,7 @@
 #include "MetaType.h"
 #include "DistanceMap.h"
 #include "UnitData.h"
+#include "ScreenCanvas.h"
 
 namespace UAlbertaBot
 {
@@ -51,7 +52,7 @@ public:
 
     const std::vector<BWAPI::TilePosition> & getClosestTiles() const;
 
-    void draw(std::function<bool(BWAPI::TilePosition tile)> isBuildableTile);
+    void draw(AKBot::ScreenCanvas& canvas, std::function<bool(BWAPI::TilePosition tile)> isBuildableTile);
 };
 
 

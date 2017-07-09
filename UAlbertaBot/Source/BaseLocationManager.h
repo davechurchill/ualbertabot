@@ -4,6 +4,7 @@
 #include "MetaType.h"
 #include "DistanceMap.h"
 #include "BaseLocation.h"
+#include "ScreenCanvas.h"
 
 namespace UAlbertaBot
 {
@@ -37,7 +38,7 @@ namespace UAlbertaBot
 
 		void update(const UnitInfoManager & unitManager);
 		void onStart(const MapTools& map);
-		void drawBaseLocations();
+		void drawBaseLocations(AKBot::ScreenCanvas& canvas);
 
 		const std::vector<const BaseLocation *> & getBaseLocations() const;
 		const std::vector<const BaseLocation *> & getStartingBaseLocations() const;

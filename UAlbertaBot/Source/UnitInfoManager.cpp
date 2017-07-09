@@ -46,7 +46,7 @@ const std::map<int, UnitInfo> & UnitInfoManager::getUnitInfoMap(BWAPI::Player pl
 	return getUnitData(player).getUnitInfoMap();
 }
 
-void UnitInfoManager::drawExtendedInterface() const
+void UnitInfoManager::drawExtendedInterface(AKBot::ScreenCanvas& canvas) const
 {
     if (!Config::Debug::DrawUnitHealthBars)
     {
@@ -60,7 +60,7 @@ void UnitInfoManager::drawExtendedInterface() const
 
         if (!ui.type.isResourceContainer())
         {
-            DebugTools::DrawUnitHPBar(ui.type, ui.lastPosition, ui.lastHealth, ui.lastShields);
+            DebugTools::DrawUnitHPBar(canvas, ui.type, ui.lastPosition, ui.lastHealth, ui.lastShields);
         }
     }
 
@@ -72,11 +72,11 @@ void UnitInfoManager::drawExtendedInterface() const
             continue;
         }
 
-        DebugTools::DrawUnitHPBar(unit->getType(), unit->getPosition(), unit->getHitPoints(), unit->getShields());
+        DebugTools::DrawUnitHPBar(canvas, unit->getType(), unit->getPosition(), unit->getHitPoints(), unit->getShields());
     }
 }
 
-void UnitInfoManager::drawUnitInformation(int x, int y) const
+void UnitInfoManager::drawUnitInformation(AKBot::ScreenCanvas& canvas, int x, int y) const
 {
 	if (!Config::Debug::DrawEnemyUnitInfo)
     {
@@ -85,12 +85,12 @@ void UnitInfoManager::drawUnitInformation(int x, int y) const
 
 	std::string prefix = "\x04";
 
-	BWAPI::Broodwar->drawTextScreen(x, y-10, "\x03 Self Loss:\x04 Minerals: \x1f%d \x04Gas: \x07%d", _unitData.at(BWAPI::Broodwar->self()).getMineralsLost(), _unitData.at(BWAPI::Broodwar->self()).getGasLost());
-    BWAPI::Broodwar->drawTextScreen(x, y, "\x03 Enemy Loss:\x04 Minerals: \x1f%d \x04Gas: \x07%d", _unitData.at(Global::getEnemy()).getMineralsLost(), _unitData.at(Global::getEnemy()).getGasLost());
-	BWAPI::Broodwar->drawTextScreen(x, y+10, "\x04 Enemy: %s", Global::getEnemy()->getName().c_str());
-	BWAPI::Broodwar->drawTextScreen(x, y+20, "\x04 UNIT NAME");
-	BWAPI::Broodwar->drawTextScreen(x+140, y+20, "\x04#");
-	BWAPI::Broodwar->drawTextScreen(x+160, y+20, "\x04X");
+	canvas.drawTextScreen(x, y-10, "\x03 Self Loss:\x04 Minerals: \x1f%d \x04Gas: \x07%d", _unitData.at(BWAPI::Broodwar->self()).getMineralsLost(), _unitData.at(BWAPI::Broodwar->self()).getGasLost());
+    canvas.drawTextScreen(x, y, "\x03 Enemy Loss:\x04 Minerals: \x1f%d \x04Gas: \x07%d", _unitData.at(Global::getEnemy()).getMineralsLost(), _unitData.at(Global::getEnemy()).getGasLost());
+	canvas.drawTextScreen(x, y+10, "\x04 Enemy: %s", Global::getEnemy()->getName().c_str());
+	canvas.drawTextScreen(x, y+20, "\x04 UNIT NAME");
+	canvas.drawTextScreen(x+140, y+20, "\x04#");
+	canvas.drawTextScreen(x+160, y+20, "\x04X");
 
 	int yspace = 0;
 
@@ -108,9 +108,9 @@ void UnitInfoManager::drawUnitInformation(int x, int y) const
 			else if (t.isBuilding())	{ prefix = "\x03"; }
 			else						{ prefix = "\x04"; }
 
-			BWAPI::Broodwar->drawTextScreen(x, y+40+((yspace)*10), " %s%s", prefix.c_str(), t.getName().c_str());
-			BWAPI::Broodwar->drawTextScreen(x+140, y+40+((yspace)*10), "%s%d", prefix.c_str(), numUnits);
-			BWAPI::Broodwar->drawTextScreen(x+160, y+40+((yspace++)*10), "%s%d", prefix.c_str(), numDeadUnits);
+			canvas.drawTextScreen(x, y+40+((yspace)*10), " %s%s", prefix.c_str(), t.getName().c_str());
+			canvas.drawTextScreen(x+140, y+40+((yspace)*10), "%s%d", prefix.c_str(), numUnits);
+			canvas.drawTextScreen(x+160, y+40+((yspace++)*10), "%s%d", prefix.c_str(), numDeadUnits);
 		}
 	}
 }

@@ -53,8 +53,8 @@ public:
 
     void                        startNewSearch(const std::vector<MetaPair> & goalUnits, const BuildingManager & buildingManager);
     
-	void						drawSearchInformation(int x, int y);
-    void						drawStateInformation(int x, int y, const BuildingManager & buildingManager);
+	void						drawSearchInformation(AKBot::ScreenCanvas& canvas, int x, int y);
+    void						drawStateInformation(AKBot::ScreenCanvas& canvas, int x, int y, const BuildingManager & buildingManager);
 
     
 	static BOSS::BuildOrderSearchGoal       GetGoal(const std::vector<MetaPair> & goalUnits);	

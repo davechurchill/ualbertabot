@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Common.h"
-
 #include "MetaType.h"
+#include "ScreenCanvas.h"
 
 namespace UAlbertaBot
 {
@@ -61,7 +61,7 @@ public:
     bool canSkipItem();
     bool hasNextHighestPriorityItem();								// returns the highest priority item
 
-    void drawQueueInformation(int x,int y);
+    void drawQueueInformation(AKBot::ScreenCanvas& canvas, int x,int y);
 
     // overload the bracket operator for ease of use
     BuildOrderItem operator [] (int i);

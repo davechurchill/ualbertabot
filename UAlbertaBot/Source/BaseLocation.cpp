@@ -176,9 +176,9 @@ bool BaseLocation::isStartLocation() const
     return _isStartLocation;
 }
 
-void BaseLocation::draw(std::function<bool(BWAPI::TilePosition tile)> isBuildableTile)
+void BaseLocation::draw(AKBot::ScreenCanvas& canvas, std::function<bool(BWAPI::TilePosition tile)> isBuildableTile)
 {
-    BWAPI::Broodwar->drawCircleMap(_centerOfResources, 16, BWAPI::Colors::Yellow);
+    canvas.drawCircleMap(_centerOfResources, 16, BWAPI::Colors::Yellow);
 
     std::stringstream ss;
     ss << "BaseLocation: " << _baseID << "\n";
@@ -197,30 +197,30 @@ void BaseLocation::draw(std::function<bool(BWAPI::TilePosition tile)> isBuildabl
         ss << "Enemy ";
     }
 
-    BWAPI::Broodwar->drawTextMap(_left, _top-60, ss.str().c_str());
-    BWAPI::Broodwar->drawTextMap(_left, _bottom, ss.str().c_str());
+    canvas.drawTextMap(_left, _top-60, ss.str().c_str());
+    canvas.drawTextMap(_left, _bottom, ss.str().c_str());
 
     // draw the base bounding box
-    BWAPI::Broodwar->drawBoxMap(_left, _top, _right, _bottom, BWAPI::Colors::White, false);
+    canvas.drawBoxMap(_left, _top, _right, _bottom, BWAPI::Colors::White, false);
     BWAPI::Position mDiag(BWAPI::UnitTypes::Resource_Mineral_Field.dimensionLeft(),
                           BWAPI::UnitTypes::Resource_Mineral_Field.dimensionDown());
     BWAPI::Position gDiag(BWAPI::UnitTypes::Resource_Vespene_Geyser.dimensionLeft(),
                           BWAPI::UnitTypes::Resource_Vespene_Geyser.dimensionDown());
     for (auto & mineralPos : _mineralPositions)
     {
-        BWAPI::Broodwar->drawBoxMap(mineralPos - mDiag, mineralPos + mDiag, BWAPI::Colors::Cyan, false);
-        //BWAPI::Broodwar->drawLineMap(mineralPos, _resourceCenter, BWAPI::Colors::Cyan);
+        canvas.drawBoxMap(mineralPos - mDiag, mineralPos + mDiag, BWAPI::Colors::Cyan, false);
+        //canvas.drawLineMap(mineralPos, _resourceCenter, BWAPI::Colors::Cyan);
     }
 
     for (auto & geyserPos : _geyserPositions)
     {
-        BWAPI::Broodwar->drawBoxMap(geyserPos - gDiag, geyserPos + gDiag, BWAPI::Colors::Green, false);
-        //BWAPI::Broodwar->drawLineMap(geyserPos, _resourceCenter, BWAPI::Colors::Green);
+        canvas.drawBoxMap(geyserPos - gDiag, geyserPos + gDiag, BWAPI::Colors::Green, false);
+        //canvas.drawLineMap(geyserPos, _resourceCenter, BWAPI::Colors::Green);
     }
 
     if (_isStartLocation)
     {
-        BWAPI::Broodwar->drawCircleMap(_position, 10, BWAPI::Colors::Red, true);
+        canvas.drawCircleMap(_position, 10, BWAPI::Colors::Red, true);
     }
 
     auto & closestTiles = getClosestTiles();
@@ -246,13 +246,13 @@ void BaseLocation::draw(std::function<bool(BWAPI::TilePosition tile)> isBuildabl
             color = BWAPI::Colors::Purple;
         }
 
-        BWAPI::Broodwar->drawCircleMap(pos, 5, color, false);
-        BWAPI::Broodwar->drawTextMap(pos, "%d", getGroundTileDistance(pos));
+        canvas.drawCircleMap(pos, 5, color, false);
+        canvas.drawTextMap(pos, "%d", getGroundTileDistance(pos));
     }
 
     int ccWidth = BWAPI::UnitTypes::Terran_Command_Center.tileWidth() * 32;
     int ccHeight = BWAPI::UnitTypes::Terran_Command_Center.tileHeight() * 32;
-    BWAPI::Broodwar->drawBoxMap(_position, _position + BWAPI::Position(ccWidth, ccHeight), BWAPI::Colors::Red, false);
+    canvas.drawBoxMap(_position, _position + BWAPI::Position(ccWidth, ccHeight), BWAPI::Colors::Red, false);
 }
 
 const BWAPI::TilePosition & BaseLocation::getDepotTilePosition() const
