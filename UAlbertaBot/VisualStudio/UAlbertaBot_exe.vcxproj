@@ -44,13 +44,13 @@
     <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_SSCAIT|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -103,8 +103,8 @@
     <RunCodeAnalysis Condition="'$(Configuration)|$(Platform)'=='Release_SSCAIT|Win32'">false</RunCodeAnalysis>
     <CodeAnalysisIgnoreGeneratedCode Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CodeAnalysisIgnoreGeneratedCode>
     <CodeAnalysisIgnoreGeneratedCode Condition="'$(Configuration)|$(Platform)'=='Release_SSCAIT|Win32'">false</CodeAnalysisIgnoreGeneratedCode>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">UAlbertaBot_d</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug_SSCAIT|Win32'">UAlbertaBot_d</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AKBot_d</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug_SSCAIT|Win32'">AKBot_d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetName>AKBot</TargetName>
@@ -171,7 +171,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <EnablePREfast>false</EnablePREfast>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
       <AdditionalOptions>/await %(AdditionalOptions)</AdditionalOptions>
@@ -212,7 +212,7 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>$(BWAPI_SSCAIT_DIR)/lib/BWAPI.lib;$(BWAPI_DIR)/lib/BWAPIClient.lib;$(Configuration)/SparCraft/SparCraft.lib;$(Configuration)/BOSS/BOSS.lib;../bin/UAlbertaBot_lib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BWAPI_SSCAIT_DIR)/lib/BWAPI.lib;$(BWAPI_SSCAIT_DIR)/lib/BWAPIClient.lib;$(Configuration)/SparCraft/SparCraft.lib;$(Configuration)/BOSS/BOSS.lib;../bin/UAlbertaBot_lib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
