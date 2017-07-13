@@ -4,12 +4,13 @@
 
 using namespace UAlbertaBot;
 
-Squad::Squad(const std::string & name, SquadOrder order, size_t priority) 
+Squad::Squad(const std::string & name, SquadOrder order, size_t priority, AKBot::PlayerLocationProviderPtr locationProvider)
 	: _name(name)
 	, _order(order)
     , _lastRetreatSwitch(0)
     , _lastRetreatSwitchVal(false)
     , _priority(priority)
+	, _transportManager(locationProvider)
 {
 }
 
@@ -114,28 +115,21 @@ void Squad::setNearEnemyUnits()
 	_nearEnemy.clear();
 	for (auto & unit : _units)
 	{
-		int x = unit->getPosition().x;
-		int y = unit->getPosition().y;
-
-		int left = unit->getType().dimensionLeft();
-		int right = unit->getType().dimensionRight();
-		int top = unit->getType().dimensionUp();
-		int bottom = unit->getType().dimensionDown();
-
 		_nearEnemy[unit] = unitNearEnemy(unit);
-		if (_nearEnemy[unit])
+		if (Config::Debug::DrawSquadInfo)
 		{
-			if (Config::Debug::DrawSquadInfo)
-			{
-				BWAPI::Broodwar->drawBoxMap(x - left, y - top, x + right, y + bottom, Config::Debug::ColorUnitNearEnemy);
-			}
-		}
-		else
-		{
-			if (Config::Debug::DrawSquadInfo)
-			{
-				BWAPI::Broodwar->drawBoxMap(x - left, y - top, x + right, y + bottom, Config::Debug::ColorUnitNotNearEnemy);
-			}
+			int x = unit->getPosition().x;
+			int y = unit->getPosition().y;
+
+			int left = unit->getType().dimensionLeft();
+			int right = unit->getType().dimensionRight();
+			int top = unit->getType().dimensionUp();
+			int bottom = unit->getType().dimensionDown();
+
+			auto color = _nearEnemy[unit]
+				? Config::Debug::ColorUnitNearEnemy
+				: Config::Debug::ColorUnitNotNearEnemy;
+			BWAPI::Broodwar->drawBoxMap(x - left, y - top, x + right, y + bottom, color);
 		}
 	}
 }

@@ -26,6 +26,7 @@
 #include "JSONTools.h"
 #include "ParseUtils.h"
 #include "UnitUtil.h"
+#include "BWAPIOpponentView.h"
 
 using namespace UAlbertaBot;
 
@@ -45,7 +46,7 @@ void UAlbertaBot_PlayGame()
     
     if (Config::BotInfo::BotMode == "Tournament")
     {
-        m = std::shared_ptr<BotModule>(new UAlbertaBot_Tournament());
+        m = std::shared_ptr<BotModule>(new UAlbertaBot_Tournament(std::make_shared<BWAPIOpponentView>()));
     }
     else if (Config::BotInfo::BotMode == "Arena")
     {

@@ -2,6 +2,7 @@
 #include "UAlbertaBot_Tournament.h"
 #include "UAlbertaBot_Arena.h"
 #include "ParseUtils.h"
+#include "BWAPIOpponentView.h"
 
 using namespace UAlbertaBot;
 
@@ -18,7 +19,7 @@ UAlbertaBotModule_dll::UAlbertaBotModule_dll()
 
     if (Config::BotInfo::BotMode == "Tournament")
     {
-        _module = std::shared_ptr<BotModule>(new UAlbertaBot_Tournament());
+        _module = std::shared_ptr<BotModule>(new UAlbertaBot_Tournament(std::make_shared<BWAPIOpponentView>()));
     }
     else if (Config::BotInfo::BotMode == "Arena")
     {

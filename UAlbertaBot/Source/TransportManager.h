@@ -2,6 +2,7 @@
 
 #include <Common.h>
 #include "MicroManager.h"
+#include "PlayerLocationProvider.h"
 
 namespace UAlbertaBot
 {
@@ -17,6 +18,7 @@ class TransportManager : public MicroManager
 	std::vector<BWAPI::Position>	_waypoints;
 	BWAPI::Position					_to;
 	BWAPI::Position					_from;
+	AKBot::PlayerLocationProviderPtr	_locationProvider;
 
 	void							calculateMapEdgeVertices();
 	void							drawTransportInformation(int x, int y);
@@ -31,7 +33,7 @@ class TransportManager : public MicroManager
 	
 public:
 
-	TransportManager();
+	TransportManager(AKBot::PlayerLocationProviderPtr locationProvider);
 
 	void							executeMicro(const std::vector<BWAPI::Unit> & targets);
 	void							update();

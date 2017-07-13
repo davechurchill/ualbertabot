@@ -6,27 +6,30 @@ using namespace UAlbertaBot;
 
 const int NearBaseLocationTileDistance = 20;
 
-BaseLocation::BaseLocation(int baseID)
-    : _baseID               (baseID)
+BaseLocation::BaseLocation(AKBot::OpponentViewPtr opponentView, int baseID)
+    : _opponentView(opponentView)
+	, _baseID               (baseID)
     , _isStartLocation      (false)
     , _left                 (std::numeric_limits<int>::max())
     , _right                (std::numeric_limits<int>::min())
     , _top                  (std::numeric_limits<int>::max())
     , _bottom               (std::numeric_limits<int>::min())
 {
-    _isPlayerStartLocation[BWAPI::Broodwar->self()] = false;
-    _isPlayerOccupying[BWAPI::Broodwar->self()] = false;
-	for (const auto& enemyPlayer : BWAPI::Broodwar->enemies())
+	auto self = opponentView->self();
+    _isPlayerStartLocation[self] = false;
+    _isPlayerOccupying[self] = false;
+	for (const auto& enemyPlayer : opponentView->enemies())
 	{
 		_isPlayerStartLocation[enemyPlayer] = false;
 		_isPlayerOccupying[enemyPlayer] = false;
 	}
 }
 
-BaseLocation::BaseLocation(int baseID, const std::vector<BWAPI::Unit> & resources)
-    : BaseLocation(baseID)
+BaseLocation::BaseLocation(AKBot::OpponentViewPtr opponentView, int baseID, const std::vector<BWAPI::Unit> & resources)
+    : BaseLocation(opponentView, baseID)
 {
-    int resourceCenterX = 0;
+	auto self = opponentView->self();
+	int resourceCenterX = 0;
     int resourceCenterY = 0;
 
     // add each of the resources to its corresponding container
@@ -84,9 +87,9 @@ BaseLocation::BaseLocation(int baseID, const std::vector<BWAPI::Unit> & resource
     }
 
     // if it's our starting location, set the pointer
-    if (getDepotTilePosition() == BWAPI::Broodwar->self()->getStartLocation())
+    if (getDepotTilePosition() == self->getStartLocation())
     {
-        _isPlayerStartLocation[BWAPI::Broodwar->self()] = true;
+        _isPlayerStartLocation[self] = true;
     }
 
     // if it's not a start location, we need to calculate the depot position
@@ -98,7 +101,7 @@ BaseLocation::BaseLocation(int baseID, const std::vector<BWAPI::Unit> & resource
             // the build position will be up-left of where this tile is
             // this means we are positioning the center of the resouce depot
             BWAPI::TilePosition buildTile(tile.x - 1, tile.y - 1);
-			auto resourceDepot = UnitUtil::getResourceDepot(BWAPI::Broodwar->self()->getRace());
+			auto resourceDepot = UnitUtil::getResourceDepot(self->getRace());
             if (Global::Map().isBuildable(buildTile, resourceDepot))
             {
                 _depotTile = buildTile;
@@ -187,12 +190,12 @@ void BaseLocation::draw(AKBot::ScreenCanvas& canvas, std::function<bool(BWAPI::T
     ss << "Geysers:      " << _geyserPositions.size() << "\n";
     ss << "Occupied By:  ";
 
-    if (isOccupiedByPlayer(BWAPI::Broodwar->self()))
+    if (isOccupiedByPlayer(_opponentView->self()))
     {
         ss << "Self ";
     }
 
-	for (auto& enemy : BWAPI::Broodwar->enemies())
+	for (auto& enemy : _opponentView->enemies())
 	{
 		if (isOccupiedByPlayer(enemy))
 		{

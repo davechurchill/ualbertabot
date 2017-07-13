@@ -3,6 +3,7 @@
 #include "Common.h"
 #include "Squad.h"
 #include "SquadData.h"
+#include "BaseLocationManager.h"
 
 namespace UAlbertaBot
 {
@@ -11,6 +12,7 @@ class CombatCommander
 	SquadData       _squadData;
     std::vector<BWAPI::Unit>  _combatUnits;
     bool            _initialized;
+	const BaseLocationManager & _baseLocationManager;
 
     void            updateScoutDefenseSquad();
 	void            updateDefenseSquads();
@@ -41,7 +43,7 @@ class CombatCommander
 
 public:
 
-	CombatCommander();
+	CombatCommander(const BaseLocationManager & baseLocationManager);
 
 	void update(const std::vector<BWAPI::Unit> & combatUnits);
     

@@ -251,7 +251,7 @@ const std::vector<BWAPI::TilePosition> & MapTools::getClosestTilesTo(BWAPI::Posi
     return getClosestTilesTo(BWAPI::TilePosition(pos));
 }
 
-void MapTools::drawLastSeen(AKBot::ScreenCanvas& canvas) const
+void MapTools::drawLastSeen(AKBot::ScreenCanvas& canvas, const BaseLocationManager & bases) const
 {
     bool rMouseState = BWAPI::Broodwar->getMouseState(BWAPI::MouseButton::M_RIGHT);
     if (!rMouseState)
@@ -260,7 +260,7 @@ void MapTools::drawLastSeen(AKBot::ScreenCanvas& canvas) const
     }
 
     // draw the least recently seen position tile as a yellow circle on the map
-    BWAPI::Position lrsp = getLeastRecentlySeenPosition(Global::Bases());
+    BWAPI::Position lrsp = getLeastRecentlySeenPosition(bases);
     canvas.drawCircleMap(lrsp, 32, BWAPI::Colors::Yellow, true);
 
 

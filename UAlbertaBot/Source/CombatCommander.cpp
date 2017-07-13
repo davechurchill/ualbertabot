@@ -1,8 +1,10 @@
 #include "CombatCommander.h"
 #include "UnitUtil.h"
 #include "Global.h"
+#include "DefaultPlayerLocationProvider.h"
 
 using namespace UAlbertaBot;
+using namespace AKBot;
 
 const size_t IdlePriority = 0;
 const size_t AttackPriority = 1;
@@ -10,8 +12,10 @@ const size_t BaseDefensePriority = 2;
 const size_t ScoutDefensePriority = 3;
 const size_t DropPriority = 4;
 
-CombatCommander::CombatCommander() 
+CombatCommander::CombatCommander(const BaseLocationManager & baseLocationManager)
     : _initialized(false)
+	, _baseLocationManager(baseLocationManager)
+	, _squadData(std::make_shared<DefaultPlayerLocationProvider>(&baseLocationManager))
 {
 	_squadData.onUnitRemoved([](const BWAPI::Unit& unit)
 	{
@@ -180,7 +184,7 @@ void CombatCommander::updateScoutDefenseSquad()
     Squad & scoutDefenseSquad = _squadData.getSquad("ScoutDefense");
   
     // get the region that our base is located in
-    const BaseLocation * myBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->self());
+    const BaseLocation * myBaseLocation = _baseLocationManager.getPlayerStartingBaseLocation(BWAPI::Broodwar->self());
     if (myBaseLocation == nullptr)
     {
         return;
@@ -247,10 +251,10 @@ void CombatCommander::updateDefenseSquads()
 		return;
 	}
 
-    const BaseLocation * enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(enemy);
+    const BaseLocation * enemyBaseLocation = _baseLocationManager.getPlayerStartingBaseLocation(enemy);
 
 	// for each of our occupied regions
-	for (const BaseLocation * myBaseLocation : Global::Bases().getOccupiedBaseLocations(BWAPI::Broodwar->self()))
+	for (const BaseLocation * myBaseLocation : _baseLocationManager.getOccupiedBaseLocations(BWAPI::Broodwar->self()))
 	{
         // don't defend inside the enemy region, this will end badly when we are stealing gas
         if (myBaseLocation == enemyBaseLocation)
@@ -454,7 +458,7 @@ BWAPI::Unit CombatCommander::findClosestDefender(const Squad & defenseSquad, BWA
 
 BWAPI::Position CombatCommander::getDefendLocation()
 {
-	return Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->self())->getPosition();
+	return _baseLocationManager.getPlayerStartingBaseLocation(BWAPI::Broodwar->self())->getPosition();
 }
 
 void CombatCommander::drawSquadInformation(AKBot::ScreenCanvas& canvas, int x, int y)
@@ -467,7 +471,7 @@ BWAPI::Position CombatCommander::getMainAttackLocation()
     // First choice: Attack an enemy region if we can see units inside it
 	for (auto& enemyPlayer : BWAPI::Broodwar->enemies())
 	{
-		const BaseLocation * enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(enemyPlayer);
+		const BaseLocation * enemyBaseLocation = _baseLocationManager.getPlayerStartingBaseLocation(enemyPlayer);
 		if (enemyBaseLocation)
 		{
 			BWAPI::Position enemyBasePosition = enemyBaseLocation->getPosition();
@@ -522,7 +526,7 @@ BWAPI::Position CombatCommander::getMainAttackLocation()
 	}
 
     // Fourth choice: We can't see anything so explore the map attacking along the way
-    return Global::Map().getLeastRecentlySeenPosition(Global::Bases());
+    return Global::Map().getLeastRecentlySeenPosition(_baseLocationManager);
 }
 
 BWAPI::Unit CombatCommander::findClosestWorkerToTarget(std::vector<BWAPI::Unit> & unitsToAssign, BWAPI::Unit target)
@@ -566,7 +570,7 @@ BWAPI::Unit CombatCommander::findClosestWorkerToTarget(std::vector<BWAPI::Unit> 
 int CombatCommander::defendWithWorkers()
 {
 	// our home nexus position
-	BWAPI::Position homePosition = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->self())->getPosition();
+	BWAPI::Position homePosition = _baseLocationManager.getPlayerStartingBaseLocation(BWAPI::Broodwar->self())->getPosition();
 
 	// enemy units near our workers
 	int enemyUnitsNearWorkers = 0;

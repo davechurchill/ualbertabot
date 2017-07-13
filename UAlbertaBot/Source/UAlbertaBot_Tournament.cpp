@@ -7,9 +7,11 @@
 
 using namespace UAlbertaBot;
 
-UAlbertaBot_Tournament::UAlbertaBot_Tournament()
+UAlbertaBot_Tournament::UAlbertaBot_Tournament(AKBot::OpponentViewPtr opponentView)
 	: _gameCommander(*this)
 	, _mapTools(BWAPI::Broodwar->mapWidth(), BWAPI::Broodwar->mapHeight())
+	, _opponentView(opponentView)
+	, _baseLocationManager(opponentView)
 {
 	// parse the configuration file for the bot's strategies
 	auto configurationFile = ParseUtils::FindConfigurationLocation(Config::ConfigFile::ConfigFileLocation);
@@ -133,7 +135,7 @@ void UAlbertaBot_Tournament::onFrame()
     _mapTools.update();
 	if (Config::Debug::DrawLastSeenTileInfo)
 	{
-		_mapTools.drawLastSeen(_canvas);
+		_mapTools.drawLastSeen(_canvas, _baseLocationManager);
 	}
     
 	_strategyManager.update();

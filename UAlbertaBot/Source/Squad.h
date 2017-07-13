@@ -49,7 +49,7 @@ class Squad
 
 public:
 
-	Squad(const std::string & name, SquadOrder order, size_t priority);
+	Squad(const std::string & name, SquadOrder order, size_t priority, AKBot::PlayerLocationProviderPtr locationProvider);
     ~Squad();
 
 	void                update(const MapTools& map);

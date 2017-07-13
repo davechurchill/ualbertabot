@@ -4,11 +4,12 @@
 
 using namespace UAlbertaBot;
 
-BaseLocationManager::BaseLocationManager()
+BaseLocationManager::BaseLocationManager(AKBot::OpponentViewPtr opponentView)
     : _tileBaseLocations(BWAPI::Broodwar->mapWidth(), std::vector<BaseLocation *>(BWAPI::Broodwar->mapHeight(), nullptr))
+	, _opponentView(opponentView)
 {
-    _playerStartingBaseLocations[BWAPI::Broodwar->self()]  = nullptr;
-	for (const auto& enemyPlayer : BWAPI::Broodwar->enemies())
+    _playerStartingBaseLocations[_opponentView->self()]  = nullptr;
+	for (const auto& enemyPlayer : _opponentView->enemies())
 	{
 		_playerStartingBaseLocations[enemyPlayer] = nullptr;
 	}
@@ -77,12 +78,12 @@ void BaseLocationManager::onStart(const MapTools& map)
     {
         if (cluster.size() > 4)
         {
-            _baseLocationData.push_back(BaseLocation(baseID++, cluster));
+            _baseLocationData.push_back(BaseLocation(_opponentView, baseID++, cluster));
         }
     }
 
     // construct the vectors of base location pointers, this is safe since they will never change
-	auto self = BWAPI::Broodwar->self();
+	auto self = _opponentView->self();
 	auto enemy = Global::getEnemy();
 	if (enemy == nullptr)
 	{
@@ -135,7 +136,7 @@ void BaseLocationManager::onStart(const MapTools& map)
     _occupiedBaseLocations[enemy] = std::set<const BaseLocation *>();
 
     // check to see that we have set a base location for ourself
-    UAB_ASSERT(_playerStartingBaseLocations[BWAPI::Broodwar->self()] != nullptr, "We didn't set a valid selfStartLocation in BaseLocations");
+    UAB_ASSERT(_playerStartingBaseLocations[_opponentView->self()] != nullptr, "We didn't set a valid selfStartLocation in BaseLocations");
 }
 
 void BaseLocationManager::update(const UnitInfoManager & unitManager)
@@ -144,7 +145,8 @@ void BaseLocationManager::update(const UnitInfoManager & unitManager)
 	resetPlayerOccupation();
 
     // for each unit on the map, update which base location it may be occupying
-    for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+	auto self = _opponentView->self();
+    for (auto & unit : self->getUnits())
     {
         // we only care about buildings on the ground
         if (!unit->getType().isBuilding() || unit->isLifted())
@@ -167,7 +169,7 @@ void BaseLocationManager::update(const UnitInfoManager & unitManager)
 	}
 
 	// update enemy base occupations
-	for (const auto& enemyPlayer : BWAPI::Broodwar->enemies())
+	for (const auto& enemyPlayer : _opponentView->enemies())
 	{
 		for (const auto & kv : unitManager.getUnitInfoMap(enemyPlayer))
 		{
@@ -235,20 +237,20 @@ void BaseLocationManager::update(const UnitInfoManager & unitManager)
 	}
 
     // update the occupied base locations for each player
-    _occupiedBaseLocations[BWAPI::Broodwar->self()] = std::set<const BaseLocation *>();
-	for (const auto& enemyPlayer : BWAPI::Broodwar->enemies())
+    _occupiedBaseLocations[self] = std::set<const BaseLocation *>();
+	for (const auto& enemyPlayer : _opponentView->enemies())
 	{
 		_occupiedBaseLocations[enemyPlayer] = std::set<const BaseLocation *>();
 	}
 
     for (auto & baseLocation : _baseLocationData)
     {
-        if (baseLocation.isOccupiedByPlayer(BWAPI::Broodwar->self()))
+        if (baseLocation.isOccupiedByPlayer(self))
         {
-            _occupiedBaseLocations[BWAPI::Broodwar->self()].insert(&baseLocation);
+            _occupiedBaseLocations[self].insert(&baseLocation);
         }
 
-		for (const auto& enemyPlayer : BWAPI::Broodwar->enemies())
+		for (const auto& enemyPlayer : _opponentView->enemies())
 		{
 			if (baseLocation.isOccupiedByPlayer(enemyPlayer))
 			{
@@ -260,10 +262,11 @@ void BaseLocationManager::update(const UnitInfoManager & unitManager)
 
 void UAlbertaBot::BaseLocationManager::resetPlayerOccupation()
 {
+	auto self = _opponentView->self();
 	for (auto & baseLocation : _baseLocationData)
 	{
-		baseLocation.setPlayerOccupying(BWAPI::Broodwar->self(), false);
-		for (const auto& enemyPlayer : BWAPI::Broodwar->enemies())
+		baseLocation.setPlayerOccupying(self, false);
+		for (const auto& enemyPlayer : _opponentView->enemies())
 		{
 			baseLocation.setPlayerOccupying(enemyPlayer, false);
 		}
@@ -281,7 +284,8 @@ void BaseLocationManager::drawBaseLocations(AKBot::ScreenCanvas& canvas)
         baseLocation.draw(canvas, isBuildableTileCheck);
     }
 
-    BWAPI::Position nextExpansionPosition(getNextExpansion(BWAPI::Broodwar->self()));
+	auto self = _opponentView->self();
+	BWAPI::Position nextExpansionPosition(getNextExpansion(self));
 
     canvas.drawCircleMap(nextExpansionPosition, 16, BWAPI::Colors::Orange, true);
 }
@@ -352,7 +356,13 @@ BWAPI::TilePosition BaseLocationManager::getNextExpansion(BWAPI::Player player) 
     const BaseLocation * closestBase = nullptr;
     int minDistance = std::numeric_limits<int>::max();
 
-    BWAPI::TilePosition homeTile = homeBase->getDepotTilePosition();
+	auto self = _opponentView->self();
+	if (!homeBase)
+	{
+		return BWAPI::TilePositions::None;
+	}
+
+	BWAPI::TilePosition homeTile = homeBase->getDepotTilePosition();
     
     // for each base location
     for (auto & base : getBaseLocations())
@@ -367,7 +377,7 @@ BWAPI::TilePosition BaseLocationManager::getNextExpansion(BWAPI::Player player) 
         BWAPI::TilePosition tile = base->getDepotTilePosition();
         bool buildingInTheWay = false;
 
-		auto resourceDepot = UnitUtil::getResourceDepot(BWAPI::Broodwar->self()->getRace());
+		auto resourceDepot = UnitUtil::getResourceDepot(self->getRace());
         for (int x = 0; x < resourceDepot.tileWidth(); ++x)
         {
             for (int y = 0; y < resourceDepot.tileHeight(); ++y)

@@ -48,7 +48,7 @@ public:
     bool                    isConnected(const BWAPI::Position & from, const BWAPI::Position & to) const;
     bool                    isWalkable(const BWAPI::TilePosition & tile) const;
     bool                    isWalkable(const BWAPI::Position & pos) const;
-    void                    drawLastSeen(AKBot::ScreenCanvas& canvas) const;
+    void                    drawLastSeen(AKBot::ScreenCanvas& canvas, const BaseLocationManager & bases) const;
     BWAPI::Position         getLeastRecentlySeenPosition(const BaseLocationManager & bases) const;
     bool                    isBuildable(BWAPI::TilePosition tile, BWAPI::UnitType type) const;
     bool                    isBuildableTile(BWAPI::TilePosition tile) const;

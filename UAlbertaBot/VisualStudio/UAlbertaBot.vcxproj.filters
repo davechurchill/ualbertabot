@@ -137,6 +137,12 @@
     <ClCompile Include="..\Source\ScreenCanvas.cpp">
       <Filter>util</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\BWAPIOpponentView.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DefaultPlayerLocationProvider.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="common">
@@ -309,6 +315,18 @@
     </ClInclude>
     <ClInclude Include="..\Source\UnitHandler.h">
       <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\OpponentView.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\BWAPIOpponentView.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\PlayerLocationProvider.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DefaultPlayerLocationProvider.h">
+      <Filter>map</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

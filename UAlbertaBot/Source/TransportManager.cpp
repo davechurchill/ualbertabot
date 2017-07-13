@@ -3,13 +3,14 @@
 
 using namespace UAlbertaBot;
 
-TransportManager::TransportManager() :
-	_transportShip(NULL)
+TransportManager::TransportManager(AKBot::PlayerLocationProviderPtr locationProvider)
+	: _transportShip(NULL)
 	, _currentRegionVertexIndex(-1)
 	, _minCorner(-1,-1)
 	, _maxCorner(-1,-1)
 	, _to(-1,-1)
 	, _from(-1,-1)
+	, _locationProvider(locationProvider)
 {
 }
 
@@ -25,7 +26,7 @@ void TransportManager::executeMicro(const std::vector<BWAPI::Unit> & targets)
 
 void TransportManager::calculateMapEdgeVertices()
 {
-	const BaseLocation * enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(Global::getEnemy());
+	const BaseLocation * enemyBaseLocation = _locationProvider->getPlayerStartingBaseLocation(Global::getEnemy());
 
 	if (enemyBaseLocation == nullptr)
 	{
@@ -169,7 +170,7 @@ void TransportManager::moveTroops()
 	//unload zealots if close enough or dying
 	int transportHP = _transportShip->getHitPoints() + _transportShip->getShields();
 	
-	const BaseLocation * enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(Global::getEnemy());
+	const BaseLocation * enemyBaseLocation = _locationProvider->getPlayerStartingBaseLocation(Global::getEnemy());
 
 	if (enemyBaseLocation && (_transportShip->getDistance(enemyBaseLocation->getPosition()) < 300 || transportHP < 100)
 		&& _transportShip->canUnloadAtPosition(_transportShip->getPosition()))
@@ -310,7 +311,7 @@ std::pair<int,int> TransportManager::findSafePath(BWAPI::Position to, BWAPI::Pos
 	UAB_ASSERT_WARNING(endPolygonIndex != -1, "Couldn't find a closest vertex");
 	BWAPI::Position enemyEdge = _mapEdgeVertices[endPolygonIndex];
 
-	const BaseLocation * enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(Global::getEnemy());
+	const BaseLocation * enemyBaseLocation = _locationProvider->getPlayerStartingBaseLocation(Global::getEnemy());
 	BWAPI::Position enemyPosition = enemyBaseLocation->getPosition();
 
 	//find the projections on the 4 edges
@@ -365,7 +366,7 @@ BWAPI::Position TransportManager::getFleePosition(int clockwise)
 {
 	UAB_ASSERT_WARNING(!_mapEdgeVertices.empty(), "We should have a transport route!");
 
-	//BWTA::BaseLocation * enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
+	//BWTA::BaseLocation * enemyBaseLocation = _locationProvider->getPlayerStartingBaseLocation(Global::getEnemy());
 
 	// if this is the first flee, we will not have a previous perimeter index
 	if (_currentRegionVertexIndex == -1)
@@ -392,9 +393,9 @@ BWAPI::Position TransportManager::getFleePosition(int clockwise)
 		double distanceFromCurrentVertex = _mapEdgeVertices[_currentRegionVertexIndex].getDistance(_transportShip->getPosition());
 
 		// keep going to the next vertex in the perimeter until we get to one we're far enough from to issue another move command
-		while (distanceFromCurrentVertex < 128*2)
+		while (distanceFromCurrentVertex < 128 * 2)
 		{
-			_currentRegionVertexIndex = (_currentRegionVertexIndex + clockwise*1) % _mapEdgeVertices.size();
+			_currentRegionVertexIndex = (_currentRegionVertexIndex + clockwise * 1) % _mapEdgeVertices.size();
 
 			distanceFromCurrentVertex = _mapEdgeVertices[_currentRegionVertexIndex].getDistance(_transportShip->getPosition());
 		}

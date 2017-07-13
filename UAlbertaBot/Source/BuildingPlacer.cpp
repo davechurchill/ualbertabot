@@ -235,7 +235,7 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b,int 
     return  BWAPI::TilePositions::None;
 }
 
-bool BuildingPlacer::tileOverlapsBaseLocation(BWAPI::TilePosition tile,BWAPI::UnitType type) const
+bool BuildingPlacer::tileOverlapsBaseLocation(BWAPI::TilePosition tile, BWAPI::UnitType type) const
 {
     // if it's a resource depot we don't care if it overlaps
     if (type.isResourceDepot())

@@ -12,6 +12,7 @@ GameCommander::GameCommander(UAlbertaBot_Tournament & uabModule)
 	, _scoutManager(uabModule.Bases())
     , _initialScoutSet(false)
     , _module(uabModule)
+	, _combatCommander(uabModule.Bases())
 {
 	auto& workerManager = uabModule.Workers();
 	_scoutManager.onScoutAssigned([&workerManager](const BWAPI::Unit &unit)
@@ -174,26 +175,17 @@ void GameCommander::setCombatUnits()
 BWAPI::Unit GameCommander::getFirstSupplyProvider()
 {
 	BWAPI::Unit supplyProvider = nullptr;
+	auto self = BWAPI::Broodwar->self();
+	auto selfRace = self->getRace();
+	auto supplyProviderUnitType = selfRace == BWAPI::Races::Zerg
+		? BWAPI::UnitTypes::Zerg_Spawning_Pool
+		: selfRace.getSupplyProvider();
 
-	if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Zerg)
+	for (auto & unit : self->getUnits())
 	{
-		for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+		if (unit->getType() == supplyProviderUnitType)
 		{
-			if (unit->getType() == BWAPI::UnitTypes::Zerg_Spawning_Pool)
-			{
-				supplyProvider = unit;
-			}
-		}
-	}
-	else
-	{
-		
-		for (auto & unit : BWAPI::Broodwar->self()->getUnits())
-		{
-			if (unit->getType() == BWAPI::Broodwar->self()->getRace().getSupplyProvider())
-			{
-				supplyProvider = unit;
-			}
+			supplyProvider = unit;
 		}
 	}
 

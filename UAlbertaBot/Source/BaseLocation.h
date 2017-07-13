@@ -5,6 +5,7 @@
 #include "DistanceMap.h"
 #include "UnitData.h"
 #include "ScreenCanvas.h"
+#include "OpponentView.h"
 
 namespace UAlbertaBot
 {
@@ -30,11 +31,11 @@ class BaseLocation
     int                 _top;
     int                 _bottom;
     bool                _isStartLocation;
-    
+	AKBot::OpponentViewPtr _opponentView;
 public:
 
-    BaseLocation(int baseID = 0);
-    BaseLocation(int baseID, const std::vector<BWAPI::Unit> & resources);
+    BaseLocation(AKBot::OpponentViewPtr opponentView, int baseID = 0);
+    BaseLocation(AKBot::OpponentViewPtr opponentView, int baseID, const std::vector<BWAPI::Unit> & resources);
     
     int getGroundTileDistance(const BWAPI::Position & pos) const;
     bool isStartLocation() const;

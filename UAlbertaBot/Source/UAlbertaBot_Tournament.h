@@ -25,12 +25,13 @@ class UAlbertaBot_Tournament : public BotModule
     MapTools            _mapTools;
     BaseLocationManager _baseLocationManager;
 	AKBot::BWAPIScreenCanvas _canvas;
+	AKBot::OpponentViewPtr _opponentView;
 
     void drawErrorMessages() const;
 
 public:
 
-    UAlbertaBot_Tournament();
+    UAlbertaBot_Tournament(AKBot::OpponentViewPtr opponentView);
     ~UAlbertaBot_Tournament();
 
     void	onStart();
