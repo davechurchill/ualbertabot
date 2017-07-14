@@ -24,5 +24,6 @@ UAlbertaBot/bin/UAlbertaBot.iobj
 /SparCraft/bin/test
 *.bat
 *.lastcodeanalysissucceeded
+compile/
 /SparCraft/VisualStudio/x64
 /UAlbertaBot/VisualStudio/x64
