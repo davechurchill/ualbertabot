@@ -1,5 +1,13 @@
 {
 
+"Engine": 
+{
+	"GroundUnitMovePenalty": 8,
+	"AirUnitMovePenalty": 0,
+	"UnitRangeAddition": 32,
+	"UnitMoveAfterAttackBuffer": 2
+},
+
 "Policies" :
 {
     "M_C"   : ["Move",   ["Enemy", "Unit", "Min", ["+Distance"]], 0, 16],
