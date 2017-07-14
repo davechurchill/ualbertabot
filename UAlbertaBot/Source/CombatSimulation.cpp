@@ -132,7 +132,7 @@ double CombatSimulation::simulateCombat()
     try
     {
 	    SparCraft::GameState s1(_state);
-        size_t selfID = getSparCraftPlayerID(BWAPI::Broodwar->self());
+        size_t selfID = getSparCraftPlayerID(_opponentView.self());
         size_t enemyID = getSparCraftPlayerID(Global::getEnemy());
 
         SparCraft::PlayerPtr selfNOK(new SparCraft::Player_AttackClosest(selfID));

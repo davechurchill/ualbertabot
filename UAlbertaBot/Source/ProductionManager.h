@@ -23,6 +23,7 @@ class ProductionManager
     bool                _haveLocationForThisBuilding;
 	const StrategyManager& _strategyManager;
 	const UnitInfoManager& _unitInfo;
+	const AKBot::OpponentView& _opponentView;
     
     BWAPI::Unit         getClosestUnitToPosition(const std::vector<BWAPI::Unit> & units,BWAPI::Position closestTo);
     BWAPI::Unit         selectUnitOfType(BWAPI::UnitType type,BWAPI::Position closestTo = BWAPI::Position(0,0));
@@ -46,7 +47,7 @@ public:
     ProductionManager(const AKBot::OpponentView& opponentView, BOSSManager & bossManager, const StrategyManager& strategyManager, const UnitInfoManager& unitInfo, const BaseLocationManager& bases);
     
     void        onStart();
-    void        update();
+    void        update(int currentFrame);
     void        onUnitDestroy(BWAPI::Unit unit);
     void        performBuildOrderSearch();
     void        drawProductionInformation(AKBot::ScreenCanvas& canvas, int x,int y);

@@ -21,7 +21,7 @@ void TankManager::executeMicro(const std::vector<BWAPI::Unit> & targets)
                  [](BWAPI::Unit u){ return u->isVisible() && !u->isFlying(); });
     
     int siegeTankRange = BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode.groundWeapon().maxRange() - 32;
-    bool haveSiege = BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::Tank_Siege_Mode);
+    bool haveSiege = opponentView.self()->hasResearched(BWAPI::TechTypes::Tank_Siege_Mode);
 
 
 
@@ -168,7 +168,7 @@ int TankManager::getAttackPriority(BWAPI::Unit rangedUnit, BWAPI::Unit target)
     }
 
     // if the target is building something near our base something is fishy
-    BWAPI::Position ourBasePosition = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
+    BWAPI::Position ourBasePosition = BWAPI::Position(opponentView.self()->getStartLocation());
     if (target->getType().isWorker() && (target->isConstructing() || target->isRepairing()) && target->getDistance(ourBasePosition) < 1200)
     {
         return 100;

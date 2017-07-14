@@ -30,14 +30,14 @@ CombatCommander::CombatCommander(const BaseLocationManager & baseLocationManager
 
 void CombatCommander::initializeSquads()
 {
-    SquadOrder idleOrder(SquadOrderTypes::Idle, BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation()), 100, "Chill Out");
+    SquadOrder idleOrder(SquadOrderTypes::Idle, BWAPI::Position(_opponentView.self()->getStartLocation()), 100, "Chill Out");
 	_squadData.addSquad("Idle", idleOrder, IdlePriority);
 
     // the main attack squad that will pressure the enemy's closest base location
     SquadOrder mainAttackOrder(SquadOrderTypes::Attack, getMainAttackLocation(), 800, "Attack Enemy Base");
 	_squadData.addSquad("MainAttack", mainAttackOrder, AttackPriority);
 
-    BWAPI::Position ourBasePosition = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
+    BWAPI::Position ourBasePosition = BWAPI::Position(_opponentView.self()->getStartLocation());
 
     // the scout defense squad will handle chasing the enemy worker scout
     SquadOrder enemyScoutDefense(SquadOrderTypes::Defend, ourBasePosition, 900, "Get the scout");
@@ -186,7 +186,7 @@ void CombatCommander::updateScoutDefenseSquad()
     Squad & scoutDefenseSquad = _squadData.getSquad("ScoutDefense");
   
     // get the region that our base is located in
-    const BaseLocation * myBaseLocation = _baseLocationManager.getPlayerStartingBaseLocation(BWAPI::Broodwar->self());
+    const BaseLocation * myBaseLocation = _baseLocationManager.getPlayerStartingBaseLocation(_opponentView.self());
     if (myBaseLocation == nullptr)
     {
         return;
@@ -256,7 +256,7 @@ void CombatCommander::updateDefenseSquads()
     const BaseLocation * enemyBaseLocation = _baseLocationManager.getPlayerStartingBaseLocation(enemy);
 
 	// for each of our occupied regions
-	for (const BaseLocation * myBaseLocation : _baseLocationManager.getOccupiedBaseLocations(BWAPI::Broodwar->self()))
+	for (const BaseLocation * myBaseLocation : _baseLocationManager.getOccupiedBaseLocations(_opponentView.self()))
 	{
         // don't defend inside the enemy region, this will end badly when we are stealing gas
         if (myBaseLocation == enemyBaseLocation)
@@ -572,7 +572,7 @@ BWAPI::Unit CombatCommander::findClosestWorkerToTarget(std::vector<BWAPI::Unit> 
 int CombatCommander::defendWithWorkers()
 {
 	// our home nexus position
-	BWAPI::Position homePosition = _baseLocationManager.getPlayerStartingBaseLocation(BWAPI::Broodwar->self())->getPosition();
+	BWAPI::Position homePosition = _baseLocationManager.getPlayerStartingBaseLocation(_opponentView.self())->getPosition();
 
 	// enemy units near our workers
 	int enemyUnitsNearWorkers = 0;
@@ -601,7 +601,7 @@ int CombatCommander::numZerglingsInOurBase()
 {
     int concernRadius = 600;
     int zerglings = 0;
-    BWAPI::Position ourBasePosition = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
+    BWAPI::Position ourBasePosition = BWAPI::Position(_opponentView.self()->getStartLocation());
     
     // check to see if the enemy has zerglings as the only attackers in our base
     for (auto & unit : UnitUtil::getEnemyUnits())
@@ -622,7 +622,7 @@ int CombatCommander::numZerglingsInOurBase()
 
 bool CombatCommander::beingBuildingRushed()
 {
-    BWAPI::Position myBasePosition(BWAPI::Broodwar->self()->getStartLocation());
+    BWAPI::Position myBasePosition(_opponentView.self()->getStartLocation());
 
     // check to see if the enemy has buildings near our base
     for (auto & unit : UnitUtil::getEnemyUnits())

@@ -25,12 +25,12 @@ class MapTools;
 class MicroManager
 {
 	std::vector<BWAPI::Unit> _units;
-	const BaseLocationManager& _bases;
-	const AKBot::OpponentView& _opponentView;
 
 protected:
 	
 	SquadOrder			order;
+	const BaseLocationManager& bases;
+	const AKBot::OpponentView& opponentView;
 
 	virtual void        executeMicro(const std::vector<BWAPI::Unit> & targets) = 0;
 	bool                checkPositionWalkable(BWAPI::Position pos);

@@ -34,7 +34,7 @@ void TransportManager::calculateMapEdgeVertices()
 		return;
 	}
 
-	const BWAPI::Position basePosition = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
+	const BWAPI::Position basePosition = BWAPI::Position(opponentView.self()->getStartLocation());
 	const std::vector<BWAPI::TilePosition> & closestTobase = Global::Map().getClosestTilesTo(basePosition);
 
 	std::set<BWAPI::Position> unsortedVertices;
@@ -108,7 +108,7 @@ void TransportManager::drawTransportInformation(AKBot::ScreenCanvas& canvas, int
 
 	if (x && y)
 	{
-		//BWAPI::Broodwar->drawTextScreen(x, y, "ScoutInfo: %s", _scoutStatus.c_str());
+		//canvas.drawTextScreen(x, y, "ScoutInfo: %s", _scoutStatus.c_str());
 	}
 	for (size_t i(0); i < _mapEdgeVertices.size(); ++i)
 	{
@@ -302,7 +302,6 @@ std::pair<int,int> TransportManager::findSafePath(BWAPI::Position to, BWAPI::Pos
 	BWAPI::Broodwar->printf("FROM: [%d,%d]",from.x, from.y);
 	BWAPI::Broodwar->printf("TO: [%d,%d]", to.x, to.y);
 
-
 	//closest map edge point to destination
 	int endPolygonIndex = getClosestVertexIndex(to);
 	//BWAPI::Broodwar->printf("end indx: [%d]", endPolygonIndex);
@@ -377,7 +376,7 @@ BWAPI::Position TransportManager::getFleePosition(int clockwise)
 
 		if (closestPolygonIndex == -1)
 		{
-			return BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
+			return BWAPI::Position(opponentView.self()->getStartLocation());
 		}
 		else
 		{

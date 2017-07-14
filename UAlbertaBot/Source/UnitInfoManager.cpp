@@ -84,11 +84,14 @@ void UnitInfoManager::drawUnitInformation(AKBot::ScreenCanvas& canvas, int x, in
         return;
     }
 
+	auto enemy = Global::getEnemy();
 	std::string prefix = "\x04";
 
-	canvas.drawTextScreen(x, y-10, "\x03 Self Loss:\x04 Minerals: \x1f%d \x04Gas: \x07%d", _unitData.at(BWAPI::Broodwar->self()).getMineralsLost(), _unitData.at(BWAPI::Broodwar->self()).getGasLost());
-    canvas.drawTextScreen(x, y, "\x03 Enemy Loss:\x04 Minerals: \x1f%d \x04Gas: \x07%d", _unitData.at(Global::getEnemy()).getMineralsLost(), _unitData.at(Global::getEnemy()).getGasLost());
-	canvas.drawTextScreen(x, y+10, "\x04 Enemy: %s", Global::getEnemy()->getName().c_str());
+	auto selfUnitData = _unitData.at(_opponentView.self());
+	auto enemyUnitData = _unitData.at(enemy);
+	canvas.drawTextScreen(x, y-10, "\x03 Self Loss:\x04 Minerals: \x1f%d \x04Gas: \x07%d", selfUnitData.getMineralsLost(), selfUnitData.getGasLost());
+    canvas.drawTextScreen(x, y, "\x03 Enemy Loss:\x04 Minerals: \x1f%d \x04Gas: \x07%d", enemyUnitData.getMineralsLost(), enemyUnitData.getGasLost());
+	canvas.drawTextScreen(x, y+10, "\x04 Enemy: %s", enemy->getName().c_str());
 	canvas.drawTextScreen(x, y+20, "\x04 UNIT NAME");
 	canvas.drawTextScreen(x+140, y+20, "\x04#");
 	canvas.drawTextScreen(x+160, y+20, "\x04X");
@@ -98,8 +101,8 @@ void UnitInfoManager::drawUnitInformation(AKBot::ScreenCanvas& canvas, int x, in
 	// for each unit in the queue
 	for (BWAPI::UnitType t : BWAPI::UnitTypes::allUnitTypes()) 
 	{
-		int numUnits = _unitData.at(Global::getEnemy()).getNumUnits(t);
-		int numDeadUnits = _unitData.at(Global::getEnemy()).getNumDeadUnits(t);
+		int numUnits = enemyUnitData.getNumUnits(t);
+		int numDeadUnits = enemyUnitData.getNumDeadUnits(t);
 
 		// if there exist units in the vector
 		if (numUnits > 0) 

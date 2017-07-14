@@ -4,8 +4,8 @@
 using namespace UAlbertaBot;
 
 MicroManager::MicroManager(const AKBot::OpponentView& opponentView, const BaseLocationManager& bases)
-	: _bases(bases)
-	, _opponentView(opponentView)
+	: bases(bases)
+	, opponentView(opponentView)
 {
 }
 
@@ -77,9 +77,9 @@ void MicroManager::execute(const MapTools & map, const SquadOrder & inputOrder)
                     // if it is a worker
                     else
                     {
-						for (const auto& enemyPlayer : _opponentView.enemies())
+						for (const auto& enemyPlayer : opponentView.enemies())
 						{
-							for (auto enemyBaseLocation : _bases.getOccupiedBaseLocations(enemyPlayer))
+							for (auto enemyBaseLocation : bases.getOccupiedBaseLocations(enemyPlayer))
 							{
 								// only add it if it's in their region
 								if (enemyBaseLocation->containsPosition(enemyUnit->getPosition()))
@@ -105,7 +105,7 @@ const std::vector<BWAPI::Unit> & MicroManager::getUnits() const
 
 void MicroManager::regroup(const MapTools & map, const BWAPI::Position & regroupPosition) const
 {
-    BWAPI::Position ourBasePosition = BWAPI::Position(_opponentView.self()->getStartLocation());
+    BWAPI::Position ourBasePosition = BWAPI::Position(opponentView.self()->getStartLocation());
     int regroupDistanceFromBase = map.getGroundDistance(regroupPosition, ourBasePosition);
 
 	// for each of the units we have
@@ -149,7 +149,7 @@ bool MicroManager::checkPositionWalkable(BWAPI::Position pos)
 	for (auto & unit : BWAPI::Broodwar->getUnitsOnTile(x/32, y/32)) 
 	{
 		if	(unit->getType().isBuilding() || unit->getType().isResourceContainer() || 
-			(unit->getPlayer() != BWAPI::Broodwar->self() && unit->getType().groundWeapon() != BWAPI::WeaponTypes::None)) 
+			(unit->getPlayer() != opponentView.self() && unit->getType().groundWeapon() != BWAPI::WeaponTypes::None))
 		{		
 				return false;
 		}

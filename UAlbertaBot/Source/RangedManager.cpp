@@ -144,7 +144,7 @@ int RangedManager::getAttackPriority(BWAPI::Unit rangedUnit, BWAPI::Unit target)
     }
 
     // if the target is building something near our base something is fishy
-    BWAPI::Position ourBasePosition = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
+    BWAPI::Position ourBasePosition = BWAPI::Position(opponentView.self()->getStartLocation());
     if (target->getType().isWorker() && (target->isConstructing() || target->isRepairing()) && target->getDistance(ourBasePosition) < 1200)
     {
         return 100;

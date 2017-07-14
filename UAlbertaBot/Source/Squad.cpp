@@ -268,7 +268,7 @@ bool Squad::needsToRegroup(const MapTools& map)
 
 	// if we are DT rushing and we haven't lost a DT yet, no retreat!
 	if (Config::Strategy::StrategyName == "Protoss_DTRush"
-		&& (BWAPI::Broodwar->self()->deadUnitCount(BWAPI::UnitTypes::Protoss_Dark_Templar) == 0))
+		&& (_opponentView.self()->deadUnitCount(BWAPI::UnitTypes::Protoss_Dark_Templar) == 0))
 	{
 		_regroupStatus = std::string("\x04 DARK TEMPLAR HOOOOO!");
 		return false;
@@ -383,7 +383,7 @@ BWAPI::Position Squad::calcRegroupPosition()
 
 	if (regroup == BWAPI::Position(0,0))
 	{
-		return BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
+		return BWAPI::Position(_opponentView.self()->getStartLocation());
 	}
 	else
 	{

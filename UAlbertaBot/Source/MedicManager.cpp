@@ -18,7 +18,7 @@ void MedicManager::executeMicro(const std::vector<BWAPI::Unit> & targets)
     
 	// create a set of all medic targets
 	std::vector<BWAPI::Unit> medicTargets;
-    for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+    for (auto & unit : opponentView.self()->getUnits())
     {
         if (unit->getHitPoints() < unit->getInitialHitPoints() && !unit->getType().isMechanical() && !unit->getType().isBuilding())
         {

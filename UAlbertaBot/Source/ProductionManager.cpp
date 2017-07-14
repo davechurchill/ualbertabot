@@ -5,7 +5,8 @@
 using namespace UAlbertaBot;
 
 ProductionManager::ProductionManager(const AKBot::OpponentView& opponentView, BOSSManager & bossManager, const StrategyManager& strategyManager, const UnitInfoManager& unitInfo, const BaseLocationManager& bases)
-	: _bossManager(bossManager)
+	: _opponentView(opponentView)
+	, _bossManager(bossManager)
 	, _unitInfo(unitInfo)
     , _buildingManager(opponentView, bases)
     , _assignedWorkerForThisBuilding (false)
@@ -61,13 +62,13 @@ void ProductionManager::onStart()
 	setBuildOrder(strategyManager.getOpeningBookBuildOrder());
 }
 
-void ProductionManager::update() 
+void ProductionManager::update(int currentFrame) 
 {
 	// check the _queue for stuff we can build
 	manageBuildOrderQueue();
     
 	// if nothing is currently building, get a new goal from the strategy manager
-	if ((_queue.size() == 0) && (BWAPI::Broodwar->getFrameCount() > 10))
+	if ((_queue.size() == 0) && (currentFrame > 10))
 	{
         if (Config::Debug::DrawBuildOrderSearchInfo)
         {
@@ -77,43 +78,45 @@ void ProductionManager::update()
 		performBuildOrderSearch();
 	}
 
+	auto self = _opponentView.self();
+	auto ourRace = self->getRace();
+	
 	// detect if there's a build order deadlock once per second
-	if ((BWAPI::Broodwar->getFrameCount() % 24 == 0) && detectBuildOrderDeadlock())
+	if ((currentFrame % 24 == 0) && detectBuildOrderDeadlock())
 	{
         if (Config::Debug::DrawBuildOrderSearchInfo)
         {
 		    BWAPI::Broodwar->printf("Supply deadlock detected, building supply!");
         }
 
-		_queue.queueAsHighestPriority(MetaType(BWAPI::Broodwar->self()->getRace().getSupplyProvider()), true);
+		_queue.queueAsHighestPriority(MetaType(ourRace.getSupplyProvider()), true);
 	}
 
 	// if they have cloaked units get a new goal asap
 	if (!_enemyCloakedDetected && _unitInfo.enemyHasCloakedUnits())
 	{
-		auto ourRace = BWAPI::Broodwar->self()->getRace();
-        if (ourRace == BWAPI::Races::Protoss)
+		if (ourRace == BWAPI::Races::Protoss)
         {
-		    if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Photon_Cannon) < 2)
+		    if (self->allUnitCount(BWAPI::UnitTypes::Protoss_Photon_Cannon) < 2)
 		    {
 			    _queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Protoss_Photon_Cannon), true);
 			    _queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Protoss_Photon_Cannon), true);
 		    }
 
-		    if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Forge) == 0)
+		    if (self->allUnitCount(BWAPI::UnitTypes::Protoss_Forge) == 0)
 		    {
 			    _queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Protoss_Forge), true);
 		    }
         }
         else if (ourRace == BWAPI::Races::Terran)
         {
-            if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Missile_Turret) < 2)
+            if (self->allUnitCount(BWAPI::UnitTypes::Terran_Missile_Turret) < 2)
 		    {
 			    _queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Missile_Turret), true);
 			    _queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Missile_Turret), true);
 		    }
 
-		    if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Engineering_Bay) == 0)
+		    if (self->allUnitCount(BWAPI::UnitTypes::Terran_Engineering_Bay) == 0)
 		    {
 			    _queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Engineering_Bay), true);
 		    }
@@ -134,7 +137,7 @@ void ProductionManager::update()
 void ProductionManager::onUnitDestroy(BWAPI::Unit unit)
 {
 	// we don't care if it's not our unit
-	if (!unit || unit->getPlayer() != BWAPI::Broodwar->self())
+	if (!unit || unit->getPlayer() != _opponentView.self())
 	{
 		return;
 	}
@@ -173,7 +176,7 @@ void ProductionManager::manageBuildOrderQueue()
 		bool canMake = canMakeNow(producer, currentItem.metaType);
 
 		// if we try to build too many refineries manually remove it
-		auto self = BWAPI::Broodwar->self();
+		auto self = _opponentView.self();
 		if (currentItem.metaType.isRefinery() && (self->allUnitCount(self->getRace().getRefinery() >= 3)))
 		{
 			_queue.removeCurrentHighestPriorityItem();
@@ -184,7 +187,7 @@ void ProductionManager::manageBuildOrderQueue()
         if (currentItem.metaType.isBuilding() && !(producer && canMake) && currentItem.metaType.whatBuilds().isWorker())
 		{
 			// construct a temporary building object
-			Building b(currentItem.metaType.getUnitType(), BWAPI::Broodwar->self()->getStartLocation());
+			Building b(currentItem.metaType.getUnitType(), self->getStartLocation());
 
 			// set the producer as the closest worker, but do not set its job yet
 			producer = Global::Workers().getBuilder(b, false);
@@ -231,7 +234,7 @@ BWAPI::Unit ProductionManager::getProducer(MetaType t, BWAPI::Position closestTo
 
     // make a set of all candidate producers
     std::vector<BWAPI::Unit> candidateProducers;
-    for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+    for (auto & unit : _opponentView.self()->getUnits())
     {
         UAB_ASSERT(unit != nullptr, "Unit was null");
 
@@ -362,7 +365,7 @@ void ProductionManager::create(BWAPI::Unit producer, BuildOrderItem & item)
         && !t.getUnitType().isAddon())
     {
         // send the building task to the building manager
-        _buildingManager.addBuildingTask(t.getUnitType(), BWAPI::Broodwar->self()->getStartLocation());
+        _buildingManager.addBuildingTask(t.getUnitType(), _opponentView.self()->getStartLocation());
     }
     else if (t.getUnitType().isAddon())
     {
@@ -429,29 +432,31 @@ bool ProductionManager::canMakeNow(BWAPI::Unit producer, MetaType t)
 
 bool ProductionManager::detectBuildOrderDeadlock()
 {
+	auto self = _opponentView.self();
+
 	// if the _queue is empty there is no deadlock
-	if (_queue.size() == 0 || BWAPI::Broodwar->self()->supplyTotal() >= 390)
+	if (_queue.size() == 0 || self->supplyTotal() >= 390)
 	{
 		return false;
 	}
 
     // If supply is being built now, there's no block. Return right away.
     // Terran and protoss calculation:
-    if (_buildingManager.isBeingBuilt(BWAPI::Broodwar->self()->getRace().getSupplyProvider()))
+    if (_buildingManager.isBeingBuilt(self->getRace().getSupplyProvider()))
     {
         return false;
     }
 
     // Terran and protoss calculation:
-    int supplyAvailable = BWAPI::Broodwar->self()->supplyTotal() - BWAPI::Broodwar->self()->supplyUsed();
+    int supplyAvailable = self->supplyTotal() - self->supplyUsed();
 
     // Zerg calculation:
     // Zerg can create an overlord that doesn't count toward supply until the next check.
     // To work around it, add up the supply by hand, including hatcheries.
-    if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Zerg) 
+    if (self->getRace() == BWAPI::Races::Zerg)
     {
-        supplyAvailable = -BWAPI::Broodwar->self()->supplyUsed();
-        for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+        supplyAvailable = -self->supplyUsed();
+        for (auto & unit : self->getUnits())
         {
             if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord)
             {
@@ -538,7 +543,7 @@ void ProductionManager::performCommand(BWAPI::UnitCommandType t)
 	if (t == BWAPI::UnitCommandTypes::Cancel_Construction)
 	{
 		BWAPI::Unit extractor = nullptr;
-		for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+		for (auto & unit : _opponentView.self()->getUnits())
 		{
 			if (unit->getType() == BWAPI::UnitTypes::Zerg_Extractor)
 			{
@@ -555,12 +560,12 @@ void ProductionManager::performCommand(BWAPI::UnitCommandType t)
 
 int ProductionManager::getFreeMinerals()
 {
-	return BWAPI::Broodwar->self()->minerals() - _buildingManager.getReservedMinerals();
+	return _opponentView.self()->minerals() - _buildingManager.getReservedMinerals();
 }
 
 int ProductionManager::getFreeGas()
 {
-	return BWAPI::Broodwar->self()->gas() - _buildingManager.getReservedGas();
+	return _opponentView.self()->gas() - _buildingManager.getReservedGas();
 }
 
 // return whether or not we meet resources, including building reserves
@@ -574,8 +579,10 @@ bool ProductionManager::meetsReservedResources(MetaType type)
 // selects a unit of a given type
 BWAPI::Unit ProductionManager::selectUnitOfType(BWAPI::UnitType type, BWAPI::Position closestTo) 
 {
+	auto self = _opponentView.self();
+
 	// if we have none of the unit type, return nullptr right away
-	if (BWAPI::Broodwar->self()->completedUnitCount(type) == 0) 
+	if (self->completedUnitCount(type) == 0)
 	{
 		return nullptr;
 	}
@@ -587,7 +594,7 @@ BWAPI::Unit ProductionManager::selectUnitOfType(BWAPI::UnitType type, BWAPI::Pos
     {
 		double minDist(1000000);
 
-		for (auto & u : BWAPI::Broodwar->self()->getUnits()) 
+		for (auto & u : self->getUnits())
         {
 			if (u->getType() == type) 
             {
@@ -604,7 +611,7 @@ BWAPI::Unit ProductionManager::selectUnitOfType(BWAPI::UnitType type, BWAPI::Pos
 	} 
     else if (type.isBuilding()) 
     {
-		for (auto & u : BWAPI::Broodwar->self()->getUnits()) 
+		for (auto & u : self->getUnits())
         {
             UAB_ASSERT(u != nullptr, "Unit was null");
 
@@ -617,7 +624,7 @@ BWAPI::Unit ProductionManager::selectUnitOfType(BWAPI::UnitType type, BWAPI::Pos
 	} 
     else 
     {
-		for (auto & u : BWAPI::Broodwar->self()->getUnits()) 
+		for (auto & u : self->getUnits())
 		{
             UAB_ASSERT(u != nullptr, "Unit was null");
 
@@ -645,7 +652,7 @@ void ProductionManager::drawProductionInformation(AKBot::ScreenCanvas& canvas, i
 
 	// fill prod with each unit which is under construction
 	std::vector<BWAPI::Unit> prod;
-	for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+	for (auto & unit : _opponentView.self()->getUnits())
 	{
         UAB_ASSERT(unit != nullptr, "Unit was null");
 
@@ -690,7 +697,7 @@ void ProductionManager::drawProductionInformation(AKBot::ScreenCanvas& canvas, i
 // this can cause issues for the build order search system so don't plan a search on these frames
 bool ProductionManager::canPlanBuildOrderNow() const
 {
-    for (const auto & unit : BWAPI::Broodwar->self()->getUnits())
+    for (const auto & unit : _opponentView.self()->getUnits())
     {
         if (unit->getRemainingTrainTime() == 0)
         {

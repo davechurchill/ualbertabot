@@ -44,7 +44,7 @@ void MeleeManager::assignTargets(const std::vector<BWAPI::Unit> & targets)
             // run away if we meet the retreat critereon
             if (meleeUnitShouldRetreat(meleeUnit, targets))
             {
-                BWAPI::Position fleeTo(BWAPI::Broodwar->self()->getStartLocation());
+                BWAPI::Position fleeTo(opponentView.self()->getStartLocation());
 
                 Micro::SmartMove(meleeUnit, fleeTo);
             }
@@ -130,7 +130,7 @@ int MeleeManager::getAttackPriority(BWAPI::Unit attacker, BWAPI::Unit unit)
 
     if (attacker->getType() == BWAPI::UnitTypes::Protoss_Dark_Templar 
         && unit->getType() == BWAPI::UnitTypes::Terran_Missile_Turret
-        && (BWAPI::Broodwar->self()->deadUnitCount(BWAPI::UnitTypes::Protoss_Dark_Templar) == 0))
+        && (opponentView.self()->deadUnitCount(BWAPI::UnitTypes::Protoss_Dark_Templar) == 0))
     {
         return 13;
     }

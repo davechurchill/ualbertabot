@@ -46,7 +46,7 @@ void GameCommander::update(AKBot::ScreenCanvas& canvas)
     
 	_bossManager.update(35 - _timer.getElapsedTimeInMilliSec());
 
-	_productionManager.update();
+	_productionManager.update(BWAPI::Broodwar->getFrameCount());
 	_combatCommander.update(_combatUnits, canvas);
     _scoutManager.update();
 }
@@ -76,7 +76,7 @@ void GameCommander::drawDebugInterface(AKBot::ScreenCanvas& canvas)
 void GameCommander::drawGameInformation(AKBot::ScreenCanvas& canvas, int x, int y)
 {
 	auto enemy = Global::getEnemy();
-	auto self = BWAPI::Broodwar->self();
+	auto self = _opponentView.self();
     canvas.drawTextScreen(x, y, "\x04Players:");
 	if (enemy != nullptr)
 	{
@@ -124,7 +124,7 @@ bool GameCommander::isAssigned(BWAPI::Unit unit) const
 void GameCommander::setValidUnits()
 {
 	// make sure the unit is completed and alive and usable
-	for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+	for (auto & unit : _opponentView.self()->getUnits())
 	{
 		if (UnitUtil::IsValidUnit(unit))
 		{	
@@ -172,7 +172,7 @@ void GameCommander::setCombatUnits()
 BWAPI::Unit GameCommander::getFirstSupplyProvider()
 {
 	BWAPI::Unit supplyProvider = nullptr;
-	auto self = BWAPI::Broodwar->self();
+	auto self = _opponentView.self();
 	auto selfRace = self->getRace();
 	auto supplyProviderUnitType = selfRace == BWAPI::Races::Zerg
 		? BWAPI::UnitTypes::Zerg_Spawning_Pool
