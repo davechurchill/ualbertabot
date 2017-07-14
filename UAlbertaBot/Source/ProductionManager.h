@@ -22,6 +22,7 @@ class ProductionManager
     bool                _assignedWorkerForThisBuilding;
     bool                _haveLocationForThisBuilding;
 	const StrategyManager& _strategyManager;
+	const UnitInfoManager& _unitInfo;
     
     BWAPI::Unit         getClosestUnitToPosition(const std::vector<BWAPI::Unit> & units,BWAPI::Position closestTo);
     BWAPI::Unit         selectUnitOfType(BWAPI::UnitType type,BWAPI::Position closestTo = BWAPI::Position(0,0));
@@ -42,7 +43,7 @@ class ProductionManager
 
 public:
     
-    ProductionManager(BOSSManager & bossManager, const StrategyManager& strategyManager);
+    ProductionManager(BOSSManager & bossManager, const StrategyManager& strategyManager, const UnitInfoManager& unitInfo);
     
     void        onStart();
     void        update();

@@ -20,11 +20,6 @@ WorkerManager & Global::Workers()
     return uabModule->Workers();
 }
 
-const UnitInfoManager & Global::UnitInfo()
-{
-    return uabModule->UnitInfo();
-}
-
 const MapTools & Global::Map()
 {
     return uabModule->Map();

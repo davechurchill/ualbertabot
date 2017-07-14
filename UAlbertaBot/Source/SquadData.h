@@ -13,10 +13,11 @@ class SquadData
     void    verifySquadUniqueMembership();
 	AKBot::PlayerLocationProvider& _locationProvider;
 	const AKBot::OpponentView& _opponentView;
+	const UnitInfoManager& _unitInfo;
 
 public:
 
-	SquadData(AKBot::PlayerLocationProvider& locationProvider, const AKBot::OpponentView& opponentView);
+	SquadData(AKBot::PlayerLocationProvider& locationProvider, const AKBot::OpponentView& opponentView, const UnitInfoManager& unitInfo);
 
     void            clearSquadData();
 

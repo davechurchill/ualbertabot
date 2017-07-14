@@ -15,6 +15,7 @@ class UnitInfoManager
 {
     std::map<BWAPI::Player, UnitData> _unitData;
     std::map<BWAPI::Player, std::set<const BaseLocation *> >  _occupiedBaseLocations;
+	const AKBot::OpponentView& _opponentView;
 
     void                    updateUnit(BWAPI::Unit unit);
     void                    updateUnitInfo();
@@ -24,7 +25,7 @@ class UnitInfoManager
 
 public:
 
-    UnitInfoManager();
+    UnitInfoManager(const AKBot::OpponentView& opponentView);
 
     void                    update();
     void                    onStart();

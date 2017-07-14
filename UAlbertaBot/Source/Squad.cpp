@@ -4,7 +4,7 @@
 
 using namespace UAlbertaBot;
 
-Squad::Squad(const std::string & name, SquadOrder order, size_t priority, AKBot::PlayerLocationProvider& locationProvider, const AKBot::OpponentView& opponentView)
+Squad::Squad(const std::string & name, SquadOrder order, size_t priority, AKBot::PlayerLocationProvider& locationProvider, const AKBot::OpponentView& opponentView, const UnitInfoManager& unitInfo)
 	: _name(name)
 	, _order(order)
     , _lastRetreatSwitch(0)
@@ -12,6 +12,7 @@ Squad::Squad(const std::string & name, SquadOrder order, size_t priority, AKBot:
     , _priority(priority)
 	, _transportManager(locationProvider)
 	, _opponentView(opponentView)
+	, _unitInfo(unitInfo)
 {
 }
 
@@ -218,7 +219,7 @@ bool Squad::needsToRegroup(const MapTools& map)
 
     // if none of our units are in attack range of any enemy units, don't retreat
     std::vector<UnitInfo> enemyCombatUnits;
-    const auto & enemyUnitInfo = Global::UnitInfo().getUnitInfoMap(Global::getEnemy());
+    const auto & enemyUnitInfo = _unitInfo.getUnitInfoMap(Global::getEnemy());
 
     bool anyInRange = false;
     for (const auto & eui : enemyUnitInfo)
@@ -248,7 +249,7 @@ bool Squad::needsToRegroup(const MapTools& map)
     }
 
 	//do the SparCraft Simulation!
-	CombatSimulation sim(_opponentView);
+	CombatSimulation sim(_opponentView, _unitInfo);
 	sim.setCombatUnits(unitClosest->getPosition(), Config::Micro::CombatRegroupRadius);
 	
     auto score = sim.simulateCombat();

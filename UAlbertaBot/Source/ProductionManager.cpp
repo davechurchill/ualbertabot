@@ -4,8 +4,9 @@
 
 using namespace UAlbertaBot;
 
-ProductionManager::ProductionManager(BOSSManager & bossManager, const StrategyManager& strategyManager)
+ProductionManager::ProductionManager(BOSSManager & bossManager, const StrategyManager& strategyManager, const UnitInfoManager& unitInfo)
 	: _bossManager(bossManager)
+	, _unitInfo(unitInfo)
     , _buildingManager()
     , _assignedWorkerForThisBuilding (false)
 	, _haveLocationForThisBuilding   (false)
@@ -88,7 +89,7 @@ void ProductionManager::update()
 	}
 
 	// if they have cloaked units get a new goal asap
-	if (!_enemyCloakedDetected && Global::UnitInfo().enemyHasCloakedUnits())
+	if (!_enemyCloakedDetected && _unitInfo.enemyHasCloakedUnits())
 	{
 		auto ourRace = BWAPI::Broodwar->self()->getRace();
         if (ourRace == BWAPI::Races::Protoss)

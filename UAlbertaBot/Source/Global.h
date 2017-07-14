@@ -16,7 +16,6 @@ namespace Global
         
     const BaseLocationManager & Bases();
     WorkerManager & Workers();
-    const UnitInfoManager & UnitInfo();
     const MapTools & Map();
 	BWAPI::Player getEnemy();
 };

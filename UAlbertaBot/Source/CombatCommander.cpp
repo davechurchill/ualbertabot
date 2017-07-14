@@ -11,11 +11,12 @@ const size_t BaseDefensePriority = 2;
 const size_t ScoutDefensePriority = 3;
 const size_t DropPriority = 4;
 
-CombatCommander::CombatCommander(const BaseLocationManager & baseLocationManager, const AKBot::OpponentView& opponentView)
+CombatCommander::CombatCommander(const BaseLocationManager & baseLocationManager, const AKBot::OpponentView& opponentView, const UnitInfoManager& unitInfo)
     : _initialized(false)
+	, _unitInfo(unitInfo)
 	, _baseLocationManager(baseLocationManager)
 	, _playerLocationProvider(baseLocationManager)
-	, _squadData(_playerLocationProvider, opponentView)
+	, _squadData(_playerLocationProvider, opponentView, unitInfo)
 	, _opponentView(opponentView)
 {
 	_squadData.onUnitRemoved([](const BWAPI::Unit& unit)
@@ -501,7 +502,7 @@ BWAPI::Position CombatCommander::getMainAttackLocation()
     // Second choice: Attack known enemy buildings
 	for (auto& enemyPlayer : _opponentView.enemies())
 	{
-		for (const auto & kv : Global::UnitInfo().getUnitInfoMap(enemyPlayer))
+		for (const auto & kv : _unitInfo.getUnitInfoMap(enemyPlayer))
 		{
 			const UnitInfo & ui = kv.second;
 

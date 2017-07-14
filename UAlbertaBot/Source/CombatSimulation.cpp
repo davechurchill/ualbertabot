@@ -4,8 +4,9 @@
 
 using namespace UAlbertaBot;
 
-CombatSimulation::CombatSimulation(const AKBot::OpponentView& opponentView)
+CombatSimulation::CombatSimulation(const AKBot::OpponentView& opponentView, const UnitInfoManager& unitInfo)
 	: _opponentView(opponentView)
+	, _unitInfo(unitInfo)
 {
 }
 
@@ -23,7 +24,7 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
 	Global::Map().GetUnitsInRadius(ourCombatUnits, center, Config::Micro::CombatRegroupRadius, true, false);
 	for (auto& enemyPlayer : _opponentView.enemies())
 	{
-		Global::UnitInfo().getNearbyForce(enemyCombatUnits, center, enemyPlayer, Config::Micro::CombatRegroupRadius);
+		_unitInfo.getNearbyForce(enemyCombatUnits, center, enemyPlayer, Config::Micro::CombatRegroupRadius);
 	}
 
 	for (auto & unit : ourCombatUnits)

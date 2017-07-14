@@ -28,6 +28,7 @@ class Squad
     size_t              _priority;
 	UnitHandler			_onRemoveHandler;
 	const AKBot::OpponentView& _opponentView;
+	const UnitInfoManager& _unitInfo;
 	
 	SquadOrder          _order;
 	MeleeManager        _meleeManager;
@@ -52,7 +53,7 @@ class Squad
 
 public:
 
-	Squad(const std::string & name, SquadOrder order, size_t priority, AKBot::PlayerLocationProvider& locationProvider, const AKBot::OpponentView& opponentView);
+	Squad(const std::string & name, SquadOrder order, size_t priority, AKBot::PlayerLocationProvider& locationProvider, const AKBot::OpponentView& opponentView, const UnitInfoManager& unitInfo);
     ~Squad();
 
 	void                update(const MapTools& map);

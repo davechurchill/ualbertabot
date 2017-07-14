@@ -224,6 +224,7 @@ void ParseUtils::ParseStrategy(const std::string & filename, StrategyManager & s
         if (strategy.HasMember(race.c_str()) && strategy[race.c_str()].IsString())
         {
             Config::Strategy::StrategyName = strategy[race.c_str()].GetString();
+			strategyManager.setPreferredStrategy(Config::Strategy::StrategyName);
         }
 
         // check if we are using an enemy specific strategy
@@ -237,6 +238,7 @@ void ParseUtils::ParseStrategy(const std::string & filename, StrategyManager & s
 				{
 					Config::Strategy::StrategyName = searchResult.second;
 					Config::Strategy::FoundEnemySpecificStrategy = true;
+					strategyManager.setPreferredStrategy(Config::Strategy::StrategyName);
 					break;
 				}
 			}
