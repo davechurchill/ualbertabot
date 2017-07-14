@@ -3,7 +3,7 @@
 
 using namespace UAlbertaBot;
 
-TransportManager::TransportManager(AKBot::PlayerLocationProviderPtr locationProvider)
+TransportManager::TransportManager(AKBot::PlayerLocationProvider& locationProvider)
 	: _transportShip(NULL)
 	, _currentRegionVertexIndex(-1)
 	, _minCorner(-1,-1)
@@ -26,7 +26,7 @@ void TransportManager::executeMicro(const std::vector<BWAPI::Unit> & targets)
 
 void TransportManager::calculateMapEdgeVertices()
 {
-	const BaseLocation * enemyBaseLocation = _locationProvider->getPlayerStartingBaseLocation(Global::getEnemy());
+	const BaseLocation * enemyBaseLocation = _locationProvider.getPlayerStartingBaseLocation(Global::getEnemy());
 
 	if (enemyBaseLocation == nullptr)
 	{
@@ -170,7 +170,7 @@ void TransportManager::moveTroops()
 	//unload zealots if close enough or dying
 	int transportHP = _transportShip->getHitPoints() + _transportShip->getShields();
 	
-	const BaseLocation * enemyBaseLocation = _locationProvider->getPlayerStartingBaseLocation(Global::getEnemy());
+	const BaseLocation * enemyBaseLocation = _locationProvider.getPlayerStartingBaseLocation(Global::getEnemy());
 
 	if (enemyBaseLocation && (_transportShip->getDistance(enemyBaseLocation->getPosition()) < 300 || transportHP < 100)
 		&& _transportShip->canUnloadAtPosition(_transportShip->getPosition()))
@@ -311,7 +311,7 @@ std::pair<int,int> TransportManager::findSafePath(BWAPI::Position to, BWAPI::Pos
 	UAB_ASSERT_WARNING(endPolygonIndex != -1, "Couldn't find a closest vertex");
 	BWAPI::Position enemyEdge = _mapEdgeVertices[endPolygonIndex];
 
-	const BaseLocation * enemyBaseLocation = _locationProvider->getPlayerStartingBaseLocation(Global::getEnemy());
+	const BaseLocation * enemyBaseLocation = _locationProvider.getPlayerStartingBaseLocation(Global::getEnemy());
 	BWAPI::Position enemyPosition = enemyBaseLocation->getPosition();
 
 	//find the projections on the 4 edges

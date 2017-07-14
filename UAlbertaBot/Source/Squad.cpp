@@ -4,7 +4,7 @@
 
 using namespace UAlbertaBot;
 
-Squad::Squad(const std::string & name, SquadOrder order, size_t priority, AKBot::PlayerLocationProviderPtr locationProvider)
+Squad::Squad(const std::string & name, SquadOrder order, size_t priority, AKBot::PlayerLocationProvider& locationProvider)
 	: _name(name)
 	, _order(order)
     , _lastRetreatSwitch(0)

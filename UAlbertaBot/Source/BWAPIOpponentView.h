@@ -12,11 +12,11 @@ namespace AKBot
 		/*
 		Returns bot's player
 		*/
-		virtual BWAPI::Player self() override;
+		virtual BWAPI::Player self() const override;
 
 		/*
 		Returns set of opponents to the given bot.
 		*/
-		virtual BWAPI::Playerset& enemies() override;
+		virtual BWAPI::Playerset& enemies() const override;
 	};
 }

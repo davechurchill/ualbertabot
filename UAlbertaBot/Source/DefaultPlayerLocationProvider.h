@@ -10,9 +10,9 @@ namespace AKBot
 	class DefaultPlayerLocationProvider
 		: public PlayerLocationProvider
 	{
-		const BaseLocationManager* _baseLocationManager;
+		const BaseLocationManager& _baseLocationManager;
 	public:
-		DefaultPlayerLocationProvider(const BaseLocationManager* baseLocationManager);
-		virtual const BaseLocation* getPlayerStartingBaseLocation(BWAPI::Player player) override;
+		DefaultPlayerLocationProvider(const BaseLocationManager& baseLocationManager);
+		virtual const BaseLocation* getPlayerStartingBaseLocation(BWAPI::Player player) const override;
 	};
 };

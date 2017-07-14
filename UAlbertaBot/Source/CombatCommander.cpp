@@ -1,7 +1,6 @@
 #include "CombatCommander.h"
 #include "UnitUtil.h"
 #include "Global.h"
-#include "DefaultPlayerLocationProvider.h"
 
 using namespace UAlbertaBot;
 using namespace AKBot;
@@ -15,7 +14,8 @@ const size_t DropPriority = 4;
 CombatCommander::CombatCommander(const BaseLocationManager & baseLocationManager)
     : _initialized(false)
 	, _baseLocationManager(baseLocationManager)
-	, _squadData(std::make_shared<DefaultPlayerLocationProvider>(&baseLocationManager))
+	, _playerLocationProvider(baseLocationManager)
+	, _squadData(_playerLocationProvider)
 {
 	_squadData.onUnitRemoved([](const BWAPI::Unit& unit)
 	{

@@ -11,11 +11,11 @@ class SquadData
 
     void    updateAllSquads(const MapTools& map);
     void    verifySquadUniqueMembership();
-	AKBot::PlayerLocationProviderPtr _locationProvider;
+	AKBot::PlayerLocationProvider& _locationProvider;
 
 public:
 
-	SquadData(AKBot::PlayerLocationProviderPtr locationProvider);
+	SquadData(AKBot::PlayerLocationProvider& locationProvider);
 
     void            clearSquadData();
 

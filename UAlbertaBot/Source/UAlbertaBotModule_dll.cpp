@@ -6,6 +6,8 @@
 
 using namespace UAlbertaBot;
 
+AKBot::BWAPIOpponentView opponentView;
+
 UAlbertaBotModule_dll::UAlbertaBotModule_dll()
 {
     // parse the bot's configuration file, if it is not found or isn't valid, the program will exit
@@ -19,7 +21,7 @@ UAlbertaBotModule_dll::UAlbertaBotModule_dll()
 
     if (Config::BotInfo::BotMode == "Tournament")
     {
-        _module = std::shared_ptr<BotModule>(new UAlbertaBot_Tournament(std::make_shared<BWAPIOpponentView>()));
+        _module = std::shared_ptr<BotModule>(new UAlbertaBot_Tournament(opponentView));
     }
     else if (Config::BotInfo::BotMode == "Arena")
     {

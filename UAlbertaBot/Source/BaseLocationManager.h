@@ -17,7 +17,7 @@ namespace UAlbertaBot
 	class BaseLocationManager
 	{
 		std::vector<BaseLocation>   _baseLocationData;
-		AKBot::OpponentViewPtr _opponentView;
+		const AKBot::OpponentView& _opponentView;
 
 		std::vector<const BaseLocation *> _baseLocationPtrs;
 		std::vector<const BaseLocation *> _startingBaseLocations;
@@ -35,7 +35,7 @@ namespace UAlbertaBot
 		void resetPlayerOccupation();
 	public:
 
-		BaseLocationManager(AKBot::OpponentViewPtr opponentView);
+		BaseLocationManager(const AKBot::OpponentView& opponentView);
 
 		void update(const UnitInfoManager & unitManager);
 		void onStart(const MapTools& map);

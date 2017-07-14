@@ -4,7 +4,7 @@
 using namespace UAlbertaBot;
 using namespace AKBot;
 
-SquadData::SquadData(AKBot::PlayerLocationProviderPtr locationProvider)
+SquadData::SquadData(AKBot::PlayerLocationProvider& locationProvider)
 	: _locationProvider(locationProvider)
 {
 	

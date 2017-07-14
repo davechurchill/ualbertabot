@@ -14,13 +14,11 @@ namespace AKBot
 		/*
 		 Returns bot's player
 		*/
-		virtual BWAPI::Player self() = 0;
+		virtual BWAPI::Player self() const = 0;
 		
 		/*
 		 Returns set of opponents to the given bot.
 		*/
-		virtual BWAPI::Playerset& enemies() = 0;
+		virtual BWAPI::Playerset& enemies() const = 0;
 	};
-
-	typedef std::shared_ptr<OpponentView> OpponentViewPtr;
 }

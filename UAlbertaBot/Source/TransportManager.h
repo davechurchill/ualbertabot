@@ -18,7 +18,7 @@ class TransportManager : public MicroManager
 	std::vector<BWAPI::Position>	_waypoints;
 	BWAPI::Position					_to;
 	BWAPI::Position					_from;
-	AKBot::PlayerLocationProviderPtr	_locationProvider;
+	AKBot::PlayerLocationProvider&	_locationProvider;
 
 	void							calculateMapEdgeVertices();
 	void							drawTransportInformation(int x, int y);
@@ -33,7 +33,7 @@ class TransportManager : public MicroManager
 	
 public:
 
-	TransportManager(AKBot::PlayerLocationProviderPtr locationProvider);
+	TransportManager(AKBot::PlayerLocationProvider& locationProvider);
 
 	void							executeMicro(const std::vector<BWAPI::Unit> & targets);
 	void							update();

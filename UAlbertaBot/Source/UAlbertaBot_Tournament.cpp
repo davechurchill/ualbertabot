@@ -7,7 +7,7 @@
 
 using namespace UAlbertaBot;
 
-UAlbertaBot_Tournament::UAlbertaBot_Tournament(AKBot::OpponentViewPtr opponentView)
+UAlbertaBot_Tournament::UAlbertaBot_Tournament(const AKBot::OpponentView& opponentView)
 	: _gameCommander(*this)
 	, _mapTools(BWAPI::Broodwar->mapWidth(), BWAPI::Broodwar->mapHeight())
 	, _opponentView(opponentView)

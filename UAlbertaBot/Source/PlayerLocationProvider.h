@@ -10,8 +10,6 @@ namespace AKBot
 	class PlayerLocationProvider
 	{
 	public:
-		virtual const BaseLocation* getPlayerStartingBaseLocation(BWAPI::Player player) = 0;
+		virtual const BaseLocation* getPlayerStartingBaseLocation(BWAPI::Player player) const = 0;
 	};
-
-	typedef std::shared_ptr<PlayerLocationProvider> PlayerLocationProviderPtr;
 }

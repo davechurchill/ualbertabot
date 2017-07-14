@@ -30,6 +30,8 @@
 
 using namespace UAlbertaBot;
 
+AKBot::BWAPIOpponentView opponentView;
+
 void UAlbertaBot_BWAPIReconnect() 
 {
     while(!BWAPI::BWAPIClient.connect())
@@ -46,7 +48,7 @@ void UAlbertaBot_PlayGame()
     
     if (Config::BotInfo::BotMode == "Tournament")
     {
-        m = std::shared_ptr<BotModule>(new UAlbertaBot_Tournament(std::make_shared<BWAPIOpponentView>()));
+        m = std::shared_ptr<BotModule>(new UAlbertaBot_Tournament(opponentView));
     }
     else if (Config::BotInfo::BotMode == "Arena")
     {

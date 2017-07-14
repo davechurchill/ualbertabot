@@ -31,11 +31,11 @@ class BaseLocation
     int                 _top;
     int                 _bottom;
     bool                _isStartLocation;
-	AKBot::OpponentViewPtr _opponentView;
+	const AKBot::OpponentView& _opponentView;
 public:
 
-    BaseLocation(AKBot::OpponentViewPtr opponentView, int baseID = 0);
-    BaseLocation(AKBot::OpponentViewPtr opponentView, int baseID, const std::vector<BWAPI::Unit> & resources);
+    BaseLocation(const AKBot::OpponentView& opponentView, int baseID = 0);
+    BaseLocation(const AKBot::OpponentView& opponentView, int baseID, const std::vector<BWAPI::Unit> & resources);
     
     int getGroundTileDistance(const BWAPI::Position & pos) const;
     bool isStartLocation() const;

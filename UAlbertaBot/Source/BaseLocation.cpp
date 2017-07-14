@@ -6,7 +6,7 @@ using namespace UAlbertaBot;
 
 const int NearBaseLocationTileDistance = 20;
 
-BaseLocation::BaseLocation(AKBot::OpponentViewPtr opponentView, int baseID)
+BaseLocation::BaseLocation(const AKBot::OpponentView& opponentView, int baseID)
     : _opponentView(opponentView)
 	, _baseID               (baseID)
     , _isStartLocation      (false)
@@ -15,20 +15,20 @@ BaseLocation::BaseLocation(AKBot::OpponentViewPtr opponentView, int baseID)
     , _top                  (std::numeric_limits<int>::max())
     , _bottom               (std::numeric_limits<int>::min())
 {
-	auto self = opponentView->self();
+	auto self = opponentView.self();
     _isPlayerStartLocation[self] = false;
     _isPlayerOccupying[self] = false;
-	for (const auto& enemyPlayer : opponentView->enemies())
+	for (const auto& enemyPlayer : opponentView.enemies())
 	{
 		_isPlayerStartLocation[enemyPlayer] = false;
 		_isPlayerOccupying[enemyPlayer] = false;
 	}
 }
 
-BaseLocation::BaseLocation(AKBot::OpponentViewPtr opponentView, int baseID, const std::vector<BWAPI::Unit> & resources)
+BaseLocation::BaseLocation(const AKBot::OpponentView& opponentView, int baseID, const std::vector<BWAPI::Unit> & resources)
     : BaseLocation(opponentView, baseID)
 {
-	auto self = opponentView->self();
+	auto self = opponentView.self();
 	int resourceCenterX = 0;
     int resourceCenterY = 0;
 
@@ -190,12 +190,12 @@ void BaseLocation::draw(AKBot::ScreenCanvas& canvas, std::function<bool(BWAPI::T
     ss << "Geysers:      " << _geyserPositions.size() << "\n";
     ss << "Occupied By:  ";
 
-    if (isOccupiedByPlayer(_opponentView->self()))
+    if (isOccupiedByPlayer(_opponentView.self()))
     {
         ss << "Self ";
     }
 
-	for (auto& enemy : _opponentView->enemies())
+	for (auto& enemy : _opponentView.enemies())
 	{
 		if (isOccupiedByPlayer(enemy))
 		{
