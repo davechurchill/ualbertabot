@@ -16,7 +16,7 @@ CombatCommander::CombatCommander(const BaseLocationManager & baseLocationManager
 	, _unitInfo(unitInfo)
 	, _baseLocationManager(baseLocationManager)
 	, _playerLocationProvider(baseLocationManager)
-	, _squadData(_playerLocationProvider, opponentView, unitInfo)
+	, _squadData(_playerLocationProvider, opponentView, unitInfo, baseLocationManager)
 	, _opponentView(opponentView)
 {
 	_squadData.onUnitRemoved([](const BWAPI::Unit& unit)
@@ -58,7 +58,7 @@ bool CombatCommander::isSquadUpdateFrame()
 	return BWAPI::Broodwar->getFrameCount() % 10 == 0;
 }
 
-void CombatCommander::update(const std::vector<BWAPI::Unit> & combatUnits)
+void CombatCommander::update(const std::vector<BWAPI::Unit> & combatUnits, AKBot::ScreenCanvas& canvas)
 {
     if (!_initialized)
     {
@@ -76,7 +76,7 @@ void CombatCommander::update(const std::vector<BWAPI::Unit> & combatUnits)
 		updateAttackSquads();
 	}
 
-	_squadData.update(Global::Map());
+	_squadData.update(Global::Map(), canvas);
 }
 
 void CombatCommander::updateIdleSquad()

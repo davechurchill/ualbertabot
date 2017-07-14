@@ -5,10 +5,13 @@
 
 using namespace UAlbertaBot;
 
-BuildingManager::BuildingManager()
+BuildingManager::BuildingManager(const AKBot::OpponentView& opponentView, const BaseLocationManager& bases)
     : _debugMode(false)
     , _reservedMinerals(0)
     , _reservedGas(0)
+	, _bases(bases)
+	, _opponentView(opponentView)
+	, _buildingPlacer(BWAPI::Broodwar->mapWidth(), BWAPI::Broodwar->mapHeight(), bases)
 {
 
 }
@@ -73,7 +76,10 @@ void BuildingManager::assignWorkersToUnassignedBuildings()
             continue;
         }
 
-        if (_debugMode) { BWAPI::Broodwar->printf("Assigning Worker To: %s",b.type.getName().c_str()); }
+        if (_debugMode)
+		{ 
+			BWAPI::Broodwar->printf("Assigning Worker To: %s",b.type.getName().c_str()); 
+		}
 
         // grab a worker unit from WorkerManager which is closest to this final position
         BWAPI::TilePosition testLocation = getBuildingLocation(b);
@@ -152,7 +158,7 @@ void BuildingManager::constructAssignedBuildings()
 void BuildingManager::checkForStartedConstruction()
 {
     // for each building unit which is being constructed
-    for (auto & buildingStarted : BWAPI::Broodwar->self()->getUnits())
+    for (auto & buildingStarted : _opponentView.self()->getUnits())
     {
         // filter out units which aren't buildings under construction
         if (!buildingStarted->getType().isBuilding() || !buildingStarted->isBeingConstructed())
@@ -180,12 +186,12 @@ void BuildingManager::checkForStartedConstruction()
                 b.buildingUnit = buildingStarted;
 
                 // if we are zerg, the buildingUnit now becomes nullptr since it's destroyed
-                if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Zerg)
+                if (_opponentView.self()->getRace() == BWAPI::Races::Zerg)
                 {
                     b.builderUnit = nullptr;
                     // if we are protoss, give the worker back to worker manager
                 }
-                else if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Protoss)
+                else if (_opponentView.self()->getRace() == BWAPI::Races::Protoss)
                 {    
                     Global::Workers().finishedWithWorker(b.builderUnit);
                     b.builderUnit = nullptr;
@@ -224,7 +230,7 @@ void BuildingManager::checkForCompletedBuildings()
         if (b.buildingUnit->isCompleted())
         {
             // if we are terran, give the worker back to worker manager
-            if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran)
+            if (_opponentView.self()->getRace() == BWAPI::Races::Terran)
             {
                 Global::Workers().finishedWithWorker(b.builderUnit);          
             }
@@ -308,7 +314,7 @@ void BuildingManager::drawBuildingInformation(AKBot::ScreenCanvas& canvas, int x
         return;
     }
 
-    for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+    for (auto & unit : _opponentView.self()->getUnits())
     {
         canvas.drawTextMap(unit->getPosition().x,unit->getPosition().y+5,"\x07%d",unit->getID());
     }
@@ -364,7 +370,7 @@ std::vector<BWAPI::UnitType> BuildingManager::buildingsQueued() const
 
 BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
 {
-    int numPylons = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Pylon);
+    int numPylons = _opponentView.self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Pylon);
     
     if (b.type.requiresPsi() && numPylons == 0)
     {
@@ -379,7 +385,7 @@ BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
     if (b.type.isResourceDepot())
     {
         // get the location 
-        BWAPI::TilePosition tile = Global::Bases().getNextExpansion(BWAPI::Broodwar->self());
+        BWAPI::TilePosition tile = _bases.getNextExpansion(BWAPI::Broodwar->self());
 
         return tile;
     }

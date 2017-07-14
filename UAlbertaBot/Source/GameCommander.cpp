@@ -7,13 +7,13 @@
 
 using namespace UAlbertaBot;
 
-GameCommander::GameCommander(UAlbertaBot_Tournament & uabModule, const AKBot::OpponentView& opponentView)
+GameCommander::GameCommander(UAlbertaBot_Tournament & uabModule, const AKBot::OpponentView& opponentView, const BaseLocationManager& bases)
     : _opponentView(opponentView)
-	, _productionManager(_bossManager, uabModule.Strategy(), uabModule.UnitInfo())
-	, _scoutManager(uabModule.Bases())
+	, _productionManager(opponentView, _bossManager, uabModule.Strategy(), uabModule.UnitInfo(), bases)
+	, _scoutManager(bases)
     , _initialScoutSet(false)
     , _module(uabModule)
-	, _combatCommander(uabModule.Bases(), opponentView, uabModule.UnitInfo())
+	, _combatCommander(bases, opponentView, uabModule.UnitInfo())
 {
 	auto& workerManager = uabModule.Workers();
 	_scoutManager.onScoutAssigned([&workerManager](const BWAPI::Unit &unit)
@@ -31,7 +31,7 @@ void GameCommander::onStart()
     _productionManager.onStart();
 }
 
-void GameCommander::update()
+void GameCommander::update(AKBot::ScreenCanvas& canvas)
 {
 	_timer.start();
 
@@ -47,7 +47,7 @@ void GameCommander::update()
 	_bossManager.update(35 - _timer.getElapsedTimeInMilliSec());
 
 	_productionManager.update();
-	_combatCommander.update(_combatUnits);
+	_combatCommander.update(_combatUnits, canvas);
     _scoutManager.update();
 }
 

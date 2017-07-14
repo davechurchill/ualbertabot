@@ -4,15 +4,20 @@
 
 using namespace UAlbertaBot;
 
-Squad::Squad(const std::string & name, SquadOrder order, size_t priority, AKBot::PlayerLocationProvider& locationProvider, const AKBot::OpponentView& opponentView, const UnitInfoManager& unitInfo)
+Squad::Squad(const std::string & name, SquadOrder order, size_t priority, AKBot::PlayerLocationProvider& locationProvider, const AKBot::OpponentView& opponentView, const UnitInfoManager& unitInfo, const BaseLocationManager& bases)
 	: _name(name)
 	, _order(order)
     , _lastRetreatSwitch(0)
     , _lastRetreatSwitchVal(false)
     , _priority(priority)
-	, _transportManager(locationProvider)
+	, _transportManager(opponentView, bases, locationProvider)
 	, _opponentView(opponentView)
 	, _unitInfo(unitInfo)
+	, _meleeManager(opponentView, bases)
+	, _medicManager(opponentView, bases)
+	, _rangedManager(opponentView, bases)
+	, _detectorManager(opponentView, Global::Map(), bases)
+	, _tankManager(opponentView, bases)
 {
 }
 
@@ -21,7 +26,7 @@ Squad::~Squad()
     //clear();
 }
 
-void Squad::update(const MapTools& map)
+void Squad::update(const MapTools& map, AKBot::ScreenCanvas& canvas)
 {
 	// update all necessary unit information within this squad
 	updateUnits();
@@ -36,7 +41,7 @@ void Squad::update(const MapTools& map)
 	};
 	if (Config::Debug::DrawSquadInfo && _order.getType() == SquadOrderTypes::Attack)
 	{
-		BWAPI::Broodwar->drawTextScreen(200, 350, "%s", _regroupStatus.c_str());
+		canvas.drawTextScreen(200, 350, "%s", _regroupStatus.c_str());
 
 		BWAPI::Unit closest = unitClosestToEnemy(distanceFunction);
 	}
@@ -48,10 +53,10 @@ void Squad::update(const MapTools& map)
 
         if (Config::Debug::DrawCombatSimulationInfo)
         {
-		    BWAPI::Broodwar->drawTextScreen(200, 150, "REGROUP");
+			canvas.drawTextScreen(200, 150, "REGROUP");
         }
 
-		BWAPI::Broodwar->drawCircleMap(regroupPosition.x, regroupPosition.y, 30, BWAPI::Colors::Purple, true);
+		canvas.drawCircleMap(regroupPosition.x, regroupPosition.y, 30, BWAPI::Colors::Purple, true);
         
 		_meleeManager.regroup(map, regroupPosition);
 		_rangedManager.regroup(map, regroupPosition);
@@ -69,6 +74,13 @@ void Squad::update(const MapTools& map)
 		auto closestToEnemyUnit = unitClosestToEnemy(distanceFunction);
 		_detectorManager.setUnitClosestToEnemy(closestToEnemyUnit);
 		_detectorManager.execute(map, _order);
+
+		_meleeManager.drawOrderText(canvas, _order);
+		_rangedManager.drawOrderText(canvas, _order);
+		_tankManager.drawOrderText(canvas, _order);
+		_medicManager.drawOrderText(canvas, _order);
+		_detectorManager.drawOrderText(canvas, _order);
+		_transportManager.drawTransportInformation(canvas, 0, 0);
 	}
 }
 

@@ -21,7 +21,6 @@ class TransportManager : public MicroManager
 	AKBot::PlayerLocationProvider&	_locationProvider;
 
 	void							calculateMapEdgeVertices();
-	void							drawTransportInformation(int x, int y);
 	void							moveTransport();
 	void							moveTroops();
 	BWAPI::Position                 getFleePosition(int clockwise=1);
@@ -33,12 +32,13 @@ class TransportManager : public MicroManager
 	
 public:
 
-	TransportManager(AKBot::PlayerLocationProvider& locationProvider);
+	TransportManager(const AKBot::OpponentView& opponentView, const BaseLocationManager& bases, AKBot::PlayerLocationProvider& locationProvider);
 
 	void							executeMicro(const std::vector<BWAPI::Unit> & targets);
 	void							update();
 	void							setTransportShip(BWAPI::UnitInterface * unit);
 	void							setFrom(BWAPI::Position from);
 	void							setTo(BWAPI::Position to);
+	void							drawTransportInformation(AKBot::ScreenCanvas& canvas, int x, int y);
 };
 }

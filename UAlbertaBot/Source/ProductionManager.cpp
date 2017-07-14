@@ -4,10 +4,10 @@
 
 using namespace UAlbertaBot;
 
-ProductionManager::ProductionManager(BOSSManager & bossManager, const StrategyManager& strategyManager, const UnitInfoManager& unitInfo)
+ProductionManager::ProductionManager(const AKBot::OpponentView& opponentView, BOSSManager & bossManager, const StrategyManager& strategyManager, const UnitInfoManager& unitInfo, const BaseLocationManager& bases)
 	: _bossManager(bossManager)
 	, _unitInfo(unitInfo)
-    , _buildingManager()
+    , _buildingManager(opponentView, bases)
     , _assignedWorkerForThisBuilding (false)
 	, _haveLocationForThisBuilding   (false)
 	, _enemyCloakedDetected          (false)

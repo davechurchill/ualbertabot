@@ -5,13 +5,16 @@
 
 using namespace UAlbertaBot;
 
-BuildingPlacer::BuildingPlacer()
+BuildingPlacer::BuildingPlacer(int width, int height, const BaseLocationManager& bases)
     : _boxTop       (std::numeric_limits<int>::max())
     , _boxBottom    (std::numeric_limits<int>::lowest())
     , _boxLeft      (std::numeric_limits<int>::max())
     , _boxRight     (std::numeric_limits<int>::lowest())
+	, _width(width)
+	, _height(height)
+	, _bases(bases)
 {
-    _reserveMap = std::vector< std::vector<bool> >(BWAPI::Broodwar->mapWidth(),std::vector<bool>(BWAPI::Broodwar->mapHeight(),false));
+    _reserveMap = std::vector< std::vector<bool> >(width,std::vector<bool>(height,false));
 
     computeResourceBox();
 }
@@ -172,7 +175,7 @@ bool BuildingPlacer::canBuildHereWithSpace(BWAPI::TilePosition position,const Bu
     }
 
     // if this rectangle doesn't fit on the map we can't build here
-    if (startx < 0 || starty < 0 || endx > BWAPI::Broodwar->mapWidth() || endx < position.x + width || endy > BWAPI::Broodwar->mapHeight())
+    if (startx < 0 || starty < 0 || endx > _width || endx < position.x + width || endy > _height)
     {
         return false;
     }
@@ -250,7 +253,7 @@ bool BuildingPlacer::tileOverlapsBaseLocation(BWAPI::TilePosition tile, BWAPI::U
     int ty2 = ty1 + type.tileHeight();
 
     // for each base location
-    for (const BaseLocation * base : Global::Bases().getBaseLocations())
+    for (const BaseLocation* base : _bases.getBaseLocations())
     {
         // dimensions of the base location
         int bx1 = base->getDepotTilePosition().x;

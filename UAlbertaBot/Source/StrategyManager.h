@@ -5,6 +5,7 @@
 #include "BuildOrder.h"
 #include "Strategy.h"
 #include "UnitInfoManager.h"
+#include "BaseLocationManager.h"
 
 namespace UAlbertaBot
 {
@@ -17,6 +18,7 @@ class StrategyManager
 	const UnitInfoManager&			_unitInfo;
 	std::string						_strategyName;
 	const AKBot::OpponentView& _opponentView;
+	const BaseLocationManager& _bases;
 
     void        writeResults();
     const int   getScore(BWAPI::Player player) const;
@@ -27,7 +29,7 @@ class StrategyManager
 
 public:
 
-    StrategyManager(std::string strategyName, const AKBot::OpponentView& opponentView, const UnitInfoManager & unitInfo);
+    StrategyManager(std::string strategyName, const AKBot::OpponentView& opponentView, const UnitInfoManager & unitInfo, const BaseLocationManager& bases);
 
     void update();
     void onEnd(const bool isWinner);

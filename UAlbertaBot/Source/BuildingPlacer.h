@@ -4,6 +4,7 @@
 #include "BuildingData.h"
 #include "MetaType.h"
 #include "ScreenCanvas.h"
+#include "BaseLocationManager.h"
 
 namespace UAlbertaBot
 {
@@ -11,20 +12,20 @@ namespace UAlbertaBot
 
 class BuildingPlacer
 {
-    
-
     std::vector< std::vector<bool> > _reserveMap;
-
+	int _width;
+	int _height;
     int     _boxTop;
     int	    _boxBottom;
     int	    _boxLeft;
     int	    _boxRight;
+	const BaseLocationManager& _bases;
 
     void    computeBuildableTileDistance(BWAPI::TilePosition tp);
 
 public:
     
-    BuildingPlacer();
+    BuildingPlacer(int width, int height, const BaseLocationManager& bases);
 
     // queries for various BuildingPlacer data
     bool					buildable(const Building & b,int x,int y) const;

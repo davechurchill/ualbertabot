@@ -7,10 +7,11 @@
 using namespace UAlbertaBot;
 
 // constructor
-StrategyManager::StrategyManager(std::string strategyName, const AKBot::OpponentView& opponentView, const UnitInfoManager & unitInfo)
+StrategyManager::StrategyManager(std::string strategyName, const AKBot::OpponentView& opponentView, const UnitInfoManager & unitInfo, const BaseLocationManager& bases)
 	: _strategyName(strategyName)
 	, _opponentView(opponentView)
 	, _unitInfo(unitInfo)
+	, _bases(bases)
 	, _emptyBuildOrder(opponentView.self()->getRace())
 {
 }
@@ -44,7 +45,7 @@ const BuildOrder & StrategyManager::getOpeningBookBuildOrder() const
 const bool StrategyManager::shouldExpandNow() const
 {
 	// if there is no place to expand to, we can't expand
-	if (Global::Bases().getNextExpansion(_opponentView.self()) == BWAPI::TilePositions::None)
+	if (_bases.getNextExpansion(_opponentView.self()) == BWAPI::TilePositions::None)
 	{
         BWAPI::Broodwar->printf("No valid expansion location");
 		return false;

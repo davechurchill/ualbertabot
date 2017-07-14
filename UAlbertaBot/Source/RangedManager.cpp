@@ -5,7 +5,8 @@
 
 using namespace UAlbertaBot;
 
-RangedManager::RangedManager() 
+RangedManager::RangedManager(const AKBot::OpponentView& opponentView, const BaseLocationManager& bases)
+	: MicroManager(opponentView, bases)
 { 
 }
 

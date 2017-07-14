@@ -3,8 +3,9 @@
 
 using namespace UAlbertaBot;
 
-TransportManager::TransportManager(AKBot::PlayerLocationProvider& locationProvider)
-	: _transportShip(NULL)
+TransportManager::TransportManager(const AKBot::OpponentView& opponentView, const BaseLocationManager& bases, AKBot::PlayerLocationProvider& locationProvider)
+	: MicroManager(opponentView, bases)
+	, _transportShip(NULL)
 	, _currentRegionVertexIndex(-1)
 	, _minCorner(-1,-1)
 	, _maxCorner(-1,-1)
@@ -98,7 +99,7 @@ void TransportManager::calculateMapEdgeVertices()
 	_mapEdgeVertices = sortedVertices;
 }
 
-void TransportManager::drawTransportInformation(int x = 0, int y = 0)
+void TransportManager::drawTransportInformation(AKBot::ScreenCanvas& canvas, int x = 0, int y = 0)
 {
 	if (!Config::Debug::DrawUnitTargetInfo)
 	{
@@ -111,8 +112,8 @@ void TransportManager::drawTransportInformation(int x = 0, int y = 0)
 	}
 	for (size_t i(0); i < _mapEdgeVertices.size(); ++i)
 	{
-		BWAPI::Broodwar->drawCircleMap(_mapEdgeVertices[i], 4, BWAPI::Colors::Green, false);
-		BWAPI::Broodwar->drawTextMap(_mapEdgeVertices[i], "%d", i);
+		canvas.drawCircleMap(_mapEdgeVertices[i], 4, BWAPI::Colors::Green, false);
+		canvas.drawTextMap(_mapEdgeVertices[i], "%d", i);
 	}
 }
 
@@ -131,8 +132,6 @@ void TransportManager::update()
 
 	moveTroops();
 	moveTransport();
-	
-	drawTransportInformation();
 }
 
 void TransportManager::moveTransport()

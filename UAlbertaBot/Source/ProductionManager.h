@@ -43,7 +43,7 @@ class ProductionManager
 
 public:
     
-    ProductionManager(BOSSManager & bossManager, const StrategyManager& strategyManager, const UnitInfoManager& unitInfo);
+    ProductionManager(const AKBot::OpponentView& opponentView, BOSSManager & bossManager, const StrategyManager& strategyManager, const UnitInfoManager& unitInfo, const BaseLocationManager& bases);
     
     void        onStart();
     void        update();

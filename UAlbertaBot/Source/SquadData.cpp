@@ -4,17 +4,18 @@
 using namespace UAlbertaBot;
 using namespace AKBot;
 
-SquadData::SquadData(AKBot::PlayerLocationProvider& locationProvider, const AKBot::OpponentView& opponentView, const UnitInfoManager& unitInfo)
+SquadData::SquadData(AKBot::PlayerLocationProvider& locationProvider, const AKBot::OpponentView& opponentView, const UnitInfoManager& unitInfo, const BaseLocationManager& bases)
 	: _locationProvider(locationProvider)
 	, _opponentView(opponentView)
 	, _unitInfo(unitInfo)
+	, _bases(bases)
 {
 	
 }
 
-void SquadData::update(const MapTools& map)
+void SquadData::update(const MapTools& map, AKBot::ScreenCanvas& canvas)
 {
-	updateAllSquads(map);
+	updateAllSquads(map, canvas);
     verifySquadUniqueMembership();
 }
 
@@ -69,14 +70,14 @@ void SquadData::addSquad(const std::string & squadName, Squad & squad)
 
 void SquadData::addSquad(const std::string & squadName, const SquadOrder & squadOrder, size_t priority)
 {
-	addSquad(squadName, Squad(squadName, squadOrder, priority, _locationProvider, _opponentView, _unitInfo));
+	addSquad(squadName, Squad(squadName, squadOrder, priority, _locationProvider, _opponentView, _unitInfo, _bases));
 }
 
-void SquadData::updateAllSquads(const MapTools& map)
+void SquadData::updateAllSquads(const MapTools& map, AKBot::ScreenCanvas& canvas)
 {
 	for (auto & kv : _squads)
 	{
-		kv.second.update(map);
+		kv.second.update(map, canvas);
 	}
 }
 

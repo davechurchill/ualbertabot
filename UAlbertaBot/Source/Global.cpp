@@ -10,11 +10,6 @@ void Global::SetModule(UAlbertaBot_Tournament * module)
     uabModule = module;
 }
 
-const BaseLocationManager & Global::Bases()
-{
-    return uabModule->Bases();
-}
-
 WorkerManager & Global::Workers()
 {
     return uabModule->Workers();

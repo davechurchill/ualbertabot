@@ -9,15 +9,16 @@ class SquadData
 	std::map<std::string, Squad> _squads;
 	UnitHandler onRemoveHandler;
 
-    void    updateAllSquads(const MapTools& map);
+    void    updateAllSquads(const MapTools& map, AKBot::ScreenCanvas& canvas);
     void    verifySquadUniqueMembership();
 	AKBot::PlayerLocationProvider& _locationProvider;
 	const AKBot::OpponentView& _opponentView;
 	const UnitInfoManager& _unitInfo;
+	const BaseLocationManager& _bases;
 
 public:
 
-	SquadData(AKBot::PlayerLocationProvider& locationProvider, const AKBot::OpponentView& opponentView, const UnitInfoManager& unitInfo);
+	SquadData(AKBot::PlayerLocationProvider& locationProvider, const AKBot::OpponentView& opponentView, const UnitInfoManager& unitInfo, const BaseLocationManager& bases);
 
     void            clearSquadData();
 
@@ -28,7 +29,7 @@ public:
     void            removeSquad(const std::string & squadName);
 	void            drawSquadInformation(AKBot::ScreenCanvas& canvas, int x, int y);
 
-    void            update(const MapTools& map);
+    void            update(const MapTools& map, AKBot::ScreenCanvas& canvas);
 
     bool            squadExists(const std::string & squadName);
     bool            unitIsInSquad(BWAPI::Unit unit) const;

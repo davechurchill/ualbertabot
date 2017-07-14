@@ -5,7 +5,8 @@
 
 using namespace UAlbertaBot;
 
-MeleeManager::MeleeManager() 
+MeleeManager::MeleeManager(const AKBot::OpponentView& opponentView, const BaseLocationManager& bases)
+	: MicroManager(opponentView, bases)
 { 
 
 }

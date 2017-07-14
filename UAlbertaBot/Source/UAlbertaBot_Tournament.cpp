@@ -9,10 +9,10 @@ using namespace UAlbertaBot;
 
 UAlbertaBot_Tournament::UAlbertaBot_Tournament(const AKBot::OpponentView& opponentView)
 	: _opponentView(opponentView)
-	, _gameCommander(*this, opponentView)
-	, _mapTools(BWAPI::Broodwar->mapWidth(), BWAPI::Broodwar->mapHeight())
 	, _baseLocationManager(opponentView)
-	, _strategyManager("", opponentView, _unitInfoManager)
+	, _gameCommander(*this, opponentView, _baseLocationManager)
+	, _mapTools(BWAPI::Broodwar->mapWidth(), BWAPI::Broodwar->mapHeight())
+	, _strategyManager("", opponentView, _unitInfoManager, _baseLocationManager)
 	, _unitInfoManager(opponentView)
 {
 	// parse the configuration file for the bot's strategies
@@ -148,7 +148,7 @@ void UAlbertaBot_Tournament::onFrame()
     _baseLocationManager.update(_unitInfoManager);
 
     // update the game commander
-	_gameCommander.update();
+	_gameCommander.update(_canvas);
 
 	// Draw debug information
 	// draw the debug information for each base location

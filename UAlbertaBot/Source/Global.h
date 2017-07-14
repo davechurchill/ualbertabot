@@ -14,7 +14,6 @@ namespace Global
 {      
     void SetModule(UAlbertaBot_Tournament * module);
         
-    const BaseLocationManager & Bases();
     WorkerManager & Workers();
     const MapTools & Map();
 	BWAPI::Player getEnemy();

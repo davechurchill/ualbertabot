@@ -6,7 +6,8 @@
 
 using namespace UAlbertaBot;
 
-TankManager::TankManager() 
+TankManager::TankManager(const AKBot::OpponentView& opponentView, const BaseLocationManager& bases)
+	: MicroManager(opponentView, bases)
 { 
 }
 

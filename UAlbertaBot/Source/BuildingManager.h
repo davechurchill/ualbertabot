@@ -4,6 +4,7 @@
 #include "WorkerManager.h"
 #include "BuildingPlacer.h"
 #include "MapTools.h"
+#include "BaseLocationManager.h"
 
 namespace UAlbertaBot
 {
@@ -11,6 +12,8 @@ class BuildingManager
 {
     BuildingPlacer  _buildingPlacer;
     std::vector<Building> _buildings;
+	const AKBot::OpponentView& _opponentView;
+	const BaseLocationManager& _bases;
 
     bool            _debugMode;
     int             _reservedMinerals;				// minerals reserved for planned buildings
@@ -32,7 +35,7 @@ class BuildingManager
 
 public:
     
-    BuildingManager();
+    BuildingManager(const AKBot::OpponentView& opponentView, const BaseLocationManager& bases);
 
     void                update();
     void                addBuildingTask(BWAPI::UnitType type,BWAPI::TilePosition desiredLocation);

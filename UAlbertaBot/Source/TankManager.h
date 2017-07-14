@@ -9,7 +9,7 @@ class TankManager : public MicroManager
 {
 public:
 
-	TankManager();
+	TankManager(const AKBot::OpponentView& opponentView, const BaseLocationManager& bases);
 	void executeMicro(const std::vector<BWAPI::Unit> & targets);
 
 	BWAPI::Unit chooseTarget(BWAPI::Unit rangedUnit, const std::vector<BWAPI::Unit> & targets, std::map<BWAPI::Unit, int> & numTargeting);

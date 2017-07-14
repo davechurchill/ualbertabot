@@ -3,7 +3,9 @@
 
 using namespace UAlbertaBot;
 
-MicroManager::MicroManager() 
+MicroManager::MicroManager(const AKBot::OpponentView& opponentView, const BaseLocationManager& bases)
+	: _bases(bases)
+	, _opponentView(opponentView)
 {
 }
 
@@ -21,7 +23,6 @@ void MicroManager::execute(const MapTools & map, const SquadOrder & inputOrder)
 	}
 
 	order = inputOrder;
-	drawOrderText();
 
 	// Discover enemies within region of interest
 	std::vector<BWAPI::Unit> nearbyEnemies;
@@ -76,9 +77,9 @@ void MicroManager::execute(const MapTools & map, const SquadOrder & inputOrder)
                     // if it is a worker
                     else
                     {
-						for (const auto& enemyPlayer : BWAPI::Broodwar->enemies())
+						for (const auto& enemyPlayer : _opponentView.enemies())
 						{
-							for (auto enemyBaseLocation : Global::Bases().getOccupiedBaseLocations(enemyPlayer))
+							for (auto enemyBaseLocation : _bases.getOccupiedBaseLocations(enemyPlayer))
 							{
 								// only add it if it's in their region
 								if (enemyBaseLocation->containsPosition(enemyUnit->getPosition()))
@@ -104,7 +105,7 @@ const std::vector<BWAPI::Unit> & MicroManager::getUnits() const
 
 void MicroManager::regroup(const MapTools & map, const BWAPI::Position & regroupPosition) const
 {
-    BWAPI::Position ourBasePosition = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
+    BWAPI::Position ourBasePosition = BWAPI::Position(_opponentView.self()->getStartLocation());
     int regroupDistanceFromBase = map.getGroundDistance(regroupPosition, ourBasePosition);
 
 	// for each of the units we have
@@ -170,10 +171,13 @@ void MicroManager::trainSubUnits(BWAPI::Unit unit) const
 	}
 }
 
-void MicroManager::drawOrderText() 
+void MicroManager::drawOrderText(AKBot::ScreenCanvas& canvas, const SquadOrder & order)
 {
-	for (auto & unit : _units) 
-    {
-		if (Config::Debug::DrawUnitTargetInfo) BWAPI::Broodwar->drawTextMap(unit->getPosition().x, unit->getPosition().y, "%s", order.getStatus().c_str());
+	if (Config::Debug::DrawUnitTargetInfo)
+	{
+		for (auto & unit : _units) 
+		{
+			canvas.drawTextMap(unit->getPosition().x, unit->getPosition().y, "%s", order.getStatus().c_str());
+		}
 	}
 }

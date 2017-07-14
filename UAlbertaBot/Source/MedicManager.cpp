@@ -7,8 +7,9 @@
 
 using namespace UAlbertaBot;
 
-MedicManager::MedicManager() 
-{ 
+MedicManager::MedicManager(const AKBot::OpponentView& opponentView, const BaseLocationManager& bases)
+	: MicroManager(opponentView, bases)
+{
 }
 
 void MedicManager::executeMicro(const std::vector<BWAPI::Unit> & targets) 
