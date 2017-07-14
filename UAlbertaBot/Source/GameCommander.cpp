@@ -7,12 +7,13 @@
 
 using namespace UAlbertaBot;
 
-GameCommander::GameCommander(UAlbertaBot_Tournament & uabModule) 
-    : _productionManager(_bossManager)
+GameCommander::GameCommander(UAlbertaBot_Tournament & uabModule, const AKBot::OpponentView& opponentView)
+    : _opponentView(opponentView)
+	, _productionManager(_bossManager, uabModule.Strategy())
 	, _scoutManager(uabModule.Bases())
     , _initialScoutSet(false)
     , _module(uabModule)
-	, _combatCommander(uabModule.Bases())
+	, _combatCommander(uabModule.Bases(), opponentView)
 {
 	auto& workerManager = uabModule.Workers();
 	_scoutManager.onScoutAssigned([&workerManager](const BWAPI::Unit &unit)
@@ -48,9 +49,6 @@ void GameCommander::update()
 	_productionManager.update();
 	_combatCommander.update(_combatUnits);
     _scoutManager.update();
-	auto& canvas = _module.getCanvas();
-	_scoutManager.drawScoutInformation(canvas, 200, 320);
-	drawDebugInterface(canvas);
 }
 
 ProductionManager & GameCommander::getProductionManager()
@@ -60,8 +58,7 @@ ProductionManager & GameCommander::getProductionManager()
 
 void GameCommander::drawDebugInterface(AKBot::ScreenCanvas& canvas)
 {
-	Global::UnitInfo().drawExtendedInterface(canvas);
-	Global::UnitInfo().drawUnitInformation(canvas, 425,30);
+	_scoutManager.drawScoutInformation(canvas, 200, 320);
 	_productionManager.drawProductionInformation(canvas, 30, 50);
 	_combatCommander.drawSquadInformation(canvas, 200, 30);
     

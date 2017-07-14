@@ -52,6 +52,7 @@ public:
     const BaseLocationManager & Bases() const;
     const MapTools & Map() const;
 	AKBot::ScreenCanvas& getCanvas();
+	const AKBot::OpponentView& getOpponentView() const  { return _opponentView; };
 };
 
 }

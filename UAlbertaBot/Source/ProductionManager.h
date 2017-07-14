@@ -6,6 +6,7 @@
 #include "StrategyManager.h"
 #include "BOSSManager.h"
 #include "BuildOrder.h"
+#include "StrategyManager.h"
 
 namespace UAlbertaBot
 {
@@ -20,6 +21,7 @@ class ProductionManager
     bool                _enemyCloakedDetected;
     bool                _assignedWorkerForThisBuilding;
     bool                _haveLocationForThisBuilding;
+	const StrategyManager& _strategyManager;
     
     BWAPI::Unit         getClosestUnitToPosition(const std::vector<BWAPI::Unit> & units,BWAPI::Position closestTo);
     BWAPI::Unit         selectUnitOfType(BWAPI::UnitType type,BWAPI::Position closestTo = BWAPI::Position(0,0));
@@ -40,7 +42,7 @@ class ProductionManager
 
 public:
     
-    ProductionManager(BOSSManager & bossManager);
+    ProductionManager(BOSSManager & bossManager, const StrategyManager& strategyManager);
     
     void        onStart();
     void        update();

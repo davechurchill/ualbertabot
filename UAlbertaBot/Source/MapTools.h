@@ -36,8 +36,11 @@ public:
 
     MapTools(int width, int height);
 
+	const size_t getWidth() const { return _width; };
+	const size_t getHeight() const { return _height; };
+
     void                    onStart();
-    void                    update();
+    void                    update(int currentFrame);
     void                    parseMap();
     
     const DistanceMap &     getDistanceMap(const BWAPI::Position & pos) const;

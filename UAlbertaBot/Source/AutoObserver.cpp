@@ -11,9 +11,9 @@ AutoObserver::AutoObserver()
 
 }
 
-void AutoObserver::onFrame()
+void AutoObserver::onFrame(int currentFrame)
 {
-    bool pickUnitToFollow = !_observerFollowingUnit || !_observerFollowingUnit->exists() || (BWAPI::Broodwar->getFrameCount() - _cameraLastMoved > _unitFollowFrames);
+    bool pickUnitToFollow = !_observerFollowingUnit || !_observerFollowingUnit->exists() || (currentFrame - _cameraLastMoved > _unitFollowFrames);
 
     if (pickUnitToFollow)
     {
@@ -21,7 +21,7 @@ void AutoObserver::onFrame()
 	    {
 		    if (unit->isUnderAttack() || unit->isAttacking() || unit->getGroundWeaponCooldown() > 0)
 		    {
-			    _cameraLastMoved = BWAPI::Broodwar->getFrameCount();
+			    _cameraLastMoved = currentFrame;
                 _unitFollowFrames = 6;
                 _observerFollowingUnit = unit;
                 pickUnitToFollow = false;
@@ -51,7 +51,7 @@ void AutoObserver::onFrame()
 	    {
 		    if (Global::Workers().isWorkerScout(unit))
 		    {
-			    _cameraLastMoved = BWAPI::Broodwar->getFrameCount();
+			    _cameraLastMoved = currentFrame;
                 _unitFollowFrames = 6;
                 _observerFollowingUnit = unit;
                 pickUnitToFollow = false;

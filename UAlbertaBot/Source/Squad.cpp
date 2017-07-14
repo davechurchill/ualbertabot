@@ -4,13 +4,14 @@
 
 using namespace UAlbertaBot;
 
-Squad::Squad(const std::string & name, SquadOrder order, size_t priority, AKBot::PlayerLocationProvider& locationProvider)
+Squad::Squad(const std::string & name, SquadOrder order, size_t priority, AKBot::PlayerLocationProvider& locationProvider, const AKBot::OpponentView& opponentView)
 	: _name(name)
 	, _order(order)
     , _lastRetreatSwitch(0)
     , _lastRetreatSwitchVal(false)
     , _priority(priority)
 	, _transportManager(locationProvider)
+	, _opponentView(opponentView)
 {
 }
 
@@ -25,7 +26,7 @@ void Squad::update(const MapTools& map)
 	updateUnits();
 
 	// determine whether or not we should regroup
-	bool needToRegroup = needsToRegroup();
+	bool needToRegroup = needsToRegroup(map);
     
 	// draw some debug info
 	auto distanceFunction = [&map](const BWAPI::Position & src, const BWAPI::Position & dest)
@@ -189,7 +190,7 @@ void Squad::addUnitsToMicroManagers()
 }
 
 // calculates whether or not to regroup
-bool Squad::needsToRegroup()
+bool Squad::needsToRegroup(const MapTools& map)
 {
     if (!Config::Micro::UseSparcraftSimulation)
     {
@@ -203,9 +204,9 @@ bool Squad::needsToRegroup()
 		return false;
 	}
 
-	auto distanceFunction = [](const BWAPI::Position & src, const BWAPI::Position & dest)
+	auto distanceFunction = [&map](const BWAPI::Position & src, const BWAPI::Position & dest)
 	{
-		return Global::Map().getGroundDistance(src, dest);
+		return map.getGroundDistance(src, dest);
 	};
 	BWAPI::Unit unitClosest = unitClosestToEnemy(distanceFunction);
 
@@ -247,7 +248,7 @@ bool Squad::needsToRegroup()
     }
 
 	//do the SparCraft Simulation!
-	CombatSimulation sim;
+	CombatSimulation sim(_opponentView);
 	sim.setCombatUnits(unitClosest->getPosition(), Config::Micro::CombatRegroupRadius);
 	
     auto score = sim.simulateCombat();

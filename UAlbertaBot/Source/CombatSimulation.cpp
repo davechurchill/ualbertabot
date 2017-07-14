@@ -4,9 +4,9 @@
 
 using namespace UAlbertaBot;
 
-CombatSimulation::CombatSimulation()
+CombatSimulation::CombatSimulation(const AKBot::OpponentView& opponentView)
+	: _opponentView(opponentView)
 {
-	
 }
 
 // sets the starting states based on the combat units within a radius of a given position
@@ -21,7 +21,7 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
 	std::vector<UnitInfo> enemyCombatUnits;
 
 	Global::Map().GetUnitsInRadius(ourCombatUnits, center, Config::Micro::CombatRegroupRadius, true, false);
-	for (auto& enemyPlayer : BWAPI::Broodwar->enemies())
+	for (auto& enemyPlayer : _opponentView.enemies())
 	{
 		Global::UnitInfo().getNearbyForce(enemyCombatUnits, center, enemyPlayer, Config::Micro::CombatRegroupRadius);
 	}
@@ -182,7 +182,7 @@ const SparCraft::GameState & CombatSimulation::getSparCraftState() const
 
 const size_t CombatSimulation::getSparCraftPlayerID(BWAPI::Player player) const
 {
-	if (player == BWAPI::Broodwar->self())
+	if (player == _opponentView.self())
 	{
 		return SparCraft::Players::Player_One;
 	}

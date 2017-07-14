@@ -15,7 +15,7 @@ class AutoObserver
 public:
 
     AutoObserver();
-    void onFrame();
+    void onFrame(int currentFrame);
 };
 
 }

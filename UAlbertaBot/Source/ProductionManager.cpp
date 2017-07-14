@@ -4,12 +4,13 @@
 
 using namespace UAlbertaBot;
 
-ProductionManager::ProductionManager( BOSSManager & bossManager) 
+ProductionManager::ProductionManager(BOSSManager & bossManager, const StrategyManager& strategyManager)
 	: _bossManager(bossManager)
     , _buildingManager()
     , _assignedWorkerForThisBuilding (false)
 	, _haveLocationForThisBuilding   (false)
 	, _enemyCloakedDetected          (false)
+	, _strategyManager(strategyManager)
 {
     
 }
@@ -50,7 +51,7 @@ void ProductionManager::performBuildOrderSearch()
 
 const StrategyManager& ProductionManager::getStrategyManager() const
 {
-	return Global::Strategy();
+	return _strategyManager;
 }
 
 void ProductionManager::onStart()
@@ -82,6 +83,7 @@ void ProductionManager::update()
         {
 		    BWAPI::Broodwar->printf("Supply deadlock detected, building supply!");
         }
+
 		_queue.queueAsHighestPriority(MetaType(BWAPI::Broodwar->self()->getRace().getSupplyProvider()), true);
 	}
 

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "StrategyManager.h"
 #include "WorkerManager.h"
 #include "UnitInfoManager.h"
 #include "MapTools.h"
@@ -16,7 +15,6 @@ namespace Global
     void SetModule(UAlbertaBot_Tournament * module);
         
     const BaseLocationManager & Bases();
-    const StrategyManager & Strategy();
     WorkerManager & Workers();
     const UnitInfoManager & UnitInfo();
     const MapTools & Map();

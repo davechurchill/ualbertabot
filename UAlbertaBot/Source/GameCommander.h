@@ -6,6 +6,7 @@
 #include "ScoutManager.h"
 #include "Timer.hpp"
 #include "ScreenCanvas.h"
+#include "BWAPIOpponentView.h"
 
 namespace UAlbertaBot
 {
@@ -20,6 +21,7 @@ class GameCommander
     ProductionManager           _productionManager;
     ScoutManager                _scoutManager;
     UAlbertaBot_Tournament &     _module;
+	const AKBot::OpponentView&	_opponentView;
 
     std::vector<BWAPI::Unit>    _validUnits;
     std::vector<BWAPI::Unit>    _combatUnits;
@@ -32,7 +34,7 @@ class GameCommander
 
 public:
 
-    GameCommander(UAlbertaBot_Tournament & uabModule);
+    GameCommander(UAlbertaBot_Tournament & uabModule, const AKBot::OpponentView& opponentView);
 
     void onStart();
     void update();

@@ -11,6 +11,8 @@
 #include "TankManager.h"
 #include "MedicManager.h"
 #include "UnitHandler.h"
+#include "MapTools.h"
+#include "OpponentView.h"
 
 namespace UAlbertaBot
 {
@@ -25,6 +27,7 @@ class Squad
     bool                _lastRetreatSwitchVal;
     size_t              _priority;
 	UnitHandler			_onRemoveHandler;
+	const AKBot::OpponentView& _opponentView;
 	
 	SquadOrder          _order;
 	MeleeManager        _meleeManager;
@@ -44,12 +47,12 @@ class Squad
 	void                        setAllUnits();
 	
 	bool                        unitNearEnemy(BWAPI::Unit unit);
-	bool                        needsToRegroup();
+	bool                        needsToRegroup(const MapTools& map);
 	int                         squadUnitsNear(BWAPI::Position p);
 
 public:
 
-	Squad(const std::string & name, SquadOrder order, size_t priority, AKBot::PlayerLocationProvider& locationProvider);
+	Squad(const std::string & name, SquadOrder order, size_t priority, AKBot::PlayerLocationProvider& locationProvider, const AKBot::OpponentView& opponentView);
     ~Squad();
 
 	void                update(const MapTools& map);

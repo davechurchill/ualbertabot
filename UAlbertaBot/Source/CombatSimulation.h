@@ -11,16 +11,18 @@
 #include "..\..\SparCraft\source\Unit.h"
 #include "..\..\SparCraft\source\AllPlayers.h"
 #include "UnitData.h"
+#include "OpponentView.h"
 
 namespace UAlbertaBot
 {
 class CombatSimulation
 {
 	SparCraft::GameState		_state;
+	const AKBot::OpponentView& _opponentView;
 
 public:
 
-	CombatSimulation();
+	CombatSimulation(const AKBot::OpponentView& opponentView);
 
 	void setCombatUnits(const BWAPI::Position & center, const int radius);
 

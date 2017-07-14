@@ -10,11 +10,6 @@ void Global::SetModule(UAlbertaBot_Tournament * module)
     uabModule = module;
 }
 
-const StrategyManager & Global::Strategy()
-{
-    return uabModule->Strategy();
-}
-
 const BaseLocationManager & Global::Bases()
 {
     return uabModule->Bases();

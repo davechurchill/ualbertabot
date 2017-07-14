@@ -328,5 +328,8 @@
     <ClInclude Include="..\Source\DefaultPlayerLocationProvider.h">
       <Filter>map</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\Strategy.h">
+      <Filter>global</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

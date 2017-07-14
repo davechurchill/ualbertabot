@@ -11,11 +11,12 @@ const size_t BaseDefensePriority = 2;
 const size_t ScoutDefensePriority = 3;
 const size_t DropPriority = 4;
 
-CombatCommander::CombatCommander(const BaseLocationManager & baseLocationManager)
+CombatCommander::CombatCommander(const BaseLocationManager & baseLocationManager, const AKBot::OpponentView& opponentView)
     : _initialized(false)
 	, _baseLocationManager(baseLocationManager)
 	, _playerLocationProvider(baseLocationManager)
-	, _squadData(_playerLocationProvider)
+	, _squadData(_playerLocationProvider, opponentView)
+	, _opponentView(opponentView)
 {
 	_squadData.onUnitRemoved([](const BWAPI::Unit& unit)
 	{
@@ -458,7 +459,7 @@ BWAPI::Unit CombatCommander::findClosestDefender(const Squad & defenseSquad, BWA
 
 BWAPI::Position CombatCommander::getDefendLocation()
 {
-	return _baseLocationManager.getPlayerStartingBaseLocation(BWAPI::Broodwar->self())->getPosition();
+	return _baseLocationManager.getPlayerStartingBaseLocation(_opponentView.self())->getPosition();
 }
 
 void CombatCommander::drawSquadInformation(AKBot::ScreenCanvas& canvas, int x, int y)
@@ -469,7 +470,7 @@ void CombatCommander::drawSquadInformation(AKBot::ScreenCanvas& canvas, int x, i
 BWAPI::Position CombatCommander::getMainAttackLocation()
 {
     // First choice: Attack an enemy region if we can see units inside it
-	for (auto& enemyPlayer : BWAPI::Broodwar->enemies())
+	for (auto& enemyPlayer : _opponentView.enemies())
 	{
 		const BaseLocation * enemyBaseLocation = _baseLocationManager.getPlayerStartingBaseLocation(enemyPlayer);
 		if (enemyBaseLocation)
@@ -498,7 +499,7 @@ BWAPI::Position CombatCommander::getMainAttackLocation()
 	}
 
     // Second choice: Attack known enemy buildings
-	for (auto& enemyPlayer : BWAPI::Broodwar->enemies())
+	for (auto& enemyPlayer : _opponentView.enemies())
 	{
 		for (const auto & kv : Global::UnitInfo().getUnitInfoMap(enemyPlayer))
 		{

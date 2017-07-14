@@ -8,9 +8,9 @@
 using namespace UAlbertaBot;
 
 UAlbertaBot_Tournament::UAlbertaBot_Tournament(const AKBot::OpponentView& opponentView)
-	: _gameCommander(*this)
+	: _opponentView(opponentView)
+	, _gameCommander(*this, opponentView)
 	, _mapTools(BWAPI::Broodwar->mapWidth(), BWAPI::Broodwar->mapHeight())
-	, _opponentView(opponentView)
 	, _baseLocationManager(opponentView)
 {
 	// parse the configuration file for the bot's strategies
@@ -131,8 +131,10 @@ AKBot::ScreenCanvas & UAlbertaBot::UAlbertaBot_Tournament::getCanvas()
 
 void UAlbertaBot_Tournament::onFrame()
 {
+	auto currentFrame = BWAPI::Broodwar->getFrameCount();
+
     // update all of the internal information managers
-    _mapTools.update();
+    _mapTools.update(currentFrame);
 	if (Config::Debug::DrawLastSeenTileInfo)
 	{
 		_mapTools.drawLastSeen(_canvas, _baseLocationManager);
@@ -143,16 +145,20 @@ void UAlbertaBot_Tournament::onFrame()
     _workerManager.update(_canvas);
     _baseLocationManager.update(_unitInfoManager);
 
+    // update the game commander
+	_gameCommander.update();
+
+	// Draw debug information
 	// draw the debug information for each base location
 	_baseLocationManager.drawBaseLocations(_canvas);
-
-    // update the game commander
-	_gameCommander.update(); 
+	
+	_unitInfoManager.drawExtendedInterface(_canvas);
+	_unitInfoManager.drawUnitInformation(_canvas, 425, 30);
+	_gameCommander.drawDebugInterface(_canvas);
   
-
     if (Config::Modules::UsingAutoObserver)
     {
-        _autoObserver.onFrame();
+        _autoObserver.onFrame(currentFrame);
     }
 
     drawErrorMessages();

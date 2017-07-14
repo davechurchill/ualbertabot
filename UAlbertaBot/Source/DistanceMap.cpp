@@ -15,14 +15,13 @@ DistanceMap::DistanceMap()
 
 }
 
-DistanceMap::DistanceMap(const BWAPI::TilePosition & startTile) 
-    : _width    (BWAPI::Broodwar->mapWidth())
-    , _height   (BWAPI::Broodwar->mapHeight())
+DistanceMap::DistanceMap(const BWAPI::TilePosition & startTile, int width, int height, TileCheckFunc isWalkable)
+    : _width    (width)
+    , _height   (height)
     , _startTile(startTile)
-    , _dist     (BWAPI::Broodwar->mapWidth(), std::vector<int>(BWAPI::Broodwar->mapHeight(), -1))
+	, _isWalkable(isWalkable)
+    , _dist     (width, std::vector<int>(height, -1))
 {
-	auto& map = Global::Map();
-	auto isWalkable = [&map](const BWAPI::TilePosition& tile) { return map.isWalkable(tile); };
 	computeDistanceMap(_startTile, isWalkable);
     _sortedTilePositions.reserve(_width * _height);
 }
@@ -50,7 +49,7 @@ const std::vector<BWAPI::TilePosition> & DistanceMap::getSortedTiles() const
 
 // Computes _dist[x][y] = ground distance from (startX, startY) to (x,y)
 // Uses BFS, since the map is quite large and DFS may cause a stack overflow
-void DistanceMap::computeDistanceMap(const BWAPI::TilePosition & startTile, std::function<bool(BWAPI::TilePosition)> isWalkable)
+void DistanceMap::computeDistanceMap(const BWAPI::TilePosition & startTile, TileCheckFunc isWalkable)
 {
     // the fringe for the BFS we will perform to calculate distances
     std::vector<BWAPI::TilePosition> fringe;

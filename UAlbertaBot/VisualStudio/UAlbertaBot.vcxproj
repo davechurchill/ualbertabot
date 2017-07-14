@@ -99,6 +99,7 @@
     <ClInclude Include="..\Source\OpponentView.h" />
     <ClInclude Include="..\Source\PlayerLocationProvider.h" />
     <ClInclude Include="..\Source\ScreenCanvas.h" />
+    <ClInclude Include="..\Source\Strategy.h" />
     <ClInclude Include="..\Source\UAlbertaBot_Arena.h" />
     <ClInclude Include="..\Source\UAlbertaBot_Tournament.h" />
     <ClInclude Include="..\Source\UnitHandler.h" />

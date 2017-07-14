@@ -2,7 +2,8 @@
 #include "rapidjson\document.h"
 #include "JSONTools.h"
 #include "BuildOrder.h"
-#include "Global.h"
+#include "StrategyManager.h"
+#include <BWAPI.h>
 
 using namespace UAlbertaBot;
 

@@ -31,7 +31,7 @@ void MapTools::onStart()
     
 }
 
-void MapTools::update()
+void MapTools::update(int currentFrame)
 {
     // update all the tiles that we see this frame
 	for (size_t x = 0; x < _width; ++x)
@@ -40,7 +40,7 @@ void MapTools::update()
 		{
 			if (BWAPI::Broodwar->isVisible(BWAPI::TilePosition(x, y)))
 			{
-				_lastSeen[x][y] = BWAPI::Broodwar->getFrameCount();
+				_lastSeen[x][y] = currentFrame;
 			}
 		}
 	}
@@ -227,9 +227,13 @@ int MapTools::getGroundDistance(const BWAPI::Position & src, const BWAPI::Positi
 
 const DistanceMap & MapTools::getDistanceMap(const BWAPI::TilePosition & tile) const
 {
-    if (_allMaps.find(tile) == _allMaps.end())
+	auto isWalkable = [this](const BWAPI::TilePosition& tile)
+	{ 
+		return this->isWalkable(tile);
+	};
+	if (_allMaps.find(tile) == _allMaps.end())
     {
-        _allMaps[tile] = DistanceMap(tile);
+        _allMaps[tile] = DistanceMap(tile, _width, _height, isWalkable);
     }
 
     return _allMaps[tile];
@@ -270,9 +274,9 @@ void MapTools::drawLastSeen(AKBot::ScreenCanvas& canvas, const BaseLocationManag
     BWAPI::TilePosition mTile(mPos);
 
     int xStart  = std::max(mTile.x - size, 0);
-    int xEnd    = std::min(mTile.x + size, BWAPI::Broodwar->mapWidth());
+    int xEnd    = std::min(mTile.x + size, (int)_width);
     int yStart  = std::max(mTile.y - size, 0);
-    int yEnd    = std::min(mTile.y + size, BWAPI::Broodwar->mapHeight());
+    int yEnd    = std::min(mTile.y + size, (int)_height);
 
     for (int x = xStart; x < xEnd; ++x)
     {
@@ -303,25 +307,25 @@ void MapTools::parseMap()
     std::string file = "c:\\scmaps\\" + BWAPI::Broodwar->mapName() + ".txt";
     mapFile.open(file.c_str());
 
-    mapFile << BWAPI::Broodwar->mapWidth()*4 << "\n";
-    mapFile << BWAPI::Broodwar->mapHeight()*4 << "\n";
+    mapFile << _width*4 << "\n";
+    mapFile << _height*4 << "\n";
 
-    for (int j=0; j<BWAPI::Broodwar->mapHeight()*4; j++) 
-    {
-        for (int i=0; i<BWAPI::Broodwar->mapWidth()*4; i++) 
-        {
-            if (BWAPI::Broodwar->isWalkable(i,j)) 
-            {
-                mapFile << "0";
-            }
-            else 
-            {
-                mapFile << "1";
-            }
-        }
+	for (int j = 0; j < _height * 4; j++)
+	{
+		for (int i = 0; i < _width * 4; i++)
+		{
+			if (BWAPI::Broodwar->isWalkable(i, j))
+			{
+				mapFile << "0";
+			}
+			else
+			{
+				mapFile << "1";
+			}
+		}
 
-        mapFile << "\n";
-    }
+		mapFile << "\n";
+	}
 
     BWAPI::Broodwar->printf(file.c_str());
 

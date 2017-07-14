@@ -4,8 +4,9 @@
 using namespace UAlbertaBot;
 using namespace AKBot;
 
-SquadData::SquadData(AKBot::PlayerLocationProvider& locationProvider)
+SquadData::SquadData(AKBot::PlayerLocationProvider& locationProvider, const AKBot::OpponentView& opponentView)
 	: _locationProvider(locationProvider)
+	, _opponentView(opponentView)
 {
 	
 }
@@ -67,7 +68,7 @@ void SquadData::addSquad(const std::string & squadName, Squad & squad)
 
 void SquadData::addSquad(const std::string & squadName, const SquadOrder & squadOrder, size_t priority)
 {
-	addSquad(squadName, Squad(squadName, squadOrder, priority, _locationProvider));
+	addSquad(squadName, Squad(squadName, squadOrder, priority, _locationProvider, _opponentView));
 }
 
 void SquadData::updateAllSquads(const MapTools& map)

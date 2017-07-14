@@ -5,6 +5,7 @@
 #include "SquadData.h"
 #include "BaseLocationManager.h"
 #include "DefaultPlayerLocationProvider.h"
+#include "OpponentView.h"
 
 namespace UAlbertaBot
 {
@@ -15,6 +16,7 @@ class CombatCommander
     bool            _initialized;
 	const BaseLocationManager & _baseLocationManager;
 	AKBot::DefaultPlayerLocationProvider _playerLocationProvider;
+	const AKBot::OpponentView& _opponentView;
 
     void            updateScoutDefenseSquad();
 	void            updateDefenseSquads();
@@ -45,7 +47,7 @@ class CombatCommander
 
 public:
 
-	CombatCommander(const BaseLocationManager & baseLocationManager);
+	CombatCommander(const BaseLocationManager & baseLocationManager, const AKBot::OpponentView& opponentView);
 
 	void update(const std::vector<BWAPI::Unit> & combatUnits);
     
