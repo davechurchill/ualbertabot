@@ -137,7 +137,7 @@ void BuildOrderQueue::removeCurrentHighestPriorityItem()
 	lowestPriority  = queue.empty() ? 0 : lowestPriority;
 }
 
-size_t BuildOrderQueue::size() 
+size_t BuildOrderQueue::size() const
 {
 	return queue.size();
 }
@@ -147,55 +147,12 @@ bool BuildOrderQueue::isEmpty()
 	return (queue.size() == 0);
 }
 
-BuildOrderItem BuildOrderQueue::operator [] (int i)
+BuildOrderItem BuildOrderQueue::operator [] (int i) const
 {
 	return queue[i];
 }
 
-void BuildOrderQueue::drawQueueInformation(AKBot::ScreenCanvas& canvas, int x, int y)
+BuildOrderItem BuildOrderQueue::operator [] (size_t i) const
 {
-	//x = x + 25;
-
-    if (!Config::Debug::DrawProductionInfo)
-    {
-        return;
-    }
-	
-	std::string prefix = "\x04";
-
-	size_t reps = queue.size() < 12 ? queue.size() : 12;
-
-	// for each unit in the queue
-	for (size_t i(0); i<reps; i++) {
-
-		prefix = "\x04";
-
-        const MetaType & type = queue[queue.size() - 1 - i].metaType;
-
-        if (type.isUnit())
-        {
-            if (type.getUnitType().isWorker())
-            {
-                prefix = "\x1F";
-            }
-            else if (type.getUnitType().supplyProvided() > 0)
-            {
-                prefix = "\x03";
-            }
-            else if (type.getUnitType().isRefinery())
-            {
-                prefix = "\x1E";
-            }
-            else if (type.isBuilding())
-            {
-                prefix = "\x11";
-            }
-            else if (type.getUnitType().groundWeapon() != BWAPI::WeaponTypes::None || type.getUnitType().airWeapon() != BWAPI::WeaponTypes::None)
-            {
-                prefix = "\x06";
-            }
-        }
-
-		canvas.drawTextScreen(x, y+(i*10), " %s%s", prefix.c_str(), type.getName().c_str());
-	}
+	return queue[i];
 }

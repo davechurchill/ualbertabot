@@ -4,6 +4,7 @@
 #include <BWAPI/Player.h>
 #include <BWAPI/TechType.h>
 #include <BWAPI/Unitset.h>
+#include "Micro.h"
 
 using namespace UAlbertaBot;
 

@@ -13,18 +13,13 @@ WorkerManager::WorkerManager()
     previousClosestWorker = nullptr;
 }
 
-void WorkerManager::update(AKBot::ScreenCanvas& canvas)
+void WorkerManager::update()
 {
 	updateWorkerStatus();
 	handleGasWorkers();
 	handleIdleWorkers();
 	handleMoveWorkers();
 	handleCombatWorkers();
-
-	drawResourceDebugInfo(canvas);
-	drawWorkerInformation(canvas, 450,20);
-
-	workerData.drawDepotDebugInfo(canvas);
 
     handleRepairWorkers();
 }
@@ -537,7 +532,6 @@ void WorkerManager::onUnitShow(BWAPI::Unit unit)
 	}
 }
 
-
 void WorkerManager::rebalanceWorkers()
 {
 	// for each worker
@@ -580,54 +574,6 @@ void WorkerManager::onUnitDestroy(BWAPI::Unit unit)
 	if (unit->getType() == BWAPI::UnitTypes::Resource_Mineral_Field)
 	{
 		rebalanceWorkers();
-	}
-}
-
-void WorkerManager::drawResourceDebugInfo(AKBot::ScreenCanvas& canvas)
-{
-    if (!Config::Debug::DrawResourceInfo)
-    {
-        return;
-    }
-
-	for (auto & worker : workerData.getWorkers()) 
-    {
-        UAB_ASSERT(worker != nullptr, "Worker was null");
-
-		char job = workerData.getJobCode(worker);
-
-		BWAPI::Position pos = worker->getTargetPosition();
-
-		canvas.drawTextMap(worker->getPosition().x, worker->getPosition().y - 5, "\x07%c", job);
-		canvas.drawLineMap(worker->getPosition().x, worker->getPosition().y, pos.x, pos.y, BWAPI::Colors::Cyan);
-
-		BWAPI::Unit depot = workerData.getWorkerDepot(worker);
-		if (depot)
-		{
-			canvas.drawLineMap(worker->getPosition().x, worker->getPosition().y, depot->getPosition().x, depot->getPosition().y, BWAPI::Colors::Orange);
-		}
-	}
-}
-
-void WorkerManager::drawWorkerInformation(AKBot::ScreenCanvas& canvas, int x, int y)
-{
-    if (!Config::Debug::DrawWorkerInfo)
-    {
-        return;
-    }
-
-	canvas.drawTextScreen(x, y, "\x04 Workers %d", workerData.getNumMineralWorkers());
-	canvas.drawTextScreen(x, y+20, "\x04 UnitID");
-	canvas.drawTextScreen(x+50, y+20, "\x04 State");
-
-	int yspace = 0;
-
-	for (auto & unit : workerData.getWorkers())
-	{
-        UAB_ASSERT(unit != nullptr, "Worker was null");
-
-		canvas.drawTextScreen(x, y+40+((yspace)*10), "\x03 %d", unit->getID());
-		canvas.drawTextScreen(x+50, y+40+((yspace++)*10), "\x03 %c", workerData.getJobCode(unit));
 	}
 }
 

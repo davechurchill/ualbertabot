@@ -39,9 +39,10 @@ class Squad
     MedicManager        _medicManager;
 
 	std::map<BWAPI::Unit, bool>	_nearEnemy;
+	BWAPI::Position _lastRegroupPosition;
+	bool			_needToRegroup;
 
 	BWAPI::Unit		unitClosestToEnemy(std::function<int(const BWAPI::Position & src, const BWAPI::Position & dest)> distance);
-    
 	void                        updateUnits();
 	void                        addUnitsToMicroManagers();
 	void                        setNearEnemyUnits();
@@ -56,7 +57,7 @@ public:
 	Squad(const std::string & name, SquadOrder order, size_t priority, AKBot::PlayerLocationProvider& locationProvider, const AKBot::OpponentView& opponentView, const UnitInfoManager& unitInfo, const BaseLocationManager& bases);
     ~Squad();
 
-	void                update(const MapTools& map, AKBot::ScreenCanvas& canvas);
+	void                update(const MapTools& map);
 	void                setSquadOrder(const SquadOrder & so);
 	void                addUnit(BWAPI::Unit u);
 	void                removeUnit(BWAPI::Unit u);
@@ -65,8 +66,18 @@ public:
     void                clear();
     size_t              getPriority() const;
     void                setPriority(const size_t & priority);
+
+	// Get name of the squad.
     const std::string & getName() const;
-    
+	const std::string& getRegroupStatus() const;
+	bool getNeedToRegroup() const;
+	const MeleeManager getMeleeManager() const { return _meleeManager; }
+	const RangedManager getRangedManager() const { return _rangedManager; }
+	const TankManager getTankManager() const { return _tankManager; }
+	const MedicManager getMedicManager() const { return _medicManager; }
+	const DetectorManager getDetectorManager() const { return _detectorManager; }
+	const TransportManager getTransportManager() const { return _transportManager; }
+
 	/*
 	 Calculate center of the squad.
 	*/
@@ -76,5 +87,7 @@ public:
 	const std::set<BWAPI::Unit> &  getUnits() const;
 	const SquadOrder &  getSquadOrder()	const;
 	void onUnitRemoved(UnitHandler handler);
+
+	BWAPI::Position getLastRegroupPosition() const { return _lastRegroupPosition; };
 };
 }

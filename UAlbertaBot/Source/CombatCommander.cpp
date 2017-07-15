@@ -58,7 +58,7 @@ bool CombatCommander::isSquadUpdateFrame()
 	return BWAPI::Broodwar->getFrameCount() % 10 == 0;
 }
 
-void CombatCommander::update(const std::vector<BWAPI::Unit> & combatUnits, AKBot::ScreenCanvas& canvas)
+void CombatCommander::update(const std::vector<BWAPI::Unit> & combatUnits)
 {
     if (!_initialized)
     {
@@ -76,7 +76,7 @@ void CombatCommander::update(const std::vector<BWAPI::Unit> & combatUnits, AKBot
 		updateAttackSquads();
 	}
 
-	_squadData.update(Global::Map(), canvas);
+	_squadData.update(Global::Map());
 }
 
 void CombatCommander::updateIdleSquad()
@@ -463,11 +463,6 @@ BWAPI::Position CombatCommander::getDefendLocation()
 	return _baseLocationManager.getPlayerStartingBaseLocation(_opponentView.self())->getPosition();
 }
 
-void CombatCommander::drawSquadInformation(AKBot::ScreenCanvas& canvas, int x, int y)
-{
-	_squadData.drawSquadInformation(canvas, x, y);
-}
-
 BWAPI::Position CombatCommander::getMainAttackLocation()
 {
     // First choice: Attack an enemy region if we can see units inside it
@@ -634,4 +629,9 @@ bool CombatCommander::beingBuildingRushed()
     }
 
     return false;
+}
+
+const SquadData& CombatCommander::getSquadData() const
+{
+	return _squadData;
 }

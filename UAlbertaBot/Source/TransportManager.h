@@ -39,6 +39,6 @@ public:
 	void							setTransportShip(BWAPI::UnitInterface * unit);
 	void							setFrom(BWAPI::Position from);
 	void							setTo(BWAPI::Position to);
-	void							drawTransportInformation(AKBot::ScreenCanvas& canvas, int x, int y);
+	const std::vector<BWAPI::Position>& getMapEdgeVertices() const { return _mapEdgeVertices; }
 };
 }

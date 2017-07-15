@@ -4,13 +4,10 @@
 #include <vector>
 #include <BWAPI/Position.h>
 #include "DistanceMap.h"
-#include "BaseLocation.h"
-#include "ScreenCanvas.h"
+#include "BaseLocationManager.h"
 
 namespace UAlbertaBot
 {
-
-	class BaseLocationManager;
     
 class MapTools
 {
@@ -51,7 +48,6 @@ public:
     bool                    isConnected(const BWAPI::Position & from, const BWAPI::Position & to) const;
     bool                    isWalkable(const BWAPI::TilePosition & tile) const;
     bool                    isWalkable(const BWAPI::Position & pos) const;
-    void                    drawLastSeen(AKBot::ScreenCanvas& canvas, const BaseLocationManager & bases) const;
     BWAPI::Position         getLeastRecentlySeenPosition(const BaseLocationManager & bases) const;
     bool                    isBuildable(BWAPI::TilePosition tile, BWAPI::UnitType type) const;
     bool                    isBuildableTile(BWAPI::TilePosition tile) const;
@@ -68,6 +64,7 @@ public:
     // returns a list of all tiles on the map, sorted by 4-direcitonal walk distance from the given position
     const std::vector<BWAPI::TilePosition> & getClosestTilesTo(const BWAPI::TilePosition & tile) const;
     const std::vector<BWAPI::TilePosition> & getClosestTilesTo(BWAPI::Position pos) const;
+	int getLastSeen(int x, int y) const;
 };
 
 }

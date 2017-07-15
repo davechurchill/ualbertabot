@@ -35,38 +35,28 @@ BaseLocation::BaseLocation(const AKBot::OpponentView& opponentView, int baseID, 
     // add each of the resources to its corresponding container
     for (auto & resource : resources)
     {
-        if (resource->getType().isMineralField())
+		auto resourcePosition = resource->getPosition();
+		auto resourceType = resource->getType();
+		if (resourceType.isMineralField())
         {
             _minerals.push_back(resource);
-            _mineralPositions.push_back(resource->getPosition());
-
-            // add the position of the minerals to the center
-            resourceCenterX += resource->getPosition().x;
-            resourceCenterY += resource->getPosition().y;
+            _mineralPositions.push_back(resourcePosition);
         }
         else
         {
             _geysers.push_back(resource);
-            _geyserPositions.push_back(resource->getPosition());
-
-            // pull the resource center toward the geyser if it exists
-            resourceCenterX += resource->getPosition().x;
-            resourceCenterY += resource->getPosition().y;
+            _geyserPositions.push_back(resourcePosition);
         }
 
         // set the limits of the base location bounding box
-        _left   = std::min(_left,   resource->getPosition().x - resource->getType().dimensionLeft());
-        _right  = std::max(_right,  resource->getPosition().x + resource->getType().dimensionRight());
-        _top    = std::min(_top,    resource->getPosition().y - resource->getType().dimensionUp());
-        _bottom = std::max(_bottom, resource->getPosition().y + resource->getType().dimensionDown());
+		_left   = std::min(_left,   resourcePosition.x - resourceType.dimensionLeft());
+        _right  = std::max(_right,  resourcePosition.x + resourceType.dimensionRight());
+        _top    = std::min(_top,    resourcePosition.y - resourceType.dimensionUp());
+        _bottom = std::max(_bottom, resourcePosition.y + resourceType.dimensionDown());
     }
 
     // calculate the center of the resources
-    size_t numResources = _minerals.size() + _geysers.size();
-    //_resourceCenter = BWAPI::Position(resourceCenterX / numResources, resourceCenterY / numResources);
-
-    _centerOfResources = BWAPI::Position(_left + (_right-_left)/2, _top + (_bottom-_top)/2);
-
+	_centerOfResources = BWAPI::Position(_left + (_right - _left) / 2, _top + (_bottom - _top) / 2);
     UAB_ASSERT(_centerOfResources.isValid(), "Found an invalid resource center");
 
     // compute this BaseLocation's DistanceMap, which will compute the ground distance
@@ -179,89 +169,6 @@ bool BaseLocation::isStartLocation() const
     return _isStartLocation;
 }
 
-void BaseLocation::draw(AKBot::ScreenCanvas& canvas, std::function<bool(BWAPI::TilePosition tile)> isBuildableTile)
-{
-    canvas.drawCircleMap(_centerOfResources, 16, BWAPI::Colors::Yellow);
-
-    std::stringstream ss;
-    ss << "BaseLocation: " << _baseID << "\n";
-    ss << "Start Loc:    " << (isStartLocation() ? "true" : "false") << "\n";
-    ss << "Minerals:     " << _mineralPositions.size() << "\n";
-    ss << "Geysers:      " << _geyserPositions.size() << "\n";
-    ss << "Occupied By:  ";
-
-    if (isOccupiedByPlayer(_opponentView.self()))
-    {
-        ss << "Self ";
-    }
-
-	for (auto& enemy : _opponentView.enemies())
-	{
-		if (isOccupiedByPlayer(enemy))
-		{
-			ss << "Enemy " << enemy->getName() << " ";
-			break;
-		}
-	}
-
-    canvas.drawTextMap(_left, _top-60, ss.str().c_str());
-    canvas.drawTextMap(_left, _bottom, ss.str().c_str());
-
-    // draw the base bounding box
-    canvas.drawBoxMap(_left, _top, _right, _bottom, BWAPI::Colors::White, false);
-    BWAPI::Position mDiag(BWAPI::UnitTypes::Resource_Mineral_Field.dimensionLeft(),
-                          BWAPI::UnitTypes::Resource_Mineral_Field.dimensionDown());
-    BWAPI::Position gDiag(BWAPI::UnitTypes::Resource_Vespene_Geyser.dimensionLeft(),
-                          BWAPI::UnitTypes::Resource_Vespene_Geyser.dimensionDown());
-    for (auto & mineralPos : _mineralPositions)
-    {
-        canvas.drawBoxMap(mineralPos - mDiag, mineralPos + mDiag, BWAPI::Colors::Cyan, false);
-        //canvas.drawLineMap(mineralPos, _resourceCenter, BWAPI::Colors::Cyan);
-    }
-
-    for (auto & geyserPos : _geyserPositions)
-    {
-        canvas.drawBoxMap(geyserPos - gDiag, geyserPos + gDiag, BWAPI::Colors::Green, false);
-        //canvas.drawLineMap(geyserPos, _resourceCenter, BWAPI::Colors::Green);
-    }
-
-    if (_isStartLocation)
-    {
-        canvas.drawCircleMap(_position, 10, BWAPI::Colors::Red, true);
-    }
-
-    auto & closestTiles = getClosestTiles();
-    if (false) for (size_t i=0; i<200 && i < closestTiles.size(); ++i)
-    {
-        const BWAPI::TilePosition & tile = closestTiles[i];
-
-        BWAPI::Position pos = BWAPI::Position(tile) + BWAPI::Position(16,16);
-
-        if (!pos.isValid())
-        {
-            continue;
-        }
-
-        BWAPI::Color color = isBuildableTile(tile) ? BWAPI::Colors::Green : BWAPI::Colors::Red;
-        if (isBuildableTile(tile) && !Global::Map().isDepotBuildableTile(tile))
-        {
-            color = BWAPI::Colors::Blue;
-        }
-
-		if (Global::Map().isBuildable(tile, BWAPI::UnitTypes::Terran_Command_Center))
-        {
-            color = BWAPI::Colors::Purple;
-        }
-
-        canvas.drawCircleMap(pos, 5, color, false);
-        canvas.drawTextMap(pos, "%d", getGroundTileDistance(pos));
-    }
-
-    int ccWidth = BWAPI::UnitTypes::Terran_Command_Center.tileWidth() * 32;
-    int ccHeight = BWAPI::UnitTypes::Terran_Command_Center.tileHeight() * 32;
-    canvas.drawBoxMap(_position, _position + BWAPI::Position(ccWidth, ccHeight), BWAPI::Colors::Red, false);
-}
-
 const BWAPI::TilePosition & BaseLocation::getDepotTilePosition() const
 {
     return _depotTile;
@@ -270,4 +177,14 @@ const BWAPI::TilePosition & BaseLocation::getDepotTilePosition() const
 bool BaseLocation::isMineralOnly() const
 {
     return getGeysers().empty();
+}
+
+const std::vector<BWAPI::Position>& BaseLocation::getMineralPositions() const
+{
+	return _mineralPositions;
+}
+
+const std::vector<BWAPI::Position>& BaseLocation::getGeyserPositions() const
+{
+	return _geyserPositions;
 }

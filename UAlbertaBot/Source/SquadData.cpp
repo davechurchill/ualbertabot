@@ -13,9 +13,9 @@ SquadData::SquadData(AKBot::PlayerLocationProvider& locationProvider, const AKBo
 	
 }
 
-void SquadData::update(const MapTools& map, AKBot::ScreenCanvas& canvas)
+void SquadData::update(const MapTools& map)
 {
-	updateAllSquads(map, canvas);
+	updateAllSquads(map);
     verifySquadUniqueMembership();
 }
 
@@ -73,47 +73,12 @@ void SquadData::addSquad(const std::string & squadName, const SquadOrder & squad
 	addSquad(squadName, Squad(squadName, squadOrder, priority, _locationProvider, _opponentView, _unitInfo, _bases));
 }
 
-void SquadData::updateAllSquads(const MapTools& map, AKBot::ScreenCanvas& canvas)
+void SquadData::updateAllSquads(const MapTools& map)
 {
 	for (auto & kv : _squads)
 	{
-		kv.second.update(map, canvas);
-	}
-}
-
-void SquadData::drawSquadInformation(AKBot::ScreenCanvas& canvas, int x, int y)
-{
-    if (!Config::Debug::DrawSquadInfo)
-    {
-        return;
-    }
-
-	canvas.drawTextScreen(x, y, "\x04Squads");
-	canvas.drawTextScreen(x, y+20, "\x04NAME");
-	canvas.drawTextScreen(x+150, y+20, "\x04SIZE");
-	canvas.drawTextScreen(x+200, y+20, "\x04LOCATION");
-
-	int yspace = 0;
-
-	for (auto & kv : _squads) 
-	{
-        const Squad & squad = kv.second;
-
-		auto & units = squad.getUnits();
-		const SquadOrder & order = squad.getSquadOrder();
-
-		canvas.drawTextScreen(x, y+40+((yspace)*10), "\x03%s", squad.getName().c_str());
-		canvas.drawTextScreen(x+150, y+40+((yspace)*10), "\x03%d", units.size());
-		canvas.drawTextScreen(x+200, y+40+((yspace++)*10), "\x03(%d,%d)", order.getPosition().x, order.getPosition().y);
-
-		canvas.drawCircleMap(order.getPosition(), 10, BWAPI::Colors::Green, true);
-        canvas.drawCircleMap(order.getPosition(), order.getRadius(), BWAPI::Colors::Red, false);
-        canvas.drawTextMap(order.getPosition() + BWAPI::Position(0, 12), "%s", squad.getName().c_str());
-
-        for (const BWAPI::Unit unit : units)
-        {
-            canvas.drawTextMap(unit->getPosition() + BWAPI::Position(0, 10), "%s", squad.getName().c_str());
-        }
+		auto& squad = kv.second;
+		squad.update(map);
 	}
 }
 

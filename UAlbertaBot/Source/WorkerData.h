@@ -3,7 +3,6 @@
 #include "Common.h"
 #include <BWAPI/Unit.h>
 #include <BWAPI/UnitType.h>
-#include "ScreenCanvas.h"
 
 namespace UAlbertaBot
 {
@@ -67,13 +66,12 @@ public:
     void    setWorkerJob(BWAPI::Unit unit,WorkerJob job,WorkerMoveData wmd);
     void    setWorkerJob(BWAPI::Unit unit,WorkerJob job,BWAPI::UnitType jobUnitType);
     void    addToMineralPatch(BWAPI::Unit unit,int num);
-    void    drawDepotDebugInfo(AKBot::ScreenCanvas& canvas);
 
     int     getNumWorkers() const;
     int     getNumMineralWorkers() const;
     int     getNumGasWorkers() const;
     int     getNumIdleWorkers() const;
-    char    getJobCode(BWAPI::Unit unit);
+    char    getJobCode(BWAPI::Unit unit) const;
 
     void    getMineralWorkers(std::set<BWAPI::Unit> & mw);
     void    getGasWorkers(std::set<BWAPI::Unit> & mw);
@@ -83,7 +81,7 @@ public:
     bool    depotIsFull(BWAPI::Unit depot);
     int     getMineralsNearDepot(BWAPI::Unit depot);
 
-    int     getNumAssignedWorkers(BWAPI::Unit unit);
+    int     getNumAssignedWorkers(BWAPI::Unit unit) const;
     BWAPI::Unit getMineralToMine(BWAPI::Unit worker);
 
     enum WorkerJob  getWorkerJob(BWAPI::Unit unit) const;
@@ -93,9 +91,10 @@ public:
     BWAPI::UnitType getWorkerBuildingType(BWAPI::Unit unit) const;
     WorkerMoveData  getWorkerMoveData(BWAPI::Unit unit) const;
 
-    std::vector<BWAPI::Unit>    getMineralPatchesNearDepot(BWAPI::Unit depot);
+    std::vector<BWAPI::Unit>    getMineralPatchesNearDepot(BWAPI::Unit depot) const;
 
     const std::set<BWAPI::Unit> & getWorkers() const;
-
+	const std::set<BWAPI::Unit>& getDepots() const;
+	const std::map<BWAPI::Unit, int>& getWorkersOnMineralPatch() const;
 };
 }

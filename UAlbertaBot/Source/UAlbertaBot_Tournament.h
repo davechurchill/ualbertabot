@@ -28,7 +28,7 @@ class UAlbertaBot_Tournament : public BotModule
 	const AKBot::OpponentView& _opponentView;
 
     void drawErrorMessages() const;
-
+	void drawDebugInformation(AKBot::ScreenCanvas& _canvas);
 public:
 
     UAlbertaBot_Tournament(const AKBot::OpponentView& opponentView);

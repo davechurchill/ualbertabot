@@ -265,10 +265,12 @@ int WorkerData::getNumIdleWorkers() const
 
 enum WorkerData::WorkerJob WorkerData::getWorkerJob(BWAPI::Unit unit) const
 {
-    if (!unit || _workerJobMap.size() == 0) { return Default; }
+    if (!unit || _workerJobMap.size() == 0) 
+	{ 
+		return Default; 
+	}
 
     auto it = _workerJobMap.find(unit);
-
     if (it != _workerJobMap.end())
     {
         return it->second;
@@ -279,9 +281,17 @@ enum WorkerData::WorkerJob WorkerData::getWorkerJob(BWAPI::Unit unit) const
 
 bool WorkerData::depotIsFull(BWAPI::Unit depot)
 {
-    if (!depot) { return false; }
+    if (!depot) 
+	{ 
+		return false; 
+	}
 
     int assignedWorkers = getNumAssignedWorkers(depot);
+	if (assignedWorkers == 0 && depot->getType().isRefinery())
+	{
+		_refineryWorkerCount[depot] = 0;
+	}
+
     int mineralsNearDepot = getMineralsNearDepot(depot);
 
     if (assignedWorkers >= mineralsNearDepot * 3)
@@ -294,7 +304,7 @@ bool WorkerData::depotIsFull(BWAPI::Unit depot)
     }
 }
 
-std::vector<BWAPI::Unit> WorkerData::getMineralPatchesNearDepot(BWAPI::Unit depot)
+std::vector<BWAPI::Unit> WorkerData::getMineralPatchesNearDepot(BWAPI::Unit depot) const
 {
     // if there are minerals near the depot, add them to the set
     std::vector<BWAPI::Unit> mineralsNearDepot;
@@ -459,9 +469,12 @@ WorkerMoveData WorkerData::getWorkerMoveData(BWAPI::Unit unit) const
     return (it->second);
 }
 
-int WorkerData::getNumAssignedWorkers(BWAPI::Unit unit)
+int WorkerData::getNumAssignedWorkers(BWAPI::Unit unit) const
 {
-    if (!unit) { return 0; }
+    if (!unit)
+	{ 
+		return 0;
+	}
 
     if (unit->getType().isResourceDepot())
     {
@@ -482,18 +495,13 @@ int WorkerData::getNumAssignedWorkers(BWAPI::Unit unit)
         {
             return it->second;
         }
-        // otherwise, we are only calling this on completed refineries, so set it
-        else
-        {
-            _refineryWorkerCount[unit] = 0;
-        }
     }
 
     // when all else fails, return 0
     return 0;
 }
 
-char WorkerData::getJobCode(BWAPI::Unit unit)
+char WorkerData::getJobCode(BWAPI::Unit unit) const
 {
     if (!unit) { return 'X'; }
 
@@ -511,40 +519,17 @@ char WorkerData::getJobCode(BWAPI::Unit unit)
     return 'X';
 }
 
-void WorkerData::drawDepotDebugInfo(AKBot::ScreenCanvas& canvas)
-{
-    for (auto & depot : _depots)
-    {
-        int x = depot->getPosition().x - 64;
-        int y = depot->getPosition().y - 32;
-
-		if (Config::Debug::DrawWorkerInfo)
-		{
-			canvas.drawBoxMap(x - 2, y - 1, x + 75, y + 14, BWAPI::Colors::Black, true);
-		}
-
-		if (Config::Debug::DrawWorkerInfo)
-		{
-			canvas.drawTextMap(x, y, "\x04 Workers: %d", getNumAssignedWorkers(depot));
-		}
-
-        std::vector<BWAPI::Unit> minerals = getMineralPatchesNearDepot(depot);
-
-        for (auto & mineral : minerals)
-        {
-            int x = mineral->getPosition().x;
-            int y = mineral->getPosition().y;
-
-            if (_workersOnMineralPatch.find(mineral) != _workersOnMineralPatch.end())
-            {
-                //if (Config::Debug::DRAW_UALBERTABOT_DEBUG) canvas.drawBoxMap(x-2, y-1, x+75, y+14, BWAPI::Colors::Black, true);
-                //if (Config::Debug::DRAW_UALBERTABOT_DEBUG) canvas.drawTextMap(x, y, "\x04 Workers: %d", workersOnMineralPatch[mineral]);
-            }
-        }
-    }
-}
-
 const std::set<BWAPI::Unit> & WorkerData::getWorkers() const
 {
     return _workers;
+}
+
+const std::set<BWAPI::Unit> & WorkerData::getDepots() const
+{
+	return _depots;
+}
+
+const std::map<BWAPI::Unit, int>& WorkerData::getWorkersOnMineralPatch() const
+{
+	return _workersOnMineralPatch;
 }

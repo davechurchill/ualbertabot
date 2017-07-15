@@ -1,5 +1,6 @@
 #include "TransportManager.h"
 #include "Global.h"
+#include "Micro.h"
 
 using namespace UAlbertaBot;
 
@@ -97,24 +98,6 @@ void TransportManager::calculateMapEdgeVertices()
 	}
     
 	_mapEdgeVertices = sortedVertices;
-}
-
-void TransportManager::drawTransportInformation(AKBot::ScreenCanvas& canvas, int x = 0, int y = 0)
-{
-	if (!Config::Debug::DrawUnitTargetInfo)
-	{
-		return;
-	}
-
-	if (x && y)
-	{
-		//canvas.drawTextScreen(x, y, "ScoutInfo: %s", _scoutStatus.c_str());
-	}
-	for (size_t i(0); i < _mapEdgeVertices.size(); ++i)
-	{
-		canvas.drawCircleMap(_mapEdgeVertices[i], 4, BWAPI::Colors::Green, false);
-		canvas.drawTextMap(_mapEdgeVertices[i], "%d", i);
-	}
 }
 
 void TransportManager::update()

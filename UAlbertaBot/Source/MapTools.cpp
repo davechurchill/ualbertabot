@@ -255,51 +255,6 @@ const std::vector<BWAPI::TilePosition> & MapTools::getClosestTilesTo(BWAPI::Posi
     return getClosestTilesTo(BWAPI::TilePosition(pos));
 }
 
-void MapTools::drawLastSeen(AKBot::ScreenCanvas& canvas, const BaseLocationManager & bases) const
-{
-    bool rMouseState = BWAPI::Broodwar->getMouseState(BWAPI::MouseButton::M_RIGHT);
-    if (!rMouseState)
-    {
-        return;
-    }
-
-    // draw the least recently seen position tile as a yellow circle on the map
-    BWAPI::Position lrsp = getLeastRecentlySeenPosition(bases);
-    canvas.drawCircleMap(lrsp, 32, BWAPI::Colors::Yellow, true);
-
-
-    int size = 4;
-    BWAPI::Position homePosition(BWAPI::Broodwar->self()->getStartLocation());
-    BWAPI::Position mPos = BWAPI::Broodwar->getMousePosition() + BWAPI::Broodwar->getScreenPosition();
-    BWAPI::TilePosition mTile(mPos);
-
-    int xStart  = std::max(mTile.x - size, 0);
-    int xEnd    = std::min(mTile.x + size, (int)_width);
-    int yStart  = std::max(mTile.y - size, 0);
-    int yEnd    = std::min(mTile.y + size, (int)_height);
-
-    for (int x = xStart; x < xEnd; ++x)
-    {
-        for (int y = yStart; y < yEnd; ++y)
-        {
-            BWAPI::Position pos(x*32, y*32);
-            BWAPI::Position diag(32, 32);
-            int homeDist = getGroundDistance(pos, homePosition);
-
-            BWAPI::Color boxColor = BWAPI::Colors::Green;
-            if (!BWAPI::Broodwar->isBuildable(BWAPI::TilePosition(x,y), true))
-            {
-                boxColor = BWAPI::Colors::Red;
-            }
-
-            canvas.drawBoxMap(pos, pos + diag, boxColor, false);
-            canvas.drawTextMap(pos + BWAPI::Position(2,2), "%d", BWAPI::Broodwar->getFrameCount() - _lastSeen[x][y]);
-            canvas.drawTextMap(pos + BWAPI::Position(2,12), "%d", homeDist);
-        }
-    }
-
-}
-
 void MapTools::parseMap()
 {
     BWAPI::Broodwar->printf("Parsing Map Information");
@@ -424,7 +379,7 @@ BWAPI::Position MapTools::getLeastRecentlySeenPosition(const BaseLocationManager
 			continue;
 		}
 
-        int lastSeen = _lastSeen[tile.x][tile.y];
+        int lastSeen = getLastSeen(tile.x, tile.y);
 		if (lastSeen < minSeen)
 		{
 			minSeen = lastSeen;
@@ -433,4 +388,9 @@ BWAPI::Position MapTools::getLeastRecentlySeenPosition(const BaseLocationManager
 	}
 
 	return BWAPI::Position(leastSeen);
+}
+
+int MapTools::getLastSeen(int x, int y) const
+{
+	return _lastSeen[x][y];
 }

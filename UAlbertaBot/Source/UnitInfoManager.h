@@ -4,7 +4,6 @@
 #include "UnitData.h"
 #include "BaseLocation.h"
 #include "..\..\SparCraft\source\SparCraft.h"
-#include "ScreenCanvas.h"
 
 namespace UAlbertaBot
 {
@@ -20,8 +19,6 @@ class UnitInfoManager
     void                    updateUnit(BWAPI::Unit unit);
     void                    updateUnitInfo();
     bool                    isValidUnit(BWAPI::Unit unit);
-    
-    const UnitData &        getUnitData(BWAPI::Player player) const;
 
 public:
 
@@ -47,10 +44,8 @@ public:
     void                    getNearbyForce(std::vector<UnitInfo> & unitInfo,BWAPI::Position p,BWAPI::Player player,int radius) const;
 
     const std::map<int, UnitInfo> & getUnitInfoMap(BWAPI::Player player) const;
-
     bool                    enemyHasCloakedUnits() const;
-    void                    drawExtendedInterface(AKBot::ScreenCanvas& canvas) const;
-    void                    drawUnitInformation(AKBot::ScreenCanvas& canvas, int x,int y) const;
+	const UnitData &        getUnitData(BWAPI::Player player) const;
 
 };
 }

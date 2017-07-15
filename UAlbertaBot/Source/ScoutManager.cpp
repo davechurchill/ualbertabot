@@ -1,6 +1,7 @@
 #include "ScoutManager.h"
 #include "Global.h"
 #include "UnitUtil.h"
+#include "Micro.h"
 
 using namespace UAlbertaBot;
 
@@ -42,21 +43,6 @@ void ScoutManager::setWorkerScout(BWAPI::Unit unit)
 	{
 		_onScoutAssigned(_workerScout);
 	}
-}
-
-void ScoutManager::drawScoutInformation(AKBot::ScreenCanvas& canvas, int x, int y)
-{
-    if (!Config::Debug::DrawScoutInfo)
-    {
-        return;
-    }
-
-	canvas.drawTextScreen(x, y, "ScoutInfo: %s", _scoutStatus.c_str());
-    for (size_t i(0); i < _enemyRegionVertices.size(); ++i)
-    {
-        canvas.drawCircleMap(_enemyRegionVertices[i], 4, BWAPI::Colors::Green, false);
-        canvas.drawTextMap(_enemyRegionVertices[i], "%d", i);
-    }
 }
 
 void UAlbertaBot::ScoutManager::onScoutReleased(UnitHandler handler)

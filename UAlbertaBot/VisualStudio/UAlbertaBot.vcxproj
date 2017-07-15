@@ -25,6 +25,7 @@
     <ClCompile Include="..\Source\AutoObserver.cpp" />
     <ClCompile Include="..\Source\BaseLocation.cpp" />
     <ClCompile Include="..\Source\BaseLocationManager.cpp" />
+    <ClCompile Include="..\Source\BaseLocationManagerDebug.cpp" />
     <ClCompile Include="..\Source\BOSSManager.cpp" />
     <ClCompile Include="..\Source\BotModule.cpp" />
     <ClCompile Include="..\source\BuildingManager.cpp" />
@@ -34,6 +35,7 @@
     <ClCompile Include="..\Source\BWAPIOpponentView.cpp" />
     <ClCompile Include="..\Source\BWAPIScreenCanvas.cpp" />
     <ClCompile Include="..\Source\CombatCommander.cpp" />
+    <ClCompile Include="..\Source\CombatCommanderDebug.cpp" />
     <ClCompile Include="..\Source\CombatSimulation.cpp" />
     <ClCompile Include="..\Source\Common.cpp" />
     <ClCompile Include="..\Source\Config.cpp" />
@@ -42,7 +44,11 @@
     <ClCompile Include="..\source\DetectorManager.cpp" />
     <ClCompile Include="..\Source\DistanceMap.cpp" />
     <ClCompile Include="..\Source\GameCommander.cpp" />
+    <ClCompile Include="..\Source\GameCommanderDebug.cpp" />
     <ClCompile Include="..\Source\Global.cpp" />
+    <ClCompile Include="..\Source\MapToolsDebug.cpp" />
+    <ClCompile Include="..\Source\ProductionManagerDebug.cpp" />
+    <ClCompile Include="..\Source\ScoutManagerDebug.cpp" />
     <ClCompile Include="..\Source\ScreenCanvas.cpp" />
     <ClCompile Include="..\Source\UAlbertaBot_Arena.cpp" />
     <ClCompile Include="..\Source\UAlbertaBot_Tournament.cpp" />
@@ -66,9 +72,11 @@
     <ClCompile Include="..\source\TransportManager.cpp" />
     <ClCompile Include="..\Source\UABAssert.cpp" />
     <ClCompile Include="..\Source\UnitData.cpp" />
+    <ClCompile Include="..\Source\UnitInfoManagerDebug.cpp" />
     <ClCompile Include="..\Source\UnitUtil.cpp" />
     <ClCompile Include="..\source\WorkerData.cpp" />
     <ClCompile Include="..\source\WorkerManager.cpp" />
+    <ClCompile Include="..\Source\WorkerManagerDebug.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\ArenaPlayer.h" />
@@ -77,6 +85,7 @@
     <ClInclude Include="..\Source\AutoObserver.h" />
     <ClInclude Include="..\Source\BaseLocation.h" />
     <ClInclude Include="..\Source\BaseLocationManager.h" />
+    <ClInclude Include="..\Source\BaseLocationManagerDebug.h" />
     <ClInclude Include="..\Source\BOSSManager.h" />
     <ClInclude Include="..\Source\BotModule.h" />
     <ClInclude Include="..\source\BuildingManager.h" />
@@ -86,18 +95,25 @@
     <ClInclude Include="..\Source\BWAPIOpponentView.h" />
     <ClInclude Include="..\Source\BWAPIScreenCanvas.h" />
     <ClInclude Include="..\Source\CombatCommander.h" />
+    <ClInclude Include="..\Source\CombatCommanderDebug.h" />
     <ClInclude Include="..\Source\CombatSimulation.h" />
     <ClInclude Include="..\Source\Common.h" />
     <ClInclude Include="..\Source\Config.h" />
     <ClInclude Include="..\Source\DebugTools.h" />
     <ClInclude Include="..\Source\DefaultPlayerLocationProvider.h" />
     <ClInclude Include="..\source\DetectorManager.h" />
+    <ClInclude Include="..\Source\Distance.h" />
     <ClInclude Include="..\Source\DistanceMap.h" />
     <ClInclude Include="..\Source\GameCommander.h" />
+    <ClInclude Include="..\Source\GameCommanderDebug.h" />
     <ClInclude Include="..\Source\GameHistory.hpp" />
     <ClInclude Include="..\Source\Global.h" />
+    <ClInclude Include="..\Source\MapToolsDebug.h" />
     <ClInclude Include="..\Source\OpponentView.h" />
     <ClInclude Include="..\Source\PlayerLocationProvider.h" />
+    <ClInclude Include="..\Source\ProductionManagerDebug.h" />
+    <ClInclude Include="..\Source\Rect.h" />
+    <ClInclude Include="..\Source\ScoutManagerDebug.h" />
     <ClInclude Include="..\Source\ScreenCanvas.h" />
     <ClInclude Include="..\Source\Strategy.h" />
     <ClInclude Include="..\Source\UAlbertaBot_Arena.h" />
@@ -125,9 +141,11 @@
     <ClInclude Include="..\source\TransportManager.h" />
     <ClInclude Include="..\Source\UABAssert.h" />
     <ClInclude Include="..\Source\UnitData.h" />
+    <ClInclude Include="..\Source\UnitInfoManagerDebug.h" />
     <ClInclude Include="..\Source\UnitUtil.h" />
     <ClInclude Include="..\source\WorkerData.h" />
     <ClInclude Include="..\source\WorkerManager.h" />
+    <ClInclude Include="..\Source\WorkerManagerDebug.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>UAlbertaBot</ProjectName>

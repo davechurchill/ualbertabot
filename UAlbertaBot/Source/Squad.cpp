@@ -26,7 +26,7 @@ Squad::~Squad()
     //clear();
 }
 
-void Squad::update(const MapTools& map, AKBot::ScreenCanvas& canvas)
+void Squad::update(const MapTools& map)
 {
 	// update all necessary unit information within this squad
 	updateUnits();
@@ -39,29 +39,18 @@ void Squad::update(const MapTools& map, AKBot::ScreenCanvas& canvas)
 	{
 		return map.getGroundDistance(src, dest);
 	};
-	if (Config::Debug::DrawSquadInfo && _order.getType() == SquadOrderTypes::Attack)
-	{
-		canvas.drawTextScreen(200, 350, "%s", _regroupStatus.c_str());
-
-		BWAPI::Unit closest = unitClosestToEnemy(distanceFunction);
-	}
 
 	// if we do need to regroup, do it
+	_needToRegroup = needToRegroup;
 	if (needToRegroup)
 	{
 		BWAPI::Position regroupPosition = calcRegroupPosition();
-
-        if (Config::Debug::DrawCombatSimulationInfo)
-        {
-			canvas.drawTextScreen(200, 150, "REGROUP");
-        }
-
-		canvas.drawCircleMap(regroupPosition.x, regroupPosition.y, 30, BWAPI::Colors::Purple, true);
         
 		_meleeManager.regroup(map, regroupPosition);
 		_rangedManager.regroup(map, regroupPosition);
         _tankManager.regroup(map, regroupPosition);
         _medicManager.regroup(map, regroupPosition);
+		_lastRegroupPosition = regroupPosition;
 	}
 	else // otherwise, execute micro
 	{
@@ -69,18 +58,12 @@ void Squad::update(const MapTools& map, AKBot::ScreenCanvas& canvas)
 		_rangedManager.execute(map, _order);
         _tankManager.execute(map, _order);
         _medicManager.execute(map, _order);
+
 		_transportManager.update();
 
 		auto closestToEnemyUnit = unitClosestToEnemy(distanceFunction);
 		_detectorManager.setUnitClosestToEnemy(closestToEnemyUnit);
 		_detectorManager.execute(map, _order);
-
-		_meleeManager.drawOrderText(canvas, _order);
-		_rangedManager.drawOrderText(canvas, _order);
-		_tankManager.drawOrderText(canvas, _order);
-		_medicManager.drawOrderText(canvas, _order);
-		_detectorManager.drawOrderText(canvas, _order);
-		_transportManager.drawTransportInformation(canvas, 0, 0);
 	}
 }
 
@@ -479,4 +462,14 @@ void Squad::removeUnit(BWAPI::Unit u)
 const std::string & Squad::getName() const
 {
     return _name;
+}
+
+const std::string& Squad::getRegroupStatus() const
+{
+	return _regroupStatus;
+}
+
+bool Squad::getNeedToRegroup() const
+{
+	return _needToRegroup;
 }

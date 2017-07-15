@@ -50,12 +50,12 @@ public:
 
     BuildOrder                  getBuildOrder();
     bool                        isSearchInProgress();
+	std::string getPreviousStatus() const { return _previousStatus; }
+	const std::vector<MetaPair>& getPreviousGoalUnits() const { return _previousGoalUnits; }
+	double getTotalPreviousSearchTime() const { return _totalPreviousSearchTime; }
+	const BOSS::DFBB_BuildOrderSearchResults& getSavedSearchResults() const { return _savedSearchResults; }
 
     void                        startNewSearch(const std::vector<MetaPair> & goalUnits, const BuildingManager & buildingManager);
-    
-	void						drawSearchInformation(AKBot::ScreenCanvas& canvas, int x, int y);
-    void						drawStateInformation(AKBot::ScreenCanvas& canvas, int x, int y, const BuildingManager & buildingManager);
-
     
 	static BOSS::BuildOrderSearchGoal       GetGoal(const std::vector<MetaPair> & goalUnits);	
     static std::vector<MetaType>			GetMetaVector(const BOSS::BuildOrder & buildOrder);

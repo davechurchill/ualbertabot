@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Common.h"
+#include "Rect.h"
 #include "MetaType.h"
 #include "DistanceMap.h"
 #include "UnitData.h"
-#include "ScreenCanvas.h"
 #include "OpponentView.h"
 
 namespace UAlbertaBot
@@ -37,6 +37,9 @@ public:
     BaseLocation(const AKBot::OpponentView& opponentView, int baseID = 0);
     BaseLocation(const AKBot::OpponentView& opponentView, int baseID, const std::vector<BWAPI::Unit> & resources);
     
+	/* Get id of the base location */
+	int getId() const { return _baseID; };
+	AKBot::Rect getRecourceBounds() const { return AKBot::Rect(_left, _top, _right, _bottom); };
     int getGroundTileDistance(const BWAPI::Position & pos) const;
     bool isStartLocation() const;
     bool isPlayerStartLocation(BWAPI::Player player) const;
@@ -48,12 +51,12 @@ public:
     const std::vector<BWAPI::Unit> & getMinerals() const;
     bool isOccupiedByPlayer(BWAPI::Player player) const;
     bool isExplored() const;
+	const std::vector<BWAPI::Position>& getMineralPositions() const;
+	const std::vector<BWAPI::Position>& getGeyserPositions() const;
 
     void setPlayerOccupying(BWAPI::Player player, bool occupying);
 
     const std::vector<BWAPI::TilePosition> & getClosestTiles() const;
-
-    void draw(AKBot::ScreenCanvas& canvas, std::function<bool(BWAPI::TilePosition tile)> isBuildableTile);
 };
 
 

@@ -43,8 +43,9 @@ public:
 
 	void update();
     void setWorkerScout(BWAPI::Unit unit);
-	void drawScoutInformation(AKBot::ScreenCanvas& canvas, int x, int y);
 	void onScoutReleased(UnitHandler handler);
 	void onScoutAssigned(UnitHandler handler);
+	const std::string getScoutStatus() const { return _scoutStatus; }
+	const std::vector<BWAPI::Position>& getEnemyRegionVerticies() const { return _enemyRegionVertices; }
 };
 }

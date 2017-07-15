@@ -5,7 +5,6 @@
 #include "ProductionManager.h"
 #include "ScoutManager.h"
 #include "Timer.hpp"
-#include "ScreenCanvas.h"
 #include "BWAPIOpponentView.h"
 
 namespace UAlbertaBot
@@ -37,21 +36,21 @@ public:
     GameCommander(UAlbertaBot_Tournament & uabModule, const AKBot::OpponentView& opponentView, const BaseLocationManager& bases);
 
     void onStart();
-    void update(AKBot::ScreenCanvas& canvas);
+    void update(int currentFrame);
 
     void handleUnitAssignments();
     void setValidUnits();
     void setScoutUnits();
     void setCombatUnits();
 
-    void drawDebugInterface(AKBot::ScreenCanvas& canvas);
-    void drawGameInformation(AKBot::ScreenCanvas& canvas, int x,int y);
-
-    BWAPI::Unit getFirstSupplyProvider();
+	BWAPI::Unit getFirstSupplyProvider();
     BWAPI::Unit getClosestUnitToTarget(BWAPI::UnitType type,BWAPI::Position target);
     BWAPI::Unit getClosestWorkerToTarget(BWAPI::Position target);
 
-    ProductionManager & getProductionManager();
+	const ProductionManager& getProductionManager() const;
+	const ScoutManager& getScoutManager() const;
+	const CombatCommander& getCombatCommander() const;
+	const AKBot::OpponentView& getOpponentView() const;
 
     void onUnitShow(BWAPI::Unit unit);
     void onUnitHide(BWAPI::Unit unit);

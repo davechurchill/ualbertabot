@@ -639,60 +639,6 @@ BWAPI::Unit ProductionManager::selectUnitOfType(BWAPI::UnitType type, BWAPI::Pos
 	return nullptr;
 }
 
-void ProductionManager::drawProductionInformation(AKBot::ScreenCanvas& canvas, int x, int y)
-{
-    _buildingManager.drawBuildingInformation(canvas, 200,50);
-	_bossManager.drawSearchInformation(canvas, 490, 100);
-    _bossManager.drawStateInformation(canvas, 250, 0, _buildingManager);
-
-    if (!Config::Debug::DrawProductionInfo)
-    {
-        return;
-    }
-
-	// fill prod with each unit which is under construction
-	std::vector<BWAPI::Unit> prod;
-	for (auto & unit : _opponentView.self()->getUnits())
-	{
-        UAB_ASSERT(unit != nullptr, "Unit was null");
-
-		if (unit->isBeingConstructed())
-		{
-			prod.push_back(unit);
-		}
-	}
-	
-	// sort it based on the time it was started
-	std::sort(prod.begin(), prod.end(), CompareWhenStarted());
-
-    canvas.drawTextScreen(x-30, y+20, "\x04 TIME");
-	canvas.drawTextScreen(x, y+20, "\x04 UNIT NAME");
-
-	size_t reps = prod.size() < 10 ? prod.size() : 10;
-
-	y += 30;
-	int yy = y;
-
-	// for each unit in the _queue
-	for (auto & unit : prod) 
-    {
-		std::string prefix = "\x07";
-
-		yy += 10;
-
-		BWAPI::UnitType t = unit->getType();
-        if (t == BWAPI::UnitTypes::Zerg_Egg)
-        {
-            t = unit->getBuildType();
-        }
-
-		canvas.drawTextScreen(x, yy, " %s%s", prefix.c_str(), t.getName().c_str());
-		canvas.drawTextScreen(x - 35, yy, "%s%6d", prefix.c_str(), unit->getRemainingBuildTime());
-	}
-
-	_queue.drawQueueInformation(canvas, x, yy+10);
-}
-
 // this will return true if any unit is on the first frame if it's training time remaining
 // this can cause issues for the build order search system so don't plan a search on these frames
 bool ProductionManager::canPlanBuildOrderNow() const

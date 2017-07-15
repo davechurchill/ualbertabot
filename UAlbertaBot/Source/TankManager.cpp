@@ -3,6 +3,7 @@
 #include <BWAPI/Game.h>
 #include <BWAPI/Player.h>
 #include <BWAPI/TechType.h>
+#include "Micro.h"
 
 using namespace UAlbertaBot;
 

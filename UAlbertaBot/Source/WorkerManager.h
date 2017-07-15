@@ -1,14 +1,12 @@
 #pragma once
 
 #include <Common.h>
+#include "BuildingData.h"
 #include "BuildingManager.h"
 #include "WorkerData.h"
-#include "ScreenCanvas.h"
 
 namespace UAlbertaBot
 {
-class Building;
-
 class WorkerManager
 {
     WorkerData  workerData;
@@ -26,7 +24,7 @@ public:
 
     WorkerManager();
 
-    void        update(AKBot::ScreenCanvas& canvas);
+    void        update();
     void        onUnitDestroy(BWAPI::Unit unit);
     void        onUnitMorph(BWAPI::Unit unit);
     void        onUnitShow(BWAPI::Unit unit);
@@ -34,9 +32,8 @@ public:
 
     void        finishedWithCombatWorkers();
 
-    void        drawResourceDebugInfo(AKBot::ScreenCanvas& canvas);
     void        updateWorkerStatus();
-    void        drawWorkerInformation(AKBot::ScreenCanvas& canvas, int x,int y);
+	const WorkerData& getWorkerData() const { return workerData; };
 
     int         getNumMineralWorkers();
     int         getNumGasWorkers();

@@ -31,7 +31,7 @@ void GameCommander::onStart()
     _productionManager.onStart();
 }
 
-void GameCommander::update(AKBot::ScreenCanvas& canvas)
+void GameCommander::update(int currentFrame)
 {
 	_timer.start();
 
@@ -46,58 +46,29 @@ void GameCommander::update(AKBot::ScreenCanvas& canvas)
     
 	_bossManager.update(35 - _timer.getElapsedTimeInMilliSec());
 
-	_productionManager.update(BWAPI::Broodwar->getFrameCount());
-	_combatCommander.update(_combatUnits, canvas);
+	_productionManager.update(currentFrame);
+	_combatCommander.update(_combatUnits);
     _scoutManager.update();
 }
 
-ProductionManager & GameCommander::getProductionManager()
+const ProductionManager& GameCommander::getProductionManager() const
 {
     return _productionManager;
 }
 
-void GameCommander::drawDebugInterface(AKBot::ScreenCanvas& canvas)
+const ScoutManager& GameCommander::getScoutManager() const
 {
-	_scoutManager.drawScoutInformation(canvas, 200, 320);
-	_productionManager.drawProductionInformation(canvas, 30, 50);
-	_combatCommander.drawSquadInformation(canvas, 200, 30);
-    
-    drawGameInformation(canvas, 4, 1);
-
-	// draw position of mouse cursor
-	if (Config::Debug::DrawMouseCursorInfo)
-	{
-		int mouseX = BWAPI::Broodwar->getMousePosition().x + BWAPI::Broodwar->getScreenPosition().x;
-		int mouseY = BWAPI::Broodwar->getMousePosition().y + BWAPI::Broodwar->getScreenPosition().y;
-		canvas.drawTextMap(mouseX + 20, mouseY, " %d %d", mouseX, mouseY);
-	}
+	return _scoutManager;
 }
 
-void GameCommander::drawGameInformation(AKBot::ScreenCanvas& canvas, int x, int y)
+const CombatCommander& GameCommander::getCombatCommander() const
 {
-	auto enemy = Global::getEnemy();
-	auto self = _opponentView.self();
-    canvas.drawTextScreen(x, y, "\x04Players:");
-	if (enemy != nullptr)
-	{
-		canvas.drawTextScreen(x + 50, y, "%c%s \x04vs. %c%s", self->getTextColor(), self->getName().c_str(),
-			enemy->getTextColor(), enemy->getName().c_str());
-	}
+	return _combatCommander;
+}
 
-	y += 12;
-		
-    canvas.drawTextScreen(x, y, "\x04Strategy:");
-	canvas.drawTextScreen(x+50, y, "\x03%s %s", Config::Strategy::StrategyName.c_str(), Config::Strategy::FoundEnemySpecificStrategy ? "(enemy specific)" : "");
-	canvas.setTextSize();
-	y += 12;
-
-    canvas.drawTextScreen(x, y, "\x04Map:");
-	canvas.drawTextScreen(x+50, y, "\x03%s", BWAPI::Broodwar->mapFileName().c_str());
-	canvas.setTextSize();
-	y += 12;
-
-    canvas.drawTextScreen(x, y, "\x04Time:");
-    canvas.drawTextScreen(x+50, y, "\x04%d %4dm %3ds", BWAPI::Broodwar->getFrameCount(), (int)(BWAPI::Broodwar->getFrameCount()/(23.8*60)), (int)((int)(BWAPI::Broodwar->getFrameCount()/23.8)%60));
+const AKBot::OpponentView& GameCommander::getOpponentView() const
+{
+	return _opponentView;
 }
 
 // assigns units to various managers

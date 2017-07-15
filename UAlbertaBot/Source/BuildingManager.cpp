@@ -289,7 +289,6 @@ bool BuildingManager::isBuildingPositionExplored(const Building & b) const
     return true;
 }
 
-
 char BuildingManager::getBuildingWorkerCode(const Building & b) const
 {
     return b.builderUnit == nullptr ? 'X' : 'W';
@@ -303,54 +302,6 @@ int BuildingManager::getReservedMinerals()
 int BuildingManager::getReservedGas() 
 {
     return _reservedGas;
-}
-
-void BuildingManager::drawBuildingInformation(AKBot::ScreenCanvas& canvas, int x,int y)
-{
-    _buildingPlacer.drawReservedTiles(canvas);
-
-    if (!Config::Debug::DrawBuildingInfo)
-    {
-        return;
-    }
-
-    for (auto & unit : _opponentView.self()->getUnits())
-    {
-        canvas.drawTextMap(unit->getPosition().x,unit->getPosition().y+5,"\x07%d",unit->getID());
-    }
-
-    canvas.drawTextScreen(x,y,"\x04 Building Information:");
-    canvas.drawTextScreen(x,y+20,"\x04 Name");
-    canvas.drawTextScreen(x+150,y+20,"\x04 State");
-
-    int yspace = 0;
-
-    for (const auto & b : _buildings)
-    {
-        if (b.status == BuildingStatus::Unassigned)
-        {
-            canvas.drawTextScreen(x,y+40+((yspace)*10),"\x03 %s",b.type.getName().c_str());
-            canvas.drawTextScreen(x+150,y+40+((yspace++)*10),"\x03 Need %c",getBuildingWorkerCode(b));
-        }
-        else if (b.status == BuildingStatus::Assigned)
-        {
-            canvas.drawTextScreen(x,y+40+((yspace)*10),"\x03 %s %d",b.type.getName().c_str(),b.builderUnit->getID());
-            canvas.drawTextScreen(x+150,y+40+((yspace++)*10),"\x03 A %c (%d,%d)",getBuildingWorkerCode(b),b.finalPosition.x,b.finalPosition.y);
-
-            int x1 = b.finalPosition.x*32;
-            int y1 = b.finalPosition.y*32;
-            int x2 = (b.finalPosition.x + b.type.tileWidth())*32;
-            int y2 = (b.finalPosition.y + b.type.tileHeight())*32;
-
-            canvas.drawLineMap(b.builderUnit->getPosition().x,b.builderUnit->getPosition().y,(x1+x2)/2,(y1+y2)/2,BWAPI::Colors::Orange);
-            canvas.drawBoxMap(x1,y1,x2,y2,BWAPI::Colors::Red,false);
-        }
-        else if (b.status == BuildingStatus::UnderConstruction)
-        {
-            canvas.drawTextScreen(x,y+40+((yspace)*10),"\x03 %s %d",b.type.getName().c_str(),b.buildingUnit->getID());
-            canvas.drawTextScreen(x+150,y+40+((yspace++)*10),"\x03 Const %c",getBuildingWorkerCode(b));
-        }
-    }
 }
 
 std::vector<BWAPI::UnitType> BuildingManager::buildingsQueued() const

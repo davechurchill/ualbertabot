@@ -1,5 +1,6 @@
 #include "MicroManager.h"
 #include "Global.h"
+#include "Micro.h"
 
 using namespace UAlbertaBot;
 
@@ -168,16 +169,5 @@ void MicroManager::trainSubUnits(BWAPI::Unit unit) const
 	else if (unit->getType() == BWAPI::UnitTypes::Protoss_Carrier)
 	{
 		unit->train(BWAPI::UnitTypes::Protoss_Interceptor);
-	}
-}
-
-void MicroManager::drawOrderText(AKBot::ScreenCanvas& canvas, const SquadOrder & order)
-{
-	if (Config::Debug::DrawUnitTargetInfo)
-	{
-		for (auto & unit : _units) 
-		{
-			canvas.drawTextMap(unit->getPosition().x, unit->getPosition().y, "%s", order.getStatus().c_str());
-		}
 	}
 }

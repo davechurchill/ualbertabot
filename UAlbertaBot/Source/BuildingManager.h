@@ -29,8 +29,6 @@ class BuildingManager
     void            checkForStartedConstruction();			// STEP 4
     void            checkForDeadTerranBuilders();			// STEP 5
     void            checkForCompletedBuildings();			// STEP 6
-
-    char            getBuildingWorkerCode(const Building & b) const;
               
 
 public:
@@ -39,17 +37,19 @@ public:
 
     void                update();
     void                addBuildingTask(BWAPI::UnitType type,BWAPI::TilePosition desiredLocation);
-    void                drawBuildingInformation(AKBot::ScreenCanvas& canvas, int x,int y);
     BWAPI::TilePosition getBuildingLocation(const Building & b);
 
     int                 getReservedMinerals();
     int                 getReservedGas();
 
     bool                isBeingBuilt(BWAPI::UnitType type);
+	char            getBuildingWorkerCode(const Building & b) const;
 
     std::vector<BWAPI::Unit> & getFinishedWorkers();
     std::vector<BWAPI::Unit> & getFinishedScouts();
 
     std::vector<BWAPI::UnitType> buildingsQueued() const;
+	const std::vector<Building>& getBuildings() const { return _buildings; }
+	const BuildingPlacer& getBuildingPlacer() const { return _buildingPlacer; }
 };
 }

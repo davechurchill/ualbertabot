@@ -4,7 +4,7 @@
 #include "MetaType.h"
 #include "DistanceMap.h"
 #include "BaseLocation.h"
-#include "ScreenCanvas.h"
+#include "Distance.h"
 
 namespace UAlbertaBot
 {
@@ -28,6 +28,20 @@ namespace UAlbertaBot
 
 		BaseLocation * _getBaseLocation(BWAPI::TilePosition pos) const;
 		BaseLocation * _getBaseLocation(BWAPI::Position pos) const;
+		// Append list of resource clusters bases on existing resources
+		void addNewResourceClusters(
+			std::vector<std::vector<BWAPI::Unit>>& resourceClusters,
+			const BWAPI::Unitset& resources,
+			AKBot::DistanceFunction distanceFunction,
+			const int resourceThreshold,
+			const int clusterDistance);
+		// Add resources to existing clusters
+		void addToExistingResourceClusters(
+			std::vector<std::vector<BWAPI::Unit>>& resourceClusters,
+			const BWAPI::Unitset& resources,
+			AKBot::DistanceFunction distanceFunction,
+			const int resourceThreshold,
+			const int clusterDistance);
 
 		/*
 			Reset the player occupation information for each location
@@ -39,7 +53,6 @@ namespace UAlbertaBot
 
 		void update(const UnitInfoManager & unitManager);
 		void onStart(const MapTools& map);
-		void drawBaseLocations(AKBot::ScreenCanvas& canvas);
 
 		const std::vector<const BaseLocation *> & getBaseLocations() const;
 		const std::vector<const BaseLocation *> & getStartingBaseLocations() const;

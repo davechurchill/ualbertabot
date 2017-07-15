@@ -50,10 +50,13 @@ public:
     void        update(int currentFrame);
     void        onUnitDestroy(BWAPI::Unit unit);
     void        performBuildOrderSearch();
-    void        drawProductionInformation(AKBot::ScreenCanvas& canvas, int x,int y);
 
     BWAPI::Unit getProducer(MetaType t,BWAPI::Position closestTo = BWAPI::Positions::None);
 	const StrategyManager& getStrategyManager() const;
+	const BuildingManager& getBuildingManager() const { return _buildingManager; }
+	const BOSSManager& getBOSSManager() const { return _bossManager; }
+	const AKBot::OpponentView& getOpponentView() const { return _opponentView; }
+	const BuildOrderQueue& getBuildOrderQueue() const { return _queue; }
 };
 
 

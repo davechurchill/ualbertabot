@@ -50,8 +50,7 @@ public:
 
 	CombatCommander(const BaseLocationManager & baseLocationManager, const AKBot::OpponentView& opponentView, const UnitInfoManager& unitInfo);
 
-	void update(const std::vector<BWAPI::Unit> & combatUnits, AKBot::ScreenCanvas& canvas);
-    
-	void drawSquadInformation(AKBot::ScreenCanvas& canvas, int x, int y);
+	void update(const std::vector<BWAPI::Unit> & combatUnits);
+	const SquadData& getSquadData() const;
 };
 }

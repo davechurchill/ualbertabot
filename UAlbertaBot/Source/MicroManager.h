@@ -2,9 +2,7 @@
 
 #include "Common.h"
 #include "SquadOrder.h"
-#include "Micro.h"
 #include "BaseLocationManager.h"
-#include "ScreenCanvas.h"
 
 namespace UAlbertaBot
 {
@@ -45,7 +43,6 @@ public:
 	void				setUnits(const std::vector<BWAPI::Unit> & u);
 	void				execute(const MapTools & map, const SquadOrder & order);
 	void				regroup(const MapTools & map, const BWAPI::Position & regroupPosition) const;
-	void                drawOrderText(AKBot::ScreenCanvas& canvas, const SquadOrder & order);
 
 };
 }

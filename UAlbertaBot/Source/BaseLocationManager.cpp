@@ -21,56 +21,15 @@ void BaseLocationManager::onStart(const MapTools& map)
     // so we will first look over all minerals and cluster them based on some distance
     const int clusterDistance = 20;
 
-    // stores each cluster of resources based on some ground distance
+	auto distanceFunction = [&map](const BWAPI::Position & src, const BWAPI::Position & dest)
+	{
+		return map.getGroundDistance(src, dest);
+	};
+	// stores each cluster of resources based on some ground distance
     std::vector<std::vector<BWAPI::Unit>> resourceClusters;
-    for (auto & mineral : BWAPI::Broodwar->getStaticMinerals())
-    {
-        // skip minerals that don't have more than 100 starting minerals
-        // these are probably stupid map-blocking minerals to confuse us
-        if (mineral->getResources() <= 100)
-        {
-            continue;
-        }
-
-        bool foundCluster = false;
-        for (std::vector<BWAPI::Unit> & cluster : resourceClusters)
-        {
-            int groundDist = map.getGroundDistance(mineral->getPosition(), UnitUtil::GetUnitsetCenter(cluster));
-
-            if (groundDist >= 0 && groundDist < clusterDistance)
-            {
-                cluster.push_back(mineral);
-                foundCluster = true;
-                break;
-            }
-        }
-
-        if (!foundCluster)
-        {
-            resourceClusters.push_back(std::vector<BWAPI::Unit>());
-            resourceClusters.back().push_back(mineral);
-        }
-    }
-
-    // add geysers only to existing resource clusters
-    for (auto & geyser : BWAPI::Broodwar->getStaticGeysers())
-    {
-        if (geyser->getResources() <= 100)
-        {
-            continue;
-        }
-
-        for (std::vector<BWAPI::Unit> & cluster : resourceClusters)
-        {
-            int groundDist = map.getGroundDistance(geyser->getPosition(), UnitUtil::GetUnitsetCenter(cluster));
-
-            if (groundDist >= 0 && groundDist < clusterDistance)
-            {
-                cluster.push_back(geyser);
-                break;
-            }
-        }
-    }
+	addNewResourceClusters(resourceClusters, BWAPI::Broodwar->getStaticMinerals(), distanceFunction, 100, clusterDistance);
+	// add geysers only to existing resource clusters
+	addToExistingResourceClusters(resourceClusters, BWAPI::Broodwar->getStaticGeysers(), distanceFunction, 100, clusterDistance);
 
     // add the base locations if there are more than 4 resouces in the cluster
     int baseID = 0;
@@ -273,23 +232,6 @@ void UAlbertaBot::BaseLocationManager::resetPlayerOccupation()
 	}
 }
 
-void BaseLocationManager::drawBaseLocations(AKBot::ScreenCanvas& canvas)
-{
-	auto isBuildableTileCheck = [](BWAPI::TilePosition tile)
-	{
-		return Global::Map().isBuildableTile(tile);
-	};
-    for (auto & baseLocation : _baseLocationData)
-    {
-        baseLocation.draw(canvas, isBuildableTileCheck);
-    }
-
-	auto self = _opponentView.self();
-	BWAPI::Position nextExpansionPosition(getNextExpansion(self));
-
-    canvas.drawCircleMap(nextExpansionPosition, 16, BWAPI::Colors::Orange, true);
-}
-
 const std::vector<const BaseLocation *> & BaseLocationManager::getBaseLocations() const
 {
     return _baseLocationPtrs;
@@ -339,6 +281,71 @@ BaseLocation * BaseLocationManager::_getBaseLocation(BWAPI::Position pos) const
 
     return _getBaseLocation(BWAPI::TilePosition(pos));
 }
+
+void BaseLocationManager::addNewResourceClusters(
+	std::vector<std::vector<BWAPI::Unit>>& resourceClusters,
+	const BWAPI::Unitset& resources,
+	AKBot::DistanceFunction distanceFunction,
+	const int resourceThreshold,
+	const int clusterDistance)
+{
+	for (auto & mineral : resources)
+	{
+		// skip minerals that don't have more than 100 starting minerals
+		// these are probably stupid map-blocking minerals to confuse us
+		if (mineral->getResources() <= resourceThreshold)
+		{
+			continue;
+		}
+
+		bool foundCluster = false;
+		for (std::vector<BWAPI::Unit> & cluster : resourceClusters)
+		{
+			int groundDist = distanceFunction(mineral->getPosition(), UnitUtil::GetUnitsetCenter(cluster));
+
+			if (groundDist >= 0 && groundDist < clusterDistance)
+			{
+				cluster.push_back(mineral);
+				foundCluster = true;
+				break;
+			}
+		}
+
+		if (!foundCluster)
+		{
+			resourceClusters.push_back(std::vector<BWAPI::Unit>());
+			resourceClusters.back().push_back(mineral);
+		}
+	}
+}
+
+void BaseLocationManager::addToExistingResourceClusters(
+	std::vector<std::vector<BWAPI::Unit>>& resourceClusters,
+	const BWAPI::Unitset& resources,
+	AKBot::DistanceFunction distanceFunction,
+	const int resourceThreshold,
+	const int clusterDistance)
+{
+	for (auto & geyser : resources)
+	{
+		if (geyser->getResources() <= resourceThreshold)
+		{
+			continue;
+		}
+
+		for (std::vector<BWAPI::Unit> & cluster : resourceClusters)
+		{
+			int groundDist = distanceFunction(geyser->getPosition(), UnitUtil::GetUnitsetCenter(cluster));
+
+			if (groundDist >= 0 && groundDist < clusterDistance)
+			{
+				cluster.push_back(geyser);
+				break;
+			}
+		}
+	}
+}
+
 
 const BaseLocation * BaseLocationManager::getBaseLocation(BWAPI::Position pos) const
 {

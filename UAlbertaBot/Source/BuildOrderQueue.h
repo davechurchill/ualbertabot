@@ -2,7 +2,6 @@
 
 #include "Common.h"
 #include "MetaType.h"
-#include "ScreenCanvas.h"
 
 namespace UAlbertaBot
 {
@@ -49,7 +48,7 @@ public:
 
     int getHighestPriorityValue();								// returns the highest priority value
     int	getLowestPriorityValue();								// returns the lowest priority value
-    size_t size();													// returns the size of the queue
+    size_t size() const;										// returns the size of the queue
 
     bool isEmpty();
 
@@ -61,9 +60,8 @@ public:
     bool canSkipItem();
     bool hasNextHighestPriorityItem();								// returns the highest priority item
 
-    void drawQueueInformation(AKBot::ScreenCanvas& canvas, int x,int y);
-
     // overload the bracket operator for ease of use
-    BuildOrderItem operator [] (int i);
+    BuildOrderItem operator [] (int i) const;
+	BuildOrderItem operator [] (size_t i) const;
 };
 }

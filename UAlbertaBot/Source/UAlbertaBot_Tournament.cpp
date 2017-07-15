@@ -4,8 +4,15 @@
 #include "ParseUtils.h"
 #include "UnitUtil.h"
 #include "Global.h"
+#include "BaseLocationManagerDebug.h"
+#include "WorkerManagerDebug.h"
+#include "MapToolsDebug.h"
+#include "UnitInfoManagerDebug.h"
+#include "GameCommanderDebug.h"
+#include "Micro.h"
 
 using namespace UAlbertaBot;
+using namespace AKBot;
 
 UAlbertaBot_Tournament::UAlbertaBot_Tournament(const AKBot::OpponentView& opponentView)
 	: _opponentView(opponentView)
@@ -137,33 +144,45 @@ void UAlbertaBot_Tournament::onFrame()
 
     // update all of the internal information managers
     _mapTools.update(currentFrame);
-	if (Config::Debug::DrawLastSeenTileInfo)
-	{
-		_mapTools.drawLastSeen(_canvas, _baseLocationManager);
-	}
-    
 	_strategyManager.update();
     _unitInfoManager.update();
-    _workerManager.update(_canvas);
+    _workerManager.update();
     _baseLocationManager.update(_unitInfoManager);
 
     // update the game commander
-	_gameCommander.update(_canvas);
+	_gameCommander.update(currentFrame);
 
 	// Draw debug information
-	// draw the debug information for each base location
-	_baseLocationManager.drawBaseLocations(_canvas);
-	
-	_unitInfoManager.drawExtendedInterface(_canvas);
-	_unitInfoManager.drawUnitInformation(_canvas, 425, 30);
-	_gameCommander.drawDebugInterface(_canvas);
-  
+	drawDebugInformation(_canvas);
+
     if (Config::Modules::UsingAutoObserver)
     {
         _autoObserver.onFrame(currentFrame);
     }
 
     drawErrorMessages();
+}
+
+void UAlbertaBot_Tournament::drawDebugInformation(AKBot::ScreenCanvas& canvas)
+{
+	if (Config::Debug::DrawLastSeenTileInfo)
+	{
+		MapToolsDebug mapDebug(_mapTools, _baseLocationManager);
+		mapDebug.drawLastSeen(canvas, _baseLocationManager);
+	}
+
+	WorkerManagerDebug debug(_workerManager.getWorkerData());
+	debug.draw(canvas);
+
+	// draw the debug information for each base location
+	BaseLocationManagerDebug baseLocationManagerDebug(_opponentView, _baseLocationManager, _mapTools);
+	baseLocationManagerDebug.draw(canvas);
+
+	UnitInfoManagerDebug unitInfoDebug(_opponentView, _unitInfoManager);
+	unitInfoDebug.draw(canvas);
+
+	GameCommanderDebug gameCommanderDebug(_gameCommander);
+	gameCommanderDebug.draw(canvas);
 }
 
 void UAlbertaBot_Tournament::drawErrorMessages() const

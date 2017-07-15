@@ -307,33 +307,6 @@ void BuildingPlacer::reserveTiles(BWAPI::TilePosition position,int width,int hei
     }
 }
 
-void BuildingPlacer::drawReservedTiles(AKBot::ScreenCanvas& canvas)
-{
-    if (!Config::Debug::DrawReservedBuildingTiles)
-    {
-        return;
-    }
-
-    int rwidth = _reserveMap.size();
-    int rheight = _reserveMap[0].size();
-
-    for (int x = 0; x < rwidth; ++x)
-    {
-        for (int y = 0; y < rheight; ++y)
-        {
-            if (_reserveMap[x][y] || isInResourceBox(x,y))
-            {
-                int x1 = x*32 + 8;
-                int y1 = y*32 + 8;
-                int x2 = (x+1)*32 - 8;
-                int y2 = (y+1)*32 - 8;
-
-                canvas.drawBoxMap(x1,y1,x2,y2,BWAPI::Colors::Yellow,false);
-            }
-        }
-    }
-}
-
 void BuildingPlacer::freeTiles(BWAPI::TilePosition position, int width, int height)
 {
     int rwidth = _reserveMap.size();
@@ -402,3 +375,15 @@ bool BuildingPlacer::isReserved(int x, int y) const
     return _reserveMap[x][y];
 }
 
+
+int BuildingPlacer::reserveWidth() const
+{
+	int rwidth = _reserveMap.size();
+	return rwidth;
+}
+
+int BuildingPlacer::reserveHeight() const
+{
+	int rheight = _reserveMap[0].size();
+	return rheight;
+}
