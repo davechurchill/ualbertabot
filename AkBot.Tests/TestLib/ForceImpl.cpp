@@ -8,8 +8,8 @@ using namespace BWAPI;
 
 namespace AKBot
 {
-  ForceImpl::ForceImpl(int _id, ForceData data)
-    : data(data)
+  ForceImpl::ForceImpl(int _id, ForceData originalData)
+    : data(originalData)
 	, self( &data )
     , id(_id)
   {

@@ -3,8 +3,8 @@
 
 namespace AKBot
 {
-  BulletImpl::BulletImpl(int _index, BulletData data)
-    : data(data)
+  BulletImpl::BulletImpl(int _index, BulletData originalData)
+    : data(originalData)
 	, self( &data )
 	, index(_index)
   {

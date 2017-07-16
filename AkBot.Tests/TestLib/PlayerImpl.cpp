@@ -6,9 +6,9 @@
 
 namespace AKBot
 {
-  PlayerImpl::PlayerImpl(int _id, PlayerData data)
+  PlayerImpl::PlayerImpl(int _id, PlayerData originalData)
     : id(_id)
-	, data(data)
+	, data(originalData)
     , self( &data )
   {
     clear();

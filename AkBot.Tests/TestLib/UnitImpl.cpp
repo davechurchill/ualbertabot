@@ -1,9 +1,10 @@
+#include "..\stdafx.h"
 #include "UnitImpl.h"
 #include <BWAPI\UnitCommand.h>
 
-AKBot::UnitImpl::UnitImpl(int _id, BWAPI::UnitData data)
+AKBot::UnitImpl::UnitImpl(int _id, BWAPI::UnitData originalData)
 	: id(_id)
-	, data(data)
+	, data(originalData)
 	, self(&data)
 {
 	clear();

@@ -1,3 +1,4 @@
+#include "..\stdafx.h"
 #include <BWAPI.h>
 #include "BulletImpl.h"
 

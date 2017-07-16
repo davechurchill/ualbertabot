@@ -3,8 +3,9 @@
 
 namespace AKBot
 {
-  RegionImpl::RegionImpl(int index, BWAPI::RegionData data)
-    : data(data), self ( &data )
+  RegionImpl::RegionImpl(int index, BWAPI::RegionData originalData)
+    : data(originalData)
+	, self ( &data )
   { }
   void RegionImpl::setNeighbors()
   {
