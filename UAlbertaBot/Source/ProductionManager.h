@@ -32,7 +32,7 @@ class ProductionManager
     bool                meetsReservedResources(MetaType type);
     void                setBuildOrder(const BuildOrder & buildOrder);
     void                create(BWAPI::Unit producer,BuildOrderItem & item);
-    void                manageBuildOrderQueue();
+    void                manageBuildOrderQueue(int currentFrame);
     void                performCommand(BWAPI::UnitCommandType t);
     bool                canMakeNow(BWAPI::Unit producer,MetaType t);
     void                predictWorkerMovement(const Building & b);
@@ -55,10 +55,10 @@ public:
     
     void        onStart();
     void        update(int currentFrame);
-    void        onUnitDestroy(BWAPI::Unit unit);
-    void        performBuildOrderSearch();
+    void        onUnitDestroy(BWAPI::Unit unit, int currentFrame);
+    void        performBuildOrderSearch(int currentFrame);
 
-    BWAPI::Unit getProducer(MetaType t,BWAPI::Position closestTo = BWAPI::Positions::None);
+    BWAPI::Unit getProducer(MetaType t, int currentFrame, BWAPI::Position closestTo = BWAPI::Positions::None);
 	const StrategyManager& getStrategyManager() const;
 	const BuildingManager& getBuildingManager() const { return _buildingManager; }
 	const BOSSManager& getBOSSManager() const { return _bossManager; }

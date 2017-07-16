@@ -63,7 +63,7 @@ void UAlbertaBot::Micro::SetOnRightClick(std::function<void(const BWAPI::Unit&un
 	onRightClickHandler = handler;
 }
 
-void Micro::SmartAttackUnit(BWAPI::Unit attacker, BWAPI::Unit target)
+void Micro::SmartAttackUnit(BWAPI::Unit attacker, BWAPI::Unit target, int currentFrame)
 {
     UAB_ASSERT(attacker, "SmartAttackUnit: Attacker not valid");
     UAB_ASSERT(target, "SmartAttackUnit: Target not valid");
@@ -74,7 +74,7 @@ void Micro::SmartAttackUnit(BWAPI::Unit attacker, BWAPI::Unit target)
     }
 
     // if we have issued a command to this unit already this frame, ignore this one
-    if (attacker->getLastCommandFrame() >= BWAPI::Broodwar->getFrameCount() || attacker->isAttackFrame())
+    if (attacker->getLastCommandFrame() >= currentFrame || attacker->isAttackFrame())
     {
         return;
     }
@@ -98,7 +98,7 @@ void Micro::SmartAttackUnit(BWAPI::Unit attacker, BWAPI::Unit target)
 	}
 }
 
-void Micro::SmartAttackMove(BWAPI::Unit attacker, const BWAPI::Position & targetPosition)
+void Micro::SmartAttackMove(BWAPI::Unit attacker, const BWAPI::Position & targetPosition, int currentFrame)
 {
     //UAB_ASSERT(attacker, "SmartAttackMove: Attacker not valid");
     //UAB_ASSERT(targetPosition.isValid(), "SmartAttackMove: targetPosition not valid");
@@ -109,7 +109,7 @@ void Micro::SmartAttackMove(BWAPI::Unit attacker, const BWAPI::Position & target
     }
 
     // if we have issued a command to this unit already this frame, ignore this one
-    if (attacker->getLastCommandFrame() >= BWAPI::Broodwar->getFrameCount() || attacker->isAttackFrame())
+    if (attacker->getLastCommandFrame() >= currentFrame || attacker->isAttackFrame())
     {
         return;
     }
@@ -133,7 +133,7 @@ void Micro::SmartAttackMove(BWAPI::Unit attacker, const BWAPI::Position & target
 	}
 }
 
-void Micro::SmartMove(BWAPI::Unit attacker, const BWAPI::Position & targetPosition)
+void Micro::SmartMove(BWAPI::Unit attacker, const BWAPI::Position & targetPosition, int currentFrame)
 {
     //UAB_ASSERT(attacker, "SmartAttackMove: Attacker not valid");
     //UAB_ASSERT(targetPosition.isValid(), "SmartAttackMove: targetPosition not valid");
@@ -144,7 +144,7 @@ void Micro::SmartMove(BWAPI::Unit attacker, const BWAPI::Position & targetPositi
     }
 
     // if we have issued a command to this unit already this frame, ignore this one
-    if (attacker->getLastCommandFrame() >= BWAPI::Broodwar->getFrameCount())
+    if (attacker->getLastCommandFrame() >= currentFrame)
     {
         return;
     }
@@ -168,7 +168,7 @@ void Micro::SmartMove(BWAPI::Unit attacker, const BWAPI::Position & targetPositi
 	}
 }
 
-void Micro::SmartRightClick(BWAPI::Unit unit, BWAPI::Unit target)
+void Micro::SmartRightClick(BWAPI::Unit unit, BWAPI::Unit target, int currentFrame)
 {
     UAB_ASSERT(unit, "SmartRightClick: Unit not valid");
     UAB_ASSERT(target, "SmartRightClick: Target not valid");
@@ -179,7 +179,7 @@ void Micro::SmartRightClick(BWAPI::Unit unit, BWAPI::Unit target)
     }
 
     // if we have issued a command to this unit already this frame, ignore this one
-    if (unit->getLastCommandFrame() >= BWAPI::Broodwar->getFrameCount() || unit->isAttackFrame())
+    if (unit->getLastCommandFrame() >= currentFrame || unit->isAttackFrame())
     {
         return;
     }
@@ -226,7 +226,7 @@ void Micro::SmartLaySpiderMine(BWAPI::Unit unit, BWAPI::Position pos)
     unit->canUseTechPosition(BWAPI::TechTypes::Spider_Mines, pos);
 }
 
-void Micro::SmartRepair(BWAPI::Unit unit, BWAPI::Unit target)
+void Micro::SmartRepair(BWAPI::Unit unit, BWAPI::Unit target, int currentFrame)
 {
     UAB_ASSERT(unit, "SmartRightClick: Unit not valid");
     UAB_ASSERT(target, "SmartRightClick: Target not valid");
@@ -237,7 +237,7 @@ void Micro::SmartRepair(BWAPI::Unit unit, BWAPI::Unit target)
     }
 
     // if we have issued a command to this unit already this frame, ignore this one
-    if (unit->getLastCommandFrame() >= BWAPI::Broodwar->getFrameCount() || unit->isAttackFrame())
+    if (unit->getLastCommandFrame() >= currentFrame || unit->isAttackFrame())
     {
         return;
     }
@@ -261,7 +261,7 @@ void Micro::SmartRepair(BWAPI::Unit unit, BWAPI::Unit target)
 	}
 }
 
-void Micro::SmartKiteTarget(BWAPI::Unit rangedUnit, BWAPI::Unit target)
+void Micro::SmartKiteTarget(BWAPI::Unit rangedUnit, BWAPI::Unit target, int currentFrame)
 {
     UAB_ASSERT(rangedUnit, "SmartKiteTarget: Unit not valid");
     UAB_ASSERT(target, "SmartKiteTarget: Target not valid");
@@ -282,7 +282,7 @@ void Micro::SmartKiteTarget(BWAPI::Unit rangedUnit, BWAPI::Unit target)
 	if (!kiteLonger && (range <= target->getType().groundWeapon().maxRange()))
 	{
 		// if we can't kite it, there's no point
-		Micro::SmartAttackUnit(rangedUnit, target);
+		Micro::SmartAttackUnit(rangedUnit, target, currentFrame);
 		return;
 	}
 
@@ -313,12 +313,12 @@ void Micro::SmartKiteTarget(BWAPI::Unit rangedUnit, BWAPI::Unit target)
 	{
 		BWAPI::Position fleePosition(rangedUnit->getPosition() - target->getPosition() + rangedUnit->getPosition());
 		//BWAPI::Broodwar->drawLineMap(rangedUnit->getPosition(), fleePosition, BWAPI::Colors::Cyan);
-		Micro::SmartMove(rangedUnit, fleePosition);
+		Micro::SmartMove(rangedUnit, fleePosition, currentFrame);
 	}
 	// otherwise shoot
 	else
 	{
-		Micro::SmartAttackUnit(rangedUnit, target);
+		Micro::SmartAttackUnit(rangedUnit, target, currentFrame);
 	}
 }
 

@@ -27,17 +27,17 @@ class BuildingManager
 
     void            validateWorkersAndBuildings();		    // STEP 1
     void            assignWorkersToUnassignedBuildings();	// STEP 2
-    void            constructAssignedBuildings();			// STEP 3
-    void            checkForStartedConstruction();			// STEP 4
+    void            constructAssignedBuildings(int currentFrame);			// STEP 3
+    void            checkForStartedConstruction(int currentFrame);			// STEP 4
     void            checkForDeadTerranBuilders();			// STEP 5
-    void            checkForCompletedBuildings();			// STEP 6
+    void            checkForCompletedBuildings(int currentFrame);			// STEP 6
               
 
 public:
     
     BuildingManager(const AKBot::OpponentView& opponentView, const BaseLocationManager& bases, const AKBot::Logger& logger);
 
-    void                update();
+    void                update(int currentFrame);
     void                addBuildingTask(BWAPI::UnitType type,BWAPI::TilePosition desiredLocation);
     BWAPI::TilePosition getBuildingLocation(const Building & b);
 

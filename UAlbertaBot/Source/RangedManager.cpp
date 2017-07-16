@@ -11,13 +11,13 @@ RangedManager::RangedManager(const AKBot::OpponentView& opponentView, const Base
 { 
 }
 
-void RangedManager::executeMicro(const std::vector<BWAPI::Unit> & targets) 
+void RangedManager::executeMicro(const std::vector<BWAPI::Unit> & targets, int currentFrame)
 {
-	assignTargets(targets);
+	assignTargets(targets, currentFrame);
 }
 
 
-void RangedManager::assignTargets(const std::vector<BWAPI::Unit> & targets)
+void RangedManager::assignTargets(const std::vector<BWAPI::Unit> & targets, int currentFrame)
 {
     const std::vector<BWAPI::Unit> & rangedUnits = getUnits();
 
@@ -54,12 +54,12 @@ void RangedManager::assignTargets(const std::vector<BWAPI::Unit> & targets)
                     }
                     else
                     {
-                        Micro::SmartKiteTarget(rangedUnit, target);
+                        Micro::SmartKiteTarget(rangedUnit, target, currentFrame);
                     }
                 }
                 else
                 {
-                    Micro::SmartAttackUnit(rangedUnit, target);
+                    Micro::SmartAttackUnit(rangedUnit, target, currentFrame);
                 }
 			}
 			// if there are no targets
@@ -69,7 +69,7 @@ void RangedManager::assignTargets(const std::vector<BWAPI::Unit> & targets)
 				if (rangedUnit->getDistance(order.getPosition()) > 100)
 				{
 					// move to it
-					Micro::SmartAttackMove(rangedUnit, order.getPosition());
+					Micro::SmartAttackMove(rangedUnit, order.getPosition(), currentFrame);
 				}
 			}
 		}

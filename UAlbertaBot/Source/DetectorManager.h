@@ -24,7 +24,7 @@ public:
 	~DetectorManager() {}
 
 	void setUnitClosestToEnemy(BWAPI::Unit unit) { unitClosestToEnemy = unit; }
-	void executeMicro(const std::vector<BWAPI::Unit> & targets);
+	void executeMicro(const std::vector<BWAPI::Unit> & targets, int currentFrame);
 
 	BWAPI::Unit closestCloakedUnit(const std::vector<BWAPI::Unit> & cloakedUnits, BWAPI::Unit detectorUnit);
 };

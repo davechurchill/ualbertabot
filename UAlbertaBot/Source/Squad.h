@@ -51,7 +51,7 @@ class Squad
 	void                        setAllUnits();
 	
 	bool                        unitNearEnemy(BWAPI::Unit unit);
-	bool                        needsToRegroup(const MapTools& map);
+	bool                        needsToRegroup(const MapTools& map, int currentFrame);
 	int                         squadUnitsNear(BWAPI::Position p);
 
 public:
@@ -67,13 +67,13 @@ public:
 		const AKBot::Logger& logger);
     ~Squad();
 
-	void                update(const MapTools& map);
+	void                update(const MapTools& map, int currentFrame);
 	void                setSquadOrder(const SquadOrder & so);
 	void                addUnit(BWAPI::Unit u);
 	void                removeUnit(BWAPI::Unit u);
     bool                containsUnit(BWAPI::Unit u) const;
     bool                isEmpty() const;
-    void                clear();
+    void                clear(int currentFrame);
     size_t              getPriority() const;
     void                setPriority(const size_t & priority);
 

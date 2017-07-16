@@ -23,11 +23,11 @@ CombatCommander::CombatCommander(
 	, _squadData(_playerLocationProvider, opponentView, unitInfo, baseLocationManager, logger)
 	, _opponentView(opponentView)
 {
-	_squadData.onUnitRemoved([](const BWAPI::Unit& unit)
+	_squadData.onUnitRemoved([](const BWAPI::Unit& unit, int currentFrame)
 	{
 		if (unit->getType().isWorker())
 		{
-			Global::Workers().finishedWithWorker(unit);
+			Global::Workers().finishedWithWorker(unit, currentFrame);
 		}
 	});
 }
@@ -57,12 +57,12 @@ void CombatCommander::initializeSquads()
     _initialized = true;
 }
 
-bool CombatCommander::isSquadUpdateFrame()
+bool CombatCommander::isSquadUpdateFrame(int currentFrame) const
 {
-	return BWAPI::Broodwar->getFrameCount() % 10 == 0;
+	return currentFrame % 10 == 0;
 }
 
-void CombatCommander::update(const std::vector<BWAPI::Unit> & combatUnits)
+void CombatCommander::update(const std::vector<BWAPI::Unit> & combatUnits, int currentFrame)
 {
     if (!_initialized)
     {
@@ -71,16 +71,16 @@ void CombatCommander::update(const std::vector<BWAPI::Unit> & combatUnits)
 
     _combatUnits = combatUnits;
 
-	if (isSquadUpdateFrame())
+	if (isSquadUpdateFrame(currentFrame))
 	{
         updateIdleSquad();
         updateDropSquads();
-        updateScoutDefenseSquad();
-		updateDefenseSquads();
+        updateScoutDefenseSquad(currentFrame);
+		updateDefenseSquads(currentFrame);
 		updateAttackSquads();
 	}
 
-	_squadData.update(Global::Map());
+	_squadData.update(Global::Map(), currentFrame);
 }
 
 void CombatCommander::updateIdleSquad()
@@ -179,7 +179,7 @@ void CombatCommander::updateDropSquads()
     }
 }
 
-void CombatCommander::updateScoutDefenseSquad() 
+void CombatCommander::updateScoutDefenseSquad(int currentFrame) 
 {
     if (_combatUnits.empty()) 
     { 
@@ -223,7 +223,7 @@ void CombatCommander::updateScoutDefenseSquad()
 			// grab it from the worker manager and put it in the squad
             if (_squadData.canAssignUnitToSquad(workerDefender, scoutDefenseSquad))
             {
-			    Global::Workers().setCombatWorker(workerDefender);
+			    Global::Workers().setCombatWorker(workerDefender, currentFrame);
                 _squadData.assignUnitToSquad(workerDefender, scoutDefenseSquad);
             }
 		}
@@ -236,15 +236,15 @@ void CombatCommander::updateScoutDefenseSquad()
             unit->stop();
             if (unit->getType().isWorker())
             {
-                Global::Workers().finishedWithWorker(unit);
+                Global::Workers().finishedWithWorker(unit, currentFrame);
             }
         }
 
-        scoutDefenseSquad.clear();
+        scoutDefenseSquad.clear(currentFrame);
     }
 }
 
-void CombatCommander::updateDefenseSquads() 
+void CombatCommander::updateDefenseSquads(int currentFrame)
 {
 	if (_combatUnits.empty()) 
     { 
@@ -311,7 +311,7 @@ void CombatCommander::updateDefenseSquads()
             // if a defense squad for this region exists, remove it
             if (_squadData.squadExists(squadName.str()))
             {
-                _squadData.getSquad(squadName.str()).clear();
+                _squadData.getSquad(squadName.str()).clear(currentFrame);
             }
             
             // and return, nothing to defend here
@@ -336,7 +336,7 @@ void CombatCommander::updateDefenseSquads()
 	        int flyingDefendersNeeded = numDefendersPerEnemyUnit * numEnemyFlyingInRegion;
 	        int groundDefensersNeeded = numDefendersPerEnemyUnit * numEnemyGroundInRegion;
 
-            updateDefenseSquadUnits(defenseSquad, flyingDefendersNeeded, groundDefensersNeeded);
+            updateDefenseSquadUnits(defenseSquad, flyingDefendersNeeded, groundDefensersNeeded, currentFrame);
         }
         else
         {
@@ -368,12 +368,16 @@ void CombatCommander::updateDefenseSquads()
 
         if (!enemyUnitInRange)
         {
-            _squadData.getSquad(squad.getName()).clear();
+            _squadData.getSquad(squad.getName()).clear(currentFrame);
         }
     }
 }
 
-void CombatCommander::updateDefenseSquadUnits(Squad & defenseSquad, const size_t & flyingDefendersNeeded, const size_t & groundDefendersNeeded)
+void CombatCommander::updateDefenseSquadUnits(
+	Squad & defenseSquad,
+	const size_t & flyingDefendersNeeded,
+	const size_t & groundDefendersNeeded,
+	int currentFrame)
 {
     auto & squadUnits = defenseSquad.getUnits();
     size_t flyingDefendersInSquad = std::count_if(squadUnits.begin(), squadUnits.end(), UnitUtil::CanAttackAir);
@@ -382,7 +386,7 @@ void CombatCommander::updateDefenseSquadUnits(Squad & defenseSquad, const size_t
     // if there's nothing left to defend, clear the squad
     if (flyingDefendersNeeded == 0 && groundDefendersNeeded == 0)
     {
-        defenseSquad.clear();
+        defenseSquad.clear(currentFrame);
         return;
     }
 
@@ -390,7 +394,7 @@ void CombatCommander::updateDefenseSquadUnits(Squad & defenseSquad, const size_t
     size_t flyingDefendersAdded = 0;
     while (flyingDefendersNeeded > flyingDefendersInSquad + flyingDefendersAdded)
     {
-        BWAPI::Unit defenderToAdd = findClosestDefender(defenseSquad, defenseSquad.getSquadOrder().getPosition(), true);
+        BWAPI::Unit defenderToAdd = findClosestDefender(defenseSquad, defenseSquad.getSquadOrder().getPosition(), true, currentFrame);
 
         // if we find a valid flying defender, add it to the squad
         if (defenderToAdd)
@@ -409,7 +413,7 @@ void CombatCommander::updateDefenseSquadUnits(Squad & defenseSquad, const size_t
     size_t groundDefendersAdded = 0;
     while (groundDefendersNeeded > groundDefendersInSquad + groundDefendersAdded)
     {
-        BWAPI::Unit defenderToAdd = findClosestDefender(defenseSquad, defenseSquad.getSquadOrder().getPosition(), false);
+        BWAPI::Unit defenderToAdd = findClosestDefender(defenseSquad, defenseSquad.getSquadOrder().getPosition(), false, currentFrame);
 
         // if we find a valid ground defender add it
         if (defenderToAdd)
@@ -425,13 +429,13 @@ void CombatCommander::updateDefenseSquadUnits(Squad & defenseSquad, const size_t
     }
 }
 
-BWAPI::Unit CombatCommander::findClosestDefender(const Squad & defenseSquad, BWAPI::Position pos, bool flyingDefender) 
+BWAPI::Unit CombatCommander::findClosestDefender(const Squad & defenseSquad, BWAPI::Position pos, bool flyingDefender, int currentFrame) 
 {
 	BWAPI::Unit closestDefender = nullptr;
 	double minDistance = std::numeric_limits<double>::max();
 
     int zerglingsInOurBase = numZerglingsInOurBase();
-    bool zerglingRush = zerglingsInOurBase > 0 && BWAPI::Broodwar->getFrameCount() < 5000;
+    bool zerglingRush = zerglingsInOurBase > 0 && currentFrame < 5000;
 
 	for (auto & unit : _combatUnits) 
 	{

@@ -12,7 +12,7 @@ TankManager::TankManager(const AKBot::OpponentView& opponentView, const BaseLoca
 { 
 }
 
-void TankManager::executeMicro(const std::vector<BWAPI::Unit> & targets) 
+void TankManager::executeMicro(const std::vector<BWAPI::Unit> & targets, int currentFrame)
 {
 	const std::vector<BWAPI::Unit> & tanks = getUnits();
 
@@ -63,12 +63,12 @@ void TankManager::executeMicro(const std::vector<BWAPI::Unit> & targets)
                 // if we're in siege mode just attack the target
                 if (tank->isSieged())
                 {
-                    Micro::SmartAttackUnit(tank, target);
+                    Micro::SmartAttackUnit(tank, target, currentFrame);
                 }
                 // if we're not in siege mode kite the target
                 else
                 {
-                    Micro::SmartKiteTarget(tank, target);
+                    Micro::SmartKiteTarget(tank, target, currentFrame);
                 }
 			}
 			// if there are no targets
@@ -84,7 +84,7 @@ void TankManager::executeMicro(const std::vector<BWAPI::Unit> & targets)
                     else
                     {
     					// move to it
-    					Micro::SmartAttackMove(tank, order.getPosition());
+    					Micro::SmartAttackMove(tank, order.getPosition(), currentFrame);
                     }
 				}
 			}

@@ -20,13 +20,13 @@ namespace Micro
 	void SetOnRepair(std::function<void(const BWAPI::Unit& unit, const BWAPI::Unit & target)> handler);
 	void SetOnRightClick(std::function<void(const BWAPI::Unit& unit, const BWAPI::Unit & target)> handler);
 
-	void SmartAttackUnit(BWAPI::Unit attacker, BWAPI::Unit target);
-    void SmartAttackMove(BWAPI::Unit attacker, const BWAPI::Position & targetPosition);
-    void SmartMove(BWAPI::Unit attacker, const BWAPI::Position & targetPosition);
-    void SmartRightClick(BWAPI::Unit unit, BWAPI::Unit target);
+	void SmartAttackUnit(BWAPI::Unit attacker, BWAPI::Unit target, int currentFrame);
+    void SmartAttackMove(BWAPI::Unit attacker, const BWAPI::Position & targetPosition, int currentFrame);
+    void SmartMove(BWAPI::Unit attacker, const BWAPI::Position & targetPosition, int currentFrame);
+    void SmartRightClick(BWAPI::Unit unit, BWAPI::Unit target, int currentFrame);
     void SmartLaySpiderMine(BWAPI::Unit unit, BWAPI::Position pos);
-    void SmartRepair(BWAPI::Unit unit, BWAPI::Unit target);
-    void SmartKiteTarget(BWAPI::Unit rangedUnit, BWAPI::Unit target);
+    void SmartRepair(BWAPI::Unit unit, BWAPI::Unit target, int currentFrame);
+    void SmartKiteTarget(BWAPI::Unit rangedUnit, BWAPI::Unit target, int currentFrame);
     void MutaDanceTarget(BWAPI::Unit muta, BWAPI::Unit target);
     BWAPI::Position GetKiteVector(BWAPI::Unit unit, BWAPI::Unit target);
 

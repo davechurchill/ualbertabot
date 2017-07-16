@@ -35,13 +35,13 @@ Squad::~Squad()
     //clear();
 }
 
-void Squad::update(const MapTools& map)
+void Squad::update(const MapTools& map, int currentFrame)
 {
 	// update all necessary unit information within this squad
 	updateUnits();
 
 	// determine whether or not we should regroup
-	bool needToRegroup = needsToRegroup(map);
+	bool needToRegroup = needsToRegroup(map, currentFrame);
     
 	// draw some debug info
 	auto distanceFunction = [&map](const BWAPI::Position & src, const BWAPI::Position & dest)
@@ -55,24 +55,24 @@ void Squad::update(const MapTools& map)
 	{
 		BWAPI::Position regroupPosition = calcRegroupPosition();
         
-		_meleeManager.regroup(map, regroupPosition);
-		_rangedManager.regroup(map, regroupPosition);
-        _tankManager.regroup(map, regroupPosition);
-        _medicManager.regroup(map, regroupPosition);
+		_meleeManager.regroup(map, regroupPosition, currentFrame);
+		_rangedManager.regroup(map, regroupPosition, currentFrame);
+        _tankManager.regroup(map, regroupPosition, currentFrame);
+        _medicManager.regroup(map, regroupPosition, currentFrame);
 		_lastRegroupPosition = regroupPosition;
 	}
 	else // otherwise, execute micro
 	{
-		_meleeManager.execute(map, _order);
-		_rangedManager.execute(map, _order);
-        _tankManager.execute(map, _order);
-        _medicManager.execute(map, _order);
+		_meleeManager.execute(map, _order, currentFrame);
+		_rangedManager.execute(map, _order, currentFrame);
+        _tankManager.execute(map, _order, currentFrame);
+        _medicManager.execute(map, _order, currentFrame);
 
-		_transportManager.update();
+		_transportManager.update(currentFrame);
 
 		auto closestToEnemyUnit = unitClosestToEnemy(distanceFunction);
 		_detectorManager.setUnitClosestToEnemy(closestToEnemyUnit);
-		_detectorManager.execute(map, _order);
+		_detectorManager.execute(map, _order, currentFrame);
 	}
 }
 
@@ -180,7 +180,7 @@ void Squad::addUnitsToMicroManagers()
 }
 
 // calculates whether or not to regroup
-bool Squad::needsToRegroup(const MapTools& map)
+bool Squad::needsToRegroup(const MapTools& map, int currentFrame)
 {
     if (!Config::Micro::UseSparcraftSimulation)
     {
@@ -239,7 +239,7 @@ bool Squad::needsToRegroup(const MapTools& map)
 
 	//do the SparCraft Simulation!
 	CombatSimulation sim(_opponentView, _unitInfo, _logger);
-	sim.setCombatUnits(unitClosest->getPosition(), Config::Micro::CombatRegroupRadius);
+	sim.setCombatUnits(unitClosest->getPosition(), Config::Micro::CombatRegroupRadius, currentFrame);
 	
     auto score = sim.simulateCombat();
 
@@ -258,7 +258,7 @@ bool Squad::needsToRegroup(const MapTools& map)
     // we should not attack unless 5 seconds have passed since a retreat
     if (retreat != _lastRetreatSwitchVal)
     {
-        if (!retreat && (BWAPI::Broodwar->getFrameCount() - _lastRetreatSwitch < switchTime))
+        if (!retreat && (currentFrame - _lastRetreatSwitch < switchTime))
         {
             waiting = true;
             retreat = _lastRetreatSwitchVal;
@@ -266,7 +266,7 @@ bool Squad::needsToRegroup(const MapTools& map)
         else
         {
             waiting = false;
-            _lastRetreatSwitch = BWAPI::Broodwar->getFrameCount();
+            _lastRetreatSwitch = currentFrame;
             _lastRetreatSwitchVal = retreat;
         }
     }
@@ -293,14 +293,14 @@ bool Squad::containsUnit(BWAPI::Unit u) const
     return std::find(_units.begin(), _units.end(), u) != _units.end();
 }
 
-void Squad::clear()
+void Squad::clear(int currentFrame)
 {
 	auto handler = _onRemoveHandler;
     for (auto & unit : getUnits())
     {
 		if (handler)
 		{
-			handler(unit);
+			handler(unit, currentFrame);
 		}
     }
 

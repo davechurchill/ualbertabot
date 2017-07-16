@@ -17,7 +17,7 @@ ScoutManager::ScoutManager(const AKBot::OpponentView& opponentView, const BaseLo
 {
 }
 
-void ScoutManager::update()
+void ScoutManager::update(int currentFrame)
 {
     // calculate enemy region vertices if we haven't yet
     /*if (_enemyRegionVertices.empty())
@@ -25,24 +25,24 @@ void ScoutManager::update()
         calculateEnemyRegionVertices();
     }*/
 
-	moveScouts();
+	moveScouts(currentFrame);
 }
 
-void ScoutManager::setWorkerScout(BWAPI::Unit unit)
+void ScoutManager::setWorkerScout(BWAPI::Unit unit, int currentFrame)
 {
     // if we have a previous worker scout, release it back to the worker manager
     if (_workerScout)
     {
 		if (_onScoutReleased)
 		{
-			_onScoutReleased(_workerScout);
+			_onScoutReleased(_workerScout, currentFrame);
 		}
     }
 
     _workerScout = unit;
 	if (_onScoutAssigned)
 	{
-		_onScoutAssigned(_workerScout);
+		_onScoutAssigned(_workerScout, currentFrame);
 	}
 }
 
@@ -56,7 +56,7 @@ void UAlbertaBot::ScoutManager::onScoutAssigned(UnitHandler handler)
 	_onScoutAssigned = handler;
 }
 
-void ScoutManager::moveScouts()
+void ScoutManager::moveScouts(int currentFrame)
 {
 	if (!_workerScout || !_workerScout->exists() || !(_workerScout->getHitPoints() > 0))
 	{
@@ -71,13 +71,13 @@ void ScoutManager::moveScouts()
 	// if we know where the enemy region is and where our scout is
 	if (_workerScout && (enemyBaseLocation != nullptr))
 	{
-		harrasEnemyBaseIfPossible(enemyBaseLocation, scoutHP);		
+		harrasEnemyBaseIfPossible(enemyBaseLocation, scoutHP, currentFrame);		
 	}
 
 	// Enemy base is unexplored
 	if (!enemyBaseLocation)
 	{
-        if (exploreEnemyBases())
+        if (exploreEnemyBases(currentFrame))
 		{
 			return;
 		}
@@ -100,7 +100,7 @@ bool ScoutManager::allEnemyBasesExplored() const
 	return true;
 }
 
-bool ScoutManager::exploreEnemyBases()
+bool ScoutManager::exploreEnemyBases(int currentFrame)
 {
 	_scoutStatus = "Enemy base unknown, exploring";
 
@@ -111,7 +111,7 @@ bool ScoutManager::exploreEnemyBases()
 		if (!BWAPI::Broodwar->isExplored(startLocation->getDepotTilePosition()))
 		{
 			// assign a zergling to go scout it
-			Micro::SmartMove(_workerScout, BWAPI::Position(startLocation->getDepotTilePosition()));
+			Micro::SmartMove(_workerScout, BWAPI::Position(startLocation->getDepotTilePosition()), currentFrame);
 			return true;
 		}
 	}
@@ -119,7 +119,7 @@ bool ScoutManager::exploreEnemyBases()
 	return false;
 }
 
-void UAlbertaBot::ScoutManager::harrasEnemyBaseIfPossible(const UAlbertaBot::BaseLocation * enemyBaseLocation, int scoutHP)
+void UAlbertaBot::ScoutManager::harrasEnemyBaseIfPossible(const UAlbertaBot::BaseLocation * enemyBaseLocation, int scoutHP, int currentFrame)
 {
 	int scoutDistanceThreshold = 30;
 
@@ -152,20 +152,20 @@ void UAlbertaBot::ScoutManager::harrasEnemyBaseIfPossible(const UAlbertaBot::Bas
 			{
 				_scoutStatus = "Harass enemy worker";
 				_currentRegionVertexIndex = -1;
-				Micro::SmartAttackUnit(_workerScout, closestWorker);
+				Micro::SmartAttackUnit(_workerScout, closestWorker, currentFrame);
 			}
 			// otherwise keep moving to the enemy base location
 			else
 			{
 				_scoutStatus = "Following perimeter";
-				Micro::SmartMove(_workerScout, enemyBaseLocation->getPosition());
+				Micro::SmartMove(_workerScout, enemyBaseLocation->getPosition(), currentFrame);
 			}
 		}
 		// if the worker scout is under attack
 		else
 		{
 			_scoutStatus = "Under attack inside, fleeing";
-			Micro::SmartMove(_workerScout, getFleePosition());
+			Micro::SmartMove(_workerScout, getFleePosition(), currentFrame);
 		}
 	}
 	// if the scout is not in the enemy region
@@ -173,14 +173,14 @@ void UAlbertaBot::ScoutManager::harrasEnemyBaseIfPossible(const UAlbertaBot::Bas
 	{
 		_scoutStatus = "Under attack inside, fleeing";
 
-		Micro::SmartMove(_workerScout, getFleePosition());
+		Micro::SmartMove(_workerScout, getFleePosition(), currentFrame);
 	}
 	else
 	{
 		_scoutStatus = "Enemy region known, going there";
 
 		// move to the enemy region
-		Micro::SmartMove(_workerScout, enemyBaseLocation->getPosition());
+		Micro::SmartMove(_workerScout, enemyBaseLocation->getPosition(), currentFrame);
 	}
 }
 

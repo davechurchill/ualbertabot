@@ -19,7 +19,7 @@ public:
     virtual const std::string & getName() const;
 
     virtual void onStart() = 0;
-    virtual void onFrame() = 0;
+    virtual void onFrame(int currentFrame) = 0;
     virtual void onBattleBegin() = 0;
     virtual void onBattleEnd() = 0;
 };

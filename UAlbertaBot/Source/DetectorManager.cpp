@@ -13,7 +13,7 @@ DetectorManager::DetectorManager(const AKBot::OpponentView& opponentView, const 
 { 
 }
 
-void DetectorManager::executeMicro(const std::vector<BWAPI::Unit> & targets) 
+void DetectorManager::executeMicro(const std::vector<BWAPI::Unit> & targets, int currentFrame)
 {
 	const std::vector<BWAPI::Unit> & detectorUnits = getUnits();
 
@@ -51,7 +51,7 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::Unit> & targets)
 		// if we need to regroup, move the detectorUnit to that location
 		if (!detectorUnitInBattle && unitClosestToEnemy && unitClosestToEnemy->getPosition().isValid())
 		{
-			Micro::SmartMove(detectorUnit, unitClosestToEnemy->getPosition());
+			Micro::SmartMove(detectorUnit, unitClosestToEnemy->getPosition(), currentFrame);
 			detectorUnitInBattle = true;
 		}
 		// otherwise there is no battle or no closest to enemy so we don't want our detectorUnit to die
@@ -59,7 +59,7 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::Unit> & targets)
 		else
 		{
 			auto explorePosition = _mapTools.getLeastRecentlySeenPosition(_bases);
-			Micro::SmartMove(detectorUnit, explorePosition);
+			Micro::SmartMove(detectorUnit, explorePosition, currentFrame);
 		}
 	}
 }

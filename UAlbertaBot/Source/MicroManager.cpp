@@ -15,7 +15,7 @@ void MicroManager::setUnits(const std::vector<BWAPI::Unit> & u)
 	_units = u; 
 }
 
-void MicroManager::execute(const MapTools & map, const SquadOrder & inputOrder)
+void MicroManager::execute(const MapTools & map, const SquadOrder & inputOrder, int currentFrame)
 {
 	// Nothing to do if we have no units
 	if (_units.empty() || !(inputOrder.getType() == SquadOrderTypes::Attack || inputOrder.getType() == SquadOrderTypes::Defend))
@@ -52,7 +52,7 @@ void MicroManager::execute(const MapTools & map, const SquadOrder & inputOrder)
         // if this is a worker defense force
         if (_units.size() == 1 && (*_units.begin())->getType().isWorker())
         {
-            executeMicro(nearbyEnemies);
+            executeMicro(nearbyEnemies, currentFrame);
         }
         // otherwise it is a normal attack force
         else
@@ -60,7 +60,7 @@ void MicroManager::execute(const MapTools & map, const SquadOrder & inputOrder)
             // if this is a defense squad then we care about all units in the area
             if (order.getType() == SquadOrderTypes::Defend)
             {
-                executeMicro(nearbyEnemies);
+                executeMicro(nearbyEnemies, currentFrame);
             }
             // otherwise we only care about workers if they are in their own region
             else
@@ -93,7 +93,7 @@ void MicroManager::execute(const MapTools & map, const SquadOrder & inputOrder)
 		        }
 
 		        // Allow micromanager to handle enemies
-		        executeMicro(workersRemoved);
+		        executeMicro(workersRemoved, currentFrame);
             }
         }
 	}	
@@ -104,7 +104,7 @@ const std::vector<BWAPI::Unit> & MicroManager::getUnits() const
     return _units; 
 }
 
-void MicroManager::regroup(const MapTools & map, const BWAPI::Position & regroupPosition) const
+void MicroManager::regroup(const MapTools & map, const BWAPI::Position & regroupPosition, int currentFrame) const
 {
     BWAPI::Position ourBasePosition = BWAPI::Position(opponentView.self()->getStartLocation());
     int regroupDistanceFromBase = map.getGroundDistance(regroupPosition, ourBasePosition);
@@ -117,16 +117,16 @@ void MicroManager::regroup(const MapTools & map, const BWAPI::Position & regroup
 		// if the unit is outside the regroup area
         if (unitDistanceFromBase > regroupDistanceFromBase)
         {
-            Micro::SmartMove(unit, ourBasePosition);
+            Micro::SmartMove(unit, ourBasePosition, currentFrame);
         }
 		else if (unit->getDistance(regroupPosition) > 100)
 		{
 			// regroup it
-			Micro::SmartMove(unit, regroupPosition);
+			Micro::SmartMove(unit, regroupPosition, currentFrame);
 		}
 		else
 		{
-			Micro::SmartAttackMove(unit, unit->getPosition());
+			Micro::SmartAttackMove(unit, unit->getPosition(), currentFrame);
 		}
 	}
 }

@@ -28,6 +28,11 @@ namespace AKBot
 
 		// draw enemy units
 		auto enemy = getEnemy();
+		if (enemy == nullptr)
+		{
+			return;
+		}
+
 		for (const auto & kv : _unitInfo.getUnitData(enemy).getUnitInfoMap())
 		{
 			const UnitInfo & ui(kv.second);
@@ -58,6 +63,11 @@ namespace AKBot
 		}
 
 		auto enemy = getEnemy();
+		if (enemy == __nullptr)
+		{
+			return;
+		}
+
 		std::string prefix = "\x04";
 
 		auto selfUnitData = _unitInfo.getUnitData(_opponentView.self());

@@ -30,7 +30,7 @@ protected:
 	const BaseLocationManager& bases;
 	const AKBot::OpponentView& opponentView;
 
-	virtual void        executeMicro(const std::vector<BWAPI::Unit> & targets) = 0;
+	virtual void        executeMicro(const std::vector<BWAPI::Unit> & targets, int currentFrame) = 0;
 	bool                checkPositionWalkable(BWAPI::Position pos);
 	void                trainSubUnits(BWAPI::Unit unit) const;
     
@@ -41,8 +41,8 @@ public:
 	const std::vector<BWAPI::Unit> & getUnits() const;
 
 	void				setUnits(const std::vector<BWAPI::Unit> & u);
-	void				execute(const MapTools & map, const SquadOrder & order);
-	void				regroup(const MapTools & map, const BWAPI::Position & regroupPosition) const;
+	void				execute(const MapTools & map, const SquadOrder & order, int currentFrame);
+	void				regroup(const MapTools & map, const BWAPI::Position & regroupPosition, int currentFrame) const;
 
 };
 }

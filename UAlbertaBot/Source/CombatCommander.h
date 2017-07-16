@@ -19,15 +19,15 @@ class CombatCommander
 	const AKBot::OpponentView& _opponentView;
 	const UnitInfoManager& _unitInfo;
 
-    void            updateScoutDefenseSquad();
-	void            updateDefenseSquads();
+    void            updateScoutDefenseSquad(int currentFrame);
+	void            updateDefenseSquads(int currentFrame);
 	void            updateAttackSquads();
     void            updateDropSquads();
 	void            updateIdleSquad();
-	bool            isSquadUpdateFrame();
+	bool            isSquadUpdateFrame(int currentFrame) const;
 	int             getNumType(std::vector<BWAPI::Unit> & units, BWAPI::UnitType type);
 
-	BWAPI::Unit     findClosestDefender(const Squad & defenseSquad, BWAPI::Position pos, bool flyingDefender);
+	BWAPI::Unit     findClosestDefender(const Squad & defenseSquad, BWAPI::Position pos, bool flyingDefender, int currentFrame);
     BWAPI::Unit     findClosestWorkerToTarget(std::vector<BWAPI::Unit> & unitsToAssign, BWAPI::Unit target);
 
 	BWAPI::Position getDefendLocation();
@@ -40,7 +40,11 @@ class CombatCommander
     int             getNumGroundDefendersInSquad(Squad & squad);
     int             getNumAirDefendersInSquad(Squad & squad);
 
-    void            updateDefenseSquadUnits(Squad & defenseSquad, const size_t & flyingDefendersNeeded, const size_t & groundDefendersNeeded);
+    void            updateDefenseSquadUnits(
+		Squad & defenseSquad,
+		const size_t & flyingDefendersNeeded,
+		const size_t & groundDefendersNeeded,
+		int currentFrame);
     int             defendWithWorkers();
 
     int             numZerglingsInOurBase();
@@ -54,7 +58,7 @@ public:
 		const UnitInfoManager& unitInfo,
 		const AKBot::Logger& logger);
 
-	void update(const std::vector<BWAPI::Unit> & combatUnits);
+	void update(const std::vector<BWAPI::Unit> & combatUnits, int currentFrame);
 	const SquadData& getSquadData() const;
 };
 }

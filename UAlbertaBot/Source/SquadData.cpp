@@ -19,25 +19,25 @@ SquadData::SquadData(
 	
 }
 
-void SquadData::update(const MapTools& map)
+void SquadData::update(const MapTools& map, int currentFrame)
 {
-	updateAllSquads(map);
+	updateAllSquads(map, currentFrame);
     verifySquadUniqueMembership();
 }
 
-void SquadData::clearSquadData()
+void SquadData::clearSquadData(int currentFrame)
 {
     // give back workers who were in squads
     for (auto & kv : _squads)
 	{
         Squad & squad = kv.second;
-		squad.clear();
+		squad.clear(currentFrame);
 	}
 
 	_squads.clear();
 }
 
-void SquadData::removeSquad(const std::string & squadName)
+void SquadData::removeSquad(const std::string & squadName, int currentFrame)
 {
     auto & squadPtr = _squads.find(squadName);
 
@@ -48,7 +48,7 @@ void SquadData::removeSquad(const std::string & squadName)
     }
 
 	auto& squad = squadPtr->second;
-	squad.clear();
+	squad.clear(currentFrame);
 
     _squads.erase(squadName);
 }
@@ -79,12 +79,12 @@ void SquadData::addSquad(const std::string & squadName, const SquadOrder & squad
 	addSquad(squadName, Squad(squadName, squadOrder, priority, _locationProvider, _opponentView, _unitInfo, _bases, _logger));
 }
 
-void SquadData::updateAllSquads(const MapTools& map)
+void SquadData::updateAllSquads(const MapTools& map, int currentFrame)
 {
 	for (auto & kv : _squads)
 	{
 		auto& squad = kv.second;
-		squad.update(map);
+		squad.update(map, currentFrame);
 	}
 }
 

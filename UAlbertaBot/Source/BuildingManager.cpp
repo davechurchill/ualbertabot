@@ -18,14 +18,14 @@ BuildingManager::BuildingManager(const AKBot::OpponentView& opponentView, const 
 }
 
 // gets called every frame from GameCommander
-void BuildingManager::update()
+void BuildingManager::update(int currentFrame)
 {
-    validateWorkersAndBuildings();          // check to see if assigned workers have died en route or while constructing
-    assignWorkersToUnassignedBuildings();   // assign workers to the unassigned buildings and label them 'planned'    
-    constructAssignedBuildings();           // for each planned building, if the worker isn't constructing, send the command    
-    checkForStartedConstruction();          // check to see if any buildings have started construction and update data structures    
-    checkForDeadTerranBuilders();           // if we are terran and a building is under construction without a worker, assign a new one    
-    checkForCompletedBuildings();           // check to see if any buildings have completed and update data structures
+    validateWorkersAndBuildings();				// check to see if assigned workers have died en route or while constructing
+    assignWorkersToUnassignedBuildings();		// assign workers to the unassigned buildings and label them 'planned'    
+    constructAssignedBuildings(currentFrame);   // for each planned building, if the worker isn't constructing, send the command    
+    checkForStartedConstruction(currentFrame);	// check to see if any buildings have started construction and update data structures    
+    checkForDeadTerranBuilders();				// if we are terran and a building is under construction without a worker, assign a new one    
+    checkForCompletedBuildings(currentFrame);   // check to see if any buildings have completed and update data structures
 }
 
 bool BuildingManager::isBeingBuilt(BWAPI::UnitType type)
@@ -106,7 +106,7 @@ void BuildingManager::assignWorkersToUnassignedBuildings()
 }
 
 // STEP 3: ISSUE CONSTRUCTION ORDERS TO ASSIGN BUILDINGS AS NEEDED
-void BuildingManager::constructAssignedBuildings()
+void BuildingManager::constructAssignedBuildings(int currentFrame)
 {
     for (auto & b : _buildings)
     {
@@ -121,7 +121,7 @@ void BuildingManager::constructAssignedBuildings()
             // if we haven't explored the build position, go there
             if (!isBuildingPositionExplored(b))
             {
-                Micro::SmartMove(b.builderUnit,BWAPI::Position(b.finalPosition));
+                Micro::SmartMove(b.builderUnit,BWAPI::Position(b.finalPosition), currentFrame);
             }
             // if this is not the first time we've sent this guy to build this
             // it must be the case that something was in the way of building
@@ -129,7 +129,7 @@ void BuildingManager::constructAssignedBuildings()
             {
                 // tell worker manager the unit we had is not needed now, since we might not be able
                 // to get a valid location soon enough
-                Global::Workers().finishedWithWorker(b.builderUnit);
+                Global::Workers().finishedWithWorker(b.builderUnit, currentFrame);
 
                 // free the previous location in reserved
                 _buildingPlacer.freeTiles(b.finalPosition,b.type.tileWidth(),b.type.tileHeight());
@@ -156,7 +156,7 @@ void BuildingManager::constructAssignedBuildings()
 }
 
 // STEP 4: UPDATE DATA STRUCTURES FOR BUILDINGS STARTING CONSTRUCTION
-void BuildingManager::checkForStartedConstruction()
+void BuildingManager::checkForStartedConstruction(int currentFrame)
 {
     // for each building unit which is being constructed
     for (auto & buildingStarted : _opponentView.self()->getUnits())
@@ -194,7 +194,7 @@ void BuildingManager::checkForStartedConstruction()
                 }
                 else if (_opponentView.self()->getRace() == BWAPI::Races::Protoss)
                 {    
-                    Global::Workers().finishedWithWorker(b.builderUnit);
+                    Global::Workers().finishedWithWorker(b.builderUnit, currentFrame);
                     b.builderUnit = nullptr;
                 }
 
@@ -215,7 +215,7 @@ void BuildingManager::checkForStartedConstruction()
 void BuildingManager::checkForDeadTerranBuilders() {}
 
 // STEP 6: CHECK FOR COMPLETED BUILDINGS
-void BuildingManager::checkForCompletedBuildings()
+void BuildingManager::checkForCompletedBuildings(int currentFrame)
 {
     std::vector<Building> toRemove;
 
@@ -233,7 +233,7 @@ void BuildingManager::checkForCompletedBuildings()
             // if we are terran, give the worker back to worker manager
             if (_opponentView.self()->getRace() == BWAPI::Races::Terran)
             {
-                Global::Workers().finishedWithWorker(b.builderUnit);          
+                Global::Workers().finishedWithWorker(b.builderUnit, currentFrame);          
             }
 
             // remove this unit from the under construction vector

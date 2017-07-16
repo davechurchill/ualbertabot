@@ -42,9 +42,9 @@ public:
     void onStart();
     void update(int currentFrame);
 
-    void handleUnitAssignments();
+    void handleUnitAssignments(int currentFrame);
     void setValidUnits();
-    void setScoutUnits();
+    void setScoutUnits(int currentFrame);
     void setCombatUnits();
 
 	BWAPI::Unit getFirstSupplyProvider();
@@ -61,7 +61,7 @@ public:
     void onUnitCreate(BWAPI::Unit unit);
     void onUnitComplete(BWAPI::Unit unit);
     void onUnitRenegade(BWAPI::Unit unit);
-    void onUnitDestroy(BWAPI::Unit unit);
+    void onUnitDestroy(BWAPI::Unit unit, int currentFrame);
     void onUnitMorph(BWAPI::Unit unit);
 };
 

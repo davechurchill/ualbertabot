@@ -24,7 +24,7 @@ void BOSSManager::reset()
 }
 
 // start a new search for a new goal
-void BOSSManager::startNewSearch(const std::vector<MetaPair> & goalUnits, const BuildingManager & buildingManager)
+void BOSSManager::startNewSearch(const std::vector<MetaPair> & goalUnits, const BuildingManager & buildingManager, int currentFrame)
 {
     size_t numWorkers   = UnitUtil::GetAllUnitCount(_opponentView.self()->getRace().getWorker());
     size_t numDepots    = UnitUtil::GetAllUnitCount(UnitUtil::getResourceDepot(_opponentView.self()->getRace()))
@@ -55,7 +55,7 @@ void BOSSManager::startNewSearch(const std::vector<MetaPair> & goalUnits, const 
         _smartSearch->setState(initialState);
 
         _searchInProgress = true;
-        _previousSearchStartFrame = BWAPI::Broodwar->getFrameCount();
+        _previousSearchStartFrame = currentFrame;
         _totalPreviousSearchTime = 0;
         _previousGoalUnits = goalUnits;
     }
@@ -66,7 +66,7 @@ void BOSSManager::startNewSearch(const std::vector<MetaPair> & goalUnits, const 
 }
 
 // tell the search to keep going for however long we have this frame
-void BOSSManager::update(double timeLimit)
+void BOSSManager::update(double timeLimit, int currentFrame)
 {
     // if there's a search in progress, resume it
     if (isSearchInProgress())
@@ -96,7 +96,7 @@ void BOSSManager::update(double timeLimit)
         _totalPreviousSearchTime += _smartSearch->getResults().timeElapsed;
 
         // after the search finishes for this frame, check to see if we have a solution or if we hit the overall time limit
-        bool searchTimeOut = (BWAPI::Broodwar->getFrameCount() > (_previousSearchStartFrame + Config::Macro::BOSSFrameLimit));
+        bool searchTimeOut = (currentFrame > (_previousSearchStartFrame + Config::Macro::BOSSFrameLimit));
         bool previousSearchComplete = searchTimeOut || _smartSearch->getResults().solved || caughtException;
         if (previousSearchComplete)
         {
@@ -122,7 +122,7 @@ void BOSSManager::update(double timeLimit)
 
             // re-set all the search information to get read for the next search
             _searchInProgress = false;
-            _previousSearchFinishFrame = BWAPI::Broodwar->getFrameCount();
+            _previousSearchFinishFrame = currentFrame;
             _previousSearchResults = _smartSearch->getResults();
             _savedSearchResults = _previousSearchResults;
             _previousBuildOrder = _previousSearchResults.buildOrder;

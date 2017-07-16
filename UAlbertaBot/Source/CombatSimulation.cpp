@@ -13,7 +13,7 @@ CombatSimulation::CombatSimulation(const AKBot::OpponentView& opponentView, cons
 
 // sets the starting states based on the combat units within a radius of a given position
 // this center will most likely be the position of the forwardmost combat unit we control
-void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int radius)
+void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int radius, int currentFrame)
 {
 	SparCraft::GameState s;
 
@@ -39,7 +39,7 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
 		{
             try
             {
-			    s.addUnit(getSparCraftUnit(unit));
+			    s.addUnit(getSparCraftUnit(unit, currentFrame));
             }
             catch (int e)
             {
@@ -67,8 +67,8 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
                             getSparCraftPlayerID(ui.player), 
                             static_cast<int>(BWAPI::UnitTypes::Terran_Marine.maxHitPoints() * hpRatio), 
                             0,
-		                    BWAPI::Broodwar->getFrameCount(), 
-                            BWAPI::Broodwar->getFrameCount());	
+		                    currentFrame, 
+                            currentFrame);	
 
             for (size_t i(0); i < 5; ++i)
             {
@@ -82,7 +82,7 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
 		{
             try
             {
-			    s.addUnit(getSparCraftUnit(ui));
+			    s.addUnit(getSparCraftUnit(ui, currentFrame));
             }
             catch (int e)
             {
@@ -95,7 +95,7 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
 }
 
 // Gets a SparCraft unit from a BWAPI::Unit, used for our own units since we have all their info
-const SparCraft::Unit CombatSimulation::getSparCraftUnit(BWAPI::Unit unit) const
+const SparCraft::Unit CombatSimulation::getSparCraftUnit(BWAPI::Unit unit, int currentFrame) const
 {
     return SparCraft::Unit( unit->getType(),
                             SparCraft::Position(unit->getPosition()), 
@@ -103,12 +103,12 @@ const SparCraft::Unit CombatSimulation::getSparCraftUnit(BWAPI::Unit unit) const
                             getSparCraftPlayerID(unit->getPlayer()), 
                             unit->getHitPoints() + unit->getShields(), 
                             0,
-		                    BWAPI::Broodwar->getFrameCount(), 
-                            BWAPI::Broodwar->getFrameCount());	
+		                    currentFrame, 
+                            currentFrame);	
 }
 
 // Gets a SparCraft unit from a UnitInfo struct, needed to get units of enemy behind FoW
-const SparCraft::Unit CombatSimulation::getSparCraftUnit(const UnitInfo & ui) const
+const SparCraft::Unit CombatSimulation::getSparCraftUnit(const UnitInfo & ui, int currentFrame) const
 {
 	BWAPI::UnitType type = ui.type;
 
@@ -124,8 +124,8 @@ const SparCraft::Unit CombatSimulation::getSparCraftUnit(const UnitInfo & ui) co
                             getSparCraftPlayerID(ui.player), 
                             ui.lastHealth, 
                             0,
-		                    BWAPI::Broodwar->getFrameCount(), 
-                            BWAPI::Broodwar->getFrameCount());	
+		                    currentFrame, 
+                            currentFrame);	
 }
 
 double CombatSimulation::simulateCombat()

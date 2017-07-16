@@ -31,10 +31,10 @@ class ScoutManager
 	BWAPI::Unit     getEnemyGeyser();
 	BWAPI::Unit     closestEnemyWorker();
     //void            followPerimeter();
-	void            moveScouts();
-	bool exploreEnemyBases();
+	void            moveScouts(int currentFrame);
+	bool exploreEnemyBases(int currentFrame);
 	bool allEnemyBasesExplored() const;
-	void harrasEnemyBaseIfPossible(const BaseLocation * enemyBaseLocation, int scoutHP);
+	void harrasEnemyBaseIfPossible(const BaseLocation * enemyBaseLocation, int scoutHP, int currentFrame);
     //void            calculateEnemyRegionVertices();
 
 
@@ -42,8 +42,8 @@ public:
     
 	ScoutManager(const AKBot::OpponentView& opponentView, const BaseLocationManager& baseLocationManager);
 
-	void update();
-    void setWorkerScout(BWAPI::Unit unit);
+	void update(int currentFrame);
+    void setWorkerScout(BWAPI::Unit unit, int currentFrame);
 	void onScoutReleased(UnitHandler handler);
 	void onScoutAssigned(UnitHandler handler);
 	const std::string getScoutStatus() const { return _scoutStatus; }

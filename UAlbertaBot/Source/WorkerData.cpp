@@ -33,14 +33,14 @@ void WorkerData::addWorker(BWAPI::Unit unit)
     _workerJobMap[unit] = Default;
 }
 
-void WorkerData::addWorker(BWAPI::Unit unit,WorkerJob job,BWAPI::Unit jobUnit)
+void WorkerData::addWorker(BWAPI::Unit unit,WorkerJob job,BWAPI::Unit jobUnit, int currentFrame)
 {
     if (!unit || !jobUnit) { return; }
 
     UAB_ASSERT(_workers.find(unit) == _workers.end(),"Worker was already in the set");
 
     _workers.insert(unit);
-    setWorkerJob(unit,job,jobUnit);
+    setWorkerJob(unit,job,jobUnit, currentFrame);
 }
 
 void WorkerData::addWorker(BWAPI::Unit unit,enum WorkerJob job,BWAPI::UnitType jobUnitType)
@@ -61,7 +61,7 @@ void WorkerData::addDepot(BWAPI::Unit unit)
     _depotWorkerCount[unit] = 0;
 }
 
-void WorkerData::removeDepot(BWAPI::Unit unit)
+void WorkerData::removeDepot(BWAPI::Unit unit, int currentFrame)
 {
     if (!unit) { return; }
 
@@ -74,7 +74,7 @@ void WorkerData::removeDepot(BWAPI::Unit unit)
         // if a worker was working at this depot
         if (_workerDepotMap[worker] == unit)
         {
-            setWorkerJob(worker,Idle,nullptr);
+            setWorkerJob(worker,Idle,nullptr, currentFrame);
         }
     }
 }
@@ -91,7 +91,7 @@ void WorkerData::addToMineralPatch(BWAPI::Unit unit,int num)
     }
 }
 
-void WorkerData::setWorkerJob(BWAPI::Unit unit,enum WorkerJob job,BWAPI::Unit jobUnit)
+void WorkerData::setWorkerJob(BWAPI::Unit unit,enum WorkerJob job,BWAPI::Unit jobUnit, int currentFrame)
 {
     if (!unit) { return; }
 
@@ -111,7 +111,7 @@ void WorkerData::setWorkerJob(BWAPI::Unit unit,enum WorkerJob job,BWAPI::Unit jo
         addToMineralPatch(mineralToMine,1);
 
         // right click the mineral to start mining
-        Micro::SmartRightClick(unit,mineralToMine);
+        Micro::SmartRightClick(unit,mineralToMine, currentFrame);
     }
     else if (job == Gas)
     {
@@ -122,7 +122,7 @@ void WorkerData::setWorkerJob(BWAPI::Unit unit,enum WorkerJob job,BWAPI::Unit jo
         _workerRefineryMap[unit] = jobUnit;
 
         // right click the refinery to start harvesting
-        Micro::SmartRightClick(unit,jobUnit);
+        Micro::SmartRightClick(unit,jobUnit, currentFrame);
     }
     else if (job == Repair)
     {
@@ -135,7 +135,7 @@ void WorkerData::setWorkerJob(BWAPI::Unit unit,enum WorkerJob job,BWAPI::Unit jo
         // start repairing 
         if (!unit->isRepairing())
         {
-            Micro::SmartRepair(unit,jobUnit);
+            Micro::SmartRepair(unit,jobUnit, currentFrame);
         }
     }
     else if (job == Scout)

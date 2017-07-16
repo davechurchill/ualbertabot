@@ -28,12 +28,12 @@ public:
 
 	CombatSimulation(const AKBot::OpponentView& opponentView, const UnitInfoManager& unitInfo, const AKBot::Logger& logger);
 
-	void setCombatUnits(const BWAPI::Position & center, const int radius);
+	void setCombatUnits(const BWAPI::Position & center, const int radius, int currentFrame);
 
 	double simulateCombat();
 
-	const SparCraft::Unit			getSparCraftUnit(const UnitInfo & ui) const;
-    const SparCraft::Unit			getSparCraftUnit(BWAPI::Unit unit) const;
+	const SparCraft::Unit			getSparCraftUnit(const UnitInfo & ui, int currentFrame) const;
+    const SparCraft::Unit			getSparCraftUnit(BWAPI::Unit unit, int currentFrame) const;
 	const SparCraft::GameState &	getSparCraftState() const;
 
 	const size_t getSparCraftPlayerID(BWAPI::Player player) const;

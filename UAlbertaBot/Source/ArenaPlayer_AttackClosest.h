@@ -16,7 +16,7 @@ public:
 	ArenaPlayer_AttackClosest();
 
     void onStart();
-    void onFrame();
+    void onFrame(int currentFrame);
     void onBattleBegin();
     void onBattleEnd();
 };

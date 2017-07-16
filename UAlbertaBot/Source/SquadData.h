@@ -11,7 +11,7 @@ class SquadData
 	UnitHandler onRemoveHandler;
 	const AKBot::Logger& _logger;
 
-    void    updateAllSquads(const MapTools& map);
+    void    updateAllSquads(const MapTools& map, int currentFrame);
     void    verifySquadUniqueMembership();
 	AKBot::PlayerLocationProvider& _locationProvider;
 	const AKBot::OpponentView& _opponentView;
@@ -27,15 +27,15 @@ public:
 		const BaseLocationManager& bases,
 		const AKBot::Logger& logger);
 
-    void            clearSquadData();
+    void            clearSquadData(int currentFrame);
 
     bool            canAssignUnitToSquad(BWAPI::Unit unit, const Squad & squad) const;
     void            assignUnitToSquad(BWAPI::Unit unit, Squad & squad);
     void            addSquad(const std::string & squadName, Squad & squad);
 	void            addSquad(const std::string & squadName, const SquadOrder & squadOrder, size_t priority);
-    void            removeSquad(const std::string & squadName);
+    void            removeSquad(const std::string & squadName, int currentFrame);
 
-    void            update(const MapTools& map);
+    void            update(const MapTools& map, int currentFrame);
 
     bool            squadExists(const std::string & squadName);
     bool            unitIsInSquad(BWAPI::Unit unit) const;

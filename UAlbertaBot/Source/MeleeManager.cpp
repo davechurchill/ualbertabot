@@ -12,12 +12,12 @@ MeleeManager::MeleeManager(const AKBot::OpponentView& opponentView, const BaseLo
 
 }
 
-void MeleeManager::executeMicro(const std::vector<BWAPI::Unit> & targets) 
+void MeleeManager::executeMicro(const std::vector<BWAPI::Unit> & targets, int currentFrame)
 {
-	assignTargets(targets);
+	assignTargets(targets, currentFrame);
 }
 
-void MeleeManager::assignTargets(const std::vector<BWAPI::Unit> & targets)
+void MeleeManager::assignTargets(const std::vector<BWAPI::Unit> & targets, int currentFrame)
 {
     const std::vector<BWAPI::Unit> & meleeUnits = getUnits();
 
@@ -47,7 +47,7 @@ void MeleeManager::assignTargets(const std::vector<BWAPI::Unit> & targets)
             {
                 BWAPI::Position fleeTo(opponentView.self()->getStartLocation());
 
-                Micro::SmartMove(meleeUnit, fleeTo);
+                Micro::SmartMove(meleeUnit, fleeTo, currentFrame);
             }
 			// if there are targets
 			else if (!meleeUnitTargets.empty())
@@ -56,7 +56,7 @@ void MeleeManager::assignTargets(const std::vector<BWAPI::Unit> & targets)
 				BWAPI::Unit target = getTarget(meleeUnit, meleeUnitTargets);
 
 				// attack it
-				Micro::SmartAttackUnit(meleeUnit, target);
+				Micro::SmartAttackUnit(meleeUnit, target, currentFrame);
 			}
 			// if there are no targets
 			else
@@ -65,7 +65,7 @@ void MeleeManager::assignTargets(const std::vector<BWAPI::Unit> & targets)
 				if (meleeUnit->getDistance(order.getPosition()) > 100)
 				{
 					// move to it
-					Micro::SmartMove(meleeUnit, order.getPosition());
+					Micro::SmartMove(meleeUnit, order.getPosition(), currentFrame);
 				}
 			}
 		}

@@ -34,7 +34,7 @@ void ProductionManager::setBuildOrder(const BuildOrder & buildOrder)
 	}
 }
 
-void ProductionManager::performBuildOrderSearch()
+void ProductionManager::performBuildOrderSearch(int currentFrame)
 {	
     if (!Config::Modules::UsingBuildOrderSearch || !canPlanBuildOrderNow())
     {
@@ -53,7 +53,7 @@ void ProductionManager::performBuildOrderSearch()
         if (!_bossManager.isSearchInProgress())
         {
 			auto strategyManager = this->getStrategyManager();
-			_bossManager.startNewSearch(strategyManager.getBuildOrderGoal(), _buildingManager);
+			_bossManager.startNewSearch(strategyManager.getBuildOrderGoal(currentFrame), _buildingManager, currentFrame);
         }
     }
 }
@@ -72,7 +72,7 @@ void ProductionManager::onStart()
 void ProductionManager::update(int currentFrame) 
 {
 	// check the _queue for stuff we can build
-	manageBuildOrderQueue();
+	manageBuildOrderQueue(currentFrame);
     
 	// if nothing is currently building, get a new goal from the strategy manager
 	if ((_queue.size() == 0) && (currentFrame > 10))
@@ -82,7 +82,7 @@ void ProductionManager::update(int currentFrame)
 		    BWAPI::Broodwar->drawTextScreen(150, 10, "Nothing left to build, new search!");
         }
 
-		performBuildOrderSearch();
+		performBuildOrderSearch(currentFrame);
 	}
 
 	auto self = _opponentView.self();
@@ -137,11 +137,11 @@ void ProductionManager::update(int currentFrame)
 		_enemyCloakedDetected = true;
 	}
 
-    _buildingManager.update();
+    _buildingManager.update(currentFrame);
 }
 
 // on unit destroy
-void ProductionManager::onUnitDestroy(BWAPI::Unit unit)
+void ProductionManager::onUnitDestroy(BWAPI::Unit unit, int currentFrame)
 {
 	// we don't care if it's not our unit
 	if (!unit || unit->getPlayer() != _opponentView.self())
@@ -156,13 +156,13 @@ void ProductionManager::onUnitDestroy(BWAPI::Unit unit)
 		{
 			if (unit->getType() != BWAPI::UnitTypes::Zerg_Drone)
 			{
-				performBuildOrderSearch();
+				performBuildOrderSearch(currentFrame);
 			}
 		}
 	}
 }
 
-void ProductionManager::manageBuildOrderQueue() 
+void ProductionManager::manageBuildOrderQueue(int currentFrame)
 {
 	// if there is nothing in the _queue, oh well
 	if (_queue.isEmpty()) 
@@ -177,7 +177,7 @@ void ProductionManager::manageBuildOrderQueue()
 	while (!_queue.isEmpty()) 
 	{
 		// this is the unit which can produce the currentItem
-        BWAPI::Unit producer = getProducer(currentItem.metaType);
+        BWAPI::Unit producer = getProducer(currentItem.metaType, currentFrame);
 
 		// check to see if we can make it right now
 		bool canMake = canMakeNow(producer, currentItem.metaType);
@@ -234,7 +234,7 @@ void ProductionManager::manageBuildOrderQueue()
 	}
 }
 
-BWAPI::Unit ProductionManager::getProducer(MetaType t, BWAPI::Position closestTo)
+BWAPI::Unit ProductionManager::getProducer(MetaType t, int currentFrame, BWAPI::Position closestTo)
 {
     // get the type of unit that builds this
     BWAPI::UnitType producerType = t.whatBuilds();
@@ -264,7 +264,7 @@ BWAPI::Unit ProductionManager::getProducer(MetaType t, BWAPI::Position closestTo
             // if we just told this unit to build an addon, then it will not be building another one
             // this deals with the frame-delay of telling a unit to build an addon and it actually starting to build
             if (unit->getLastCommand().getType() == BWAPI::UnitCommandTypes::Build_Addon 
-                && (BWAPI::Broodwar->getFrameCount() - unit->getLastCommandFrame() < 10)) 
+                && (currentFrame - unit->getLastCommandFrame() < 10))
             { 
                 continue; 
             }

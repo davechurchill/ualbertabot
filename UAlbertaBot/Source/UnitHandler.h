@@ -4,5 +4,5 @@
 
 namespace AKBot
 {
-	typedef std::function<void(const BWAPI::Unit& unit)> UnitHandler;
+	typedef std::function<void(const BWAPI::Unit& unit, int currentFrame)> UnitHandler;
 }

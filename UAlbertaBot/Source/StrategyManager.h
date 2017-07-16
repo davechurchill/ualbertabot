@@ -24,10 +24,10 @@ class StrategyManager
 
     void        writeResults();
     const int   getScore(BWAPI::Player player) const;
-    const bool  shouldExpandNow() const;
-    const MetaPairVector getProtossBuildOrderGoal() const;
-    const MetaPairVector getTerranBuildOrderGoal() const;
-    const MetaPairVector getZergBuildOrderGoal() const;
+    const bool  shouldExpandNow(int currentFrame) const;
+    const MetaPairVector getProtossBuildOrderGoal(int currentFrame) const;
+    const MetaPairVector getTerranBuildOrderGoal(int currentFrame) const;
+    const MetaPairVector getZergBuildOrderGoal(int currentFrame) const;
 
 public:
 
@@ -44,7 +44,7 @@ public:
     void setLearnedStrategy();
 	void setPreferredStrategy(std::string strategy);
     void readResults();
-    const MetaPairVector getBuildOrderGoal() const;
+    const MetaPairVector getBuildOrderGoal(int currentFrame) const;
     const BuildOrder & getOpeningBookBuildOrder() const;
 };
 }

@@ -21,7 +21,7 @@ TransportManager::TransportManager(
 {
 }
 
-void TransportManager::executeMicro(const std::vector<BWAPI::Unit> & targets) 
+void TransportManager::executeMicro(const std::vector<BWAPI::Unit> & targets, int currentFrame)
 {
 	const std::vector<BWAPI::Unit> & transportUnits = getUnits();
 
@@ -105,7 +105,7 @@ void TransportManager::calculateMapEdgeVertices()
 	_mapEdgeVertices = sortedVertices;
 }
 
-void TransportManager::update()
+void TransportManager::update(int currentFrame)
 {
     if (!_transportShip && getUnits().size() > 0)
     {
@@ -119,10 +119,10 @@ void TransportManager::update()
 	}
 
 	moveTroops();
-	moveTransport();
+	moveTransport(currentFrame);
 }
 
-void TransportManager::moveTransport()
+void TransportManager::moveTransport(int currentFrame)
 {
 	if (!_transportShip || !_transportShip->exists() || !(_transportShip->getHitPoints() > 0))
 	{
@@ -140,11 +140,11 @@ void TransportManager::moveTransport()
 	
 	if (_to.isValid() && _from.isValid())
 	{
-		followPerimeter(_to, _from);
+		followPerimeter(_to, _from, currentFrame);
 	}
 	else
 	{
-		followPerimeter();
+		followPerimeter(1, currentFrame);
 	}
 }
 
@@ -180,7 +180,7 @@ void TransportManager::moveTroops()
 	
 }
 
-void TransportManager::followPerimeter(int clockwise)
+void TransportManager::followPerimeter(int clockwise, int currentFrame)
 {
 	BWAPI::Position goTo = getFleePosition(clockwise);
 
@@ -189,15 +189,15 @@ void TransportManager::followPerimeter(int clockwise)
 		BWAPI::Broodwar->drawCircleMap(goTo, 5, BWAPI::Colors::Red, true);
 	}
 
-	Micro::SmartMove(_transportShip, goTo);
+	Micro::SmartMove(_transportShip, goTo, currentFrame);
 }
 
-void TransportManager::followPerimeter(BWAPI::Position to, BWAPI::Position from)
+void TransportManager::followPerimeter(BWAPI::Position to, BWAPI::Position from, int currentFrame)
 {
 	static int following = 0;
 	if (following)
 	{
-		followPerimeter(following);
+		followPerimeter(following, currentFrame);
 		return;
 	}
 
@@ -213,7 +213,7 @@ void TransportManager::followPerimeter(BWAPI::Position to, BWAPI::Position from)
 
 		_logger.log("WAYPOINTS: [%d] - [%d]", wpIDX.first, wpIDX.second);
 
-		Micro::SmartMove(_transportShip, _waypoints[0]);
+		Micro::SmartMove(_transportShip, _waypoints[0], currentFrame);
 	}
 	else if (_waypoints.size() > 1 && _transportShip->getDistance(_waypoints[0]) < 100)
 	{
@@ -228,13 +228,13 @@ void TransportManager::followPerimeter(BWAPI::Position to, BWAPI::Position from)
 		{
 			_logger.log("FOLLOW clockwise");
 			following = 1;
-			followPerimeter(following);
+			followPerimeter(following, currentFrame);
 		}
 		else
 		{
 			_logger.log("FOLLOW counter clockwise");
 			following = -1;
-			followPerimeter(following);
+			followPerimeter(following, currentFrame);
 		}
 
 	}
@@ -242,7 +242,7 @@ void TransportManager::followPerimeter(BWAPI::Position to, BWAPI::Position from)
 	{	
 		//if close to second waypoint, go to destination!
 		following = 0;
-		Micro::SmartMove(_transportShip, to);
+		Micro::SmartMove(_transportShip, to, currentFrame);
 	}
 
 }

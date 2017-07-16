@@ -65,7 +65,7 @@ SparCraft::Move ArenaPlayer_SparCraft::GetSparCraftPlayerMove(const SparCraft::G
     return move;
 }
 
-SparCraft::GameState ArenaPlayer_SparCraft::GetSparCraftState() const
+SparCraft::GameState ArenaPlayer_SparCraft::GetSparCraftState(int currentFrame) const
 {
     SparCraft::GameState state;
 
@@ -75,16 +75,16 @@ SparCraft::GameState ArenaPlayer_SparCraft::GetSparCraftState() const
 
         if (playerID != SparCraft::Players::Player_None && SparCraft::System::UnitTypeSupported(unit->getType()))
         {
-            state.addUnit(GetSparCraftUnit(unit));
+            state.addUnit(GetSparCraftUnit(unit, currentFrame));
         }
     }
 
-    state.setTime(BWAPI::Broodwar->getFrameCount());
+    state.setTime(currentFrame);
 
     return state;
 }
 
-SparCraft::Unit ArenaPlayer_SparCraft::GetSparCraftUnit(BWAPI::Unit unit) const
+SparCraft::Unit ArenaPlayer_SparCraft::GetSparCraftUnit(BWAPI::Unit unit, int currentFrame) const
 {
     SparCraft::Unit sUnit(unit->getType(),
         SparCraft::Position(unit->getPosition()),
@@ -92,8 +92,8 @@ SparCraft::Unit ArenaPlayer_SparCraft::GetSparCraftUnit(BWAPI::Unit unit) const
         GetSparCraftPlayerID(unit->getPlayer()),
         unit->getHitPoints() + unit->getShields(),
         0,
-        BWAPI::Broodwar->getFrameCount() + GetTimeCanMove(unit),
-        BWAPI::Broodwar->getFrameCount() + GetTimeCanAttack(unit));
+        currentFrame + GetTimeCanMove(unit),
+        currentFrame + GetTimeCanAttack(unit));
 
     sUnit.setBWAPIUnitID(unit->getID());
 
@@ -139,7 +139,11 @@ void ArenaPlayer_SparCraft::DrawSparCraftMove(AKBot::ScreenCanvas& canvas, const
     }
 }
 
-void ArenaPlayer_SparCraft::DoSparCraftMove(AKBot::ScreenCanvas& canvas, const SparCraft::GameState & state, const SparCraft::Move & move) const
+void ArenaPlayer_SparCraft::DoSparCraftMove(
+	AKBot::ScreenCanvas& canvas,
+	const SparCraft::GameState & state,
+	const SparCraft::Move & move,
+	int currentFrame) const
 {
     for (size_t a(0); a < move.size(); ++a)
     {
@@ -166,7 +170,7 @@ void ArenaPlayer_SparCraft::DoSparCraftMove(AKBot::ScreenCanvas& canvas, const S
             const BWAPI::Position & dest = targetUnit->getPosition();
 
             //unit->rightClick(targetUnit);
-            Micro::SmartAttackUnit(unit, targetUnit);
+            Micro::SmartAttackUnit(unit, targetUnit, currentFrame);
 
             canvas.drawLineMap(unit->getPosition(), dest, BWAPI::Colors::Green);
         }

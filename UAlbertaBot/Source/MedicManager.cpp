@@ -13,7 +13,7 @@ MedicManager::MedicManager(const AKBot::OpponentView& opponentView, const BaseLo
 {
 }
 
-void MedicManager::executeMicro(const std::vector<BWAPI::Unit> & targets) 
+void MedicManager::executeMicro(const std::vector<BWAPI::Unit> & targets, int currentFrame)
 {
 	const std::vector<BWAPI::Unit> & medics = getUnits();
     
@@ -69,6 +69,6 @@ void MedicManager::executeMicro(const std::vector<BWAPI::Unit> & targets)
     // the remaining medics should head to the squad order position
     for (auto & medic : availableMedics)
     {
-        Micro::SmartAttackMove(medic, order.getPosition());
+        Micro::SmartAttackMove(medic, order.getPosition(), currentFrame);
     }
 }

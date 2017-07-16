@@ -15,18 +15,18 @@ WorkerManager::WorkerManager(const AKBot::OpponentView& opponentView, const AKBo
     previousClosestWorker = nullptr;
 }
 
-void WorkerManager::update()
+void WorkerManager::update(int currentFrame)
 {
-	updateWorkerStatus();
-	handleGasWorkers();
-	handleIdleWorkers();
-	handleMoveWorkers();
-	handleCombatWorkers();
+	updateWorkerStatus(currentFrame);
+	handleGasWorkers(currentFrame);
+	handleIdleWorkers(currentFrame);
+	handleMoveWorkers(currentFrame);
+	handleCombatWorkers(currentFrame);
 
-    handleRepairWorkers();
+    handleRepairWorkers(currentFrame);
 }
 
-void WorkerManager::updateWorkerStatus() 
+void WorkerManager::updateWorkerStatus(int currentFrame)
 {
 	// for each of our Workers
 	for (auto & worker : workerData.getWorkers())
@@ -42,7 +42,7 @@ void WorkerManager::updateWorkerStatus()
 			(workerData.getWorkerJob(worker) != WorkerData::Move) &&
 			(workerData.getWorkerJob(worker) != WorkerData::Scout)) 
 		{
-			workerData.setWorkerJob(worker, WorkerData::Idle, nullptr);
+			workerData.setWorkerJob(worker, WorkerData::Idle, nullptr, currentFrame);
 		}
 
 		// if its job is gas
@@ -53,23 +53,23 @@ void WorkerManager::updateWorkerStatus()
 			// if the refinery doesn't exist anymore
 			if (!refinery || !refinery->exists() ||	refinery->getHitPoints() <= 0)
 			{
-				setMineralWorker(worker);
+				setMineralWorker(worker, currentFrame);
 			}
 		}
 	}
 }
 
-void WorkerManager::setRepairWorker(BWAPI::Unit worker, BWAPI::Unit unitToRepair)
+void WorkerManager::setRepairWorker(BWAPI::Unit worker, BWAPI::Unit unitToRepair, int currentFrame)
 {
-    workerData.setWorkerJob(worker, WorkerData::Repair, unitToRepair);
+    workerData.setWorkerJob(worker, WorkerData::Repair, unitToRepair, currentFrame);
 }
 
-void WorkerManager::stopRepairing(BWAPI::Unit worker)
+void WorkerManager::stopRepairing(BWAPI::Unit worker, int currentFrame)
 {
-    workerData.setWorkerJob(worker, WorkerData::Idle, nullptr);
+    workerData.setWorkerJob(worker, WorkerData::Idle, nullptr, currentFrame);
 }
 
-void WorkerManager::handleGasWorkers() 
+void WorkerManager::handleGasWorkers(int currentFrame)
 {
 	// for each unit we have
 	for (auto & unit : _opponentView.self()->getUnits())
@@ -86,7 +86,7 @@ void WorkerManager::handleGasWorkers()
 				BWAPI::Unit gasWorker = getGasWorker(unit);
 				if (gasWorker)
 				{
-					workerData.setWorkerJob(gasWorker, WorkerData::Gas, unit);
+					workerData.setWorkerJob(gasWorker, WorkerData::Gas, unit, currentFrame);
 				}
 			}
 		}
@@ -94,7 +94,7 @@ void WorkerManager::handleGasWorkers()
 
 }
 
-void WorkerManager::handleIdleWorkers() 
+void WorkerManager::handleIdleWorkers(int currentFrame)
 {
 	// for each of our workers
 	for (auto & worker : workerData.getWorkers())
@@ -105,12 +105,12 @@ void WorkerManager::handleIdleWorkers()
 		if (workerData.getWorkerJob(worker) == WorkerData::Idle) 
 		{
 			// send it to the nearest mineral patch
-			setMineralWorker(worker);
+			setMineralWorker(worker, currentFrame);
 		}
 	}
 }
 
-void WorkerManager::handleRepairWorkers()
+void WorkerManager::handleRepairWorkers(int currentFrame)
 {
     if (_opponentView.self()->getRace() != BWAPI::Races::Terran)
     {
@@ -122,14 +122,14 @@ void WorkerManager::handleRepairWorkers()
         if (unit->getType().isBuilding() && (unit->getHitPoints() < unit->getType().maxHitPoints()))
         {
             BWAPI::Unit repairWorker = getClosestMineralWorkerTo(unit);
-            setRepairWorker(repairWorker, unit);
+            setRepairWorker(repairWorker, unit,currentFrame);
             break;
         }
     }
 }
 
 // bad micro for combat workers
-void WorkerManager::handleCombatWorkers()
+void WorkerManager::handleCombatWorkers(int currentFrame)
 {
 	for (auto & worker : workerData.getWorkers())
 	{
@@ -142,7 +142,7 @@ void WorkerManager::handleCombatWorkers()
 
 			if (target)
 			{
-				Micro::SmartAttackUnit(worker, target);
+				Micro::SmartAttackUnit(worker, target, currentFrame);
 			}
 		}
 	}
@@ -169,7 +169,7 @@ BWAPI::Unit WorkerManager::getClosestEnemyUnit(BWAPI::Unit worker)
 	return closestUnit;
 }
 
-void WorkerManager::finishedWithCombatWorkers()
+void WorkerManager::finishedWithCombatWorkers(int currentFrame)
 {
 	for (auto & worker : workerData.getWorkers())
 	{
@@ -177,7 +177,7 @@ void WorkerManager::finishedWithCombatWorkers()
 
 		if (workerData.getWorkerJob(worker) == WorkerData::Combat)
 		{
-			setMineralWorker(worker);
+			setMineralWorker(worker, currentFrame);
 		}
 	}
 }
@@ -223,7 +223,7 @@ BWAPI::Unit WorkerManager::getClosestMineralWorkerTo(BWAPI::Unit enemyUnit)
 }
 
 
-void WorkerManager::handleMoveWorkers() 
+void WorkerManager::handleMoveWorkers(int currentFrame)
 {
 	// for each of our workers
 	for (auto & worker : workerData.getWorkers())
@@ -235,13 +235,13 @@ void WorkerManager::handleMoveWorkers()
 		{
 			WorkerMoveData data = workerData.getWorkerMoveData(worker);
 			
-			Micro::SmartMove(worker, data.position);
+			Micro::SmartMove(worker, data.position, currentFrame);
 		}
 	}
 }
 
 // set a worker to mine minerals
-void WorkerManager::setMineralWorker(BWAPI::Unit unit)
+void WorkerManager::setMineralWorker(BWAPI::Unit unit, int currentFrame)
 {
     UAB_ASSERT(unit != nullptr, "Unit was null");
 
@@ -252,7 +252,7 @@ void WorkerManager::setMineralWorker(BWAPI::Unit unit)
 	if (depot)
 	{
 		// update workerData with the new job
-		workerData.setWorkerJob(unit, WorkerData::Minerals, depot);
+		workerData.setWorkerJob(unit, WorkerData::Minerals, depot, currentFrame);
 	}
 	else
 	{
@@ -287,14 +287,14 @@ BWAPI::Unit WorkerManager::getClosestDepot(BWAPI::Unit worker)
 
 
 // other managers that need workers call this when they're done with a unit
-void WorkerManager::finishedWithWorker(BWAPI::Unit unit) 
+void WorkerManager::finishedWithWorker(BWAPI::Unit unit, int currentFrame)
 {
 	UAB_ASSERT(unit != nullptr, "Unit was null");
 
 	//_logger.log("BuildingManager finished with worker %d", unit->getID());
 	if (workerData.getWorkerJob(unit) != WorkerData::Scout)
 	{
-		workerData.setWorkerJob(unit, WorkerData::Idle, nullptr);
+		workerData.setWorkerJob(unit, WorkerData::Idle, nullptr, currentFrame);
 	}
 }
 
@@ -385,11 +385,11 @@ BWAPI::Unit WorkerManager::getBuilder(Building & b, bool setJobAsBuilder)
 }
 
 // sets a worker as a scout
-void WorkerManager::setScoutWorker(BWAPI::Unit worker)
+void WorkerManager::setScoutWorker(BWAPI::Unit worker, int currentFrame)
 {
 	UAB_ASSERT(worker != nullptr, "Worker was null");
 
-	workerData.setWorkerJob(worker, WorkerData::Scout, nullptr);
+	workerData.setWorkerJob(worker, WorkerData::Scout, nullptr, currentFrame);
 }
 
 // gets a worker which will move to a current location
@@ -491,11 +491,11 @@ bool WorkerManager::willHaveResources(int mineralsRequired, int gasRequired, dou
 	}
 }
 
-void WorkerManager::setCombatWorker(BWAPI::Unit worker)
+void WorkerManager::setCombatWorker(BWAPI::Unit worker, int currentFrame)
 {
 	UAB_ASSERT(worker != nullptr, "Worker was null");
 
-	workerData.setWorkerJob(worker, WorkerData::Combat, nullptr);
+	workerData.setWorkerJob(worker, WorkerData::Combat, nullptr, currentFrame);
 }
 
 void WorkerManager::onUnitMorph(BWAPI::Unit unit)
@@ -534,7 +534,7 @@ void WorkerManager::onUnitShow(BWAPI::Unit unit)
 	}
 }
 
-void WorkerManager::rebalanceWorkers()
+void WorkerManager::rebalanceWorkers(int currentFrame)
 {
 	// for each worker
 	for (auto & worker : workerData.getWorkers())
@@ -550,22 +550,22 @@ void WorkerManager::rebalanceWorkers()
 
 		if (depot && workerData.depotIsFull(depot))
 		{
-			workerData.setWorkerJob(worker, WorkerData::Idle, nullptr);
+			workerData.setWorkerJob(worker, WorkerData::Idle, nullptr, currentFrame);
 		}
 		else if (!depot)
 		{
-			workerData.setWorkerJob(worker, WorkerData::Idle, nullptr);
+			workerData.setWorkerJob(worker, WorkerData::Idle, nullptr, currentFrame);
 		}
 	}
 }
 
-void WorkerManager::onUnitDestroy(BWAPI::Unit unit) 
+void WorkerManager::onUnitDestroy(BWAPI::Unit unit, int currentFrame)
 {
 	UAB_ASSERT(unit != nullptr, "Unit was null");
 
 	if (unit->getType().isResourceDepot() && unit->getPlayer() == _opponentView.self())
 	{
-		workerData.removeDepot(unit);
+		workerData.removeDepot(unit, currentFrame);
 	}
 
 	if (unit->getType().isWorker() && unit->getPlayer() == _opponentView.self())
@@ -575,7 +575,7 @@ void WorkerManager::onUnitDestroy(BWAPI::Unit unit)
 
 	if (unit->getType() == BWAPI::UnitTypes::Resource_Mineral_Field)
 	{
-		rebalanceWorkers();
+		rebalanceWorkers(currentFrame);
 	}
 }
 

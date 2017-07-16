@@ -62,7 +62,8 @@ void UAlbertaBot_Arena::onStart()
 
 void UAlbertaBot_Arena::onFrame()
 {
-    drawUnitHPBars(_canvas);
+	auto currentFrame = BWAPI::Broodwar->getFrameCount();
+	drawUnitHPBars(_canvas);
 
     // if there is a battle ongoing
     if (isBattle())
@@ -73,7 +74,7 @@ void UAlbertaBot_Arena::onFrame()
             _arenaPlayer->onBattleBegin();
         }
 
-        _arenaPlayer->onFrame();
+        _arenaPlayer->onFrame(currentFrame);
     }
     // otherwise there is currently no battle
     else

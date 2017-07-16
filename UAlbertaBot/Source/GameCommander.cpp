@@ -21,13 +21,13 @@ GameCommander::GameCommander(
 	, _bossManager(opponentView)
 {
 	auto& workerManager = uabModule.Workers();
-	_scoutManager.onScoutAssigned([&workerManager](const BWAPI::Unit &unit)
+	_scoutManager.onScoutAssigned([&workerManager](const BWAPI::Unit &unit, int currentFrame)
 	{
-		workerManager.setScoutWorker(unit);
+		workerManager.setScoutWorker(unit, currentFrame);
 	});
-	_scoutManager.onScoutReleased([&workerManager](const BWAPI::Unit &unit)
+	_scoutManager.onScoutReleased([&workerManager](const BWAPI::Unit &unit, int currentFrame)
 	{
-		workerManager.finishedWithWorker(unit);
+		workerManager.finishedWithWorker(unit, currentFrame);
 	});
 }
 
@@ -47,13 +47,13 @@ void GameCommander::update(int currentFrame)
 		return;
 	}
 
-	handleUnitAssignments();
+	handleUnitAssignments(currentFrame);
     
-	_bossManager.update(35 - _timer.getElapsedTimeInMilliSec());
+	_bossManager.update(35 - _timer.getElapsedTimeInMilliSec(), currentFrame);
 
 	_productionManager.update(currentFrame);
-	_combatCommander.update(_combatUnits);
-    _scoutManager.update();
+	_combatCommander.update(_combatUnits, currentFrame);
+    _scoutManager.update(currentFrame);
 }
 
 const ProductionManager& GameCommander::getProductionManager() const
@@ -77,7 +77,7 @@ const AKBot::OpponentView& GameCommander::getOpponentView() const
 }
 
 // assigns units to various managers
-void GameCommander::handleUnitAssignments()
+void GameCommander::handleUnitAssignments(int currentFrame)
 {
 	_validUnits.clear();
     _combatUnits.clear();
@@ -86,7 +86,7 @@ void GameCommander::handleUnitAssignments()
 	setValidUnits();
 
 	// set each type of unit
-	setScoutUnits();
+	setScoutUnits(currentFrame);
 	setCombatUnits();
 }
 
@@ -109,7 +109,7 @@ void GameCommander::setValidUnits()
 	}
 }
 
-void GameCommander::setScoutUnits()
+void GameCommander::setScoutUnits(int currentFrame)
 {
     // if we haven't set a scout unit, do it
     if (_scoutUnits.empty() && !_initialScoutSet)
@@ -125,7 +125,7 @@ void GameCommander::setScoutUnits()
 			// if we find a worker (which we should) add it to the scout units
 			if (workerScout)
 			{
-                _scoutManager.setWorkerScout(workerScout);
+                _scoutManager.setWorkerScout(workerScout, currentFrame);
 				assignUnit(workerScout, _scoutUnits);
                 _initialScoutSet = true;
 			}
@@ -189,9 +189,9 @@ void GameCommander::onUnitRenegade(BWAPI::Unit unit)
 { 
 	}
 
-void GameCommander::onUnitDestroy(BWAPI::Unit unit)		
+void GameCommander::onUnitDestroy(BWAPI::Unit unit, int currentFrame)
 { 	
-	_productionManager.onUnitDestroy(unit);
+	_productionManager.onUnitDestroy(unit, currentFrame);
 }
 
 void GameCommander::onUnitMorph(BWAPI::Unit unit)		

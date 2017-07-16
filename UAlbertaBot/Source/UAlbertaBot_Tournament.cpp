@@ -148,7 +148,7 @@ void UAlbertaBot_Tournament::onFrame()
     _mapTools.update(currentFrame);
 	_strategyManager.update();
     _unitInfoManager.update();
-    _workerManager.update();
+    _workerManager.update(currentFrame);
     _baseLocationManager.update(_unitInfoManager);
 
     // update the game commander
@@ -196,9 +196,10 @@ void UAlbertaBot_Tournament::drawErrorMessages() const
 
 void UAlbertaBot_Tournament::onUnitDestroy(BWAPI::Unit unit)
 {
-	_workerManager.onUnitDestroy(unit);
+	auto currentFrame = BWAPI::Broodwar->getFrameCount();
+	_workerManager.onUnitDestroy(unit, currentFrame);
 	_unitInfoManager.onUnitDestroy(unit); 
-    _gameCommander.onUnitDestroy(unit);
+    _gameCommander.onUnitDestroy(unit, currentFrame);
 }
 
 void UAlbertaBot_Tournament::onUnitMorph(BWAPI::Unit unit)

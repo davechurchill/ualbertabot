@@ -60,11 +60,11 @@ public:
 
     void    workerDestroyed(BWAPI::Unit unit);
     void    addDepot(BWAPI::Unit unit);
-    void    removeDepot(BWAPI::Unit unit);
+    void    removeDepot(BWAPI::Unit unit, int currentFrame);
     void    addWorker(BWAPI::Unit unit);
-    void    addWorker(BWAPI::Unit unit,WorkerJob job,BWAPI::Unit jobUnit);
+    void    addWorker(BWAPI::Unit unit,WorkerJob job,BWAPI::Unit jobUnit, int currentFrame);
     void    addWorker(BWAPI::Unit unit,WorkerJob job,BWAPI::UnitType jobUnitType);
-    void    setWorkerJob(BWAPI::Unit unit,WorkerJob job,BWAPI::Unit jobUnit);
+    void    setWorkerJob(BWAPI::Unit unit,WorkerJob job,BWAPI::Unit jobUnit, int currentFrame);
     void    setWorkerJob(BWAPI::Unit unit,WorkerJob job,WorkerMoveData wmd);
     void    setWorkerJob(BWAPI::Unit unit,WorkerJob job,BWAPI::UnitType jobUnitType);
     void    addToMineralPatch(BWAPI::Unit unit,int num);

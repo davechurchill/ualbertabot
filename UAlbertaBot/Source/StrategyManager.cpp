@@ -49,7 +49,7 @@ const BuildOrder & StrategyManager::getOpeningBookBuildOrder() const
     }
 }
 
-const bool StrategyManager::shouldExpandNow() const
+const bool StrategyManager::shouldExpandNow(int currentFrame) const
 {
 	// if there is no place to expand to, we can't expand
 	if (_bases.getNextExpansion(_opponentView.self()) == BWAPI::TilePositions::None)
@@ -63,7 +63,7 @@ const bool StrategyManager::shouldExpandNow() const
                         + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hatchery)
                         + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Lair)
                         + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hive);
-	int frame           = BWAPI::Broodwar->getFrameCount();
+	int frame           = currentFrame;
     int minute          = frame / (24*60);
 
     // if we have a ridiculous stockpile of minerals, expand
@@ -91,27 +91,27 @@ void StrategyManager::addStrategy(const std::string & name, Strategy & strategy)
     _strategies[name] = strategy;
 }
 
-const MetaPairVector StrategyManager::getBuildOrderGoal() const
+const MetaPairVector StrategyManager::getBuildOrderGoal(int currentFrame) const
 {
     auto myRace = _opponentView.self()->getRace();
 
     if (myRace == BWAPI::Races::Protoss)
     {
-        return getProtossBuildOrderGoal();
+        return getProtossBuildOrderGoal(currentFrame);
     }
     else if (myRace == BWAPI::Races::Terran)
 	{
-		return getTerranBuildOrderGoal();
+		return getTerranBuildOrderGoal(currentFrame);
 	}
     else if (myRace == BWAPI::Races::Zerg)
 	{
-		return getZergBuildOrderGoal();
+		return getZergBuildOrderGoal(currentFrame);
 	}
 
     return MetaPairVector();
 }
 
-const MetaPairVector StrategyManager::getProtossBuildOrderGoal() const
+const MetaPairVector StrategyManager::getProtossBuildOrderGoal(int currentFrame) const
 {
 	// the goal to return
 	MetaPairVector goal;
@@ -182,7 +182,7 @@ const MetaPairVector StrategyManager::getProtossBuildOrderGoal() const
 	}
 
     // if we want to expand, insert a nexus into the build order
-	if (shouldExpandNow())
+	if (shouldExpandNow(currentFrame))
 	{
 		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Nexus, numNexusAll + 1));
 	}
@@ -190,7 +190,7 @@ const MetaPairVector StrategyManager::getProtossBuildOrderGoal() const
 	return goal;
 }
 
-const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
+const MetaPairVector StrategyManager::getTerranBuildOrderGoal(int currentFrame) const
 {
 	// the goal to return
 	std::vector<MetaPair> goal;
@@ -240,7 +240,7 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
         _logger.log("Warning: No build order goal for Terran Strategy: %s", _strategyName.c_str());
     }
 
-    if (shouldExpandNow())
+    if (shouldExpandNow(currentFrame))
     {
         goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Command_Center, numCC + 1));
         goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_SCV, numWorkers + 10));
@@ -254,7 +254,7 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 	return goal;
 }
 
-const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
+const MetaPairVector StrategyManager::getZergBuildOrderGoal(int currentFrame) const
 {
 	// the goal to return
 	std::vector<MetaPair> goal;
@@ -303,7 +303,7 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
         goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Drone, numDrones + 4));
     }
 
-    if (shouldExpandNow())
+    if (shouldExpandNow(currentFrame))
     {
         goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Hatchery, numCC + 1));
         goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Drone, numWorkers + 10));

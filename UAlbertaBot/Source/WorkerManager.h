@@ -14,33 +14,33 @@ class WorkerManager
     BWAPI::Unit previousClosestWorker;
 	const AKBot::OpponentView& _opponentView;
 
-    void        setMineralWorker(BWAPI::Unit unit);
+    void        setMineralWorker(BWAPI::Unit unit, int currentFrame);
     
-    void        handleIdleWorkers();
-    void        handleGasWorkers();
-    void        handleMoveWorkers();
-    void        handleCombatWorkers();
-    void        handleRepairWorkers();
+    void        handleIdleWorkers(int currentFrame);
+    void        handleGasWorkers(int currentFrame);
+    void        handleMoveWorkers(int currentFrame);
+    void        handleCombatWorkers(int currentFrame);
+    void        handleRepairWorkers(int currentFrame);
 
 public:
 
     WorkerManager(const AKBot::OpponentView& opponentView, const AKBot::Logger& logger);
 
-    void        update();
-    void        onUnitDestroy(BWAPI::Unit unit);
+    void        update(int currentFrame);
+    void        onUnitDestroy(BWAPI::Unit unit, int currentFrame);
     void        onUnitMorph(BWAPI::Unit unit);
     void        onUnitShow(BWAPI::Unit unit);
-    void        finishedWithWorker(BWAPI::Unit unit);
+    void        finishedWithWorker(BWAPI::Unit unit, int currentFrame);
 
-    void        finishedWithCombatWorkers();
+    void        finishedWithCombatWorkers(int currentFrame);
 
-    void        updateWorkerStatus();
+    void        updateWorkerStatus(int currentFrame);
 	const WorkerData& getWorkerData() const { return workerData; };
 
     int         getNumMineralWorkers();
     int         getNumGasWorkers();
     int         getNumIdleWorkers();
-    void        setScoutWorker(BWAPI::Unit worker);
+    void        setScoutWorker(BWAPI::Unit worker, int currentFrame);
 
     bool        isWorkerScout(BWAPI::Unit worker) const;
     bool        isFree(BWAPI::Unit worker) const;
@@ -54,13 +54,13 @@ public:
     BWAPI::Unit getClosestMineralWorkerTo(BWAPI::Unit enemyUnit);
 
     void        setBuildingWorker(BWAPI::Unit worker,Building & b);
-    void        setRepairWorker(BWAPI::Unit worker,BWAPI::Unit unitToRepair);
-    void        stopRepairing(BWAPI::Unit worker);
+    void        setRepairWorker(BWAPI::Unit worker,BWAPI::Unit unitToRepair, int currentFrame);
+    void        stopRepairing(BWAPI::Unit worker, int currentFrame);
     void        setMoveWorker(int m,int g,BWAPI::Position p);
-    void        setCombatWorker(BWAPI::Unit worker);
+    void        setCombatWorker(BWAPI::Unit worker, int currentFrame);
 
     bool        willHaveResources(int mineralsRequired,int gasRequired,double distance);
-    void        rebalanceWorkers();
+    void        rebalanceWorkers(int currentFrame);
 
 };
 

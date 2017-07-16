@@ -11,11 +11,15 @@ namespace UAlbertaBot
     
 class ArenaPlayer_SparCraft : public ArenaPlayer
 {
-    SparCraft::GameState    GetSparCraftState() const;
-    SparCraft::Unit         GetSparCraftUnit(BWAPI::Unit unit) const;
+    SparCraft::GameState    GetSparCraftState(int currentFrame) const;
+    SparCraft::Unit         GetSparCraftUnit(BWAPI::Unit unit, int currentFrame) const;
     SparCraft::Move         GetSparCraftPlayerMove(const SparCraft::GameState & state, const size_t & playerID) const;
     size_t                  GetSparCraftPlayerID(BWAPI::Player player) const;
-    void                    DoSparCraftMove(AKBot::ScreenCanvas& canvas, const SparCraft::GameState & state, const SparCraft::Move & move) const;
+    void                    DoSparCraftMove(
+		AKBot::ScreenCanvas& canvas,
+		const SparCraft::GameState & state,
+		const SparCraft::Move & move,
+		int currentFrame) const;
     void                    DrawSparCraftState(AKBot::ScreenCanvas& canvas, const SparCraft::GameState & state, int x, int y) const;
     void                    DrawSparCraftMove(AKBot::ScreenCanvas& canvas, const SparCraft::GameState & state, const SparCraft::Move & move) const;
 
