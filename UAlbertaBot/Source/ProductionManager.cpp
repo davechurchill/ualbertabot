@@ -4,15 +4,22 @@
 
 using namespace UAlbertaBot;
 
-ProductionManager::ProductionManager(const AKBot::OpponentView& opponentView, BOSSManager & bossManager, const StrategyManager& strategyManager, const UnitInfoManager& unitInfo, const BaseLocationManager& bases)
+ProductionManager::ProductionManager(
+	const AKBot::OpponentView& opponentView,
+	BOSSManager & bossManager,
+	const StrategyManager& strategyManager,
+	const UnitInfoManager& unitInfo,
+	const BaseLocationManager& bases,
+	const AKBot::Logger& logger)
 	: _opponentView(opponentView)
 	, _bossManager(bossManager)
 	, _unitInfo(unitInfo)
-    , _buildingManager(opponentView, bases)
+    , _buildingManager(opponentView, bases, logger)
     , _assignedWorkerForThisBuilding (false)
 	, _haveLocationForThisBuilding   (false)
 	, _enemyCloakedDetected          (false)
 	, _strategyManager(strategyManager)
+	, _logger(logger)
 {
     
 }
@@ -86,7 +93,7 @@ void ProductionManager::update(int currentFrame)
 	{
         if (Config::Debug::DrawBuildOrderSearchInfo)
         {
-		    BWAPI::Broodwar->printf("Supply deadlock detected, building supply!");
+		    _logger.log("Supply deadlock detected, building supply!");
         }
 
 		_queue.queueAsHighestPriority(MetaType(ourRace.getSupplyProvider()), true);
@@ -124,7 +131,7 @@ void ProductionManager::update(int currentFrame)
         
         if (Config::Debug::DrawBuildOrderSearchInfo)
         {
-		    BWAPI::Broodwar->printf("Enemy Cloaked Unit Detected!");
+		    _logger.log("Enemy Cloaked Unit Detected!");
         }
 
 		_enemyCloakedDetected = true;

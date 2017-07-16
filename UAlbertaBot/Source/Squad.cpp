@@ -4,13 +4,21 @@
 
 using namespace UAlbertaBot;
 
-Squad::Squad(const std::string & name, SquadOrder order, size_t priority, AKBot::PlayerLocationProvider& locationProvider, const AKBot::OpponentView& opponentView, const UnitInfoManager& unitInfo, const BaseLocationManager& bases)
+Squad::Squad(
+	const std::string & name,
+	SquadOrder order,
+	size_t priority,
+	AKBot::PlayerLocationProvider& locationProvider,
+	const AKBot::OpponentView& opponentView,
+	const UnitInfoManager& unitInfo,
+	const BaseLocationManager& bases,
+	const AKBot::Logger& logger)
 	: _name(name)
 	, _order(order)
     , _lastRetreatSwitch(0)
     , _lastRetreatSwitchVal(false)
     , _priority(priority)
-	, _transportManager(opponentView, bases, locationProvider)
+	, _transportManager(opponentView, bases, locationProvider, logger)
 	, _opponentView(opponentView)
 	, _unitInfo(unitInfo)
 	, _meleeManager(opponentView, bases)
@@ -18,6 +26,7 @@ Squad::Squad(const std::string & name, SquadOrder order, size_t priority, AKBot:
 	, _rangedManager(opponentView, bases)
 	, _detectorManager(opponentView, Global::Map(), bases)
 	, _tankManager(opponentView, bases)
+	, _logger(logger)
 {
 }
 
@@ -229,7 +238,7 @@ bool Squad::needsToRegroup(const MapTools& map)
     }
 
 	//do the SparCraft Simulation!
-	CombatSimulation sim(_opponentView, _unitInfo);
+	CombatSimulation sim(_opponentView, _unitInfo, _logger);
 	sim.setCombatUnits(unitClosest->getPosition(), Config::Micro::CombatRegroupRadius);
 	
     auto score = sim.simulateCombat();
@@ -315,7 +324,7 @@ BWAPI::Position Squad::calcCenter()
     {
         if (Config::Debug::DrawSquadInfo)
         {
-            BWAPI::Broodwar->printf("Squad::calcCenter() called on empty squad");
+            _logger.log("Squad::calcCenter() called on empty squad");
         }
 
         return BWAPI::Position(0,0);

@@ -3,10 +3,12 @@
 #include "UAlbertaBot_Arena.h"
 #include "ParseUtils.h"
 #include "BWAPIOpponentView.h"
+#include "BWAPIPrintLogger.h"
 
 using namespace UAlbertaBot;
 
 AKBot::BWAPIOpponentView opponentView;
+AKBot::BWAPIPrintLogger logger;
 
 UAlbertaBotModule_dll::UAlbertaBotModule_dll()
 {
@@ -21,7 +23,7 @@ UAlbertaBotModule_dll::UAlbertaBotModule_dll()
 
     if (Config::BotInfo::BotMode == "Tournament")
     {
-        _module = std::shared_ptr<BotModule>(new UAlbertaBot_Tournament(opponentView));
+        _module = std::shared_ptr<BotModule>(new UAlbertaBot_Tournament(opponentView, logger));
     }
     else if (Config::BotInfo::BotMode == "Arena")
     {

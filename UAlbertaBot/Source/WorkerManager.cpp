@@ -8,8 +8,9 @@
 
 using namespace UAlbertaBot;
 
-WorkerManager::WorkerManager(const AKBot::OpponentView& opponentView)
+WorkerManager::WorkerManager(const AKBot::OpponentView& opponentView, const AKBot::Logger& logger)
 	: _opponentView(opponentView)
+	, workerData(logger)
 {
     previousClosestWorker = nullptr;
 }
@@ -255,7 +256,7 @@ void WorkerManager::setMineralWorker(BWAPI::Unit unit)
 	}
 	else
 	{
-		// BWAPI::Broodwar->printf("No valid depot for mineral worker");
+		// _logger.log("No valid depot for mineral worker");
 	}
 }
 
@@ -290,7 +291,7 @@ void WorkerManager::finishedWithWorker(BWAPI::Unit unit)
 {
 	UAB_ASSERT(unit != nullptr, "Unit was null");
 
-	//BWAPI::Broodwar->printf("BuildingManager finished with worker %d", unit->getID());
+	//_logger.log("BuildingManager finished with worker %d", unit->getID());
 	if (workerData.getWorkerJob(unit) != WorkerData::Scout)
 	{
 		workerData.setWorkerJob(unit, WorkerData::Idle, nullptr);
@@ -447,12 +448,12 @@ void WorkerManager::setMoveWorker(int mineralsNeeded, int gasNeeded, BWAPI::Posi
 
 	if (closestWorker)
 	{
-		//BWAPI::Broodwar->printf("Setting worker job Move for worker %d", closestWorker->getID());
+		//_logger.log("Setting worker job Move for worker %d", closestWorker->getID());
 		workerData.setWorkerJob(closestWorker, WorkerData::Move, WorkerMoveData(mineralsNeeded, gasNeeded, p));
 	}
 	else
 	{
-		//BWAPI::Broodwar->printf("Error, no worker found");
+		//_logger.log("Error, no worker found");
 	}
 }
 
@@ -510,7 +511,7 @@ void WorkerManager::onUnitMorph(BWAPI::Unit unit)
 	// if something morphs into a building, it was a worker?
 	if (unit->getType().isBuilding() && unit->getPlayer() == _opponentView.self() && unit->getPlayer()->getRace() == BWAPI::Races::Zerg)
 	{
-		//BWAPI::Broodwar->printf("A Drone started building");
+		//_logger.log("A Drone started building");
 		workerData.workerDestroyed(unit);
 	}
 }
@@ -528,7 +529,7 @@ void WorkerManager::onUnitShow(BWAPI::Unit unit)
 	// if something morphs into a worker, add it
 	if (unit->getType().isWorker() && unit->getPlayer() == _opponentView.self() && unit->getHitPoints() >= 0)
 	{
-		//BWAPI::Broodwar->printf("A worker was shown %d", unit->getID());
+		//_logger.log("A worker was shown %d", unit->getID());
 		workerData.addWorker(unit);
 	}
 }

@@ -5,6 +5,7 @@
 #include <BWAPI/Position.h>
 #include "DistanceMap.h"
 #include "BaseLocationManager.h"
+#include "Logger.h"
 
 namespace UAlbertaBot
 {
@@ -17,6 +18,7 @@ class MapTools
     // a cache of already computed distance maps, which is mutable since it only acts as a cache
     mutable std::map<BWAPI::TilePosition, DistanceMap>   _allMaps;
 	const AKBot::OpponentView& _opponentView;
+	const AKBot::Logger& _logger;
 
     std::vector<std::vector<bool>> _walkable;               // the map stored at TilePosition resolution, values are 0/1 for walkable or not walkable
     std::vector<std::vector<bool>> _buildable;         // whether a tile is buildable (includes static resources)
@@ -32,7 +34,7 @@ class MapTools
     
 public:
 
-    MapTools(int width, int height, const AKBot::OpponentView& opponentView);
+    MapTools(int width, int height, const AKBot::OpponentView& opponentView, const AKBot::Logger& logger);
 
 	const size_t getWidth() const { return _width; };
 	const size_t getHeight() const { return _height; };

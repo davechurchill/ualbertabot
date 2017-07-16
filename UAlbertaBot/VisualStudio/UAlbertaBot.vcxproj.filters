@@ -167,6 +167,9 @@
     <ClCompile Include="..\Source\FileLogger.cpp">
       <Filter>util</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\BWAPIPrintLogger.cpp">
+      <Filter>debug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="common">
@@ -387,6 +390,12 @@
     </ClInclude>
     <ClInclude Include="..\Source\FileLogger.h">
       <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Logger.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\BWAPIPrintLogger.h">
+      <Filter>debug</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

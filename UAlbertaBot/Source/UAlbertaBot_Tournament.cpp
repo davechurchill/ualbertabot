@@ -14,15 +14,15 @@
 using namespace UAlbertaBot;
 using namespace AKBot;
 
-UAlbertaBot_Tournament::UAlbertaBot_Tournament(const AKBot::OpponentView& opponentView)
+UAlbertaBot_Tournament::UAlbertaBot_Tournament(const AKBot::OpponentView& opponentView, const AKBot::Logger& logger)
 	: _opponentView(opponentView)
 	, _baseLocationManager(opponentView)
-	, _gameCommander(*this, opponentView, _baseLocationManager)
-	, _mapTools(BWAPI::Broodwar->mapWidth(), BWAPI::Broodwar->mapHeight(), opponentView)
-	, _strategyManager("", opponentView, _unitInfoManager, _baseLocationManager)
+	, _gameCommander(*this, opponentView, _baseLocationManager, logger)
+	, _mapTools(BWAPI::Broodwar->mapWidth(), BWAPI::Broodwar->mapHeight(), opponentView, logger)
+	, _strategyManager("", opponentView, _unitInfoManager, _baseLocationManager, logger)
 	, _unitInfoManager(opponentView)
 	, _autoObserver(opponentView)
-	, _workerManager(opponentView)
+	, _workerManager(opponentView, logger)
 {
 	// parse the configuration file for the bot's strategies
 	auto configurationFile = ParseUtils::FindConfigurationLocation(Config::ConfigFile::ConfigFileLocation);

@@ -48,7 +48,11 @@ class CombatCommander
 
 public:
 
-	CombatCommander(const BaseLocationManager & baseLocationManager, const AKBot::OpponentView& opponentView, const UnitInfoManager& unitInfo);
+	CombatCommander(
+		const BaseLocationManager & baseLocationManager,
+		const AKBot::OpponentView& opponentView,
+		const UnitInfoManager& unitInfo,
+		const AKBot::Logger& logger);
 
 	void update(const std::vector<BWAPI::Unit> & combatUnits);
 	const SquadData& getSquadData() const;

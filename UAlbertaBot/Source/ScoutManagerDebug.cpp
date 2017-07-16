@@ -18,9 +18,12 @@ namespace AKBot
 		}
 
 		auto& workerScout = _scoutManager.getWorkerScount();
-		if (workerScout->isCarryingGas())
+		if (workerScout)
 		{
-			canvas.drawCircleMap(workerScout->getPosition(), 10, BWAPI::Colors::Purple, true);
+			if (workerScout->isCarryingGas())
+			{
+				canvas.drawCircleMap(workerScout->getPosition(), 10, BWAPI::Colors::Purple, true);
+			}
 		}
 	}
 }

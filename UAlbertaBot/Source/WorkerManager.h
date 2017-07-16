@@ -24,7 +24,7 @@ class WorkerManager
 
 public:
 
-    WorkerManager(const AKBot::OpponentView& opponentView);
+    WorkerManager(const AKBot::OpponentView& opponentView, const AKBot::Logger& logger);
 
     void        update();
     void        onUnitDestroy(BWAPI::Unit unit);

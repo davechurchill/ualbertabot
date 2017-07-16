@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Squad.h"
+#include "Logger.h"
 
 namespace UAlbertaBot
 {
@@ -8,6 +9,7 @@ class SquadData
 {
 	std::map<std::string, Squad> _squads;
 	UnitHandler onRemoveHandler;
+	const AKBot::Logger& _logger;
 
     void    updateAllSquads(const MapTools& map);
     void    verifySquadUniqueMembership();
@@ -18,7 +20,12 @@ class SquadData
 
 public:
 
-	SquadData(AKBot::PlayerLocationProvider& locationProvider, const AKBot::OpponentView& opponentView, const UnitInfoManager& unitInfo, const BaseLocationManager& bases);
+	SquadData(
+		AKBot::PlayerLocationProvider& locationProvider,
+		const AKBot::OpponentView& opponentView,
+		const UnitInfoManager& unitInfo,
+		const BaseLocationManager& bases,
+		const AKBot::Logger& logger);
 
     void            clearSquadData();
 

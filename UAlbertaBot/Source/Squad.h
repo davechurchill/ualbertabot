@@ -13,6 +13,7 @@
 #include "UnitHandler.h"
 #include "MapTools.h"
 #include "OpponentView.h"
+#include "Logger.h"
 
 namespace UAlbertaBot
 {
@@ -29,6 +30,7 @@ class Squad
 	UnitHandler			_onRemoveHandler;
 	const AKBot::OpponentView& _opponentView;
 	const UnitInfoManager& _unitInfo;
+	const AKBot::Logger& _logger;
 	
 	SquadOrder          _order;
 	MeleeManager        _meleeManager;
@@ -54,7 +56,15 @@ class Squad
 
 public:
 
-	Squad(const std::string & name, SquadOrder order, size_t priority, AKBot::PlayerLocationProvider& locationProvider, const AKBot::OpponentView& opponentView, const UnitInfoManager& unitInfo, const BaseLocationManager& bases);
+	Squad(
+		const std::string & name,
+		SquadOrder order,
+		size_t priority,
+		AKBot::PlayerLocationProvider& locationProvider,
+		const AKBot::OpponentView& opponentView,
+		const UnitInfoManager& unitInfo,
+		const BaseLocationManager& bases,
+		const AKBot::Logger& logger);
     ~Squad();
 
 	void                update(const MapTools& map);

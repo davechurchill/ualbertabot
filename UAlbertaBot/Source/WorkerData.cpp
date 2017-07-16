@@ -5,7 +5,8 @@
 
 using namespace UAlbertaBot;
 
-WorkerData::WorkerData()
+WorkerData::WorkerData(const AKBot::Logger& logger)
+	: _logger(logger)
 {
     for (auto & unit : BWAPI::Broodwar->getAllUnits())
     {
@@ -143,7 +144,7 @@ void WorkerData::setWorkerJob(BWAPI::Unit unit,enum WorkerJob job,BWAPI::Unit jo
     }
     else if (job == Build)
     {
-        BWAPI::Broodwar->printf("Setting worker job to build");
+        _logger.log("Setting worker job to build");
     }
 }
 
@@ -174,7 +175,7 @@ void WorkerData::setWorkerJob(BWAPI::Unit unit,enum WorkerJob job,WorkerMoveData
 
     if (_workerJobMap[unit] != Move)
     {
-        BWAPI::Broodwar->printf("Something went horribly wrong");
+        _logger.log("Something went horribly wrong");
     }
 }
 

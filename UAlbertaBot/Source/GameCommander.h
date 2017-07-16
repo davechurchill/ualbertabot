@@ -33,7 +33,11 @@ class GameCommander
 
 public:
 
-    GameCommander(UAlbertaBot_Tournament & uabModule, const AKBot::OpponentView& opponentView, const BaseLocationManager& bases);
+    GameCommander(
+		UAlbertaBot_Tournament & uabModule,
+		const AKBot::OpponentView& opponentView,
+		const BaseLocationManager& bases,
+		const AKBot::Logger& logger);
 
     void onStart();
     void update(int currentFrame);

@@ -12,7 +12,7 @@ const int actionX[LegalActions] = {1, -1, 0, 0};
 const int actionY[LegalActions] = {0, 0, 1, -1};
 
 // constructor for MapTools
-MapTools::MapTools(int width, int height, const AKBot::OpponentView& opponentView)
+MapTools::MapTools(int width, int height, const AKBot::OpponentView& opponentView, const AKBot::Logger& logger)
     : _width            (width)
     , _height           (height)
     , _walkable         (width, std::vector<bool>(height, false))
@@ -21,6 +21,7 @@ MapTools::MapTools(int width, int height, const AKBot::OpponentView& opponentVie
     , _lastSeen         (width, std::vector<int> (height, 0))
     , _sectorNumber     (width, std::vector<int> (height, 0))
 	, _opponentView(opponentView)
+	, _logger(logger)
 {
     setBWAPIMapData();
 
@@ -258,7 +259,7 @@ const std::vector<BWAPI::TilePosition> & MapTools::getClosestTilesTo(BWAPI::Posi
 
 void MapTools::parseMap()
 {
-    BWAPI::Broodwar->printf("Parsing Map Information");
+	_logger.log("Parsing Map Information");
     std::ofstream mapFile;
     std::string file = "c:\\scmaps\\" + BWAPI::Broodwar->mapName() + ".txt";
     mapFile.open(file.c_str());
@@ -283,7 +284,7 @@ void MapTools::parseMap()
 		mapFile << "\n";
 	}
 
-    BWAPI::Broodwar->printf(file.c_str());
+	_logger.log(file.c_str());
 
     mapFile.close();
 }

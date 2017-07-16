@@ -8,12 +8,18 @@
 using namespace UAlbertaBot;
 
 // constructor
-StrategyManager::StrategyManager(std::string strategyName, const AKBot::OpponentView& opponentView, const UnitInfoManager & unitInfo, const BaseLocationManager& bases)
+StrategyManager::StrategyManager(
+	std::string strategyName,
+	const AKBot::OpponentView& opponentView,
+	const UnitInfoManager & unitInfo,
+	const BaseLocationManager& bases,
+	const AKBot::Logger& logger)
 	: _strategyName(strategyName)
 	, _opponentView(opponentView)
 	, _unitInfo(unitInfo)
 	, _bases(bases)
 	, _emptyBuildOrder(opponentView.self()->getRace())
+	, _logger(logger)
 {
 }
 
@@ -48,7 +54,7 @@ const bool StrategyManager::shouldExpandNow() const
 	// if there is no place to expand to, we can't expand
 	if (_bases.getNextExpansion(_opponentView.self()) == BWAPI::TilePositions::None)
 	{
-        BWAPI::Broodwar->printf("No valid expansion location");
+        _logger.log("No valid expansion location");
 		return false;
 	}
 
@@ -231,7 +237,7 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
     }
     else
     {
-        BWAPI::Broodwar->printf("Warning: No build order goal for Terran Strategy: %s", _strategyName.c_str());
+        _logger.log("Warning: No build order goal for Terran Strategy: %s", _strategyName.c_str());
     }
 
     if (shouldExpandNow())
@@ -341,11 +347,11 @@ void StrategyManager::readResults()
             ss >> wins;
             ss >> losses;
 
-            //BWAPI::Broodwar->printf("Results Found: %s %d %d", strategyName.c_str(), wins, losses);
+            //_logger.log("Results Found: %s %d %d", strategyName.c_str(), wins, losses);
 
             if (_strategies.find(strategyName) == _strategies.end())
             {
-                //BWAPI::Broodwar->printf("Warning: Results file has unknown Strategy: %s", strategyName.c_str());
+                //_logger.log("Warning: Results file has unknown Strategy: %s", strategyName.c_str());
             }
             else
             {
@@ -358,7 +364,7 @@ void StrategyManager::readResults()
     }
     else
     {
-        //BWAPI::Broodwar->printf("No results file found: %s", enemyResultsFile.c_str());
+        //_logger.log("No results file found: %s", enemyResultsFile.c_str());
     }
 }
 
@@ -438,7 +444,7 @@ void StrategyManager::setLearnedStrategy()
     // also we're pretty confident in our base strategies so don't change if insufficient games have been played
     if (strategyGamesPlayed < 5 || (strategyGamesPlayed > 0 && winRate > 0.49))
     {
-        BWAPI::Broodwar->printf("Still using default strategy");
+        _logger.log("Still using default strategy");
         return;
     }
 

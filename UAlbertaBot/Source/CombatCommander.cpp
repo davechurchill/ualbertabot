@@ -11,12 +11,16 @@ const size_t BaseDefensePriority = 2;
 const size_t ScoutDefensePriority = 3;
 const size_t DropPriority = 4;
 
-CombatCommander::CombatCommander(const BaseLocationManager & baseLocationManager, const AKBot::OpponentView& opponentView, const UnitInfoManager& unitInfo)
+CombatCommander::CombatCommander(
+	const BaseLocationManager & baseLocationManager,
+	const AKBot::OpponentView& opponentView,
+	const UnitInfoManager& unitInfo,
+	const AKBot::Logger& logger)
     : _initialized(false)
 	, _unitInfo(unitInfo)
 	, _baseLocationManager(baseLocationManager)
 	, _playerLocationProvider(baseLocationManager)
-	, _squadData(_playerLocationProvider, opponentView, unitInfo, baseLocationManager)
+	, _squadData(_playerLocationProvider, opponentView, unitInfo, baseLocationManager, logger)
 	, _opponentView(opponentView)
 {
 	_squadData.onUnitRemoved([](const BWAPI::Unit& unit)

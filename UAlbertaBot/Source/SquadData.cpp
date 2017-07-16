@@ -4,11 +4,17 @@
 using namespace UAlbertaBot;
 using namespace AKBot;
 
-SquadData::SquadData(AKBot::PlayerLocationProvider& locationProvider, const AKBot::OpponentView& opponentView, const UnitInfoManager& unitInfo, const BaseLocationManager& bases)
+SquadData::SquadData(
+	AKBot::PlayerLocationProvider& locationProvider,
+	const AKBot::OpponentView& opponentView,
+	const UnitInfoManager& unitInfo,
+	const BaseLocationManager& bases,
+	const AKBot::Logger& logger)
 	: _locationProvider(locationProvider)
 	, _opponentView(opponentView)
 	, _unitInfo(unitInfo)
 	, _bases(bases)
+	, _logger(logger)
 {
 	
 }
@@ -70,7 +76,7 @@ void SquadData::addSquad(const std::string & squadName, Squad & squad)
 
 void SquadData::addSquad(const std::string & squadName, const SquadOrder & squadOrder, size_t priority)
 {
-	addSquad(squadName, Squad(squadName, squadOrder, priority, _locationProvider, _opponentView, _unitInfo, _bases));
+	addSquad(squadName, Squad(squadName, squadOrder, priority, _locationProvider, _opponentView, _unitInfo, _bases, _logger));
 }
 
 void SquadData::updateAllSquads(const MapTools& map)
@@ -93,7 +99,7 @@ void SquadData::verifySquadUniqueMembership()
         {
             if (std::find(assigned.begin(), assigned.end(), unit) != assigned.end())
             {
-                BWAPI::Broodwar->printf("Unit is in at least two squads: %s", unit->getType().getName().c_str());
+                _logger.log("Unit is in at least two squads: %s", unit->getType().getName().c_str());
             }
 
             assigned.push_back(unit);

@@ -4,9 +4,10 @@
 
 using namespace UAlbertaBot;
 
-CombatSimulation::CombatSimulation(const AKBot::OpponentView& opponentView, const UnitInfoManager& unitInfo)
+CombatSimulation::CombatSimulation(const AKBot::OpponentView& opponentView, const UnitInfoManager& unitInfo, const AKBot::Logger& logger)
 	: _opponentView(opponentView)
 	, _unitInfo(unitInfo)
+	, _logger(logger)
 {
 }
 
@@ -43,7 +44,7 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
             catch (int e)
             {
                 e=1;
-                BWAPI::Broodwar->printf("Problem Adding Self Unit with ID: %d", unit->getID());
+                _logger.log("Problem Adding Self Unit with ID: %d", unit->getID());
             }
 		}
 	}
@@ -85,7 +86,7 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
             }
             catch (int e)
             {
-                BWAPI::Broodwar->printf("Problem Adding Enemy Unit with ID: %d %d", ui.unitID, e);
+                _logger.log("Problem Adding Enemy Unit with ID: %d %d", ui.unitID, e);
             }
 		}
 	}
@@ -170,7 +171,7 @@ double CombatSimulation::simulateCombat()
     }
     catch (int e)
     {
-        BWAPI::Broodwar->printf("SparCraft FatalError, simulateCombat() threw");
+        _logger.log("SparCraft FatalError, simulateCombat() threw");
 
         return e;
     }

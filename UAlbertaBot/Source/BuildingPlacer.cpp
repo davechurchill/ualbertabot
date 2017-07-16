@@ -64,7 +64,7 @@ void BuildingPlacer::computeResourceBox()
         _boxRight   = right > _boxRight   ? right  : _boxRight;
     }
 
-    //BWAPI::Broodwar->printf("%d %d %d %d", boxTop, boxBottom, boxLeft, boxRight);
+    //_logger.log("%d %d %d %d", boxTop, boxBottom, boxLeft, boxRight);
 }
 
 // makes final checks to see if a building can be built at a certain location
@@ -227,14 +227,14 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b,int 
         if (canBuildHereWithSpace(closestToBuilding[i],b,buildDist,horizontalOnly))
         {
             double ms = t.getElapsedTimeInMilliSec();
-            //BWAPI::Broodwar->printf("Building Placer Took %d iterations, lasting %lf ms @ %lf iterations/ms, %lf setup ms", i, ms, (i / ms), ms1);
+            //_logger.log("Building Placer Took %d iterations, lasting %lf ms @ %lf iterations/ms, %lf setup ms", i, ms, (i / ms), ms1);
 
             return closestToBuilding[i];
         }
     }
 
     double ms = t.getElapsedTimeInMilliSec();
-    //BWAPI::Broodwar->printf("Building Placer Took %lf ms", ms);
+    //_logger.log("Building Placer Took %lf ms", ms);
 
     return  BWAPI::TilePositions::None;
 }

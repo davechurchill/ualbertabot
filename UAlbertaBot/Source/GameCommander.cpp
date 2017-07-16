@@ -7,13 +7,17 @@
 
 using namespace UAlbertaBot;
 
-GameCommander::GameCommander(UAlbertaBot_Tournament & uabModule, const AKBot::OpponentView& opponentView, const BaseLocationManager& bases)
+GameCommander::GameCommander(
+	UAlbertaBot_Tournament & uabModule,
+	const AKBot::OpponentView& opponentView,
+	const BaseLocationManager& bases,
+	const AKBot::Logger& logger)
     : _opponentView(opponentView)
-	, _productionManager(opponentView, _bossManager, uabModule.Strategy(), uabModule.UnitInfo(), bases)
+	, _productionManager(opponentView, _bossManager, uabModule.Strategy(), uabModule.UnitInfo(), bases, logger)
 	, _scoutManager(opponentView, bases)
     , _initialScoutSet(false)
     , _module(uabModule)
-	, _combatCommander(bases, opponentView, uabModule.UnitInfo())
+	, _combatCommander(bases, opponentView, uabModule.UnitInfo(), logger)
 	, _bossManager(opponentView)
 {
 	auto& workerManager = uabModule.Workers();

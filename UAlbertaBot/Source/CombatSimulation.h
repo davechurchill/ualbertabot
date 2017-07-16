@@ -13,6 +13,7 @@
 #include "UnitData.h"
 #include "OpponentView.h"
 #include "UnitInfoManager.h"
+#include "Logger.h"
 
 namespace UAlbertaBot
 {
@@ -21,10 +22,11 @@ class CombatSimulation
 	SparCraft::GameState		_state;
 	const AKBot::OpponentView& _opponentView;
 	const UnitInfoManager& _unitInfo;
+	const AKBot::Logger& _logger;
 
 public:
 
-	CombatSimulation(const AKBot::OpponentView& opponentView, const UnitInfoManager& unitInfo);
+	CombatSimulation(const AKBot::OpponentView& opponentView, const UnitInfoManager& unitInfo, const AKBot::Logger& logger);
 
 	void setCombatUnits(const BWAPI::Position & center, const int radius);
 

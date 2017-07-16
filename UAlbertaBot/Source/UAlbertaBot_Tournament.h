@@ -30,7 +30,7 @@ class UAlbertaBot_Tournament : public BotModule
 	void drawDebugInformation(AKBot::ScreenCanvas& _canvas);
 public:
 
-    UAlbertaBot_Tournament(const AKBot::OpponentView& opponentView);
+    UAlbertaBot_Tournament(const AKBot::OpponentView& opponentView, const AKBot::Logger& logger);
     ~UAlbertaBot_Tournament();
 
     void	onStart();

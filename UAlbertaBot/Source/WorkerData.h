@@ -3,6 +3,7 @@
 #include "Common.h"
 #include <BWAPI/Unit.h>
 #include <BWAPI/UnitType.h>
+#include "Logger.h"
 
 namespace UAlbertaBot
 {
@@ -49,12 +50,13 @@ private:
     std::map<BWAPI::Unit,int>               _refineryWorkerCount;
 
     std::map<BWAPI::Unit,int>               _workersOnMineralPatch;
+	const AKBot::Logger& _logger;
 
     void clearPreviousJob(BWAPI::Unit unit);
 
 public:
 
-    WorkerData();
+    WorkerData(const AKBot::Logger& logger);
 
     void    workerDestroyed(BWAPI::Unit unit);
     void    addDepot(BWAPI::Unit unit);

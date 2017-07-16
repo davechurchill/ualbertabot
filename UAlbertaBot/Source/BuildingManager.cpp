@@ -5,13 +5,14 @@
 
 using namespace UAlbertaBot;
 
-BuildingManager::BuildingManager(const AKBot::OpponentView& opponentView, const BaseLocationManager& bases)
+BuildingManager::BuildingManager(const AKBot::OpponentView& opponentView, const BaseLocationManager& bases, const AKBot::Logger& logger)
     : _debugMode(false)
     , _reservedMinerals(0)
     , _reservedGas(0)
 	, _bases(bases)
 	, _opponentView(opponentView)
 	, _buildingPlacer(BWAPI::Broodwar->mapWidth(), BWAPI::Broodwar->mapHeight(), opponentView, bases)
+	, _logger(logger)
 {
 
 }
@@ -78,7 +79,7 @@ void BuildingManager::assignWorkersToUnassignedBuildings()
 
         if (_debugMode)
 		{ 
-			BWAPI::Broodwar->printf("Assigning Worker To: %s",b.type.getName().c_str()); 
+			_logger.log("Assigning Worker To: %s",b.type.getName().c_str()); 
 		}
 
         // grab a worker unit from WorkerManager which is closest to this final position

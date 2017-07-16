@@ -105,7 +105,7 @@ void BOSSManager::update(double timeLimit)
             // if we've found a solution, let us know
             if (_smartSearch->getResults().solved && Config::Debug::DrawBuildOrderSearchInfo)
             {
-                //BWAPI::Broodwar->printf("Build order SOLVED in %d nodes", (int)_smartSearch->getResults().nodesExpanded);
+                //_logger.log("Build order SOLVED in %d nodes", (int)_smartSearch->getResults().nodesExpanded);
             }
 
             if (_smartSearch->getResults().solved)
