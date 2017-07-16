@@ -3,6 +3,7 @@
 #include "UnitUtil.h"
 #include "Global.h"
 #include "ParseUtils.h"
+#include "FileLogger.h"
 
 using namespace UAlbertaBot;
 

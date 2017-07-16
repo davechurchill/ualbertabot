@@ -17,7 +17,6 @@
 #include <array>
 
 #include <BWAPI/Position.h>
-#include "Logger.h"
 
 #include "Config.h"
 #include "UABAssert.h"

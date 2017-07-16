@@ -54,7 +54,7 @@
     <ClCompile Include="..\Source\UAlbertaBot_Tournament.cpp" />
     <ClCompile Include="..\Source\UnitInfoManager.cpp" />
     <ClCompile Include="..\source\JSONTools.cpp" />
-    <ClCompile Include="..\Source\Logger.cpp" />
+    <ClCompile Include="..\Source\FileLogger.cpp" />
     <ClCompile Include="..\Source\MapTools.cpp" />
     <ClCompile Include="..\Source\MedicManager.cpp" />
     <ClCompile Include="..\source\MeleeManager.cpp" />
@@ -121,7 +121,7 @@
     <ClInclude Include="..\Source\UnitHandler.h" />
     <ClInclude Include="..\Source\UnitInfoManager.h" />
     <ClInclude Include="..\source\JSONTools.h" />
-    <ClInclude Include="..\Source\Logger.h" />
+    <ClInclude Include="..\Source\FileLogger.h" />
     <ClInclude Include="..\Source\MapTools.h" />
     <ClInclude Include="..\Source\MedicManager.h" />
     <ClInclude Include="..\source\MeleeManager.h" />

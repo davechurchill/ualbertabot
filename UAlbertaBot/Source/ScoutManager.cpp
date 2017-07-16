@@ -67,11 +67,6 @@ void ScoutManager::moveScouts()
     
 	// get the enemy base location, if we have one
 	const BaseLocation * enemyBaseLocation = _baseLocationManager.getPlayerStartingBaseLocation(Global::getEnemy());
-
-    if (_workerScout->isCarryingGas())
-    {
-        BWAPI::Broodwar->drawCircleMap(_workerScout->getPosition(), 10, BWAPI::Colors::Purple, true);
-    }
         
 	// if we know where the enemy region is and where our scout is
 	if (_workerScout && (enemyBaseLocation != nullptr))

@@ -94,9 +94,6 @@
     <ClCompile Include="..\source\JSONTools.cpp">
       <Filter>util</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Logger.cpp">
-      <Filter>util</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\MetaType.cpp">
       <Filter>util</Filter>
     </ClCompile>
@@ -166,6 +163,9 @@
     </ClCompile>
     <ClCompile Include="..\Source\ProductionManagerDebug.cpp">
       <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\FileLogger.cpp">
+      <Filter>util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -291,9 +291,6 @@
     <ClInclude Include="..\source\JSONTools.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Logger.h">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\MetaType.h">
       <Filter>util</Filter>
     </ClInclude>
@@ -387,6 +384,9 @@
     </ClInclude>
     <ClInclude Include="..\Source\ProductionManagerDebug.h">
       <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\FileLogger.h">
+      <Filter>util</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

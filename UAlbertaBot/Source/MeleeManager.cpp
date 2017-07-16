@@ -69,12 +69,6 @@ void MeleeManager::assignTargets(const std::vector<BWAPI::Unit> & targets)
 				}
 			}
 		}
-
-		if (Config::Debug::DrawUnitTargetInfo)
-		{
-			BWAPI::Broodwar->drawLineMap(meleeUnit->getPosition().x, meleeUnit->getPosition().y, 
-			meleeUnit->getTargetPosition().x, meleeUnit->getTargetPosition().y, Config::Debug::ColorLineTarget);
-		}
 	}
 }
 

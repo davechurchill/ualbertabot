@@ -4,7 +4,6 @@
 #include "GameCommander.h"
 #include <iostream>
 #include <fstream>
-#include "Logger.h"
 #include "HardCodedInfo.h"
 #include "Config.h"
 #include "AutoObserver.h"

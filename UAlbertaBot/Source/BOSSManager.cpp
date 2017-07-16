@@ -1,6 +1,7 @@
 #include "Common.h"
 #include "BOSSManager.h"
 #include "UnitUtil.h"
+#include "FileLogger.h"
 
 using namespace UAlbertaBot;
 

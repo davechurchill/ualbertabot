@@ -116,7 +116,21 @@ namespace AKBot
 
 	void CombatCommanderDebug::drawOrder(AKBot::ScreenCanvas& canvas, const Squad& squad, const SquadOrder& order) const
 	{
-		drawOrderText(canvas, squad.getMeleeManager(), order);
+		auto& meleeManager = squad.getMeleeManager();
+		for (auto & meleeUnit : meleeManager.getUnits())
+		{
+			if (Config::Debug::DrawUnitTargetInfo)
+			{
+				canvas.drawLineMap(
+					meleeUnit->getPosition().x,
+					meleeUnit->getPosition().y,
+					meleeUnit->getTargetPosition().x,
+					meleeUnit->getTargetPosition().y,
+					Config::Debug::ColorLineTarget);
+			}
+		}
+		
+		drawOrderText(canvas, meleeManager, order);
 		drawOrderText(canvas, squad.getRangedManager(), order);
 		drawOrderText(canvas, squad.getTankManager(), order);
 		drawOrderText(canvas, squad.getMedicManager(), order);
