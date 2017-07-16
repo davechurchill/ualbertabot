@@ -10,10 +10,11 @@ using namespace UAlbertaBot;
 GameCommander::GameCommander(UAlbertaBot_Tournament & uabModule, const AKBot::OpponentView& opponentView, const BaseLocationManager& bases)
     : _opponentView(opponentView)
 	, _productionManager(opponentView, _bossManager, uabModule.Strategy(), uabModule.UnitInfo(), bases)
-	, _scoutManager(bases)
+	, _scoutManager(opponentView, bases)
     , _initialScoutSet(false)
     , _module(uabModule)
 	, _combatCommander(bases, opponentView, uabModule.UnitInfo())
+	, _bossManager(opponentView)
 {
 	auto& workerManager = uabModule.Workers();
 	_scoutManager.onScoutAssigned([&workerManager](const BWAPI::Unit &unit)

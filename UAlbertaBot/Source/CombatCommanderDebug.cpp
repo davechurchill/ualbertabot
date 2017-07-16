@@ -58,12 +58,28 @@ namespace AKBot
 
 	void CombatCommanderDebug::drawRegroupStatus(AKBot::ScreenCanvas& canvas, const Squad& squad) const
 	{
-		if (Config::Debug::DrawSquadInfo)
+		if (squad.getSquadOrder().getType() == UAlbertaBot::SquadOrderTypes::Attack)
 		{
-			if (squad.getSquadOrder().getType() == UAlbertaBot::SquadOrderTypes::Attack)
-			{
-				canvas.drawTextScreen(200, 350, "%s", squad.getRegroupStatus().c_str());
-			}
+			canvas.drawTextScreen(200, 350, "%s", squad.getRegroupStatus().c_str());
+		}
+	}
+
+	void CombatCommanderDebug::drawNearbyUnits(AKBot::ScreenCanvas& canvas, const Squad& squad) const
+	{
+		for (auto & unit : squad.getUnits())
+		{
+			int x = unit->getPosition().x;
+			int y = unit->getPosition().y;
+
+			int left = unit->getType().dimensionLeft();
+			int right = unit->getType().dimensionRight();
+			int top = unit->getType().dimensionUp();
+			int bottom = unit->getType().dimensionDown();
+
+			auto color = squad.isNearEnemy(unit)
+				? Config::Debug::ColorUnitNearEnemy
+				: Config::Debug::ColorUnitNotNearEnemy;
+			canvas.drawBoxMap(x - left, y - top, x + right, y + bottom, color);
 		}
 	}
 
@@ -79,14 +95,22 @@ namespace AKBot
 
 	void CombatCommanderDebug::drawSquad(AKBot::ScreenCanvas& canvas, const Squad& squad) const
 	{
-		drawRegroupStatus(canvas, squad);
+		if (Config::Debug::DrawSquadInfo)
+		{
+			drawRegroupStatus(canvas, squad);
+			drawNearbyUnits(canvas, squad);
+		}
+
 		if (squad.getNeedToRegroup())
 		{
 			drawRegroupPosition(canvas, squad.getLastRegroupPosition());
 		}
 		else
 		{
-			drawOrder(canvas, squad, squad.getSquadOrder());
+			if (Config::Debug::DrawUnitTargetInfo)
+			{
+				drawOrder(canvas, squad, squad.getSquadOrder());
+			}
 		}
 	}
 
@@ -103,22 +127,14 @@ namespace AKBot
 	
 	void CombatCommanderDebug::drawOrderText(AKBot::ScreenCanvas& canvas, const MicroManager& manager, const SquadOrder & order) const
 	{
-		if (Config::Debug::DrawUnitTargetInfo)
+		for (auto & unit : manager.getUnits())
 		{
-			for (auto & unit : manager.getUnits())
-			{
-				canvas.drawTextMap(unit->getPosition().x, unit->getPosition().y, "%s", order.getStatus().c_str());
-			}
+			canvas.drawTextMap(unit->getPosition().x, unit->getPosition().y, "%s", order.getStatus().c_str());
 		}
 	}
 
 	void CombatCommanderDebug::drawTransportInformation(AKBot::ScreenCanvas& canvas, const TransportManager& transportManager, int x, int y) const
 	{
-		if (!Config::Debug::DrawUnitTargetInfo)
-		{
-			return;
-		}
-
 		if (x && y)
 		{
 			//canvas.drawTextScreen(x, y, "ScoutInfo: %s", _scoutStatus.c_str());

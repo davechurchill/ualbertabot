@@ -3,8 +3,9 @@
 
 using namespace UAlbertaBot;
 
-AutoObserver::AutoObserver()
-    : _unitFollowFrames(0)
+AutoObserver::AutoObserver(const AKBot::OpponentView& opponentView)
+	: _opponentView(opponentView)
+	, _unitFollowFrames(0)
     , _cameraLastMoved(0)
     , _observerFollowingUnit(nullptr)
 {
@@ -17,7 +18,7 @@ void AutoObserver::onFrame(int currentFrame)
 
     if (pickUnitToFollow)
     {
-	    for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+	    for (auto & unit : _opponentView.self()->getUnits())
 	    {
 		    if (unit->isUnderAttack() || unit->isAttacking() || unit->getGroundWeaponCooldown() > 0)
 		    {
@@ -32,11 +33,11 @@ void AutoObserver::onFrame(int currentFrame)
 
     if (pickUnitToFollow)
     {
-	    for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+	    for (auto & unit : _opponentView.self()->getUnits())
 	    {
 		    if (unit->isBeingConstructed() && (unit->getRemainingBuildTime() < 12))
 		    {
-			    _cameraLastMoved = BWAPI::Broodwar->getFrameCount();
+			    _cameraLastMoved = currentFrame;
                 _unitFollowFrames = 24;
                 _observerFollowingUnit = unit;
                 pickUnitToFollow = false;
@@ -47,7 +48,7 @@ void AutoObserver::onFrame(int currentFrame)
 
     if (pickUnitToFollow)
     {
-	    for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+	    for (auto & unit : _opponentView.self()->getUnits())
 	    {
 		    if (Global::Workers().isWorkerScout(unit))
 		    {

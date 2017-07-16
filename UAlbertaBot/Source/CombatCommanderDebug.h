@@ -21,6 +21,7 @@ namespace AKBot
 		void drawSquadInformation(AKBot::ScreenCanvas& canvas, const SquadData& squadData, int x, int y) const;
 		void drawRegroupPosition(AKBot::ScreenCanvas& canvas, BWAPI::Position regroupPosition) const;
 		void drawRegroupStatus(AKBot::ScreenCanvas& canvas, const Squad& squad) const;
+		void drawNearbyUnits(AKBot::ScreenCanvas& canvas, const Squad& squad) const;
 		void drawOrder(AKBot::ScreenCanvas& canvas, const Squad& squad, const SquadOrder& order) const;
 		void drawOrderText(AKBot::ScreenCanvas& canvas, const MicroManager& manager, const SquadOrder & order) const;
 		void drawTransportInformation(ScreenCanvas& canvas, const TransportManager& transportManager, int x, int y) const;

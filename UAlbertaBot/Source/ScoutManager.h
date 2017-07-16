@@ -22,6 +22,7 @@ class ScoutManager
 	std::vector<BWAPI::Position>    _enemyRegionVertices;
 	UnitHandler     _onScoutReleased;
 	UnitHandler     _onScoutAssigned;
+	const AKBot::OpponentView& _opponentView;
 
 	bool            enemyWorkerInRadius();
     bool            immediateThreat();
@@ -39,7 +40,7 @@ class ScoutManager
 
 public:
     
-	ScoutManager(const BaseLocationManager& baseLocationManager);
+	ScoutManager(const AKBot::OpponentView& opponentView, const BaseLocationManager& baseLocationManager);
 
 	void update();
     void setWorkerScout(BWAPI::Unit unit);

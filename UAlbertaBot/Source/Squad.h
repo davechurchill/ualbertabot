@@ -87,6 +87,7 @@ public:
 	const std::set<BWAPI::Unit> &  getUnits() const;
 	const SquadOrder &  getSquadOrder()	const;
 	void onUnitRemoved(UnitHandler handler);
+	bool isNearEnemy(const BWAPI::Unit& unit) const;
 
 	BWAPI::Position getLastRegroupPosition() const { return _lastRegroupPosition; };
 };

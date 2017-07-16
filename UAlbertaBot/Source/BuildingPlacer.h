@@ -4,6 +4,7 @@
 #include "BuildingData.h"
 #include "MetaType.h"
 #include "BaseLocationManager.h"
+#include "OpponentView.h"
 
 namespace UAlbertaBot
 {
@@ -19,12 +20,13 @@ class BuildingPlacer
     int	    _boxLeft;
     int	    _boxRight;
 	const BaseLocationManager& _bases;
+	const AKBot::OpponentView& _opponentView;
 
     void    computeBuildableTileDistance(BWAPI::TilePosition tp);
 
 public:
     
-    BuildingPlacer(int width, int height, const BaseLocationManager& bases);
+    BuildingPlacer(int width, int height, const AKBot::OpponentView& opponentView, const BaseLocationManager& bases);
 
     // queries for various BuildingPlacer data
     bool					buildable(const Building & b,int x,int y) const;

@@ -18,9 +18,11 @@ UAlbertaBot_Tournament::UAlbertaBot_Tournament(const AKBot::OpponentView& oppone
 	: _opponentView(opponentView)
 	, _baseLocationManager(opponentView)
 	, _gameCommander(*this, opponentView, _baseLocationManager)
-	, _mapTools(BWAPI::Broodwar->mapWidth(), BWAPI::Broodwar->mapHeight())
+	, _mapTools(BWAPI::Broodwar->mapWidth(), BWAPI::Broodwar->mapHeight(), opponentView)
 	, _strategyManager("", opponentView, _unitInfoManager, _baseLocationManager)
 	, _unitInfoManager(opponentView)
+	, _autoObserver(opponentView)
+	, _workerManager(opponentView)
 {
 	// parse the configuration file for the bot's strategies
 	auto configurationFile = ParseUtils::FindConfigurationLocation(Config::ConfigFile::ConfigFileLocation);

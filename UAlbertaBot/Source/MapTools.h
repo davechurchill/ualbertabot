@@ -15,7 +15,8 @@ class MapTools
     size_t _height;
 
     // a cache of already computed distance maps, which is mutable since it only acts as a cache
-    mutable std::map<BWAPI::TilePosition, DistanceMap>   _allMaps;   
+    mutable std::map<BWAPI::TilePosition, DistanceMap>   _allMaps;
+	const AKBot::OpponentView& _opponentView;
 
     std::vector<std::vector<bool>> _walkable;               // the map stored at TilePosition resolution, values are 0/1 for walkable or not walkable
     std::vector<std::vector<bool>> _buildable;         // whether a tile is buildable (includes static resources)
@@ -31,7 +32,7 @@ class MapTools
     
 public:
 
-    MapTools(int width, int height);
+    MapTools(int width, int height, const AKBot::OpponentView& opponentView);
 
 	const size_t getWidth() const { return _width; };
 	const size_t getHeight() const { return _height; };

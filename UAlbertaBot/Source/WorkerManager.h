@@ -4,6 +4,7 @@
 #include "BuildingData.h"
 #include "BuildingManager.h"
 #include "WorkerData.h"
+#include "OpponentView.h"
 
 namespace UAlbertaBot
 {
@@ -11,6 +12,7 @@ class WorkerManager
 {
     WorkerData  workerData;
     BWAPI::Unit previousClosestWorker;
+	const AKBot::OpponentView& _opponentView;
 
     void        setMineralWorker(BWAPI::Unit unit);
     
@@ -22,7 +24,7 @@ class WorkerManager
 
 public:
 
-    WorkerManager();
+    WorkerManager(const AKBot::OpponentView& opponentView);
 
     void        update();
     void        onUnitDestroy(BWAPI::Unit unit);

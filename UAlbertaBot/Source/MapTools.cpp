@@ -12,7 +12,7 @@ const int actionX[LegalActions] = {1, -1, 0, 0};
 const int actionY[LegalActions] = {0, 0, 1, -1};
 
 // constructor for MapTools
-MapTools::MapTools(int width, int height)
+MapTools::MapTools(int width, int height, const AKBot::OpponentView& opponentView)
     : _width            (width)
     , _height           (height)
     , _walkable         (width, std::vector<bool>(height, false))
@@ -20,6 +20,7 @@ MapTools::MapTools(int width, int height)
     , _depotBuildable   (width, std::vector<bool>(height, true))
     , _lastSeen         (width, std::vector<int> (height, 0))
     , _sectorNumber     (width, std::vector<int> (height, 0))
+	, _opponentView(opponentView)
 {
     setBWAPIMapData();
 
@@ -358,7 +359,7 @@ BWAPI::Position MapTools::getLeastRecentlySeenPosition(const BaseLocationManager
 {
 	int minSeen = std::numeric_limits<int>::max();
 	BWAPI::TilePosition leastSeen(0,0);
-    const BaseLocation * baseLocation = bases.getPlayerStartingBaseLocation(BWAPI::Broodwar->self());
+    const BaseLocation * baseLocation = bases.getPlayerStartingBaseLocation(_opponentView.self());
 
 	const auto enemy = Global::getEnemy();
 	const auto enemyStartLocation = enemy == nullptr ? nullptr : bases.getPlayerStartingBaseLocation(enemy);

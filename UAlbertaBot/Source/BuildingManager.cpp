@@ -11,7 +11,7 @@ BuildingManager::BuildingManager(const AKBot::OpponentView& opponentView, const 
     , _reservedGas(0)
 	, _bases(bases)
 	, _opponentView(opponentView)
-	, _buildingPlacer(BWAPI::Broodwar->mapWidth(), BWAPI::Broodwar->mapHeight(), bases)
+	, _buildingPlacer(BWAPI::Broodwar->mapWidth(), BWAPI::Broodwar->mapHeight(), opponentView, bases)
 {
 
 }
@@ -336,7 +336,7 @@ BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
     if (b.type.isResourceDepot())
     {
         // get the location 
-        BWAPI::TilePosition tile = _bases.getNextExpansion(BWAPI::Broodwar->self());
+        BWAPI::TilePosition tile = _bases.getNextExpansion(_opponentView.self());
 
         return tile;
     }

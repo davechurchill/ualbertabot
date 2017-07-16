@@ -113,21 +113,6 @@ void Squad::setNearEnemyUnits()
 	for (auto & unit : _units)
 	{
 		_nearEnemy[unit] = unitNearEnemy(unit);
-		if (Config::Debug::DrawSquadInfo)
-		{
-			int x = unit->getPosition().x;
-			int y = unit->getPosition().y;
-
-			int left = unit->getType().dimensionLeft();
-			int right = unit->getType().dimensionRight();
-			int top = unit->getType().dimensionUp();
-			int bottom = unit->getType().dimensionDown();
-
-			auto color = _nearEnemy[unit]
-				? Config::Debug::ColorUnitNearEnemy
-				: Config::Debug::ColorUnitNotNearEnemy;
-			BWAPI::Broodwar->drawBoxMap(x - left, y - top, x + right, y + bottom, color);
-		}
 	}
 }
 
@@ -472,4 +457,8 @@ const std::string& Squad::getRegroupStatus() const
 bool Squad::getNeedToRegroup() const
 {
 	return _needToRegroup;
+}
+bool Squad::isNearEnemy(const BWAPI::Unit& unit) const
+{
+	return _nearEnemy.at(unit);
 }

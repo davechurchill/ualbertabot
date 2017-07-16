@@ -5,13 +5,14 @@
 
 using namespace UAlbertaBot;
 
-BuildingPlacer::BuildingPlacer(int width, int height, const BaseLocationManager& bases)
+BuildingPlacer::BuildingPlacer(int width, int height, const AKBot::OpponentView& opponentView, const BaseLocationManager& bases)
     : _boxTop       (std::numeric_limits<int>::max())
     , _boxBottom    (std::numeric_limits<int>::lowest())
     , _boxLeft      (std::numeric_limits<int>::max())
     , _boxRight     (std::numeric_limits<int>::lowest())
 	, _width(width)
 	, _height(height)
+	, _opponentView(opponentView)
 	, _bases(bases)
 {
     _reserveMap = std::vector< std::vector<bool> >(width,std::vector<bool>(height,false));
@@ -29,13 +30,13 @@ bool BuildingPlacer::isInResourceBox(int x, int y) const
 
 void BuildingPlacer::computeResourceBox()
 {
-	auto self = BWAPI::Broodwar->self();
+	auto self = _opponentView.self();
 	if (self == nullptr)
 	{
 		return;
 	}
 
-    BWAPI::Position start(BWAPI::Broodwar->self()->getStartLocation());
+    BWAPI::Position start(self->getStartLocation());
     std::vector<BWAPI::Unit> unitsAroundNexus;
 
     for (auto & unit : BWAPI::Broodwar->getAllUnits())
@@ -214,7 +215,7 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b,int 
     double ms1 = t.getElapsedTimeInMilliSec();
 
     // special easy case of having no pylons
-    int numPylons = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Pylon);
+    int numPylons = _opponentView.self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Pylon);
     if (b.type.requiresPsi() && numPylons == 0)
     {
         return BWAPI::TilePositions::None;
@@ -258,7 +259,7 @@ bool BuildingPlacer::tileOverlapsBaseLocation(BWAPI::TilePosition tile, BWAPI::U
         // dimensions of the base location
         int bx1 = base->getDepotTilePosition().x;
         int by1 = base->getDepotTilePosition().y;
-		auto resourceDepot = UnitUtil::getResourceDepot(BWAPI::Broodwar->self()->getRace());
+		auto resourceDepot = UnitUtil::getResourceDepot(_opponentView.self()->getRace());
         int bx2 = bx1 + resourceDepot.tileWidth();
         int by2 = by1 + resourceDepot.tileHeight();
 
@@ -286,7 +287,7 @@ bool BuildingPlacer::buildable(const Building & b,int x,int y) const
         return false;
     }
 
-    if ((BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran) && tileBlocksAddon(BWAPI::TilePosition(x,y)))
+    if ((_opponentView.self()->getRace() == BWAPI::Races::Terran) && tileBlocksAddon(BWAPI::TilePosition(x,y)))
     {
         return false;
     }
@@ -325,7 +326,7 @@ BWAPI::TilePosition BuildingPlacer::getRefineryPosition()
 {
     BWAPI::TilePosition closestGeyser = BWAPI::TilePositions::None;
     double minGeyserDistanceFromHome = std::numeric_limits<double>::max();
-    BWAPI::Position homePosition = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
+    BWAPI::Position homePosition = BWAPI::Position(_opponentView.self()->getStartLocation());
 
     // for each geyser
     for (auto & geyser : BWAPI::Broodwar->getStaticGeysers())
@@ -340,7 +341,7 @@ BWAPI::TilePosition BuildingPlacer::getRefineryPosition()
 
         // check to see if it's next to one of our depots
         bool nearDepot = false;
-        for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+        for (auto & unit : _opponentView.self()->getUnits())
         {
             if (unit->getType().isResourceDepot() && unit->getDistance(geyserPos) < 300)
             {

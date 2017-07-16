@@ -5,6 +5,7 @@
 #include "../../BOSS/source/BOSS.h"
 #include "StrategyManager.h"
 #include <memory>
+#include "OpponentView.h"
 
 namespace UAlbertaBot
 {
@@ -26,6 +27,7 @@ class BOSSManager
     BOSS::DFBB_BuildOrderSearchResults      _previousSearchResults;
     BOSS::DFBB_BuildOrderSearchResults      _savedSearchResults;
     BOSS::BuildOrder                        _previousBuildOrder;
+	const AKBot::OpponentView& _opponentView;
 
 	BOSS::GameState				            getCurrentState();
 	BOSS::GameState				            getStartState();
@@ -43,7 +45,7 @@ class BOSSManager
 
 public:
 	
-	BOSSManager();
+	BOSSManager(const AKBot::OpponentView& opponentView);
 
 	void						update(double timeLimit);
     void                        reset();

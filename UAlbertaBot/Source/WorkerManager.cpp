@@ -8,7 +8,8 @@
 
 using namespace UAlbertaBot;
 
-WorkerManager::WorkerManager() 
+WorkerManager::WorkerManager(const AKBot::OpponentView& opponentView)
+	: _opponentView(opponentView)
 {
     previousClosestWorker = nullptr;
 }
@@ -70,7 +71,7 @@ void WorkerManager::stopRepairing(BWAPI::Unit worker)
 void WorkerManager::handleGasWorkers() 
 {
 	// for each unit we have
-	for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+	for (auto & unit : _opponentView.self()->getUnits())
 	{
 		// if that unit is a refinery
 		if (unit->getType().isRefinery() && unit->isCompleted())
@@ -110,12 +111,12 @@ void WorkerManager::handleIdleWorkers()
 
 void WorkerManager::handleRepairWorkers()
 {
-    if (BWAPI::Broodwar->self()->getRace() != BWAPI::Races::Terran)
+    if (_opponentView.self()->getRace() != BWAPI::Races::Terran)
     {
         return;
     }
 
-    for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+    for (auto & unit : _opponentView.self()->getUnits())
     {
         if (unit->getType().isBuilding() && (unit->getHitPoints() < unit->getType().maxHitPoints()))
         {
@@ -265,7 +266,7 @@ BWAPI::Unit WorkerManager::getClosestDepot(BWAPI::Unit worker)
 	BWAPI::Unit closestDepot = nullptr;
 	double closestDistance = 0;
 
-	for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+	for (auto & unit : _opponentView.self()->getUnits())
 	{
         UAB_ASSERT(unit != nullptr, "Unit was null");
 
@@ -465,7 +466,7 @@ bool WorkerManager::willHaveResources(int mineralsRequired, int gasRequired, dou
 	}
 
 	// the speed of the worker unit
-	double speed = BWAPI::Broodwar->self()->getRace().getWorker().topSpeed();
+	double speed = _opponentView.self()->getRace().getWorker().topSpeed();
 
     UAB_ASSERT(speed > 0, "Speed is negative");
 
@@ -501,13 +502,13 @@ void WorkerManager::onUnitMorph(BWAPI::Unit unit)
 	UAB_ASSERT(unit != nullptr, "Unit was null");
 
 	// if something morphs into a worker, add it
-	if (unit->getType().isWorker() && unit->getPlayer() == BWAPI::Broodwar->self() && unit->getHitPoints() >= 0)
+	if (unit->getType().isWorker() && unit->getPlayer() == _opponentView.self() && unit->getHitPoints() >= 0)
 	{
 		workerData.addWorker(unit);
 	}
 
 	// if something morphs into a building, it was a worker?
-	if (unit->getType().isBuilding() && unit->getPlayer() == BWAPI::Broodwar->self() && unit->getPlayer()->getRace() == BWAPI::Races::Zerg)
+	if (unit->getType().isBuilding() && unit->getPlayer() == _opponentView.self() && unit->getPlayer()->getRace() == BWAPI::Races::Zerg)
 	{
 		//BWAPI::Broodwar->printf("A Drone started building");
 		workerData.workerDestroyed(unit);
@@ -519,13 +520,13 @@ void WorkerManager::onUnitShow(BWAPI::Unit unit)
 	UAB_ASSERT(unit != nullptr, "Unit was null");
 
 	// add the depot if it exists
-	if (unit->getType().isResourceDepot() && unit->getPlayer() == BWAPI::Broodwar->self())
+	if (unit->getType().isResourceDepot() && unit->getPlayer() == _opponentView.self())
 	{
 		workerData.addDepot(unit);
 	}
 
 	// if something morphs into a worker, add it
-	if (unit->getType().isWorker() && unit->getPlayer() == BWAPI::Broodwar->self() && unit->getHitPoints() >= 0)
+	if (unit->getType().isWorker() && unit->getPlayer() == _opponentView.self() && unit->getHitPoints() >= 0)
 	{
 		//BWAPI::Broodwar->printf("A worker was shown %d", unit->getID());
 		workerData.addWorker(unit);
@@ -561,12 +562,12 @@ void WorkerManager::onUnitDestroy(BWAPI::Unit unit)
 {
 	UAB_ASSERT(unit != nullptr, "Unit was null");
 
-	if (unit->getType().isResourceDepot() && unit->getPlayer() == BWAPI::Broodwar->self())
+	if (unit->getType().isResourceDepot() && unit->getPlayer() == _opponentView.self())
 	{
 		workerData.removeDepot(unit);
 	}
 
-	if (unit->getType().isWorker() && unit->getPlayer() == BWAPI::Broodwar->self()) 
+	if (unit->getType().isWorker() && unit->getPlayer() == _opponentView.self())
 	{
 		workerData.workerDestroyed(unit);
 	}

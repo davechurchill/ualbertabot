@@ -5,13 +5,14 @@
 
 using namespace UAlbertaBot;
 
-ScoutManager::ScoutManager(const BaseLocationManager& baseLocationManager)
+ScoutManager::ScoutManager(const AKBot::OpponentView& opponentView, const BaseLocationManager& baseLocationManager)
     : _workerScout(nullptr)
     , _numWorkerScouts(0)
     , _scoutUnderAttack(false)
     , _scoutStatus("None")
     , _currentRegionVertexIndex(-1)
     , _previousScoutHP(0)
+	, _opponentView(opponentView)
 	, _baseLocationManager(baseLocationManager)
 {
 }
@@ -92,7 +93,7 @@ void ScoutManager::moveScouts()
 
 bool ScoutManager::allEnemyBasesExplored() const
 {
-	for (const auto& enemy : BWAPI::Broodwar->enemies())
+	for (const auto& enemy : _opponentView.enemies())
 	{
 		const auto enemyBaseLocation = _baseLocationManager.getPlayerStartingBaseLocation(enemy);
 		if (enemyBaseLocation == nullptr)
@@ -310,7 +311,7 @@ int ScoutManager::getClosestVertexIndex(BWAPI::Unit unit)
 BWAPI::Position ScoutManager::getFleePosition()
 {
     // TODO: make this follow the perimeter of the enemy base again, but for now just use home base as flee direction
-    return _baseLocationManager.getPlayerStartingBaseLocation(BWAPI::Broodwar->self())->getPosition();
+    return _baseLocationManager.getPlayerStartingBaseLocation(_opponentView.self())->getPosition();
 
     //UAB_ASSERT_WARNING(!_enemyRegionVertices.empty(), "We should have an enemy region vertices if we are fleeing");
     //
@@ -326,7 +327,7 @@ BWAPI::Position ScoutManager::getFleePosition()
 
     //    if (closestPolygonIndex == -1)
     //    {
-    //        return BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
+    //        return BWAPI::Position(_opponentView.self()->getStartLocation());
     //    }
     //    else
     //    {
@@ -370,7 +371,7 @@ BWAPI::Position ScoutManager::getFleePosition()
 //        return;
 //    }
 //
-//    const BWAPI::Position basePosition = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
+//    const BWAPI::Position basePosition = BWAPI::Position(_opponentView.self()->getStartLocation());
 //    const std::vector<BWAPI::TilePosition> & closestTobase = Global::Map().getClosestTilesTo(basePosition);
 //
 //    std::set<BWAPI::Position> unsortedVertices;
