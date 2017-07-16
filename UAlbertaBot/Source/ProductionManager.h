@@ -70,8 +70,8 @@ public:
     // the sorting operator
     bool operator() (BWAPI::Unit u1,BWAPI::Unit u2)
     {
-        int startedU1 = BWAPI::Broodwar->getFrameCount() - (u1->getType().buildTime() - u1->getRemainingBuildTime());
-        int startedU2 = BWAPI::Broodwar->getFrameCount() - (u2->getType().buildTime() - u2->getRemainingBuildTime());
+        int startedU1 = u1->getType().buildTime() - u1->getRemainingBuildTime();
+        int startedU2 = u2->getType().buildTime() - u2->getRemainingBuildTime();
         return startedU1 > startedU2;
     }
 };
