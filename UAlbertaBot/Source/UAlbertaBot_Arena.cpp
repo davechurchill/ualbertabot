@@ -35,9 +35,15 @@ void UAlbertaBot_Arena::onStart()
 
     // Set the starting date
     _startDate = Assert::currentDateTime();
-
+    
     // set the arena player
     _arenaPlayer = std::shared_ptr<ArenaPlayer>(new ArenaPlayer_AttackClosest());
+    _arenaPlayer->onStart();
+
+    // set the results file name
+    std::stringstream ssf;
+    ssf << _startDate << "___" << BWAPI::Broodwar->mapFileName() << "___" << _arenaPlayer->getName() << ".txt";
+    _resultsFile = ssf.str();
 
     if (Config::BWAPIOptions::EnableCompleteMapInformation)
     {
@@ -58,6 +64,14 @@ void UAlbertaBot_Arena::onStart()
 void UAlbertaBot_Arena::onFrame()
 {
     drawUnitHPBars();
+
+    // update the results of the current experiment
+    std::stringstream ss;
+    ss << BWAPI::Broodwar->mapFileName() << "\nPlayer: " << _arenaPlayer->getName() << "\n";
+    ss << "Battles: " << _battles << "\nWins:   " << _results[0] << "\nLosses: " << _results[1] << "\nDraws:  " << _results[2] << "\nScore:  " << ((double)(_results[0] + (double)_results[2]/2)/_battles);
+    _resultString = ss.str();
+
+    BWAPI::Broodwar->drawTextScreen(10, 10, _resultString.c_str());
 
     // if there is a battle ongoing
     if (isBattle())
@@ -80,13 +94,15 @@ void UAlbertaBot_Arena::onFrame()
             _battles++;
             _results[winner()]++;
         }
-    }
 
-    std::stringstream ss;
-    ss << BWAPI::Broodwar->mapFileName() << "\nPlayer: " << _arenaPlayer->getName() << "\n";
-    ss << "Battles: " << _battles << "\nWins:   " << _results[0] << "\nLosses: " << _results[1] << "\nDraws:  " << _results[2] << "\nScore:  " << ((double)(_results[0] + (double)_results[2]/2)/_battles);
-    _resultString = ss.str();
-    BWAPI::Broodwar->drawTextScreen(10, 10, _resultString.c_str());
+        // write the output results file if the conditions are met
+        if (_battles % Config::Arena::ArenaOutputResults == 0 || _prevIsBattle)
+        {
+            std::ofstream fout(_resultsFile);
+            fout << _resultString;
+            fout.close();
+        }
+    }
 
     _prevIsBattle = isBattle();
 }

@@ -30,7 +30,6 @@ namespace Config
 
     namespace Arena
     {
-        extern std::string ArenaPlayerName;
         extern int ArenaOutputResults;
         extern int ArenaBattles;
     }

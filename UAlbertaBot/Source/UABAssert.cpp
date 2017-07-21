@@ -18,6 +18,11 @@ namespace Assert
 		localtime_s(&tstruct, &now);
         strftime(buf, sizeof(buf), "%Y-%m-%d_%X", &tstruct);
 
+        for (size_t i=0; i<80; ++i)
+        {
+            if (buf[i] == ':') buf[i] = '-';
+        }
+
         return buf;
     }
 

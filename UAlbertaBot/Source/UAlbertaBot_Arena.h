@@ -14,6 +14,7 @@ class UAlbertaBot_Arena : public BotModule
     std::shared_ptr<ArenaPlayer>    _arenaPlayer;
     std::string                     _startDate;
     std::string                     _resultString;
+    std::string                     _resultsFile;
     std::vector<size_t>             _results;       // 0 = wins, 1 = losses, 2 = draws
     size_t                          _battles;
     bool                            _prevIsBattle;

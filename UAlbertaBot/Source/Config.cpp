@@ -53,7 +53,6 @@ namespace Config
 
     namespace Arena
     {
-        std::string ArenaPlayerName         = "AttackWC_NOK";
         int ArenaOutputResults              = 10;
         int ArenaBattles                    = 1000;
     }

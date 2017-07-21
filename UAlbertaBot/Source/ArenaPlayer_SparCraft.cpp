@@ -45,7 +45,7 @@ void ArenaPlayer_SparCraft::onBattleEnd()
 
 void ArenaPlayer_SparCraft::PlaySparCraftSimulation(const SparCraft::GameState & state)
 {
-    SparCraft::PlayerPtr player = SparCraft::AIParameters::Instance().getPlayer(GetSparCraftPlayerID(BWAPI::Broodwar->self()), Config::Arena::ArenaPlayerName);
+    SparCraft::PlayerPtr player = SparCraft::AIParameters::Instance().getPlayer(GetSparCraftPlayerID(BWAPI::Broodwar->self()), "AtackC");
     SparCraft::PlayerPtr enemy =  SparCraft::AIParameters::Instance().getPlayer(GetSparCraftPlayerID(BWAPI::Broodwar->enemy()), "AttackC");
 
     SparCraft::Game g(state, player, enemy);
@@ -54,7 +54,7 @@ void ArenaPlayer_SparCraft::PlaySparCraftSimulation(const SparCraft::GameState &
 
 SparCraft::Move ArenaPlayer_SparCraft::GetSparCraftPlayerMove(const SparCraft::GameState & state, const size_t & playerID) const
 {
-    SparCraft::PlayerPtr player = SparCraft::AIParameters::Instance().getPlayer(playerID, Config::Arena::ArenaPlayerName);
+    SparCraft::PlayerPtr player = SparCraft::AIParameters::Instance().getPlayer(playerID,  "AtackC");
 
     SparCraft::Move move;
     player->getMove(state, move);

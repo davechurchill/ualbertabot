@@ -150,7 +150,6 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
     if (doc.HasMember("Arena") && doc["Arena"].IsObject())
     {
         const rapidjson::Value & arena = doc["Arena"];
-        JSONTools::ReadString("ArenaPlayerName", arena, Config::Arena::ArenaPlayerName);
         JSONTools::ReadInt("ArenaBattles", arena, Config::Arena::ArenaBattles);
         JSONTools::ReadInt("ArenaOutputResults", arena, Config::Arena::ArenaOutputResults);
     }

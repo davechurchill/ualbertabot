@@ -4,7 +4,7 @@
         "BotName"                   : "UAlbertaBot",
         "Authors"                   : "David Churchill",
         "PrintInfoOnStart"          : false,
-        "BotMode"                   : "Arena"
+        "BotMode"                   : "Tournament"
     },
         
     "BWAPI" : 
@@ -17,7 +17,6 @@
     
     "Arena" :
     {
-        "ArenaPlayerName"           : "HoldWC_NOK",
         "ArenaOutputResults"        : 10,
         "ArenaBattles"              : 1000
     },
