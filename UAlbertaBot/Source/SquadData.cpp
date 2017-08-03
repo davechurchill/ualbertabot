@@ -27,7 +27,7 @@ void SquadData::update(const MapTools& map, int currentFrame)
 
 void SquadData::clearSquadData(int currentFrame)
 {
-    // give back workers who were in squads
+	// give back workers who were in squads
     for (auto & kv : _squads)
 	{
         Squad & squad = kv.second;

@@ -34,7 +34,15 @@ namespace UnitUtil
     size_t GetAllUnitCount(BWAPI::UnitType type);
     BWAPI::Position GetUnitsetCenter(const std::vector<BWAPI::Unit> & cluster);
     
-    BWAPI::Unit GetClosestUnitTypeToTarget(BWAPI::UnitType type, BWAPI::Position target);
+    // BWAPI::Unit GetClosestUnitTypeToTarget(BWAPI::UnitType type, BWAPI::Position target);
+	template<typename TUnitCollection, typename TTargetType>
+	BWAPI::Unit GetClosestsUnit(
+		const TUnitCollection& units,
+		TTargetType target);
+	template<typename TUnitCollection>
+	BWAPI::Unit GetClosestsUnit(
+		const TUnitCollection& units,
+		std::function<bool(const BWAPI::Unit&)> distance);
     BWAPI::WeaponType GetWeapon(BWAPI::Unit attacker, BWAPI::Unit target);
     BWAPI::WeaponType GetWeapon(BWAPI::UnitType attacker, BWAPI::UnitType target);
 

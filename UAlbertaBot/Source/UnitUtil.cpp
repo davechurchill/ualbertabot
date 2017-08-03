@@ -5,6 +5,7 @@
 #include <BWAPI/Playerset.h>
 #include <BWAPI/Unitset.h>
 #include <BWAPI/UnitCommand.h>
+#include <numeric>
 
 using namespace UAlbertaBot;
 
@@ -236,26 +237,37 @@ size_t UnitUtil::GetAllUnitCount(BWAPI::UnitType type)
     return count;
 }
 
-
-BWAPI::Unit UnitUtil::GetClosestUnitTypeToTarget(BWAPI::UnitType type, BWAPI::Position target)
+template<typename TUnitCollection>
+BWAPI::Unit UnitUtil::GetClosestsUnit(
+	const TUnitCollection& units,
+	std::function<bool(const BWAPI::Unit&)> distance)
 {
+	double closestDist = std::numeric_limits<double>::infinity();
 	BWAPI::Unit closestUnit = nullptr;
-	double closestDist = 100000;
-
-	for (auto & unit : BWAPI::Broodwar->self()->getUnits())
-	{
-		if (unit->getType() == type)
-		{
-			double dist = unit->getDistance(target);
-			if (!closestUnit || dist < closestDist)
-			{
-				closestUnit = unit;
-				closestDist = dist;
-			}
+	return std::accumulate(units.begin(), units.end(), closestUnit, [&closestDist, &distance](BWAPI::Unit init, BWAPI::Unit unit) {
+		double dist = distance(unit);
+		if (init == nullptr) {
+			closestDist = dist;
+			return unit;
 		}
-	}
 
-	return closestUnit;
+		if (closestDist > dist) {
+			closestDist = dist;
+			return unit;
+		}
+
+		return init;
+	});
+}
+
+template<typename TUnitCollection, typename TTargetType>
+BWAPI::Unit UnitUtil::GetClosestsUnit(
+	const TUnitCollection& units,
+	TTargetType target)
+{
+	return GetClosestsUnit(units, [&target](const BWAPI::Unit& unit) {
+		return unit->getDistance(target);
+	});
 }
 
 const BWAPI::UnitType UnitUtil::getResourceDepot(const BWAPI::Race& race)

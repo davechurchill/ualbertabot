@@ -2,6 +2,7 @@
 #include "Global.h"
 #include "UnitUtil.h"
 #include "Micro.h"
+#include <boost/range/adaptors.hpp>
 
 using namespace UAlbertaBot;
 
@@ -64,25 +65,20 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::Unit> & targets, int
 	}
 }
 
+
 BWAPI::Unit DetectorManager::closestCloakedUnit(const std::vector<BWAPI::Unit> & cloakedUnits, BWAPI::Unit detectorUnit)
 {
-	BWAPI::Unit closestCloaked = nullptr;
-	double closestDist = 100000;
-
-	for (auto & unit : cloakedUnits)
-	{
-		// if we haven't already assigned an detectorUnit to this cloaked unit
-		if (!cloakedUnitMap[unit])
-		{
-			double dist = unit->getDistance(detectorUnit);
-
-			if (!closestCloaked || (dist < closestDist))
-			{
-				closestCloaked = unit;
-				closestDist = dist;
-			}
-		}
-	}
-
-	return closestCloaked;
+	using boost::adaptors::filtered;
+	using boost::adaptors::transformed;
+	auto cloakedUnitsNotInTheList = cloakedUnits
+		| filtered([this](const BWAPI::Unit const& unit) { 
+			return !cloakedUnitMap[unit];
+		});
+	/*
+	 This distance to observer map 
+	auto distanceToObserverMap = cloakedUnitsNotInTheList | transformed([&detectorUnit](const BWAPI::Unit const& unit) {
+		return std::make_pair(unit, unit->getDistance(detectorUnit));
+	});
+	*/
+	return UnitUtil::GetClosestsUnit(cloakedUnitsNotInTheList, detectorUnit);
 }

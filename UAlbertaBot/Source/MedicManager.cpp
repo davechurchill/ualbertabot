@@ -5,6 +5,7 @@
 #include <BWAPI/TechType.h>
 #include <BWAPI/Unitset.h>
 #include "Micro.h"
+#include "UnitUtil.h"
 
 using namespace UAlbertaBot;
 
@@ -15,8 +16,6 @@ MedicManager::MedicManager(const AKBot::OpponentView& opponentView, const BaseLo
 
 void MedicManager::executeMicro(const std::vector<BWAPI::Unit> & targets, int currentFrame)
 {
-	const std::vector<BWAPI::Unit> & medics = getUnits();
-    
 	// create a set of all medic targets
 	std::vector<BWAPI::Unit> medicTargets;
     for (auto & unit : opponentView.self()->getUnits())
@@ -27,7 +26,9 @@ void MedicManager::executeMicro(const std::vector<BWAPI::Unit> & targets, int cu
         }
     }
     
-    std::vector<BWAPI::Unit> availableMedics(medics);
+	const std::vector<BWAPI::Unit> & medics = getUnits();
+
+	std::vector<BWAPI::Unit> availableMedics(medics);
 
     // for each target, send the closest medic to heal it
     for (auto & target : medicTargets)
@@ -39,31 +40,16 @@ void MedicManager::executeMicro(const std::vector<BWAPI::Unit> & targets, int cu
         }
 
         double closestMedicDist = std::numeric_limits<double>::infinity();
-        BWAPI::Unit closestMedic = nullptr;
+        auto closestMedic = UnitUtil::GetClosestsUnit(availableMedics, target);
 
-        for (auto & medic : availableMedics)
-        {
-            double dist = medic->getDistance(target);
-
-            if (!closestMedic || (dist < closestMedicDist))
-            {
-                closestMedic = medic;
-                closestMedicDist = dist;
-            }
-        }
+		// if we didn't find a medic which means they're all in use so break
+		if (!closestMedic) {
+			break;
+		}
 
         // if we found a medic, send it to heal the target
-        if (closestMedic)
-        {
-            closestMedic->useTech(BWAPI::TechTypes::Healing, target);
-
-            availableMedics.erase(std::remove(availableMedics.begin(), availableMedics.end(), closestMedic), availableMedics.end());
-        }
-        // otherwise we didn't find a medic which means they're all in use so break
-        else
-        {
-            break;
-        }
+		closestMedic->useTech(BWAPI::TechTypes::Healing, target);
+		availableMedics.erase(std::remove(availableMedics.begin(), availableMedics.end(), closestMedic), availableMedics.end());
     }
 
     // the remaining medics should head to the squad order position

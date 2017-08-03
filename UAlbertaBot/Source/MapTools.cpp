@@ -369,6 +369,11 @@ BWAPI::Position MapTools::getLeastRecentlySeenPosition(const BaseLocationManager
         baseLocation = enemyStartLocation;
     }
 
+	if (baseLocation == nullptr)
+	{
+		return BWAPI::Position(leastSeen);
+	}
+
     BWAPI::Position myBasePosition = baseLocation->getPosition();
 
     for (auto & tile : baseLocation->getClosestTiles())
