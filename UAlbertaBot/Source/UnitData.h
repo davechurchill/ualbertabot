@@ -32,9 +32,9 @@ struct UnitInfo
 
     }
 
-    const bool operator == (BWAPI::Unit unit) const
+    const bool operator == (BWAPI::Unit target) const
     {
-        return unitID == unit->getID();
+        return unitID == target->getID();
     }
 
     const bool operator == (const UnitInfo & rhs) const

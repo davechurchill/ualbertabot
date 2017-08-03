@@ -288,7 +288,8 @@ void ParseUtils::ParseStrategy(const std::string & filename, StrategyManager & s
                     }
                 }
 
-                strategyManager.addStrategy(name, Strategy(name, strategyRace, buildOrder));
+				Strategy strategyInstance(name, strategyRace, buildOrder);
+                strategyManager.addStrategy(name, strategyInstance);
             }
         }
     }

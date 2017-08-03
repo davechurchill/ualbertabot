@@ -8,6 +8,7 @@ typedef std::experimental::generator<BWAPI::Unit> UnitCollection;
 #include <vector>
 typedef std::vector<BWAPI::Unit> UnitCollection;
 #endif
+#include <numeric>
 
 namespace UAlbertaBot
 {
@@ -35,14 +36,37 @@ namespace UnitUtil
     BWAPI::Position GetUnitsetCenter(const std::vector<BWAPI::Unit> & cluster);
     
     // BWAPI::Unit GetClosestUnitTypeToTarget(BWAPI::UnitType type, BWAPI::Position target);
-	template<typename TUnitCollection, typename TTargetType>
-	BWAPI::Unit GetClosestsUnit(
-		const TUnitCollection& units,
-		TTargetType target);
 	template<typename TUnitCollection>
-	BWAPI::Unit GetClosestsUnit(
+	BWAPI::Unit UnitUtil::GetClosestsUnit(
 		const TUnitCollection& units,
-		std::function<bool(const BWAPI::Unit&)> distance);
+		std::function<bool(const BWAPI::Unit&)> distance)
+	{
+		double closestDist = std::numeric_limits<double>::infinity();
+		BWAPI::Unit closestUnit = nullptr;
+		return std::accumulate(units.begin(), units.end(), closestUnit, [&closestDist, &distance](BWAPI::Unit init, BWAPI::Unit unit) {
+			double dist = distance(unit);
+			if (init == nullptr) {
+				closestDist = dist;
+				return unit;
+			}
+
+			if (closestDist > dist) {
+				closestDist = dist;
+				return unit;
+			}
+
+			return init;
+		});
+	};
+	template<typename TUnitCollection, typename TTargetType>
+	BWAPI::Unit UnitUtil::GetClosestsUnitToTarget(
+		const TUnitCollection& units,
+		TTargetType target)
+	{
+		return GetClosestsUnit(units, [&target](const BWAPI::Unit& unit) {
+			return unit->getDistance(target);
+		});
+	};
     BWAPI::WeaponType GetWeapon(BWAPI::Unit attacker, BWAPI::Unit target);
     BWAPI::WeaponType GetWeapon(BWAPI::UnitType attacker, BWAPI::UnitType target);
 

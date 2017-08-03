@@ -15,7 +15,7 @@ namespace AKBot
 		drawBuildingInformation(canvas, buildingManager, 200, 50);
 		auto bossManager = _productionManager.getBOSSManager();
 		drawSearchInformation(canvas, bossManager, 490, 100);
-		drawStateInformation(canvas, bossManager, 250, 0, buildingManager);
+		drawStateInformation(canvas, 250, 0, buildingManager);
 
 		if (!Config::Debug::DrawProductionInfo)
 		{
@@ -199,7 +199,7 @@ namespace AKBot
 		canvas.drawTextScreen(BWAPI::Position(x, y + 45), "BO Size: %d", (int)savedSearchResults.buildOrder.size());
 	}
 
-	void ProductionManagerDebug::drawStateInformation(AKBot::ScreenCanvas& canvas, const BOSSManager& bossManager, int x, int y, const BuildingManager & buildingManager) const
+	void ProductionManagerDebug::drawStateInformation(AKBot::ScreenCanvas& canvas, int x, int y, const BuildingManager & buildingManager) const
 	{
 		if (!Config::Debug::DrawBOSSStateInfo)
 		{

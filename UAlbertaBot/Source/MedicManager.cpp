@@ -8,6 +8,7 @@
 #include "UnitUtil.h"
 
 using namespace UAlbertaBot;
+using UAlbertaBot::UnitUtil::GetClosestsUnitToTarget;
 
 MedicManager::MedicManager(const AKBot::OpponentView& opponentView, const BaseLocationManager& bases)
 	: MicroManager(opponentView, bases)
@@ -39,8 +40,7 @@ void MedicManager::executeMicro(const std::vector<BWAPI::Unit> & targets, int cu
             continue;
         }
 
-        double closestMedicDist = std::numeric_limits<double>::infinity();
-        auto closestMedic = UnitUtil::GetClosestsUnit(availableMedics, target);
+        auto closestMedic = GetClosestsUnitToTarget(availableMedics, target);
 
 		// if we didn't find a medic which means they're all in use so break
 		if (!closestMedic) {

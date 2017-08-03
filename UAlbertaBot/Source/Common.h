@@ -16,7 +16,10 @@
 #include <map>
 #include <array>
 
+#pragma warning( push )
+#pragma warning( disable : 4458)
 #include <BWAPI/Position.h>
+#pragma warning( pop )
 
 #include "Config.h"
 #include "UABAssert.h"

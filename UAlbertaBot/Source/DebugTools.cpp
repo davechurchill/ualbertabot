@@ -16,8 +16,13 @@ void DebugTools::DrawUnitHPBar(ScreenCanvas& canvas, const BWAPI::UnitType & typ
         double hpRatio = (double)hitPoints / (double)type.maxHitPoints();
 
         BWAPI::Color hpColor = BWAPI::Colors::Green;
-        if (hpRatio < 0.66) hpColor = BWAPI::Colors::Orange;
-        if (hpRatio < 0.33) hpColor = BWAPI::Colors::Red;
+		if (hpRatio < 0.66) {
+			hpColor = BWAPI::Colors::Orange;
+		}
+
+		if (hpRatio < 0.33) {
+			hpColor = BWAPI::Colors::Red;
+		}
 
         int ratioRight = left + (int)((right - left) * hpRatio);
         int hpTop = top + verticalOffset;

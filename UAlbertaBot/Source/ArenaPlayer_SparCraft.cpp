@@ -185,7 +185,6 @@ int ArenaPlayer_SparCraft::GetTimeSinceLastAttack(BWAPI::Unit unit) const
 
 void ArenaPlayer_SparCraft::DrawSparCraftState(AKBot::ScreenCanvas& canvas, const SparCraft::GameState & state, int x, int y) const
 {
-    size_t numUnits = 0;
     std::stringstream ss;
     for (size_t p(0); p < 2; ++p)
     {

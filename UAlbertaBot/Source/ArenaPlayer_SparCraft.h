@@ -2,7 +2,10 @@
 
 #include "Common.h"
 #include <BWAPI/Unit.h>
+#pragma warning( push )
+#pragma warning( disable : 4100)
 #include "../../SparCraft/source/SparCraft.h"
+#pragma warning( pop )
 #include "ArenaPlayer.h"
 #include "ScreenCanvas.h"
 

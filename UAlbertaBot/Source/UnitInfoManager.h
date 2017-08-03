@@ -3,7 +3,10 @@
 #include "Common.h"
 #include "UnitData.h"
 #include "BaseLocation.h"
-#include "..\..\SparCraft\source\SparCraft.h"
+#pragma warning( push )
+#pragma warning( disable : 4100)
+#include "../../SparCraft/source/SparCraft.h"
+#pragma warning( pop )
 
 namespace UAlbertaBot
 {

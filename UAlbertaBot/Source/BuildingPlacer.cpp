@@ -212,8 +212,6 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b,int 
     // get the precomputed vector of tile positions which are sorted closes to this location
     const std::vector<BWAPI::TilePosition> & closestToBuilding = Global::Map().getClosestTilesTo(BWAPI::Position(b.desiredPosition));
 
-    double ms1 = t.getElapsedTimeInMilliSec();
-
     // special easy case of having no pylons
     int numPylons = _opponentView.self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Pylon);
     if (b.type.requiresPsi() && numPylons == 0)
@@ -226,15 +224,9 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b,int 
     {
         if (canBuildHereWithSpace(closestToBuilding[i],b,buildDist,horizontalOnly))
         {
-            double ms = t.getElapsedTimeInMilliSec();
-            //_logger.log("Building Placer Took %d iterations, lasting %lf ms @ %lf iterations/ms, %lf setup ms", i, ms, (i / ms), ms1);
-
             return closestToBuilding[i];
         }
     }
-
-    double ms = t.getElapsedTimeInMilliSec();
-    //_logger.log("Building Placer Took %lf ms", ms);
 
     return  BWAPI::TilePositions::None;
 }

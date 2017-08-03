@@ -6,10 +6,13 @@
 	#include "Visualizer.h"
 #endif
 
+#pragma warning( push )
+#pragma warning( disable : 4100)
 #include "..\..\SparCraft\source\GameState.h"
 #include "..\..\SparCraft\source\Game.h"
 #include "..\..\SparCraft\source\Unit.h"
 #include "..\..\SparCraft\source\AllPlayers.h"
+#pragma warning( pop )
 #include "UnitData.h"
 #include "OpponentView.h"
 #include "UnitInfoManager.h"

@@ -29,8 +29,6 @@ BaseLocation::BaseLocation(const AKBot::OpponentView& opponentView, int baseID, 
     : BaseLocation(opponentView, baseID)
 {
 	auto self = opponentView.self();
-	int resourceCenterX = 0;
-    int resourceCenterY = 0;
 
     // add each of the resources to its corresponding container
     for (auto & resource : resources)

@@ -72,9 +72,9 @@ void BaseLocationManager::onStart(const MapTools& map)
     }
 
     // construct the map of tile positions to base locations
-    for (int x=0; x < map.getWidth(); ++x)
+    for (size_t x=0; x < map.getWidth(); ++x)
     {
-        for (int y=0; y < map.getHeight(); ++y)
+        for (size_t y=0; y < map.getHeight(); ++y)
         {
             for (auto & baseLocation : _baseLocationData)
             {
@@ -121,8 +121,8 @@ void BaseLocationManager::update(const UnitInfoManager & unitManager)
         }
     }
 
-    auto enemyPlayer = Global::getEnemy();
-	if (enemyPlayer == nullptr)
+    auto defaultEnemyPlayer = Global::getEnemy();
+	if (defaultEnemyPlayer == nullptr)
 	{
 		return;
 	}

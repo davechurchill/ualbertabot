@@ -179,9 +179,9 @@ bool MapTools::isBuildable(BWAPI::TilePosition tile, BWAPI::UnitType type) const
     {
         for (int y=startY; y<endY; ++y)
         {
-            BWAPI::TilePosition tile(x,y);
+            BWAPI::TilePosition currentTile(x,y);
 
-            if (!isBuildableTile(tile) || (type.isResourceDepot() && !isDepotBuildableTile(tile)))
+            if (!isBuildableTile(currentTile) || (type.isResourceDepot() && !isDepotBuildableTile(currentTile)))
             {
                 return false;
             }
@@ -267,9 +267,9 @@ void MapTools::parseMap()
     mapFile << _width*4 << "\n";
     mapFile << _height*4 << "\n";
 
-	for (int j = 0; j < _height * 4; j++)
+	for (size_t j = 0; j < _height * 4; j++)
 	{
-		for (int i = 0; i < _width * 4; i++)
+		for (size_t i = 0; i < _width * 4; i++)
 		{
 			if (BWAPI::Broodwar->isWalkable(i, j))
 			{

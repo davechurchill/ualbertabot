@@ -71,7 +71,7 @@ BWAPI::Unit DetectorManager::closestCloakedUnit(const std::vector<BWAPI::Unit> &
 	using boost::adaptors::filtered;
 	using boost::adaptors::transformed;
 	auto cloakedUnitsNotInTheList = cloakedUnits
-		| filtered([this](const BWAPI::Unit const& unit) { 
+		| filtered([this](const BWAPI::Unit& unit) { 
 			return !cloakedUnitMap[unit];
 		});
 	/*
@@ -80,5 +80,5 @@ BWAPI::Unit DetectorManager::closestCloakedUnit(const std::vector<BWAPI::Unit> &
 		return std::make_pair(unit, unit->getDistance(detectorUnit));
 	});
 	*/
-	return UnitUtil::GetClosestsUnit(cloakedUnitsNotInTheList, detectorUnit);
+	return UnitUtil::GetClosestsUnitToTarget(cloakedUnitsNotInTheList, detectorUnit);
 }

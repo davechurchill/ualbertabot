@@ -187,7 +187,7 @@ void GameCommander::onUnitComplete(BWAPI::Unit unit)
 
 void GameCommander::onUnitRenegade(BWAPI::Unit unit)		
 { 
-	}
+}
 
 void GameCommander::onUnitDestroy(BWAPI::Unit unit, int currentFrame)
 { 	

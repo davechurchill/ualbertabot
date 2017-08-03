@@ -189,9 +189,6 @@ void UAlbertaBot_Tournament::drawDebugInformation(AKBot::ScreenCanvas& canvas)
 
 void UAlbertaBot_Tournament::drawErrorMessages() const
 {
-    char red = '\x08';
-    char green = '\x07';
-    char white = '\x04';
 }
 
 void UAlbertaBot_Tournament::onUnitDestroy(BWAPI::Unit unit)
