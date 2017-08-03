@@ -41,8 +41,6 @@ namespace AKBot
 		canvas.drawTextScreen(x - 30, y + 20, "\x04 TIME");
 		canvas.drawTextScreen(x, y + 20, "\x04 UNIT NAME");
 
-		size_t reps = prod.size() < 10 ? prod.size() : 10;
-
 		y += 30;
 		int yy = y;
 

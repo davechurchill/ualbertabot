@@ -357,7 +357,7 @@ void BuildingManager::removeBuildings(const std::vector<Building> & toRemove)
 {
     for (auto & b : toRemove)
     {
-        auto & it = std::find(_buildings.begin(), _buildings.end(), b);
+        auto it = std::find(_buildings.begin(), _buildings.end(), b);
 
         if (it != _buildings.end())
         {

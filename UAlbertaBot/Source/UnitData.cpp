@@ -26,7 +26,7 @@ void UnitData::updateUnit(BWAPI::Unit unit)
     }
 
     bool firstSeen = false;
-    auto & it = _unitMap.find(unit->getID());
+    const auto & it = _unitMap.find(unit->getID());
     if (it == _unitMap.end())
     {
         firstSeen = true;

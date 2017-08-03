@@ -148,47 +148,47 @@ void UAlbertaBot_Arena::drawUnitHPBars(ScreenCanvas& canvas) const
 
 }
 
-void UAlbertaBot_Arena::onEnd(bool isWinner)
+void UAlbertaBot_Arena::onEnd(bool)
 {
 
 }
 
-void UAlbertaBot_Arena::onUnitDestroy(BWAPI::Unit unit)
+void UAlbertaBot_Arena::onUnitDestroy(BWAPI::Unit)
 {
 
 }
 
-void UAlbertaBot_Arena::onUnitMorph(BWAPI::Unit unit)
+void UAlbertaBot_Arena::onUnitMorph(BWAPI::Unit)
 {
 
 }
 
-void UAlbertaBot_Arena::onSendText(std::string text)
+void UAlbertaBot_Arena::onSendText(std::string)
 {
 
 }
 
-void UAlbertaBot_Arena::onUnitCreate(BWAPI::Unit unit)
+void UAlbertaBot_Arena::onUnitCreate(BWAPI::Unit)
 {
 
 }
 
-void UAlbertaBot_Arena::onUnitComplete(BWAPI::Unit unit)
+void UAlbertaBot_Arena::onUnitComplete(BWAPI::Unit)
 {
 
 }
 
-void UAlbertaBot_Arena::onUnitShow(BWAPI::Unit unit)
+void UAlbertaBot_Arena::onUnitShow(BWAPI::Unit)
 {
 
 }
 
-void UAlbertaBot_Arena::onUnitHide(BWAPI::Unit unit)
+void UAlbertaBot_Arena::onUnitHide(BWAPI::Unit)
 {
 
 }
 
-void UAlbertaBot_Arena::onUnitRenegade(BWAPI::Unit unit)
+void UAlbertaBot_Arena::onUnitRenegade(BWAPI::Unit)
 {
 
 }

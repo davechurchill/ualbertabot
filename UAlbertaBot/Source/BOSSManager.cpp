@@ -26,8 +26,9 @@ void BOSSManager::reset()
 // start a new search for a new goal
 void BOSSManager::startNewSearch(const std::vector<MetaPair> & goalUnits, const BuildingManager & buildingManager, int currentFrame)
 {
-    size_t numWorkers   = UnitUtil::GetAllUnitCount(_opponentView.self()->getRace().getWorker());
-    size_t numDepots    = UnitUtil::GetAllUnitCount(UnitUtil::getResourceDepot(_opponentView.self()->getRace()))
+	auto self = _opponentView.self();
+    size_t numWorkers   = UnitUtil::GetAllUnitCount(self->getRace().getWorker());
+    size_t numDepots    = UnitUtil::GetAllUnitCount(UnitUtil::getResourceDepot(self->getRace()))
                         + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Lair)
                         + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hive);
 

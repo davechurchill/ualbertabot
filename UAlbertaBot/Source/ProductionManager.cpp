@@ -41,7 +41,7 @@ void ProductionManager::performBuildOrderSearch(int currentFrame)
         return;
     }
 
-	BuildOrder & buildOrder = _bossManager.getBuildOrder();
+	BuildOrder buildOrder = _bossManager.getBuildOrder();
 
     if (buildOrder.size() > 0)
     {

@@ -65,10 +65,10 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
                             SparCraft::Position(ui.lastPosition), 
                             ui.unitID, 
                             getSparCraftPlayerID(ui.player), 
-                            static_cast<int>(BWAPI::UnitTypes::Terran_Marine.maxHitPoints() * hpRatio), 
-                            0,
-		                    currentFrame, 
-                            currentFrame);	
+                            static_cast<SparCraft::HealthType>(BWAPI::UnitTypes::Terran_Marine.maxHitPoints() * hpRatio),
+                            static_cast<SparCraft::HealthType>(0),
+		                    static_cast<SparCraft::TimeType>(currentFrame), 
+                            static_cast<SparCraft::TimeType>(currentFrame));	
 
             for (size_t i(0); i < 5; ++i)
             {
@@ -101,10 +101,10 @@ const SparCraft::Unit CombatSimulation::getSparCraftUnit(BWAPI::Unit unit, int c
                             SparCraft::Position(unit->getPosition()), 
                             unit->getID(), 
                             getSparCraftPlayerID(unit->getPlayer()), 
-                            unit->getHitPoints() + unit->getShields(), 
-                            0,
-		                    currentFrame, 
-                            currentFrame);	
+							static_cast<SparCraft::HealthType>(unit->getHitPoints() + unit->getShields()),
+                            static_cast<SparCraft::HealthType>(0),
+		                    static_cast<SparCraft::TimeType>(currentFrame), 
+                            static_cast<SparCraft::TimeType>(currentFrame));	
 }
 
 // Gets a SparCraft unit from a UnitInfo struct, needed to get units of enemy behind FoW
@@ -122,10 +122,10 @@ const SparCraft::Unit CombatSimulation::getSparCraftUnit(const UnitInfo & ui, in
                             SparCraft::Position(ui.lastPosition), 
                             ui.unitID, 
                             getSparCraftPlayerID(ui.player), 
-                            ui.lastHealth, 
-                            0,
-		                    currentFrame, 
-                            currentFrame);	
+                            static_cast<SparCraft::HealthType>(ui.lastHealth), 
+                            static_cast<SparCraft::TimeType>(0),
+		                    static_cast<SparCraft::TimeType>(currentFrame), 
+		static_cast<SparCraft::TimeType>(currentFrame));
 }
 
 double CombatSimulation::simulateCombat()

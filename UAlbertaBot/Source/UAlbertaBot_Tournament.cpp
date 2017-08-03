@@ -208,7 +208,6 @@ void UAlbertaBot_Tournament::onUnitMorph(BWAPI::Unit unit)
 
 void UAlbertaBot_Tournament::onSendText(std::string text) 
 { 
-	ParseUtils::ParseTextCommand(text);
     BWAPI::Broodwar->sendText("%s", text.c_str());
 }
 

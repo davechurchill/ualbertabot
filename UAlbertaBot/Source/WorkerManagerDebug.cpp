@@ -80,13 +80,14 @@ namespace AKBot
 			auto workersOnMineralPatch = _workerData.getWorkersOnMineralPatch();
 			for (auto & mineral : minerals)
 			{
-				int x = mineral->getPosition().x;
-				int y = mineral->getPosition().y;
-
 				if (workersOnMineralPatch.find(mineral) != workersOnMineralPatch.end())
 				{
-					//if (Config::Debug::DRAW_UALBERTABOT_DEBUG) canvas.drawBoxMap(x-2, y-1, x+75, y+14, BWAPI::Colors::Black, true);
-					//if (Config::Debug::DRAW_UALBERTABOT_DEBUG) canvas.drawTextMap(x, y, "\x04 Workers: %d", workersOnMineralPatch[mineral]);
+					auto mineralPosition = mineral->getPosition();
+					int mineralX = mineralPosition.x;
+					int mineralY = mineralPosition.y;
+
+					canvas.drawBoxMap(mineralX - 2, mineralY - 1, mineralX + 75, mineralY + 14, BWAPI::Colors::Black, true);
+					canvas.drawTextMap(mineralX, mineralY, "\x04 Workers: %d", workersOnMineralPatch[mineral]);
 				}
 			}
 		}

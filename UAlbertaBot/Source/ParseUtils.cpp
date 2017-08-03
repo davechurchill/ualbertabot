@@ -295,25 +295,6 @@ void ParseUtils::ParseStrategy(const std::string & filename, StrategyManager & s
     }
 }
 
-void ParseUtils::ParseTextCommand(const std::string & commandString)
-{
-    std::stringstream ss(commandString);
-
-    std::string command;
-    std::transform(command.begin(), command.end(), command.begin(), ::tolower);
-
-    std::string variableName;
-    std::transform(variableName.begin(), variableName.end(), variableName.begin(), ::tolower);
-
-    std::string val;
-
-    ss >> command;
-    ss >> variableName;
-    ss >> val;
-
-    
-}
-
 BWAPI::Race ParseUtils::GetRace(const std::string & raceName)
 {
     if (raceName == "Protoss")
@@ -338,35 +319,6 @@ BWAPI::Race ParseUtils::GetRace(const std::string & raceName)
 
     UAB_ASSERT_WARNING(false, "Race not found: %s", raceName.c_str());
     return BWAPI::Races::None;
-}
-
-int ParseUtils::GetIntFromString(const std::string & str)
-{
-    std::stringstream ss(str);
-    int a = 0;
-    ss >> a;
-    return a;
-}
-
-bool ParseUtils::GetBoolFromString(const std::string & str)
-{
-    std::string boolStr(str);
-    std::transform(boolStr.begin(), boolStr.end(), boolStr.begin(), ::tolower);
-
-    if (boolStr == "true" || boolStr == "t")
-    {
-        return true;
-    }
-    else if (boolStr == "false" || boolStr == "f")
-    {
-        return false;
-    }
-    else
-    {
-        UAB_ASSERT_WARNING(false, "Unknown bool from string: %s", str.c_str());
-    }
-
-    return false;
 }
 
 std::string ParseUtils::ReadFile(const std::string & filename)

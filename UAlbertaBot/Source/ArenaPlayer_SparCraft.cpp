@@ -90,10 +90,10 @@ SparCraft::Unit ArenaPlayer_SparCraft::GetSparCraftUnit(BWAPI::Unit unit, int cu
         SparCraft::Position(unit->getPosition()),
         0,
         GetSparCraftPlayerID(unit->getPlayer()),
-        unit->getHitPoints() + unit->getShields(),
-        0,
-        currentFrame + GetTimeCanMove(unit),
-        currentFrame + GetTimeCanAttack(unit));
+		static_cast<SparCraft::HealthType>(unit->getHitPoints() + unit->getShields()),
+		static_cast<SparCraft::HealthType>(0),
+        static_cast<SparCraft::TimeType>(currentFrame + GetTimeCanMove(unit)),
+		static_cast<SparCraft::TimeType>(currentFrame + GetTimeCanAttack(unit)));
 
     sUnit.setBWAPIUnitID(unit->getID());
 
