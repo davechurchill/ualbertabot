@@ -18,6 +18,7 @@ class CombatCommander
 	AKBot::DefaultPlayerLocationProvider _playerLocationProvider;
 	const AKBot::OpponentView& _opponentView;
 	const UnitInfoManager& _unitInfo;
+	const MapTools& _mapTools;
 
     void            updateScoutDefenseSquad(int currentFrame);
 	void            updateDefenseSquads(int currentFrame);
@@ -56,6 +57,7 @@ public:
 		const BaseLocationManager & baseLocationManager,
 		const AKBot::OpponentView& opponentView,
 		const UnitInfoManager& unitInfo,
+		const MapTools& mapTools,
 		const AKBot::Logger& logger);
 
 	void update(const std::vector<BWAPI::Unit> & combatUnits, int currentFrame);

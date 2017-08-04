@@ -6,6 +6,7 @@
 #include "DistanceMap.h"
 #include "UnitData.h"
 #include "OpponentView.h"
+#include "MapTools.h"
 
 namespace UAlbertaBot
 {
@@ -32,10 +33,11 @@ class BaseLocation
     int                 _bottom;
     bool                _isStartLocation;
 	const AKBot::OpponentView& _opponentView;
+	const MapTools&		_mapTools;
 public:
 
-    BaseLocation(const AKBot::OpponentView& opponentView, int baseID = 0);
-    BaseLocation(const AKBot::OpponentView& opponentView, int baseID, const std::vector<BWAPI::Unit> & resources);
+    BaseLocation(const AKBot::OpponentView& opponentView, const MapTools& mapTools, int baseID);
+	BaseLocation(const AKBot::OpponentView& opponentView, const MapTools& mapTools, int baseID, const std::vector<BWAPI::Unit> & resources);
     
 	/* Get id of the base location */
 	int getId() const { return _baseID; };

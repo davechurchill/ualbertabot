@@ -5,7 +5,12 @@
 
 using namespace UAlbertaBot;
 
-BuildingPlacer::BuildingPlacer(int width, int height, const AKBot::OpponentView& opponentView, const BaseLocationManager& bases)
+BuildingPlacer::BuildingPlacer(
+	int width,
+	int height,
+	const AKBot::OpponentView& opponentView,
+	const BaseLocationManager& bases,
+	const MapTools& mapTools)
     : _boxTop       (std::numeric_limits<int>::max())
     , _boxBottom    (std::numeric_limits<int>::lowest())
     , _boxLeft      (std::numeric_limits<int>::max())
@@ -14,6 +19,7 @@ BuildingPlacer::BuildingPlacer(int width, int height, const AKBot::OpponentView&
 	, _height(height)
 	, _opponentView(opponentView)
 	, _bases(bases)
+	, _mapTools(mapTools)
 {
     _reserveMap = std::vector< std::vector<bool> >(width,std::vector<bool>(height,false));
 
@@ -68,13 +74,13 @@ void BuildingPlacer::computeResourceBox()
 }
 
 // makes final checks to see if a building can be built at a certain location
-bool BuildingPlacer::canBuildHere(BWAPI::TilePosition position,const Building & b) const
+BuildingPlaceCheckStatus BuildingPlacer::canBuildHere(BWAPI::TilePosition position,const Building & b) const
 {
     //returns true if we can build this type of unit here. Takes into account reserved tiles.
     if (!BWAPI::Broodwar->canBuildHere(position,b.type,b.builderUnit))
     {
         //BWAPI::Broodwar->drawCircleMap(BWAPI::Position(position), 8, BWAPI::Colors::Red, true);
-        return false;
+        return BuildingPlaceCheckStatus::CannotBuild;
     }
 
     // check the reserve map
@@ -85,7 +91,7 @@ bool BuildingPlacer::canBuildHere(BWAPI::TilePosition position,const Building & 
             if (_reserveMap[x][y])
             {
                 //BWAPI::Broodwar->drawCircleMap(BWAPI::Position(position), 8, BWAPI::Colors::Blue, true);
-                return false;
+                return BuildingPlaceCheckStatus::LocationReserved;
             }
         }
     }
@@ -94,17 +100,17 @@ bool BuildingPlacer::canBuildHere(BWAPI::TilePosition position,const Building & 
     if (tileOverlapsBaseLocation(position,b.type))
     {
         //BWAPI::Broodwar->drawCircleMap(BWAPI::Position(position), 8, BWAPI::Colors::Yellow, true);
-        return false;
+        return BuildingPlaceCheckStatus::BaseLocationOverlap;
     }
 
     if (isInResourceBox(position.x,position.y))
     {
         //BWAPI::Broodwar->drawCircleMap(BWAPI::Position(position), 8, BWAPI::Colors::Orange, true);
-        return false;
+        return BuildingPlaceCheckStatus::ResourceOverlap;
     }
 
     //BWAPI::Broodwar->drawCircleMap(BWAPI::Position(position), 8, BWAPI::Colors::Green, true);
-    return true;
+    return BuildingPlaceCheckStatus::CanBuild;
 }
 
 bool BuildingPlacer::tileBlocksAddon(BWAPI::TilePosition position) const
@@ -128,14 +134,15 @@ bool BuildingPlacer::tileBlocksAddon(BWAPI::TilePosition position) const
 }
 
 //returns true if we can build this type of unit here with the specified amount of space.
-bool BuildingPlacer::canBuildHereWithSpace(BWAPI::TilePosition position,const Building & b,int buildDist,bool horizontalOnly) const
+BuildingPlaceCheckStatus BuildingPlacer::canBuildHereWithSpace(BWAPI::TilePosition position,const Building & b,int buildDist,bool horizontalOnly) const
 {
     BWAPI::UnitType type = b.type;
 
     //if we can't build here, we of course can't build here with space
-    if (!canBuildHere(position, b))
+	auto checkStatus = canBuildHere(position, b);
+    if (checkStatus != BuildingPlaceCheckStatus::CanBuild)
     {
-        return false;
+        return checkStatus;
     }
 
     // height and width of the building
@@ -178,7 +185,7 @@ bool BuildingPlacer::canBuildHereWithSpace(BWAPI::TilePosition position,const Bu
     // if this rectangle doesn't fit on the map we can't build here
     if (startx < 0 || starty < 0 || endx > _width || endx < position.x + width || endy > _height)
     {
-        return false;
+        return BuildingPlaceCheckStatus::CannotBuild;
     }
 
     // if we can't build here, or space is reserved, or it's in the resource box, we can't build here
@@ -188,20 +195,20 @@ bool BuildingPlacer::canBuildHereWithSpace(BWAPI::TilePosition position,const Bu
         {
             if (!b.type.isRefinery())
             {
-                if (!buildable(b,x,y) || _reserveMap[x][y])
+                if (!buildable(b,x,y))
                 {
-                    return false;
+                    return BuildingPlaceCheckStatus::CannotBuild;
                 }
+
+				if (_reserveMap[x][y])
+				{
+					return BuildingPlaceCheckStatus::LocationReserved;
+				}
             }
         }
     }
 
-    return true;
-}
-
-BWAPI::TilePosition BuildingPlacer::GetBuildLocation(const Building & b,int padding) const
-{
-    return BWAPI::TilePosition(0,0);
+    return BuildingPlaceCheckStatus::CanBuild;
 }
 
 BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b,int buildDist,bool horizontalOnly) const
@@ -210,7 +217,7 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b,int 
     t.start();
 
     // get the precomputed vector of tile positions which are sorted closes to this location
-    const std::vector<BWAPI::TilePosition> & closestToBuilding = Global::Map().getClosestTilesTo(BWAPI::Position(b.desiredPosition));
+    const std::vector<BWAPI::TilePosition> & closestToBuilding = _mapTools.getClosestTilesTo(BWAPI::Position(b.desiredPosition));
 
     // special easy case of having no pylons
     int numPylons = _opponentView.self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Pylon);
@@ -222,7 +229,8 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b,int 
     // iterate through the list until we've found a suitable location
     for (size_t i(0); i < closestToBuilding.size(); ++i)
     {
-        if (canBuildHereWithSpace(closestToBuilding[i],b,buildDist,horizontalOnly))
+		auto checkStatus = canBuildHereWithSpace(closestToBuilding[i], b, buildDist, horizontalOnly);
+        if (checkStatus != BuildingPlaceCheckStatus::CanBuild)
         {
             return closestToBuilding[i];
         }

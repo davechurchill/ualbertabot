@@ -12,19 +12,20 @@ Squad::Squad(
 	const AKBot::OpponentView& opponentView,
 	const UnitInfoManager& unitInfo,
 	const BaseLocationManager& bases,
+	const MapTools& mapTools,
 	const AKBot::Logger& logger)
 	: _name(name)
 	, _order(order)
     , _lastRetreatSwitch(0)
     , _lastRetreatSwitchVal(false)
     , _priority(priority)
-	, _transportManager(opponentView, bases, locationProvider, logger)
+	, _transportManager(opponentView, bases, locationProvider, mapTools, logger)
 	, _opponentView(opponentView)
 	, _unitInfo(unitInfo)
 	, _meleeManager(opponentView, bases)
 	, _medicManager(opponentView, bases)
 	, _rangedManager(opponentView, bases)
-	, _detectorManager(opponentView, Global::Map(), bases)
+	, _detectorManager(opponentView, mapTools, bases)
 	, _tankManager(opponentView, bases)
 	, _logger(logger)
 {
@@ -38,7 +39,7 @@ Squad::~Squad()
 void Squad::update(const MapTools& map, int currentFrame)
 {
 	// update all necessary unit information within this squad
-	updateUnits();
+	updateUnits(map);
 
 	// determine whether or not we should regroup
 	bool needToRegroup = needsToRegroup(map, currentFrame);
@@ -68,7 +69,7 @@ void Squad::update(const MapTools& map, int currentFrame)
         _tankManager.execute(map, _order, currentFrame);
         _medicManager.execute(map, _order, currentFrame);
 
-		_transportManager.update(currentFrame);
+		_transportManager.update(map, currentFrame);
 
 		auto closestToEnemyUnit = unitClosestToEnemy(distanceFunction);
 		_detectorManager.setUnitClosestToEnemy(closestToEnemyUnit);
@@ -91,10 +92,10 @@ void Squad::setPriority(const size_t & priority)
     _priority = priority;
 }
 
-void Squad::updateUnits()
+void Squad::updateUnits(const MapTools& map)
 {
 	setAllUnits();
-	setNearEnemyUnits();
+	setNearEnemyUnits(map);
 	addUnitsToMicroManagers();
 }
 
@@ -116,12 +117,12 @@ void Squad::setAllUnits()
 	_units = goodUnits;
 }
 
-void Squad::setNearEnemyUnits()
+void Squad::setNearEnemyUnits(const MapTools& map)
 {
 	_nearEnemy.clear();
 	for (auto & unit : _units)
 	{
-		_nearEnemy[unit] = unitNearEnemy(unit);
+		_nearEnemy[unit] = unitNearEnemy(map, unit);
 	}
 }
 
@@ -245,9 +246,19 @@ bool Squad::needsToRegroup(const MapTools& map, int currentFrame)
 		return false;
 	}
 
+	auto simulationCenter = unitClosest->getPosition();
+	std::vector<BWAPI::Unit> ourCombatUnits;
+	map.GetUnitsInRadius(ourCombatUnits, simulationCenter, Config::Micro::CombatRegroupRadius, true, false);
+
+	std::vector<UnitInfo> enemyCombatUnitsForSimulation;
+	for (auto& enemyPlayer : _opponentView.enemies())
+	{
+		_unitInfo.getNearbyForce(enemyCombatUnitsForSimulation, simulationCenter, enemyPlayer, Config::Micro::CombatRegroupRadius);
+	}
+
 	//do the SparCraft Simulation!
 	CombatSimulation sim(_opponentView, _unitInfo, _logger);
-	sim.setCombatUnits(unitClosest->getPosition(), Config::Micro::CombatRegroupRadius, currentFrame);
+	sim.setCombatUnits(ourCombatUnits, enemyCombatUnitsForSimulation, simulationCenter, Config::Micro::CombatRegroupRadius, currentFrame);
     auto score = sim.simulateCombat();
 
 	bool retreat = score < 0;
@@ -306,13 +317,13 @@ void Squad::clear(int currentFrame)
     _units.clear();
 }
 
-bool Squad::unitNearEnemy(BWAPI::Unit unit)
+bool Squad::unitNearEnemy(const MapTools& map, BWAPI::Unit unit)
 {
 	assert(unit);
 
 	std::vector<BWAPI::Unit> enemyNear;
 
-	Global::Map().GetUnitsInRadius(enemyNear, unit->getPosition(), 400, false, true);
+	map.GetUnitsInRadius(enemyNear, unit->getPosition(), 400, false, true);
 
 	return enemyNear.size() > 0;
 }

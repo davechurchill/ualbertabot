@@ -31,7 +31,12 @@ public:
 
 	CombatSimulation(const AKBot::OpponentView& opponentView, const UnitInfoManager& unitInfo, const AKBot::Logger& logger);
 
-	void setCombatUnits(const BWAPI::Position & center, const int radius, int currentFrame);
+	void setCombatUnits(
+		const std::vector<BWAPI::Unit> ourCombatUnits,
+		std::vector<UnitInfo> enemyCombatUnits,
+		const BWAPI::Position & center,
+		const int radius,
+		int currentFrame);
 
 	double simulateCombat();
 

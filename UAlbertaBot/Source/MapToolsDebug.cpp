@@ -18,7 +18,7 @@ namespace AKBot
 		}
 
 		// draw the least recently seen position tile as a yellow circle on the map
-		BWAPI::Position lrsp = _map.getLeastRecentlySeenPosition(bases);
+		BWAPI::Position lrsp = bases.getLeastRecentlySeenPosition(_map);
 		canvas.drawCircleMap(lrsp, 32, BWAPI::Colors::Yellow, true);
 
 

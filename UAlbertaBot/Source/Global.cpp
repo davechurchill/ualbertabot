@@ -15,11 +15,6 @@ WorkerManager & Global::Workers()
     return uabModule->Workers();
 }
 
-const MapTools & Global::Map()
-{
-    return uabModule->Map();
-}
-
 BWAPI::Player Global::getEnemy()
 {
 	const auto defaultEnemy = BWAPI::Broodwar->enemy();

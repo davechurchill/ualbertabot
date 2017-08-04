@@ -59,7 +59,7 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::Unit> & targets, int
 		// send him to scout around the map
 		else
 		{
-			auto explorePosition = _mapTools.getLeastRecentlySeenPosition(_bases);
+			auto explorePosition = _bases.getLeastRecentlySeenPosition(_mapTools);
 			Micro::SmartMove(detectorUnit, explorePosition, currentFrame);
 		}
 	}

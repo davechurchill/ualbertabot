@@ -5,7 +5,10 @@
 
 using namespace UAlbertaBot;
 
-ScoutManager::ScoutManager(const AKBot::OpponentView& opponentView, const BaseLocationManager& baseLocationManager)
+ScoutManager::ScoutManager(
+	const AKBot::OpponentView& opponentView,
+	const BaseLocationManager& baseLocationManager,
+	const MapTools& mapTools)
     : _workerScout(nullptr)
     , _numWorkerScouts(0)
     , _scoutUnderAttack(false)
@@ -14,6 +17,7 @@ ScoutManager::ScoutManager(const AKBot::OpponentView& opponentView, const BaseLo
     , _previousScoutHP(0)
 	, _opponentView(opponentView)
 	, _baseLocationManager(baseLocationManager)
+	, _mapTools(mapTools)
 {
 }
 
@@ -123,7 +127,7 @@ void UAlbertaBot::ScoutManager::harrasEnemyBaseIfPossible(const UAlbertaBot::Bas
 {
 	int scoutDistanceThreshold = 30;
 
-	int scoutDistanceToEnemy = Global::Map().getGroundDistance(_workerScout->getPosition(), enemyBaseLocation->getPosition());
+	int scoutDistanceToEnemy = _mapTools.getGroundDistance(_workerScout->getPosition(), enemyBaseLocation->getPosition());
 	bool scoutInRangeOfenemy = scoutDistanceToEnemy <= scoutDistanceThreshold;
 
 	// we only care if the scout is under attack within the enemy region

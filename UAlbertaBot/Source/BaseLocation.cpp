@@ -6,8 +6,9 @@ using namespace UAlbertaBot;
 
 const int NearBaseLocationTileDistance = 20;
 
-BaseLocation::BaseLocation(const AKBot::OpponentView& opponentView, int baseID)
+BaseLocation::BaseLocation(const AKBot::OpponentView& opponentView, const MapTools& mapTools, int baseID)
     : _opponentView(opponentView)
+	, _mapTools(mapTools)
 	, _baseID               (baseID)
     , _isStartLocation      (false)
     , _left                 (std::numeric_limits<int>::max())
@@ -25,8 +26,8 @@ BaseLocation::BaseLocation(const AKBot::OpponentView& opponentView, int baseID)
 	}
 }
 
-BaseLocation::BaseLocation(const AKBot::OpponentView& opponentView, int baseID, const std::vector<BWAPI::Unit> & resources)
-    : BaseLocation(opponentView, baseID)
+BaseLocation::BaseLocation(const AKBot::OpponentView& opponentView, const MapTools& mapTools, int baseID, const std::vector<BWAPI::Unit> & resources)
+    : BaseLocation(opponentView, mapTools, baseID)
 {
 	auto self = opponentView.self();
 
@@ -59,7 +60,7 @@ BaseLocation::BaseLocation(const AKBot::OpponentView& opponentView, int baseID, 
 
     // compute this BaseLocation's DistanceMap, which will compute the ground distance
     // from the center of its recourses to every other tile on the map
-    _distanceMap = Global::Map().getDistanceMap(_centerOfResources);
+    _distanceMap = _mapTools.getDistanceMap(_centerOfResources);
 
     // check to see if this is a start location for the map
     for (auto & tilePos : BWAPI::Broodwar->getStartLocations())
@@ -90,7 +91,7 @@ BaseLocation::BaseLocation(const AKBot::OpponentView& opponentView, int baseID, 
             // this means we are positioning the center of the resouce depot
             BWAPI::TilePosition buildTile(tile.x - 1, tile.y - 1);
 			auto resourceDepot = UnitUtil::getResourceDepot(self->getRace());
-            if (Global::Map().isBuildable(buildTile, resourceDepot))
+            if (_mapTools.isBuildable(buildTile, resourceDepot))
             {
                 _depotTile = buildTile;
                 _position = BWAPI::Position(buildTile);

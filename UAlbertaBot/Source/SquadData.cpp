@@ -9,11 +9,13 @@ SquadData::SquadData(
 	const AKBot::OpponentView& opponentView,
 	const UnitInfoManager& unitInfo,
 	const BaseLocationManager& bases,
+	const MapTools& mapTools,
 	const AKBot::Logger& logger)
 	: _locationProvider(locationProvider)
 	, _opponentView(opponentView)
 	, _unitInfo(unitInfo)
 	, _bases(bases)
+	, _mapTools(mapTools)
 	, _logger(logger)
 {
 	
@@ -76,7 +78,7 @@ void SquadData::addSquad(const std::string & squadName, Squad & squad)
 
 void SquadData::addSquad(const std::string & squadName, const SquadOrder & squadOrder, size_t priority)
 {
-	Squad squad(squadName, squadOrder, priority, _locationProvider, _opponentView, _unitInfo, _bases, _logger);
+	Squad squad(squadName, squadOrder, priority, _locationProvider, _opponentView, _unitInfo, _bases, _mapTools, _logger);
 	addSquad(squadName, squad);
 }
 

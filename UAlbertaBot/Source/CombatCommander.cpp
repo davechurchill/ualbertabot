@@ -15,12 +15,14 @@ CombatCommander::CombatCommander(
 	const BaseLocationManager & baseLocationManager,
 	const AKBot::OpponentView& opponentView,
 	const UnitInfoManager& unitInfo,
+	const MapTools& mapTools,
 	const AKBot::Logger& logger)
     : _initialized(false)
 	, _unitInfo(unitInfo)
 	, _baseLocationManager(baseLocationManager)
+	, _mapTools(mapTools)
 	, _playerLocationProvider(baseLocationManager)
-	, _squadData(_playerLocationProvider, opponentView, unitInfo, baseLocationManager, logger)
+	, _squadData(_playerLocationProvider, opponentView, unitInfo, baseLocationManager, mapTools, logger)
 	, _opponentView(opponentView)
 {
 	_squadData.onUnitRemoved([](const BWAPI::Unit& unit, int currentFrame)
@@ -80,7 +82,7 @@ void CombatCommander::update(const std::vector<BWAPI::Unit> & combatUnits, int c
 		updateAttackSquads();
 	}
 
-	_squadData.update(Global::Map(), currentFrame);
+	_squadData.update(_mapTools, currentFrame);
 }
 
 void CombatCommander::updateIdleSquad()
@@ -489,7 +491,7 @@ BWAPI::Position CombatCommander::getMainAttackLocation()
 
 			// get all known enemy units in the area
 			std::vector<BWAPI::Unit> enemyUnitsInArea;
-			Global::Map().GetUnitsInRadius(enemyUnitsInArea, enemyBasePosition, 800, false, true);
+			_mapTools.GetUnitsInRadius(enemyUnitsInArea, enemyBasePosition, 800, false, true);
 
 			for (auto & unit : enemyUnitsInArea)
 			{
@@ -531,7 +533,7 @@ BWAPI::Position CombatCommander::getMainAttackLocation()
 	}
 
     // Fourth choice: We can't see anything so explore the map attacking along the way
-    return Global::Map().getLeastRecentlySeenPosition(_baseLocationManager);
+    return _baseLocationManager.getLeastRecentlySeenPosition(_mapTools);
 }
 
 BWAPI::Unit CombatCommander::findClosestWorkerToTarget(std::vector<BWAPI::Unit> & unitsToAssign, BWAPI::Unit target)

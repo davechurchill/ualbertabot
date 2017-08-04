@@ -13,20 +13,16 @@ CombatSimulation::CombatSimulation(const AKBot::OpponentView& opponentView, cons
 
 // sets the starting states based on the combat units within a radius of a given position
 // this center will most likely be the position of the forwardmost combat unit we control
-void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int radius, int currentFrame)
+void CombatSimulation::setCombatUnits(
+	const std::vector<BWAPI::Unit> ourCombatUnits,
+	std::vector<UnitInfo> enemyCombatUnits,
+	const BWAPI::Position & center,
+	const int radius,
+	int currentFrame)
 {
 	SparCraft::GameState s;
 
 	BWAPI::Broodwar->drawCircleMap(center.x, center.y, 10, BWAPI::Colors::Red, true);
-
-	std::vector<BWAPI::Unit> ourCombatUnits;
-	std::vector<UnitInfo> enemyCombatUnits;
-
-	Global::Map().GetUnitsInRadius(ourCombatUnits, center, Config::Micro::CombatRegroupRadius, true, false);
-	for (auto& enemyPlayer : _opponentView.enemies())
-	{
-		_unitInfo.getNearbyForce(enemyCombatUnits, center, enemyPlayer, Config::Micro::CombatRegroupRadius);
-	}
 
 	for (auto & unit : ourCombatUnits)
 	{
@@ -139,9 +135,9 @@ double CombatSimulation::simulateCombat()
         SparCraft::PlayerPtr selfNOK(new SparCraft::Player_AttackClosest(selfID));
         SparCraft::PlayerPtr enemyNOK(new SparCraft::Player_AttackClosest(enemyID));
 
-        SparCraft::PlayerPtr p1 =  SparCraft::AIParameters::Instance().getPlayer(selfID, Config::SparCraft::CombatSimPlayerName);
-        SparCraft::PlayerPtr p2 =  SparCraft::AIParameters::Instance().getPlayer(enemyID, Config::SparCraft::CombatSimPlayerName);
-
+		auto& aiParameters = SparCraft::AIParameters::Instance();
+        SparCraft::PlayerPtr p1 =  aiParameters.getPlayer(selfID, Config::SparCraft::CombatSimPlayerName);
+        SparCraft::PlayerPtr p2 =  aiParameters.getPlayer(enemyID, Config::SparCraft::CombatSimPlayerName);
 
 	    SparCraft::Game g (s1, p1, p2, 2000);
 

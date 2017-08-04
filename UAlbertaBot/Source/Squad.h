@@ -14,6 +14,7 @@
 #include "MapTools.h"
 #include "OpponentView.h"
 #include "Logger.h"
+#include "MapTools.h"
 
 namespace UAlbertaBot
 {
@@ -45,12 +46,12 @@ class Squad
 	bool			_needToRegroup;
 
 	BWAPI::Unit		unitClosestToEnemy(std::function<int(const BWAPI::Position & src, const BWAPI::Position & dest)> distance);
-	void                        updateUnits();
+	void                        updateUnits(const MapTools& map);
 	void                        addUnitsToMicroManagers();
-	void                        setNearEnemyUnits();
+	void                        setNearEnemyUnits(const MapTools& map);
 	void                        setAllUnits();
 	
-	bool                        unitNearEnemy(BWAPI::Unit unit);
+	bool                        unitNearEnemy(const MapTools& map, BWAPI::Unit unit);
 	bool                        needsToRegroup(const MapTools& map, int currentFrame);
 	int                         squadUnitsNear(BWAPI::Position p);
 
@@ -64,6 +65,7 @@ public:
 		const AKBot::OpponentView& opponentView,
 		const UnitInfoManager& unitInfo,
 		const BaseLocationManager& bases,
+		const MapTools& mapTools,
 		const AKBot::Logger& logger);
     ~Squad();
 

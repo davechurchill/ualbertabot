@@ -5,13 +5,18 @@
 
 using namespace UAlbertaBot;
 
-BuildingManager::BuildingManager(const AKBot::OpponentView& opponentView, const BaseLocationManager& bases, const AKBot::Logger& logger)
+BuildingManager::BuildingManager(
+	const AKBot::OpponentView& opponentView,
+	const BaseLocationManager& bases,
+	const MapTools& mapTools,
+	const AKBot::Logger& logger)
     : _debugMode(false)
     , _reservedMinerals(0)
     , _reservedGas(0)
 	, _bases(bases)
+	, _mapTools(mapTools)
 	, _opponentView(opponentView)
-	, _buildingPlacer(BWAPI::Broodwar->mapWidth(), BWAPI::Broodwar->mapHeight(), opponentView, bases)
+	, _buildingPlacer(mapTools.getWidth(), mapTools.getHeight(), opponentView, bases, mapTools)
 	, _logger(logger)
 {
 

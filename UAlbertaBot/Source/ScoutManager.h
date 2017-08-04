@@ -23,6 +23,7 @@ class ScoutManager
 	UnitHandler     _onScoutReleased;
 	UnitHandler     _onScoutAssigned;
 	const AKBot::OpponentView& _opponentView;
+	const MapTools& _mapTools;
 
 	bool            enemyWorkerInRadius();
     bool            immediateThreat();
@@ -40,7 +41,10 @@ class ScoutManager
 
 public:
     
-	ScoutManager(const AKBot::OpponentView& opponentView, const BaseLocationManager& baseLocationManager);
+	ScoutManager(
+		const AKBot::OpponentView& opponentView,
+		const BaseLocationManager& baseLocationManager,
+		const MapTools& mapTools);
 
 	void update(int currentFrame);
     void setWorkerScout(BWAPI::Unit unit, int currentFrame);

@@ -51,6 +51,7 @@ public:
 		const StrategyManager& strategyManager,
 		const UnitInfoManager& unitInfo,
 		const BaseLocationManager& bases,
+		const MapTools& mapTools,
 		const AKBot::Logger& logger);
     
     void        onStart();

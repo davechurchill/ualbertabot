@@ -356,47 +356,6 @@ bool MapTools::isConnected(const BWAPI::Position & from, const BWAPI::Position &
     return isConnected(BWAPI::TilePosition(from), BWAPI::TilePosition(to));
 }
 
-BWAPI::Position MapTools::getLeastRecentlySeenPosition(const BaseLocationManager & bases) const
-{
-	int minSeen = std::numeric_limits<int>::max();
-	BWAPI::TilePosition leastSeen(0,0);
-    const BaseLocation * baseLocation = bases.getPlayerStartingBaseLocation(_opponentView.self());
-
-	const auto enemy = Global::getEnemy();
-	const auto enemyStartLocation = enemy == nullptr ? nullptr : bases.getPlayerStartingBaseLocation(enemy);
-    if (enemyStartLocation != nullptr)
-    {
-        baseLocation = enemyStartLocation;
-    }
-
-	if (baseLocation == nullptr)
-	{
-		return BWAPI::Position(leastSeen);
-	}
-
-    BWAPI::Position myBasePosition = baseLocation->getPosition();
-
-    for (auto & tile : baseLocation->getClosestTiles())
-    {
-        UAB_ASSERT(tile.isValid(), "How is this tile not valid?");
-
-		// don't worry about places that aren't connected to our start locatin
-		if (!isConnected(BWAPI::Position(tile), myBasePosition))
-		{
-			continue;
-		}
-
-        int lastSeen = getLastSeen(tile.x, tile.y);
-		if (lastSeen < minSeen)
-		{
-			minSeen = lastSeen;
-            leastSeen = tile;
-		}	
-	}
-
-	return BWAPI::Position(leastSeen);
-}
-
 int MapTools::getLastSeen(int x, int y) const
 {
 	return _lastSeen[x][y];

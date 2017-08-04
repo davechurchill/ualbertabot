@@ -37,7 +37,7 @@ void BaseLocationManager::onStart(const MapTools& map)
     {
         if (cluster.size() > 4)
         {
-            _baseLocationData.push_back(BaseLocation(_opponentView, baseID++, cluster));
+            _baseLocationData.push_back(BaseLocation(_opponentView, map, baseID++, cluster));
         }
     }
 
@@ -230,6 +230,47 @@ void UAlbertaBot::BaseLocationManager::resetPlayerOccupation()
 			baseLocation.setPlayerOccupying(enemyPlayer, false);
 		}
 	}
+}
+
+BWAPI::Position UAlbertaBot::BaseLocationManager::getLeastRecentlySeenPosition(const MapTools & mapTools) const
+{
+	int minSeen = std::numeric_limits<int>::max();
+	BWAPI::TilePosition leastSeen(0, 0);
+	const BaseLocation * baseLocation = getPlayerStartingBaseLocation(_opponentView.self());
+
+	const auto enemy = Global::getEnemy();
+	const auto enemyStartLocation = enemy == nullptr ? nullptr : getPlayerStartingBaseLocation(enemy);
+	if (enemyStartLocation != nullptr)
+	{
+		baseLocation = enemyStartLocation;
+	}
+
+	if (baseLocation == nullptr)
+	{
+		return BWAPI::Position(leastSeen);
+	}
+
+	BWAPI::Position myBasePosition = baseLocation->getPosition();
+
+	for (auto & tile : baseLocation->getClosestTiles())
+	{
+		UAB_ASSERT(tile.isValid(), "How is this tile not valid?");
+
+		// don't worry about places that aren't connected to our start locatin
+		if (!mapTools.isConnected(BWAPI::Position(tile), myBasePosition))
+		{
+			continue;
+		}
+
+		int lastSeen = mapTools.getLastSeen(tile.x, tile.y);
+		if (lastSeen < minSeen)
+		{
+			minSeen = lastSeen;
+			leastSeen = tile;
+		}
+	}
+
+	return BWAPI::Position(leastSeen);
 }
 
 const std::vector<const BaseLocation *> & BaseLocationManager::getBaseLocations() const

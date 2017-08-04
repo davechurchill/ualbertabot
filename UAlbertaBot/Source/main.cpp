@@ -42,27 +42,8 @@ void UAlbertaBot_BWAPIReconnect()
     }
 }
 
-void UAlbertaBot_PlayGame()
+void UAlbertaBot_PlayGame(std::shared_ptr<BotModule>  m)
 {
-    // The UAlbertaBot module which will handle all the game logic
-    // All Starcraft logic is in this object, when it destructs it's all cleaned up for the next game
-    std::shared_ptr<BotModule>  m;
-    
-    if (Config::BotInfo::BotMode == "Tournament")
-    {
-        m = std::shared_ptr<BotModule>(new UAlbertaBot_Tournament(opponentView, logger));
-    }
-    else if (Config::BotInfo::BotMode == "Arena")
-    {
-        m = std::shared_ptr<BotModule>(new UAlbertaBot_Arena());
-    }
-    else
-    {
-        std::cerr << "Unknown bot module selected: " << Config::BotInfo::BotMode << "\n";
-        exit(-1);
-    }
-    
-
     // The main game loop, which continues while we are connected to BWAPI and in a game
 	while (BWAPI::BWAPIClient.isConnected() && BWAPI::Broodwar->isInGame()) 
     {
@@ -134,7 +115,25 @@ int main(int argc, const char * argv[])
             {
                 std::cout << "Playing game " << gameCount++ << " on map " << BWAPI::Broodwar->mapFileName() << "\n";
 
-                UAlbertaBot_PlayGame();
+				// The UAlbertaBot module which will handle all the game logic
+				// All Starcraft logic is in this object, when it destructs it's all cleaned up for the next game
+				std::shared_ptr<BotModule>  m;
+
+				if (Config::BotInfo::BotMode == "Tournament")
+				{
+					m = std::shared_ptr<BotModule>(new UAlbertaBot_Tournament(opponentView, logger));
+				}
+				else if (Config::BotInfo::BotMode == "Arena")
+				{
+					m = std::shared_ptr<BotModule>(new UAlbertaBot_Arena());
+				}
+				else
+				{
+					std::cerr << "Unknown bot module selected: " << Config::BotInfo::BotMode << "\n";
+					exit(-1);
+				}
+
+                UAlbertaBot_PlayGame(m);
             }
         }
 

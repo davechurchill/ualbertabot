@@ -15,6 +15,7 @@ class BuildingManager
     std::vector<Building> _buildings;
 	const AKBot::OpponentView& _opponentView;
 	const BaseLocationManager& _bases;
+	const MapTools& _mapTools;
 	const AKBot::Logger& _logger;
 
     bool            _debugMode;
@@ -35,7 +36,11 @@ class BuildingManager
 
 public:
     
-    BuildingManager(const AKBot::OpponentView& opponentView, const BaseLocationManager& bases, const AKBot::Logger& logger);
+    BuildingManager(
+		const AKBot::OpponentView& opponentView,
+		const BaseLocationManager& bases,
+		const MapTools& mapTools,
+		const AKBot::Logger& logger);
 
     void                update(int currentFrame);
     void                addBuildingTask(BWAPI::UnitType type,BWAPI::TilePosition desiredLocation);

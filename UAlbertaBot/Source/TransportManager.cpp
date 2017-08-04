@@ -8,6 +8,7 @@ TransportManager::TransportManager(
 	const AKBot::OpponentView& opponentView,
 	const BaseLocationManager& bases,
 	AKBot::PlayerLocationProvider& locationProvider,
+	const MapTools& mapTools,
 	const AKBot::Logger& logger)
 	: MicroManager(opponentView, bases)
 	, _transportShip(NULL)
@@ -17,6 +18,7 @@ TransportManager::TransportManager(
 	, _to(-1,-1)
 	, _from(-1,-1)
 	, _locationProvider(locationProvider)
+	, _mapTools(mapTools)
 	, _logger(logger)
 {
 }
@@ -41,7 +43,7 @@ void TransportManager::calculateMapEdgeVertices()
 	}
 
 	const BWAPI::Position basePosition = BWAPI::Position(opponentView.self()->getStartLocation());
-	const std::vector<BWAPI::TilePosition> & closestTobase = Global::Map().getClosestTilesTo(basePosition);
+	const std::vector<BWAPI::TilePosition> & closestTobase = _mapTools.getClosestTilesTo(basePosition);
 
 	std::set<BWAPI::Position> unsortedVertices;
 
@@ -105,7 +107,7 @@ void TransportManager::calculateMapEdgeVertices()
 	_mapEdgeVertices = sortedVertices;
 }
 
-void TransportManager::update(int currentFrame)
+void TransportManager::update(const MapTools& mapTools, int currentFrame)
 {
     if (!_transportShip && getUnits().size() > 0)
     {

@@ -13,11 +13,11 @@ GameCommander::GameCommander(
 	const BaseLocationManager& bases,
 	const AKBot::Logger& logger)
     : _opponentView(opponentView)
-	, _productionManager(opponentView, _bossManager, uabModule.Strategy(), uabModule.UnitInfo(), bases, logger)
-	, _scoutManager(opponentView, bases)
+	, _productionManager(opponentView, _bossManager, uabModule.Strategy(), uabModule.UnitInfo(), bases, uabModule.Map(), logger)
+	, _scoutManager(opponentView, bases, uabModule.Map())
     , _initialScoutSet(false)
     , _module(uabModule)
-	, _combatCommander(bases, opponentView, uabModule.UnitInfo(), logger)
+	, _combatCommander(bases, opponentView, uabModule.UnitInfo(), uabModule.Map(), logger)
 	, _bossManager(opponentView)
 {
 	auto& workerManager = uabModule.Workers();

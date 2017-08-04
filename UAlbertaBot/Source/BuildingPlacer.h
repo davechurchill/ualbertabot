@@ -8,7 +8,14 @@
 
 namespace UAlbertaBot
 {
-
+	enum BuildingPlaceCheckStatus
+	{
+		CanBuild,
+		CannotBuild,
+		LocationReserved,
+		BaseLocationOverlap,
+		ResourceOverlap
+	};
 
 class BuildingPlacer
 {
@@ -21,12 +28,18 @@ class BuildingPlacer
     int	    _boxRight;
 	const BaseLocationManager& _bases;
 	const AKBot::OpponentView& _opponentView;
+	const MapTools& _mapTools;
 
     void    computeBuildableTileDistance(BWAPI::TilePosition tp);
 
 public:
     
-    BuildingPlacer(int width, int height, const AKBot::OpponentView& opponentView, const BaseLocationManager& bases);
+    BuildingPlacer(
+		int width,
+		int height,
+		const AKBot::OpponentView& opponentView,
+		const BaseLocationManager& bases,
+		const MapTools& mapTools);
 
     // queries for various BuildingPlacer data
     bool					buildable(const Building & b,int x,int y) const;
@@ -35,11 +48,9 @@ public:
     bool					tileOverlapsBaseLocation(BWAPI::TilePosition tile,BWAPI::UnitType type) const;
     bool                    tileBlocksAddon(BWAPI::TilePosition position) const;
 
-    BWAPI::TilePosition		GetBuildLocation(const Building & b,int padding) const;
-
     // determines whether we can build at a given location
-    bool					canBuildHere(BWAPI::TilePosition position,const Building & b) const;
-    bool					canBuildHereWithSpace(BWAPI::TilePosition position,const Building & b,int buildDist,bool horizontalOnly = false) const;
+	BuildingPlaceCheckStatus	canBuildHere(BWAPI::TilePosition position,const Building & b) const;
+	BuildingPlaceCheckStatus	canBuildHereWithSpace(BWAPI::TilePosition position,const Building & b,int buildDist,bool horizontalOnly = false) const;
 
     // returns a build location near a building's desired location
     BWAPI::TilePosition		getBuildLocationNear(const Building & b,int buildDist,bool horizontalOnly = false) const;

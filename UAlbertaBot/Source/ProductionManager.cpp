@@ -10,11 +10,12 @@ ProductionManager::ProductionManager(
 	const StrategyManager& strategyManager,
 	const UnitInfoManager& unitInfo,
 	const BaseLocationManager& bases,
+	const MapTools& mapTools,
 	const AKBot::Logger& logger)
 	: _opponentView(opponentView)
 	, _bossManager(bossManager)
 	, _unitInfo(unitInfo)
-    , _buildingManager(opponentView, bases, logger)
+    , _buildingManager(opponentView, bases, mapTools, logger)
     , _assignedWorkerForThisBuilding (false)
 	, _haveLocationForThisBuilding   (false)
 	, _enemyCloakedDetected          (false)

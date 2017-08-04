@@ -5,12 +5,10 @@
 #include "DistanceMap.h"
 #include "BaseLocation.h"
 #include "Distance.h"
+#include "UnitInfoManager.h"
 
 namespace UAlbertaBot
 {
-	class UnitInfoManager;
-	class MapTools;
-
 	/*
 		Manage location of the player bases.
 	*/
@@ -62,6 +60,7 @@ namespace UAlbertaBot
 
 		const BaseLocation * getBaseLocation(BWAPI::TilePosition pos) const;
 		const BaseLocation * getBaseLocation(BWAPI::Position pos) const;
+		BWAPI::Position         getLeastRecentlySeenPosition(const MapTools & bases) const;
 	};
 
 }

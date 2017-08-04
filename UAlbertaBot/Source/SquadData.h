@@ -17,6 +17,7 @@ class SquadData
 	const AKBot::OpponentView& _opponentView;
 	const UnitInfoManager& _unitInfo;
 	const BaseLocationManager& _bases;
+	const MapTools& _mapTools;
 
 public:
 
@@ -25,6 +26,7 @@ public:
 		const AKBot::OpponentView& opponentView,
 		const UnitInfoManager& unitInfo,
 		const BaseLocationManager& bases,
+		const MapTools& mapTools,
 		const AKBot::Logger& logger);
 
     void            clearSquadData(int currentFrame);
