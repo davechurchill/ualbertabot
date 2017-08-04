@@ -10,6 +10,7 @@
 #include "rapidjson\document.h"
 #include "Global.h"
 #include "BWAPIScreenCanvas.h"
+#include "BOSSManager.h"
 
 namespace UAlbertaBot
 {
@@ -20,9 +21,13 @@ class UAlbertaBot_Tournament : public BotModule
     AutoObserver        _autoObserver;
     WorkerManager       _workerManager;
     UnitInfoManager     _unitInfoManager;
+	ProductionManager	_productionManager;
+	BOSSManager         _bossManager;
     StrategyManager     _strategyManager;
     MapTools            _mapTools;
     BaseLocationManager _baseLocationManager;
+	CombatCommander     _combatCommander;
+	ScoutManager		_scoutManager;
 	AKBot::BWAPIScreenCanvas _canvas;
 	const AKBot::OpponentView& _opponentView;
 
@@ -45,10 +50,7 @@ public:
     void	onUnitHide(BWAPI::Unit unit);
     void	onUnitRenegade(BWAPI::Unit unit);
 
-    WorkerManager & Workers();
     const UnitInfoManager & UnitInfo() const;
-    const StrategyManager & Strategy() const;
-    const BaseLocationManager & Bases() const;
     const MapTools & Map() const;
 	AKBot::ScreenCanvas& getCanvas();
 	const AKBot::OpponentView& getOpponentView() const  { return _opponentView; };

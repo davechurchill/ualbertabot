@@ -8,12 +8,14 @@ using namespace UAlbertaBot;
 BuildingManager::BuildingManager(
 	const AKBot::OpponentView& opponentView,
 	const BaseLocationManager& bases,
+	WorkerManager& workerManager,
 	const MapTools& mapTools,
 	const AKBot::Logger& logger)
     : _debugMode(false)
     , _reservedMinerals(0)
     , _reservedGas(0)
 	, _bases(bases)
+	, _workerManager(workerManager)
 	, _mapTools(mapTools)
 	, _opponentView(opponentView)
 	, _buildingPlacer(mapTools.getWidth(), mapTools.getHeight(), opponentView, bases, mapTools)
@@ -97,7 +99,12 @@ void BuildingManager::assignWorkersToUnassignedBuildings()
         b.finalPosition = testLocation;
 
         // grab the worker unit from WorkerManager which is closest to this final position
-        b.builderUnit = Global::Workers().getBuilder(b);
+		auto builderUnit = _workerManager.getBuilder(b);
+		if (builderUnit) {
+			_workerManager.setBuildingWorker(builderUnit, b);
+		}
+
+		b.builderUnit = builderUnit;
         if (!b.builderUnit)
         {
             continue;
@@ -134,7 +141,7 @@ void BuildingManager::constructAssignedBuildings(int currentFrame)
             {
                 // tell worker manager the unit we had is not needed now, since we might not be able
                 // to get a valid location soon enough
-                Global::Workers().finishedWithWorker(b.builderUnit, currentFrame);
+				_workerManager.finishedWithWorker(b.builderUnit, currentFrame);
 
                 // free the previous location in reserved
                 _buildingPlacer.freeTiles(b.finalPosition,b.type.tileWidth(),b.type.tileHeight());
@@ -199,7 +206,7 @@ void BuildingManager::checkForStartedConstruction(int currentFrame)
                 }
                 else if (_opponentView.self()->getRace() == BWAPI::Races::Protoss)
                 {    
-                    Global::Workers().finishedWithWorker(b.builderUnit, currentFrame);
+					_workerManager.finishedWithWorker(b.builderUnit, currentFrame);
                     b.builderUnit = nullptr;
                 }
 
@@ -238,7 +245,7 @@ void BuildingManager::checkForCompletedBuildings(int currentFrame)
             // if we are terran, give the worker back to worker manager
             if (_opponentView.self()->getRace() == BWAPI::Races::Terran)
             {
-                Global::Workers().finishedWithWorker(b.builderUnit, currentFrame);          
+                _workerManager.finishedWithWorker(b.builderUnit, currentFrame);
             }
 
             // remove this unit from the under construction vector

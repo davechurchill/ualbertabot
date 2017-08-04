@@ -1,19 +1,7 @@
 #include "Global.h"
-#include "UAlbertaBot_Tournament.h"
+#include "BWAPI.h"
 
 using namespace UAlbertaBot;
-
-UAlbertaBot_Tournament * uabModule = nullptr;
-
-void Global::SetModule(UAlbertaBot_Tournament * module)
-{
-    uabModule = module;
-}
-
-WorkerManager & Global::Workers()
-{
-    return uabModule->Workers();
-}
 
 BWAPI::Player Global::getEnemy()
 {

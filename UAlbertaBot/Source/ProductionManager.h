@@ -7,6 +7,7 @@
 #include "BOSSManager.h"
 #include "BuildOrder.h"
 #include "StrategyManager.h"
+#include "WorkerManager.h"
 
 namespace UAlbertaBot
 {
@@ -23,6 +24,7 @@ class ProductionManager
     bool                _haveLocationForThisBuilding;
 	const StrategyManager& _strategyManager;
 	const UnitInfoManager& _unitInfo;
+	WorkerManager& _workerManager;
 	const AKBot::OpponentView& _opponentView;
 	const AKBot::Logger& _logger;
     
@@ -49,6 +51,7 @@ public:
 		const AKBot::OpponentView& opponentView,
 		BOSSManager & bossManager,
 		const StrategyManager& strategyManager,
+		WorkerManager& workerManager,
 		const UnitInfoManager& unitInfo,
 		const BaseLocationManager& bases,
 		const MapTools& mapTools,

@@ -6,6 +6,7 @@
 #include "BaseLocationManager.h"
 #include "DefaultPlayerLocationProvider.h"
 #include "OpponentView.h"
+#include "WorkerManager.h"
 
 namespace UAlbertaBot
 {
@@ -19,6 +20,7 @@ class CombatCommander
 	const AKBot::OpponentView& _opponentView;
 	const UnitInfoManager& _unitInfo;
 	const MapTools& _mapTools;
+	WorkerManager& _workerManager;
 
     void            updateScoutDefenseSquad(int currentFrame);
 	void            updateDefenseSquads(int currentFrame);
@@ -56,6 +58,7 @@ public:
 	CombatCommander(
 		const BaseLocationManager & baseLocationManager,
 		const AKBot::OpponentView& opponentView,
+		WorkerManager& workerManager,
 		const UnitInfoManager& unitInfo,
 		const MapTools& mapTools,
 		const AKBot::Logger& logger);

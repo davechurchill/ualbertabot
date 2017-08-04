@@ -3,37 +3,38 @@
 #include "UnitUtil.h"
 #include "Timer.hpp"
 #include "Global.h"
-#include "UAlbertaBot_Tournament.h"
 
 using namespace UAlbertaBot;
 
 GameCommander::GameCommander(
-	UAlbertaBot_Tournament & uabModule,
 	const AKBot::OpponentView& opponentView,
+	BOSSManager& bossManager,
+	CombatCommander& combatCommander,
+	ScoutManager& scoutManager,
+	ProductionManager& productionManager,
+	WorkerManager& workerManager,
 	const BaseLocationManager& bases,
 	const AKBot::Logger& logger)
     : _opponentView(opponentView)
-	, _productionManager(opponentView, _bossManager, uabModule.Strategy(), uabModule.UnitInfo(), bases, uabModule.Map(), logger)
-	, _scoutManager(opponentView, bases, uabModule.Map())
+	, _workerManager(workerManager)
+	, _productionManager(productionManager)
+	, _scoutManager(_scoutManager)
     , _initialScoutSet(false)
-    , _module(uabModule)
-	, _combatCommander(bases, opponentView, uabModule.UnitInfo(), uabModule.Map(), logger)
-	, _bossManager(opponentView)
+	, _combatCommander(combatCommander)
+	, _bossManager(bossManager)
 {
-	auto& workerManager = uabModule.Workers();
-	_scoutManager.onScoutAssigned([&workerManager](const BWAPI::Unit &unit, int currentFrame)
+	_scoutManager.onScoutAssigned([this](const BWAPI::Unit &unit, int currentFrame)
 	{
-		workerManager.setScoutWorker(unit, currentFrame);
+		_workerManager.setScoutWorker(unit, currentFrame);
 	});
-	_scoutManager.onScoutReleased([&workerManager](const BWAPI::Unit &unit, int currentFrame)
+	_scoutManager.onScoutReleased([this](const BWAPI::Unit &unit, int currentFrame)
 	{
-		workerManager.finishedWithWorker(unit, currentFrame);
+		_workerManager.finishedWithWorker(unit, currentFrame);
 	});
 }
 
 void GameCommander::onStart()
 {
-    _productionManager.onStart();
 }
 
 void GameCommander::update(int currentFrame)
@@ -41,17 +42,12 @@ void GameCommander::update(int currentFrame)
 	_timer.start();
 
 	// Do nothing if we don't have any enemy.
-	auto enemy = Global::getEnemy();
-	if (enemy == nullptr)
-	{
-		return;
-	}
-
 	handleUnitAssignments(currentFrame);
     
 	_bossManager.update(35 - _timer.getElapsedTimeInMilliSec(), currentFrame);
 
-	_productionManager.update(currentFrame);
+	// Line below should be moved to UAlbertaBot_Tournament::onFrame
+	// _productionManager.update(currentFrame);
 	_combatCommander.update(_combatUnits, currentFrame);
     _scoutManager.update(currentFrame);
 }
@@ -190,8 +186,7 @@ void GameCommander::onUnitRenegade(BWAPI::Unit unit)
 }
 
 void GameCommander::onUnitDestroy(BWAPI::Unit unit, int currentFrame)
-{ 	
-	_productionManager.onUnitDestroy(unit, currentFrame);
+{
 }
 
 void GameCommander::onUnitMorph(BWAPI::Unit unit)		
@@ -228,7 +223,7 @@ BWAPI::Unit GameCommander::getClosestWorkerToTarget(BWAPI::Position target)
 
 	for (auto & unit : _validUnits)
 	{
-		if (!isAssigned(unit) && unit->getType().isWorker() && Global::Workers().isFree(unit))
+		if (!isAssigned(unit) && unit->getType().isWorker() && _workerManager.isFree(unit))
 		{
 			double dist = unit->getDistance(target);
 			if (!closestUnit || dist < closestDist)

@@ -5,6 +5,7 @@
 #include "BuildingPlacer.h"
 #include "MapTools.h"
 #include "BaseLocationManager.h"
+#include "WorkerManager.h"
 #include "Logger.h"
 
 namespace UAlbertaBot
@@ -15,6 +16,7 @@ class BuildingManager
     std::vector<Building> _buildings;
 	const AKBot::OpponentView& _opponentView;
 	const BaseLocationManager& _bases;
+	WorkerManager& _workerManager;
 	const MapTools& _mapTools;
 	const AKBot::Logger& _logger;
 
@@ -39,6 +41,7 @@ public:
     BuildingManager(
 		const AKBot::OpponentView& opponentView,
 		const BaseLocationManager& bases,
+		WorkerManager& workerManager,
 		const MapTools& mapTools,
 		const AKBot::Logger& logger);
 

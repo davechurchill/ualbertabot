@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Common.h"
-#include "WorkerManager.h"
 #include "../../BOSS/source/BOSS.h"
-#include "StrategyManager.h"
 #include <memory>
 #include "OpponentView.h"
+#include "BuildingManager.h"
+#include "Strategy.h"
 
 namespace UAlbertaBot
 {

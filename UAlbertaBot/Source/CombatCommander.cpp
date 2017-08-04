@@ -14,22 +14,24 @@ const size_t DropPriority = 4;
 CombatCommander::CombatCommander(
 	const BaseLocationManager & baseLocationManager,
 	const AKBot::OpponentView& opponentView,
+	WorkerManager& workerManager,
 	const UnitInfoManager& unitInfo,
 	const MapTools& mapTools,
 	const AKBot::Logger& logger)
     : _initialized(false)
 	, _unitInfo(unitInfo)
 	, _baseLocationManager(baseLocationManager)
+	, _workerManager(workerManager)
 	, _mapTools(mapTools)
 	, _playerLocationProvider(baseLocationManager)
 	, _squadData(_playerLocationProvider, opponentView, unitInfo, baseLocationManager, mapTools, logger)
 	, _opponentView(opponentView)
 {
-	_squadData.onUnitRemoved([](const BWAPI::Unit& unit, int currentFrame)
+	_squadData.onUnitRemoved([this](const BWAPI::Unit& unit, int currentFrame)
 	{
 		if (unit->getType().isWorker())
 		{
-			Global::Workers().finishedWithWorker(unit, currentFrame);
+			_workerManager.finishedWithWorker(unit, currentFrame);
 		}
 	});
 }
@@ -225,7 +227,7 @@ void CombatCommander::updateScoutDefenseSquad(int currentFrame)
 			// grab it from the worker manager and put it in the squad
             if (_squadData.canAssignUnitToSquad(workerDefender, scoutDefenseSquad))
             {
-			    Global::Workers().setCombatWorker(workerDefender, currentFrame);
+				_workerManager.setCombatWorker(workerDefender, currentFrame);
                 _squadData.assignUnitToSquad(workerDefender, scoutDefenseSquad);
             }
 		}
@@ -238,7 +240,7 @@ void CombatCommander::updateScoutDefenseSquad(int currentFrame)
             unit->stop();
             if (unit->getType().isWorker())
             {
-                Global::Workers().finishedWithWorker(unit, currentFrame);
+				_workerManager.finishedWithWorker(unit, currentFrame);
             }
         }
 
@@ -557,7 +559,7 @@ BWAPI::Unit CombatCommander::findClosestWorkerToTarget(std::vector<BWAPI::Unit> 
         }
 
 		// if it is a move worker
-        if (Global::Workers().isFree(unit)) 
+        if (_workerManager.isFree(unit))
 		{
 			double dist = unit->getDistance(target);
 

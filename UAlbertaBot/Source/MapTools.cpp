@@ -4,6 +4,8 @@
 #include "UnitUtil.h"
 #include <utility>
 #include <type_traits>
+#include <BWAPI.h>
+#include <fstream>
 
 using namespace UAlbertaBot;
 

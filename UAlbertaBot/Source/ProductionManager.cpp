@@ -1,5 +1,4 @@
 #include "ProductionManager.h"
-#include "Global.h"
 #include "UnitUtil.h"
 
 using namespace UAlbertaBot;
@@ -8,14 +7,16 @@ ProductionManager::ProductionManager(
 	const AKBot::OpponentView& opponentView,
 	BOSSManager & bossManager,
 	const StrategyManager& strategyManager,
+	WorkerManager& workerManager,
 	const UnitInfoManager& unitInfo,
 	const BaseLocationManager& bases,
 	const MapTools& mapTools,
 	const AKBot::Logger& logger)
 	: _opponentView(opponentView)
+	, _workerManager(workerManager)
 	, _bossManager(bossManager)
 	, _unitInfo(unitInfo)
-    , _buildingManager(opponentView, bases, mapTools, logger)
+    , _buildingManager(opponentView, bases, _workerManager, mapTools, logger)
     , _assignedWorkerForThisBuilding (false)
 	, _haveLocationForThisBuilding   (false)
 	, _enemyCloakedDetected          (false)
@@ -153,7 +154,7 @@ void ProductionManager::onUnitDestroy(BWAPI::Unit unit, int currentFrame)
 	if (Config::Modules::UsingBuildOrderSearch)
 	{
 		// if it's a worker or a building, we need to re-search for the current goal
-		if ((unit->getType().isWorker() && !Global::Workers().isWorkerScout(unit)) || unit->getType().isBuilding())
+		if ((unit->getType().isWorker() && !_workerManager.isWorkerScout(unit)) || unit->getType().isBuilding())
 		{
 			if (unit->getType() != BWAPI::UnitTypes::Zerg_Drone)
 			{
@@ -198,7 +199,7 @@ void ProductionManager::manageBuildOrderQueue(int currentFrame)
 			Building b(currentItem.metaType.getUnitType(), self->getStartLocation());
 
 			// set the producer as the closest worker, but do not set its job yet
-			producer = Global::Workers().getBuilder(b, false);
+			producer = _workerManager.getBuilder(b);
 
 			// predict the worker movement to that building location
 			predictWorkerMovement(b);
@@ -535,7 +536,7 @@ void ProductionManager::predictWorkerMovement(const Building & b)
 	int gasRequired						= std::max(0, b.type.gasPrice() - getFreeGas());
 
 	// get a candidate worker to move to this location
-	BWAPI::Unit moveWorker			= Global::Workers().getMoveWorker(walkToPosition);
+	BWAPI::Unit moveWorker			= _workerManager.getMoveWorker(walkToPosition);
 
 	// Conditions under which to move the worker: 
 	//		- there's a valid worker to move
@@ -543,13 +544,13 @@ void ProductionManager::predictWorkerMovement(const Building & b)
 	//		- the build position is valid
 	//		- we will have the required resources by the time the worker gets there
 	if (moveWorker && _haveLocationForThisBuilding && !_assignedWorkerForThisBuilding && (_predictedTilePosition != BWAPI::TilePositions::None) &&
-		Global::Workers().willHaveResources(mineralsRequired, gasRequired, moveWorker->getDistance(walkToPosition)) )
+		_workerManager.willHaveResources(mineralsRequired, gasRequired, moveWorker->getDistance(walkToPosition)) )
 	{
 		// we have assigned a worker
 		_assignedWorkerForThisBuilding = true;
 
 		// tell the worker manager to move this worker
-		Global::Workers().setMoveWorker(mineralsRequired, gasRequired, walkToPosition);
+		_workerManager.setMoveWorker(mineralsRequired, gasRequired, walkToPosition);
 	}
 }
 

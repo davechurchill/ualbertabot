@@ -1,10 +1,12 @@
 #include "AutoObserver.h"
 #include "Global.h"
+#include <BWAPI.h>
 
 using namespace UAlbertaBot;
 
-AutoObserver::AutoObserver(const AKBot::OpponentView& opponentView)
+AutoObserver::AutoObserver(const AKBot::OpponentView& opponentView, const WorkerManager& workerManager)
 	: _opponentView(opponentView)
+	, _workerManager(workerManager)
 	, _unitFollowFrames(0)
     , _cameraLastMoved(0)
     , _observerFollowingUnit(nullptr)
@@ -50,7 +52,7 @@ void AutoObserver::onFrame(int currentFrame)
     {
 	    for (auto & unit : _opponentView.self()->getUnits())
 	    {
-		    if (Global::Workers().isWorkerScout(unit))
+		    if (_workerManager.isWorkerScout(unit))
 		    {
 			    _cameraLastMoved = currentFrame;
                 _unitFollowFrames = 6;

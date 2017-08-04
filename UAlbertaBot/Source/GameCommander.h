@@ -10,16 +10,14 @@
 namespace UAlbertaBot
 {
 
-class UAlbertaBot_Tournament;
-
 class GameCommander
 {
     Timer                       _timer;
-    CombatCommander             _combatCommander;
-    BOSSManager                 _bossManager;
-    ProductionManager           _productionManager;
-    ScoutManager                _scoutManager;
-    UAlbertaBot_Tournament &     _module;
+    CombatCommander&            _combatCommander;
+    BOSSManager&                _bossManager;
+    ProductionManager&          _productionManager;
+	ScoutManager&				_scoutManager;
+	WorkerManager& _workerManager;
 	const AKBot::OpponentView&	_opponentView;
 
     std::vector<BWAPI::Unit>    _validUnits;
@@ -34,8 +32,12 @@ class GameCommander
 public:
 
     GameCommander(
-		UAlbertaBot_Tournament & uabModule,
 		const AKBot::OpponentView& opponentView,
+		BOSSManager& bossManager,
+		CombatCommander& combatCommander,
+		ScoutManager& scoutManager,
+		ProductionManager& productionManager,
+		WorkerManager& workerManager,
 		const BaseLocationManager& bases,
 		const AKBot::Logger& logger);
 
@@ -46,6 +48,7 @@ public:
     void setValidUnits();
     void setScoutUnits(int currentFrame);
     void setCombatUnits();
+	std::vector<BWAPI::Unit>& getCombatUnits() { return _combatUnits; }
 
 	BWAPI::Unit getFirstSupplyProvider();
     BWAPI::Unit getClosestUnitToTarget(BWAPI::UnitType type,BWAPI::Position target);

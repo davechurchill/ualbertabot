@@ -17,12 +17,16 @@ using namespace AKBot;
 UAlbertaBot_Tournament::UAlbertaBot_Tournament(const AKBot::OpponentView& opponentView, const AKBot::Logger& logger)
 	: _opponentView(opponentView)
 	, _baseLocationManager(opponentView)
-	, _gameCommander(*this, opponentView, _baseLocationManager, logger)
-	, _mapTools(BWAPI::Broodwar->mapWidth(), BWAPI::Broodwar->mapHeight(), opponentView, logger)
-	, _strategyManager("", opponentView, _unitInfoManager, _baseLocationManager, logger)
-	, _unitInfoManager(opponentView)
-	, _autoObserver(opponentView)
+	, _autoObserver(opponentView, _workerManager)
 	, _workerManager(opponentView, logger)
+	, _strategyManager("", opponentView, _unitInfoManager, _baseLocationManager, logger)
+	, _bossManager(opponentView)
+	, _unitInfoManager(opponentView)
+	, _mapTools(BWAPI::Broodwar->mapWidth(), BWAPI::Broodwar->mapHeight(), opponentView, logger)
+	, _scoutManager(opponentView, _baseLocationManager, _mapTools)
+	, _productionManager(opponentView, _bossManager, _strategyManager, _workerManager, _unitInfoManager, _baseLocationManager, _mapTools, logger)
+	, _combatCommander(_baseLocationManager, opponentView, _workerManager, _unitInfoManager, _mapTools, logger)
+	, _gameCommander(opponentView, _bossManager, _combatCommander, _scoutManager, _productionManager, _workerManager, _baseLocationManager, logger)
 {
 	// parse the configuration file for the bot's strategies
 	auto configurationFile = ParseUtils::FindConfigurationLocation(Config::ConfigFile::ConfigFileLocation);
@@ -31,7 +35,6 @@ UAlbertaBot_Tournament::UAlbertaBot_Tournament(const AKBot::OpponentView& oppone
 
 UAlbertaBot_Tournament::~UAlbertaBot_Tournament()
 {
-	Global::SetModule(nullptr);
 }
 
 // This gets called when the bot starts!
@@ -44,9 +47,6 @@ void UAlbertaBot_Tournament::onStart()
 
 	// Initialize BOSS, the Build Order Search System
 	BOSS::init();
-
-	// Initialize all the global classes in UAlbertaBot 
-	Global::SetModule(this);
 
 	// Set our BWAPI options here    
 	BWAPI::Broodwar->setLocalSpeed(Config::BWAPIOptions::SetLocalSpeed);
@@ -76,6 +76,7 @@ void UAlbertaBot_Tournament::onStart()
 	_unitInfoManager.onStart();
 	_mapTools.onStart();
 	_baseLocationManager.onStart(_mapTools);
+	_productionManager.onStart();
 	_gameCommander.onStart();
 
 	Micro::SetOnAttackUnit([this](const BWAPI::Unit&attacker, const BWAPI::Unit&target)
@@ -110,24 +111,9 @@ void UAlbertaBot_Tournament::onEnd(bool isWinner)
 	_strategyManager.onEnd(isWinner);
 }
 
-WorkerManager & UAlbertaBot_Tournament::Workers()
-{
-    return _workerManager;
-}
-
 const UnitInfoManager & UAlbertaBot_Tournament::UnitInfo() const
 {
     return _unitInfoManager;
-}
-
-const StrategyManager & UAlbertaBot_Tournament::Strategy() const
-{
-    return _strategyManager;
-}
-
-const BaseLocationManager & UAlbertaBot_Tournament::Bases() const
-{
-    return _baseLocationManager;
 }
 
 const MapTools & UAlbertaBot_Tournament::Map() const
@@ -142,9 +128,15 @@ AKBot::ScreenCanvas & UAlbertaBot::UAlbertaBot_Tournament::getCanvas()
 
 void UAlbertaBot_Tournament::onFrame()
 {
+	auto enemy = Global::getEnemy();
+	if (enemy == nullptr)
+	{
+		return;
+	}
+
 	auto currentFrame = BWAPI::Broodwar->getFrameCount();
 
-    // update all of the internal information managers
+	// update all of the internal information managers
     _mapTools.update(currentFrame);
 	_strategyManager.update();
     _unitInfoManager.update();
@@ -153,6 +145,9 @@ void UAlbertaBot_Tournament::onFrame()
 
     // update the game commander
 	_gameCommander.update(currentFrame);
+	_productionManager.update(currentFrame);
+	_combatCommander.update(_gameCommander.getCombatUnits(), currentFrame);
+	_scoutManager.update(currentFrame);
 
 	// Draw debug information
 	drawDebugInformation(_canvas);
@@ -197,6 +192,7 @@ void UAlbertaBot_Tournament::onUnitDestroy(BWAPI::Unit unit)
 	_workerManager.onUnitDestroy(unit, currentFrame);
 	_unitInfoManager.onUnitDestroy(unit); 
     _gameCommander.onUnitDestroy(unit, currentFrame);
+	_productionManager.onUnitDestroy(unit, currentFrame);
 }
 
 void UAlbertaBot_Tournament::onUnitMorph(BWAPI::Unit unit)

@@ -1,6 +1,7 @@
 #include "BaseLocation.h"
 #include "Global.h"
 #include "UnitUtil.h"
+#include <BWAPI.h>
 
 using namespace UAlbertaBot;
 

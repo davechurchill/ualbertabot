@@ -333,7 +333,7 @@ BWAPI::Unit WorkerManager::getGasWorker(BWAPI::Unit refinery)
 // gets a builder for BuildingManager to use
 // if setJobAsBuilder is true (default), it will be flagged as a builder unit
 // set 'setJobAsBuilder' to false if we just want to see which worker will build a building
-BWAPI::Unit WorkerManager::getBuilder(Building & b, bool setJobAsBuilder)
+BWAPI::Unit WorkerManager::getBuilder(Building & b) const
 {
 	// variables to hold the closest worker of each type to the building
 	BWAPI::Unit closestMovingWorker = nullptr;
@@ -374,12 +374,6 @@ BWAPI::Unit WorkerManager::getBuilder(Building & b, bool setJobAsBuilder)
 	// if we found a moving worker, use it, otherwise using a mining worker
 	BWAPI::Unit chosenWorker = closestMovingWorker ? closestMovingWorker : closestMiningWorker;
 
-	// if the worker exists (one may not have been found in rare cases)
-	if (chosenWorker && setJobAsBuilder)
-	{
-		workerData.setWorkerJob(chosenWorker, WorkerData::Build, b.type);
-	}
-
 	// return the worker
 	return chosenWorker;
 }
@@ -393,7 +387,7 @@ void WorkerManager::setScoutWorker(BWAPI::Unit worker, int currentFrame)
 }
 
 // gets a worker which will move to a current location
-BWAPI::Unit WorkerManager::getMoveWorker(BWAPI::Position p)
+BWAPI::Unit WorkerManager::getMoveWorker(BWAPI::Position p) const
 {
 	// set up the pointer
 	BWAPI::Unit closestWorker = nullptr;
@@ -458,7 +452,7 @@ void WorkerManager::setMoveWorker(int mineralsNeeded, int gasNeeded, BWAPI::Posi
 }
 
 // will we have the required resources by the time a worker can travel a certain distance
-bool WorkerManager::willHaveResources(int mineralsRequired, int gasRequired, double distance)
+bool WorkerManager::willHaveResources(int mineralsRequired, int gasRequired, double distance) const
 {
 	// if we don't require anything, we will have it
 	if (mineralsRequired <= 0 && gasRequired <= 0)
@@ -600,17 +594,17 @@ bool WorkerManager::isBuilder(BWAPI::Unit worker) const
 	return (workerData.getWorkerJob(worker) == WorkerData::Build);
 }
 
-int WorkerManager::getNumMineralWorkers() 
+int WorkerManager::getNumMineralWorkers() const
 {
 	return workerData.getNumMineralWorkers();	
 }
 
-int WorkerManager::getNumIdleWorkers() 
+int WorkerManager::getNumIdleWorkers() const
 {
 	return workerData.getNumIdleWorkers();	
 }
 
-int WorkerManager::getNumGasWorkers() 
+int WorkerManager::getNumGasWorkers() const
 {
 	return workerData.getNumGasWorkers();
 }

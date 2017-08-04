@@ -2,7 +2,6 @@
 
 #include <Common.h>
 #include "BuildingData.h"
-#include "BuildingManager.h"
 #include "WorkerData.h"
 #include "OpponentView.h"
 
@@ -37,17 +36,17 @@ public:
     void        updateWorkerStatus(int currentFrame);
 	const WorkerData& getWorkerData() const { return workerData; };
 
-    int         getNumMineralWorkers();
-    int         getNumGasWorkers();
-    int         getNumIdleWorkers();
+    int         getNumMineralWorkers() const;
+    int         getNumGasWorkers() const;
+    int         getNumIdleWorkers() const;
     void        setScoutWorker(BWAPI::Unit worker, int currentFrame);
 
     bool        isWorkerScout(BWAPI::Unit worker) const;
     bool        isFree(BWAPI::Unit worker) const;
     bool        isBuilder(BWAPI::Unit worker) const;
 
-    BWAPI::Unit getBuilder(Building & b,bool setJobAsBuilder = true);
-    BWAPI::Unit getMoveWorker(BWAPI::Position p);
+    BWAPI::Unit getBuilder(Building & b) const;
+    BWAPI::Unit getMoveWorker(BWAPI::Position p) const;
     BWAPI::Unit getClosestDepot(BWAPI::Unit worker);
     BWAPI::Unit getGasWorker(BWAPI::Unit refinery);
     BWAPI::Unit getClosestEnemyUnit(BWAPI::Unit worker);
@@ -59,7 +58,7 @@ public:
     void        setMoveWorker(int m,int g,BWAPI::Position p);
     void        setCombatWorker(BWAPI::Unit worker, int currentFrame);
 
-    bool        willHaveResources(int mineralsRequired,int gasRequired,double distance);
+    bool        willHaveResources(int mineralsRequired,int gasRequired,double distance) const;
     void        rebalanceWorkers(int currentFrame);
 
 };
