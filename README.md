@@ -4,6 +4,16 @@ This bot based on the original UAlberta Bot written by David Churchill (dave.chu
 
 Author: Andrey Kurdyumov (kant2002@gmail.com)
 
+## Dependencies
+
+For mamaging dependencies used vcpkg
+
+    # install dependencies
+    vcpkg install boost
+    vcpkg install boost-di
+
+This is additional dependencies to Dave Churchill's bot.
+
 ## How to build
 
 For testing locally you need only VS2017, for these you should use Debug and Release solution configuration.
