@@ -230,7 +230,7 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b,int 
     for (size_t i(0); i < closestToBuilding.size(); ++i)
     {
 		auto checkStatus = canBuildHereWithSpace(closestToBuilding[i], b, buildDist, horizontalOnly);
-        if (checkStatus != BuildingPlaceCheckStatus::CanBuild)
+        if (checkStatus == BuildingPlaceCheckStatus::CanBuild)
         {
             return closestToBuilding[i];
         }

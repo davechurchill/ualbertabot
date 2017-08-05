@@ -48,9 +48,9 @@ void UAlbertaBot_BWAPIReconnect()
 
 class BotPlayer
 {
-	std::unique_ptr<BotModule> m;
+	unique_ptr<BotModule> m;
 public:
-	BotPlayer(std::unique_ptr<BotModule> _m) : m(std::move(_m)) {}
+	BotPlayer(unique_ptr<BotModule> _m) : m(std::move(_m)) {}
 
 	bool isValid() const { return !!m.get(); }
 
@@ -110,7 +110,7 @@ BotPlayer createBot(const std::string& mode) {
 			else {
 				return nullptr;
 			}
-		}).in(di::unique)
+		})
 	);
 	// injector.create<ScoutManager>();
 

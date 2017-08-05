@@ -17,6 +17,7 @@ namespace UAlbertaBot
 
 class UAlbertaBot_Tournament : public BotModule
 {
+	shared_ptr<MapTools> _mapTools;
     GameCommander       _gameCommander;
     AutoObserver        _autoObserver;
     UnitInfoManager     _unitInfoManager;
@@ -25,7 +26,6 @@ class UAlbertaBot_Tournament : public BotModule
     StrategyManager     _strategyManager;
 	CombatCommander     _combatCommander;
 	AKBot::BWAPIScreenCanvas _canvas;
-    shared_ptr<MapTools> _mapTools;
     shared_ptr<WorkerManager> _workerManager;
 	shared_ptr<BaseLocationManager> _baseLocationManager;
 	shared_ptr<ScoutManager> _scoutManager;
