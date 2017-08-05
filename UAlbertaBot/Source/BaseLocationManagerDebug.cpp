@@ -4,9 +4,9 @@
 namespace AKBot
 {
 	BaseLocationManagerDebug::BaseLocationManagerDebug(
-		const OpponentView & opponentView,
-		const BaseLocationManager& baseLocationManager,
-		const MapTools& map)
+		std::shared_ptr<OpponentView> opponentView,
+		shared_ptr<BaseLocationManager> baseLocationManager,
+		shared_ptr<MapTools> map)
 		: _opponentView(opponentView)
 		, _baseLocationManager(baseLocationManager)
 		, _map(map)
@@ -16,16 +16,16 @@ namespace AKBot
 	{
 		auto isBuildableTileCheck = [this](BWAPI::TilePosition tile)
 		{
-			return _map.isBuildableTile(tile);
+			return _map->isBuildableTile(tile);
 		};
-		for (auto baseLocation : _baseLocationManager.getBaseLocations())
+		for (auto baseLocation : _baseLocationManager->getBaseLocations())
 		{
 			// baseLocation->draw(canvas, isBuildableTileCheck);
 			drawBase(*baseLocation, canvas, isBuildableTileCheck);
 		}
 
-		auto self = _opponentView.self();
-		BWAPI::Position nextExpansionPosition(_baseLocationManager.getNextExpansion(self));
+		auto self = _opponentView->self();
+		BWAPI::Position nextExpansionPosition(_baseLocationManager->getNextExpansion(self));
 
 		canvas.drawCircleMap(nextExpansionPosition, 16, BWAPI::Colors::Orange, true);
 	}
@@ -47,12 +47,12 @@ namespace AKBot
 		ss << "Geysers:      " << geyserPositions.size() << "\n";
 		ss << "Occupied By:  ";
 
-		if (base.isOccupiedByPlayer(_opponentView.self()))
+		if (base.isOccupiedByPlayer(_opponentView->self()))
 		{
 			ss << "Self ";
 		}
 
-		for (auto& enemy : _opponentView.enemies())
+		for (auto& enemy : _opponentView->enemies())
 		{
 			if (base.isOccupiedByPlayer(enemy))
 			{
@@ -101,12 +101,12 @@ namespace AKBot
 			}
 
 			BWAPI::Color color = isBuildableTile(tile) ? BWAPI::Colors::Green : BWAPI::Colors::Red;
-			if (isBuildableTile(tile) && !_map.isDepotBuildableTile(tile))
+			if (isBuildableTile(tile) && !_map->isDepotBuildableTile(tile))
 			{
 				color = BWAPI::Colors::Blue;
 			}
 
-			if (_map.isBuildable(tile, BWAPI::UnitTypes::Terran_Command_Center))
+			if (_map->isBuildable(tile, BWAPI::UnitTypes::Terran_Command_Center))
 			{
 				color = BWAPI::Colors::Purple;
 			}

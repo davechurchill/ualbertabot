@@ -50,13 +50,13 @@ private:
     std::map<BWAPI::Unit,int>               _refineryWorkerCount;
 
     std::map<BWAPI::Unit,int>               _workersOnMineralPatch;
-	const AKBot::Logger& _logger;
+	shared_ptr<AKBot::Logger> _logger;
 
     void clearPreviousJob(BWAPI::Unit unit);
 
 public:
 
-    WorkerData(const AKBot::Logger& logger);
+    WorkerData(shared_ptr<AKBot::Logger> logger);
 
     void    workerDestroyed(BWAPI::Unit unit);
     void    addDepot(BWAPI::Unit unit);

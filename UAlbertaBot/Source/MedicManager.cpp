@@ -10,7 +10,7 @@
 using namespace UAlbertaBot;
 using UAlbertaBot::UnitUtil::GetClosestsUnitToTarget;
 
-MedicManager::MedicManager(const AKBot::OpponentView& opponentView, const BaseLocationManager& bases)
+MedicManager::MedicManager(shared_ptr<AKBot::OpponentView> opponentView, shared_ptr<BaseLocationManager> bases)
 	: MicroManager(opponentView, bases)
 {
 }
@@ -19,7 +19,7 @@ void MedicManager::executeMicro(const std::vector<BWAPI::Unit> & targets, int cu
 {
 	// create a set of all medic targets
 	std::vector<BWAPI::Unit> medicTargets;
-    for (auto & unit : opponentView.self()->getUnits())
+    for (auto & unit : opponentView->self()->getUnits())
     {
         if (unit->getHitPoints() < unit->getInitialHitPoints() && !unit->getType().isMechanical() && !unit->getType().isBuilding())
         {

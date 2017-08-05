@@ -32,6 +32,7 @@
     <ClCompile Include="..\source\BuildingPlacer.cpp" />
     <ClCompile Include="..\source\BuildOrder.cpp" />
     <ClCompile Include="..\source\BuildOrderQueue.cpp" />
+    <ClCompile Include="..\Source\BWAPIMapInformation.cpp" />
     <ClCompile Include="..\Source\BWAPIOpponentView.cpp" />
     <ClCompile Include="..\Source\BWAPIPrintLogger.cpp" />
     <ClCompile Include="..\Source\BWAPIScreenCanvas.cpp" />
@@ -93,6 +94,7 @@
     <ClInclude Include="..\source\BuildingPlacer.h" />
     <ClInclude Include="..\source\BuildOrder.h" />
     <ClInclude Include="..\source\BuildOrderQueue.h" />
+    <ClInclude Include="..\Source\BWAPIMapInformation.h" />
     <ClInclude Include="..\Source\BWAPIOpponentView.h" />
     <ClInclude Include="..\Source\BWAPIPrintLogger.h" />
     <ClInclude Include="..\Source\BWAPIScreenCanvas.h" />
@@ -111,6 +113,7 @@
     <ClInclude Include="..\Source\GameHistory.hpp" />
     <ClInclude Include="..\Source\Global.h" />
     <ClInclude Include="..\Source\Logger.h" />
+    <ClInclude Include="..\Source\MapInformation.h" />
     <ClInclude Include="..\Source\MapToolsDebug.h" />
     <ClInclude Include="..\Source\OpponentView.h" />
     <ClInclude Include="..\Source\PlayerLocationProvider.h" />

@@ -15,6 +15,7 @@
 #include <set>
 #include <map>
 #include <array>
+#include <memory>
 
 #pragma warning( push )
 #pragma warning( disable : 4458)
@@ -59,3 +60,6 @@ struct Rect
     int x, y;
     int height, width;
 };
+
+using std::shared_ptr;
+using std::unique_ptr;

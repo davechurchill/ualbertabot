@@ -6,7 +6,7 @@
 using namespace UAlbertaBot;
 
 // constructor
-BOSSManager::BOSSManager(const AKBot::OpponentView& opponentView)
+BOSSManager::BOSSManager(shared_ptr<AKBot::OpponentView> opponentView)
 	: _opponentView(opponentView)
 	, _previousSearchStartFrame(0)
     , _previousSearchFinishFrame(0)
@@ -26,7 +26,7 @@ void BOSSManager::reset()
 // start a new search for a new goal
 void BOSSManager::startNewSearch(const std::vector<MetaPair> & goalUnits, const BuildingManager & buildingManager, int currentFrame)
 {
-	auto self = _opponentView.self();
+	auto self = _opponentView->self();
     size_t numWorkers   = UnitUtil::GetAllUnitCount(self->getRace().getWorker());
     size_t numDepots    = UnitUtil::GetAllUnitCount(UnitUtil::getResourceDepot(self->getRace()))
                         + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Lair)
@@ -49,7 +49,7 @@ void BOSSManager::startNewSearch(const std::vector<MetaPair> & goalUnits, const 
     {
         BOSS::BuildOrderSearchGoal goal = GetGoal(goalUnits);
 
-        BOSS::GameState initialState(BWAPI::Broodwar, _opponentView.self(), buildingManager.buildingsQueued());
+        BOSS::GameState initialState(BWAPI::Broodwar, _opponentView->self(), buildingManager.buildingsQueued());
 
         _smartSearch = SearchPtr(new BOSS::DFBB_BuildOrderSmartSearch(initialState.getRace()));
         _smartSearch->setGoal(GetGoal(goalUnits));
@@ -214,7 +214,7 @@ BOSS::GameState BOSSManager::getStartState()
 
 const BOSS::RaceID BOSSManager::getRace() const
 {
-    BWAPI::Race r = _opponentView.self()->getRace();
+    BWAPI::Race r = _opponentView->self()->getRace();
     if (r == BWAPI::Races::Protoss)
     {
         return BOSS::Races::Protoss;
@@ -255,7 +255,7 @@ std::vector<MetaType> BOSSManager::GetMetaVector(const BOSS::BuildOrder & buildO
 
 BuildOrder BOSSManager::getBuildOrder()
 {
-    return BuildOrder(_opponentView.self()->getRace(), GetMetaVector(_previousBuildOrder));
+    return BuildOrder(_opponentView->self()->getRace(), GetMetaVector(_previousBuildOrder));
 }
 
 BOSS::ActionType BOSSManager::GetActionType(const MetaType & t)

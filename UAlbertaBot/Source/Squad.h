@@ -29,9 +29,9 @@ class Squad
     bool                _lastRetreatSwitchVal;
     size_t              _priority;
 	UnitHandler			_onRemoveHandler;
-	const AKBot::OpponentView& _opponentView;
+	shared_ptr<AKBot::OpponentView> _opponentView;
 	const UnitInfoManager& _unitInfo;
-	const AKBot::Logger& _logger;
+	std::shared_ptr<AKBot::Logger> _logger;
 	
 	SquadOrder          _order;
 	MeleeManager        _meleeManager;
@@ -46,13 +46,13 @@ class Squad
 	bool			_needToRegroup;
 
 	BWAPI::Unit		unitClosestToEnemy(std::function<int(const BWAPI::Position & src, const BWAPI::Position & dest)> distance);
-	void                        updateUnits(const MapTools& map);
+	void                        updateUnits(shared_ptr<MapTools> map);
 	void                        addUnitsToMicroManagers();
-	void                        setNearEnemyUnits(const MapTools& map);
+	void                        setNearEnemyUnits(shared_ptr<MapTools> map);
 	void                        setAllUnits();
 	
-	bool                        unitNearEnemy(const MapTools& map, BWAPI::Unit unit);
-	bool                        needsToRegroup(const MapTools& map, int currentFrame);
+	bool                        unitNearEnemy(shared_ptr<MapTools> map, BWAPI::Unit unit);
+	bool                        needsToRegroup(shared_ptr<MapTools> map, int currentFrame);
 	int                         squadUnitsNear(BWAPI::Position p);
 
 public:
@@ -62,14 +62,14 @@ public:
 		SquadOrder order,
 		size_t priority,
 		AKBot::PlayerLocationProvider& locationProvider,
-		const AKBot::OpponentView& opponentView,
+		shared_ptr<AKBot::OpponentView> opponentView,
 		const UnitInfoManager& unitInfo,
-		const BaseLocationManager& bases,
-		const MapTools& mapTools,
-		const AKBot::Logger& logger);
+		shared_ptr<BaseLocationManager> bases,
+		shared_ptr<MapTools> mapTools,
+		std::shared_ptr<AKBot::Logger> logger);
     ~Squad();
 
-	void                update(const MapTools& map, int currentFrame);
+	void                update(shared_ptr<MapTools> map, int currentFrame);
 	void                setSquadOrder(const SquadOrder & so);
 	void                addUnit(BWAPI::Unit u);
 	void                removeUnit(BWAPI::Unit u);

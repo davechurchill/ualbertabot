@@ -32,12 +32,12 @@ class BaseLocation
     int                 _top;
     int                 _bottom;
     bool                _isStartLocation;
-	const AKBot::OpponentView& _opponentView;
-	const MapTools&		_mapTools;
+	std::shared_ptr<AKBot::OpponentView> _opponentView;
+	shared_ptr<MapTools>		_mapTools;
 public:
 
-    BaseLocation(const AKBot::OpponentView& opponentView, const MapTools& mapTools, int baseID);
-	BaseLocation(const AKBot::OpponentView& opponentView, const MapTools& mapTools, int baseID, const std::vector<BWAPI::Unit> & resources);
+    BaseLocation(std::shared_ptr<AKBot::OpponentView> opponentView, shared_ptr<MapTools> mapTools, int baseID);
+	BaseLocation(std::shared_ptr<AKBot::OpponentView> opponentView, shared_ptr<MapTools> mapTools, int baseID, const std::vector<BWAPI::Unit> & resources);
     
 	/* Get id of the base location */
 	int getId() const { return _baseID; };

@@ -40,7 +40,7 @@ namespace AKBot
 	void GameCommanderDebug::drawGameInformation(ScreenCanvas& canvas, int x, int y) const
 	{
 		auto enemy = getEnemy();
-		auto self = _gameCommander.getOpponentView().self();
+		auto self = _gameCommander.getOpponentView()->self();
 		canvas.drawTextScreen(x, y, "\x04Players:");
 		if (enemy != nullptr)
 		{

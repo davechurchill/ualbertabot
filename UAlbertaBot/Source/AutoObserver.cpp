@@ -4,7 +4,7 @@
 
 using namespace UAlbertaBot;
 
-AutoObserver::AutoObserver(const AKBot::OpponentView& opponentView, const WorkerManager& workerManager)
+AutoObserver::AutoObserver(shared_ptr<AKBot::OpponentView> opponentView, shared_ptr<WorkerManager> workerManager)
 	: _opponentView(opponentView)
 	, _workerManager(workerManager)
 	, _unitFollowFrames(0)
@@ -20,7 +20,7 @@ void AutoObserver::onFrame(int currentFrame)
 
     if (pickUnitToFollow)
     {
-	    for (auto & unit : _opponentView.self()->getUnits())
+	    for (auto & unit : _opponentView->self()->getUnits())
 	    {
 		    if (unit->isUnderAttack() || unit->isAttacking() || unit->getGroundWeaponCooldown() > 0)
 		    {
@@ -35,7 +35,7 @@ void AutoObserver::onFrame(int currentFrame)
 
     if (pickUnitToFollow)
     {
-	    for (auto & unit : _opponentView.self()->getUnits())
+	    for (auto & unit : _opponentView->self()->getUnits())
 	    {
 		    if (unit->isBeingConstructed() && (unit->getRemainingBuildTime() < 12))
 		    {
@@ -50,9 +50,9 @@ void AutoObserver::onFrame(int currentFrame)
 
     if (pickUnitToFollow)
     {
-	    for (auto & unit : _opponentView.self()->getUnits())
+	    for (auto & unit : _opponentView->self()->getUnits())
 	    {
-		    if (_workerManager.isWorkerScout(unit))
+		    if (_workerManager->isWorkerScout(unit))
 		    {
 			    _cameraLastMoved = currentFrame;
                 _unitFollowFrames = 6;

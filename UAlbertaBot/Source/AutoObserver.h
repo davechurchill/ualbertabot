@@ -13,12 +13,12 @@ class AutoObserver
     int                         _cameraLastMoved;
     int                         _unitFollowFrames;
     BWAPI::Unit      _observerFollowingUnit;
-	const WorkerManager& _workerManager;
-	const AKBot::OpponentView& _opponentView;
+	shared_ptr<WorkerManager> _workerManager;
+	shared_ptr<AKBot::OpponentView> _opponentView;
 
 public:
 
-    AutoObserver(const AKBot::OpponentView& opponentView, const WorkerManager& workerManager);
+    AutoObserver(shared_ptr<AKBot::OpponentView> opponentView, shared_ptr<WorkerManager> workerManager);
     void onFrame(int currentFrame);
 };
 

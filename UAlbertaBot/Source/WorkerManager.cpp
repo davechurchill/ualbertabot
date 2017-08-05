@@ -7,8 +7,9 @@
 #include <BWAPI/Unitset.h>
 
 using namespace UAlbertaBot;
+using namespace AKBot;
 
-WorkerManager::WorkerManager(const AKBot::OpponentView& opponentView, const AKBot::Logger& logger)
+WorkerManager::WorkerManager(std::shared_ptr<OpponentView> opponentView, std::shared_ptr<AKBot::Logger> logger)
 	: _opponentView(opponentView)
 	, workerData(logger)
 {
@@ -72,7 +73,7 @@ void WorkerManager::stopRepairing(BWAPI::Unit worker, int currentFrame)
 void WorkerManager::handleGasWorkers(int currentFrame)
 {
 	// for each unit we have
-	for (auto & unit : _opponentView.self()->getUnits())
+	for (auto & unit : _opponentView->self()->getUnits())
 	{
 		// if that unit is a refinery
 		if (unit->getType().isRefinery() && unit->isCompleted())
@@ -112,12 +113,12 @@ void WorkerManager::handleIdleWorkers(int currentFrame)
 
 void WorkerManager::handleRepairWorkers(int currentFrame)
 {
-    if (_opponentView.self()->getRace() != BWAPI::Races::Terran)
+    if (_opponentView->self()->getRace() != BWAPI::Races::Terran)
     {
         return;
     }
 
-    for (auto & unit : _opponentView.self()->getUnits())
+    for (auto & unit : _opponentView->self()->getUnits())
     {
         if (unit->getType().isBuilding() && (unit->getHitPoints() < unit->getType().maxHitPoints()))
         {
@@ -267,11 +268,15 @@ BWAPI::Unit WorkerManager::getClosestDepot(BWAPI::Unit worker)
 	BWAPI::Unit closestDepot = nullptr;
 	double closestDistance = 0;
 
-	for (auto & unit : _opponentView.self()->getUnits())
+	for (auto & unit : _opponentView->self()->getUnits())
 	{
         UAB_ASSERT(unit != nullptr, "Unit was null");
 
-		if (unit->getType().isResourceDepot() && (unit->isCompleted() || unit->getType() == BWAPI::UnitTypes::Zerg_Lair || unit->getType() == BWAPI::UnitTypes::Zerg_Hive) && !workerData.depotIsFull(unit))
+		if (unit->getType().isResourceDepot()
+			&& (unit->isCompleted()
+				|| unit->getType() == BWAPI::UnitTypes::Zerg_Lair
+				|| unit->getType() == BWAPI::UnitTypes::Zerg_Hive)
+			&& !workerData.depotIsFull(unit))
 		{
 			double distance = unit->getDistance(worker);
 			if (!closestDepot || distance < closestDistance)
@@ -461,7 +466,7 @@ bool WorkerManager::willHaveResources(int mineralsRequired, int gasRequired, dou
 	}
 
 	// the speed of the worker unit
-	double speed = _opponentView.self()->getRace().getWorker().topSpeed();
+	double speed = _opponentView->self()->getRace().getWorker().topSpeed();
 
     UAB_ASSERT(speed > 0, "Speed is negative");
 
@@ -496,14 +501,15 @@ void WorkerManager::onUnitMorph(BWAPI::Unit unit)
 {
 	UAB_ASSERT(unit != nullptr, "Unit was null");
 
+	auto isOwnedUnit = unit->getPlayer() == _opponentView->self();
 	// if something morphs into a worker, add it
-	if (unit->getType().isWorker() && unit->getPlayer() == _opponentView.self() && unit->getHitPoints() >= 0)
+	if (unit->getType().isWorker() && isOwnedUnit && unit->getHitPoints() >= 0)
 	{
 		workerData.addWorker(unit);
 	}
 
 	// if something morphs into a building, it was a worker?
-	if (unit->getType().isBuilding() && unit->getPlayer() == _opponentView.self() && unit->getPlayer()->getRace() == BWAPI::Races::Zerg)
+	if (unit->getType().isBuilding() && isOwnedUnit && unit->getPlayer()->getRace() == BWAPI::Races::Zerg)
 	{
 		//_logger.log("A Drone started building");
 		workerData.workerDestroyed(unit);
@@ -515,13 +521,13 @@ void WorkerManager::onUnitShow(BWAPI::Unit unit)
 	UAB_ASSERT(unit != nullptr, "Unit was null");
 
 	// add the depot if it exists
-	if (unit->getType().isResourceDepot() && unit->getPlayer() == _opponentView.self())
+	if (unit->getType().isResourceDepot() && unit->getPlayer() == _opponentView->self())
 	{
 		workerData.addDepot(unit);
 	}
 
 	// if something morphs into a worker, add it
-	if (unit->getType().isWorker() && unit->getPlayer() == _opponentView.self() && unit->getHitPoints() >= 0)
+	if (unit->getType().isWorker() && unit->getPlayer() == _opponentView->self() && unit->getHitPoints() >= 0)
 	{
 		//_logger.log("A worker was shown %d", unit->getID());
 		workerData.addWorker(unit);
@@ -557,12 +563,12 @@ void WorkerManager::onUnitDestroy(BWAPI::Unit unit, int currentFrame)
 {
 	UAB_ASSERT(unit != nullptr, "Unit was null");
 
-	if (unit->getType().isResourceDepot() && unit->getPlayer() == _opponentView.self())
+	if (unit->getType().isResourceDepot() && unit->getPlayer() == _opponentView->self())
 	{
 		workerData.removeDepot(unit, currentFrame);
 	}
 
-	if (unit->getType().isWorker() && unit->getPlayer() == _opponentView.self())
+	if (unit->getType().isWorker() && unit->getPlayer() == _opponentView->self())
 	{
 		workerData.workerDestroyed(unit);
 	}

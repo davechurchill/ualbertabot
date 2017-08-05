@@ -6,7 +6,7 @@
 
 using namespace UAlbertaBot;
 
-MeleeManager::MeleeManager(const AKBot::OpponentView& opponentView, const BaseLocationManager& bases)
+MeleeManager::MeleeManager(shared_ptr<AKBot::OpponentView> opponentView, shared_ptr<BaseLocationManager> bases)
 	: MicroManager(opponentView, bases)
 { 
 
@@ -45,7 +45,7 @@ void MeleeManager::assignTargets(const std::vector<BWAPI::Unit> & targets, int c
             // run away if we meet the retreat critereon
             if (meleeUnitShouldRetreat(meleeUnit, targets))
             {
-                BWAPI::Position fleeTo(opponentView.self()->getStartLocation());
+                BWAPI::Position fleeTo(opponentView->self()->getStartLocation());
 
                 Micro::SmartMove(meleeUnit, fleeTo, currentFrame);
             }
@@ -125,7 +125,7 @@ int MeleeManager::getAttackPriority(BWAPI::Unit attacker, BWAPI::Unit unit)
 
     if (attacker->getType() == BWAPI::UnitTypes::Protoss_Dark_Templar 
         && unit->getType() == BWAPI::UnitTypes::Terran_Missile_Turret
-        && (opponentView.self()->deadUnitCount(BWAPI::UnitTypes::Protoss_Dark_Templar) == 0))
+        && (opponentView->self()->deadUnitCount(BWAPI::UnitTypes::Protoss_Dark_Templar) == 0))
     {
         return 13;
     }

@@ -12,12 +12,12 @@ const size_t ScoutDefensePriority = 3;
 const size_t DropPriority = 4;
 
 CombatCommander::CombatCommander(
-	const BaseLocationManager & baseLocationManager,
-	const AKBot::OpponentView& opponentView,
-	WorkerManager& workerManager,
+	shared_ptr<BaseLocationManager> baseLocationManager,
+	shared_ptr<AKBot::OpponentView> opponentView,
+	shared_ptr<WorkerManager> workerManager,
 	const UnitInfoManager& unitInfo,
-	const MapTools& mapTools,
-	const AKBot::Logger& logger)
+	shared_ptr<MapTools> mapTools,
+	std::shared_ptr<AKBot::Logger> logger)
     : _initialized(false)
 	, _unitInfo(unitInfo)
 	, _baseLocationManager(baseLocationManager)
@@ -31,21 +31,21 @@ CombatCommander::CombatCommander(
 	{
 		if (unit->getType().isWorker())
 		{
-			_workerManager.finishedWithWorker(unit, currentFrame);
+			_workerManager->finishedWithWorker(unit, currentFrame);
 		}
 	});
 }
 
 void CombatCommander::initializeSquads()
 {
-    SquadOrder idleOrder(SquadOrderTypes::Idle, BWAPI::Position(_opponentView.self()->getStartLocation()), 100, "Chill Out");
+    SquadOrder idleOrder(SquadOrderTypes::Idle, BWAPI::Position(_opponentView->self()->getStartLocation()), 100, "Chill Out");
 	_squadData.addSquad("Idle", idleOrder, IdlePriority);
 
     // the main attack squad that will pressure the enemy's closest base location
     SquadOrder mainAttackOrder(SquadOrderTypes::Attack, getMainAttackLocation(), 800, "Attack Enemy Base");
 	_squadData.addSquad("MainAttack", mainAttackOrder, AttackPriority);
 
-    BWAPI::Position ourBasePosition = BWAPI::Position(_opponentView.self()->getStartLocation());
+    BWAPI::Position ourBasePosition = BWAPI::Position(_opponentView->self()->getStartLocation());
 
     // the scout defense squad will handle chasing the enemy worker scout
     SquadOrder enemyScoutDefense(SquadOrderTypes::Defend, ourBasePosition, 900, "Get the scout");
@@ -194,7 +194,7 @@ void CombatCommander::updateScoutDefenseSquad(int currentFrame)
     Squad & scoutDefenseSquad = _squadData.getSquad("ScoutDefense");
   
     // get the region that our base is located in
-    const BaseLocation * myBaseLocation = _baseLocationManager.getPlayerStartingBaseLocation(_opponentView.self());
+    const BaseLocation * myBaseLocation = _baseLocationManager->getPlayerStartingBaseLocation(_opponentView->self());
     if (myBaseLocation == nullptr)
     {
         return;
@@ -227,7 +227,7 @@ void CombatCommander::updateScoutDefenseSquad(int currentFrame)
 			// grab it from the worker manager and put it in the squad
             if (_squadData.canAssignUnitToSquad(workerDefender, scoutDefenseSquad))
             {
-				_workerManager.setCombatWorker(workerDefender, currentFrame);
+				_workerManager->setCombatWorker(workerDefender, currentFrame);
                 _squadData.assignUnitToSquad(workerDefender, scoutDefenseSquad);
             }
 		}
@@ -240,7 +240,7 @@ void CombatCommander::updateScoutDefenseSquad(int currentFrame)
             unit->stop();
             if (unit->getType().isWorker())
             {
-				_workerManager.finishedWithWorker(unit, currentFrame);
+				_workerManager->finishedWithWorker(unit, currentFrame);
             }
         }
 
@@ -261,10 +261,10 @@ void CombatCommander::updateDefenseSquads(int currentFrame)
 		return;
 	}
 
-    const BaseLocation * enemyBaseLocation = _baseLocationManager.getPlayerStartingBaseLocation(enemy);
+    const BaseLocation * enemyBaseLocation = _baseLocationManager->getPlayerStartingBaseLocation(enemy);
 
 	// for each of our occupied regions
-	for (const BaseLocation * myBaseLocation : _baseLocationManager.getOccupiedBaseLocations(_opponentView.self()))
+	for (const BaseLocation * myBaseLocation : _baseLocationManager->getOccupiedBaseLocations(_opponentView->self()))
 	{
         // don't defend inside the enemy region, this will end badly when we are stealing gas
         if (myBaseLocation == enemyBaseLocation)
@@ -472,15 +472,15 @@ BWAPI::Unit CombatCommander::findClosestDefender(const Squad & defenseSquad, BWA
 
 BWAPI::Position CombatCommander::getDefendLocation()
 {
-	return _baseLocationManager.getPlayerStartingBaseLocation(_opponentView.self())->getPosition();
+	return _baseLocationManager->getPlayerStartingBaseLocation(_opponentView->self())->getPosition();
 }
 
 BWAPI::Position CombatCommander::getMainAttackLocation()
 {
     // First choice: Attack an enemy region if we can see units inside it
-	for (auto& enemyPlayer : _opponentView.enemies())
+	for (auto& enemyPlayer : _opponentView->enemies())
 	{
-		const BaseLocation * enemyBaseLocation = _baseLocationManager.getPlayerStartingBaseLocation(enemyPlayer);
+		const BaseLocation * enemyBaseLocation = _baseLocationManager->getPlayerStartingBaseLocation(enemyPlayer);
 		if (enemyBaseLocation)
 		{
 			BWAPI::Position enemyBasePosition = enemyBaseLocation->getPosition();
@@ -493,7 +493,7 @@ BWAPI::Position CombatCommander::getMainAttackLocation()
 
 			// get all known enemy units in the area
 			std::vector<BWAPI::Unit> enemyUnitsInArea;
-			_mapTools.GetUnitsInRadius(enemyUnitsInArea, enemyBasePosition, 800, false, true);
+			_mapTools->GetUnitsInRadius(enemyUnitsInArea, enemyBasePosition, 800, false, true);
 
 			for (auto & unit : enemyUnitsInArea)
 			{
@@ -507,7 +507,7 @@ BWAPI::Position CombatCommander::getMainAttackLocation()
 	}
 
     // Second choice: Attack known enemy buildings
-	for (auto& enemyPlayer : _opponentView.enemies())
+	for (auto& enemyPlayer : _opponentView->enemies())
 	{
 		for (const auto & kv : _unitInfo.getUnitInfoMap(enemyPlayer))
 		{
@@ -535,7 +535,7 @@ BWAPI::Position CombatCommander::getMainAttackLocation()
 	}
 
     // Fourth choice: We can't see anything so explore the map attacking along the way
-    return _baseLocationManager.getLeastRecentlySeenPosition(_mapTools);
+    return _baseLocationManager->getLeastRecentlySeenPosition(_mapTools);
 }
 
 BWAPI::Unit CombatCommander::findClosestWorkerToTarget(std::vector<BWAPI::Unit> & unitsToAssign, BWAPI::Unit target)
@@ -559,7 +559,7 @@ BWAPI::Unit CombatCommander::findClosestWorkerToTarget(std::vector<BWAPI::Unit> 
         }
 
 		// if it is a move worker
-        if (_workerManager.isFree(unit))
+        if (_workerManager->isFree(unit))
 		{
 			double dist = unit->getDistance(target);
 
@@ -579,7 +579,7 @@ BWAPI::Unit CombatCommander::findClosestWorkerToTarget(std::vector<BWAPI::Unit> 
 int CombatCommander::defendWithWorkers()
 {
 	// our home nexus position
-	BWAPI::Position homePosition = _baseLocationManager.getPlayerStartingBaseLocation(_opponentView.self())->getPosition();
+	BWAPI::Position homePosition = _baseLocationManager->getPlayerStartingBaseLocation(_opponentView->self())->getPosition();
 
 	// enemy units near our workers
 	int enemyUnitsNearWorkers = 0;
@@ -608,7 +608,7 @@ int CombatCommander::numZerglingsInOurBase()
 {
     int concernRadius = 600;
     int zerglings = 0;
-    BWAPI::Position ourBasePosition = BWAPI::Position(_opponentView.self()->getStartLocation());
+    BWAPI::Position ourBasePosition = BWAPI::Position(_opponentView->self()->getStartLocation());
     
     // check to see if the enemy has zerglings as the only attackers in our base
     for (auto & unit : UnitUtil::getEnemyUnits())
@@ -629,7 +629,7 @@ int CombatCommander::numZerglingsInOurBase()
 
 bool CombatCommander::beingBuildingRushed()
 {
-    BWAPI::Position myBasePosition(_opponentView.self()->getStartLocation());
+    BWAPI::Position myBasePosition(_opponentView->self()->getStartLocation());
 
     // check to see if the enemy has buildings near our base
     for (auto & unit : UnitUtil::getEnemyUnits())

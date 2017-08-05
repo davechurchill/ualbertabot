@@ -15,11 +15,14 @@ namespace AKBot
 	*/
 	class BaseLocationManagerDebug
 	{
-		const OpponentView& _opponentView;
-		const BaseLocationManager& _baseLocationManager;
-		const MapTools& _map;
+		std::shared_ptr<OpponentView> _opponentView;
+		shared_ptr<BaseLocationManager> _baseLocationManager;
+		shared_ptr<MapTools> _map;
 	public:
-		BaseLocationManagerDebug(const OpponentView& opponentView, const BaseLocationManager& baseLocationManager, const MapTools& map);
+		BaseLocationManagerDebug(
+			std::shared_ptr<OpponentView> opponentView,
+			shared_ptr<BaseLocationManager> baseLocationManager,
+			shared_ptr<MapTools> map);
 		void draw(AKBot::ScreenCanvas& canvas);
 		void drawBase(const BaseLocation& base, AKBot::ScreenCanvas& canvas, std::function<bool(BWAPI::TilePosition tile)> isBuildableTile) const;
 	};

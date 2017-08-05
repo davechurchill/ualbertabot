@@ -9,11 +9,11 @@ Squad::Squad(
 	SquadOrder order,
 	size_t priority,
 	AKBot::PlayerLocationProvider& locationProvider,
-	const AKBot::OpponentView& opponentView,
+	shared_ptr<AKBot::OpponentView> opponentView,
 	const UnitInfoManager& unitInfo,
-	const BaseLocationManager& bases,
-	const MapTools& mapTools,
-	const AKBot::Logger& logger)
+	shared_ptr<BaseLocationManager> bases,
+	shared_ptr<MapTools> mapTools,
+	std::shared_ptr<AKBot::Logger> logger)
 	: _name(name)
 	, _order(order)
     , _lastRetreatSwitch(0)
@@ -36,7 +36,7 @@ Squad::~Squad()
     //clear();
 }
 
-void Squad::update(const MapTools& map, int currentFrame)
+void Squad::update(shared_ptr<MapTools> map, int currentFrame)
 {
 	// update all necessary unit information within this squad
 	updateUnits(map);
@@ -47,7 +47,7 @@ void Squad::update(const MapTools& map, int currentFrame)
 	// draw some debug info
 	auto distanceFunction = [&map](const BWAPI::Position & src, const BWAPI::Position & dest)
 	{
-		return map.getGroundDistance(src, dest);
+		return map->getGroundDistance(src, dest);
 	};
 
 	// if we do need to regroup, do it
@@ -92,7 +92,7 @@ void Squad::setPriority(const size_t & priority)
     _priority = priority;
 }
 
-void Squad::updateUnits(const MapTools& map)
+void Squad::updateUnits(shared_ptr<MapTools> map)
 {
 	setAllUnits();
 	setNearEnemyUnits(map);
@@ -117,7 +117,7 @@ void Squad::setAllUnits()
 	_units = goodUnits;
 }
 
-void Squad::setNearEnemyUnits(const MapTools& map)
+void Squad::setNearEnemyUnits(shared_ptr<MapTools> map)
 {
 	_nearEnemy.clear();
 	for (auto & unit : _units)
@@ -181,7 +181,7 @@ void Squad::addUnitsToMicroManagers()
 }
 
 // calculates whether or not to regroup
-bool Squad::needsToRegroup(const MapTools& map, int currentFrame)
+bool Squad::needsToRegroup(shared_ptr<MapTools> map, int currentFrame)
 {
     if (!Config::Micro::UseSparcraftSimulation)
     {
@@ -197,7 +197,7 @@ bool Squad::needsToRegroup(const MapTools& map, int currentFrame)
 
 	auto distanceFunction = [&map](const BWAPI::Position & src, const BWAPI::Position & dest)
 	{
-		return map.getGroundDistance(src, dest);
+		return map->getGroundDistance(src, dest);
 	};
 	BWAPI::Unit unitClosest = unitClosestToEnemy(distanceFunction);
 
@@ -240,7 +240,7 @@ bool Squad::needsToRegroup(const MapTools& map, int currentFrame)
 
 	// if we are DT rushing and we haven't lost a DT yet, no retreat!
 	if (Config::Strategy::StrategyName == "Protoss_DTRush"
-		&& (_opponentView.self()->deadUnitCount(BWAPI::UnitTypes::Protoss_Dark_Templar) == 0))
+		&& (_opponentView->self()->deadUnitCount(BWAPI::UnitTypes::Protoss_Dark_Templar) == 0))
 	{
 		_regroupStatus = std::string("\x04 DARK TEMPLAR HOOOOO!");
 		return false;
@@ -248,10 +248,10 @@ bool Squad::needsToRegroup(const MapTools& map, int currentFrame)
 
 	auto simulationCenter = unitClosest->getPosition();
 	std::vector<BWAPI::Unit> ourCombatUnits;
-	map.GetUnitsInRadius(ourCombatUnits, simulationCenter, Config::Micro::CombatRegroupRadius, true, false);
+	map->GetUnitsInRadius(ourCombatUnits, simulationCenter, Config::Micro::CombatRegroupRadius, true, false);
 
 	std::vector<UnitInfo> enemyCombatUnitsForSimulation;
-	for (auto& enemyPlayer : _opponentView.enemies())
+	for (auto& enemyPlayer : _opponentView->enemies())
 	{
 		_unitInfo.getNearbyForce(enemyCombatUnitsForSimulation, simulationCenter, enemyPlayer, Config::Micro::CombatRegroupRadius);
 	}
@@ -317,13 +317,13 @@ void Squad::clear(int currentFrame)
     _units.clear();
 }
 
-bool Squad::unitNearEnemy(const MapTools& map, BWAPI::Unit unit)
+bool Squad::unitNearEnemy(shared_ptr<MapTools> map, BWAPI::Unit unit)
 {
 	assert(unit);
 
 	std::vector<BWAPI::Unit> enemyNear;
 
-	map.GetUnitsInRadius(enemyNear, unit->getPosition(), 400, false, true);
+	map->GetUnitsInRadius(enemyNear, unit->getPosition(), 400, false, true);
 
 	return enemyNear.size() > 0;
 }
@@ -334,7 +334,7 @@ BWAPI::Position Squad::calcCenter()
     {
         if (Config::Debug::DrawSquadInfo)
         {
-            _logger.log("Squad::calcCenter() called on empty squad");
+            _logger->log("Squad::calcCenter() called on empty squad");
         }
 
         return BWAPI::Position(0,0);
@@ -370,7 +370,7 @@ BWAPI::Position Squad::calcRegroupPosition()
 
 	if (regroup == BWAPI::Position(0,0))
 	{
-		return BWAPI::Position(_opponentView.self()->getStartLocation());
+		return BWAPI::Position(_opponentView->self()->getStartLocation());
 	}
 	else
 	{

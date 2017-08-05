@@ -26,9 +26,9 @@ class BuildingPlacer
     int	    _boxBottom;
     int	    _boxLeft;
     int	    _boxRight;
-	const BaseLocationManager& _bases;
-	const AKBot::OpponentView& _opponentView;
-	const MapTools& _mapTools;
+	shared_ptr<BaseLocationManager> _bases;
+	shared_ptr<AKBot::OpponentView> _opponentView;
+	shared_ptr<MapTools> _mapTools;
 
     void    computeBuildableTileDistance(BWAPI::TilePosition tp);
 
@@ -37,9 +37,9 @@ public:
     BuildingPlacer(
 		int width,
 		int height,
-		const AKBot::OpponentView& opponentView,
-		const BaseLocationManager& bases,
-		const MapTools& mapTools);
+		shared_ptr<AKBot::OpponentView> opponentView,
+		shared_ptr<BaseLocationManager> bases,
+		shared_ptr<MapTools> mapTools);
 
     // queries for various BuildingPlacer data
     bool					buildable(const Building & b,int x,int y) const;

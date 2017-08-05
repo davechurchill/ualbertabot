@@ -5,11 +5,11 @@
 using namespace UAlbertaBot;
 
 TransportManager::TransportManager(
-	const AKBot::OpponentView& opponentView,
-	const BaseLocationManager& bases,
+	shared_ptr<AKBot::OpponentView> opponentView,
+	shared_ptr<BaseLocationManager> bases,
 	AKBot::PlayerLocationProvider& locationProvider,
-	const MapTools& mapTools,
-	const AKBot::Logger& logger)
+	shared_ptr<MapTools> mapTools,
+	std::shared_ptr<AKBot::Logger> logger)
 	: MicroManager(opponentView, bases)
 	, _transportShip(NULL)
 	, _currentRegionVertexIndex(-1)
@@ -42,8 +42,8 @@ void TransportManager::calculateMapEdgeVertices()
 		return;
 	}
 
-	const BWAPI::Position basePosition = BWAPI::Position(opponentView.self()->getStartLocation());
-	const std::vector<BWAPI::TilePosition> & closestTobase = _mapTools.getClosestTilesTo(basePosition);
+	const BWAPI::Position basePosition = BWAPI::Position(opponentView->self()->getStartLocation());
+	const std::vector<BWAPI::TilePosition> & closestTobase = _mapTools->getClosestTilesTo(basePosition);
 
 	std::set<BWAPI::Position> unsortedVertices;
 
@@ -107,7 +107,7 @@ void TransportManager::calculateMapEdgeVertices()
 	_mapEdgeVertices = sortedVertices;
 }
 
-void TransportManager::update(const MapTools& mapTools, int currentFrame)
+void TransportManager::update(shared_ptr<MapTools> mapTools, int currentFrame)
 {
     if (!_transportShip && getUnits().size() > 0)
     {
@@ -213,13 +213,13 @@ void TransportManager::followPerimeter(BWAPI::Position to, BWAPI::Position from,
 		_waypoints.push_back(_mapEdgeVertices[wpIDX.first]);
 		_waypoints.push_back(_mapEdgeVertices[wpIDX.second]);
 
-		_logger.log("WAYPOINTS: [%d] - [%d]", wpIDX.first, wpIDX.second);
+		_logger->log("WAYPOINTS: [%d] - [%d]", wpIDX.first, wpIDX.second);
 
 		Micro::SmartMove(_transportShip, _waypoints[0], currentFrame);
 	}
 	else if (_waypoints.size() > 1 && _transportShip->getDistance(_waypoints[0]) < 100)
 	{
-		_logger.log("FOLLOW PERIMETER TO SECOND WAYPOINT!");
+		_logger->log("FOLLOW PERIMETER TO SECOND WAYPOINT!");
 		//follow perimeter to second waypoint! 
 		//clockwise or counterclockwise? 
 		int closestPolygonIndex = getClosestVertexIndex(_transportShip);
@@ -228,13 +228,13 @@ void TransportManager::followPerimeter(BWAPI::Position to, BWAPI::Position from,
 		if (_mapEdgeVertices[(closestPolygonIndex + 1) % _mapEdgeVertices.size()].getApproxDistance(_waypoints[1]) <
 			_mapEdgeVertices[(closestPolygonIndex - 1) % _mapEdgeVertices.size()].getApproxDistance(_waypoints[1]))
 		{
-			_logger.log("FOLLOW clockwise");
+			_logger->log("FOLLOW clockwise");
 			following = 1;
 			followPerimeter(following, currentFrame);
 		}
 		else
 		{
-			_logger.log("FOLLOW counter clockwise");
+			_logger->log("FOLLOW counter clockwise");
 			following = -1;
 			followPerimeter(following, currentFrame);
 		}
@@ -289,8 +289,8 @@ int TransportManager::getClosestVertexIndex(BWAPI::Position p)
 
 std::pair<int,int> TransportManager::findSafePath(BWAPI::Position to, BWAPI::Position from)
 {
-	_logger.log("FROM: [%d,%d]",from.x, from.y);
-	_logger.log("TO: [%d,%d]", to.x, to.y);
+	_logger->log("FROM: [%d,%d]",from.x, from.y);
+	_logger->log("TO: [%d,%d]", to.x, to.y);
 
 	//closest map edge point to destination
 	int endPolygonIndex = getClosestVertexIndex(to);
@@ -366,7 +366,7 @@ BWAPI::Position TransportManager::getFleePosition(int clockwise)
 
 		if (closestPolygonIndex == -1)
 		{
-			return BWAPI::Position(opponentView.self()->getStartLocation());
+			return BWAPI::Position(opponentView->self()->getStartLocation());
 		}
 		else
 		{

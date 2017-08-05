@@ -7,29 +7,27 @@
 using namespace UAlbertaBot;
 
 GameCommander::GameCommander(
-	const AKBot::OpponentView& opponentView,
+	shared_ptr<AKBot::OpponentView> opponentView,
 	BOSSManager& bossManager,
 	CombatCommander& combatCommander,
-	ScoutManager& scoutManager,
+	shared_ptr<ScoutManager> scoutManager,
 	ProductionManager& productionManager,
-	WorkerManager& workerManager,
-	const BaseLocationManager& bases,
-	const AKBot::Logger& logger)
+	shared_ptr<WorkerManager> workerManager)
     : _opponentView(opponentView)
 	, _workerManager(workerManager)
 	, _productionManager(productionManager)
-	, _scoutManager(_scoutManager)
+	, _scoutManager(scoutManager)
     , _initialScoutSet(false)
 	, _combatCommander(combatCommander)
 	, _bossManager(bossManager)
 {
-	_scoutManager.onScoutAssigned([this](const BWAPI::Unit &unit, int currentFrame)
+	_scoutManager->onScoutAssigned([this](const BWAPI::Unit &unit, int currentFrame)
 	{
-		_workerManager.setScoutWorker(unit, currentFrame);
+		_workerManager->setScoutWorker(unit, currentFrame);
 	});
-	_scoutManager.onScoutReleased([this](const BWAPI::Unit &unit, int currentFrame)
+	_scoutManager->onScoutReleased([this](const BWAPI::Unit &unit, int currentFrame)
 	{
-		_workerManager.finishedWithWorker(unit, currentFrame);
+		_workerManager->finishedWithWorker(unit, currentFrame);
 	});
 }
 
@@ -48,8 +46,8 @@ void GameCommander::update(int currentFrame)
 
 	// Line below should be moved to UAlbertaBot_Tournament::onFrame
 	// _productionManager.update(currentFrame);
-	_combatCommander.update(_combatUnits, currentFrame);
-    _scoutManager.update(currentFrame);
+	//_combatCommander.update(_combatUnits, currentFrame);
+    //_scoutManager->update(currentFrame);
 }
 
 const ProductionManager& GameCommander::getProductionManager() const
@@ -57,7 +55,7 @@ const ProductionManager& GameCommander::getProductionManager() const
     return _productionManager;
 }
 
-const ScoutManager& GameCommander::getScoutManager() const
+const shared_ptr<ScoutManager> GameCommander::getScoutManager() const
 {
 	return _scoutManager;
 }
@@ -67,7 +65,7 @@ const CombatCommander& GameCommander::getCombatCommander() const
 	return _combatCommander;
 }
 
-const AKBot::OpponentView& GameCommander::getOpponentView() const
+const shared_ptr<AKBot::OpponentView> GameCommander::getOpponentView() const
 {
 	return _opponentView;
 }
@@ -96,7 +94,7 @@ bool GameCommander::isAssigned(BWAPI::Unit unit) const
 void GameCommander::setValidUnits()
 {
 	// make sure the unit is completed and alive and usable
-	for (auto & unit : _opponentView.self()->getUnits())
+	for (auto & unit : _opponentView->self()->getUnits())
 	{
 		if (UnitUtil::IsValidUnit(unit))
 		{	
@@ -121,7 +119,7 @@ void GameCommander::setScoutUnits(int currentFrame)
 			// if we find a worker (which we should) add it to the scout units
 			if (workerScout)
 			{
-                _scoutManager.setWorkerScout(workerScout, currentFrame);
+                _scoutManager->setWorkerScout(workerScout, currentFrame);
 				assignUnit(workerScout, _scoutUnits);
                 _initialScoutSet = true;
 			}
@@ -144,7 +142,7 @@ void GameCommander::setCombatUnits()
 BWAPI::Unit GameCommander::getFirstSupplyProvider()
 {
 	BWAPI::Unit supplyProvider = nullptr;
-	auto self = _opponentView.self();
+	auto self = _opponentView->self();
 	auto selfRace = self->getRace();
 	auto supplyProviderUnitType = selfRace == BWAPI::Races::Zerg
 		? BWAPI::UnitTypes::Zerg_Spawning_Pool
@@ -223,7 +221,7 @@ BWAPI::Unit GameCommander::getClosestWorkerToTarget(BWAPI::Position target)
 
 	for (auto & unit : _validUnits)
 	{
-		if (!isAssigned(unit) && unit->getType().isWorker() && _workerManager.isFree(unit))
+		if (!isAssigned(unit) && unit->getType().isWorker() && _workerManager->isFree(unit))
 		{
 			double dist = unit->getDistance(target);
 			if (!closestUnit || dist < closestDist)

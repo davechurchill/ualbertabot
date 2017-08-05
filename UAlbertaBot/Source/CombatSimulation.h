@@ -23,13 +23,13 @@ namespace UAlbertaBot
 class CombatSimulation
 {
 	SparCraft::GameState		_state;
-	const AKBot::OpponentView& _opponentView;
+	shared_ptr<AKBot::OpponentView> _opponentView;
 	const UnitInfoManager& _unitInfo;
-	const AKBot::Logger& _logger;
+	std::shared_ptr<AKBot::Logger> _logger;
 
 public:
 
-	CombatSimulation(const AKBot::OpponentView& opponentView, const UnitInfoManager& unitInfo, const AKBot::Logger& logger);
+	CombatSimulation(shared_ptr<AKBot::OpponentView> opponentView, const UnitInfoManager& unitInfo, std::shared_ptr<AKBot::Logger> logger);
 
 	void setCombatUnits(
 		const std::vector<BWAPI::Unit> ourCombatUnits,

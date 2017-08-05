@@ -14,11 +14,11 @@ class BuildingManager
 {
     BuildingPlacer  _buildingPlacer;
     std::vector<Building> _buildings;
-	const AKBot::OpponentView& _opponentView;
-	const BaseLocationManager& _bases;
-	WorkerManager& _workerManager;
-	const MapTools& _mapTools;
-	const AKBot::Logger& _logger;
+	shared_ptr<AKBot::OpponentView> _opponentView;
+	shared_ptr<BaseLocationManager> _bases;
+	shared_ptr<WorkerManager> _workerManager;
+	shared_ptr<MapTools> _mapTools;
+	std::shared_ptr<AKBot::Logger> _logger;
 
     bool            _debugMode;
     int             _reservedMinerals;				// minerals reserved for planned buildings
@@ -39,11 +39,11 @@ class BuildingManager
 public:
     
     BuildingManager(
-		const AKBot::OpponentView& opponentView,
-		const BaseLocationManager& bases,
-		WorkerManager& workerManager,
-		const MapTools& mapTools,
-		const AKBot::Logger& logger);
+		shared_ptr<AKBot::OpponentView> opponentView,
+		shared_ptr<BaseLocationManager> bases,
+		shared_ptr<WorkerManager> workerManager,
+		shared_ptr<MapTools> mapTools,
+		std::shared_ptr<AKBot::Logger> logger);
 
     void                update(int currentFrame);
     void                addBuildingTask(BWAPI::UnitType type,BWAPI::TilePosition desiredLocation);

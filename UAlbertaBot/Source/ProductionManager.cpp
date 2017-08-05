@@ -4,19 +4,19 @@
 using namespace UAlbertaBot;
 
 ProductionManager::ProductionManager(
-	const AKBot::OpponentView& opponentView,
+	shared_ptr<AKBot::OpponentView> opponentView,
 	BOSSManager & bossManager,
 	const StrategyManager& strategyManager,
-	WorkerManager& workerManager,
+	shared_ptr<WorkerManager> workerManager,
 	const UnitInfoManager& unitInfo,
-	const BaseLocationManager& bases,
-	const MapTools& mapTools,
-	const AKBot::Logger& logger)
+	shared_ptr<BaseLocationManager> bases,
+	shared_ptr<MapTools> mapTools,
+	std::shared_ptr<AKBot::Logger> logger)
 	: _opponentView(opponentView)
 	, _workerManager(workerManager)
 	, _bossManager(bossManager)
 	, _unitInfo(unitInfo)
-    , _buildingManager(opponentView, bases, _workerManager, mapTools, logger)
+    , _buildingManager(opponentView, bases, workerManager, mapTools, logger)
     , _assignedWorkerForThisBuilding (false)
 	, _haveLocationForThisBuilding   (false)
 	, _enemyCloakedDetected          (false)
@@ -87,7 +87,7 @@ void ProductionManager::update(int currentFrame)
 		performBuildOrderSearch(currentFrame);
 	}
 
-	auto self = _opponentView.self();
+	auto self = _opponentView->self();
 	auto ourRace = self->getRace();
 	
 	// detect if there's a build order deadlock once per second
@@ -95,7 +95,7 @@ void ProductionManager::update(int currentFrame)
 	{
         if (Config::Debug::DrawBuildOrderSearchInfo)
         {
-		    _logger.log("Supply deadlock detected, building supply!");
+		    _logger->log("Supply deadlock detected, building supply!");
         }
 
 		_queue.queueAsHighestPriority(MetaType(ourRace.getSupplyProvider()), true);
@@ -133,7 +133,7 @@ void ProductionManager::update(int currentFrame)
         
         if (Config::Debug::DrawBuildOrderSearchInfo)
         {
-		    _logger.log("Enemy Cloaked Unit Detected!");
+		    _logger->log("Enemy Cloaked Unit Detected!");
         }
 
 		_enemyCloakedDetected = true;
@@ -146,7 +146,7 @@ void ProductionManager::update(int currentFrame)
 void ProductionManager::onUnitDestroy(BWAPI::Unit unit, int currentFrame)
 {
 	// we don't care if it's not our unit
-	if (!unit || unit->getPlayer() != _opponentView.self())
+	if (!unit || unit->getPlayer() != _opponentView->self())
 	{
 		return;
 	}
@@ -154,7 +154,7 @@ void ProductionManager::onUnitDestroy(BWAPI::Unit unit, int currentFrame)
 	if (Config::Modules::UsingBuildOrderSearch)
 	{
 		// if it's a worker or a building, we need to re-search for the current goal
-		if ((unit->getType().isWorker() && !_workerManager.isWorkerScout(unit)) || unit->getType().isBuilding())
+		if ((unit->getType().isWorker() && !_workerManager->isWorkerScout(unit)) || unit->getType().isBuilding())
 		{
 			if (unit->getType() != BWAPI::UnitTypes::Zerg_Drone)
 			{
@@ -185,7 +185,7 @@ void ProductionManager::manageBuildOrderQueue(int currentFrame)
 		bool canMake = canMakeNow(producer, currentItem.metaType);
 
 		// if we try to build too many refineries manually remove it
-		auto self = _opponentView.self();
+		auto self = _opponentView->self();
 		if (currentItem.metaType.isRefinery() && (self->allUnitCount(self->getRace().getRefinery() >= 3)))
 		{
 			_queue.removeCurrentHighestPriorityItem();
@@ -199,7 +199,7 @@ void ProductionManager::manageBuildOrderQueue(int currentFrame)
 			Building b(currentItem.metaType.getUnitType(), self->getStartLocation());
 
 			// set the producer as the closest worker, but do not set its job yet
-			producer = _workerManager.getBuilder(b);
+			producer = _workerManager->getBuilder(b);
 
 			// predict the worker movement to that building location
 			predictWorkerMovement(b);
@@ -243,7 +243,7 @@ BWAPI::Unit ProductionManager::getProducer(MetaType t, int currentFrame, BWAPI::
 
     // make a set of all candidate producers
     std::vector<BWAPI::Unit> candidateProducers;
-    for (auto & unit : _opponentView.self()->getUnits())
+    for (auto & unit : _opponentView->self()->getUnits())
     {
         UAB_ASSERT(unit != nullptr, "Unit was null");
 
@@ -382,7 +382,7 @@ void ProductionManager::create(BWAPI::Unit producer, BuildOrderItem & item)
         && !t.getUnitType().isAddon())
     {
         // send the building task to the building manager
-        _buildingManager.addBuildingTask(t.getUnitType(), _opponentView.self()->getStartLocation());
+        _buildingManager.addBuildingTask(t.getUnitType(), _opponentView->self()->getStartLocation());
     }
     else if (t.getUnitType().isAddon())
     {
@@ -449,7 +449,7 @@ bool ProductionManager::canMakeNow(BWAPI::Unit producer, MetaType t)
 
 bool ProductionManager::detectBuildOrderDeadlock()
 {
-	auto self = _opponentView.self();
+	auto self = _opponentView->self();
 
 	// if the _queue is empty there is no deadlock
 	if (_queue.size() == 0 || self->supplyTotal() >= 390)
@@ -536,7 +536,7 @@ void ProductionManager::predictWorkerMovement(const Building & b)
 	int gasRequired						= std::max(0, b.type.gasPrice() - getFreeGas());
 
 	// get a candidate worker to move to this location
-	BWAPI::Unit moveWorker			= _workerManager.getMoveWorker(walkToPosition);
+	BWAPI::Unit moveWorker			= _workerManager->getMoveWorker(walkToPosition);
 
 	// Conditions under which to move the worker: 
 	//		- there's a valid worker to move
@@ -544,13 +544,13 @@ void ProductionManager::predictWorkerMovement(const Building & b)
 	//		- the build position is valid
 	//		- we will have the required resources by the time the worker gets there
 	if (moveWorker && _haveLocationForThisBuilding && !_assignedWorkerForThisBuilding && (_predictedTilePosition != BWAPI::TilePositions::None) &&
-		_workerManager.willHaveResources(mineralsRequired, gasRequired, moveWorker->getDistance(walkToPosition)) )
+		_workerManager->willHaveResources(mineralsRequired, gasRequired, moveWorker->getDistance(walkToPosition)) )
 	{
 		// we have assigned a worker
 		_assignedWorkerForThisBuilding = true;
 
 		// tell the worker manager to move this worker
-		_workerManager.setMoveWorker(mineralsRequired, gasRequired, walkToPosition);
+		_workerManager->setMoveWorker(mineralsRequired, gasRequired, walkToPosition);
 	}
 }
 
@@ -560,7 +560,7 @@ void ProductionManager::performCommand(BWAPI::UnitCommandType t)
 	if (t == BWAPI::UnitCommandTypes::Cancel_Construction)
 	{
 		BWAPI::Unit extractor = nullptr;
-		for (auto & unit : _opponentView.self()->getUnits())
+		for (auto & unit : _opponentView->self()->getUnits())
 		{
 			if (unit->getType() == BWAPI::UnitTypes::Zerg_Extractor)
 			{
@@ -577,12 +577,12 @@ void ProductionManager::performCommand(BWAPI::UnitCommandType t)
 
 int ProductionManager::getFreeMinerals()
 {
-	return _opponentView.self()->minerals() - _buildingManager.getReservedMinerals();
+	return _opponentView->self()->minerals() - _buildingManager.getReservedMinerals();
 }
 
 int ProductionManager::getFreeGas()
 {
-	return _opponentView.self()->gas() - _buildingManager.getReservedGas();
+	return _opponentView->self()->gas() - _buildingManager.getReservedGas();
 }
 
 // return whether or not we meet resources, including building reserves
@@ -596,7 +596,7 @@ bool ProductionManager::meetsReservedResources(MetaType type)
 // selects a unit of a given type
 BWAPI::Unit ProductionManager::selectUnitOfType(BWAPI::UnitType type, BWAPI::Position closestTo) 
 {
-	auto self = _opponentView.self();
+	auto self = _opponentView->self();
 
 	// if we have none of the unit type, return nullptr right away
 	if (self->completedUnitCount(type) == 0)
@@ -660,7 +660,7 @@ BWAPI::Unit ProductionManager::selectUnitOfType(BWAPI::UnitType type, BWAPI::Pos
 // this can cause issues for the build order search system so don't plan a search on these frames
 bool ProductionManager::canPlanBuildOrderNow() const
 {
-    for (const auto & unit : _opponentView.self()->getUnits())
+    for (const auto & unit : _opponentView->self()->getUnits())
     {
         if (unit->getRemainingTrainTime() == 0)
         {

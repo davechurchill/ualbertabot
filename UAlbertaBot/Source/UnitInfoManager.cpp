@@ -5,7 +5,7 @@
 
 using namespace UAlbertaBot;
 
-UnitInfoManager::UnitInfoManager(const AKBot::OpponentView& opponentView)
+UnitInfoManager::UnitInfoManager(shared_ptr<AKBot::OpponentView> opponentView)
 	: _opponentView(opponentView)
 {
 	
@@ -28,14 +28,14 @@ void UnitInfoManager::updateUnitInfo()
 		updateUnit(unit);
 	}
 
-	for (auto & unit : _opponentView.self()->getUnits())
+	for (auto & unit : _opponentView->self()->getUnits())
 	{
 		updateUnit(unit);
 	}
 
 	// remove bad enemy units
-	_unitData[_opponentView.self()].removeBadUnits();
-	for (const auto& enemyPlayer : _opponentView.enemies())
+	_unitData[_opponentView->self()].removeBadUnits();
+	for (const auto& enemyPlayer : _opponentView->enemies())
 	{
 		_unitData[enemyPlayer].removeBadUnits();
 	}
@@ -53,7 +53,7 @@ bool UnitInfoManager::isEnemyUnit(BWAPI::Unit unit)
 
 void UnitInfoManager::updateUnit(BWAPI::Unit unit)
 {
-    if (!(unit->getPlayer() == _opponentView.self() || isEnemyUnit(unit)))
+    if (!(unit->getPlayer() == _opponentView->self() || isEnemyUnit(unit)))
     {
         return;
     }
@@ -65,7 +65,7 @@ void UnitInfoManager::updateUnit(BWAPI::Unit unit)
 bool UnitInfoManager::isValidUnit(BWAPI::Unit unit) 
 {
 	// we only care about our units and enemy units
-	if (unit->getPlayer() != _opponentView.self() && !isEnemyUnit(unit))
+	if (unit->getPlayer() != _opponentView->self() && !isEnemyUnit(unit))
 	{
 		return false;
 	}

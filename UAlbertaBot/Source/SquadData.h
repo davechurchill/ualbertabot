@@ -9,25 +9,25 @@ class SquadData
 {
 	std::map<std::string, Squad> _squads;
 	UnitHandler onRemoveHandler;
-	const AKBot::Logger& _logger;
+	std::shared_ptr<AKBot::Logger> _logger;
 
-    void    updateAllSquads(const MapTools& map, int currentFrame);
+    void    updateAllSquads(shared_ptr<MapTools> map, int currentFrame);
     void    verifySquadUniqueMembership();
 	AKBot::PlayerLocationProvider& _locationProvider;
-	const AKBot::OpponentView& _opponentView;
+	shared_ptr<AKBot::OpponentView> _opponentView;
 	const UnitInfoManager& _unitInfo;
-	const BaseLocationManager& _bases;
-	const MapTools& _mapTools;
+	shared_ptr<BaseLocationManager> _bases;
+	shared_ptr<MapTools> _mapTools;
 
 public:
 
 	SquadData(
 		AKBot::PlayerLocationProvider& locationProvider,
-		const AKBot::OpponentView& opponentView,
+		shared_ptr<AKBot::OpponentView> opponentView,
 		const UnitInfoManager& unitInfo,
-		const BaseLocationManager& bases,
-		const MapTools& mapTools,
-		const AKBot::Logger& logger);
+		shared_ptr<BaseLocationManager> bases,
+		shared_ptr<MapTools> mapTools,
+		std::shared_ptr<AKBot::Logger> logger);
 
     void            clearSquadData(int currentFrame);
 
@@ -37,7 +37,7 @@ public:
 	void            addSquad(const std::string & squadName, const SquadOrder & squadOrder, size_t priority);
     void            removeSquad(const std::string & squadName, int currentFrame);
 
-    void            update(const MapTools& map, int currentFrame);
+    void            update(shared_ptr<MapTools> map, int currentFrame);
 
     bool            squadExists(const std::string & squadName);
     bool            unitIsInSquad(BWAPI::Unit unit) const;

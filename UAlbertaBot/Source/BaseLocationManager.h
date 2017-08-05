@@ -15,7 +15,7 @@ namespace UAlbertaBot
 	class BaseLocationManager
 	{
 		std::vector<BaseLocation>   _baseLocationData;
-		const AKBot::OpponentView& _opponentView;
+		std::shared_ptr<AKBot::OpponentView> _opponentView;
 
 		std::vector<const BaseLocation *> _baseLocationPtrs;
 		std::vector<const BaseLocation *> _startingBaseLocations;
@@ -46,11 +46,10 @@ namespace UAlbertaBot
 		*/
 		void resetPlayerOccupation();
 	public:
-
-		BaseLocationManager(const AKBot::OpponentView& opponentView);
+		BaseLocationManager(std::shared_ptr<AKBot::OpponentView> opponentView);
 
 		void update(const UnitInfoManager & unitManager);
-		void onStart(const MapTools& map);
+		void onStart(shared_ptr<MapTools> map);
 
 		const std::vector<const BaseLocation *> & getBaseLocations() const;
 		const std::vector<const BaseLocation *> & getStartingBaseLocations() const;
@@ -60,7 +59,7 @@ namespace UAlbertaBot
 
 		const BaseLocation * getBaseLocation(BWAPI::TilePosition pos) const;
 		const BaseLocation * getBaseLocation(BWAPI::Position pos) const;
-		BWAPI::Position         getLeastRecentlySeenPosition(const MapTools & bases) const;
+		BWAPI::Position         getLeastRecentlySeenPosition(shared_ptr<MapTools> bases) const;
 	};
 
 }

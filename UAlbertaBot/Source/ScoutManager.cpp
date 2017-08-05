@@ -6,9 +6,9 @@
 using namespace UAlbertaBot;
 
 ScoutManager::ScoutManager(
-	const AKBot::OpponentView& opponentView,
-	const BaseLocationManager& baseLocationManager,
-	const MapTools& mapTools)
+	shared_ptr<AKBot::OpponentView> opponentView,
+	shared_ptr<BaseLocationManager> baseLocationManager,
+	shared_ptr<MapTools> mapTools)
     : _workerScout(nullptr)
     , _numWorkerScouts(0)
     , _scoutUnderAttack(false)
@@ -70,7 +70,7 @@ void ScoutManager::moveScouts(int currentFrame)
     int scoutHP = _workerScout->getHitPoints() + _workerScout->getShields();
     
 	// get the enemy base location, if we have one
-	const BaseLocation * enemyBaseLocation = _baseLocationManager.getPlayerStartingBaseLocation(Global::getEnemy());
+	const BaseLocation * enemyBaseLocation = _baseLocationManager->getPlayerStartingBaseLocation(Global::getEnemy());
         
 	// if we know where the enemy region is and where our scout is
 	if (_workerScout && (enemyBaseLocation != nullptr))
@@ -92,9 +92,9 @@ void ScoutManager::moveScouts(int currentFrame)
 
 bool ScoutManager::allEnemyBasesExplored() const
 {
-	for (const auto& enemy : _opponentView.enemies())
+	for (const auto& enemy : _opponentView->enemies())
 	{
-		const auto enemyBaseLocation = _baseLocationManager.getPlayerStartingBaseLocation(enemy);
+		const auto enemyBaseLocation = _baseLocationManager->getPlayerStartingBaseLocation(enemy);
 		if (enemyBaseLocation == nullptr)
 		{
 			return false;
@@ -109,7 +109,7 @@ bool ScoutManager::exploreEnemyBases(int currentFrame)
 	_scoutStatus = "Enemy base unknown, exploring";
 
 	// for each start location in the level
-	for (const auto startLocation : _baseLocationManager.getStartingBaseLocations())
+	for (const auto startLocation : _baseLocationManager->getStartingBaseLocations())
 	{
 		// if we haven't explored it yet
 		if (!BWAPI::Broodwar->isExplored(startLocation->getDepotTilePosition()))
@@ -127,7 +127,7 @@ void UAlbertaBot::ScoutManager::harrasEnemyBaseIfPossible(const UAlbertaBot::Bas
 {
 	int scoutDistanceThreshold = 30;
 
-	int scoutDistanceToEnemy = _mapTools.getGroundDistance(_workerScout->getPosition(), enemyBaseLocation->getPosition());
+	int scoutDistanceToEnemy = _mapTools->getGroundDistance(_workerScout->getPosition(), enemyBaseLocation->getPosition());
 	bool scoutInRangeOfenemy = scoutDistanceToEnemy <= scoutDistanceThreshold;
 
 	// we only care if the scout is under attack within the enemy region
@@ -224,7 +224,7 @@ BWAPI::Unit ScoutManager::closestEnemyWorker()
 BWAPI::Unit ScoutManager::getEnemyGeyser()
 {
 	BWAPI::Unit geyser = nullptr;
-	const BaseLocation * enemyBaseLocation = _baseLocationManager.getPlayerStartingBaseLocation(Global::getEnemy());
+	const BaseLocation * enemyBaseLocation = _baseLocationManager->getPlayerStartingBaseLocation(Global::getEnemy());
 
 	for (auto & unit : enemyBaseLocation->getGeysers())
 	{
@@ -310,7 +310,7 @@ int ScoutManager::getClosestVertexIndex(BWAPI::Unit unit)
 BWAPI::Position ScoutManager::getFleePosition()
 {
     // TODO: make this follow the perimeter of the enemy base again, but for now just use home base as flee direction
-    return _baseLocationManager.getPlayerStartingBaseLocation(_opponentView.self())->getPosition();
+    return _baseLocationManager->getPlayerStartingBaseLocation(_opponentView->self())->getPosition();
 
     //UAB_ASSERT_WARNING(!_enemyRegionVertices.empty(), "We should have an enemy region vertices if we are fleeing");
     //

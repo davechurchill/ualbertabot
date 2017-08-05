@@ -9,7 +9,7 @@ class RangedManager : public MicroManager
 {
 public:
 
-	RangedManager(const AKBot::OpponentView& opponentView, const BaseLocationManager& bases);
+	RangedManager(shared_ptr<AKBot::OpponentView> opponentView, shared_ptr<BaseLocationManager> bases);
 	void executeMicro(const std::vector<BWAPI::Unit> & targets, int currentFrame);
 
 	int getAttackPriority(BWAPI::Unit rangedUnit, BWAPI::Unit target);

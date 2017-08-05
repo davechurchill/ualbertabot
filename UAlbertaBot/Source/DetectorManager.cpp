@@ -6,11 +6,13 @@
 
 using namespace UAlbertaBot;
 
-DetectorManager::DetectorManager(const AKBot::OpponentView& opponentView, const MapTools& mapTools, const BaseLocationManager& bases)
+DetectorManager::DetectorManager(
+	shared_ptr<AKBot::OpponentView> opponentView,
+	shared_ptr<MapTools> mapTools,
+	shared_ptr<BaseLocationManager> bases)
     : MicroManager(opponentView, bases)
 	, unitClosestToEnemy(nullptr)
 	, _mapTools(mapTools)
-	, _bases(bases)
 { 
 }
 
@@ -59,7 +61,7 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::Unit> & targets, int
 		// send him to scout around the map
 		else
 		{
-			auto explorePosition = _bases.getLeastRecentlySeenPosition(_mapTools);
+			auto explorePosition = bases->getLeastRecentlySeenPosition(_mapTools);
 			Micro::SmartMove(detectorUnit, explorePosition, currentFrame);
 		}
 	}

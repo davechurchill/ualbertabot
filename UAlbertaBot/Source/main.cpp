@@ -15,9 +15,11 @@
 #include <chrono>
 #include <iostream>
 #include <fstream>
+#include <boost\di.hpp>
 
 // 3rd Party Libraries
 #include "rapidjson\document.h"
+
 
 // UAlbertaBot Libraries
 #include "BotModule.h"
@@ -28,8 +30,10 @@
 #include "UnitUtil.h"
 #include "BWAPIOpponentView.h"
 #include "BWAPIPrintLogger.h"
+#include "BWAPIMapInformation.h"
 
 using namespace UAlbertaBot;
+namespace di = boost::di;
 
 AKBot::BWAPIOpponentView opponentView;
 AKBot::BWAPIPrintLogger logger;
@@ -42,39 +46,77 @@ void UAlbertaBot_BWAPIReconnect()
     }
 }
 
-void UAlbertaBot_PlayGame(std::shared_ptr<BotModule>  m)
+class BotPlayer
 {
-    // The main game loop, which continues while we are connected to BWAPI and in a game
-	while (BWAPI::BWAPIClient.isConnected() && BWAPI::Broodwar->isInGame()) 
-    {
-        // Handle each of the events that happened on this frame of the game
-		for (const BWAPI::Event & e : BWAPI::Broodwar->getEvents()) 
-        {
-			switch (e.getType()) 
-            {
-                case BWAPI::EventType::MatchStart:      { m->onStart();                      break; }
-                case BWAPI::EventType::MatchEnd:        { m->onEnd(e.isWinner());            break; }
-			    case BWAPI::EventType::MatchFrame:      { m->onFrame();                      break; }
-			    case BWAPI::EventType::UnitShow:        { m->onUnitShow(e.getUnit());        break; }
-			    case BWAPI::EventType::UnitHide:        { m->onUnitHide(e.getUnit());        break; }
-			    case BWAPI::EventType::UnitCreate:      { m->onUnitCreate(e.getUnit());      break; }
-			    case BWAPI::EventType::UnitMorph:       { m->onUnitMorph(e.getUnit());       break; }
-			    case BWAPI::EventType::UnitDestroy:     { m->onUnitDestroy(e.getUnit());     break; }
-			    case BWAPI::EventType::UnitRenegade:    { m->onUnitRenegade(e.getUnit());    break; }
-			    case BWAPI::EventType::UnitComplete:    { m->onUnitComplete(e.getUnit());    break; }
-			    case BWAPI::EventType::SendText:        { m->onSendText(e.getText());        break; }
+	std::unique_ptr<BotModule> m;
+public:
+	BotPlayer(std::unique_ptr<BotModule> _m) : m(std::move(_m)) {}
+
+	bool isValid() const { return !!m.get(); }
+
+	void UAlbertaBot_PlayGame()
+	{
+		// The main game loop, which continues while we are connected to BWAPI and in a game
+		while (BWAPI::BWAPIClient.isConnected() && BWAPI::Broodwar->isInGame())
+		{
+			// Handle each of the events that happened on this frame of the game
+			for (const BWAPI::Event & e : BWAPI::Broodwar->getEvents())
+			{
+				switch (e.getType())
+				{
+				case BWAPI::EventType::MatchStart: { m->onStart();                      break; }
+				case BWAPI::EventType::MatchEnd: { m->onEnd(e.isWinner());            break; }
+				case BWAPI::EventType::MatchFrame: { m->onFrame();                      break; }
+				case BWAPI::EventType::UnitShow: { m->onUnitShow(e.getUnit());        break; }
+				case BWAPI::EventType::UnitHide: { m->onUnitHide(e.getUnit());        break; }
+				case BWAPI::EventType::UnitCreate: { m->onUnitCreate(e.getUnit());      break; }
+				case BWAPI::EventType::UnitMorph: { m->onUnitMorph(e.getUnit());       break; }
+				case BWAPI::EventType::UnitDestroy: { m->onUnitDestroy(e.getUnit());     break; }
+				case BWAPI::EventType::UnitRenegade: { m->onUnitRenegade(e.getUnit());    break; }
+				case BWAPI::EventType::UnitComplete: { m->onUnitComplete(e.getUnit());    break; }
+				case BWAPI::EventType::SendText: { m->onSendText(e.getText());        break; }
+				}
+			}
+
+			BWAPI::BWAPIClient.update();
+			if (!BWAPI::BWAPIClient.isConnected())
+			{
+				std::cout << "Disconnected\n";
+				break;
 			}
 		}
 
-		BWAPI::BWAPIClient.update();
-		if (!BWAPI::BWAPIClient.isConnected()) 
-        {
-			std::cout << "Disconnected\n";
-			break;
-		}
+		std::cout << "Game Over\n";
 	}
+};
 
-    std::cout << "Game Over\n";
+BotPlayer createBot(const std::string& mode) {
+	auto base_bot_module = [] {
+		return di::make_injector(
+			di::bind<AKBot::Logger>().to<AKBot::BWAPIPrintLogger>(),
+			di::bind<AKBot::OpponentView>().to<AKBot::BWAPIOpponentView>(),
+			di::bind<AKBot::MapInformation>().to<AKBot::BWAPIMapInformation>()
+		);
+	};
+	auto injector = di::make_injector(
+		base_bot_module(),
+		di::bind<BotModule>().to([&](const auto& injector) -> unique_ptr<BotModule> {
+			if (mode == "Tournament") {
+				return injector.template create<unique_ptr<UAlbertaBot_Tournament>>();
+			}
+			else if (mode == "Arena") {
+				return injector.template create<unique_ptr<UAlbertaBot_Arena>>();
+			}
+			else {
+				return nullptr;
+			}
+		}).in(di::unique)
+	);
+	// injector.create<ScoutManager>();
+
+	// The UAlbertaBot module which will handle all the game logic
+	// All Starcraft logic is in this object, when it destructs it's all cleaned up for the next game
+	return injector.create<BotPlayer>();
 }
 
 int main(int argc, const char * argv[]) 
@@ -111,29 +153,20 @@ int main(int argc, const char * argv[])
             }
 
             // If we are successfully in a game, call the module to play the game
-            if (BWAPI::Broodwar->isInGame())
-            {
-                std::cout << "Playing game " << gameCount++ << " on map " << BWAPI::Broodwar->mapFileName() << "\n";
+			if (BWAPI::Broodwar->isInGame())
+			{
+				std::cout << "Playing game " << gameCount++ << " on map " << BWAPI::Broodwar->mapFileName() << "\n";
 
-				// The UAlbertaBot module which will handle all the game logic
-				// All Starcraft logic is in this object, when it destructs it's all cleaned up for the next game
-				std::shared_ptr<BotModule>  m;
-
-				if (Config::BotInfo::BotMode == "Tournament")
+				std::string botMode = Config::BotInfo::BotMode;
+				auto m = createBot(botMode);
+				m.UAlbertaBot_PlayGame();
+				if (!m.isValid())
 				{
-					m = std::shared_ptr<BotModule>(new UAlbertaBot_Tournament(opponentView, logger));
-				}
-				else if (Config::BotInfo::BotMode == "Arena")
-				{
-					m = std::shared_ptr<BotModule>(new UAlbertaBot_Arena());
-				}
-				else
-				{
-					std::cerr << "Unknown bot module selected: " << Config::BotInfo::BotMode << "\n";
+					std::cerr << "Unknown bot module selected: " << botMode << "\n";
 					exit(-1);
 				}
 
-                UAlbertaBot_PlayGame(m);
+                //UAlbertaBot_PlayGame(m);
             }
         }
 

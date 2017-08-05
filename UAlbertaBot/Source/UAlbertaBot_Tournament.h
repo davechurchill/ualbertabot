@@ -19,23 +19,28 @@ class UAlbertaBot_Tournament : public BotModule
 {
     GameCommander       _gameCommander;
     AutoObserver        _autoObserver;
-    WorkerManager       _workerManager;
     UnitInfoManager     _unitInfoManager;
 	ProductionManager	_productionManager;
 	BOSSManager         _bossManager;
     StrategyManager     _strategyManager;
-    MapTools            _mapTools;
-    BaseLocationManager _baseLocationManager;
 	CombatCommander     _combatCommander;
-	ScoutManager		_scoutManager;
 	AKBot::BWAPIScreenCanvas _canvas;
-	const AKBot::OpponentView& _opponentView;
+    shared_ptr<MapTools> _mapTools;
+    shared_ptr<WorkerManager> _workerManager;
+	shared_ptr<BaseLocationManager> _baseLocationManager;
+	shared_ptr<ScoutManager> _scoutManager;
+	shared_ptr<AKBot::OpponentView> _opponentView;
 
-    void drawErrorMessages() const;
 	void drawDebugInformation(AKBot::ScreenCanvas& _canvas);
 public:
 
-    UAlbertaBot_Tournament(const AKBot::OpponentView& opponentView, const AKBot::Logger& logger);
+    explicit UAlbertaBot_Tournament(
+		shared_ptr<AKBot::OpponentView> opponentView,
+		shared_ptr<BaseLocationManager> baseLocationManager,
+		shared_ptr<MapTools> mapTools,
+		shared_ptr<WorkerManager> workerManager,
+		shared_ptr<ScoutManager> scoutManager,
+		shared_ptr<AKBot::Logger> logger);
     ~UAlbertaBot_Tournament();
 
     void	onStart();
@@ -51,9 +56,8 @@ public:
     void	onUnitRenegade(BWAPI::Unit unit);
 
     const UnitInfoManager & UnitInfo() const;
-    const MapTools & Map() const;
 	AKBot::ScreenCanvas& getCanvas();
-	const AKBot::OpponentView& getOpponentView() const  { return _opponentView; };
+	const std::shared_ptr<AKBot::OpponentView> getOpponentView() const  { return _opponentView; };
 };
 
 }

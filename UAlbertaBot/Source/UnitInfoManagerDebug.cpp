@@ -8,7 +8,7 @@ namespace AKBot
 	using UAlbertaBot::DebugTools::DrawUnitHPBar;
 	using UAlbertaBot::Global::getEnemy;
 
-	UnitInfoManagerDebug::UnitInfoManagerDebug(const OpponentView& opponentView, const UnitInfoManager& unitInfo)
+	UnitInfoManagerDebug::UnitInfoManagerDebug(std::shared_ptr<OpponentView> opponentView, const UnitInfoManager& unitInfo)
 		: _opponentView(opponentView), _unitInfo(unitInfo)
 	{
 	}
@@ -70,7 +70,7 @@ namespace AKBot
 
 		std::string prefix = "\x04";
 
-		auto selfUnitData = _unitInfo.getUnitData(_opponentView.self());
+		auto selfUnitData = _unitInfo.getUnitData(_opponentView->self());
 		auto enemyUnitData = _unitInfo.getUnitData(enemy);
 		canvas.drawTextScreen(x, y - 10, "\x03 Self Loss:\x04 Minerals: \x1f%d \x04Gas: \x07%d", selfUnitData.getMineralsLost(), selfUnitData.getGasLost());
 		canvas.drawTextScreen(x, y, "\x03 Enemy Loss:\x04 Minerals: \x1f%d \x04Gas: \x07%d", enemyUnitData.getMineralsLost(), enemyUnitData.getGasLost());

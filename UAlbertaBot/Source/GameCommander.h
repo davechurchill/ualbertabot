@@ -16,9 +16,9 @@ class GameCommander
     CombatCommander&            _combatCommander;
     BOSSManager&                _bossManager;
     ProductionManager&          _productionManager;
-	ScoutManager&				_scoutManager;
-	WorkerManager& _workerManager;
-	const AKBot::OpponentView&	_opponentView;
+	shared_ptr<ScoutManager>	_scoutManager;
+	shared_ptr<WorkerManager> _workerManager;
+	shared_ptr<AKBot::OpponentView>	_opponentView;
 
     std::vector<BWAPI::Unit>    _validUnits;
     std::vector<BWAPI::Unit>    _combatUnits;
@@ -32,14 +32,12 @@ class GameCommander
 public:
 
     GameCommander(
-		const AKBot::OpponentView& opponentView,
+		shared_ptr<AKBot::OpponentView> opponentView,
 		BOSSManager& bossManager,
 		CombatCommander& combatCommander,
-		ScoutManager& scoutManager,
+		shared_ptr<ScoutManager> scoutManager,
 		ProductionManager& productionManager,
-		WorkerManager& workerManager,
-		const BaseLocationManager& bases,
-		const AKBot::Logger& logger);
+		shared_ptr<WorkerManager> workerManager);
 
     void onStart();
     void update(int currentFrame);
@@ -55,9 +53,9 @@ public:
     BWAPI::Unit getClosestWorkerToTarget(BWAPI::Position target);
 
 	const ProductionManager& getProductionManager() const;
-	const ScoutManager& getScoutManager() const;
+	const shared_ptr<ScoutManager> getScoutManager() const;
 	const CombatCommander& getCombatCommander() const;
-	const AKBot::OpponentView& getOpponentView() const;
+	const shared_ptr<AKBot::OpponentView> getOpponentView() const;
 
     void onUnitShow(BWAPI::Unit unit);
     void onUnitHide(BWAPI::Unit unit);

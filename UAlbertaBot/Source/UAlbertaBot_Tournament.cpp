@@ -14,19 +14,25 @@
 using namespace UAlbertaBot;
 using namespace AKBot;
 
-UAlbertaBot_Tournament::UAlbertaBot_Tournament(const AKBot::OpponentView& opponentView, const AKBot::Logger& logger)
+UAlbertaBot_Tournament::UAlbertaBot_Tournament(
+	shared_ptr<AKBot::OpponentView> opponentView,
+	shared_ptr<BaseLocationManager> baseLocationManager,
+	shared_ptr<MapTools> mapTools,
+	shared_ptr<WorkerManager> workerManager,
+	shared_ptr<ScoutManager> scoutManager,
+	shared_ptr<AKBot::Logger> logger)
 	: _opponentView(opponentView)
-	, _baseLocationManager(opponentView)
-	, _autoObserver(opponentView, _workerManager)
-	, _workerManager(opponentView, logger)
-	, _strategyManager("", opponentView, _unitInfoManager, _baseLocationManager, logger)
+	, _baseLocationManager(baseLocationManager)
+	, _workerManager(workerManager)
 	, _bossManager(opponentView)
+	, _autoObserver(opponentView, workerManager)
 	, _unitInfoManager(opponentView)
-	, _mapTools(BWAPI::Broodwar->mapWidth(), BWAPI::Broodwar->mapHeight(), opponentView, logger)
-	, _scoutManager(opponentView, _baseLocationManager, _mapTools)
-	, _productionManager(opponentView, _bossManager, _strategyManager, _workerManager, _unitInfoManager, _baseLocationManager, _mapTools, logger)
-	, _combatCommander(_baseLocationManager, opponentView, _workerManager, _unitInfoManager, _mapTools, logger)
-	, _gameCommander(opponentView, _bossManager, _combatCommander, _scoutManager, _productionManager, _workerManager, _baseLocationManager, logger)
+	, _strategyManager("", opponentView, _unitInfoManager, baseLocationManager, logger)
+	, _mapTools(mapTools)
+	, _scoutManager(scoutManager)
+	, _productionManager(opponentView, _bossManager, _strategyManager, workerManager, _unitInfoManager, baseLocationManager, mapTools, logger)
+	, _combatCommander(baseLocationManager, opponentView, workerManager, _unitInfoManager, mapTools, logger)
+	, _gameCommander(opponentView, _bossManager, _combatCommander, scoutManager, _productionManager, workerManager)
 {
 	// parse the configuration file for the bot's strategies
 	auto configurationFile = ParseUtils::FindConfigurationLocation(Config::ConfigFile::ConfigFileLocation);
@@ -74,8 +80,8 @@ void UAlbertaBot_Tournament::onStart()
 	}
 
 	_unitInfoManager.onStart();
-	_mapTools.onStart();
-	_baseLocationManager.onStart(_mapTools);
+	_mapTools->onStart();
+	_baseLocationManager->onStart(_mapTools);
 	_productionManager.onStart();
 	_gameCommander.onStart();
 
@@ -116,11 +122,6 @@ const UnitInfoManager & UAlbertaBot_Tournament::UnitInfo() const
     return _unitInfoManager;
 }
 
-const MapTools & UAlbertaBot_Tournament::Map() const
-{
-    return _mapTools;
-}
-
 AKBot::ScreenCanvas & UAlbertaBot::UAlbertaBot_Tournament::getCanvas()
 {
 	return _canvas;
@@ -137,17 +138,17 @@ void UAlbertaBot_Tournament::onFrame()
 	auto currentFrame = BWAPI::Broodwar->getFrameCount();
 
 	// update all of the internal information managers
-    _mapTools.update(currentFrame);
+    _mapTools->update(currentFrame);
 	_strategyManager.update();
     _unitInfoManager.update();
-    _workerManager.update(currentFrame);
-    _baseLocationManager.update(_unitInfoManager);
+    _workerManager->update(currentFrame);
+    _baseLocationManager->update(_unitInfoManager);
 
     // update the game commander
 	_gameCommander.update(currentFrame);
 	_productionManager.update(currentFrame);
 	_combatCommander.update(_gameCommander.getCombatUnits(), currentFrame);
-	_scoutManager.update(currentFrame);
+	_scoutManager->update(currentFrame);
 
 	// Draw debug information
 	drawDebugInformation(_canvas);
@@ -156,8 +157,6 @@ void UAlbertaBot_Tournament::onFrame()
     {
         _autoObserver.onFrame(currentFrame);
     }
-
-    drawErrorMessages();
 }
 
 void UAlbertaBot_Tournament::drawDebugInformation(AKBot::ScreenCanvas& canvas)
@@ -165,10 +164,10 @@ void UAlbertaBot_Tournament::drawDebugInformation(AKBot::ScreenCanvas& canvas)
 	if (Config::Debug::DrawLastSeenTileInfo)
 	{
 		MapToolsDebug mapDebug(_mapTools, _baseLocationManager);
-		mapDebug.drawLastSeen(canvas, _baseLocationManager);
+		mapDebug.drawLastSeen(canvas);
 	}
 
-	WorkerManagerDebug debug(_workerManager.getWorkerData());
+	WorkerManagerDebug debug(_workerManager->getWorkerData());
 	debug.draw(canvas);
 
 	// draw the debug information for each base location
@@ -182,14 +181,10 @@ void UAlbertaBot_Tournament::drawDebugInformation(AKBot::ScreenCanvas& canvas)
 	gameCommanderDebug.draw(canvas);
 }
 
-void UAlbertaBot_Tournament::drawErrorMessages() const
-{
-}
-
 void UAlbertaBot_Tournament::onUnitDestroy(BWAPI::Unit unit)
 {
 	auto currentFrame = BWAPI::Broodwar->getFrameCount();
-	_workerManager.onUnitDestroy(unit, currentFrame);
+	_workerManager->onUnitDestroy(unit, currentFrame);
 	_unitInfoManager.onUnitDestroy(unit); 
     _gameCommander.onUnitDestroy(unit, currentFrame);
 	_productionManager.onUnitDestroy(unit, currentFrame);
@@ -198,7 +193,7 @@ void UAlbertaBot_Tournament::onUnitDestroy(BWAPI::Unit unit)
 void UAlbertaBot_Tournament::onUnitMorph(BWAPI::Unit unit)
 {
 	_unitInfoManager.onUnitMorph(unit);
-	_workerManager.onUnitMorph(unit);
+	_workerManager->onUnitMorph(unit);
     _gameCommander.onUnitMorph(unit);
 }
 
@@ -222,7 +217,7 @@ void UAlbertaBot_Tournament::onUnitComplete(BWAPI::Unit unit)
 void UAlbertaBot_Tournament::onUnitShow(BWAPI::Unit unit)
 { 
 	_unitInfoManager.onUnitShow(unit); 
-	_workerManager.onUnitShow(unit);
+	_workerManager->onUnitShow(unit);
     _gameCommander.onUnitShow(unit);
 }
 

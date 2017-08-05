@@ -4,7 +4,7 @@
 
 using namespace UAlbertaBot;
 
-MicroManager::MicroManager(const AKBot::OpponentView& opponentView, const BaseLocationManager& bases)
+MicroManager::MicroManager(shared_ptr<AKBot::OpponentView> opponentView, shared_ptr<BaseLocationManager> bases)
 	: bases(bases)
 	, opponentView(opponentView)
 {
@@ -15,7 +15,7 @@ void MicroManager::setUnits(const std::vector<BWAPI::Unit> & u)
 	_units = u; 
 }
 
-void MicroManager::execute(const MapTools & map, const SquadOrder & inputOrder, int currentFrame)
+void MicroManager::execute(shared_ptr<MapTools> map, const SquadOrder & inputOrder, int currentFrame)
 {
 	// Nothing to do if we have no units
 	if (_units.empty() || !(inputOrder.getType() == SquadOrderTypes::Attack || inputOrder.getType() == SquadOrderTypes::Defend))
@@ -31,17 +31,17 @@ void MicroManager::execute(const MapTools & map, const SquadOrder & inputOrder, 
 	// if the order is to defend, we only care about units in the radius of the defense
 	if (order.getType() == SquadOrderTypes::Defend)
 	{
-		map.GetUnitsInRadius(nearbyEnemies, order.getPosition(), order.getRadius(), false, true);
+		map->GetUnitsInRadius(nearbyEnemies, order.getPosition(), order.getRadius(), false, true);
 	
 	} // otherwise we want to see everything on the way
 	else if (order.getType() == SquadOrderTypes::Attack) 
 	{
-		map.GetUnitsInRadius(nearbyEnemies, order.getPosition(), order.getRadius(), false, true);
+		map->GetUnitsInRadius(nearbyEnemies, order.getPosition(), order.getRadius(), false, true);
 		for (auto & unit : _units) 
 		{
 			BWAPI::Unit u = unit;
 			BWAPI::UnitType t = u->getType();
-			map.GetUnitsInRadius(nearbyEnemies, unit->getPosition(), order.getRadius(), false, true);
+			map->GetUnitsInRadius(nearbyEnemies, unit->getPosition(), order.getRadius(), false, true);
 		}
 	}
 
@@ -78,9 +78,9 @@ void MicroManager::execute(const MapTools & map, const SquadOrder & inputOrder, 
                     // if it is a worker
                     else
                     {
-						for (const auto& enemyPlayer : opponentView.enemies())
+						for (const auto& enemyPlayer : opponentView->enemies())
 						{
-							for (auto enemyBaseLocation : bases.getOccupiedBaseLocations(enemyPlayer))
+							for (auto enemyBaseLocation : bases->getOccupiedBaseLocations(enemyPlayer))
 							{
 								// only add it if it's in their region
 								if (enemyBaseLocation->containsPosition(enemyUnit->getPosition()))
@@ -104,15 +104,15 @@ const std::vector<BWAPI::Unit> & MicroManager::getUnits() const
     return _units; 
 }
 
-void MicroManager::regroup(const MapTools & map, const BWAPI::Position & regroupPosition, int currentFrame) const
+void MicroManager::regroup(shared_ptr<MapTools> map, const BWAPI::Position & regroupPosition, int currentFrame) const
 {
-    BWAPI::Position ourBasePosition = BWAPI::Position(opponentView.self()->getStartLocation());
-    int regroupDistanceFromBase = map.getGroundDistance(regroupPosition, ourBasePosition);
+    BWAPI::Position ourBasePosition = BWAPI::Position(opponentView->self()->getStartLocation());
+    int regroupDistanceFromBase = map->getGroundDistance(regroupPosition, ourBasePosition);
 
 	// for each of the units we have
 	for (auto & unit : _units)
 	{
-        int unitDistanceFromBase = map.getGroundDistance(unit->getPosition(), ourBasePosition);
+        int unitDistanceFromBase = map->getGroundDistance(unit->getPosition(), ourBasePosition);
 
 		// if the unit is outside the regroup area
         if (unitDistanceFromBase > regroupDistanceFromBase)
@@ -150,7 +150,7 @@ bool MicroManager::checkPositionWalkable(BWAPI::Position pos)
 	for (auto & unit : BWAPI::Broodwar->getUnitsOnTile(x/32, y/32)) 
 	{
 		if	(unit->getType().isBuilding() || unit->getType().isResourceContainer() || 
-			(unit->getPlayer() != opponentView.self() && unit->getType().groundWeapon() != BWAPI::WeaponTypes::None))
+			(unit->getPlayer() != opponentView->self() && unit->getType().groundWeapon() != BWAPI::WeaponTypes::None))
 		{		
 				return false;
 		}

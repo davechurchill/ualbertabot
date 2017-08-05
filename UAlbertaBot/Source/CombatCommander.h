@@ -15,12 +15,12 @@ class CombatCommander
 	SquadData       _squadData;
     std::vector<BWAPI::Unit>  _combatUnits;
     bool            _initialized;
-	const BaseLocationManager & _baseLocationManager;
+	shared_ptr<BaseLocationManager> _baseLocationManager;
 	AKBot::DefaultPlayerLocationProvider _playerLocationProvider;
-	const AKBot::OpponentView& _opponentView;
+	shared_ptr<AKBot::OpponentView> _opponentView;
 	const UnitInfoManager& _unitInfo;
-	const MapTools& _mapTools;
-	WorkerManager& _workerManager;
+	shared_ptr<MapTools> _mapTools;
+	shared_ptr<WorkerManager> _workerManager;
 
     void            updateScoutDefenseSquad(int currentFrame);
 	void            updateDefenseSquads(int currentFrame);
@@ -56,12 +56,12 @@ class CombatCommander
 public:
 
 	CombatCommander(
-		const BaseLocationManager & baseLocationManager,
-		const AKBot::OpponentView& opponentView,
-		WorkerManager& workerManager,
+		shared_ptr<BaseLocationManager> baseLocationManager,
+		shared_ptr<AKBot::OpponentView> opponentView,
+		shared_ptr<WorkerManager> workerManager,
 		const UnitInfoManager& unitInfo,
-		const MapTools& mapTools,
-		const AKBot::Logger& logger);
+		shared_ptr<MapTools> mapTools,
+		std::shared_ptr<AKBot::Logger> logger);
 
 	void update(const std::vector<BWAPI::Unit> & combatUnits, int currentFrame);
 	const SquadData& getSquadData() const;

@@ -25,7 +25,7 @@ namespace AKBot
 		// fill prod with each unit which is under construction
 		std::vector<BWAPI::Unit> prod;
 		const auto& opponentView = _productionManager.getOpponentView();
-		for (auto & unit : opponentView.self()->getUnits())
+		for (auto & unit : opponentView->self()->getUnits())
 		{
 			UAB_ASSERT(unit != nullptr, "Unit was null");
 
@@ -122,7 +122,7 @@ namespace AKBot
 		}
 
 		const auto& opponentView = _productionManager.getOpponentView();
-		for (auto & unit : opponentView.self()->getUnits())
+		for (auto & unit : opponentView->self()->getUnits())
 		{
 			canvas.drawTextMap(unit->getPosition().x, unit->getPosition().y + 5, "\x07%d", unit->getID());
 		}
@@ -205,7 +205,7 @@ namespace AKBot
 		}
 
 		const auto& opponentView = _productionManager.getOpponentView();
-		BOSS::GameState currentState(BWAPI::Broodwar, opponentView.self(), buildingManager.buildingsQueued());
+		BOSS::GameState currentState(BWAPI::Broodwar, opponentView->self(), buildingManager.buildingsQueued());
 		canvas.drawTextScreen(BWAPI::Position(x - 100, y + 30), "\x04%s", currentState.getBuildingData().toString().c_str());
 		canvas.drawTextScreen(BWAPI::Position(x + 150, y), "\x04%s", currentState.toString().c_str());
 	}

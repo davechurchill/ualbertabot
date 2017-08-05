@@ -4,18 +4,20 @@
 
 using namespace UAlbertaBot;
 
-BaseLocationManager::BaseLocationManager(const AKBot::OpponentView& opponentView)
+BaseLocationManager::BaseLocationManager(std::shared_ptr<AKBot::OpponentView> opponentView)
     : _tileBaseLocations(BWAPI::Broodwar->mapWidth(), std::vector<BaseLocation *>(BWAPI::Broodwar->mapHeight(), nullptr))
 	, _opponentView(opponentView)
+	, _baseLocationPtrs(0)
+	, _baseLocationData()
 {
-    _playerStartingBaseLocations[_opponentView.self()]  = nullptr;
-	for (const auto& enemyPlayer : _opponentView.enemies())
+    _playerStartingBaseLocations[_opponentView->self()]  = nullptr;
+	for (const auto& enemyPlayer : _opponentView->enemies())
 	{
 		_playerStartingBaseLocations[enemyPlayer] = nullptr;
 	}
 }
 
-void BaseLocationManager::onStart(const MapTools& map)
+void BaseLocationManager::onStart(shared_ptr<MapTools> map)
 {
     // a BaseLocation will be anything where there are minerals to mine
     // so we will first look over all minerals and cluster them based on some distance
@@ -23,7 +25,7 @@ void BaseLocationManager::onStart(const MapTools& map)
 
 	auto distanceFunction = [&map](const BWAPI::Position & src, const BWAPI::Position & dest)
 	{
-		return map.getGroundDistance(src, dest);
+		return map->getGroundDistance(src, dest);
 	};
 	// stores each cluster of resources based on some ground distance
     std::vector<std::vector<BWAPI::Unit>> resourceClusters;
@@ -42,7 +44,7 @@ void BaseLocationManager::onStart(const MapTools& map)
     }
 
     // construct the vectors of base location pointers, this is safe since they will never change
-	auto self = _opponentView.self();
+	auto self = _opponentView->self();
 	auto enemy = Global::getEnemy();
 	if (enemy == nullptr)
 	{
@@ -72,9 +74,9 @@ void BaseLocationManager::onStart(const MapTools& map)
     }
 
     // construct the map of tile positions to base locations
-    for (size_t x=0; x < map.getWidth(); ++x)
+    for (size_t x=0; x < map->getWidth(); ++x)
     {
-        for (size_t y=0; y < map.getHeight(); ++y)
+        for (size_t y=0; y < map->getHeight(); ++y)
         {
             for (auto & baseLocation : _baseLocationData)
             {
@@ -95,7 +97,7 @@ void BaseLocationManager::onStart(const MapTools& map)
     _occupiedBaseLocations[enemy] = std::set<const BaseLocation *>();
 
     // check to see that we have set a base location for ourself
-    UAB_ASSERT(_playerStartingBaseLocations[_opponentView.self()] != nullptr, "We didn't set a valid selfStartLocation in BaseLocations");
+    UAB_ASSERT(_playerStartingBaseLocations[_opponentView->self()] != nullptr, "We didn't set a valid selfStartLocation in BaseLocations");
 }
 
 void BaseLocationManager::update(const UnitInfoManager & unitManager)
@@ -104,7 +106,7 @@ void BaseLocationManager::update(const UnitInfoManager & unitManager)
 	resetPlayerOccupation();
 
     // for each unit on the map, update which base location it may be occupying
-	auto self = _opponentView.self();
+	auto self = _opponentView->self();
     for (auto & unit : self->getUnits())
     {
         // we only care about buildings on the ground
@@ -128,7 +130,7 @@ void BaseLocationManager::update(const UnitInfoManager & unitManager)
 	}
 
 	// update enemy base occupations
-	for (const auto& enemyPlayer : _opponentView.enemies())
+	for (const auto& enemyPlayer : _opponentView->enemies())
 	{
 		for (const auto & kv : unitManager.getUnitInfoMap(enemyPlayer))
 		{
@@ -197,7 +199,7 @@ void BaseLocationManager::update(const UnitInfoManager & unitManager)
 
     // update the occupied base locations for each player
     _occupiedBaseLocations[self] = std::set<const BaseLocation *>();
-	for (const auto& enemyPlayer : _opponentView.enemies())
+	for (const auto& enemyPlayer : _opponentView->enemies())
 	{
 		_occupiedBaseLocations[enemyPlayer] = std::set<const BaseLocation *>();
 	}
@@ -209,7 +211,7 @@ void BaseLocationManager::update(const UnitInfoManager & unitManager)
             _occupiedBaseLocations[self].insert(&baseLocation);
         }
 
-		for (const auto& enemyPlayer : _opponentView.enemies())
+		for (const auto& enemyPlayer : _opponentView->enemies())
 		{
 			if (baseLocation.isOccupiedByPlayer(enemyPlayer))
 			{
@@ -221,22 +223,22 @@ void BaseLocationManager::update(const UnitInfoManager & unitManager)
 
 void UAlbertaBot::BaseLocationManager::resetPlayerOccupation()
 {
-	auto self = _opponentView.self();
+	auto self = _opponentView->self();
 	for (auto & baseLocation : _baseLocationData)
 	{
 		baseLocation.setPlayerOccupying(self, false);
-		for (const auto& enemyPlayer : _opponentView.enemies())
+		for (const auto& enemyPlayer : _opponentView->enemies())
 		{
 			baseLocation.setPlayerOccupying(enemyPlayer, false);
 		}
 	}
 }
 
-BWAPI::Position UAlbertaBot::BaseLocationManager::getLeastRecentlySeenPosition(const MapTools & mapTools) const
+BWAPI::Position UAlbertaBot::BaseLocationManager::getLeastRecentlySeenPosition(shared_ptr<MapTools> mapTools) const
 {
 	int minSeen = std::numeric_limits<int>::max();
 	BWAPI::TilePosition leastSeen(0, 0);
-	const BaseLocation * baseLocation = getPlayerStartingBaseLocation(_opponentView.self());
+	const BaseLocation * baseLocation = getPlayerStartingBaseLocation(_opponentView->self());
 
 	const auto enemy = Global::getEnemy();
 	const auto enemyStartLocation = enemy == nullptr ? nullptr : getPlayerStartingBaseLocation(enemy);
@@ -257,12 +259,12 @@ BWAPI::Position UAlbertaBot::BaseLocationManager::getLeastRecentlySeenPosition(c
 		UAB_ASSERT(tile.isValid(), "How is this tile not valid?");
 
 		// don't worry about places that aren't connected to our start locatin
-		if (!mapTools.isConnected(BWAPI::Position(tile), myBasePosition))
+		if (!mapTools->isConnected(BWAPI::Position(tile), myBasePosition))
 		{
 			continue;
 		}
 
-		int lastSeen = mapTools.getLastSeen(tile.x, tile.y);
+		int lastSeen = mapTools->getLastSeen(tile.x, tile.y);
 		if (lastSeen < minSeen)
 		{
 			minSeen = lastSeen;
@@ -404,7 +406,7 @@ BWAPI::TilePosition BaseLocationManager::getNextExpansion(BWAPI::Player player) 
     const BaseLocation * closestBase = nullptr;
     int minDistance = std::numeric_limits<int>::max();
 
-	auto self = _opponentView.self();
+	auto self = _opponentView->self();
 	if (!homeBase)
 	{
 		return BWAPI::TilePositions::None;

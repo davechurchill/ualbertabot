@@ -18,9 +18,9 @@ class StrategyManager
     BuildOrder                      _emptyBuildOrder;
 	const UnitInfoManager&			_unitInfo;
 	std::string						_strategyName;
-	const AKBot::OpponentView& _opponentView;
-	const BaseLocationManager& _bases;
-	const AKBot::Logger& _logger;
+	shared_ptr<AKBot::OpponentView> _opponentView;
+	shared_ptr<BaseLocationManager> _bases;
+	std::shared_ptr<AKBot::Logger> _logger;
 
     void        writeResults();
     const int   getScore(BWAPI::Player player) const;
@@ -33,10 +33,10 @@ public:
 
     StrategyManager(
 		std::string strategyName,
-		const AKBot::OpponentView& opponentView,
+		shared_ptr<AKBot::OpponentView> opponentView,
 		const UnitInfoManager & unitInfo,
-		const BaseLocationManager& bases,
-		const AKBot::Logger& logger);
+		shared_ptr<BaseLocationManager> bases,
+		std::shared_ptr<AKBot::Logger> logger);
 
     void update();
     void onEnd(const bool isWinner);

@@ -6,11 +6,11 @@ using namespace AKBot;
 
 SquadData::SquadData(
 	AKBot::PlayerLocationProvider& locationProvider,
-	const AKBot::OpponentView& opponentView,
+	shared_ptr<AKBot::OpponentView> opponentView,
 	const UnitInfoManager& unitInfo,
-	const BaseLocationManager& bases,
-	const MapTools& mapTools,
-	const AKBot::Logger& logger)
+	shared_ptr<BaseLocationManager> bases,
+	shared_ptr<MapTools> mapTools,
+	std::shared_ptr<AKBot::Logger> logger)
 	: _locationProvider(locationProvider)
 	, _opponentView(opponentView)
 	, _unitInfo(unitInfo)
@@ -21,7 +21,7 @@ SquadData::SquadData(
 	
 }
 
-void SquadData::update(const MapTools& map, int currentFrame)
+void SquadData::update(shared_ptr<MapTools> map, int currentFrame)
 {
 	updateAllSquads(map, currentFrame);
     verifySquadUniqueMembership();
@@ -82,7 +82,7 @@ void SquadData::addSquad(const std::string & squadName, const SquadOrder & squad
 	addSquad(squadName, squad);
 }
 
-void SquadData::updateAllSquads(const MapTools& map, int currentFrame)
+void SquadData::updateAllSquads(shared_ptr<MapTools> map, int currentFrame)
 {
 	for (auto & kv : _squads)
 	{
@@ -102,7 +102,7 @@ void SquadData::verifySquadUniqueMembership()
         {
             if (std::find(assigned.begin(), assigned.end(), unit) != assigned.end())
             {
-                _logger.log("Unit is in at least two squads: %s", unit->getType().getName().c_str());
+                _logger->log("Unit is in at least two squads: %s", unit->getType().getName().c_str());
             }
 
             assigned.push_back(unit);

@@ -27,7 +27,7 @@ class BOSSManager
     BOSS::DFBB_BuildOrderSearchResults      _previousSearchResults;
     BOSS::DFBB_BuildOrderSearchResults      _savedSearchResults;
     BOSS::BuildOrder                        _previousBuildOrder;
-	const AKBot::OpponentView& _opponentView;
+	shared_ptr<AKBot::OpponentView> _opponentView;
 
 	BOSS::GameState				            getCurrentState();
 	BOSS::GameState				            getStartState();
@@ -45,7 +45,7 @@ class BOSSManager
 
 public:
 	
-	BOSSManager(const AKBot::OpponentView& opponentView);
+	BOSSManager(shared_ptr<AKBot::OpponentView> opponentView);
 
 	void						update(double timeLimit, int currentFrame);
     void                        reset();

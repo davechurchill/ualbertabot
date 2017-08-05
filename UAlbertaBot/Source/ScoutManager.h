@@ -3,16 +3,15 @@
 #include "Common.h"
 #include "MicroManager.h"
 #include "UnitHandler.h"
+#include "BaseLocationManager.h"
 
 namespace UAlbertaBot
 {
 	using namespace AKBot;
-	class BaseLocation;
-	class BaseLocationManager;
 
 class ScoutManager 
 {
-	const BaseLocationManager& _baseLocationManager;
+	shared_ptr<BaseLocationManager> _baseLocationManager;
 	BWAPI::Unit     _workerScout;
     std::string     _scoutStatus;
 	int             _numWorkerScouts;
@@ -22,8 +21,8 @@ class ScoutManager
 	std::vector<BWAPI::Position>    _enemyRegionVertices;
 	UnitHandler     _onScoutReleased;
 	UnitHandler     _onScoutAssigned;
-	const AKBot::OpponentView& _opponentView;
-	const MapTools& _mapTools;
+	shared_ptr<AKBot::OpponentView> _opponentView;
+	shared_ptr<MapTools> _mapTools;
 
 	bool            enemyWorkerInRadius();
     bool            immediateThreat();
@@ -42,9 +41,9 @@ class ScoutManager
 public:
     
 	ScoutManager(
-		const AKBot::OpponentView& opponentView,
-		const BaseLocationManager& baseLocationManager,
-		const MapTools& mapTools);
+		shared_ptr<AKBot::OpponentView> opponentView,
+		shared_ptr<BaseLocationManager> baseLocationManager,
+		shared_ptr<MapTools> mapTools);
 
 	void update(int currentFrame);
     void setWorkerScout(BWAPI::Unit unit, int currentFrame);

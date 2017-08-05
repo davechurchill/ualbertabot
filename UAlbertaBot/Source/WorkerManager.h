@@ -7,11 +7,13 @@
 
 namespace UAlbertaBot
 {
+	using AKBot::OpponentView;
+
 class WorkerManager
 {
     WorkerData  workerData;
     BWAPI::Unit previousClosestWorker;
-	const AKBot::OpponentView& _opponentView;
+	std::shared_ptr<OpponentView> _opponentView;
 
     void        setMineralWorker(BWAPI::Unit unit, int currentFrame);
     
@@ -23,7 +25,7 @@ class WorkerManager
 
 public:
 
-    WorkerManager(const AKBot::OpponentView& opponentView, const AKBot::Logger& logger);
+    WorkerManager(std::shared_ptr<OpponentView> opponentView, std::shared_ptr<AKBot::Logger> logger);
 
     void        update(int currentFrame);
     void        onUnitDestroy(BWAPI::Unit unit, int currentFrame);

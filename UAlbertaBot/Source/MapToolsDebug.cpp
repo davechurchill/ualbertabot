@@ -4,12 +4,12 @@
 
 namespace AKBot
 {
-	MapToolsDebug::MapToolsDebug(const MapTools& map, const BaseLocationManager & bases)
+	MapToolsDebug::MapToolsDebug(shared_ptr<MapTools> map, shared_ptr<BaseLocationManager> bases)
 		: _map(map), _bases(bases)
 	{
 	}
 
-	void MapToolsDebug::drawLastSeen(AKBot::ScreenCanvas& canvas, const BaseLocationManager & bases) const
+	void MapToolsDebug::drawLastSeen(AKBot::ScreenCanvas& canvas) const
 	{
 		bool rMouseState = BWAPI::Broodwar->getMouseState(BWAPI::MouseButton::M_RIGHT);
 		if (!rMouseState)
@@ -18,7 +18,7 @@ namespace AKBot
 		}
 
 		// draw the least recently seen position tile as a yellow circle on the map
-		BWAPI::Position lrsp = bases.getLeastRecentlySeenPosition(_map);
+		BWAPI::Position lrsp = _bases->getLeastRecentlySeenPosition(_map);
 		canvas.drawCircleMap(lrsp, 32, BWAPI::Colors::Yellow, true);
 
 
@@ -28,9 +28,9 @@ namespace AKBot
 		BWAPI::TilePosition mTile(mPos);
 
 		int xStart = std::max(mTile.x - size, 0);
-		int xEnd = std::min(mTile.x + size, (int)_map.getWidth());
+		int xEnd = std::min(mTile.x + size, (int)_map->getWidth());
 		int yStart = std::max(mTile.y - size, 0);
-		int yEnd = std::min(mTile.y + size, (int)_map.getHeight());
+		int yEnd = std::min(mTile.y + size, (int)_map->getHeight());
 
 		for (int x = xStart; x < xEnd; ++x)
 		{
@@ -38,7 +38,7 @@ namespace AKBot
 			{
 				BWAPI::Position pos(x * 32, y * 32);
 				BWAPI::Position diag(32, 32);
-				int homeDist = _map.getGroundDistance(pos, homePosition);
+				int homeDist = _map->getGroundDistance(pos, homePosition);
 
 				BWAPI::Color boxColor = BWAPI::Colors::Green;
 				if (!BWAPI::Broodwar->isBuildable(BWAPI::TilePosition(x, y), true))
@@ -47,7 +47,7 @@ namespace AKBot
 				}
 
 				canvas.drawBoxMap(pos, pos + diag, boxColor, false);
-				canvas.drawTextMap(pos + BWAPI::Position(2, 2), "%d", BWAPI::Broodwar->getFrameCount() - _map.getLastSeen(x, y));
+				canvas.drawTextMap(pos + BWAPI::Position(2, 2), "%d", BWAPI::Broodwar->getFrameCount() - _map->getLastSeen(x, y));
 				canvas.drawTextMap(pos + BWAPI::Position(2, 12), "%d", homeDist);
 			}
 		}

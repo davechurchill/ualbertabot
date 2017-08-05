@@ -10,15 +10,15 @@ using namespace UAlbertaBot;
 // constructor
 StrategyManager::StrategyManager(
 	std::string strategyName,
-	const AKBot::OpponentView& opponentView,
+	shared_ptr<AKBot::OpponentView> opponentView,
 	const UnitInfoManager & unitInfo,
-	const BaseLocationManager& bases,
-	const AKBot::Logger& logger)
+	shared_ptr<BaseLocationManager> bases,
+	std::shared_ptr<AKBot::Logger> logger)
 	: _strategyName(strategyName)
 	, _opponentView(opponentView)
 	, _unitInfo(unitInfo)
 	, _bases(bases)
-	, _emptyBuildOrder(opponentView.self()->getRace())
+	, _emptyBuildOrder(opponentView->self()->getRace())
 	, _logger(logger)
 {
 }
@@ -52,9 +52,9 @@ const BuildOrder & StrategyManager::getOpeningBookBuildOrder() const
 const bool StrategyManager::shouldExpandNow(int currentFrame) const
 {
 	// if there is no place to expand to, we can't expand
-	if (_bases.getNextExpansion(_opponentView.self()) == BWAPI::TilePositions::None)
+	if (_bases->getNextExpansion(_opponentView->self()) == BWAPI::TilePositions::None)
 	{
-        _logger.log("No valid expansion location");
+        _logger->log("No valid expansion location");
 		return false;
 	}
 
@@ -67,7 +67,7 @@ const bool StrategyManager::shouldExpandNow(int currentFrame) const
     int minute          = frame / (24*60);
 
     // if we have a ridiculous stockpile of minerals, expand
-    if (_opponentView.self()->minerals() > 3000)
+    if (_opponentView->self()->minerals() > 3000)
     {
         return true;
     }
@@ -93,7 +93,7 @@ void StrategyManager::addStrategy(const std::string & name, Strategy & strategy)
 
 const MetaPairVector StrategyManager::getBuildOrderGoal(int currentFrame) const
 {
-    auto myRace = _opponentView.self()->getRace();
+    auto myRace = _opponentView->self()->getRace();
 
     if (myRace == BWAPI::Races::Protoss)
     {
@@ -120,9 +120,9 @@ const MetaPairVector StrategyManager::getProtossBuildOrderGoal(int currentFrame)
     int numPylons           = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Protoss_Pylon);
 	int numDragoons         = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Protoss_Dragoon);
 	int numProbes           = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Protoss_Probe);
-	int numNexusCompleted   = _opponentView.self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Nexus);
+	int numNexusCompleted   = _opponentView->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Nexus);
 	int numNexusAll         = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Protoss_Nexus);
-	int numCyber            = _opponentView.self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Cybernetics_Core);
+	int numCyber            = _opponentView->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Cybernetics_Core);
 	int numCannon           = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Protoss_Photon_Cannon);
     int numScout            = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Protoss_Corsair);
     int numReaver           = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Protoss_Reaver);
@@ -237,7 +237,7 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal(int currentFrame) 
     }
     else
     {
-        _logger.log("Warning: No build order goal for Terran Strategy: %s", _strategyName.c_str());
+        _logger->log("Warning: No build order goal for Terran Strategy: %s", _strategyName.c_str());
     }
 
     if (shouldExpandNow(currentFrame))
@@ -444,7 +444,7 @@ void StrategyManager::setLearnedStrategy()
     // also we're pretty confident in our base strategies so don't change if insufficient games have been played
     if (strategyGamesPlayed < 5 || (strategyGamesPlayed > 0 && winRate > 0.49))
     {
-        _logger.log("Still using default strategy");
+        _logger->log("Still using default strategy");
         return;
     }
 
@@ -452,7 +452,7 @@ void StrategyManager::setLearnedStrategy()
     for (auto & kv : _strategies)
     {
         Strategy & strategy = kv.second;
-        if (strategy._race == _opponentView.self()->getRace())
+        if (strategy._race == _opponentView->self()->getRace())
         {
             totalGamesPlayed += strategy._wins + strategy._losses;
         }
@@ -465,7 +465,7 @@ void StrategyManager::setLearnedStrategy()
     for (auto & kv : _strategies)
     {
         Strategy & strategy = kv.second;
-        if (strategy._race != _opponentView.self()->getRace())
+        if (strategy._race != _opponentView->self()->getRace())
         {
             continue;
         }

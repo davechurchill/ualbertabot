@@ -170,6 +170,9 @@
     <ClCompile Include="..\Source\BWAPIPrintLogger.cpp">
       <Filter>debug</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\BWAPIMapInformation.cpp">
+      <Filter>global</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="common">
@@ -396,6 +399,12 @@
     </ClInclude>
     <ClInclude Include="..\Source\BWAPIPrintLogger.h">
       <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\MapInformation.h">
+      <Filter>global</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\BWAPIMapInformation.h">
+      <Filter>global</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

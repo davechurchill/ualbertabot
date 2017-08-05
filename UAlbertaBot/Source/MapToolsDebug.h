@@ -10,10 +10,10 @@ namespace AKBot
 
 	class MapToolsDebug
 	{
-		const MapTools& _map;
-		const BaseLocationManager & _bases;
+		shared_ptr<MapTools> _map;
+		shared_ptr<BaseLocationManager> _bases;
 	public:
-		MapToolsDebug(const MapTools& map, const BaseLocationManager & bases);
-		void drawLastSeen(AKBot::ScreenCanvas& canvas, const BaseLocationManager & bases) const;
+		MapToolsDebug(shared_ptr<MapTools> map, shared_ptr<BaseLocationManager> bases);
+		void drawLastSeen(AKBot::ScreenCanvas& canvas) const;
 	};
 }

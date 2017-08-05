@@ -7,7 +7,7 @@
 
 using namespace UAlbertaBot;
 
-TankManager::TankManager(const AKBot::OpponentView& opponentView, const BaseLocationManager& bases)
+TankManager::TankManager(shared_ptr<AKBot::OpponentView> opponentView, shared_ptr<BaseLocationManager> bases)
 	: MicroManager(opponentView, bases)
 {
 }
@@ -22,7 +22,7 @@ void TankManager::executeMicro(const std::vector<BWAPI::Unit> & targets, int cur
 		[](BWAPI::Unit u) { return u->isVisible() && !u->isFlying(); });
 
 	int siegeTankRange = BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode.groundWeapon().maxRange() - 32;
-	bool haveSiege = opponentView.self()->hasResearched(BWAPI::TechTypes::Tank_Siege_Mode);
+	bool haveSiege = opponentView->self()->hasResearched(BWAPI::TechTypes::Tank_Siege_Mode);
 
 	// for each zealot
 	for (auto & tank : tanks)
@@ -167,7 +167,7 @@ int TankManager::getAttackPriority(BWAPI::Unit rangedUnit, BWAPI::Unit target)
 	}
 
 	// if the target is building something near our base something is fishy
-	BWAPI::Position ourBasePosition = BWAPI::Position(opponentView.self()->getStartLocation());
+	BWAPI::Position ourBasePosition = BWAPI::Position(opponentView->self()->getStartLocation());
 	if (target->getType().isWorker() && (target->isConstructing() || target->isRepairing()) && target->getDistance(ourBasePosition) < 1200)
 	{
 		return 100;

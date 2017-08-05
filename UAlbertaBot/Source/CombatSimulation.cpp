@@ -4,7 +4,10 @@
 
 using namespace UAlbertaBot;
 
-CombatSimulation::CombatSimulation(const AKBot::OpponentView& opponentView, const UnitInfoManager& unitInfo, const AKBot::Logger& logger)
+CombatSimulation::CombatSimulation(
+	shared_ptr<AKBot::OpponentView> opponentView,
+	const UnitInfoManager& unitInfo,
+	std::shared_ptr<AKBot::Logger> logger)
 	: _opponentView(opponentView)
 	, _unitInfo(unitInfo)
 	, _logger(logger)
@@ -40,7 +43,7 @@ void CombatSimulation::setCombatUnits(
             catch (int e)
             {
                 e=1;
-                _logger.log("Problem Adding Self Unit with ID: %d", unit->getID());
+                _logger->log("Problem Adding Self Unit with ID: %d", unit->getID());
             }
 		}
 	}
@@ -82,7 +85,7 @@ void CombatSimulation::setCombatUnits(
             }
             catch (int e)
             {
-                _logger.log("Problem Adding Enemy Unit with ID: %d %d", ui.unitID, e);
+                _logger->log("Problem Adding Enemy Unit with ID: %d %d", ui.unitID, e);
             }
 		}
 	}
@@ -129,7 +132,7 @@ double CombatSimulation::simulateCombat()
     try
     {
 	    SparCraft::GameState s1(_state);
-        size_t selfID = getSparCraftPlayerID(_opponentView.self());
+        size_t selfID = getSparCraftPlayerID(_opponentView->self());
         size_t enemyID = getSparCraftPlayerID(Global::getEnemy());
 
         SparCraft::PlayerPtr selfNOK(new SparCraft::Player_AttackClosest(selfID));
@@ -167,7 +170,7 @@ double CombatSimulation::simulateCombat()
     }
     catch (int e)
     {
-        _logger.log("SparCraft FatalError, simulateCombat() threw");
+        _logger->log("SparCraft FatalError, simulateCombat() threw");
 
         return e;
     }
@@ -180,7 +183,7 @@ const SparCraft::GameState & CombatSimulation::getSparCraftState() const
 
 const size_t CombatSimulation::getSparCraftPlayerID(BWAPI::Player player) const
 {
-	if (player == _opponentView.self())
+	if (player == _opponentView->self())
 	{
 		return SparCraft::Players::Player_One;
 	}

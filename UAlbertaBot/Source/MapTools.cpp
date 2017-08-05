@@ -14,15 +14,15 @@ const int actionX[LegalActions] = {1, -1, 0, 0};
 const int actionY[LegalActions] = {0, 0, 1, -1};
 
 // constructor for MapTools
-MapTools::MapTools(int width, int height, const AKBot::OpponentView& opponentView, const AKBot::Logger& logger)
-    : _width            (width)
-    , _height           (height)
-    , _walkable         (width, std::vector<bool>(height, false))
-    , _buildable        (width, std::vector<bool>(height, true))
-    , _depotBuildable   (width, std::vector<bool>(height, true))
-    , _lastSeen         (width, std::vector<int> (height, 0))
-    , _sectorNumber     (width, std::vector<int> (height, 0))
-	, _opponentView(opponentView)
+MapTools::MapTools(shared_ptr<AKBot::MapInformation> mapInformation, std::shared_ptr<AKBot::Logger> logger)
+    : _width            (mapInformation->getWidth())
+    , _height           (mapInformation->getHeight())
+	, _mapInformation(mapInformation)
+    , _walkable         (mapInformation->getWidth(), std::vector<bool>(mapInformation->getHeight(), false))
+    , _buildable        (mapInformation->getWidth(), std::vector<bool>(mapInformation->getHeight(), true))
+    , _depotBuildable   (mapInformation->getWidth(), std::vector<bool>(mapInformation->getHeight(), true))
+    , _lastSeen         (mapInformation->getWidth(), std::vector<int> (mapInformation->getHeight(), 0))
+    , _sectorNumber     (mapInformation->getWidth(), std::vector<int> (mapInformation->getHeight(), 0))
 	, _logger(logger)
 {
     setBWAPIMapData();
@@ -42,7 +42,7 @@ void MapTools::update(int currentFrame)
 	{
 		for (size_t y = 0; y < _height; ++y)
 		{
-			if (BWAPI::Broodwar->isVisible(BWAPI::TilePosition(x, y)))
+			if (_mapInformation->isVisible(x, y))
 			{
 				_lastSeen[x][y] = currentFrame;
 			}
@@ -109,29 +109,29 @@ void MapTools::setBWAPIMapData()
             bool clear = true;
 
             // check each walk tile within this TilePosition
-            for (int i=0; i<4; ++i)
-            {
-                for (int j=0; j<4; ++j)
-                {
-                    if (!BWAPI::Broodwar->isWalkable(x*4 + i, y*4 + j))
-                    {
-                        clear = false;
-                        break;
-                    }
+			for (int i = 0; i < 4; ++i)
+			{
+				for (int j = 0; j < 4; ++j)
+				{
+					if (!_mapInformation->isWalkable(x * 4 + i, y * 4 + j))
+					{
+						clear = false;
+						break;
+					}
 
-                    if (clear)
-                    {
-                        break;
-                    }
-                }
-            }
+					if (clear)
+					{
+						break;
+					}
+				}
+			}
 
             // set the map as binary clear or not
             _walkable[x][y] = clear;
 
             // set whether this tile is buildable
-            _buildable[x][y] = BWAPI::Broodwar->isBuildable(BWAPI::TilePosition(x,y), false);
-            _depotBuildable[x][y] = BWAPI::Broodwar->isBuildable(BWAPI::TilePosition(x,y), false);
+			_buildable[x][y] = _mapInformation->isBuildable(x, y);
+			_depotBuildable[x][y] = _mapInformation->isBuildable(x, y);
         }
     }
 
@@ -143,30 +143,32 @@ void MapTools::setBWAPIMapData()
             continue;
         }
 
-        int tileX = resource->getTilePosition().x;
-        int tileY = resource->getTilePosition().y;
+		auto tilePosition = resource->getTilePosition();
+        int tileX = tilePosition.x;
+        int tileY = tilePosition.y;
 
-        for (int x=tileX; x<tileX+resource->getType().tileWidth(); ++x)
-        {
-            for (int y=tileY; y<tileY+resource->getType().tileHeight(); ++y)
-            {
-                _buildable[x][y] = false;
+		auto resourceType = resource->getType();
+		for (int x = tileX; x < tileX + resourceType.tileWidth(); ++x)
+		{
+			for (int y = tileY; y < tileY + resourceType.tileHeight(); ++y)
+			{
+				_buildable[x][y] = false;
 
-                // depots can't be built within 3 tiles of any resource
-                for (int rx=-3; rx<=3; rx++)
-                {
-                    for (int ry=-3; ry<=3; ry++)
-                    {
-                        if (!BWAPI::TilePosition(x+rx, y+ry).isValid())
-                        {
-                            continue;
-                        }
+				// depots can't be built within 3 tiles of any resource
+				for (int rx = -3; rx <= 3; rx++)
+				{
+					for (int ry = -3; ry <= 3; ry++)
+					{
+						if (!BWAPI::TilePosition(x + rx, y + ry).isValid())
+						{
+							continue;
+						}
 
-                        _depotBuildable[x+rx][y+ry] = false;
-                    }
-                }
-            }
-        }
+						_depotBuildable[x + rx][y + ry] = false;
+					}
+				}
+			}
+		}
     }
 }
 
@@ -259,43 +261,9 @@ const std::vector<BWAPI::TilePosition> & MapTools::getClosestTilesTo(BWAPI::Posi
     return getClosestTilesTo(BWAPI::TilePosition(pos));
 }
 
-void MapTools::parseMap()
-{
-	_logger.log("Parsing Map Information");
-    std::ofstream mapFile;
-    std::string file = "c:\\scmaps\\" + BWAPI::Broodwar->mapName() + ".txt";
-    mapFile.open(file.c_str());
-
-    mapFile << _width*4 << "\n";
-    mapFile << _height*4 << "\n";
-
-	for (size_t j = 0; j < _height * 4; j++)
-	{
-		for (size_t i = 0; i < _width * 4; i++)
-		{
-			if (BWAPI::Broodwar->isWalkable(i, j))
-			{
-				mapFile << "0";
-			}
-			else
-			{
-				mapFile << "1";
-			}
-		}
-
-		mapFile << "\n";
-	}
-
-	_logger.log(file.c_str());
-
-    mapFile.close();
-}
-
 // get units within radius of center and add to units
 void MapTools::GetUnitsInRadius(std::vector<BWAPI::Unit> & units, BWAPI::Position center, int radius, bool ourUnits, bool oppUnits)
 {
-    const int radiusSquared = radius * radius;
-
     if (ourUnits)
     {
         for (const BWAPI::Unit & unit : BWAPI::Broodwar->self()->getUnits())

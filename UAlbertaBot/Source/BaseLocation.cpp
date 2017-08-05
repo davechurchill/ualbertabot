@@ -7,30 +7,34 @@ using namespace UAlbertaBot;
 
 const int NearBaseLocationTileDistance = 20;
 
-BaseLocation::BaseLocation(const AKBot::OpponentView& opponentView, const MapTools& mapTools, int baseID)
+BaseLocation::BaseLocation(std::shared_ptr<AKBot::OpponentView> opponentView, shared_ptr<MapTools> mapTools, int baseID)
     : _opponentView(opponentView)
 	, _mapTools(mapTools)
 	, _baseID               (baseID)
     , _isStartLocation      (false)
+	, _geyserPositions(0)
+	, _mineralPositions(0)
+	, _geysers(0)
+	, _minerals(0)
     , _left                 (std::numeric_limits<int>::max())
     , _right                (std::numeric_limits<int>::min())
     , _top                  (std::numeric_limits<int>::max())
     , _bottom               (std::numeric_limits<int>::min())
 {
-	auto self = opponentView.self();
+	auto self = opponentView->self();
     _isPlayerStartLocation[self] = false;
     _isPlayerOccupying[self] = false;
-	for (const auto& enemyPlayer : opponentView.enemies())
+	for (const auto& enemyPlayer : opponentView->enemies())
 	{
 		_isPlayerStartLocation[enemyPlayer] = false;
 		_isPlayerOccupying[enemyPlayer] = false;
 	}
 }
 
-BaseLocation::BaseLocation(const AKBot::OpponentView& opponentView, const MapTools& mapTools, int baseID, const std::vector<BWAPI::Unit> & resources)
+BaseLocation::BaseLocation(std::shared_ptr<AKBot::OpponentView> opponentView, shared_ptr<MapTools> mapTools, int baseID, const std::vector<BWAPI::Unit> & resources)
     : BaseLocation(opponentView, mapTools, baseID)
 {
-	auto self = opponentView.self();
+	auto self = opponentView->self();
 
     // add each of the resources to its corresponding container
     for (auto & resource : resources)
@@ -61,7 +65,7 @@ BaseLocation::BaseLocation(const AKBot::OpponentView& opponentView, const MapToo
 
     // compute this BaseLocation's DistanceMap, which will compute the ground distance
     // from the center of its recourses to every other tile on the map
-    _distanceMap = _mapTools.getDistanceMap(_centerOfResources);
+    _distanceMap = _mapTools->getDistanceMap(_centerOfResources);
 
     // check to see if this is a start location for the map
     for (auto & tilePos : BWAPI::Broodwar->getStartLocations())
@@ -92,7 +96,7 @@ BaseLocation::BaseLocation(const AKBot::OpponentView& opponentView, const MapToo
             // this means we are positioning the center of the resouce depot
             BWAPI::TilePosition buildTile(tile.x - 1, tile.y - 1);
 			auto resourceDepot = UnitUtil::getResourceDepot(self->getRace());
-            if (_mapTools.isBuildable(buildTile, resourceDepot))
+            if (_mapTools->isBuildable(buildTile, resourceDepot))
             {
                 _depotTile = buildTile;
                 _position = BWAPI::Position(buildTile);

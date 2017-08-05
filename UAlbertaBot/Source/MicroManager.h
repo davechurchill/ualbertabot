@@ -27,8 +27,8 @@ class MicroManager
 protected:
 	
 	SquadOrder			order;
-	const BaseLocationManager& bases;
-	const AKBot::OpponentView& opponentView;
+	shared_ptr<BaseLocationManager> bases;
+	shared_ptr<AKBot::OpponentView> opponentView;
 
 	virtual void        executeMicro(const std::vector<BWAPI::Unit> & targets, int currentFrame) = 0;
 	bool                checkPositionWalkable(BWAPI::Position pos);
@@ -36,13 +36,13 @@ protected:
     
 
 public:
-						MicroManager(const AKBot::OpponentView& opponentView, const BaseLocationManager& bases);
+						MicroManager(shared_ptr<AKBot::OpponentView> opponentView, shared_ptr<BaseLocationManager> bases);
 
 	const std::vector<BWAPI::Unit> & getUnits() const;
 
 	void				setUnits(const std::vector<BWAPI::Unit> & u);
-	void				execute(const MapTools & map, const SquadOrder & order, int currentFrame);
-	void				regroup(const MapTools & map, const BWAPI::Position & regroupPosition, int currentFrame) const;
+	void				execute(shared_ptr<MapTools> map, const SquadOrder & order, int currentFrame);
+	void				regroup(shared_ptr<MapTools> map, const BWAPI::Position & regroupPosition, int currentFrame) const;
 
 };
 }

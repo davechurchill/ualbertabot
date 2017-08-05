@@ -11,8 +11,7 @@ class MicroManager;
 class DetectorManager : public MicroManager
 {
 	std::map<BWAPI::Unit, bool>	cloakedUnitMap;
-	const MapTools& _mapTools;
-	const BaseLocationManager& _bases;
+	shared_ptr<MapTools> _mapTools;
 
 	bool isAssigned(BWAPI::Unit unit);
 
@@ -20,7 +19,7 @@ class DetectorManager : public MicroManager
 
 public:
 
-	DetectorManager(const AKBot::OpponentView& opponentView, const MapTools& mapTool, const BaseLocationManager& basess);
+	DetectorManager(shared_ptr<AKBot::OpponentView> opponentView, shared_ptr<MapTools> mapTool, shared_ptr<BaseLocationManager> basess);
 	~DetectorManager() {}
 
 	void setUnitClosestToEnemy(BWAPI::Unit unit) { unitClosestToEnemy = unit; }

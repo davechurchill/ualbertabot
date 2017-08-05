@@ -24,9 +24,9 @@ class ProductionManager
     bool                _haveLocationForThisBuilding;
 	const StrategyManager& _strategyManager;
 	const UnitInfoManager& _unitInfo;
-	WorkerManager& _workerManager;
-	const AKBot::OpponentView& _opponentView;
-	const AKBot::Logger& _logger;
+	shared_ptr<WorkerManager> _workerManager;
+	shared_ptr<AKBot::OpponentView> _opponentView;
+	shared_ptr<AKBot::Logger> _logger;
     
     BWAPI::Unit         getClosestUnitToPosition(const std::vector<BWAPI::Unit> & units,BWAPI::Position closestTo);
     BWAPI::Unit         selectUnitOfType(BWAPI::UnitType type,BWAPI::Position closestTo = BWAPI::Position(0,0));
@@ -48,14 +48,14 @@ class ProductionManager
 public:
     
     ProductionManager(
-		const AKBot::OpponentView& opponentView,
+		shared_ptr<AKBot::OpponentView> opponentView,
 		BOSSManager & bossManager,
 		const StrategyManager& strategyManager,
-		WorkerManager& workerManager,
+		shared_ptr<WorkerManager> workerManager,
 		const UnitInfoManager& unitInfo,
-		const BaseLocationManager& bases,
-		const MapTools& mapTools,
-		const AKBot::Logger& logger);
+		shared_ptr<BaseLocationManager> bases,
+		shared_ptr<MapTools> mapTools,
+		std::shared_ptr<AKBot::Logger> logger);
     
     void        onStart();
     void        update(int currentFrame);
@@ -66,7 +66,7 @@ public:
 	const StrategyManager& getStrategyManager() const;
 	const BuildingManager& getBuildingManager() const { return _buildingManager; }
 	const BOSSManager& getBOSSManager() const { return _bossManager; }
-	const AKBot::OpponentView& getOpponentView() const { return _opponentView; }
+	const shared_ptr<AKBot::OpponentView> getOpponentView() const { return _opponentView; }
 	const BuildOrderQueue& getBuildOrderQueue() const { return _queue; }
 };
 

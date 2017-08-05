@@ -20,8 +20,8 @@ class TransportManager : public MicroManager
 	BWAPI::Position					_to;
 	BWAPI::Position					_from;
 	AKBot::PlayerLocationProvider&	_locationProvider;
-	const AKBot::Logger& _logger;
-	const MapTools& _mapTools;
+	shared_ptr<AKBot::Logger> _logger;
+	shared_ptr<MapTools> _mapTools;
 
 	void							calculateMapEdgeVertices();
 	void							moveTransport(int currentFrame);
@@ -36,14 +36,14 @@ class TransportManager : public MicroManager
 public:
 
 	TransportManager(
-		const AKBot::OpponentView& opponentView,
-		const BaseLocationManager& bases,
+		shared_ptr<AKBot::OpponentView> opponentView,
+		shared_ptr<BaseLocationManager> bases,
 		AKBot::PlayerLocationProvider& locationProvider,
-		const MapTools& mapTools,
-		const AKBot::Logger& logger);
+		shared_ptr<MapTools> mapTools,
+		std::shared_ptr<AKBot::Logger> logger);
 
 	void							executeMicro(const std::vector<BWAPI::Unit> & targets, int currentFrame) override;
-	void							update(const MapTools& mapTools, int currentFrame);
+	void							update(shared_ptr<MapTools> mapTools, int currentFrame);
 	void							setTransportShip(BWAPI::UnitInterface * unit);
 	void							setFrom(BWAPI::Position from);
 	void							setTo(BWAPI::Position to);

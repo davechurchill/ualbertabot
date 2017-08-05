@@ -8,9 +8,9 @@ namespace AKBot
 
 	class ScoutManagerDebug
 	{
-		const ScoutManager& _scoutManager;
+		shared_ptr<ScoutManager> _scoutManager;
 	public:
-		ScoutManagerDebug(const ScoutManager& scoutManager);
+		ScoutManagerDebug(shared_ptr<ScoutManager> scoutManager);
 		void drawScoutInformation(AKBot::ScreenCanvas& canvas, int x, int y) const;
 	};
 }

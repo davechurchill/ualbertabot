@@ -9,12 +9,12 @@ namespace AKBot
 	class UnitInfoManagerDebug
 	{
 		const UnitInfoManager& _unitInfo;
-		const OpponentView& _opponentView;
+		std::shared_ptr<OpponentView> _opponentView;
 
 		void drawExtendedInterface(ScreenCanvas& canvas) const;
 		void drawUnitInformation(ScreenCanvas& canvas, int x, int y) const;
 	public:
-		UnitInfoManagerDebug(const OpponentView& opponentView, const UnitInfoManager& unitInfo);
+		UnitInfoManagerDebug(std::shared_ptr<OpponentView> opponentView, const UnitInfoManager& unitInfo);
 		void draw(ScreenCanvas& canvas) const;
 	};
 }

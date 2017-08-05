@@ -11,6 +11,7 @@ class BotModule
 public:
 
     BotModule();
+	~BotModule() = default;
 
     virtual void onStart() = 0;
     virtual void onFrame() = 0;
