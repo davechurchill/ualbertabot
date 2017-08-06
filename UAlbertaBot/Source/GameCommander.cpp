@@ -21,14 +21,6 @@ GameCommander::GameCommander(
 	, _combatCommander(combatCommander)
 	, _bossManager(bossManager)
 {
-	_scoutManager->onScoutAssigned([this](const BWAPI::Unit &unit, int currentFrame)
-	{
-		_workerManager->setScoutWorker(unit, currentFrame);
-	});
-	_scoutManager->onScoutReleased([this](const BWAPI::Unit &unit, int currentFrame)
-	{
-		_workerManager->finishedWithWorker(unit, currentFrame);
-	});
 }
 
 void GameCommander::onStart()

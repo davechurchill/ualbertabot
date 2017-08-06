@@ -34,7 +34,7 @@ class CombatCommander
     BWAPI::Unit     findClosestWorkerToTarget(std::vector<BWAPI::Unit> & unitsToAssign, BWAPI::Unit target);
 
 	BWAPI::Position getDefendLocation();
-    BWAPI::Position getMainAttackLocation();
+    BWAPI::Position getMainAttackLocation(BWAPI::Position squadPosition);
 
     void            initializeSquads();
     void            verifySquadUniqueMembership();
@@ -52,7 +52,10 @@ class CombatCommander
 
     int             numZerglingsInOurBase();
     bool            beingBuildingRushed();
-
+	bool findEnemyBaseLocation(BWAPI::Position& basePosition);
+	bool findEnemyBuilding(BWAPI::Position& buildingPosition);
+	// Find enemy unit which is closest to the given position.
+	bool findEnemyUnit(BWAPI::Position targetPosition, BWAPI::Position& unitPosition);
 public:
 
 	CombatCommander(

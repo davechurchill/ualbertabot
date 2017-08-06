@@ -1,9 +1,14 @@
 #include "CombatCommander.h"
 #include "UnitUtil.h"
 #include "Global.h"
+#include <boost/range/adaptors.hpp>
+#include <boost/range/algorithm.hpp>
+#include <boost/generator_iterator.hpp>
 
 using namespace UAlbertaBot;
 using namespace AKBot;
+
+using boost::adaptors::filtered;
 
 const size_t IdlePriority = 0;
 const size_t AttackPriority = 1;
@@ -38,11 +43,16 @@ CombatCommander::CombatCommander(
 
 void CombatCommander::initializeSquads()
 {
-    SquadOrder idleOrder(SquadOrderTypes::Idle, BWAPI::Position(_opponentView->self()->getStartLocation()), 100, "Chill Out");
+	auto startPosition = BWAPI::Position(_opponentView->self()->getStartLocation());
+    SquadOrder idleOrder(SquadOrderTypes::Idle, startPosition, 100, "Chill Out");
 	_squadData.addSquad("Idle", idleOrder, IdlePriority);
 
     // the main attack squad that will pressure the enemy's closest base location
-    SquadOrder mainAttackOrder(SquadOrderTypes::Attack, getMainAttackLocation(), 800, "Attack Enemy Base");
+    SquadOrder mainAttackOrder(
+		SquadOrderTypes::Attack,
+		getMainAttackLocation(startPosition),
+		800,
+		"Attack Enemy Base");
 	_squadData.addSquad("MainAttack", mainAttackOrder, AttackPriority);
 
     BWAPI::Position ourBasePosition = BWAPI::Position(_opponentView->self()->getStartLocation());
@@ -104,21 +114,25 @@ void CombatCommander::updateAttackSquads()
 {
     Squad & mainAttackSquad = _squadData.getSquad("MainAttack");
 
+	auto hydralistCount = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hydralisk);
     for (auto & unit : _combatUnits)
     {
-        if (unit->getType() == BWAPI::UnitTypes::Zerg_Scourge && UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hydralisk) < 30)
+        if (unit->getType() == BWAPI::UnitTypes::Zerg_Scourge
+			&& hydralistCount < 30)
         {
             continue;
         }
 
         // get every unit of a lower priority and put it into the attack squad
-        if (!unit->getType().isWorker() && (unit->getType() != BWAPI::UnitTypes::Zerg_Overlord) && _squadData.canAssignUnitToSquad(unit, mainAttackSquad))
+        if (!unit->getType().isWorker() 
+			&& (unit->getType() != BWAPI::UnitTypes::Zerg_Overlord) 
+			&& _squadData.canAssignUnitToSquad(unit, mainAttackSquad))
         {
             _squadData.assignUnitToSquad(unit, mainAttackSquad);
         }
     }
 
-    SquadOrder mainAttackOrder(SquadOrderTypes::Attack, getMainAttackLocation(), 800, "Attack Enemy Base");
+    SquadOrder mainAttackOrder(SquadOrderTypes::Attack, getMainAttackLocation(mainAttackSquad.calcCenter()), 800, "Attack Enemy Base");
     mainAttackSquad.setSquadOrder(mainAttackOrder);
 }
 
@@ -178,7 +192,7 @@ void CombatCommander::updateDropSquads()
     // otherwise the drop squad is full, so execute the order
     else
     {
-        SquadOrder dropOrder(SquadOrderTypes::Drop, getMainAttackLocation(), 800, "Attack Enemy Base");
+        SquadOrder dropOrder(SquadOrderTypes::Drop, getMainAttackLocation(dropSquad.calcCenter()), 800, "Attack Enemy Base");
         dropSquad.setSquadOrder(dropOrder);
     }
 }
@@ -475,63 +489,27 @@ BWAPI::Position CombatCommander::getDefendLocation()
 	return _baseLocationManager->getPlayerStartingBaseLocation(_opponentView->self())->getPosition();
 }
 
-BWAPI::Position CombatCommander::getMainAttackLocation()
+BWAPI::Position CombatCommander::getMainAttackLocation(BWAPI::Position squadPosition)
 {
     // First choice: Attack an enemy region if we can see units inside it
-	for (auto& enemyPlayer : _opponentView->enemies())
+	BWAPI::Position enemyBasePosition;
+	if (findEnemyBaseLocation(enemyBasePosition))
 	{
-		const BaseLocation * enemyBaseLocation = _baseLocationManager->getPlayerStartingBaseLocation(enemyPlayer);
-		if (enemyBaseLocation)
-		{
-			BWAPI::Position enemyBasePosition = enemyBaseLocation->getPosition();
-
-			// If the enemy base hasn't been seen yet, go there.
-			if (!BWAPI::Broodwar->isExplored(BWAPI::TilePosition(enemyBasePosition)))
-			{
-				return enemyBasePosition;
-			}
-
-			// get all known enemy units in the area
-			std::vector<BWAPI::Unit> enemyUnitsInArea;
-			_mapTools->GetUnitsInRadius(enemyUnitsInArea, enemyBasePosition, 800, false, true);
-
-			for (auto & unit : enemyUnitsInArea)
-			{
-				if (unit->getType() != BWAPI::UnitTypes::Zerg_Overlord)
-				{
-					// Enemy base is not empty: It's not only overlords in the enemy base area.
-					return enemyBasePosition;
-				}
-			}
-		}
+		return enemyBasePosition;
 	}
 
-    // Second choice: Attack known enemy buildings
-	for (auto& enemyPlayer : _opponentView->enemies())
+	// Second choice: Attack known enemy buildings
+	BWAPI::Position enemyBuildingPosition;
+	if (findEnemyBuilding(enemyBuildingPosition))
 	{
-		for (const auto & kv : _unitInfo->getUnitInfoMap(enemyPlayer))
-		{
-			const UnitInfo & ui = kv.second;
-
-			if (ui.type.isBuilding() && ui.lastPosition != BWAPI::Positions::None)
-			{
-				return ui.lastPosition;
-			}
-		}
+		return enemyBuildingPosition;
 	}
 
     // Third choice: Attack visible enemy units that aren't overlords
-    for (auto & unit : UnitUtil::getEnemyUnits())
+	BWAPI::Position unitPosition;
+	if (findEnemyUnit(squadPosition, unitPosition))
 	{
-        if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord)
-        {
-            continue;
-        }
-
-		if (UnitUtil::IsValidUnit(unit) && unit->isVisible())
-		{
-			return unit->getPosition();
-		}
+		return unitPosition;
 	}
 
     // Fourth choice: We can't see anything so explore the map attacking along the way
@@ -641,6 +619,113 @@ bool CombatCommander::beingBuildingRushed()
     }
 
     return false;
+}
+
+bool UAlbertaBot::CombatCommander::findEnemyBaseLocation(BWAPI::Position & basePosition)
+{
+	for (auto& enemyPlayer : _opponentView->enemies())
+	{
+		const BaseLocation * enemyBaseLocation = _baseLocationManager->getPlayerStartingBaseLocation(enemyPlayer);
+		if (enemyBaseLocation)
+		{
+			BWAPI::Position enemyBasePosition = enemyBaseLocation->getPosition();
+
+			// If the enemy base hasn't been seen yet, go there.
+			if (!BWAPI::Broodwar->isExplored(BWAPI::TilePosition(enemyBasePosition)))
+			{
+				basePosition = enemyBasePosition;
+				return true;
+			}
+
+			// get all known enemy units in the area
+			std::vector<BWAPI::Unit> enemyUnitsInArea;
+			UnitUtil::getUnitsInRadius(enemyUnitsInArea, enemyBasePosition, 800, false, true);
+
+			for (auto & unit : enemyUnitsInArea)
+			{
+				if (unit->getType() != BWAPI::UnitTypes::Zerg_Overlord)
+				{
+					// Enemy base is not empty: It's not only overlords in the enemy base area.
+					basePosition = enemyBasePosition;
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
+bool UAlbertaBot::CombatCommander::findEnemyBuilding(BWAPI::Position & buildingPosition)
+{
+	for (auto& enemyPlayer : _opponentView->enemies())
+	{
+		for (const auto & kv : _unitInfo->getUnitInfoMap(enemyPlayer))
+		{
+			const UnitInfo & ui = kv.second;
+
+			if (ui.type.isBuilding() && ui.lastPosition != BWAPI::Positions::None)
+			{
+				buildingPosition = ui.lastPosition;
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+bool UAlbertaBot::CombatCommander::findEnemyUnit(BWAPI::Position targetPosition, BWAPI::Position & unitPosition)
+{
+	auto validUnitTypes = [this](const BWAPI::Unit& unit) {
+		return unit->getType() != BWAPI::UnitTypes::Zerg_Overlord;
+	};
+	auto visibleUnits = [this](const BWAPI::Unit& unit) {
+		return unit->isVisible();
+	};
+	auto distanceComparator = [&targetPosition](BWAPI::Unit a, BWAPI::Unit b) -> bool {
+		return targetPosition.getDistance(a->getPosition()) > targetPosition.getDistance(b->getPosition());
+	};
+
+	bool takeFirst = true;
+	BWAPI::Unit lastUnit = nullptr;
+	for (auto& unit : UnitUtil::getEnemyUnits())
+	{
+		if (!validUnitTypes(unit))
+		{
+			continue;
+		}
+
+		if (!UnitUtil::IsValidUnit(unit))
+		{
+			continue;
+		}
+
+		if (!visibleUnits(unit))
+		{
+			continue;
+		}
+
+		if (lastUnit == nullptr)
+		{
+			lastUnit = unit;
+			unitPosition = unit->getPosition();
+			// If we take first unit only, then stop search there.
+			if (takeFirst) {
+				break;
+			}
+		}
+		else
+		{
+			if (distanceComparator(unit, lastUnit))
+			{
+				lastUnit = unit;
+				unitPosition = unit->getPosition();
+			}
+		}
+	}
+
+	return lastUnit != nullptr;
 }
 
 const SquadData& CombatCommander::getSquadData() const

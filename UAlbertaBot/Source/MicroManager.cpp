@@ -1,6 +1,7 @@
 #include "MicroManager.h"
 #include "Global.h"
 #include "Micro.h"
+#include "UnitUtil.h"
 
 using namespace UAlbertaBot;
 
@@ -31,17 +32,17 @@ void MicroManager::execute(shared_ptr<MapTools> map, const SquadOrder & inputOrd
 	// if the order is to defend, we only care about units in the radius of the defense
 	if (order.getType() == SquadOrderTypes::Defend)
 	{
-		map->GetUnitsInRadius(nearbyEnemies, order.getPosition(), order.getRadius(), false, true);
+		UnitUtil::getUnitsInRadius(nearbyEnemies, order.getPosition(), order.getRadius(), false, true);
 	
 	} // otherwise we want to see everything on the way
 	else if (order.getType() == SquadOrderTypes::Attack) 
 	{
-		map->GetUnitsInRadius(nearbyEnemies, order.getPosition(), order.getRadius(), false, true);
+		UnitUtil::getUnitsInRadius(nearbyEnemies, order.getPosition(), order.getRadius(), false, true);
 		for (auto & unit : _units) 
 		{
 			BWAPI::Unit u = unit;
 			BWAPI::UnitType t = u->getType();
-			map->GetUnitsInRadius(nearbyEnemies, unit->getPosition(), order.getRadius(), false, true);
+			UnitUtil::getUnitsInRadius(nearbyEnemies, unit->getPosition(), order.getRadius(), false, true);
 		}
 	}
 

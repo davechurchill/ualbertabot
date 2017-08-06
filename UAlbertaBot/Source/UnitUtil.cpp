@@ -247,3 +247,28 @@ const BWAPI::UnitType UnitUtil::getResourceDepot(const BWAPI::Race& race)
 	};
 	return baseTypes[race.getID()];
 }
+
+void UAlbertaBot::UnitUtil::getUnitsInRadius(std::vector<BWAPI::Unit>& units, BWAPI::Position center, int radius, bool ourUnits, bool oppUnits)
+{
+	if (ourUnits)
+	{
+		for (const BWAPI::Unit & unit : BWAPI::Broodwar->self()->getUnits())
+		{
+			if (unit->getPosition().getDistance(center) <= radius)
+			{
+				units.push_back(unit);
+			}
+		}
+	}
+
+	if (oppUnits)
+	{
+		for (const auto & unit : UnitUtil::getEnemyUnits())
+		{
+			if (unit->getPosition().getDistance(center) <= radius)
+			{
+				units.push_back(unit);
+			}
+		}
+	}
+}

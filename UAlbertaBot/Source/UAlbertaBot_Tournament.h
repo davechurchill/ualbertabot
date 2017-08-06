@@ -19,8 +19,10 @@ class UAlbertaBot_Tournament : public BotModule
 {
 	shared_ptr<MapTools> _mapTools;
 	shared_ptr<BaseLocationManager> _baseLocationManager;
-    GameCommander       _gameCommander;
+	shared_ptr<ScoutManager> _scoutManager;
 	shared_ptr<AutoObserver> _autoObserver;
+
+    GameCommander       _gameCommander;
 	shared_ptr<UnitInfoManager>     _unitInfoManager;
 	ProductionManager	_productionManager;
 	BOSSManager         _bossManager;
@@ -28,7 +30,6 @@ class UAlbertaBot_Tournament : public BotModule
 	CombatCommander     _combatCommander;
 	AKBot::BWAPIScreenCanvas _canvas;
     shared_ptr<WorkerManager> _workerManager;
-	shared_ptr<ScoutManager> _scoutManager;
 	shared_ptr<AKBot::OpponentView> _opponentView;
 
 	void drawDebugInformation(AKBot::ScreenCanvas& _canvas);
@@ -40,9 +41,9 @@ public:
 		unique_ptr<AutoObserver> autoObserver,
 		shared_ptr<StrategyManager> strategyManager,
 		shared_ptr<UnitInfoManager> unitInfoManager,
-		shared_ptr<MapTools> mapTools,
+		unique_ptr<MapTools> mapTools,
 		shared_ptr<WorkerManager> workerManager,
-		shared_ptr<ScoutManager> scoutManager,
+		unique_ptr<ScoutManager> scoutManager,
 		shared_ptr<AKBot::Logger> logger);
     ~UAlbertaBot_Tournament();
 

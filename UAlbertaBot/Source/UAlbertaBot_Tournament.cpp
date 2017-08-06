@@ -20,9 +20,9 @@ UAlbertaBot_Tournament::UAlbertaBot_Tournament(
 	unique_ptr<AutoObserver> autoObserver,
 	shared_ptr<StrategyManager> strategyManager,
 	shared_ptr<UnitInfoManager> unitInfoManager,
-	shared_ptr<MapTools> mapTools,
+	unique_ptr<MapTools> mapTools,
 	shared_ptr<WorkerManager> workerManager,
-	shared_ptr<ScoutManager> scoutManager,
+	unique_ptr<ScoutManager> scoutManager,
 	shared_ptr<AKBot::Logger> logger)
 	: _opponentView(opponentView)
 	, _baseLocationManager(std::move(baseLocationManager))
@@ -31,15 +31,24 @@ UAlbertaBot_Tournament::UAlbertaBot_Tournament(
 	, _autoObserver(std::move(autoObserver))
 	, _unitInfoManager(unitInfoManager)
 	, _strategyManager(strategyManager)
-	, _mapTools(mapTools)
-	, _scoutManager(scoutManager)
-	, _productionManager(opponentView, _bossManager, strategyManager, workerManager, unitInfoManager, _baseLocationManager, mapTools, logger)
-	, _combatCommander(_baseLocationManager, opponentView, workerManager, unitInfoManager, mapTools, logger)
-	, _gameCommander(opponentView, _bossManager, _combatCommander, scoutManager, _productionManager, workerManager)
+	, _mapTools(std::move(mapTools))
+	, _scoutManager(std::move(scoutManager))
+	, _productionManager(opponentView, _bossManager, strategyManager, workerManager, unitInfoManager, _baseLocationManager, _mapTools, logger)
+	, _combatCommander(_baseLocationManager, opponentView, workerManager, unitInfoManager, _mapTools, logger)
+	, _gameCommander(opponentView, _bossManager, _combatCommander, _scoutManager, _productionManager, workerManager)
 {
 	// parse the configuration file for the bot's strategies
 	auto configurationFile = ParseUtils::FindConfigurationLocation(Config::ConfigFile::ConfigFileLocation);
 	ParseUtils::ParseStrategy(configurationFile, _strategyManager);
+
+	_scoutManager->onScoutAssigned([this](const BWAPI::Unit &unit, int currentFrame)
+	{
+		_workerManager->setScoutWorker(unit, currentFrame);
+	});
+	_scoutManager->onScoutReleased([this](const BWAPI::Unit &unit, int currentFrame)
+	{
+		_workerManager->finishedWithWorker(unit, currentFrame);
+	});
 }
 
 UAlbertaBot_Tournament::~UAlbertaBot_Tournament()

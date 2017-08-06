@@ -75,5 +75,13 @@ namespace UnitUtil
 
 	UnitCollection getEnemyUnits();
 	const BWAPI::UnitType getResourceDepot(const BWAPI::Race& race);
+
+	// get units within radius of center and add to units
+	void getUnitsInRadius(
+		std::vector<BWAPI::Unit> & units,
+		BWAPI::Position center,
+		int radius,
+		bool ourUnits,
+		bool oppUnits);
 };
 }

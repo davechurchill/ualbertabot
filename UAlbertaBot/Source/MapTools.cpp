@@ -261,32 +261,6 @@ const std::vector<BWAPI::TilePosition> & MapTools::getClosestTilesTo(BWAPI::Posi
     return getClosestTilesTo(BWAPI::TilePosition(pos));
 }
 
-// get units within radius of center and add to units
-void MapTools::GetUnitsInRadius(std::vector<BWAPI::Unit> & units, BWAPI::Position center, int radius, bool ourUnits, bool oppUnits)
-{
-    if (ourUnits)
-    {
-        for (const BWAPI::Unit & unit : BWAPI::Broodwar->self()->getUnits())
-        {
-            if (unit->getPosition().getDistance(center) <= radius)
-            {
-                units.push_back(unit);
-            }
-        }
-    }
-
-    if (oppUnits)
-    {
-        for (const auto & unit : UnitUtil::getEnemyUnits())
-        {
-            if (unit->getPosition().getDistance(center) <= radius)
-            {
-                units.push_back(unit);
-            }
-        }
-    }
-}
-
 const int & MapTools::getSectorNumber(const BWAPI::TilePosition & tile) const
 {
     UAB_ASSERT(tile.isValid(), "Getting sector number of invalid tile");
