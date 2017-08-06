@@ -100,7 +100,7 @@ void BaseLocationManager::onStart(shared_ptr<MapTools> map)
     UAB_ASSERT(_playerStartingBaseLocations[_opponentView->self()] != nullptr, "We didn't set a valid selfStartLocation in BaseLocations");
 }
 
-void BaseLocationManager::update(const UnitInfoManager & unitManager)
+void BaseLocationManager::update(shared_ptr<UnitInfoManager> unitManager)
 {   
     // reset the player occupation information for each location
 	resetPlayerOccupation();
@@ -132,7 +132,7 @@ void BaseLocationManager::update(const UnitInfoManager & unitManager)
 	// update enemy base occupations
 	for (const auto& enemyPlayer : _opponentView->enemies())
 	{
-		for (const auto & kv : unitManager.getUnitInfoMap(enemyPlayer))
+		for (const auto & kv : unitManager->getUnitInfoMap(enemyPlayer))
 		{
 			const UnitInfo & ui = kv.second;
 

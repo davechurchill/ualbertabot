@@ -7,7 +7,7 @@ using namespace AKBot;
 SquadData::SquadData(
 	AKBot::PlayerLocationProvider& locationProvider,
 	shared_ptr<AKBot::OpponentView> opponentView,
-	const UnitInfoManager& unitInfo,
+	shared_ptr<UnitInfoManager> unitInfo,
 	shared_ptr<BaseLocationManager> bases,
 	shared_ptr<MapTools> mapTools,
 	std::shared_ptr<AKBot::Logger> logger)

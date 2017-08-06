@@ -46,6 +46,95 @@ void UAlbertaBot_BWAPIReconnect()
     }
 }
 
+template <class, class TScope>
+class session_scope {
+	class session_guard {
+	public:
+		explicit session_guard(bool& guard) : guard_(guard) { guard = true; }
+		~session_guard() { guard_ = false; }
+
+	private:
+		bool& guard_;
+	};
+
+public:
+	template <class TExpected, class TGiven>
+	class scope {
+		using scope_type = typename TScope::template scope<TExpected, TGiven>;
+
+	public:
+		template <class T>
+		using is_referable = typename scope_type::template is_referable<T>;
+
+		template <class T, class TName, class TProvider>
+#if defined(__MSVC__)
+		static auto try_create(const TProvider& provider)->T;
+#else
+		static auto try_create(const TProvider& provider) -> decltype(scope_type{}.template try_create<T, TName>(provider));
+#endif
+
+		template <class T, class TName, class TProvider>
+		auto create(const TProvider& provider) {
+			static std::shared_ptr<TGiven> null{ nullptr };
+			return get_session() ? scope_.template create<T, TName>(provider) : null;
+		}
+
+	private:
+		scope_type scope_;
+	};
+
+	auto operator()() const { return session_guard{ get_session() }; }
+
+private:
+	static auto& get_session() {
+		static auto is_in_session = false;
+		return is_in_session;
+	}
+};
+
+template <class TName, class TScope = di::scopes::singleton>
+auto session(const TName&, const TScope& = {}) {
+	return session_scope<TName, TScope>{};
+}
+auto my_session = [] {};
+
+class scoped_scope {
+public:
+	template <class, class T>
+	class scope {
+	public:
+		template <class T_>
+		using is_referable = typename di::wrappers::shared<scoped_scope, T>::template is_referable<T_>;
+
+		template <class, class, class TProvider, class T_ = di::aux::decay_t<decltype(di::aux::declval<TProvider>().get())>>
+		static decltype(di::wrappers::shared<scoped_scope, T_>{
+			std::shared_ptr<T_>{std::shared_ptr<T_>{di::aux::declval<TProvider>().get()}}})
+			try_create(const TProvider &);
+
+			template <class T_, class, class TProvider>
+			auto create(const TProvider &provider) {
+				return create_impl<di::aux::decay_t<decltype(provider.get())>>(provider);
+			}
+
+			scope() = default;
+			scope(scope &&other) noexcept : object_(other.object_) { other.object_ = nullptr; }
+			~scope() noexcept { delete object_; }
+
+	private:
+		template <class, class TProvider>
+		auto create_impl(const TProvider &provider) {
+			if (!object_) {
+				object_ = new std::shared_ptr<T>{ provider.get() };
+			}
+			return di::wrappers::shared<scoped_scope, T, std::shared_ptr<T> &>{*object_};
+		}
+
+		std::shared_ptr<T> *object_ = nullptr;
+	};
+};
+
+static constexpr scoped_scope scoped{};
+
 class BotPlayer
 {
 	unique_ptr<BotModule> m;
@@ -100,19 +189,20 @@ BotPlayer createBot(const std::string& mode) {
 	};
 	auto injector = di::make_injector(
 		base_bot_module(),
-		di::bind<BotModule>().to([&](const auto& injector) -> unique_ptr<BotModule> {
+		/*di::bind<BotModule>().to([&](const auto& injector) -> BotModule&& {
 			if (mode == "Tournament") {
-				return injector.template create<unique_ptr<UAlbertaBot_Tournament>>();
+				return injector.template create<UAlbertaBot_Tournament&&>();
 			}
 			else if (mode == "Arena") {
-				return injector.template create<unique_ptr<UAlbertaBot_Arena>>();
+				return injector.template create<UAlbertaBot_Arena&&>();
 			}
 			else {
 				return nullptr;
 			}
-		})
+		}).in(di::unique)*/
+		di::bind<BotModule>().to<UAlbertaBot_Tournament>().in(di::unique)
 	);
-	// injector.create<ScoutManager>();
+	//injector.create<ScoutManager>();
 
 	// The UAlbertaBot module which will handle all the game logic
 	// All Starcraft logic is in this object, when it destructs it's all cleaned up for the next game
@@ -159,13 +249,13 @@ int main(int argc, const char * argv[])
 
 				std::string botMode = Config::BotInfo::BotMode;
 				auto m = createBot(botMode);
-				m.UAlbertaBot_PlayGame();
 				if (!m.isValid())
 				{
 					std::cerr << "Unknown bot module selected: " << botMode << "\n";
 					exit(-1);
 				}
 
+				m.UAlbertaBot_PlayGame();
                 //UAlbertaBot_PlayGame(m);
             }
         }

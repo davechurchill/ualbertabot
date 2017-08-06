@@ -18,16 +18,16 @@ namespace UAlbertaBot
 class UAlbertaBot_Tournament : public BotModule
 {
 	shared_ptr<MapTools> _mapTools;
+	shared_ptr<BaseLocationManager> _baseLocationManager;
     GameCommander       _gameCommander;
-    AutoObserver        _autoObserver;
-    UnitInfoManager     _unitInfoManager;
+	shared_ptr<AutoObserver> _autoObserver;
+	shared_ptr<UnitInfoManager>     _unitInfoManager;
 	ProductionManager	_productionManager;
 	BOSSManager         _bossManager;
-    StrategyManager     _strategyManager;
+	shared_ptr<StrategyManager> _strategyManager;
 	CombatCommander     _combatCommander;
 	AKBot::BWAPIScreenCanvas _canvas;
     shared_ptr<WorkerManager> _workerManager;
-	shared_ptr<BaseLocationManager> _baseLocationManager;
 	shared_ptr<ScoutManager> _scoutManager;
 	shared_ptr<AKBot::OpponentView> _opponentView;
 
@@ -36,7 +36,10 @@ public:
 
     explicit UAlbertaBot_Tournament(
 		shared_ptr<AKBot::OpponentView> opponentView,
-		shared_ptr<BaseLocationManager> baseLocationManager,
+		unique_ptr<BaseLocationManager> baseLocationManager,
+		unique_ptr<AutoObserver> autoObserver,
+		shared_ptr<StrategyManager> strategyManager,
+		shared_ptr<UnitInfoManager> unitInfoManager,
 		shared_ptr<MapTools> mapTools,
 		shared_ptr<WorkerManager> workerManager,
 		shared_ptr<ScoutManager> scoutManager,
@@ -55,7 +58,7 @@ public:
     void	onUnitHide(BWAPI::Unit unit);
     void	onUnitRenegade(BWAPI::Unit unit);
 
-    const UnitInfoManager & UnitInfo() const;
+    const shared_ptr<UnitInfoManager> UnitInfo() const;
 	AKBot::ScreenCanvas& getCanvas();
 	const std::shared_ptr<AKBot::OpponentView> getOpponentView() const  { return _opponentView; };
 };

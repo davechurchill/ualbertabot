@@ -48,7 +48,7 @@ namespace UAlbertaBot
 	public:
 		BaseLocationManager(std::shared_ptr<AKBot::OpponentView> opponentView);
 
-		void update(const UnitInfoManager & unitManager);
+		void update(shared_ptr<UnitInfoManager> unitManager);
 		void onStart(shared_ptr<MapTools> map);
 
 		const std::vector<const BaseLocation *> & getBaseLocations() const;

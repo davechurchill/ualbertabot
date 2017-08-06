@@ -24,12 +24,13 @@ class CombatSimulation
 {
 	SparCraft::GameState		_state;
 	shared_ptr<AKBot::OpponentView> _opponentView;
-	const UnitInfoManager& _unitInfo;
 	std::shared_ptr<AKBot::Logger> _logger;
 
 public:
 
-	CombatSimulation(shared_ptr<AKBot::OpponentView> opponentView, const UnitInfoManager& unitInfo, std::shared_ptr<AKBot::Logger> logger);
+	CombatSimulation(
+		shared_ptr<AKBot::OpponentView> opponentView,
+		shared_ptr<AKBot::Logger> logger);
 
 	void setCombatUnits(
 		const std::vector<BWAPI::Unit> ourCombatUnits,

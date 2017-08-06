@@ -9,12 +9,11 @@ using namespace UAlbertaBot;
 
 // constructor
 StrategyManager::StrategyManager(
-	std::string strategyName,
 	shared_ptr<AKBot::OpponentView> opponentView,
-	const UnitInfoManager & unitInfo,
+	shared_ptr<UnitInfoManager> unitInfo,
 	shared_ptr<BaseLocationManager> bases,
 	std::shared_ptr<AKBot::Logger> logger)
-	: _strategyName(strategyName)
+	: _strategyName("")
 	, _opponentView(opponentView)
 	, _unitInfo(unitInfo)
 	, _bases(bases)
@@ -176,7 +175,7 @@ const MetaPairVector StrategyManager::getProtossBuildOrderGoal(int currentFrame)
     }
     
     // add observer to the goal if the enemy has cloaked units
-	if (_unitInfo.enemyHasCloakedUnits())
+	if (_unitInfo->enemyHasCloakedUnits())
 	{
 		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Observer, 1));
 	}
@@ -246,7 +245,7 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal(int currentFrame) 
         goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_SCV, numWorkers + 10));
     }
 
-    if (_unitInfo.enemyHasCloakedUnits())
+    if (_unitInfo->enemyHasCloakedUnits())
 	{
 		goal.push_back(MetaPair(BWAPI::UnitTypes::Terran_Science_Vessel, 1));
 	}

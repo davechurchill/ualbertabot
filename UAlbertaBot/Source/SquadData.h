@@ -15,7 +15,7 @@ class SquadData
     void    verifySquadUniqueMembership();
 	AKBot::PlayerLocationProvider& _locationProvider;
 	shared_ptr<AKBot::OpponentView> _opponentView;
-	const UnitInfoManager& _unitInfo;
+	shared_ptr<UnitInfoManager> _unitInfo;
 	shared_ptr<BaseLocationManager> _bases;
 	shared_ptr<MapTools> _mapTools;
 
@@ -24,7 +24,7 @@ public:
 	SquadData(
 		AKBot::PlayerLocationProvider& locationProvider,
 		shared_ptr<AKBot::OpponentView> opponentView,
-		const UnitInfoManager& unitInfo,
+		shared_ptr<UnitInfoManager> unitInfo,
 		shared_ptr<BaseLocationManager> bases,
 		shared_ptr<MapTools> mapTools,
 		std::shared_ptr<AKBot::Logger> logger);

@@ -8,7 +8,9 @@ namespace AKBot
 	using UAlbertaBot::DebugTools::DrawUnitHPBar;
 	using UAlbertaBot::Global::getEnemy;
 
-	UnitInfoManagerDebug::UnitInfoManagerDebug(std::shared_ptr<OpponentView> opponentView, const UnitInfoManager& unitInfo)
+	UnitInfoManagerDebug::UnitInfoManagerDebug(
+		shared_ptr<OpponentView> opponentView,
+		shared_ptr<UnitInfoManager> unitInfo)
 		: _opponentView(opponentView), _unitInfo(unitInfo)
 	{
 	}
@@ -33,7 +35,7 @@ namespace AKBot
 			return;
 		}
 
-		for (const auto & kv : _unitInfo.getUnitData(enemy).getUnitInfoMap())
+		for (const auto & kv : _unitInfo->getUnitData(enemy).getUnitInfoMap())
 		{
 			const UnitInfo & ui(kv.second);
 
@@ -70,8 +72,8 @@ namespace AKBot
 
 		std::string prefix = "\x04";
 
-		auto selfUnitData = _unitInfo.getUnitData(_opponentView->self());
-		auto enemyUnitData = _unitInfo.getUnitData(enemy);
+		auto selfUnitData = _unitInfo->getUnitData(_opponentView->self());
+		auto enemyUnitData = _unitInfo->getUnitData(enemy);
 		canvas.drawTextScreen(x, y - 10, "\x03 Self Loss:\x04 Minerals: \x1f%d \x04Gas: \x07%d", selfUnitData.getMineralsLost(), selfUnitData.getGasLost());
 		canvas.drawTextScreen(x, y, "\x03 Enemy Loss:\x04 Minerals: \x1f%d \x04Gas: \x07%d", enemyUnitData.getMineralsLost(), enemyUnitData.getGasLost());
 		canvas.drawTextScreen(x, y + 10, "\x04 Enemy: %s", enemy->getName().c_str());

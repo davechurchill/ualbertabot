@@ -30,8 +30,8 @@ class Squad
     size_t              _priority;
 	UnitHandler			_onRemoveHandler;
 	shared_ptr<AKBot::OpponentView> _opponentView;
-	const UnitInfoManager& _unitInfo;
-	std::shared_ptr<AKBot::Logger> _logger;
+	shared_ptr<AKBot::Logger> _logger;
+	shared_ptr<UnitInfoManager> _unitInfo;
 	
 	SquadOrder          _order;
 	MeleeManager        _meleeManager;
@@ -63,7 +63,7 @@ public:
 		size_t priority,
 		AKBot::PlayerLocationProvider& locationProvider,
 		shared_ptr<AKBot::OpponentView> opponentView,
-		const UnitInfoManager& unitInfo,
+		shared_ptr<UnitInfoManager> unitInfo,
 		shared_ptr<BaseLocationManager> bases,
 		shared_ptr<MapTools> mapTools,
 		std::shared_ptr<AKBot::Logger> logger);

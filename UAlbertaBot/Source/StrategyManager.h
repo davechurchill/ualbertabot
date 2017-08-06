@@ -16,7 +16,7 @@ class StrategyManager
     std::map<std::string,Strategy> _strategies;
     int                             _totalGamesPlayed;
     BuildOrder                      _emptyBuildOrder;
-	const UnitInfoManager&			_unitInfo;
+	shared_ptr<UnitInfoManager>			_unitInfo;
 	std::string						_strategyName;
 	shared_ptr<AKBot::OpponentView> _opponentView;
 	shared_ptr<BaseLocationManager> _bases;
@@ -32,11 +32,10 @@ class StrategyManager
 public:
 
     StrategyManager(
-		std::string strategyName,
 		shared_ptr<AKBot::OpponentView> opponentView,
-		const UnitInfoManager & unitInfo,
+		shared_ptr<UnitInfoManager> unitInfo,
 		shared_ptr<BaseLocationManager> bases,
-		std::shared_ptr<AKBot::Logger> logger);
+		shared_ptr<AKBot::Logger> logger);
 
     void update();
     void onEnd(const bool isWinner);

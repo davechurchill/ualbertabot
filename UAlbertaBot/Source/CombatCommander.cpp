@@ -15,9 +15,9 @@ CombatCommander::CombatCommander(
 	shared_ptr<BaseLocationManager> baseLocationManager,
 	shared_ptr<AKBot::OpponentView> opponentView,
 	shared_ptr<WorkerManager> workerManager,
-	const UnitInfoManager& unitInfo,
+	shared_ptr<UnitInfoManager> unitInfo,
 	shared_ptr<MapTools> mapTools,
-	std::shared_ptr<AKBot::Logger> logger)
+	shared_ptr<AKBot::Logger> logger)
     : _initialized(false)
 	, _unitInfo(unitInfo)
 	, _baseLocationManager(baseLocationManager)
@@ -509,7 +509,7 @@ BWAPI::Position CombatCommander::getMainAttackLocation()
     // Second choice: Attack known enemy buildings
 	for (auto& enemyPlayer : _opponentView->enemies())
 	{
-		for (const auto & kv : _unitInfo.getUnitInfoMap(enemyPlayer))
+		for (const auto & kv : _unitInfo->getUnitInfoMap(enemyPlayer))
 		{
 			const UnitInfo & ui = kv.second;
 

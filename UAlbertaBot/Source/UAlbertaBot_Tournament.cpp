@@ -16,27 +16,30 @@ using namespace AKBot;
 
 UAlbertaBot_Tournament::UAlbertaBot_Tournament(
 	shared_ptr<AKBot::OpponentView> opponentView,
-	shared_ptr<BaseLocationManager> baseLocationManager,
+	unique_ptr<BaseLocationManager> baseLocationManager,
+	unique_ptr<AutoObserver> autoObserver,
+	shared_ptr<StrategyManager> strategyManager,
+	shared_ptr<UnitInfoManager> unitInfoManager,
 	shared_ptr<MapTools> mapTools,
 	shared_ptr<WorkerManager> workerManager,
 	shared_ptr<ScoutManager> scoutManager,
 	shared_ptr<AKBot::Logger> logger)
 	: _opponentView(opponentView)
-	, _baseLocationManager(baseLocationManager)
+	, _baseLocationManager(std::move(baseLocationManager))
 	, _workerManager(workerManager)
 	, _bossManager(opponentView)
-	, _autoObserver(opponentView, workerManager)
-	, _unitInfoManager(opponentView)
-	, _strategyManager("", opponentView, _unitInfoManager, baseLocationManager, logger)
+	, _autoObserver(std::move(autoObserver))
+	, _unitInfoManager(unitInfoManager)
+	, _strategyManager(strategyManager)
 	, _mapTools(mapTools)
 	, _scoutManager(scoutManager)
-	, _productionManager(opponentView, _bossManager, _strategyManager, workerManager, _unitInfoManager, baseLocationManager, mapTools, logger)
-	, _combatCommander(baseLocationManager, opponentView, workerManager, _unitInfoManager, mapTools, logger)
+	, _productionManager(opponentView, _bossManager, strategyManager, workerManager, unitInfoManager, _baseLocationManager, mapTools, logger)
+	, _combatCommander(_baseLocationManager, opponentView, workerManager, unitInfoManager, mapTools, logger)
 	, _gameCommander(opponentView, _bossManager, _combatCommander, scoutManager, _productionManager, workerManager)
 {
 	// parse the configuration file for the bot's strategies
 	auto configurationFile = ParseUtils::FindConfigurationLocation(Config::ConfigFile::ConfigFileLocation);
-	ParseUtils::ParseStrategy(configurationFile, this->_strategyManager);
+	ParseUtils::ParseStrategy(configurationFile, _strategyManager);
 }
 
 UAlbertaBot_Tournament::~UAlbertaBot_Tournament()
@@ -75,11 +78,11 @@ void UAlbertaBot_Tournament::onStart()
 
 	if (Config::Modules::UsingStrategyIO)
 	{
-		_strategyManager.readResults();
-		_strategyManager.setLearnedStrategy();
+		_strategyManager->readResults();
+		_strategyManager->setLearnedStrategy();
 	}
 
-	_unitInfoManager.onStart();
+	_unitInfoManager->onStart();
 	_mapTools->onStart();
 	_baseLocationManager->onStart(_mapTools);
 	_productionManager.onStart();
@@ -114,10 +117,10 @@ void UAlbertaBot_Tournament::onStart()
 
 void UAlbertaBot_Tournament::onEnd(bool isWinner) 
 {
-	_strategyManager.onEnd(isWinner);
+	_strategyManager->onEnd(isWinner);
 }
 
-const UnitInfoManager & UAlbertaBot_Tournament::UnitInfo() const
+const shared_ptr<UnitInfoManager> UAlbertaBot_Tournament::UnitInfo() const
 {
     return _unitInfoManager;
 }
@@ -139,8 +142,8 @@ void UAlbertaBot_Tournament::onFrame()
 
 	// update all of the internal information managers
     _mapTools->update(currentFrame);
-	_strategyManager.update();
-    _unitInfoManager.update();
+	_strategyManager->update();
+    _unitInfoManager->update();
     _workerManager->update(currentFrame);
     _baseLocationManager->update(_unitInfoManager);
 
@@ -155,7 +158,7 @@ void UAlbertaBot_Tournament::onFrame()
 
     if (Config::Modules::UsingAutoObserver)
     {
-        _autoObserver.onFrame(currentFrame);
+        _autoObserver->onFrame(currentFrame);
     }
 }
 
@@ -185,14 +188,14 @@ void UAlbertaBot_Tournament::onUnitDestroy(BWAPI::Unit unit)
 {
 	auto currentFrame = BWAPI::Broodwar->getFrameCount();
 	_workerManager->onUnitDestroy(unit, currentFrame);
-	_unitInfoManager.onUnitDestroy(unit); 
+	_unitInfoManager->onUnitDestroy(unit); 
     _gameCommander.onUnitDestroy(unit, currentFrame);
 	_productionManager.onUnitDestroy(unit, currentFrame);
 }
 
 void UAlbertaBot_Tournament::onUnitMorph(BWAPI::Unit unit)
 {
-	_unitInfoManager.onUnitMorph(unit);
+	_unitInfoManager->onUnitMorph(unit);
 	_workerManager->onUnitMorph(unit);
     _gameCommander.onUnitMorph(unit);
 }
@@ -204,31 +207,31 @@ void UAlbertaBot_Tournament::onSendText(std::string text)
 
 void UAlbertaBot_Tournament::onUnitCreate(BWAPI::Unit unit)
 { 
-	_unitInfoManager.onUnitCreate(unit); 
+	_unitInfoManager->onUnitCreate(unit); 
     _gameCommander.onUnitCreate(unit);
 }
 
 void UAlbertaBot_Tournament::onUnitComplete(BWAPI::Unit unit)
 {
-	_unitInfoManager.onUnitComplete(unit);
+	_unitInfoManager->onUnitComplete(unit);
     _gameCommander.onUnitComplete(unit);
 }
 
 void UAlbertaBot_Tournament::onUnitShow(BWAPI::Unit unit)
 { 
-	_unitInfoManager.onUnitShow(unit); 
+	_unitInfoManager->onUnitShow(unit);
 	_workerManager->onUnitShow(unit);
     _gameCommander.onUnitShow(unit);
 }
 
 void UAlbertaBot_Tournament::onUnitHide(BWAPI::Unit unit)
 { 
-	_unitInfoManager.onUnitHide(unit); 
+	_unitInfoManager->onUnitHide(unit);
     _gameCommander.onUnitHide(unit);
 }
 
 void UAlbertaBot_Tournament::onUnitRenegade(BWAPI::Unit unit)
 { 
-	_unitInfoManager.onUnitRenegade(unit); 
+	_unitInfoManager->onUnitRenegade(unit);
     _gameCommander.onUnitRenegade(unit);
 }

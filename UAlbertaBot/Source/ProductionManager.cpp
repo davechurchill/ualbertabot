@@ -6,9 +6,9 @@ using namespace UAlbertaBot;
 ProductionManager::ProductionManager(
 	shared_ptr<AKBot::OpponentView> opponentView,
 	BOSSManager & bossManager,
-	const StrategyManager& strategyManager,
+	shared_ptr<StrategyManager> strategyManager,
 	shared_ptr<WorkerManager> workerManager,
-	const UnitInfoManager& unitInfo,
+	shared_ptr<UnitInfoManager> unitInfo,
 	shared_ptr<BaseLocationManager> bases,
 	shared_ptr<MapTools> mapTools,
 	std::shared_ptr<AKBot::Logger> logger)
@@ -55,12 +55,12 @@ void ProductionManager::performBuildOrderSearch(int currentFrame)
         if (!_bossManager.isSearchInProgress())
         {
 			auto strategyManager = this->getStrategyManager();
-			_bossManager.startNewSearch(strategyManager.getBuildOrderGoal(currentFrame), _buildingManager, currentFrame);
+			_bossManager.startNewSearch(strategyManager->getBuildOrderGoal(currentFrame), _buildingManager, currentFrame);
         }
     }
 }
 
-const StrategyManager& ProductionManager::getStrategyManager() const
+const shared_ptr<StrategyManager> ProductionManager::getStrategyManager() const
 {
 	return _strategyManager;
 }
@@ -68,7 +68,7 @@ const StrategyManager& ProductionManager::getStrategyManager() const
 void ProductionManager::onStart()
 {
 	auto strategyManager = this->getStrategyManager();
-	setBuildOrder(strategyManager.getOpeningBookBuildOrder());
+	setBuildOrder(strategyManager->getOpeningBookBuildOrder());
 }
 
 void ProductionManager::update(int currentFrame) 
@@ -102,7 +102,7 @@ void ProductionManager::update(int currentFrame)
 	}
 
 	// if they have cloaked units get a new goal asap
-	if (!_enemyCloakedDetected && _unitInfo.enemyHasCloakedUnits())
+	if (!_enemyCloakedDetected && _unitInfo->enemyHasCloakedUnits())
 	{
 		if (ourRace == BWAPI::Races::Protoss)
         {

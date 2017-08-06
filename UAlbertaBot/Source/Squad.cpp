@@ -10,7 +10,7 @@ Squad::Squad(
 	size_t priority,
 	AKBot::PlayerLocationProvider& locationProvider,
 	shared_ptr<AKBot::OpponentView> opponentView,
-	const UnitInfoManager& unitInfo,
+	shared_ptr<UnitInfoManager> unitInfo,
 	shared_ptr<BaseLocationManager> bases,
 	shared_ptr<MapTools> mapTools,
 	std::shared_ptr<AKBot::Logger> logger)
@@ -209,7 +209,7 @@ bool Squad::needsToRegroup(shared_ptr<MapTools> map, int currentFrame)
 
     // if none of our units are in attack range of any enemy units, don't retreat
     std::vector<UnitInfo> enemyCombatUnits;
-    const auto & enemyUnitInfo = _unitInfo.getUnitInfoMap(Global::getEnemy());
+    const auto & enemyUnitInfo = _unitInfo->getUnitInfoMap(Global::getEnemy());
 
     bool anyInRange = false;
     for (const auto & eui : enemyUnitInfo)
@@ -253,11 +253,11 @@ bool Squad::needsToRegroup(shared_ptr<MapTools> map, int currentFrame)
 	std::vector<UnitInfo> enemyCombatUnitsForSimulation;
 	for (auto& enemyPlayer : _opponentView->enemies())
 	{
-		_unitInfo.getNearbyForce(enemyCombatUnitsForSimulation, simulationCenter, enemyPlayer, Config::Micro::CombatRegroupRadius);
+		_unitInfo->getNearbyForce(enemyCombatUnitsForSimulation, simulationCenter, enemyPlayer, Config::Micro::CombatRegroupRadius);
 	}
 
 	//do the SparCraft Simulation!
-	CombatSimulation sim(_opponentView, _unitInfo, _logger);
+	CombatSimulation sim(_opponentView, _logger);
 	sim.setCombatUnits(ourCombatUnits, enemyCombatUnitsForSimulation, simulationCenter, Config::Micro::CombatRegroupRadius, currentFrame);
     auto score = sim.simulateCombat();
 

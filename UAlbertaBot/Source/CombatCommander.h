@@ -18,7 +18,7 @@ class CombatCommander
 	shared_ptr<BaseLocationManager> _baseLocationManager;
 	AKBot::DefaultPlayerLocationProvider _playerLocationProvider;
 	shared_ptr<AKBot::OpponentView> _opponentView;
-	const UnitInfoManager& _unitInfo;
+	shared_ptr<UnitInfoManager> _unitInfo;
 	shared_ptr<MapTools> _mapTools;
 	shared_ptr<WorkerManager> _workerManager;
 
@@ -59,9 +59,9 @@ public:
 		shared_ptr<BaseLocationManager> baseLocationManager,
 		shared_ptr<AKBot::OpponentView> opponentView,
 		shared_ptr<WorkerManager> workerManager,
-		const UnitInfoManager& unitInfo,
+		shared_ptr<UnitInfoManager> unitInfo,
 		shared_ptr<MapTools> mapTools,
-		std::shared_ptr<AKBot::Logger> logger);
+		shared_ptr<AKBot::Logger> logger);
 
 	void update(const std::vector<BWAPI::Unit> & combatUnits, int currentFrame);
 	const SquadData& getSquadData() const;

@@ -37,7 +37,7 @@ namespace UnitUtil
     
     // BWAPI::Unit GetClosestUnitTypeToTarget(BWAPI::UnitType type, BWAPI::Position target);
 	template<typename TUnitCollection>
-	BWAPI::Unit UnitUtil::GetClosestsUnit(
+	BWAPI::Unit GetClosestsUnit(
 		const TUnitCollection& units,
 		std::function<bool(const BWAPI::Unit&)> distance)
 	{
@@ -59,7 +59,7 @@ namespace UnitUtil
 		});
 	};
 	template<typename TUnitCollection, typename TTargetType>
-	BWAPI::Unit UnitUtil::GetClosestsUnitToTarget(
+	BWAPI::Unit GetClosestsUnitToTarget(
 		const TUnitCollection& units,
 		TTargetType target)
 	{

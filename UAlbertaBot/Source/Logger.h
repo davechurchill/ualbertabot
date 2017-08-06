@@ -5,6 +5,7 @@ namespace AKBot
 	class Logger
 	{
 	public:
+		virtual ~Logger() noexcept = default;
 		/// <summary>Prints text to the logger sink.</summary> 
 		/// 
 		/// <param name="format">

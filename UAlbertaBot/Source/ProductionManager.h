@@ -22,8 +22,8 @@ class ProductionManager
     bool                _enemyCloakedDetected;
     bool                _assignedWorkerForThisBuilding;
     bool                _haveLocationForThisBuilding;
-	const StrategyManager& _strategyManager;
-	const UnitInfoManager& _unitInfo;
+	shared_ptr<StrategyManager> _strategyManager;
+	shared_ptr<UnitInfoManager> _unitInfo;
 	shared_ptr<WorkerManager> _workerManager;
 	shared_ptr<AKBot::OpponentView> _opponentView;
 	shared_ptr<AKBot::Logger> _logger;
@@ -50,9 +50,9 @@ public:
     ProductionManager(
 		shared_ptr<AKBot::OpponentView> opponentView,
 		BOSSManager & bossManager,
-		const StrategyManager& strategyManager,
+		shared_ptr<StrategyManager> strategyManager,
 		shared_ptr<WorkerManager> workerManager,
-		const UnitInfoManager& unitInfo,
+		shared_ptr<UnitInfoManager> unitInfo,
 		shared_ptr<BaseLocationManager> bases,
 		shared_ptr<MapTools> mapTools,
 		std::shared_ptr<AKBot::Logger> logger);
@@ -63,7 +63,7 @@ public:
     void        performBuildOrderSearch(int currentFrame);
 
     BWAPI::Unit getProducer(MetaType t, int currentFrame, BWAPI::Position closestTo = BWAPI::Positions::None);
-	const StrategyManager& getStrategyManager() const;
+	const shared_ptr<StrategyManager> getStrategyManager() const;
 	const BuildingManager& getBuildingManager() const { return _buildingManager; }
 	const BOSSManager& getBOSSManager() const { return _bossManager; }
 	const shared_ptr<AKBot::OpponentView> getOpponentView() const { return _opponentView; }

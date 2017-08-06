@@ -6,10 +6,8 @@ using namespace UAlbertaBot;
 
 CombatSimulation::CombatSimulation(
 	shared_ptr<AKBot::OpponentView> opponentView,
-	const UnitInfoManager& unitInfo,
 	std::shared_ptr<AKBot::Logger> logger)
 	: _opponentView(opponentView)
-	, _unitInfo(unitInfo)
 	, _logger(logger)
 {
 }
