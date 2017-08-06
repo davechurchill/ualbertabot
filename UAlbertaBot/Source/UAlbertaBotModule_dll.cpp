@@ -4,6 +4,7 @@
 #include "ParseUtils.h"
 #include "BWAPIOpponentView.h"
 #include "BWAPIPrintLogger.h"
+#include "BotFactory.h"
 
 using namespace UAlbertaBot;
 
@@ -21,18 +22,13 @@ UAlbertaBotModule_dll::UAlbertaBotModule_dll()
         return;
     }
 
-    if (Config::BotInfo::BotMode == "Tournament")
-    {
-        _module = std::shared_ptr<BotModule>(new UAlbertaBot_Tournament(opponentView, logger));
-    }
-    else if (Config::BotInfo::BotMode == "Arena")
-    {
-        _module = std::shared_ptr<BotModule>(new UAlbertaBot_Arena());
-    }
-    else
-    {
-        std::cerr << "Unknown bot module selected: " << Config::BotInfo::BotMode << "\n";
-    }
+	std::string botMode = Config::BotInfo::BotMode;
+	auto m = createBot(botMode);
+	_module = m.getBot();
+	if (!m.isValid())
+	{
+		std::cerr << "Unknown bot module selected: " << botMode << "\n";
+	}
 }
 
 void UAlbertaBotModule_dll::onStart()

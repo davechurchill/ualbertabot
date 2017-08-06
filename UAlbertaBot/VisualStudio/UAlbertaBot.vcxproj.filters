@@ -173,6 +173,8 @@
     <ClCompile Include="..\Source\BWAPIMapInformation.cpp">
       <Filter>global</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\BotPlayer.cpp" />
+    <ClCompile Include="..\Source\BotFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="common">
@@ -406,5 +408,7 @@
     <ClInclude Include="..\Source\BWAPIMapInformation.h">
       <Filter>global</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\BotFactory.h" />
+    <ClInclude Include="..\Source\BotPlayer.h" />
   </ItemGroup>
 </Project>
