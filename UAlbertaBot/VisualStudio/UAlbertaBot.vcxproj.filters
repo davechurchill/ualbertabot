@@ -140,41 +140,41 @@
     <ClCompile Include="..\Source\DefaultPlayerLocationProvider.cpp">
       <Filter>map</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\BaseLocationManagerDebug.cpp">
-      <Filter>debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\WorkerManagerDebug.cpp">
-      <Filter>debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\MapToolsDebug.cpp">
-      <Filter>debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\UnitInfoManagerDebug.cpp">
-      <Filter>debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\GameCommanderDebug.cpp">
-      <Filter>debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\CombatCommanderDebug.cpp">
-      <Filter>debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\ScoutManagerDebug.cpp">
-      <Filter>debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\ProductionManagerDebug.cpp">
-      <Filter>debug</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\FileLogger.cpp">
       <Filter>util</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\BWAPIPrintLogger.cpp">
-      <Filter>debug</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\BWAPIMapInformation.cpp">
       <Filter>global</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\BotPlayer.cpp" />
     <ClCompile Include="..\Source\BotFactory.cpp" />
+    <ClCompile Include="..\Source\debug\BaseLocationManagerDebug.cpp">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\debug\BWAPIPrintLogger.cpp">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\debug\CombatCommanderDebug.cpp">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\debug\GameCommanderDebug.cpp">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\debug\MapToolsDebug.cpp">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\debug\ProductionManagerDebug.cpp">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\debug\ScoutManagerDebug.cpp">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\debug\UnitInfoManagerDebug.cpp">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\debug\WorkerManagerDebug.cpp">
+      <Filter>debug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="common">
@@ -366,41 +366,14 @@
     <ClInclude Include="..\Source\Distance.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\BaseLocationManagerDebug.h">
-      <Filter>debug</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\Rect.h">
       <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\WorkerManagerDebug.h">
-      <Filter>debug</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\MapToolsDebug.h">
-      <Filter>debug</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\UnitInfoManagerDebug.h">
-      <Filter>debug</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\GameCommanderDebug.h">
-      <Filter>debug</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\CombatCommanderDebug.h">
-      <Filter>debug</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\ScoutManagerDebug.h">
-      <Filter>debug</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\ProductionManagerDebug.h">
-      <Filter>debug</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\FileLogger.h">
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Logger.h">
       <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\BWAPIPrintLogger.h">
-      <Filter>debug</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\MapInformation.h">
       <Filter>global</Filter>
@@ -410,5 +383,32 @@
     </ClInclude>
     <ClInclude Include="..\Source\BotFactory.h" />
     <ClInclude Include="..\Source\BotPlayer.h" />
+    <ClInclude Include="..\Source\debug\BaseLocationManagerDebug.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\debug\BWAPIPrintLogger.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\debug\CombatCommanderDebug.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\debug\GameCommanderDebug.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\debug\MapToolsDebug.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\debug\ProductionManagerDebug.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\debug\ScoutManagerDebug.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\debug\UnitInfoManagerDebug.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\debug\WorkerManagerDebug.h">
+      <Filter>debug</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

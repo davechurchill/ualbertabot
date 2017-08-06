@@ -21,15 +21,11 @@
 
 
 // UAlbertaBot Libraries
-#include "BotModule.h"
-#include "UAlbertaBot_Arena.h"
-#include "UAlbertaBot_Tournament.h"
 #include "JSONTools.h"
 #include "ParseUtils.h"
 #include "UnitUtil.h"
 #include "BWAPIOpponentView.h"
-#include "BWAPIPrintLogger.h"
-#include "BWAPIMapInformation.h"
+#include "debug\BWAPIPrintLogger.h"
 #include "BotFactory.h"
 
 using namespace AKBot;

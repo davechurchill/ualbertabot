@@ -3,7 +3,7 @@
 #include "UAlbertaBot_Arena.h"
 #include "UAlbertaBot_Tournament.h"
 #include "BWAPIOpponentView.h"
-#include "BWAPIPrintLogger.h"
+#include "debug\BWAPIPrintLogger.h"
 #include "BWAPIMapInformation.h"
 
 namespace di = boost::di;

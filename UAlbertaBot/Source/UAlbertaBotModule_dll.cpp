@@ -3,7 +3,7 @@
 #include "UAlbertaBot_Arena.h"
 #include "ParseUtils.h"
 #include "BWAPIOpponentView.h"
-#include "BWAPIPrintLogger.h"
+#include "debug\BWAPIPrintLogger.h"
 #include "BotFactory.h"
 
 using namespace UAlbertaBot;

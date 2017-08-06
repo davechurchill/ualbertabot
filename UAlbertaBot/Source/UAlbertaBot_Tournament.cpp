@@ -4,11 +4,11 @@
 #include "ParseUtils.h"
 #include "UnitUtil.h"
 #include "Global.h"
-#include "BaseLocationManagerDebug.h"
-#include "WorkerManagerDebug.h"
-#include "MapToolsDebug.h"
-#include "UnitInfoManagerDebug.h"
-#include "GameCommanderDebug.h"
+#include "debug/BaseLocationManagerDebug.h"
+#include "debug/WorkerManagerDebug.h"
+#include "debug/MapToolsDebug.h"
+#include "debug/UnitInfoManagerDebug.h"
+#include "debug/GameCommanderDebug.h"
 #include "Micro.h"
 
 using namespace UAlbertaBot;
