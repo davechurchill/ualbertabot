@@ -4,7 +4,9 @@
 #include <BWAPI/Game.h>
 #include <BWAPI/Player.h>
 #include <BWAPI/Unitset.h>
+#include "BWAPIOpponentView.h"
 
+using namespace AKBot;
 using namespace UAlbertaBot;
 
 ArenaPlayer_AttackClosest::ArenaPlayer_AttackClosest()
@@ -34,7 +36,7 @@ BWAPI::Unit ArenaPlayer_AttackClosest::getClosestEnemyUnit(BWAPI::Unit ourUnit) 
     BWAPI::Unit closestUnit = nullptr;
 	double closestDist = std::numeric_limits<double>::max();
 
-	for (auto unit : UnitUtil::getEnemyUnits())
+	for (auto unit : UnitUtil::getEnemyUnits(std::make_shared<BWAPIOpponentView>()))
 	{
 		double dist = unit->getDistance(ourUnit);
 		if (!closestUnit || dist < closestDist)

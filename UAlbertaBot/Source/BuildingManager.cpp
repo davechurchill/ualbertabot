@@ -288,16 +288,16 @@ bool BuildingManager::isBuildingPositionExplored(const Building & b) const
     BWAPI::TilePosition tile = b.finalPosition;
 
     // for each tile where the building will be built
-    for (int x=0; x<b.type.tileWidth(); ++x)
-    {
-        for (int y=0; y<b.type.tileHeight(); ++y)
-        {
-            if (!BWAPI::Broodwar->isExplored(tile.x + x,tile.y + y))
-            {
-                return false;
-            }
-        }
-    }
+	for (int x = 0; x < b.type.tileWidth(); ++x)
+	{
+		for (int y = 0; y < b.type.tileHeight(); ++y)
+		{
+			if (!_mapTools->isExplored(BWAPI::TilePosition(tile.x + x, tile.y + y)))
+			{
+				return false;
+			}
+		}
+	}
 
     return true;
 }

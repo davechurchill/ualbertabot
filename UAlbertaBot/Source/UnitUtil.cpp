@@ -99,12 +99,12 @@ Rect UnitUtil::GetRect(BWAPI::Unit unit)
     return r;
 }
 
-UnitCollection UAlbertaBot::UnitUtil::getEnemyUnits()
+UnitCollection UAlbertaBot::UnitUtil::getEnemyUnits(shared_ptr<AKBot::OpponentView> opponentView)
 {
 #if _MSC_VER < 1900
 	UnitCollection result;
 #endif
-	for (const auto& enemy : BWAPI::Broodwar->enemies())
+	for (const auto& enemy : opponentView->enemies())
 	{
 		for (const auto & unit : enemy->getUnits())
 		{
@@ -248,7 +248,13 @@ const BWAPI::UnitType UnitUtil::getResourceDepot(const BWAPI::Race& race)
 	return baseTypes[race.getID()];
 }
 
-void UAlbertaBot::UnitUtil::getUnitsInRadius(std::vector<BWAPI::Unit>& units, BWAPI::Position center, int radius, bool ourUnits, bool oppUnits)
+void UAlbertaBot::UnitUtil::getUnitsInRadius(
+	shared_ptr<AKBot::OpponentView> opponentView,
+	std::vector<BWAPI::Unit>& units,
+	BWAPI::Position center,
+	int radius,
+	bool ourUnits,
+	bool oppUnits)
 {
 	if (ourUnits)
 	{
@@ -263,7 +269,7 @@ void UAlbertaBot::UnitUtil::getUnitsInRadius(std::vector<BWAPI::Unit>& units, BW
 
 	if (oppUnits)
 	{
-		for (const auto & unit : UnitUtil::getEnemyUnits())
+		for (const auto & unit : UnitUtil::getEnemyUnits(opponentView))
 		{
 			if (unit->getPosition().getDistance(center) <= radius)
 			{

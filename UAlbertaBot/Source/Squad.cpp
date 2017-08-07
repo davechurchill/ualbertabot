@@ -248,7 +248,13 @@ bool Squad::needsToRegroup(shared_ptr<MapTools> map, int currentFrame)
 
 	auto simulationCenter = unitClosest->getPosition();
 	std::vector<BWAPI::Unit> ourCombatUnits;
-	UnitUtil::getUnitsInRadius(ourCombatUnits, simulationCenter, Config::Micro::CombatRegroupRadius, true, false);
+	UnitUtil::getUnitsInRadius(
+		_opponentView,
+		ourCombatUnits,
+		simulationCenter,
+		Config::Micro::CombatRegroupRadius,
+		true,
+		false);
 
 	std::vector<UnitInfo> enemyCombatUnitsForSimulation;
 	for (auto& enemyPlayer : _opponentView->enemies())
@@ -323,7 +329,13 @@ bool Squad::unitNearEnemy(shared_ptr<MapTools> map, BWAPI::Unit unit)
 
 	std::vector<BWAPI::Unit> enemyNear;
 
-	UnitUtil::getUnitsInRadius(enemyNear, unit->getPosition(), 400, false, true);
+	UnitUtil::getUnitsInRadius(
+		_opponentView,
+		enemyNear,
+		unit->getPosition(),
+		400,
+		false,
+		true);
 
 	return enemyNear.size() > 0;
 }

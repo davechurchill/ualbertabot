@@ -9,6 +9,10 @@ typedef std::experimental::generator<BWAPI::Unit> UnitCollection;
 typedef std::vector<BWAPI::Unit> UnitCollection;
 #endif
 #include <numeric>
+#include <memory>
+#include "OpponentView.h"
+
+using std::shared_ptr;
 
 namespace UAlbertaBot
 {
@@ -73,11 +77,12 @@ namespace UnitUtil
     double GetDistanceBetweenTwoRectangles(Rect & rect1, Rect & rect2);
     Rect GetRect(BWAPI::Unit unit);
 
-	UnitCollection getEnemyUnits();
+	UnitCollection getEnemyUnits(shared_ptr<AKBot::OpponentView> opponentView);
 	const BWAPI::UnitType getResourceDepot(const BWAPI::Race& race);
 
 	// get units within radius of center and add to units
 	void getUnitsInRadius(
+		shared_ptr<AKBot::OpponentView> opponentView,
 		std::vector<BWAPI::Unit> & units,
 		BWAPI::Position center,
 		int radius,
