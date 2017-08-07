@@ -11,6 +11,7 @@ namespace AKBot
 	class OpponentView
 	{
 	public:
+		virtual ~OpponentView() = default;
 		/*
 		 Returns bot's player
 		*/

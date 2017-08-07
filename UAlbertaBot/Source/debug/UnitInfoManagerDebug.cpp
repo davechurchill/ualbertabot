@@ -15,7 +15,7 @@ namespace AKBot
 	{
 	}
 
-	void UnitInfoManagerDebug::draw(ScreenCanvas& canvas) const
+	void UnitInfoManagerDebug::draw(ScreenCanvas& canvas)
 	{
 		drawExtendedInterface(canvas);
 		drawUnitInformation(canvas, 425, 30);

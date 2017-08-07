@@ -24,7 +24,7 @@ void BOSSManager::reset()
 }
 
 // start a new search for a new goal
-void BOSSManager::startNewSearch(const std::vector<MetaPair> & goalUnits, const BuildingManager & buildingManager, int currentFrame)
+void BOSSManager::startNewSearch(const std::vector<MetaPair> & goalUnits, shared_ptr<BuildingManager> buildingManager, int currentFrame)
 {
 	auto self = _opponentView->self();
     size_t numWorkers   = UnitUtil::GetAllUnitCount(self->getRace().getWorker());
@@ -49,7 +49,7 @@ void BOSSManager::startNewSearch(const std::vector<MetaPair> & goalUnits, const 
     {
         BOSS::BuildOrderSearchGoal goal = GetGoal(goalUnits);
 
-        BOSS::GameState initialState(BWAPI::Broodwar, _opponentView->self(), buildingManager.buildingsQueued());
+        BOSS::GameState initialState(BWAPI::Broodwar, _opponentView->self(), buildingManager->buildingsQueued());
 
         _smartSearch = SearchPtr(new BOSS::DFBB_BuildOrderSmartSearch(initialState.getRace()));
         _smartSearch->setGoal(GetGoal(goalUnits));

@@ -1,48 +1,96 @@
 #include "BotFactory.h"
-#include <boost\di.hpp>
 #include "UAlbertaBot_Arena.h"
 #include "UAlbertaBot_Tournament.h"
 #include "BWAPIOpponentView.h"
-#include "debug\BWAPIPrintLogger.h"
 #include "BWAPIMapInformation.h"
 
-namespace di = boost::di;
+#include "debug\BWAPIPrintLogger.h"
+#include "debug\BaseLocationManagerDebug.h"
+#include "debug\GameCommanderDebug.h"
+#include "debug\UnitInfoManagerDebug.h"
+#include "debug\WorkerManagerDebug.h"
+#include "debug\MapToolsDebug.h"
+#include "debug\DebugInfoProvider.h"
+
 using namespace AKBot;
 using namespace UAlbertaBot;
 
 BotPlayer AKBot::createBot(const std::string& mode) {
-	auto injectorFactory = [&mode]() -> di::injector<BotPlayer> {
-		auto base_bot_module = [] {
-			return di::make_injector(
-				di::bind<AKBot::Logger>().to<AKBot::BWAPIPrintLogger>(),
-				di::bind<AKBot::OpponentView>().to<AKBot::BWAPIOpponentView>(),
-				di::bind<AKBot::MapInformation>().to<AKBot::BWAPIMapInformation>()
-			);
+	if (mode == "Tournament") {
+		auto logger = std::shared_ptr<AKBot::Logger>(new AKBot::BWAPIPrintLogger());
+		auto opponentView = std::shared_ptr<AKBot::OpponentView>(new AKBot::BWAPIOpponentView());
+		auto workerData = std::shared_ptr<WorkerData>(new WorkerData(logger));
+		auto workerManager = std::shared_ptr<WorkerManager>(new WorkerManager(
+			opponentView,
+			workerData));
+		auto autoObserver = std::shared_ptr<AutoObserver>(new AutoObserver(opponentView, workerManager));
+		auto baseLocationManager = std::shared_ptr<BaseLocationManager>(new BaseLocationManager(opponentView));
+		auto unitInfoManager = std::shared_ptr<UnitInfoManager>(new UnitInfoManager(opponentView));
+		auto strategyManager = std::shared_ptr<StrategyManager>(new StrategyManager(
+			opponentView,
+			unitInfoManager,
+			baseLocationManager,
+			logger));
+		auto mapInformation = std::shared_ptr<MapInformation>(new BWAPIMapInformation());
+		auto mapTools = std::shared_ptr<MapTools>(new MapTools(mapInformation, logger));
+		auto combatCommander = std::shared_ptr<CombatCommander>(new CombatCommander(
+			baseLocationManager,
+			opponentView,
+			workerManager,
+			unitInfoManager,
+			mapTools,
+			logger));
+		auto bossManager = std::shared_ptr<BOSSManager>(new BOSSManager(opponentView));
+		auto scoutManager = std::shared_ptr<ScoutManager>(new ScoutManager(
+			opponentView,
+			baseLocationManager,
+			mapTools));
+		auto buildingManager = std::shared_ptr<BuildingManager>(new BuildingManager(
+			opponentView,
+			baseLocationManager,
+			workerManager,
+			mapTools,
+			logger));
+		auto productionManager = std::shared_ptr<ProductionManager>(new ProductionManager(
+			opponentView,
+			bossManager,
+			buildingManager,
+			strategyManager,
+			workerManager,
+			unitInfoManager,
+			baseLocationManager,
+			mapTools,
+			logger));
+		auto gameCommander = std::shared_ptr<GameCommander>(new GameCommander(
+			opponentView,
+			bossManager,
+			combatCommander,
+			scoutManager,
+			productionManager,
+			workerManager
+		));
+		std::vector<shared_ptr<DebugInfoProvider>> providers = {
+			std::shared_ptr<DebugInfoProvider>(new AKBot::GameCommanderDebug(gameCommander)),
+			std::shared_ptr<DebugInfoProvider>(new AKBot::BaseLocationManagerDebug(opponentView, baseLocationManager, mapTools)),
+			std::shared_ptr<DebugInfoProvider>(new AKBot::UnitInfoManagerDebug(opponentView, unitInfoManager)),
+			std::shared_ptr<DebugInfoProvider>(new AKBot::WorkerManagerDebug(workerData)),
+			std::shared_ptr<DebugInfoProvider>(new AKBot::MapToolsDebug(mapTools, baseLocationManager)),
 		};
-		if (mode == "Tournament") {
-			return di::make_injector(
-				base_bot_module(),
-				di::bind<BotModule>().to<UAlbertaBot_Tournament>().in(di::unique)
-			);
-		}
-		else if (mode == "Arena") {
-			return di::make_injector(
-				base_bot_module(),
-				di::bind<BotModule>().to<UAlbertaBot_Arena>().in(di::unique)
-			);
-		}
-		else {
-			return di::make_injector(
-				base_bot_module(),
-				di::bind<BotModule>().to([&](const auto& injector)-> std::unique_ptr<BotModule> {
-					return nullptr;
-				})
-			);
-		}
-	};
-
-	// The UAlbertaBot module which will handle all the game logic
-	// All Starcraft logic is in this object, when it destructs it's all cleaned up for the next game
-	auto injector = injectorFactory();
-	return injector.create<BotPlayer>();
+		shared_ptr<GameDebug> gameDebug = std::shared_ptr<GameDebug>(new GameDebug(providers));
+		return BotPlayer(std::shared_ptr<BotModule>(new UAlbertaBot_Tournament(
+			baseLocationManager,
+			autoObserver,
+			strategyManager,
+			unitInfoManager,
+			mapTools,
+			combatCommander,
+			gameCommander,
+			gameDebug)));
+	}
+	else if (mode == "Arena") {
+		return BotPlayer(std::shared_ptr<BotModule>(new UAlbertaBot_Arena()));
+	}
+	else {
+		return BotPlayer(std::shared_ptr<BotModule>());
+	}
 }

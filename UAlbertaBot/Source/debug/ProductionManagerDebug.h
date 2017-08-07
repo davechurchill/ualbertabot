@@ -13,14 +13,14 @@ namespace AKBot
 
 	class ProductionManagerDebug
 	{
-		const ProductionManager& _productionManager;
-		void drawBuildingInformation(ScreenCanvas& canvas, const BuildingManager& buildingManager, int x, int y) const;
+		shared_ptr<ProductionManager> _productionManager;
+		void drawBuildingInformation(ScreenCanvas& canvas, shared_ptr<BuildingManager> buildingManager, int x, int y) const;
 		void drawQueueInformation(AKBot::ScreenCanvas& canvas, const BuildOrderQueue& buildQueue, int x, int y) const;
-		void drawStateInformation(AKBot::ScreenCanvas& canvas, int x, int y, const BuildingManager & buildingManager) const;
-		void drawSearchInformation(AKBot::ScreenCanvas& canvas, const BOSSManager& bossManager, int x, int y) const;
+		void drawStateInformation(AKBot::ScreenCanvas& canvas, int x, int y, shared_ptr<BuildingManager> buildingManager) const;
+		void drawSearchInformation(AKBot::ScreenCanvas& canvas, shared_ptr<BOSSManager> bossManager, int x, int y) const;
 		void drawReservedTiles(AKBot::ScreenCanvas& canvas, const BuildingPlacer& buildingPlacer) const;
 	public:
-		ProductionManagerDebug(const ProductionManager& productionManager);
+		ProductionManagerDebug(shared_ptr<ProductionManager> productionManager);
 		void drawProductionInformation(AKBot::ScreenCanvas& canvas, int x, int y) const;
 	};
 }

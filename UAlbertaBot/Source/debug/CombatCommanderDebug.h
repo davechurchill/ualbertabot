@@ -14,7 +14,7 @@ namespace AKBot
 
 	class CombatCommanderDebug
 	{
-		const CombatCommander & _combatCommander;
+		shared_ptr<CombatCommander> _combatCommander;
 
 		void drawSquadData(AKBot::ScreenCanvas& canvas, const SquadData& squadData) const;
 		void drawSquad(AKBot::ScreenCanvas& canvas, const Squad& squad) const;
@@ -26,7 +26,7 @@ namespace AKBot
 		void drawOrderText(AKBot::ScreenCanvas& canvas, const MicroManager& manager, const SquadOrder & order) const;
 		void drawTransportInformation(ScreenCanvas& canvas, const TransportManager& transportManager, int x, int y) const;
 	public:
-		CombatCommanderDebug(const CombatCommander& combatCommander);
+		CombatCommanderDebug(shared_ptr<CombatCommander> combatCommander);
 		void draw(ScreenCanvas& canvas) const;
 	};
 }

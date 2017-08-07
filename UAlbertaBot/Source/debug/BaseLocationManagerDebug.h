@@ -3,6 +3,7 @@
 #include "MapTools.h"
 #include "ScreenCanvas.h"
 #include "OpponentView.h"
+#include "DebugInfoProvider.h"
 
 namespace AKBot
 {
@@ -13,17 +14,17 @@ namespace AKBot
 	/*
 	 Allow draw debug information about base locations
 	*/
-	class BaseLocationManagerDebug
+	class BaseLocationManagerDebug: public DebugInfoProvider
 	{
 		std::shared_ptr<OpponentView> _opponentView;
 		shared_ptr<BaseLocationManager> _baseLocationManager;
 		shared_ptr<MapTools> _map;
 	public:
 		BaseLocationManagerDebug(
-			std::shared_ptr<OpponentView> opponentView,
+			shared_ptr<OpponentView> opponentView,
 			shared_ptr<BaseLocationManager> baseLocationManager,
 			shared_ptr<MapTools> map);
-		void draw(AKBot::ScreenCanvas& canvas);
+		void draw(AKBot::ScreenCanvas& canvas) override;
 		void drawBase(const BaseLocation& base, AKBot::ScreenCanvas& canvas, std::function<bool(BWAPI::TilePosition tile)> isBuildableTile) const;
 	};
 }

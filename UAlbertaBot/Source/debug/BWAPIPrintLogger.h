@@ -6,7 +6,7 @@ namespace AKBot
 	class BWAPIPrintLogger : public Logger
 	{
 	public:
-		~BWAPIPrintLogger() = default;
+		~BWAPIPrintLogger() override = default;
 		virtual void log(const char *format, ...) const override;
 	};
 }

@@ -43,7 +43,7 @@ public:
 		shared_ptr<BaseLocationManager> bases,
 		shared_ptr<WorkerManager> workerManager,
 		shared_ptr<MapTools> mapTools,
-		std::shared_ptr<AKBot::Logger> logger);
+		shared_ptr<AKBot::Logger> logger);
 
     void                update(int currentFrame);
     void                addBuildingTask(BWAPI::UnitType type,BWAPI::TilePosition desiredLocation);

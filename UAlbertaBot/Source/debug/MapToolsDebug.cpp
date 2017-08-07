@@ -9,8 +9,13 @@ namespace AKBot
 	{
 	}
 
-	void MapToolsDebug::drawLastSeen(AKBot::ScreenCanvas& canvas) const
+	void MapToolsDebug::draw(AKBot::ScreenCanvas& canvas)
 	{
+		if (!Config::Debug::DrawLastSeenTileInfo)
+		{
+			return;
+		}
+
 		bool rMouseState = BWAPI::Broodwar->getMouseState(BWAPI::MouseButton::M_RIGHT);
 		if (!rMouseState)
 		{

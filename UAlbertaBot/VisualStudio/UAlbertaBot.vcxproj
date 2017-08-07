@@ -45,6 +45,7 @@
     <ClCompile Include="..\Source\debug\BWAPIPrintLogger.cpp" />
     <ClCompile Include="..\Source\debug\CombatCommanderDebug.cpp" />
     <ClCompile Include="..\Source\debug\GameCommanderDebug.cpp" />
+    <ClCompile Include="..\Source\debug\GameDebug.cpp" />
     <ClCompile Include="..\Source\debug\MapToolsDebug.cpp" />
     <ClCompile Include="..\Source\debug\ProductionManagerDebug.cpp" />
     <ClCompile Include="..\Source\debug\ScoutManagerDebug.cpp" />
@@ -108,7 +109,9 @@
     <ClInclude Include="..\Source\debug\BaseLocationManagerDebug.h" />
     <ClInclude Include="..\Source\debug\BWAPIPrintLogger.h" />
     <ClInclude Include="..\Source\debug\CombatCommanderDebug.h" />
+    <ClInclude Include="..\Source\debug\DebugInfoProvider.h" />
     <ClInclude Include="..\Source\debug\GameCommanderDebug.h" />
+    <ClInclude Include="..\Source\debug\GameDebug.h" />
     <ClInclude Include="..\Source\debug\MapToolsDebug.h" />
     <ClInclude Include="..\Source\debug\ProductionManagerDebug.h" />
     <ClInclude Include="..\Source\debug\ScoutManagerDebug.h" />

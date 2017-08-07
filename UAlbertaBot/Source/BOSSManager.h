@@ -57,7 +57,7 @@ public:
 	double getTotalPreviousSearchTime() const { return _totalPreviousSearchTime; }
 	const BOSS::DFBB_BuildOrderSearchResults& getSavedSearchResults() const { return _savedSearchResults; }
 
-    void                        startNewSearch(const std::vector<MetaPair> & goalUnits, const BuildingManager & buildingManager, int currentFrame);
+    void                        startNewSearch(const std::vector<MetaPair> & goalUnits, shared_ptr<BuildingManager> buildingManager, int currentFrame);
     
 	static BOSS::BuildOrderSearchGoal       GetGoal(const std::vector<MetaPair> & goalUnits);	
     static std::vector<MetaType>			GetMetaVector(const BOSS::BuildOrder & buildOrder);

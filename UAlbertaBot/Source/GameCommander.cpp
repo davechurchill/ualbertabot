@@ -8,10 +8,10 @@ using namespace UAlbertaBot;
 
 GameCommander::GameCommander(
 	shared_ptr<AKBot::OpponentView> opponentView,
-	BOSSManager& bossManager,
-	CombatCommander& combatCommander,
+	shared_ptr<BOSSManager> bossManager,
+	shared_ptr<CombatCommander> combatCommander,
 	shared_ptr<ScoutManager> scoutManager,
-	ProductionManager& productionManager,
+	shared_ptr<ProductionManager> productionManager,
 	shared_ptr<WorkerManager> workerManager)
     : _opponentView(opponentView)
 	, _workerManager(workerManager)
@@ -21,28 +21,37 @@ GameCommander::GameCommander(
 	, _combatCommander(combatCommander)
 	, _bossManager(bossManager)
 {
+	_scoutManager->onScoutAssigned([this](const BWAPI::Unit &unit, int currentFrame)
+	{
+		_workerManager->setScoutWorker(unit, currentFrame);
+	});
+	_scoutManager->onScoutReleased([this](const BWAPI::Unit &unit, int currentFrame)
+	{
+		_workerManager->finishedWithWorker(unit, currentFrame);
+	});
 }
 
 void GameCommander::onStart()
 {
+	_productionManager->onStart();
 }
 
 void GameCommander::update(int currentFrame)
 {
 	_timer.start();
+	_workerManager->update(currentFrame);
 
 	// Do nothing if we don't have any enemy.
 	handleUnitAssignments(currentFrame);
     
-	_bossManager.update(35 - _timer.getElapsedTimeInMilliSec(), currentFrame);
+	_bossManager->update(35 - _timer.getElapsedTimeInMilliSec(), currentFrame);
 
-	// Line below should be moved to UAlbertaBot_Tournament::onFrame
-	// _productionManager.update(currentFrame);
-	//_combatCommander.update(_combatUnits, currentFrame);
-    //_scoutManager->update(currentFrame);
+	_productionManager->update(currentFrame);
+	_combatCommander->update(getCombatUnits(), currentFrame);
+	_scoutManager->update(currentFrame);
 }
 
-const ProductionManager& GameCommander::getProductionManager() const
+const shared_ptr<ProductionManager> GameCommander::getProductionManager() const
 {
     return _productionManager;
 }
@@ -52,7 +61,7 @@ const shared_ptr<ScoutManager> GameCommander::getScoutManager() const
 	return _scoutManager;
 }
 
-const CombatCommander& GameCommander::getCombatCommander() const
+const shared_ptr<CombatCommander> GameCommander::getCombatCommander() const
 {
 	return _combatCommander;
 }
@@ -152,8 +161,8 @@ BWAPI::Unit GameCommander::getFirstSupplyProvider()
 }
 
 void GameCommander::onUnitShow(BWAPI::Unit unit)			
-{ 
-	
+{
+	_workerManager->onUnitShow(unit);
 }
 
 void GameCommander::onUnitHide(BWAPI::Unit unit)			
@@ -177,11 +186,13 @@ void GameCommander::onUnitRenegade(BWAPI::Unit unit)
 
 void GameCommander::onUnitDestroy(BWAPI::Unit unit, int currentFrame)
 {
+	_workerManager->onUnitDestroy(unit, currentFrame);
+	_productionManager->onUnitDestroy(unit, currentFrame);
 }
 
 void GameCommander::onUnitMorph(BWAPI::Unit unit)		
-{ 
-	
+{
+	_workerManager->onUnitMorph(unit);
 }
 
 

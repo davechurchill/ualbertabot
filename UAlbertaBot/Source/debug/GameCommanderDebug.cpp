@@ -8,22 +8,22 @@ namespace AKBot
 {
 	using UAlbertaBot::Global::getEnemy;
 
-	GameCommanderDebug::GameCommanderDebug(const GameCommander & gameCommander)
+	GameCommanderDebug::GameCommanderDebug(shared_ptr<GameCommander> gameCommander)
 		: _gameCommander(gameCommander)
 	{
 	}
 
-	void GameCommanderDebug::draw(ScreenCanvas & canvas) const
+	void GameCommanderDebug::draw(ScreenCanvas & canvas)
 	{
 		if (Config::Debug::DrawScoutInfo)
 		{
-			ScoutManagerDebug scoutDebug(_gameCommander.getScoutManager());
+			ScoutManagerDebug scoutDebug(_gameCommander->getScoutManager());
 			scoutDebug.drawScoutInformation(canvas, 200, 320);
 		}
 
-		ProductionManagerDebug productionDebug(_gameCommander.getProductionManager());
+		ProductionManagerDebug productionDebug(_gameCommander->getProductionManager());
 		productionDebug.drawProductionInformation(canvas, 30, 50);
-		CombatCommanderDebug combatDebug(_gameCommander.getCombatCommander());
+		CombatCommanderDebug combatDebug(_gameCommander->getCombatCommander());
 		combatDebug.draw(canvas);
 
 		drawGameInformation(canvas, 4, 1);
@@ -40,7 +40,7 @@ namespace AKBot
 	void GameCommanderDebug::drawGameInformation(ScreenCanvas& canvas, int x, int y) const
 	{
 		auto enemy = getEnemy();
-		auto self = _gameCommander.getOpponentView()->self();
+		auto self = _gameCommander->getOpponentView()->self();
 		canvas.drawTextScreen(x, y, "\x04Players:");
 		if (enemy != nullptr)
 		{

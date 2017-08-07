@@ -2,13 +2,13 @@
 
 namespace AKBot
 {
-	CombatCommanderDebug::CombatCommanderDebug(const CombatCommander & combatCommander)
+	CombatCommanderDebug::CombatCommanderDebug(shared_ptr<CombatCommander> combatCommander)
 		: _combatCommander(combatCommander)
 	{
 	}
 	void CombatCommanderDebug::draw(ScreenCanvas & canvas) const
 	{
-		auto& squadData = _combatCommander.getSquadData();
+		auto& squadData = _combatCommander->getSquadData();
 		drawSquadData(canvas, squadData);
 		if (Config::Debug::DrawSquadInfo)
 		{

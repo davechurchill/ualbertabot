@@ -4,51 +4,33 @@
 #include "ParseUtils.h"
 #include "UnitUtil.h"
 #include "Global.h"
-#include "debug/BaseLocationManagerDebug.h"
-#include "debug/WorkerManagerDebug.h"
-#include "debug/MapToolsDebug.h"
-#include "debug/UnitInfoManagerDebug.h"
-#include "debug/GameCommanderDebug.h"
 #include "Micro.h"
+#include "BotFactory.h"
 
 using namespace UAlbertaBot;
 using namespace AKBot;
 
 UAlbertaBot_Tournament::UAlbertaBot_Tournament(
-	shared_ptr<AKBot::OpponentView> opponentView,
-	unique_ptr<BaseLocationManager> baseLocationManager,
-	unique_ptr<AutoObserver> autoObserver,
+	shared_ptr<BaseLocationManager> baseLocationManager,
+	shared_ptr<AutoObserver> autoObserver,
 	shared_ptr<StrategyManager> strategyManager,
 	shared_ptr<UnitInfoManager> unitInfoManager,
-	unique_ptr<MapTools> mapTools,
-	shared_ptr<WorkerManager> workerManager,
-	unique_ptr<ScoutManager> scoutManager,
-	shared_ptr<AKBot::Logger> logger)
-	: _opponentView(opponentView)
+	shared_ptr<MapTools> mapTools,
+	shared_ptr<CombatCommander> combatManager,
+	shared_ptr<GameCommander> gameCommander,
+	shared_ptr<AKBot::GameDebug> gameDebug)
+	: _gameDebug(std::move(gameDebug))
 	, _baseLocationManager(std::move(baseLocationManager))
-	, _workerManager(workerManager)
-	, _bossManager(opponentView)
 	, _autoObserver(std::move(autoObserver))
-	, _unitInfoManager(unitInfoManager)
-	, _strategyManager(strategyManager)
+	, _unitInfoManager(std::move(unitInfoManager))
+	, _strategyManager(std::move(strategyManager))
 	, _mapTools(std::move(mapTools))
-	, _scoutManager(std::move(scoutManager))
-	, _productionManager(opponentView, _bossManager, strategyManager, workerManager, unitInfoManager, _baseLocationManager, _mapTools, logger)
-	, _combatCommander(_baseLocationManager, opponentView, workerManager, unitInfoManager, _mapTools, logger)
-	, _gameCommander(opponentView, _bossManager, _combatCommander, _scoutManager, _productionManager, workerManager)
+	, _combatCommander(std::move(combatManager))
+	, _gameCommander(std::move(gameCommander))
 {
 	// parse the configuration file for the bot's strategies
 	auto configurationFile = ParseUtils::FindConfigurationLocation(Config::ConfigFile::ConfigFileLocation);
 	ParseUtils::ParseStrategy(configurationFile, _strategyManager);
-
-	_scoutManager->onScoutAssigned([this](const BWAPI::Unit &unit, int currentFrame)
-	{
-		_workerManager->setScoutWorker(unit, currentFrame);
-	});
-	_scoutManager->onScoutReleased([this](const BWAPI::Unit &unit, int currentFrame)
-	{
-		_workerManager->finishedWithWorker(unit, currentFrame);
-	});
 }
 
 UAlbertaBot_Tournament::~UAlbertaBot_Tournament()
@@ -94,8 +76,7 @@ void UAlbertaBot_Tournament::onStart()
 	_unitInfoManager->onStart();
 	_mapTools->onStart();
 	_baseLocationManager->onStart(_mapTools);
-	_productionManager.onStart();
-	_gameCommander.onStart();
+	_gameCommander->onStart();
 
 	Micro::SetOnAttackUnit([this](const BWAPI::Unit&attacker, const BWAPI::Unit&target)
 	{
@@ -153,14 +134,10 @@ void UAlbertaBot_Tournament::onFrame()
     _mapTools->update(currentFrame);
 	_strategyManager->update();
     _unitInfoManager->update();
-    _workerManager->update(currentFrame);
     _baseLocationManager->update(_unitInfoManager);
 
     // update the game commander
-	_gameCommander.update(currentFrame);
-	_productionManager.update(currentFrame);
-	_combatCommander.update(_gameCommander.getCombatUnits(), currentFrame);
-	_scoutManager->update(currentFrame);
+	_gameCommander->update(currentFrame);
 
 	// Draw debug information
 	drawDebugInformation(_canvas);
@@ -173,40 +150,20 @@ void UAlbertaBot_Tournament::onFrame()
 
 void UAlbertaBot_Tournament::drawDebugInformation(AKBot::ScreenCanvas& canvas)
 {
-	if (Config::Debug::DrawLastSeenTileInfo)
-	{
-		MapToolsDebug mapDebug(_mapTools, _baseLocationManager);
-		mapDebug.drawLastSeen(canvas);
-	}
-
-	WorkerManagerDebug debug(_workerManager->getWorkerData());
-	debug.draw(canvas);
-
-	// draw the debug information for each base location
-	BaseLocationManagerDebug baseLocationManagerDebug(_opponentView, _baseLocationManager, _mapTools);
-	baseLocationManagerDebug.draw(canvas);
-
-	UnitInfoManagerDebug unitInfoDebug(_opponentView, _unitInfoManager);
-	unitInfoDebug.draw(canvas);
-
-	GameCommanderDebug gameCommanderDebug(_gameCommander);
-	gameCommanderDebug.draw(canvas);
+	_gameDebug->draw(canvas);
 }
 
 void UAlbertaBot_Tournament::onUnitDestroy(BWAPI::Unit unit)
 {
 	auto currentFrame = BWAPI::Broodwar->getFrameCount();
-	_workerManager->onUnitDestroy(unit, currentFrame);
 	_unitInfoManager->onUnitDestroy(unit); 
-    _gameCommander.onUnitDestroy(unit, currentFrame);
-	_productionManager.onUnitDestroy(unit, currentFrame);
+    _gameCommander->onUnitDestroy(unit, currentFrame);
 }
 
 void UAlbertaBot_Tournament::onUnitMorph(BWAPI::Unit unit)
 {
 	_unitInfoManager->onUnitMorph(unit);
-	_workerManager->onUnitMorph(unit);
-    _gameCommander.onUnitMorph(unit);
+    _gameCommander->onUnitMorph(unit);
 }
 
 void UAlbertaBot_Tournament::onSendText(std::string text) 
@@ -217,30 +174,29 @@ void UAlbertaBot_Tournament::onSendText(std::string text)
 void UAlbertaBot_Tournament::onUnitCreate(BWAPI::Unit unit)
 { 
 	_unitInfoManager->onUnitCreate(unit); 
-    _gameCommander.onUnitCreate(unit);
+    _gameCommander->onUnitCreate(unit);
 }
 
 void UAlbertaBot_Tournament::onUnitComplete(BWAPI::Unit unit)
 {
 	_unitInfoManager->onUnitComplete(unit);
-    _gameCommander.onUnitComplete(unit);
+    _gameCommander->onUnitComplete(unit);
 }
 
 void UAlbertaBot_Tournament::onUnitShow(BWAPI::Unit unit)
 { 
 	_unitInfoManager->onUnitShow(unit);
-	_workerManager->onUnitShow(unit);
-    _gameCommander.onUnitShow(unit);
+    _gameCommander->onUnitShow(unit);
 }
 
 void UAlbertaBot_Tournament::onUnitHide(BWAPI::Unit unit)
 { 
 	_unitInfoManager->onUnitHide(unit);
-    _gameCommander.onUnitHide(unit);
+    _gameCommander->onUnitHide(unit);
 }
 
 void UAlbertaBot_Tournament::onUnitRenegade(BWAPI::Unit unit)
 { 
 	_unitInfoManager->onUnitRenegade(unit);
-    _gameCommander.onUnitRenegade(unit);
+    _gameCommander->onUnitRenegade(unit);
 }

@@ -5,18 +5,19 @@ using namespace UAlbertaBot;
 
 ProductionManager::ProductionManager(
 	shared_ptr<AKBot::OpponentView> opponentView,
-	BOSSManager & bossManager,
+	shared_ptr<BOSSManager> bossManager,
+	shared_ptr<BuildingManager> buildingManager,
 	shared_ptr<StrategyManager> strategyManager,
 	shared_ptr<WorkerManager> workerManager,
 	shared_ptr<UnitInfoManager> unitInfo,
 	shared_ptr<BaseLocationManager> bases,
 	shared_ptr<MapTools> mapTools,
-	std::shared_ptr<AKBot::Logger> logger)
+	shared_ptr<AKBot::Logger> logger)
 	: _opponentView(opponentView)
 	, _workerManager(workerManager)
 	, _bossManager(bossManager)
 	, _unitInfo(unitInfo)
-    , _buildingManager(opponentView, bases, workerManager, mapTools, logger)
+    , _buildingManager(buildingManager)
     , _assignedWorkerForThisBuilding (false)
 	, _haveLocationForThisBuilding   (false)
 	, _enemyCloakedDetected          (false)
@@ -43,19 +44,19 @@ void ProductionManager::performBuildOrderSearch(int currentFrame)
         return;
     }
 
-	BuildOrder buildOrder = _bossManager.getBuildOrder();
+	BuildOrder buildOrder = _bossManager->getBuildOrder();
 
     if (buildOrder.size() > 0)
     {
 	    setBuildOrder(buildOrder);
-        _bossManager.reset();
+        _bossManager->reset();
     }
     else
     {
-        if (!_bossManager.isSearchInProgress())
+        if (!_bossManager->isSearchInProgress())
         {
 			auto strategyManager = this->getStrategyManager();
-			_bossManager.startNewSearch(strategyManager->getBuildOrderGoal(currentFrame), _buildingManager, currentFrame);
+			_bossManager->startNewSearch(strategyManager->getBuildOrderGoal(currentFrame), _buildingManager, currentFrame);
         }
     }
 }
@@ -139,7 +140,7 @@ void ProductionManager::update(int currentFrame)
 		_enemyCloakedDetected = true;
 	}
 
-    _buildingManager.update(currentFrame);
+    _buildingManager->update(currentFrame);
 }
 
 // on unit destroy
@@ -382,7 +383,7 @@ void ProductionManager::create(BWAPI::Unit producer, BuildOrderItem & item)
         && !t.getUnitType().isAddon())
     {
         // send the building task to the building manager
-        _buildingManager.addBuildingTask(t.getUnitType(), _opponentView->self()->getStartLocation());
+        _buildingManager->addBuildingTask(t.getUnitType(), _opponentView->self()->getStartLocation());
     }
     else if (t.getUnitType().isAddon())
     {
@@ -459,7 +460,7 @@ bool ProductionManager::detectBuildOrderDeadlock()
 
     // If supply is being built now, there's no block. Return right away.
     // Terran and protoss calculation:
-    if (_buildingManager.isBeingBuilt(self->getRace().getSupplyProvider()))
+    if (_buildingManager->isBeingBuilt(self->getRace().getSupplyProvider()))
     {
         return false;
     }
@@ -506,7 +507,7 @@ void ProductionManager::predictWorkerMovement(const Building & b)
 	// get a possible building location for the building
 	if (!_haveLocationForThisBuilding)
 	{
-		_predictedTilePosition = _buildingManager.getBuildingLocation(b);
+		_predictedTilePosition = _buildingManager->getBuildingLocation(b);
 	}
 
 	if (_predictedTilePosition != BWAPI::TilePositions::None)
@@ -577,12 +578,12 @@ void ProductionManager::performCommand(BWAPI::UnitCommandType t)
 
 int ProductionManager::getFreeMinerals()
 {
-	return _opponentView->self()->minerals() - _buildingManager.getReservedMinerals();
+	return _opponentView->self()->minerals() - _buildingManager->getReservedMinerals();
 }
 
 int ProductionManager::getFreeGas()
 {
-	return _opponentView->self()->gas() - _buildingManager.getReservedGas();
+	return _opponentView->self()->gas() - _buildingManager->getReservedGas();
 }
 
 // return whether or not we meet resources, including building reserves

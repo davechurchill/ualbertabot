@@ -4,16 +4,16 @@ namespace AKBot
 {
 	using UAlbertaBot::CompareWhenStarted;
 
-	ProductionManagerDebug::ProductionManagerDebug(const ProductionManager& productionManager)
+	ProductionManagerDebug::ProductionManagerDebug(shared_ptr<ProductionManager> productionManager)
 		: _productionManager(productionManager)
 	{
 	}
 
 	void ProductionManagerDebug::drawProductionInformation(AKBot::ScreenCanvas& canvas, int x, int y) const
 	{
-		auto buildingManager = _productionManager.getBuildingManager();
+		auto buildingManager = _productionManager->getBuildingManager();
 		drawBuildingInformation(canvas, buildingManager, 200, 50);
-		auto bossManager = _productionManager.getBOSSManager();
+		auto bossManager = _productionManager->getBOSSManager();
 		drawSearchInformation(canvas, bossManager, 490, 100);
 		drawStateInformation(canvas, 250, 0, buildingManager);
 
@@ -24,7 +24,7 @@ namespace AKBot
 
 		// fill prod with each unit which is under construction
 		std::vector<BWAPI::Unit> prod;
-		const auto& opponentView = _productionManager.getOpponentView();
+		const auto& opponentView = _productionManager->getOpponentView();
 		for (auto & unit : opponentView->self()->getUnits())
 		{
 			UAB_ASSERT(unit != nullptr, "Unit was null");
@@ -61,7 +61,7 @@ namespace AKBot
 			canvas.drawTextScreen(x - 35, yy, "%s%6d", prefix.c_str(), unit->getRemainingBuildTime());
 		}
 
-		drawQueueInformation(canvas, _productionManager.getBuildOrderQueue(), x, yy + 10);
+		drawQueueInformation(canvas, _productionManager->getBuildOrderQueue(), x, yy + 10);
 	}
 
 	void ProductionManagerDebug::drawQueueInformation(AKBot::ScreenCanvas& canvas, const BuildOrderQueue& buildQueue, int x, int y) const
@@ -112,16 +112,16 @@ namespace AKBot
 		}
 	}
 
-	void ProductionManagerDebug::drawBuildingInformation(AKBot::ScreenCanvas& canvas, const BuildingManager& buildingManager, int x, int y) const
+	void ProductionManagerDebug::drawBuildingInformation(AKBot::ScreenCanvas& canvas, shared_ptr<BuildingManager> buildingManager, int x, int y) const
 	{
-		drawReservedTiles(canvas, buildingManager.getBuildingPlacer());
+		drawReservedTiles(canvas, buildingManager->getBuildingPlacer());
 
 		if (!Config::Debug::DrawBuildingInfo)
 		{
 			return;
 		}
 
-		const auto& opponentView = _productionManager.getOpponentView();
+		const auto& opponentView = _productionManager->getOpponentView();
 		for (auto & unit : opponentView->self()->getUnits())
 		{
 			canvas.drawTextMap(unit->getPosition().x, unit->getPosition().y + 5, "\x07%d", unit->getID());
@@ -133,9 +133,9 @@ namespace AKBot
 
 		int yspace = 0;
 
-		for (const auto & b : buildingManager.getBuildings())
+		for (const auto & b : buildingManager->getBuildings())
 		{
-			auto workerCode = buildingManager.getBuildingWorkerCode(b);
+			auto workerCode = buildingManager->getBuildingWorkerCode(b);
 			if (b.status == UAlbertaBot::BuildingStatus::Unassigned)
 			{
 				canvas.drawTextScreen(x, y + 40 + ((yspace) * 10), "\x03 %s", b.type.getName().c_str());
@@ -163,7 +163,7 @@ namespace AKBot
 	}
 
 
-	void ProductionManagerDebug::drawSearchInformation(AKBot::ScreenCanvas& canvas, const BOSSManager& bossManager, int x, int y) const
+	void ProductionManagerDebug::drawSearchInformation(AKBot::ScreenCanvas& canvas, shared_ptr<BOSSManager> bossManager, int x, int y) const
 	{
 		if (!Config::Debug::DrawBuildOrderSearchInfo)
 		{
@@ -179,9 +179,9 @@ namespace AKBot
 
 		canvas.drawTextScreen(BWAPI::Position(x, y), "%cBuildOrderSearch:", '\x04');
 		y += 10;
-		canvas.drawTextScreen(BWAPI::Position(x, y), "%s", bossManager.getPreviousStatus().c_str());
+		canvas.drawTextScreen(BWAPI::Position(x, y), "%s", bossManager->getPreviousStatus().c_str());
 
-		auto& previousGoalUnits = bossManager.getPreviousGoalUnits();
+		auto& previousGoalUnits = bossManager->getPreviousGoalUnits();
 		for (size_t i = 0; i < previousGoalUnits.size(); ++i)
 		{
 			if (previousGoalUnits[i].second > 0)
@@ -191,21 +191,21 @@ namespace AKBot
 			}
 		}
 
-		canvas.drawTextScreen(BWAPI::Position(x, y + 25), "Time (ms): %.3lf", bossManager.getTotalPreviousSearchTime());
-		const auto& savedSearchResults = bossManager.getSavedSearchResults();
+		canvas.drawTextScreen(BWAPI::Position(x, y + 25), "Time (ms): %.3lf", bossManager->getTotalPreviousSearchTime());
+		const auto& savedSearchResults = bossManager->getSavedSearchResults();
 		canvas.drawTextScreen(BWAPI::Position(x, y + 35), "Nodes: %d", savedSearchResults.nodesExpanded);
 		canvas.drawTextScreen(BWAPI::Position(x, y + 45), "BO Size: %d", (int)savedSearchResults.buildOrder.size());
 	}
 
-	void ProductionManagerDebug::drawStateInformation(AKBot::ScreenCanvas& canvas, int x, int y, const BuildingManager & buildingManager) const
+	void ProductionManagerDebug::drawStateInformation(AKBot::ScreenCanvas& canvas, int x, int y, shared_ptr<BuildingManager> buildingManager) const
 	{
 		if (!Config::Debug::DrawBOSSStateInfo)
 		{
 			return;
 		}
 
-		const auto& opponentView = _productionManager.getOpponentView();
-		BOSS::GameState currentState(BWAPI::Broodwar, opponentView->self(), buildingManager.buildingsQueued());
+		const auto& opponentView = _productionManager->getOpponentView();
+		BOSS::GameState currentState(BWAPI::Broodwar, opponentView->self(), buildingManager->buildingsQueued());
 		canvas.drawTextScreen(BWAPI::Position(x - 100, y + 30), "\x04%s", currentState.getBuildingData().toString().c_str());
 		canvas.drawTextScreen(BWAPI::Position(x + 150, y), "\x04%s", currentState.toString().c_str());
 	}

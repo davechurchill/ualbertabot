@@ -1,5 +1,6 @@
 #pragma once
 
+#include "DebugInfoProvider.h"
 #include "GameCommander.h"
 #include "ScreenCanvas.h"
 
@@ -7,13 +8,13 @@ namespace AKBot
 {
 	using UAlbertaBot::GameCommander;
 
-	class GameCommanderDebug
+	class GameCommanderDebug : public DebugInfoProvider
 	{
-		const GameCommander& _gameCommander;
+		shared_ptr<GameCommander> _gameCommander;
 
 		void drawGameInformation(ScreenCanvas& canvas, int x, int y) const;
 	public:
-		GameCommanderDebug(const GameCommander& gameCommander);
-		void draw(ScreenCanvas& canvas) const;
+		GameCommanderDebug(shared_ptr<GameCommander> gameCommander);
+		void draw(ScreenCanvas& canvas) override;
 	};
 }

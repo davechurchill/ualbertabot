@@ -13,9 +13,9 @@ namespace UAlbertaBot
 class GameCommander
 {
     Timer                       _timer;
-    CombatCommander&            _combatCommander;
-    BOSSManager&                _bossManager;
-    ProductionManager&          _productionManager;
+	shared_ptr<CombatCommander>            _combatCommander;
+	shared_ptr<BOSSManager>                _bossManager;
+	shared_ptr<ProductionManager>          _productionManager;
 	shared_ptr<ScoutManager>	_scoutManager;
 	shared_ptr<WorkerManager> _workerManager;
 	shared_ptr<AKBot::OpponentView>	_opponentView;
@@ -33,10 +33,10 @@ public:
 
     GameCommander(
 		shared_ptr<AKBot::OpponentView> opponentView,
-		BOSSManager& bossManager,
-		CombatCommander& combatCommander,
+		shared_ptr<BOSSManager> bossManager,
+		shared_ptr<CombatCommander> combatCommander,
 		shared_ptr<ScoutManager> scoutManager,
-		ProductionManager& productionManager,
+		shared_ptr<ProductionManager> productionManager,
 		shared_ptr<WorkerManager> workerManager);
 
     void onStart();
@@ -52,9 +52,9 @@ public:
     BWAPI::Unit getClosestUnitToTarget(BWAPI::UnitType type,BWAPI::Position target);
     BWAPI::Unit getClosestWorkerToTarget(BWAPI::Position target);
 
-	const ProductionManager& getProductionManager() const;
+	const shared_ptr<ProductionManager> getProductionManager() const;
 	const shared_ptr<ScoutManager> getScoutManager() const;
-	const CombatCommander& getCombatCommander() const;
+	const shared_ptr<CombatCommander> getCombatCommander() const;
 	const shared_ptr<AKBot::OpponentView> getOpponentView() const;
 
     void onUnitShow(BWAPI::Unit unit);

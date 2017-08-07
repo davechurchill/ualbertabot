@@ -1,0 +1,15 @@
+#pragma once 
+#include "ScreenCanvas.h"
+
+namespace AKBot
+{
+	class DebugInfoProvider
+	{
+	public:
+		virtual ~DebugInfoProvider() noexcept = default;
+		/*
+		 Draw debug information on the screen canvas.
+		*/
+		virtual void draw(ScreenCanvas& canvas) = 0;
+	};
+}

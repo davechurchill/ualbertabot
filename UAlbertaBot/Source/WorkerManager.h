@@ -11,7 +11,7 @@ namespace UAlbertaBot
 
 class WorkerManager
 {
-    WorkerData  workerData;
+	shared_ptr<WorkerData>  workerData;
     BWAPI::Unit previousClosestWorker;
 	std::shared_ptr<OpponentView> _opponentView;
 
@@ -25,7 +25,9 @@ class WorkerManager
 
 public:
 
-    WorkerManager(std::shared_ptr<OpponentView> opponentView, std::shared_ptr<AKBot::Logger> logger);
+    WorkerManager(
+		shared_ptr<OpponentView> opponentView,
+		shared_ptr<WorkerData>  workerData);
 
     void        update(int currentFrame);
     void        onUnitDestroy(BWAPI::Unit unit, int currentFrame);
@@ -36,7 +38,7 @@ public:
     void        finishedWithCombatWorkers(int currentFrame);
 
     void        updateWorkerStatus(int currentFrame);
-	const WorkerData& getWorkerData() const { return workerData; };
+	shared_ptr<WorkerData> getWorkerData() const { return workerData; };
 
     int         getNumMineralWorkers() const;
     int         getNumGasWorkers() const;

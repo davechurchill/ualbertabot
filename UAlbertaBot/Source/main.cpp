@@ -27,6 +27,18 @@
 #include "BWAPIOpponentView.h"
 #include "debug\BWAPIPrintLogger.h"
 #include "BotFactory.h"
+#include "UAlbertaBot_Arena.h"
+#include "UAlbertaBot_Tournament.h"
+#include "BWAPIOpponentView.h"
+#include "BWAPIMapInformation.h"
+
+#include "debug\BWAPIPrintLogger.h"
+#include "debug\BaseLocationManagerDebug.h"
+#include "debug\GameCommanderDebug.h"
+#include "debug\UnitInfoManagerDebug.h"
+#include "debug\WorkerManagerDebug.h"
+#include "debug\MapToolsDebug.h"
+#include "debug\DebugInfoProvider.h"
 
 using namespace AKBot;
 using namespace UAlbertaBot;
@@ -80,11 +92,12 @@ int main(int argc, const char * argv[])
 			{
 				std::cout << "Playing game " << gameCount++ << " on map " << BWAPI::Broodwar->mapFileName() << "\n";
 
-				std::string botMode = Config::BotInfo::BotMode;
-				auto m = createBot(botMode);
+				std::string mode = Config::BotInfo::BotMode;
+				auto m = createBot(mode);
+				std::cerr << "Bot Address: " << m.getBot().get() << std::endl;
 				if (!m.isValid())
 				{
-					std::cerr << "Unknown bot module selected: " << botMode << "\n";
+					std::cerr << "Unknown bot module selected: " << mode << "\n";
 					exit(-1);
 				}
 
