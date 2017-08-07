@@ -6,7 +6,7 @@ namespace AKBot
 	class DebugInfoProvider
 	{
 	public:
-		virtual ~DebugInfoProvider() noexcept = default;
+		virtual ~DebugInfoProvider() = default;
 		/*
 		 Draw debug information on the screen canvas.
 		*/
