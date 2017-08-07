@@ -23,7 +23,7 @@ namespace AKBot
 
 	void UnitInfoManagerDebug::drawExtendedInterface(AKBot::ScreenCanvas& canvas) const
 	{
-		if (!Config::Debug::DrawUnitHealthBars)
+		if (!Config.Debug.DrawUnitHealthBars)
 		{
 			return;
 		}
@@ -59,7 +59,7 @@ namespace AKBot
 
 	void UnitInfoManagerDebug::drawUnitInformation(AKBot::ScreenCanvas& canvas, int x, int y) const
 	{
-		if (!Config::Debug::DrawEnemyUnitInfo)
+		if (!Config.Debug.DrawEnemyUnitInfo)
 		{
 			return;
 		}

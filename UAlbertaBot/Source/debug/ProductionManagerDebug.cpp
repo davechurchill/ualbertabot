@@ -17,7 +17,7 @@ namespace AKBot
 		drawSearchInformation(canvas, bossManager, 490, 100);
 		drawStateInformation(canvas, 250, 0, buildingManager);
 
-		if (!Config::Debug::DrawProductionInfo)
+		if (!Config.Debug.DrawProductionInfo)
 		{
 			return;
 		}
@@ -68,7 +68,7 @@ namespace AKBot
 	{
 		//x = x + 25;
 
-		if (!Config::Debug::DrawProductionInfo)
+		if (!Config.Debug.DrawProductionInfo)
 		{
 			return;
 		}
@@ -116,7 +116,7 @@ namespace AKBot
 	{
 		drawReservedTiles(canvas, buildingManager->getBuildingPlacer());
 
-		if (!Config::Debug::DrawBuildingInfo)
+		if (!Config.Debug.DrawBuildingInfo)
 		{
 			return;
 		}
@@ -165,7 +165,7 @@ namespace AKBot
 
 	void ProductionManagerDebug::drawSearchInformation(AKBot::ScreenCanvas& canvas, shared_ptr<BOSSManager> bossManager, int x, int y) const
 	{
-		if (!Config::Debug::DrawBuildOrderSearchInfo)
+		if (!Config.Debug.DrawBuildOrderSearchInfo)
 		{
 			return;
 		}
@@ -199,7 +199,7 @@ namespace AKBot
 
 	void ProductionManagerDebug::drawStateInformation(AKBot::ScreenCanvas& canvas, int x, int y, shared_ptr<BuildingManager> buildingManager) const
 	{
-		if (!Config::Debug::DrawBOSSStateInfo)
+		if (!Config.Debug.DrawBOSSStateInfo)
 		{
 			return;
 		}
@@ -212,7 +212,7 @@ namespace AKBot
 
 	void ProductionManagerDebug::drawReservedTiles(AKBot::ScreenCanvas& canvas, const BuildingPlacer& buildingPlacer) const
 	{
-		if (!Config::Debug::DrawReservedBuildingTiles)
+		if (!Config.Debug.DrawReservedBuildingTiles)
 		{
 			return;
 		}

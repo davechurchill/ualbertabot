@@ -137,8 +137,8 @@ double CombatSimulation::simulateCombat()
         SparCraft::PlayerPtr enemyNOK(new SparCraft::Player_AttackClosest(enemyID));
 
 		auto& aiParameters = SparCraft::AIParameters::Instance();
-        SparCraft::PlayerPtr p1 =  aiParameters.getPlayer(selfID, Config::SparCraft::CombatSimPlayerName);
-        SparCraft::PlayerPtr p2 =  aiParameters.getPlayer(enemyID, Config::SparCraft::CombatSimPlayerName);
+        SparCraft::PlayerPtr p1 =  aiParameters.getPlayer(selfID, Config.SparCraft.CombatSimPlayerName);
+        SparCraft::PlayerPtr p2 =  aiParameters.getPlayer(enemyID, Config.SparCraft.CombatSimPlayerName);
 
 	    SparCraft::Game g (s1, p1, p2, 2000);
 
@@ -147,7 +147,7 @@ double CombatSimulation::simulateCombat()
 	    double eval = SparCraft::Eval::Eval(g.getState(), SparCraft::Players::Player_One, SparCraft::EvaluationMethods::LTD2).val();
         //std::cout << "LTD2: " << SparCraft::Eval::LTD2(g.getState(), 0) << ", " << SparCraft::Eval::LTD2(g.getState(), 1) << "\n";
 
-        if (Config::Debug::DrawCombatSimulationInfo)
+        if (Config.Debug.DrawCombatSimulationInfo)
         {
             std::stringstream ss1;
             ss1 << "Initial State:\n";

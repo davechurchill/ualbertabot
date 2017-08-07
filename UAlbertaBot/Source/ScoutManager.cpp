@@ -152,7 +152,7 @@ void UAlbertaBot::ScoutManager::harrasEnemyBaseIfPossible(const UAlbertaBot::Bas
 		if (!_scoutUnderAttack)
 		{
 			// if there is a worker nearby, harass it
-			if (Config::Strategy::ScoutHarassEnemy && closestWorker && (_workerScout->getDistance(closestWorker) < 800))
+			if (Config.Strategy.ScoutHarassEnemy && closestWorker && (_workerScout->getDistance(closestWorker) < 800))
 			{
 				_scoutStatus = "Harass enemy worker";
 				_currentRegionVertexIndex = -1;

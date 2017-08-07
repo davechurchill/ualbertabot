@@ -186,7 +186,7 @@ void TransportManager::followPerimeter(int clockwise, int currentFrame)
 {
 	BWAPI::Position goTo = getFleePosition(clockwise);
 
-	if (Config::Debug::DrawUnitTargetInfo)
+	if (Config.Debug.DrawUnitTargetInfo)
 	{
 		BWAPI::Broodwar->drawCircleMap(goTo, 5, BWAPI::Colors::Red, true);
 	}

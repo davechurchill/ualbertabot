@@ -15,7 +15,7 @@ namespace AKBot
 
 	void GameCommanderDebug::draw(ScreenCanvas & canvas)
 	{
-		if (Config::Debug::DrawScoutInfo)
+		if (Config.Debug.DrawScoutInfo)
 		{
 			ScoutManagerDebug scoutDebug(_gameCommander->getScoutManager());
 			scoutDebug.drawScoutInformation(canvas, 200, 320);
@@ -29,7 +29,7 @@ namespace AKBot
 		drawGameInformation(canvas, 4, 1);
 
 		// draw position of mouse cursor
-		if (Config::Debug::DrawMouseCursorInfo)
+		if (Config.Debug.DrawMouseCursorInfo)
 		{
 			int mouseX = BWAPI::Broodwar->getMousePosition().x + BWAPI::Broodwar->getScreenPosition().x;
 			int mouseY = BWAPI::Broodwar->getMousePosition().y + BWAPI::Broodwar->getScreenPosition().y;
@@ -51,7 +51,7 @@ namespace AKBot
 		y += 12;
 
 		canvas.drawTextScreen(x, y, "\x04Strategy:");
-		canvas.drawTextScreen(x + 50, y, "\x03%s %s", Config::Strategy::StrategyName.c_str(), Config::Strategy::FoundEnemySpecificStrategy ? "(enemy specific)" : "");
+		canvas.drawTextScreen(x + 50, y, "\x03%s %s", Config.Strategy.StrategyName.c_str(), Config.Strategy.FoundEnemySpecificStrategy ? "(enemy specific)" : "");
 		canvas.setTextSize();
 		y += 12;
 

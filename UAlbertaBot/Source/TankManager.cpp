@@ -42,7 +42,7 @@ void TankManager::executeMicro(const std::vector<BWAPI::Unit> & targets, int cur
 				// find the best target for this zealot
 				BWAPI::Unit target = getTarget(tank, tankTargets);
 
-				if (target && Config::Debug::DrawUnitTargetInfo)
+				if (target && Config.Debug.DrawUnitTargetInfo)
 				{
 					BWAPI::Broodwar->drawLineMap(tank->getPosition(), tank->getTargetPosition(), BWAPI::Colors::Purple);
 				}

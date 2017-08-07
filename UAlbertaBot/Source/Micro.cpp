@@ -30,7 +30,7 @@ void Micro::drawAction(
 	const BWAPI::Position & targetPosition,
 	const BWAPI::Color color)
 {
-	if (Config::Debug::DrawUnitTargetInfo)
+	if (Config.Debug.DrawUnitTargetInfo)
 	{
 		canvas.drawCircleMap(attackerPostion, dotRadius, color, true);
 		canvas.drawCircleMap(targetPosition, dotRadius, color, true);
@@ -278,7 +278,7 @@ void Micro::SmartKiteTarget(BWAPI::Unit rangedUnit, BWAPI::Unit target, int curr
 	}
 
 	// determine whether the target can be kited
-    bool kiteLonger = Config::Micro::KiteLongerRangedUnits.find(rangedUnit->getType()) != Config::Micro::KiteLongerRangedUnits.end();
+    bool kiteLonger = Config.Micro.KiteLongerRangedUnits.find(rangedUnit->getType()) != Config.Micro.KiteLongerRangedUnits.end();
 	if (!kiteLonger && (range <= target->getType().groundWeapon().maxRange()))
 	{
 		// if we can't kite it, there's no point

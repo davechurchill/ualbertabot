@@ -16,7 +16,7 @@ void ArenaPlayer_SparCraft::onStart()
         SparCraft::init();
 
         // Read the SparCraft configuration file
-        SparCraft::AIParameters::Instance().parseFile(Config::SparCraft::SparCraftConfigFile);
+        SparCraft::AIParameters::Instance().parseFile(Config.SparCraft.SparCraftConfigFile);
        
 
         std::cout << "SparCraft initialized\n";
@@ -48,7 +48,7 @@ void ArenaPlayer_SparCraft::PlaySparCraftSimulation(const SparCraft::GameState &
 	auto& aiParameters = SparCraft::AIParameters::Instance();
 	auto sparcraftSelfPlayer = GetSparCraftPlayerID(BWAPI::Broodwar->self());
 	auto sparcraftEnemyPlayer = GetSparCraftPlayerID(BWAPI::Broodwar->enemy());
-    SparCraft::PlayerPtr player = aiParameters.getPlayer(sparcraftSelfPlayer, Config::Arena::ArenaPlayerName);
+    SparCraft::PlayerPtr player = aiParameters.getPlayer(sparcraftSelfPlayer, Config.Arena.ArenaPlayerName);
     SparCraft::PlayerPtr enemy =  aiParameters.getPlayer(sparcraftEnemyPlayer, "AttackC");
 
     SparCraft::Game g(state, player, enemy);
@@ -57,7 +57,7 @@ void ArenaPlayer_SparCraft::PlaySparCraftSimulation(const SparCraft::GameState &
 
 SparCraft::Move ArenaPlayer_SparCraft::GetSparCraftPlayerMove(const SparCraft::GameState & state, const size_t & playerID) const
 {
-    SparCraft::PlayerPtr player = SparCraft::AIParameters::Instance().getPlayer(playerID, Config::Arena::ArenaPlayerName);
+    SparCraft::PlayerPtr player = SparCraft::AIParameters::Instance().getPlayer(playerID, Config.Arena.ArenaPlayerName);
 
     SparCraft::Move move;
     player->getMove(state, move);

@@ -183,7 +183,7 @@ void Squad::addUnitsToMicroManagers()
 // calculates whether or not to regroup
 bool Squad::needsToRegroup(shared_ptr<MapTools> map, int currentFrame)
 {
-    if (!Config::Micro::UseSparcraftSimulation)
+    if (!Config.Micro.UseSparcraftSimulation)
     {
         return false;
     }
@@ -239,7 +239,7 @@ bool Squad::needsToRegroup(shared_ptr<MapTools> map, int currentFrame)
     }
 
 	// if we are DT rushing and we haven't lost a DT yet, no retreat!
-	if (Config::Strategy::StrategyName == "Protoss_DTRush"
+	if (Config.Strategy.StrategyName == "Protoss_DTRush"
 		&& (_opponentView->self()->deadUnitCount(BWAPI::UnitTypes::Protoss_Dark_Templar) == 0))
 	{
 		_regroupStatus = std::string("\x04 DARK TEMPLAR HOOOOO!");
@@ -252,19 +252,19 @@ bool Squad::needsToRegroup(shared_ptr<MapTools> map, int currentFrame)
 		_opponentView,
 		ourCombatUnits,
 		simulationCenter,
-		Config::Micro::CombatRegroupRadius,
+		Config.Micro.CombatRegroupRadius,
 		true,
 		false);
 
 	std::vector<UnitInfo> enemyCombatUnitsForSimulation;
 	for (auto& enemyPlayer : _opponentView->enemies())
 	{
-		_unitInfo->getNearbyForce(enemyCombatUnitsForSimulation, simulationCenter, enemyPlayer, Config::Micro::CombatRegroupRadius);
+		_unitInfo->getNearbyForce(enemyCombatUnitsForSimulation, simulationCenter, enemyPlayer, Config.Micro.CombatRegroupRadius);
 	}
 
 	//do the SparCraft Simulation!
 	CombatSimulation sim(_opponentView, _logger);
-	sim.setCombatUnits(ourCombatUnits, enemyCombatUnitsForSimulation, simulationCenter, Config::Micro::CombatRegroupRadius, currentFrame);
+	sim.setCombatUnits(ourCombatUnits, enemyCombatUnitsForSimulation, simulationCenter, Config.Micro.CombatRegroupRadius, currentFrame);
     auto score = sim.simulateCombat();
 
 	bool retreat = score < 0;
@@ -344,7 +344,7 @@ BWAPI::Position Squad::calcCenter()
 {
     if (_units.empty())
     {
-        if (Config::Debug::DrawSquadInfo)
+        if (Config.Debug.DrawSquadInfo)
         {
             _logger->log("Squad::calcCenter() called on empty squad");
         }

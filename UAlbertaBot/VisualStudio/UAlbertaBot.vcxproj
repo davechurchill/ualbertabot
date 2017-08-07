@@ -26,6 +26,7 @@
     <ClCompile Include="..\Source\BaseLocation.cpp" />
     <ClCompile Include="..\Source\BaseLocationManager.cpp" />
     <ClCompile Include="..\Source\BOSSManager.cpp" />
+    <ClCompile Include="..\Source\BotConfiguration.cpp" />
     <ClCompile Include="..\Source\BotFactory.cpp" />
     <ClCompile Include="..\Source\BotModule.cpp" />
     <ClCompile Include="..\Source\BotPlayer.cpp" />
@@ -91,6 +92,7 @@
     <ClInclude Include="..\Source\BaseLocation.h" />
     <ClInclude Include="..\Source\BaseLocationManager.h" />
     <ClInclude Include="..\Source\BOSSManager.h" />
+    <ClInclude Include="..\Source\BotConfiguration.h" />
     <ClInclude Include="..\Source\BotFactory.h" />
     <ClInclude Include="..\Source\BotModule.h" />
     <ClInclude Include="..\Source\BotPlayer.h" />

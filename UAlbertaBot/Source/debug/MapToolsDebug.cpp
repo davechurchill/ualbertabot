@@ -11,7 +11,7 @@ namespace AKBot
 
 	void MapToolsDebug::draw(AKBot::ScreenCanvas& canvas)
 	{
-		if (!Config::Debug::DrawLastSeenTileInfo)
+		if (!Config.Debug.DrawLastSeenTileInfo)
 		{
 			return;
 		}

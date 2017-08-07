@@ -8,12 +8,12 @@ namespace AKBot
 	}
 	void WorkerManagerDebug::draw(ScreenCanvas & canvas)
 	{
-		if (Config::Debug::DrawResourceInfo)
+		if (Config.Debug.DrawResourceInfo)
 		{
 			drawResourceDebugInfo(canvas);
 		}
 
-		if (Config::Debug::DrawWorkerInfo)
+		if (Config.Debug.DrawWorkerInfo)
 		{
 			drawWorkerInformation(canvas, 450, 20);
 		}
@@ -66,12 +66,12 @@ namespace AKBot
 			int x = depot->getPosition().x - 64;
 			int y = depot->getPosition().y - 32;
 
-			if (Config::Debug::DrawWorkerInfo)
+			if (Config.Debug.DrawWorkerInfo)
 			{
 				canvas.drawBoxMap(x - 2, y - 1, x + 75, y + 14, BWAPI::Colors::Black, true);
 			}
 
-			if (Config::Debug::DrawWorkerInfo)
+			if (Config.Debug.DrawWorkerInfo)
 			{
 				canvas.drawTextMap(x, y, "\x04 Workers: %d", _workerData->getNumAssignedWorkers(depot));
 			}

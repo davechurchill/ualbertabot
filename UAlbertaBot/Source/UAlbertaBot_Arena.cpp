@@ -31,12 +31,12 @@ void UAlbertaBot_Arena::onStart()
 {
     // Parse the bot's configuration file if it has one, change this file path to where your config file is
     // Any relative path name will be relative to Starcraft installation folder
-	auto configurationFile = ParseUtils::FindConfigurationLocation(Config::ConfigFile::ConfigFileLocation);
+	auto configurationFile = ParseUtils::FindConfigurationLocation(ConfigOld::ConfigFile::ConfigFileLocation);
     ParseUtils::ParseConfigFile(configurationFile);
     
     // Set our BWAPI options here    
-    BWAPI::Broodwar->setLocalSpeed(Config::BWAPIOptions::SetLocalSpeed);
-    BWAPI::Broodwar->setFrameSkip(Config::BWAPIOptions::SetFrameSkip);
+    BWAPI::Broodwar->setLocalSpeed(Config.BWAPIOptions.SetLocalSpeed);
+    BWAPI::Broodwar->setFrameSkip(Config.BWAPIOptions.SetFrameSkip);
 
     // Set the starting date
     _startDate = Assert::currentDateTime();
@@ -44,19 +44,19 @@ void UAlbertaBot_Arena::onStart()
     // set the arena player
     _arenaPlayer = std::shared_ptr<ArenaPlayer>(new ArenaPlayer_AttackClosest());
 
-    if (Config::BWAPIOptions::EnableCompleteMapInformation)
+    if (Config.BWAPIOptions.EnableCompleteMapInformation)
     {
         BWAPI::Broodwar->enableFlag(BWAPI::Flag::CompleteMapInformation);
     }
 
-    if (Config::BWAPIOptions::EnableUserInput)
+    if (Config.BWAPIOptions.EnableUserInput)
     {
         BWAPI::Broodwar->enableFlag(BWAPI::Flag::UserInput);
     }
 
-    if (Config::BotInfo::PrintInfoOnStart)
+    if (Config.BotInfo.PrintInfoOnStart)
     {
-        BWAPI::Broodwar->printf("Hello! I am %s, written by %s", Config::BotInfo::BotName.c_str(), Config::BotInfo::Authors.c_str());
+        BWAPI::Broodwar->printf("Hello! I am %s, written by %s", Config.BotInfo.BotName.c_str(), Config.BotInfo.Authors.c_str());
     }
 }
 
@@ -134,7 +134,9 @@ int UAlbertaBot_Arena::winner()
 
 void UAlbertaBot_Arena::drawUnitHPBars(ScreenCanvas& canvas) const
 {
-    if (!Config::Debug::DrawUnitHealthBars) { return; }
+    if (!Config.Debug.DrawUnitHealthBars) { 
+		return;
+	}
 
     for (const auto & unit : BWAPI::Broodwar->getAllUnits())
     {

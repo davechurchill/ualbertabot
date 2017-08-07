@@ -10,7 +10,7 @@ namespace AKBot
 	{
 		auto& squadData = _combatCommander->getSquadData();
 		drawSquadData(canvas, squadData);
-		if (Config::Debug::DrawSquadInfo)
+		if (Config.Debug.DrawSquadInfo)
 		{
 			drawSquadInformation(canvas, squadData, 200, 30);
 		}
@@ -77,15 +77,15 @@ namespace AKBot
 			int bottom = unit->getType().dimensionDown();
 
 			auto color = squad.isNearEnemy(unit)
-				? Config::Debug::ColorUnitNearEnemy
-				: Config::Debug::ColorUnitNotNearEnemy;
+				? Config.Debug.ColorUnitNearEnemy
+				: Config.Debug.ColorUnitNotNearEnemy;
 			canvas.drawBoxMap(x - left, y - top, x + right, y + bottom, color);
 		}
 	}
 
 	void CombatCommanderDebug::drawRegroupPosition(AKBot::ScreenCanvas& canvas, BWAPI::Position regroupPosition) const
 	{
-		if (Config::Debug::DrawCombatSimulationInfo)
+		if (Config.Debug.DrawCombatSimulationInfo)
 		{
 			canvas.drawTextScreen(200, 150, "REGROUP");
 		}
@@ -95,7 +95,7 @@ namespace AKBot
 
 	void CombatCommanderDebug::drawSquad(AKBot::ScreenCanvas& canvas, const Squad& squad) const
 	{
-		if (Config::Debug::DrawSquadInfo)
+		if (Config.Debug.DrawSquadInfo)
 		{
 			drawRegroupStatus(canvas, squad);
 			drawNearbyUnits(canvas, squad);
@@ -107,7 +107,7 @@ namespace AKBot
 		}
 		else
 		{
-			if (Config::Debug::DrawUnitTargetInfo)
+			if (Config.Debug.DrawUnitTargetInfo)
 			{
 				drawOrder(canvas, squad, squad.getSquadOrder());
 			}
@@ -119,14 +119,14 @@ namespace AKBot
 		auto& meleeManager = squad.getMeleeManager();
 		for (auto & meleeUnit : meleeManager.getUnits())
 		{
-			if (Config::Debug::DrawUnitTargetInfo)
+			if (Config.Debug.DrawUnitTargetInfo)
 			{
 				canvas.drawLineMap(
 					meleeUnit->getPosition().x,
 					meleeUnit->getPosition().y,
 					meleeUnit->getTargetPosition().x,
 					meleeUnit->getTargetPosition().y,
-					Config::Debug::ColorLineTarget);
+					Config.Debug.ColorLineTarget);
 			}
 		}
 		

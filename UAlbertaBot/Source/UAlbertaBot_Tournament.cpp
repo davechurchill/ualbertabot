@@ -29,7 +29,7 @@ UAlbertaBot_Tournament::UAlbertaBot_Tournament(
 	, _gameCommander(std::move(gameCommander))
 {
 	// parse the configuration file for the bot's strategies
-	auto configurationFile = ParseUtils::FindConfigurationLocation(Config::ConfigFile::ConfigFileLocation);
+	auto configurationFile = ParseUtils::FindConfigurationLocation(ConfigOld::ConfigFile::ConfigFileLocation);
 	ParseUtils::ParseStrategy(configurationFile, _strategyManager);
 }
 
@@ -42,32 +42,32 @@ void UAlbertaBot_Tournament::onStart()
 {
 	// Initialize SparCraft, the combat simulation package
 	SparCraft::init();
-	auto configurationFile = ParseUtils::FindConfigurationLocation(Config::SparCraft::SparCraftConfigFile);
+	auto configurationFile = ParseUtils::FindConfigurationLocation(Config.SparCraft.SparCraftConfigFile);
 	SparCraft::AIParameters::Instance().parseFile(configurationFile);
 
 	// Initialize BOSS, the Build Order Search System
 	BOSS::init();
 
 	// Set our BWAPI options here    
-	BWAPI::Broodwar->setLocalSpeed(Config::BWAPIOptions::SetLocalSpeed);
-	BWAPI::Broodwar->setFrameSkip(Config::BWAPIOptions::SetFrameSkip);
+	BWAPI::Broodwar->setLocalSpeed(Config.BWAPIOptions.SetLocalSpeed);
+	BWAPI::Broodwar->setFrameSkip(Config.BWAPIOptions.SetFrameSkip);
 
-	if (Config::BWAPIOptions::EnableCompleteMapInformation)
+	if (Config.BWAPIOptions.EnableCompleteMapInformation)
 	{
 		BWAPI::Broodwar->enableFlag(BWAPI::Flag::CompleteMapInformation);
 	}
 
-	if (Config::BWAPIOptions::EnableUserInput)
+	if (Config.BWAPIOptions.EnableUserInput)
 	{
 		BWAPI::Broodwar->enableFlag(BWAPI::Flag::UserInput);
 	}
 
-	if (Config::BotInfo::PrintInfoOnStart)
+	if (Config.BotInfo.PrintInfoOnStart)
 	{
-		BWAPI::Broodwar->printf("Hello! I am %s, written by %s", Config::BotInfo::BotName.c_str(), Config::BotInfo::Authors.c_str());
+		BWAPI::Broodwar->printf("Hello! I am %s, written by %s", Config.BotInfo.BotName.c_str(), Config.BotInfo.Authors.c_str());
 	}
 
-	if (Config::Modules::UsingStrategyIO)
+	if (Config.Modules.UsingStrategyIO)
 	{
 		_strategyManager->readResults();
 		_strategyManager->setLearnedStrategy();
@@ -142,7 +142,7 @@ void UAlbertaBot_Tournament::onFrame()
 	// Draw debug information
 	drawDebugInformation(_canvas);
 
-    if (Config::Modules::UsingAutoObserver)
+    if (Config.Modules.UsingAutoObserver)
     {
         _autoObserver->onFrame(currentFrame);
     }

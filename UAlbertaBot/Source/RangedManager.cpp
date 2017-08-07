@@ -39,14 +39,14 @@ void RangedManager::assignTargets(const std::vector<BWAPI::Unit> & targets, int 
 				// find the best target for this zealot
 				BWAPI::Unit target = getTarget(rangedUnit, rangedUnitTargets);
                 
-                if (target && Config::Debug::DrawUnitTargetInfo) 
+                if (target && Config.Debug.DrawUnitTargetInfo) 
 	            {
 		            BWAPI::Broodwar->drawLineMap(rangedUnit->getPosition(), rangedUnit->getTargetPosition(), BWAPI::Colors::Purple);
 	            }
 
 
 				// attack it
-                if (Config::Micro::KiteWithRangedUnits)
+                if (Config.Micro.KiteWithRangedUnits)
                 {
                     if (rangedUnit->getType() == BWAPI::UnitTypes::Zerg_Mutalisk || rangedUnit->getType() == BWAPI::UnitTypes::Terran_Vulture)
                     {

@@ -3,7 +3,9 @@
 
 using namespace UAlbertaBot;
 
-namespace Config
+BotConfiguration Config;
+
+namespace ConfigOld
 {
     namespace ConfigFile
     {

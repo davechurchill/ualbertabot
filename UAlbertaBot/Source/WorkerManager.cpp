@@ -85,7 +85,7 @@ void WorkerManager::handleGasWorkers(int currentFrame)
 			int numAssigned = workerData->getNumAssignedWorkers(unit);
 
 			// if it's less than we want it to be, fill 'er up
-			for (int i=0; i<(Config::Macro::WorkersPerRefinery-numAssigned); ++i)
+			for (int i=0; i<(Config.Macro.WorkersPerRefinery-numAssigned); ++i)
 			{
 				BWAPI::Unit gasWorker = getGasWorker(unit);
 				if (gasWorker)

@@ -97,14 +97,14 @@ void BOSSManager::update(double timeLimit, int currentFrame)
         _totalPreviousSearchTime += _smartSearch->getResults().timeElapsed;
 
         // after the search finishes for this frame, check to see if we have a solution or if we hit the overall time limit
-        bool searchTimeOut = (currentFrame > (_previousSearchStartFrame + Config::Macro::BOSSFrameLimit));
+        bool searchTimeOut = (currentFrame > (_previousSearchStartFrame + Config.Macro.BOSSFrameLimit));
         bool previousSearchComplete = searchTimeOut || _smartSearch->getResults().solved || caughtException;
         if (previousSearchComplete)
         {
             bool solved = _smartSearch->getResults().solved && _smartSearch->getResults().solutionFound;
 
             // if we've found a solution, let us know
-            if (_smartSearch->getResults().solved && Config::Debug::DrawBuildOrderSearchInfo)
+            if (_smartSearch->getResults().solved && Config.Debug.DrawBuildOrderSearchInfo)
             {
                 //_logger.log("Build order SOLVED in %d nodes", (int)_smartSearch->getResults().nodesExpanded);
             }
@@ -172,7 +172,7 @@ void BOSSManager::update(double timeLimit, int currentFrame)
                 {
                     UAB_ASSERT_WARNING(false, "BOSS Timeout Naive Search Exception: %s", exception.what());
                     _previousStatus += "\x08Naive Exception";
-                    if (Config::Debug::DrawBuildOrderSearchInfo)
+                    if (Config.Debug.DrawBuildOrderSearchInfo)
                     {
 					    BWAPI::Broodwar->drawTextScreen(0, 20, "No legal BuildOrder found, returning empty Build Order");
                     }

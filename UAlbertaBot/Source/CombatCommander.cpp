@@ -62,7 +62,7 @@ void CombatCommander::initializeSquads()
     _squadData.addSquad("ScoutDefense", enemyScoutDefense, ScoutDefensePriority);
 
     // add a drop squad if we are using a drop strategy
-    if (Config::Strategy::StrategyName == "Protoss_Drop")
+    if (Config.Strategy.StrategyName == "Protoss_Drop")
     {
         SquadOrder zealotDrop(SquadOrderTypes::Drop, ourBasePosition, 900, "Wait for transport");
         _squadData.addSquad("Drop", zealotDrop, DropPriority);
@@ -138,7 +138,7 @@ void CombatCommander::updateAttackSquads()
 
 void CombatCommander::updateDropSquads()
 {
-    if (Config::Strategy::StrategyName != "Protoss_Drop")
+    if (Config.Strategy.StrategyName != "Protoss_Drop")
     {
         return;
     }
@@ -468,7 +468,7 @@ BWAPI::Unit CombatCommander::findClosestDefender(const Squad & defenseSquad, BWA
         }
 
         // add workers to the defense squad if we are being rushed very quickly
-        if (!Config::Micro::WorkersDefendRush || (unit->getType().isWorker() && !zerglingRush && !beingBuildingRushed()))
+        if (!Config.Micro.WorkersDefendRush || (unit->getType().isWorker() && !zerglingRush && !beingBuildingRushed()))
         {
             continue;
         }

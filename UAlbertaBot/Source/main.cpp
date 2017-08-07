@@ -59,7 +59,7 @@ int main(int argc, const char * argv[])
     bool exitIfStarcraftShutdown = true;
 
     // parse the bot's configuration file, if it is not found or isn't valid, the program will exit
-	auto configurationFile = ParseUtils::FindConfigurationLocation(Config::ConfigFile::ConfigFileLocation);
+	auto configurationFile = ParseUtils::FindConfigurationLocation(ConfigOld::ConfigFile::ConfigFileLocation);
 	ParseUtils::ParseConfigFile(configurationFile);
 
     size_t gameCount = 0;
@@ -92,7 +92,7 @@ int main(int argc, const char * argv[])
 			{
 				std::cout << "Playing game " << gameCount++ << " on map " << BWAPI::Broodwar->mapFileName() << "\n";
 
-				std::string mode = Config::BotInfo::BotMode;
+				std::string mode = Config.BotInfo.BotMode;
 				auto m = createBot(mode);
 				std::cerr << "Bot Address: " << m.getBot().get() << std::endl;
 				if (!m.isValid())

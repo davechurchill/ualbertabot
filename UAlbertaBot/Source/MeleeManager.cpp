@@ -189,7 +189,7 @@ bool MeleeManager::meleeUnitShouldRetreat(BWAPI::Unit meleeUnit, const std::vect
 
     // we don't want to retreat the melee unit if its shields or hit points are above the threshold set in the config file
     // set those values to zero if you never want the unit to retreat from combat individually
-    if (meleeUnit->getShields() > Config::Micro::RetreatMeleeUnitShields || meleeUnit->getHitPoints() > Config::Micro::RetreatMeleeUnitHP)
+    if (meleeUnit->getShields() > Config.Micro.RetreatMeleeUnitShields || meleeUnit->getHitPoints() > Config.Micro.RetreatMeleeUnitHP)
     {
         return false;
     }

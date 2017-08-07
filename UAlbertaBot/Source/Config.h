@@ -1,11 +1,10 @@
 #pragma once
 
-#include <BWAPI/UnitType.h>
-#include <BWAPI/Color.h>
-#include <cassert>
-#include <set>
+#include "BotConfiguration.h"
 
-namespace Config
+extern BotConfiguration Config;
+
+namespace ConfigOld
 {
     namespace ConfigFile
     {

@@ -39,7 +39,7 @@ void ProductionManager::setBuildOrder(const BuildOrder & buildOrder)
 
 void ProductionManager::performBuildOrderSearch(int currentFrame)
 {	
-    if (!Config::Modules::UsingBuildOrderSearch || !canPlanBuildOrderNow())
+    if (!Config.Modules.UsingBuildOrderSearch || !canPlanBuildOrderNow())
     {
         return;
     }
@@ -80,7 +80,7 @@ void ProductionManager::update(int currentFrame)
 	// if nothing is currently building, get a new goal from the strategy manager
 	if ((_queue.size() == 0) && (currentFrame > 10))
 	{
-        if (Config::Debug::DrawBuildOrderSearchInfo)
+        if (Config.Debug.DrawBuildOrderSearchInfo)
         {
 		    BWAPI::Broodwar->drawTextScreen(150, 10, "Nothing left to build, new search!");
         }
@@ -94,7 +94,7 @@ void ProductionManager::update(int currentFrame)
 	// detect if there's a build order deadlock once per second
 	if ((currentFrame % 24 == 0) && detectBuildOrderDeadlock())
 	{
-        if (Config::Debug::DrawBuildOrderSearchInfo)
+        if (Config.Debug.DrawBuildOrderSearchInfo)
         {
 		    _logger->log("Supply deadlock detected, building supply!");
         }
@@ -132,7 +132,7 @@ void ProductionManager::update(int currentFrame)
 		    }
         }
         
-        if (Config::Debug::DrawBuildOrderSearchInfo)
+        if (Config.Debug.DrawBuildOrderSearchInfo)
         {
 		    _logger->log("Enemy Cloaked Unit Detected!");
         }
@@ -152,7 +152,7 @@ void ProductionManager::onUnitDestroy(BWAPI::Unit unit, int currentFrame)
 		return;
 	}
 		
-	if (Config::Modules::UsingBuildOrderSearch)
+	if (Config.Modules.UsingBuildOrderSearch)
 	{
 		// if it's a worker or a building, we need to re-search for the current goal
 		if ((unit->getType().isWorker() && !_workerManager->isWorkerScout(unit)) || unit->getType().isBuilding())
@@ -524,7 +524,7 @@ void ProductionManager::predictWorkerMovement(const Building & b)
 	int x2 = x1 + (b.type.tileWidth()) * 32;
 	int y1 = _predictedTilePosition.y * 32;
 	int y2 = y1 + (b.type.tileHeight()) * 32;
-	if (Config::Debug::DrawWorkerInfo) 
+	if (Config.Debug.DrawWorkerInfo) 
     {
         BWAPI::Broodwar->drawBoxMap(x1, y1, x2, y2, BWAPI::Colors::Blue, false);
     }

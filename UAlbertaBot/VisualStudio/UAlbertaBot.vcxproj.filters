@@ -178,6 +178,9 @@
     <ClCompile Include="..\Source\debug\GameDebug.cpp">
       <Filter>debug</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\BotConfiguration.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="common">
@@ -418,6 +421,9 @@
     </ClInclude>
     <ClInclude Include="..\Source\debug\GameDebug.h">
       <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\BotConfiguration.h">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
