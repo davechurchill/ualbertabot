@@ -1,5 +1,5 @@
+#include "Common.h"
 #include "SparCraftAssert.h"
-#include "SparCraftException.h"
 
 #include <cstring>
 
@@ -50,7 +50,7 @@ namespace Assert
         
         #if !defined(EMSCRIPTEN)
             std::cerr << ss.str();  
-            throw SparCraftException(ss.str(), state);
+            throw SparCraftException(ss.str());
         #else
             printf("C++ AI: AI Exception Thrown:\n %s\n", ss.str().c_str());
             throw SparCraftException(ss.str());

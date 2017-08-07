@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="html">
+      <UniqueIdentifier>{29fff299-2e45-4ae5-ac51-aa7a3decd6b9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\source\htmltools\HTMLChart.h">
+      <Filter>html</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\htmltools\HTMLTable.h">
+      <Filter>html</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\benchmark\TournamentGame.h" />
+    <ClInclude Include="..\source\benchmark\Benchmarks.h" />
+    <ClInclude Include="..\source\benchmark\Tournament.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\source\htmltools\HTMLChart.cpp">
+      <Filter>html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\htmltools\HTMLTable.cpp">
+      <Filter>html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\benchmark\main_benchmarks.cpp" />
+    <ClCompile Include="..\source\benchmark\Benchmarks.cpp" />
+    <ClCompile Include="..\source\benchmark\Tournament.cpp" />
+    <ClCompile Include="..\source\benchmark\TournamentGame.cpp" />
+  </ItemGroup>
+</Project>

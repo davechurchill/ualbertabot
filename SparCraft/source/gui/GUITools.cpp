@@ -100,6 +100,18 @@ namespace GUITools
         glPopMatrix();
     }
 
+    void DrawPercentageRect(const Position & tl, const Position & br, double percentage, const GLfloat * rgba, const GLfloat * bgrgba)
+    {
+        int width = (br.x() - tl.x())*percentage;
+
+        if (bgrgba != nullptr)
+        {        
+            DrawRect(tl, br, bgrgba);
+        }
+
+        DrawRect(tl, Position(tl.x()+width, br.y()), rgba);
+    }
+
     void DrawRectGradient(const Position & tl, const Position & br, const GLfloat * rgbaLeft, const GLfloat * rgbaRight)
     {
         glPushMatrix();

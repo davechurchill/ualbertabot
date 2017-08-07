@@ -1,5 +1,5 @@
 #include "JSONTools.h"
-
+#include "UABAssert.h"
 
 namespace UAlbertaBot
 {

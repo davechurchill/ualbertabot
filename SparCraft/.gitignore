@@ -1,9 +1,13 @@
 VisualStudio/Release
 VisualStudio/Debug
+VisualStudio/.vs
 bin/SparCraft
+bin/SparCraft_NOGUI
 bin/*.txt
 bin/*.pdb
 bin/*.map
 bin/*.dll
 bin/*.exe
+bin/html/*
 source/*.o
+!bin/SparCraft_Config.txt

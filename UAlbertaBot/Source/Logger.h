@@ -1,20 +1,22 @@
 #pragma once
 
-#include <string>
-#include <iostream>
-#include <fstream>
-
-namespace UAlbertaBot
+namespace AKBot
 {
-namespace Logger 
-{
-    void LogAppendToFile(const std::string & logFile, const std::string & msg);
-	void LogAppendToFile(const std::string & logFile, const char *fmt, ...);
-    void LogOverwriteToFile(const std::string & logFile, const std::string & msg);
-};
-
-namespace FileUtils
-{
-    std::string ReadFile(const std::string & filename);
-}
+	class Logger
+	{
+	public:
+		virtual ~Logger() = default;
+		/// <summary>Prints text to the logger sink.</summary> 
+		/// 
+		/// <param name="format">
+		///   Text formatting. See std::printf for more information. Refrain from passing non-constant
+		///   strings directly in this parameter.
+		/// </param>
+		/// <param name="...">
+		///   The arguments that will be formatted using the given text formatting.
+		/// </param>
+		///
+		/// @see Text::Enum, std::printf
+		virtual void log(const char *format, ...) const = 0;
+	};
 }

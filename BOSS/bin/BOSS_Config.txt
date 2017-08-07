@@ -1,0 +1,74 @@
+{
+    "Experiments" : 
+    {    
+        "BuildOrderPlot" :
+        {
+            "Run"           : true,
+            "Type"          : "BuildOrderPlot",
+            "OutputDir"     : "gnuplot/",
+            "Scenarios"     :   
+            [ 
+                { "State" : "Zerg Start State", "BuildOrder" : "3 Hatch Muta" }
+            ] 
+        },
+    
+        "TestCombatSearch" :
+        {
+            "Run"               : false,
+            "Type"              : "CombatSearch",
+            "SearchTypes"       : [ "BestResponse", "Integral", "Bucket"],
+            "Race"              : "Protoss",
+            "State"             : "Protoss Start State",
+            "PrintNewBest"      : true,
+            "SearchTimeLimitMS" : 1200000,
+            "FrameTimeLimit"    : 4500,
+            "RelevantActions"   : [ "Protoss_Probe", "Protoss_Pylon", "Protoss_Nexus", "Protoss_Assimilator", "Protoss_Gateway", "Protoss_Zealot", "Protoss_Cybernetics_Core", "Protoss_Dragoon" ],
+            "MaxActions"        : [ ["Protoss_Nexus", 1], ["Protoss_Assimilator", 1], ["Protoss_Cybernetics_Core", 1], ["Protoss_Pylon", 6], ["Protoss_Gateway", 3] ],
+            "AlwaysMakeWorkers" : true,
+            "OpeningBuildOrder" : "Protoss Opening Book",
+            "BestResponseParams":
+            {
+                "EnemyState"        : "Protoss Start State",
+                "EnemyBuildOrder"   : "8 Zealots"
+            }
+        },
+        
+        "DT Rush" :   
+        {   
+            "Run"           : false, 
+            "Type"          : "BuildOrderSearch", 
+            "OutputFile"    : "DTRush_Opt.txt", 
+            "Race"          : "Protoss",
+            "State"         : "Protoss Start State"
+        }
+    },
+
+    "States" : 
+    {
+        "Protoss Start State"   : { "race" : "Protoss", "minerals" : 50, "gas" : 0, "units" : [ ["Protoss_Probe", 4], ["Protoss_Nexus", 1] ] },
+        "Zerg Start State"      : { "race" : "Zerg",    "minerals" : 50, "gas" : 0, "units" : [ ["Zerg_Drone", 4], ["Zerg_Hatchery", 1], ["Zerg_Overlord", 1] ] },
+        "Terran Start State"    : { "race" : "Terran",  "minerals" : 50, "gas" : 0, "units" : [ ["Terran_SCV", 4], ["Terran_Command_Center", 1] ] }
+    },
+    
+    "Build Orders" :
+    {
+        "Empty"                 : [ ],        
+        "Protoss Opening Book"  : [ "Protoss_Probe", "Protoss_Probe", "Protoss_Probe", "Protoss_Probe", "Protoss_Pylon"],
+        "Zerg Opening Book"     : [ "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Overlord" ],
+        "Terran Opening Book"   : [ "Terran_SCV", "Terran_SCV", "Terran_SCV", "Terran_SCV", "Terran_Supply_Depot" ],
+        "3 Hatch Muta"          : [ "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Overlord", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Hatchery", "Zerg_Spawning_Pool", "Zerg_Drone", "Zerg_Drone", "Zerg_Hatchery", "Zerg_Extractor", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Overlord", "Zerg_Lair", "Zerg_Extractor", "Zerg_Drone", "Zerg_Drone", "Zerg_Zergling", "Zerg_Zergling", "Zerg_Zergling", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Overlord", "Zerg_Drone", "Zerg_Overlord", "Zerg_Drone", "Zerg_Overlord", "Zerg_Spire", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk" ],
+        "3 Hatch Muta 2"        : [ "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Overlord", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Hatchery", "Zerg_Spawning_Pool", "Zerg_Drone", "Zerg_Drone", "Zerg_Hatchery", "Zerg_Extractor", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Overlord", "Zerg_Lair", "Zerg_Extractor", "Zerg_Drone", "Zerg_Drone", "Zerg_Zergling", "Zerg_Zergling", "Zerg_Zergling", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Overlord", "Zerg_Drone", "Zerg_Overlord", "Zerg_Drone", "Zerg_Overlord", "Zerg_Spire", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Drone", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk", "Zerg_Mutalisk" ],
+        "8 Zealots"             : [ "Protoss_Probe", "Protoss_Probe", "Protoss_Probe", "Protoss_Probe", "Protoss_Pylon", "Protoss_Probe", "Protoss_Probe", "Protoss_Gateway", "Protoss_Probe", "Protoss_Probe", "Protoss_Gateway", "Protoss_Probe", "Protoss_Gateway", "Protoss_Pylon",  "Protoss_Pylon", "Protoss_Zealot", "Protoss_Zealot", "Protoss_Zealot", "Protoss_Zealot", "Protoss_Zealot", "Protoss_Zealot", "Protoss_Zealot", "Protoss_Zealot" ],
+        "UAB Zealot Rush"       : [ "Protoss_Probe", "Protoss_Probe", "Protoss_Probe", "Protoss_Probe", "Protoss_Pylon", "Protoss_Probe", "Protoss_Gateway", "Protoss_Gateway", "Protoss_Probe", "Protoss_Probe", "Protoss_Zealot", "Protoss_Pylon", "Protoss_Zealot", "Protoss_Zealot", "Protoss_Probe", "Protoss_Zealot", "Protoss_Zealot", "Protoss_Probe", "Protoss_Pylon", "Protoss_Zealot", "Protoss_Gateway", "Protoss_Probe", "Protoss_Pylon", "Protoss_Probe", "Protoss_Zealot", "Protoss_Probe", "Protoss_Zealot", "Protoss_Zealot", "Protoss_Zealot", "Protoss_Zealot", "Protoss_Pylon", "Protoss_Probe", "Protoss_Zealot", "Protoss_Zealot", "Protoss_Zealot" ],
+        "UAB DT Rush"           : [ "Protoss_Probe", "Protoss_Probe", "Protoss_Probe", "Protoss_Probe", "Protoss_Pylon", "Protoss_Probe", "Protoss_Gateway", "Protoss_Probe", "Protoss_Assimilator", "Protoss_Probe", "Protoss_Cybernetics_Core", "Protoss_Probe", "Protoss_Citadel_of_Adun", "Protoss_Probe", "Protoss_Templar_Archives", "Protoss_Gateway", "Protoss_Dark_Templar", "Protoss_Dark_Templar", "Protoss_Pylon", "Protoss_Dark_Templar", "Protoss_Dark_Templar", "Protoss_Probe", "Protoss_Pylon", "Protoss_Probe"],
+        "UAB Dragoon Rush"      : [ "Protoss_Probe", "Protoss_Probe", "Protoss_Probe", "Protoss_Probe", "Protoss_Pylon", "Protoss_Probe", "Protoss_Probe", "Protoss_Gateway", "Protoss_Probe", "Protoss_Assimilator", "Protoss_Probe", "Protoss_Probe", "Protoss_Cybernetics_Core", "Protoss_Probe", "Protoss_Probe", "Protoss_Gateway", "Singularity_Charge", "Protoss_Dragoon", "Protoss_Gateway", "Protoss_Pylon", "Protoss_Dragoon", "Protoss_Dragoon", "Protoss_Probe", "Protoss_Gateway", "Protoss_Pylon", "Protoss_Probe", "Protoss_Dragoon", "Protoss_Dragoon", "Protoss_Dragoon"],
+        "Build Order"           : [ "Terran_SCV", "Terran_Barracks", "Terran_Marine", "Terran_Marine", "Terran_Refinery", "Terran_Engineering_Bay", "Terran_Bunker"]
+    },
+
+    "Build Order Search Goals" :
+    {
+        "2 Dark Templars"       : { "race" : "Protoss", "goal" : [ ["Protoss_Dark_Templar", 2] ], "goalMax" : [] },
+        "8 Zealots 2 Dragoons"  : { "race" : "Protoss", "goal" : [ ["Protoss_Zealot", 8], ["Protoss_Dragoon", 2] ], "goalMax" : [] },
+        "6 Mutalisks"           : { "race" : "Zerg", "goal" : [ ["Zerg_Mutalisk", 6] ], "goalMax" : [] }
+    }
+}

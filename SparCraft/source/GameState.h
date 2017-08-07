@@ -1,127 +1,73 @@
 #pragma once
 
 #include "Common.h"
-#include <algorithm>
 #include "MoveArray.h"
-#include "Hash.h"
-#include "Map.hpp"
+#include "Map.h"
 #include "Unit.h"
 #include "GraphViz.hpp"
-#include "Array.hpp"
-#include "Logger.h"
+#include "GameStateUnitData.h"
+
+
 #include <memory>
+#include <algorithm>
 
 typedef std::shared_ptr<SparCraft::Map> MapPtr;
 
 namespace SparCraft
 {
-class GameState 
+class GameState
 {
-    Map *                                                           _map;               
+    std::shared_ptr<Map>    _map;
 
-    std::vector<Unit> _units[Constants::Num_Players];
-    std::vector<int>  _unitIndex[Constants::Num_Players];
+    GameStateUnitData       _unitData;
 
-    Array2D<Unit, Constants::Num_Players, Constants::Max_Units>     _units2;             
-    Array2D<int, Constants::Num_Players, Constants::Max_Units>      _unitIndex2;        
-    Array<Unit, 1>                                                  _neutralUnits;
+    size_t                  _numMovements[2];
+    TimeType                _currentTime;
 
-    Array<UnitCountType, Constants::Num_Players>                    _numUnits;
-    Array<UnitCountType, Constants::Num_Players>                    _prevNumUnits;
+    void                    doAction(const Action & theMove);
 
-    Array<float, Constants::Num_Players>                            _totalLTD;
-    Array<float, Constants::Num_Players>                            _totalSumSQRT;
-
-    Array<int, Constants::Num_Players>                              _numMovements;
-    Array<int, Constants::Num_Players>                              _prevHPSum;
-	
-    TimeType                                                        _currentTime;
-    size_t                                                          _maxUnits;
-    TimeType                                                        _sameHPFrames;
-
-    // checks to see if the unit array is full before adding a unit to the state
-    const bool              checkFull(const IDType & player)                                        const;
-    const bool              checkUniqueUnitIDs()                                                    const;
-
-    void                    performAction(const Action & theMove);
+    Unit &                  _getUnitByID(const size_t & unitID);
+    Unit &                  _getUnit(const size_t & player,const size_t & unitIndex);
 
 public:
 
     GameState();
-    GameState(const std::string & filename);
 
-	// misc functions
-    void                    finishedMoving();
+    // misc functions
     void                    updateGameTime();
-    const bool              playerDead(const IDType & player)                                       const;
-    const bool              isTerminal()                                                            const;
+    bool                    playerDead(const size_t & player)                                       const;
+    bool                    gameOver()                                                              const;
+    size_t                  getEnemy(const size_t & player)                                         const;
+    size_t                  winner()                                                                const;
 
     // unit data functions
-    const size_t            numUnits(const IDType & player)                                         const;
-    const size_t            prevNumUnits(const IDType & player)                                     const;
-    const size_t            numNeutralUnits()                                                       const;
-    const size_t            closestEnemyUnitDistance(const Unit & unit)                             const;
+    size_t                  numUnits(const size_t & player)                                         const;
 
     // Unit functions
-    void                    sortUnits();
     void                    addUnit(const Unit & u);
-    void                    addUnit(const BWAPI::UnitType unitType, const IDType playerID, const Position & pos);
-    void                    addUnitWithID(const Unit & u);
-    void                    addNeutralUnit(const Unit & unit);
-    const Unit &            getUnit(const IDType & player, const UnitCountType & unitIndex)         const;
-    const Unit &            getUnitByID(const IDType & unitID)                                      const;
-          Unit &            getUnit(const IDType & player, const UnitCountType & unitIndex);
-    const Unit &            getUnitByID(const IDType & player, const IDType & unitID)               const;
-          Unit &            getUnitByID(const IDType & player, const IDType & unitID);
-    const Unit &            getClosestEnemyUnit(const IDType & player, const IDType & unitIndex, bool checkCloaked=false);
-    const Unit &            getClosestOurUnit(const IDType & player, const IDType & unitIndex);
-    const Unit &            getUnitDirect(const IDType & player, const IDType & unit)               const;
-    const Unit &            getNeutralUnit(const size_t & u)                                        const;
-    
+    const Unit &            getUnitByID(const size_t & unitID)                                      const;
+    const Unit &            getUnit(const size_t & player, const size_t & unitIndex)                const;
+    const std::vector<Unit> & getAllUnits()                                                         const;
+    const std::vector<size_t> & getUnitIDs(const size_t & player)                                   const;
+
     // game time functions
     void                    setTime(const TimeType & time);
-    const TimeType          getTime()                                                               const;
-
-    // evaluation functions
-    const StateEvalScore    eval(   const IDType & player, const IDType & evalMethod, 
-                                    const IDType p1Script = PlayerModels::NOKDPS,
-                                    const IDType p2Script = PlayerModels::NOKDPS)                   const;
-    const ScoreType         evalLTD(const IDType & player)                                        const;
-    const ScoreType         evalLTD2(const IDType & player)                                       const;
-    const ScoreType         LTD(const IDType & player)                                            const;
-    const ScoreType         LTD2(const IDType & player)                                           const;
-    const StateEvalScore    evalSim(const IDType & player, const IDType & p1, const IDType & p2)    const;
-    const IDType            getEnemy(const IDType & player)                                         const;
-
-    // unit hitpoint calculations, needed for LTD2 evaluation
-    void                    calculateStartingHealth();
-    void                    setTotalLTD(const float & p1, const float & p2);
-    void                    setTotalLTD2(const float & p1, const float & p2);
-    const float &           getTotalLTD(const IDType & player)                                    const;
-    const float &           getTotalLTD2(const IDType & player)                                   const;
+    TimeType                getTime()                                                               const;
+    TimeType                getTimeNextUnitCanAct(const size_t & player)                            const;
 
     // move related functions
-    void                    generateMoves(MoveArray & moves, const IDType & playerIndex)            const;
-    void                    makeMoves(const std::vector<Action> & moves);
-    const int &             getNumMovements(const IDType & player)                                  const;
-    const IDType            whoCanMove()                                                            const;
-    const bool              bothCanMove()                                                           const;
-		  
+    void                    doMove(const Move & moves);
+    void                    doMove(const Move & m1, const Move & m2, bool advanceGameTime = true);
+    size_t                  getNumMovements(const size_t & player)                                  const;
+    size_t                  whoCanMove()                                                            const;
+    bool                    bothCanMove()                                                           const;
+
     // map-related functions
-    void                    setMap(Map * map);
-    Map *                   getMap()                                                                const;
-    const bool              isWalkable(const Position & pos)                                        const;
-    const bool              isFlyable(const Position & pos)                                         const;
-
-    // hashing functions
-    const HashType          calculateHash(const size_t & hashNum)                                   const;
-
-    // state i/o functions
-    void                    print(int indent = 0) const;
-	std::string             toString() const;
-    std::string             toStringCompact() const;
-    void                    write(const std::string & filename)                                     const;
-    void                    read(const std::string & filename);
+    void                    setMap(std::shared_ptr<Map> map);
+    std::shared_ptr<Map>    getMap()                                                                const;
+    bool                    isWalkable(const Position & pos)                                        const;
+    bool                    isFlyable(const Position & pos)                                         const;
+    
 };
 
 }

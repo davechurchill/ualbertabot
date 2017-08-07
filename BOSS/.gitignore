@@ -1,6 +1,7 @@
 VisualStudio/Release
 VisualStudio/Debug
 VisualStudio/ipch
+VisualStudio/.vs
 VisualStudio/*.txt
 VisualStudio/*.vsp
 emscripten/*.js
@@ -9,7 +10,6 @@ emscripten/*.data
 bin/*.exe
 bin/*.pdb
 bin/*.ilk
-bin/*.txt
 bin/*.map
 bin/*.bsc
 bin/*.lib

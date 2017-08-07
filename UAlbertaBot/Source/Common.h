@@ -15,15 +15,15 @@
 #include <set>
 #include <map>
 #include <array>
+#include <memory>
 
-#include <BWAPI.h>
-#include <BWTA.h>
-#include "Logger.h"
+#pragma warning( push )
+#pragma warning( disable : 4458)
+#include <BWAPI/Position.h>
+#pragma warning( pop )
 
 #include "Config.h"
 #include "UABAssert.h"
-
-BWAPI::AIModule * __NewAIModule();
 
 #define UALBERTABOT_PROJECT
 
@@ -60,3 +60,6 @@ struct Rect
     int x, y;
     int height, width;
 };
+
+using std::shared_ptr;
+using std::unique_ptr;

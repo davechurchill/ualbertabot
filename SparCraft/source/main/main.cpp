@@ -1,38 +1,15 @@
-#ifndef WIN32
-#define APIENTRY
-#define APIENTRYP
-#endif
-
 #include "../SparCraft.h"
-#include "SearchExperiment.h"
+#include "SparCraftExperiment.h"
+
+using namespace SparCraft;
 
 int main(int argc, char *argv[])
 {
     SparCraft::init();
+    AIParameters::Instance().parseFile("SparCraft_Config.txt");
 
-    try
-    {
-        if (argc == 2)
-        {
-            SparCraft::SearchExperiment exp(argv[1]);
-            exp.runExperiment();
-        }
-        else
-        {
-            SparCraft::System::FatalError("Please provide experiment file as only argument");
-        }
-    }
-    catch(int e)
-    {
-        if (e == SparCraft::System::SPARCRAFT_FATAL_ERROR)
-        {
-            std::cerr << "\nSparCraft FatalError Exception, Shutting Down\n\n";
-        }
-        else
-        {
-            std::cerr << "\nUnknown Exception, Shutting Down\n\n";
-        }
-    }
-   
+    SparCraftExperiment exp;
+    exp.parseConfigFile("SparCraft_Config.txt");
+
     return 0;
 }

@@ -1,4 +1,5 @@
 #include "BuildOrder.h"
+#include <BWAPI/Race.h>
 
 using namespace UAlbertaBot;
 

@@ -1,10 +1,11 @@
 #pragma once
 
 #include "Common.h"
-#include "WorkerManager.h"
 #include "../../BOSS/source/BOSS.h"
-#include "StrategyManager.h"
 #include <memory>
+#include "OpponentView.h"
+#include "BuildingManager.h"
+#include "Strategy.h"
 
 namespace UAlbertaBot
 {
@@ -26,6 +27,7 @@ class BOSSManager
     BOSS::DFBB_BuildOrderSearchResults      _previousSearchResults;
     BOSS::DFBB_BuildOrderSearchResults      _savedSearchResults;
     BOSS::BuildOrder                        _previousBuildOrder;
+	shared_ptr<AKBot::OpponentView> _opponentView;
 
 	BOSS::GameState				            getCurrentState();
 	BOSS::GameState				            getStartState();
@@ -40,23 +42,22 @@ class BOSSManager
 
     void                                    logBadSearch();
 
-	BOSSManager();
 
 public:
+	
+	BOSSManager(shared_ptr<AKBot::OpponentView> opponentView);
 
-	static BOSSManager &	    Instance();
-
-	void						update(double timeLimit);
+	void						update(double timeLimit, int currentFrame);
     void                        reset();
 
     BuildOrder                  getBuildOrder();
     bool                        isSearchInProgress();
+	std::string getPreviousStatus() const { return _previousStatus; }
+	const std::vector<MetaPair>& getPreviousGoalUnits() const { return _previousGoalUnits; }
+	double getTotalPreviousSearchTime() const { return _totalPreviousSearchTime; }
+	const BOSS::DFBB_BuildOrderSearchResults& getSavedSearchResults() const { return _savedSearchResults; }
 
-    void                        startNewSearch(const std::vector<MetaPair> & goalUnits);
-    
-	void						drawSearchInformation(int x, int y);
-    void						drawStateInformation(int x, int y);
-
+    void                        startNewSearch(const std::vector<MetaPair> & goalUnits, shared_ptr<BuildingManager> buildingManager, int currentFrame);
     
 	static BOSS::BuildOrderSearchGoal       GetGoal(const std::vector<MetaPair> & goalUnits);	
     static std::vector<MetaType>			GetMetaVector(const BOSS::BuildOrder & buildOrder);

@@ -2,52 +2,64 @@
 
 #include "Common.h"
 #include <vector>
-#include "BWAPI.h"
-#include "DistanceMap.hpp"
+#include <BWAPI/Position.h>
+#include "DistanceMap.h"
+#include "Logger.h"
+#include "OpponentView.h"
+#include "MapInformation.h"
 
 namespace UAlbertaBot
 {
-
-// provides useful tools for analyzing the starcraft map
-// calculates connectivity and distances using flood fills
+    
 class MapTools
 {
+    size_t _width;
+    size_t _height;
+
+    // a cache of already computed distance maps, which is mutable since it only acts as a cache
+    mutable std::map<BWAPI::TilePosition, DistanceMap>   _allMaps;
+	std::shared_ptr<AKBot::Logger> _logger;
+	shared_ptr<AKBot::MapInformation> _mapInformation;
+
+    std::vector<std::vector<bool>> _walkable;               // the map stored at TilePosition resolution, values are 0/1 for walkable or not walkable
+    std::vector<std::vector<bool>> _buildable;         // whether a tile is buildable (includes static resources)
+    std::vector<std::vector<bool>> _depotBuildable;    // whether a depot is buildable on a tile (illegal within 3 tiles of static resource)
+    std::vector<std::vector<int>>  _lastSeen;          // the last time any of our units has seen this position on the map
+    std::vector<std::vector<int>>  _sectorNumber;      // connectivity sector number, two tiles are ground connected if they have the same number
     
-    std::map<BWAPI::Position,
-             DistanceMap>       _allMaps;    // a cache of already computed distance maps
-    std::vector<bool>           _map;        // the map stored at TilePosition resolution, values are 0/1 for walkable or not walkable
-    std::vector<bool>           _units;      // map that stores whether a unit is on this position
-    std::vector<int>            _fringe;     // the fringe vector which is used as a sort of 'open list'
-    int                         _rows;
-    int                         _cols;
+    void setBWAPIMapData();                 // reads in the map data from bwapi and stores it in our map format
+    void computeConnectivity();
 
-    MapTools();
-
-    int                     getIndex(int row,int col);   // return the index of the 1D array from (row,col)
-    bool                    unexplored(DistanceMap & dmap,const int index) const;
-    void                    reset();                           // resets the distance and fringe vectors, call before each search    
-    void                    setBWAPIMapData();                 // reads in the map data from bwapi and stores it in our map format
-    void                    resetFringe();
-    void                    computeDistance(DistanceMap & dmap,const BWAPI::Position p); // computes walk distance from Position P to all other points on the map
-    BWAPI::TilePosition     getTilePosition(int index);
-
+    const int & getSectorNumber(const BWAPI::TilePosition & tile) const;
+    int & getSectorNumber(const BWAPI::TilePosition & tile);
+    
 public:
 
-    static MapTools &       Instance();
+    MapTools(shared_ptr<AKBot::MapInformation> mapInformation, std::shared_ptr<AKBot::Logger> logger);
 
-    void                    parseMap();
-    void                    search(DistanceMap & dmap,const int sR,const int sC);
-    void                    fill(const int index,const int region);
-    int                     getGroundDistance(BWAPI::Position from,BWAPI::Position to);
-    int	                    getEnemyBaseDistance(BWAPI::Position p);
-    int	                    getMyBaseDistance(BWAPI::Position p);
-    BWAPI::Position         getEnemyBaseMoveTo(BWAPI::Position p);
-    BWAPI::TilePosition     getNextExpansion();
-    BWAPI::TilePosition     getNextExpansion(BWAPI::Player player);
-    void                    drawHomeDistanceMap();
+	const size_t getWidth() const { return _width; };
+	const size_t getHeight() const { return _height; };
 
-    const std::vector<BWAPI::TilePosition> & getClosestTilesTo(BWAPI::Position pos);
+    void                    onStart();
+    void                    update(int currentFrame);
+    
+    const DistanceMap &     getDistanceMap(const BWAPI::Position & pos) const;
+    const DistanceMap &     getDistanceMap(const BWAPI::TilePosition & tile) const;
+    int                     getGroundDistance(const BWAPI::TilePosition & src, const BWAPI::TilePosition & dest) const;
+    int                     getGroundDistance(const BWAPI::Position & src, const BWAPI::Position & dest) const;
+    bool                    isConnected(const BWAPI::TilePosition & from, const BWAPI::TilePosition & to) const;
+    bool                    isConnected(const BWAPI::Position & from, const BWAPI::Position & to) const;
+    bool                    isWalkable(const BWAPI::TilePosition & tile) const;
+    bool                    isWalkable(const BWAPI::Position & pos) const;
+    bool                    isBuildable(BWAPI::TilePosition tile, BWAPI::UnitType type) const;
+    bool                    isBuildableTile(BWAPI::TilePosition tile) const;
+    bool                    isDepotBuildableTile(BWAPI::TilePosition tile) const;
+    
 
+    // returns a list of all tiles on the map, sorted by 4-direcitonal walk distance from the given position
+    const std::vector<BWAPI::TilePosition> & getClosestTilesTo(const BWAPI::TilePosition & tile) const;
+    const std::vector<BWAPI::TilePosition> & getClosestTilesTo(BWAPI::Position pos) const;
+	int getLastSeen(int x, int y) const;
 };
 
 }

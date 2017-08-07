@@ -1,4 +1,10 @@
 #include "UnitUtil.h"
+#include "UABAssert.h"
+#include <BWAPI/Game.h>
+#include <BWAPI/Player.h>
+#include <BWAPI/Playerset.h>
+#include <BWAPI/Unitset.h>
+#include <BWAPI/UnitCommand.h>
 
 using namespace UAlbertaBot;
 
@@ -10,23 +16,53 @@ bool UnitUtil::IsCombatUnit(BWAPI::Unit unit)
         return false;
     }
 
+    return IsCombatUnitType(unit->getType());
+
+}
+
+bool UnitUtil::IsCombatUnitType(BWAPI::UnitType type)
+{
+    // check for various types of combat units
+    if (type.canAttack() || 
+        type == BWAPI::UnitTypes::Terran_Medic ||
+        type == BWAPI::UnitTypes::Protoss_High_Templar ||
+        type == BWAPI::UnitTypes::Protoss_Observer ||
+        type == BWAPI::UnitTypes::Zerg_Overlord ||
+        type == BWAPI::UnitTypes::Protoss_Observer)
+    {
+        return true;
+    }
+
     // no workers or buildings allowed
-    if (unit && unit->getType().isWorker() || unit->getType().isBuilding())
+    if (type.isWorker() || type.isBuilding())
     {
         return false;
     }
 
-    // check for various types of combat units
-    if (unit->getType().canAttack() || 
-        unit->getType() == BWAPI::UnitTypes::Terran_Medic ||
-        unit->getType() == BWAPI::UnitTypes::Protoss_High_Templar ||
-        unit->getType() == BWAPI::UnitTypes::Protoss_Observer ||
-        unit->isFlying() && unit->getType().spaceProvided() > 0)
-    {
-        return true;
-    }
-		
     return false;
+}
+
+BWAPI::Position UnitUtil::GetUnitsetCenter(const std::vector<BWAPI::Unit> & cluster)
+{
+    int sumX = 0;
+    int sumY = 0;
+
+    for (const auto & resource : cluster)
+    {
+        sumX += resource->getPosition().x;
+        sumY += resource->getPosition().y;
+    }
+
+    return BWAPI::Position(sumX / cluster.size(), sumY / cluster.size());
+}
+
+bool UnitUtil::IsMorphedBuildingType(BWAPI::UnitType type)
+{
+    return  type == BWAPI::UnitTypes::Zerg_Sunken_Colony ||
+            type == BWAPI::UnitTypes::Zerg_Spore_Colony ||
+            type == BWAPI::UnitTypes::Zerg_Lair ||
+            type == BWAPI::UnitTypes::Zerg_Hive ||
+            type == BWAPI::UnitTypes::Zerg_Greater_Spire;
 }
 
 bool UnitUtil::IsValidUnit(BWAPI::Unit unit)
@@ -63,6 +99,28 @@ Rect UnitUtil::GetRect(BWAPI::Unit unit)
     return r;
 }
 
+UnitCollection UAlbertaBot::UnitUtil::getEnemyUnits()
+{
+#if _MSC_VER < 1900
+	UnitCollection result;
+#endif
+	for (const auto& enemy : BWAPI::Broodwar->enemies())
+	{
+		for (const auto & unit : enemy->getUnits())
+		{
+#if _MSC_VER < 1900
+			result.push_back(unit);
+#else
+			co_yield unit;
+#endif
+		}
+	}
+
+#if _MSC_VER < 1900
+	return result;
+#endif
+}
+
 double UnitUtil::GetDistanceBetweenTwoRectangles(Rect & rect1, Rect & rect2)
 {
     Rect & mostLeft = rect1.x < rect2.x ? rect1 : rect2;
@@ -78,7 +136,7 @@ double UnitUtil::GetDistanceBetweenTwoRectangles(Rect & rect1, Rect & rect2)
 
 bool UnitUtil::CanAttack(BWAPI::Unit attacker, BWAPI::Unit target)
 {
-    return GetWeapon(attacker, target) != BWAPI::UnitTypes::None;
+    return GetWeapon(attacker, target) != BWAPI::WeaponTypes::None;
 }
 
 bool UnitUtil::CanAttackAir(BWAPI::Unit unit)
@@ -178,24 +236,39 @@ size_t UnitUtil::GetAllUnitCount(BWAPI::UnitType type)
     return count;
 }
 
-
-BWAPI::Unit UnitUtil::GetClosestUnitTypeToTarget(BWAPI::UnitType type, BWAPI::Position target)
+const BWAPI::UnitType UnitUtil::getResourceDepot(const BWAPI::Race& race)
 {
-	BWAPI::Unit closestUnit = nullptr;
-	double closestDist = 100000;
-
-	for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+	using namespace BWAPI::UnitTypes::Enum;
+	static const int baseTypes[BWAPI::Races::Enum::MAX] =
 	{
-		if (unit->getType() == type)
+		Zerg_Hatchery, Terran_Command_Center, Protoss_Nexus,
+		None, None, None, // unused
+		Unknown, None, Unknown // random, none, unk
+	};
+	return baseTypes[race.getID()];
+}
+
+void UAlbertaBot::UnitUtil::getUnitsInRadius(std::vector<BWAPI::Unit>& units, BWAPI::Position center, int radius, bool ourUnits, bool oppUnits)
+{
+	if (ourUnits)
+	{
+		for (const BWAPI::Unit & unit : BWAPI::Broodwar->self()->getUnits())
 		{
-			double dist = unit->getDistance(target);
-			if (!closestUnit || dist < closestDist)
+			if (unit->getPosition().getDistance(center) <= radius)
 			{
-				closestUnit = unit;
-				closestDist = dist;
+				units.push_back(unit);
 			}
 		}
 	}
 
-	return closestUnit;
+	if (oppUnits)
+	{
+		for (const auto & unit : UnitUtil::getEnemyUnits())
+		{
+			if (unit->getPosition().getDistance(center) <= radius)
+			{
+				units.push_back(unit);
+			}
+		}
+	}
 }

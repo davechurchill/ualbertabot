@@ -2,27 +2,42 @@
 
 using namespace SparCraft;
 
-Player_PortfolioGreedySearch::Player_PortfolioGreedySearch (const IDType & playerID) 
+Player_PortfolioGreedySearch::Player_PortfolioGreedySearch (const size_t & playerID, const PGSParameters & params)
+    : Player()
+    , _params(params)
+    , _computedDescription(false)
 {
 	_playerID = playerID;
-	_iterations = 1;
-    _responses = 0;
-	_seed = PlayerModels::NOKDPS;
 }
 
-Player_PortfolioGreedySearch::Player_PortfolioGreedySearch (const IDType & playerID, const IDType & seed, const size_t & iter, const size_t & responses, const size_t & timeLimit)
+void Player_PortfolioGreedySearch::getMove(const GameState & state, Move & move)
 {
-	_playerID = playerID;
-	_iterations = iter;
-    _responses = responses;
-	_seed = seed;
-    _timeLimit = timeLimit;
+    startTimer();
+    move.clear();
+
+	PortfolioGreedySearch pgs(_params);
+
+	move = pgs.search(state, _playerID);
+    stopTimer();
 }
 
-void Player_PortfolioGreedySearch::getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec)
+PlayerPtr Player_PortfolioGreedySearch::clone()
 {
-    moveVec.clear();
-	PortfolioGreedySearch pgs(_playerID, _seed, _iterations, _responses, _timeLimit);
+    return PlayerPtr(new Player_PortfolioGreedySearch(*this));
+}
 
-	moveVec = pgs.search(_playerID, state);
+const std::string & Player_PortfolioGreedySearch::getDescription()
+{
+    if (!_computedDescription)
+    {
+        std::stringstream ss;
+        ss << _name;
+        ss << "\n";
+        ss << _params.toString();
+        _description = ss.str();
+
+        _computedDescription = true;
+    }
+
+    return _description;
 }

@@ -1,70 +1,70 @@
 #pragma once
 
 #include <Common.h>
-#include "BuildingManager.h"
+#include "BuildingData.h"
 #include "WorkerData.h"
+#include "OpponentView.h"
 
 namespace UAlbertaBot
 {
-class Building;
+	using AKBot::OpponentView;
 
 class WorkerManager
 {
-    WorkerData  workerData;
+	shared_ptr<WorkerData>  workerData;
     BWAPI::Unit previousClosestWorker;
+	std::shared_ptr<OpponentView> _opponentView;
 
-    void        setMineralWorker(BWAPI::Unit unit);
-    bool        isGasStealRefinery(BWAPI::Unit unit);
+    void        setMineralWorker(BWAPI::Unit unit, int currentFrame);
     
-    void        handleIdleWorkers();
-    void        handleGasWorkers();
-    void        handleMoveWorkers();
-    void        handleCombatWorkers();
-    void        handleRepairWorkers();
-
-    WorkerManager();
+    void        handleIdleWorkers(int currentFrame);
+    void        handleGasWorkers(int currentFrame);
+    void        handleMoveWorkers(int currentFrame);
+    void        handleCombatWorkers(int currentFrame);
+    void        handleRepairWorkers(int currentFrame);
 
 public:
 
-    void        update();
-    void        onUnitDestroy(BWAPI::Unit unit);
+    WorkerManager(
+		shared_ptr<OpponentView> opponentView,
+		shared_ptr<WorkerData>  workerData);
+
+    void        update(int currentFrame);
+    void        onUnitDestroy(BWAPI::Unit unit, int currentFrame);
     void        onUnitMorph(BWAPI::Unit unit);
     void        onUnitShow(BWAPI::Unit unit);
-    void        onUnitRenegade(BWAPI::Unit unit);
-    void        finishedWithWorker(BWAPI::Unit unit);
+    void        finishedWithWorker(BWAPI::Unit unit, int currentFrame);
 
-    void        finishedWithCombatWorkers();
+    void        finishedWithCombatWorkers(int currentFrame);
 
-    void        drawResourceDebugInfo();
-    void        updateWorkerStatus();
-    void        drawWorkerInformation(int x,int y);
+    void        updateWorkerStatus(int currentFrame);
+	shared_ptr<WorkerData> getWorkerData() const { return workerData; };
 
-    int         getNumMineralWorkers();
-    int         getNumGasWorkers();
-    int         getNumIdleWorkers();
-    void        setScoutWorker(BWAPI::Unit worker);
+    int         getNumMineralWorkers() const;
+    int         getNumGasWorkers() const;
+    int         getNumIdleWorkers() const;
+    void        setScoutWorker(BWAPI::Unit worker, int currentFrame);
 
-    bool        isWorkerScout(BWAPI::Unit worker);
-    bool        isFree(BWAPI::Unit worker);
-    bool        isBuilder(BWAPI::Unit worker);
+    bool        isWorkerScout(BWAPI::Unit worker) const;
+    bool        isFree(BWAPI::Unit worker) const;
+    bool        isBuilder(BWAPI::Unit worker) const;
 
-    BWAPI::Unit getBuilder(Building & b,bool setJobAsBuilder = true);
-    BWAPI::Unit getMoveWorker(BWAPI::Position p);
+    BWAPI::Unit getBuilder(Building & b) const;
+    BWAPI::Unit getMoveWorker(BWAPI::Position p) const;
     BWAPI::Unit getClosestDepot(BWAPI::Unit worker);
     BWAPI::Unit getGasWorker(BWAPI::Unit refinery);
     BWAPI::Unit getClosestEnemyUnit(BWAPI::Unit worker);
     BWAPI::Unit getClosestMineralWorkerTo(BWAPI::Unit enemyUnit);
-    BWAPI::Unit getWorkerScout();
 
     void        setBuildingWorker(BWAPI::Unit worker,Building & b);
-    void        setRepairWorker(BWAPI::Unit worker,BWAPI::Unit unitToRepair);
-    void        stopRepairing(BWAPI::Unit worker);
+    void        setRepairWorker(BWAPI::Unit worker,BWAPI::Unit unitToRepair, int currentFrame);
+    void        stopRepairing(BWAPI::Unit worker, int currentFrame);
     void        setMoveWorker(int m,int g,BWAPI::Position p);
-    void        setCombatWorker(BWAPI::Unit worker);
+    void        setCombatWorker(BWAPI::Unit worker, int currentFrame);
 
-    bool        willHaveResources(int mineralsRequired,int gasRequired,double distance);
-    void        rebalanceWorkers();
+    bool        willHaveResources(int mineralsRequired,int gasRequired,double distance) const;
+    void        rebalanceWorkers(int currentFrame);
 
-    static WorkerManager &  Instance();
 };
+
 }

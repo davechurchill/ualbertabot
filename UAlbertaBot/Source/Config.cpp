@@ -1,13 +1,23 @@
 #include "Config.h"
 #include "UABAssert.h"
 
+using namespace UAlbertaBot;
+
 namespace Config
 {
     namespace ConfigFile
     {
-        bool ConfigFileFound                = false;
-        bool ConfigFileParsed               = false;
-        std::string ConfigFileLocation      = "bwapi-data/AI/UAlbertaBot_Config.txt";
+        bool ConfigFileFound                = true;
+        bool ConfigFileParsed               = true;
+        std::string ConfigFileLocation      = "AK_Config.json";
+    }
+    
+    namespace BotInfo
+    {
+        std::string BotName                 = "Andrey Kurdiumov";
+        std::string Authors                 = "Andrey Kurdiumov, Dave Churchill";
+        bool PrintInfoOnStart               = false;
+        std::string BotMode                 = "Tournament"; // must be 'Tournament' or 'Arena'
     }
 
     namespace Strategy
@@ -18,7 +28,6 @@ namespace Config
         std::string StrategyName            = "Protoss_ZealotRush";
         std::string ReadDir                 = "bwapi-data/read/";
         std::string WriteDir                = "bwapi-data/write/";
-        bool GasStealWithScout              = false;
         bool ScoutHarassEnemy               = true;
         bool UseEnemySpecificStrategy       = false;
         bool FoundEnemySpecificStrategy     = false;
@@ -26,24 +35,12 @@ namespace Config
 
     namespace Modules							    
     {
-        // the default tournament bot modules
-        bool UsingGameCommander             = true;     // toggle GameCommander, effectively UAlbertaBot
-        bool UsingScoutManager              = true;
-        bool UsingCombatCommander           = true;
         bool UsingBuildOrderSearch          = true;     // toggle use of Build Order Search, currently no backup
         bool UsingAutoObserver              = false;
         bool UsingStrategyIO                = false;    // toggle the use of file io for strategy
-        bool UsingUnitCommandManager        = false;    // handles all unit commands
 		
         // extra things, don't enable unless you know what they are
         bool UsingBuildOrderDemo            = false;
-    }
-
-    namespace BotInfo
-    {
-        std::string BotName                 = "UAlbertaBot";
-        std::string Authors                 = "Dave Churchill";
-        bool PrintInfoOnStart               = false;
     }
 
     namespace BWAPIOptions
@@ -52,6 +49,19 @@ namespace Config
         int SetFrameSkip                    = 0;
         bool EnableUserInput                = true;
         bool EnableCompleteMapInformation   = false;
+    }
+
+    namespace Arena
+    {
+        std::string ArenaPlayerName         = "AttackWC_NOK";
+        int ArenaOutputResults              = 10;
+        int ArenaBattles                    = 1000;
+    }
+    
+    namespace SparCraft
+    {
+        std::string SparCraftConfigFile     = "SparCraft_Config.txt";
+        std::string CombatSimPlayerName     = "AttackC";
     }
     
     namespace Tournament						
@@ -75,7 +85,7 @@ namespace Config
         bool DrawMouseCursorInfo            = false;
         bool DrawEnemyUnitInfo              = false;
         bool DrawBWTAInfo                   = false;
-        bool DrawMapGrid                    = false;
+        bool DrawLastSeenTileInfo           = false;
         bool DrawUnitTargetInfo             = false;
         bool DrawSquadInfo                  = false;
         bool DrawBOSSStateInfo              = false;
@@ -115,4 +125,5 @@ namespace Config
     {
         extern int MAP_GRID_SIZE            = 320;      // size of grid spacing in MapGrid
     }
+
 }
