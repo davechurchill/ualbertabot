@@ -64,7 +64,8 @@ public:
 		shared_ptr<WorkerManager> workerManager,
 		shared_ptr<UnitInfoManager> unitInfo,
 		shared_ptr<MapTools> mapTools,
-		shared_ptr<AKBot::Logger> logger);
+		shared_ptr<AKBot::Logger> logger,
+		const BotMicroConfiguration& microConfiguration);
 
 	void update(const std::vector<BWAPI::Unit> & combatUnits, int currentFrame);
 	const SquadData& getSquadData() const;

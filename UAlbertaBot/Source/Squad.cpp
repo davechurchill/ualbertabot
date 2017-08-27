@@ -13,21 +13,23 @@ Squad::Squad(
 	shared_ptr<UnitInfoManager> unitInfo,
 	shared_ptr<BaseLocationManager> bases,
 	shared_ptr<MapTools> mapTools,
-	std::shared_ptr<AKBot::Logger> logger)
+	std::shared_ptr<AKBot::Logger> logger,
+	const BotMicroConfiguration& microConfiguration)
 	: _name(name)
 	, _order(order)
     , _lastRetreatSwitch(0)
     , _lastRetreatSwitchVal(false)
     , _priority(priority)
-	, _transportManager(opponentView, bases, locationProvider, mapTools, logger)
+	, _transportManager(opponentView, bases, locationProvider, mapTools, logger, microConfiguration)
 	, _opponentView(opponentView)
 	, _unitInfo(unitInfo)
-	, _meleeManager(opponentView, bases)
+	, _meleeManager(opponentView, bases, microConfiguration)
 	, _medicManager(opponentView, bases)
-	, _rangedManager(opponentView, bases)
+	, _rangedManager(opponentView, bases, microConfiguration)
 	, _detectorManager(opponentView, mapTools, bases)
-	, _tankManager(opponentView, bases)
+	, _tankManager(opponentView, bases, microConfiguration)
 	, _logger(logger)
+	, _microConfiguration(microConfiguration)
 {
 }
 
@@ -183,7 +185,7 @@ void Squad::addUnitsToMicroManagers()
 // calculates whether or not to regroup
 bool Squad::needsToRegroup(shared_ptr<MapTools> map, int currentFrame)
 {
-    if (!Config.Micro.UseSparcraftSimulation)
+    if (!_microConfiguration.UseSparcraftSimulation)
     {
         return false;
     }
@@ -252,19 +254,19 @@ bool Squad::needsToRegroup(shared_ptr<MapTools> map, int currentFrame)
 		_opponentView,
 		ourCombatUnits,
 		simulationCenter,
-		Config.Micro.CombatRegroupRadius,
+		_microConfiguration.CombatRegroupRadius,
 		true,
 		false);
 
 	std::vector<UnitInfo> enemyCombatUnitsForSimulation;
 	for (auto& enemyPlayer : _opponentView->enemies())
 	{
-		_unitInfo->getNearbyForce(enemyCombatUnitsForSimulation, simulationCenter, enemyPlayer, Config.Micro.CombatRegroupRadius);
+		_unitInfo->getNearbyForce(enemyCombatUnitsForSimulation, simulationCenter, enemyPlayer, _microConfiguration.CombatRegroupRadius);
 	}
 
 	//do the SparCraft Simulation!
 	CombatSimulation sim(_opponentView, _logger);
-	sim.setCombatUnits(ourCombatUnits, enemyCombatUnitsForSimulation, simulationCenter, Config.Micro.CombatRegroupRadius, currentFrame);
+	sim.setCombatUnits(ourCombatUnits, enemyCombatUnitsForSimulation, simulationCenter, _microConfiguration.CombatRegroupRadius, currentFrame);
     auto score = sim.simulateCombat();
 
 	bool retreat = score < 0;

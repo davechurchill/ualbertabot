@@ -30,12 +30,9 @@ void Micro::drawAction(
 	const BWAPI::Position & targetPosition,
 	const BWAPI::Color color)
 {
-	if (Config.Debug.DrawUnitTargetInfo)
-	{
-		canvas.drawCircleMap(attackerPostion, dotRadius, color, true);
-		canvas.drawCircleMap(targetPosition, dotRadius, color, true);
-		canvas.drawLineMap(attackerPostion, targetPosition, color);
-	}
+	canvas.drawCircleMap(attackerPostion, dotRadius, color, true);
+	canvas.drawCircleMap(targetPosition, dotRadius, color, true);
+	canvas.drawLineMap(attackerPostion, targetPosition, color);
 }
 
 void UAlbertaBot::Micro::SetOnAttackUnit(std::function<void(const BWAPI::Unit&attacker, const BWAPI::Unit&target)> handler)
@@ -261,7 +258,11 @@ void Micro::SmartRepair(BWAPI::Unit unit, BWAPI::Unit target, int currentFrame)
 	}
 }
 
-void Micro::SmartKiteTarget(BWAPI::Unit rangedUnit, BWAPI::Unit target, int currentFrame)
+void Micro::SmartKiteTarget(
+	BWAPI::Unit rangedUnit,
+	BWAPI::Unit target,
+	int currentFrame,
+	const std::set<BWAPI::UnitType>& kiteLongerRangedUnits)
 {
     UAB_ASSERT(rangedUnit, "SmartKiteTarget: Unit not valid");
     UAB_ASSERT(target, "SmartKiteTarget: Target not valid");
@@ -278,7 +279,7 @@ void Micro::SmartKiteTarget(BWAPI::Unit rangedUnit, BWAPI::Unit target, int curr
 	}
 
 	// determine whether the target can be kited
-    bool kiteLonger = Config.Micro.KiteLongerRangedUnits.find(rangedUnit->getType()) != Config.Micro.KiteLongerRangedUnits.end();
+    bool kiteLonger = kiteLongerRangedUnits.find(rangedUnit->getType()) != kiteLongerRangedUnits.end();
 	if (!kiteLonger && (range <= target->getType().groundWeapon().maxRange()))
 	{
 		// if we can't kite it, there's no point

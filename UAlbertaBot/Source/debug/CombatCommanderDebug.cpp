@@ -120,9 +120,12 @@ namespace AKBot
 	void CombatCommanderDebug::drawOrder(AKBot::ScreenCanvas& canvas, const Squad& squad, const SquadOrder& order) const
 	{
 		auto& meleeManager = squad.getMeleeManager();
-		for (auto & meleeUnit : meleeManager.getUnits())
+		auto& rangedManager = squad.getRangedManager();
+		auto& tankManager = squad.getTankManager();
+		auto& transportManager = squad.getTransportManager();
+		if (_debugConfiguration.DrawUnitTargetInfo)
 		{
-			if (_debugConfiguration.DrawUnitTargetInfo)
+			for (auto & meleeUnit : meleeManager.getUnits())
 			{
 				canvas.drawLineMap(
 					meleeUnit->getPosition().x,
@@ -131,15 +134,30 @@ namespace AKBot
 					meleeUnit->getTargetPosition().y,
 					_debugConfiguration.ColorLineTarget);
 			}
+
+			for (auto & rangedUnit : rangedManager.getUnits())
+			{
+				canvas.drawLineMap(rangedUnit->getPosition(), rangedUnit->getTargetPosition(), BWAPI::Colors::Purple);
+			}
+
+			for (auto & unit : tankManager.getUnits())
+			{
+				canvas.drawLineMap(unit->getPosition(), unit->getTargetPosition(), BWAPI::Colors::Purple);
+			}
+
+			for (auto & unit : transportManager.getUnits())
+			{
+				canvas.drawLineMap(unit->getPosition(), unit->getTargetPosition(), BWAPI::Colors::Purple);
+			}
 		}
 		
 		drawOrderText(canvas, meleeManager, order);
-		drawOrderText(canvas, squad.getRangedManager(), order);
-		drawOrderText(canvas, squad.getTankManager(), order);
+		drawOrderText(canvas, rangedManager, order);
+		drawOrderText(canvas, tankManager, order);
 		drawOrderText(canvas, squad.getMedicManager(), order);
 		drawOrderText(canvas, squad.getDetectorManager(), order);
 
-		drawTransportInformation(canvas, squad.getTransportManager(), 0, 0);
+		drawTransportInformation(canvas, transportManager, 0, 0);
 	}
 	
 	void CombatCommanderDebug::drawOrderText(AKBot::ScreenCanvas& canvas, const MicroManager& manager, const SquadOrder & order) const

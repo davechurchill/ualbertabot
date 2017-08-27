@@ -18,7 +18,7 @@ class SquadData
 	shared_ptr<UnitInfoManager> _unitInfo;
 	shared_ptr<BaseLocationManager> _bases;
 	shared_ptr<MapTools> _mapTools;
-
+	const BotMicroConfiguration& _microConfiguration;
 public:
 
 	SquadData(
@@ -27,7 +27,8 @@ public:
 		shared_ptr<UnitInfoManager> unitInfo,
 		shared_ptr<BaseLocationManager> bases,
 		shared_ptr<MapTools> mapTools,
-		std::shared_ptr<AKBot::Logger> logger);
+		std::shared_ptr<AKBot::Logger> logger,
+		const BotMicroConfiguration& microConfiguration);
 
     void            clearSquadData(int currentFrame);
 

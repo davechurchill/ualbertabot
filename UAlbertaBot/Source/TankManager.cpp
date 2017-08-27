@@ -7,8 +7,12 @@
 
 using namespace UAlbertaBot;
 
-TankManager::TankManager(shared_ptr<AKBot::OpponentView> opponentView, shared_ptr<BaseLocationManager> bases)
+TankManager::TankManager(
+	shared_ptr<AKBot::OpponentView> opponentView,
+	shared_ptr<BaseLocationManager> bases,
+	const BotMicroConfiguration& microConfiguration)
 	: MicroManager(opponentView, bases)
+	, _microConfiguration(microConfiguration)
 {
 }
 
@@ -42,10 +46,12 @@ void TankManager::executeMicro(const std::vector<BWAPI::Unit> & targets, int cur
 				// find the best target for this zealot
 				BWAPI::Unit target = getTarget(tank, tankTargets);
 
-				if (target && Config.Debug.DrawUnitTargetInfo)
+				// Code below now moved to CombatCommanderDebug
+				// I don't know how target variable and rangedUnit->getTargetPosition() related right now
+				/*if (target && _microConfiguration.DrawUnitTargetInfo)
 				{
-					BWAPI::Broodwar->drawLineMap(tank->getPosition(), tank->getTargetPosition(), BWAPI::Colors::Purple);
-				}
+					canvas.drawLineMap(tank->getPosition(), tank->getTargetPosition(), BWAPI::Colors::Purple);
+				}*/
 
 				// if we are within siege range, siege up
 				if (tank->getDistance(target) < siegeTankRange && tank->canSiege() && !tankNearChokepoint)
@@ -66,7 +72,7 @@ void TankManager::executeMicro(const std::vector<BWAPI::Unit> & targets, int cur
 				// if we're not in siege mode kite the target
 				else
 				{
-					Micro::SmartKiteTarget(tank, target, currentFrame);
+					Micro::SmartKiteTarget(tank, target, currentFrame, _microConfiguration.KiteLongerRangedUnits);
 				}
 			}
 			// if there are no targets

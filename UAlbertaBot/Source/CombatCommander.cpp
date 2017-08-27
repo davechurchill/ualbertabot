@@ -22,14 +22,15 @@ CombatCommander::CombatCommander(
 	shared_ptr<WorkerManager> workerManager,
 	shared_ptr<UnitInfoManager> unitInfo,
 	shared_ptr<MapTools> mapTools,
-	shared_ptr<AKBot::Logger> logger)
+	shared_ptr<AKBot::Logger> logger,
+	const BotMicroConfiguration& microConfiguration)
     : _initialized(false)
 	, _unitInfo(unitInfo)
 	, _baseLocationManager(baseLocationManager)
 	, _workerManager(workerManager)
 	, _mapTools(mapTools)
 	, _playerLocationProvider(baseLocationManager)
-	, _squadData(_playerLocationProvider, opponentView, unitInfo, baseLocationManager, mapTools, logger)
+	, _squadData(_playerLocationProvider, opponentView, unitInfo, baseLocationManager, mapTools, logger, microConfiguration)
 	, _opponentView(opponentView)
 {
 	_squadData.onUnitRemoved([this](const BWAPI::Unit& unit, int currentFrame)

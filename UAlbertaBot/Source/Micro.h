@@ -26,7 +26,11 @@ namespace Micro
     void SmartRightClick(BWAPI::Unit unit, BWAPI::Unit target, int currentFrame);
     void SmartLaySpiderMine(BWAPI::Unit unit, BWAPI::Position pos);
     void SmartRepair(BWAPI::Unit unit, BWAPI::Unit target, int currentFrame);
-    void SmartKiteTarget(BWAPI::Unit rangedUnit, BWAPI::Unit target, int currentFrame);
+    void SmartKiteTarget(
+		BWAPI::Unit rangedUnit,
+		BWAPI::Unit target,
+		int currentFrame,
+		const std::set<BWAPI::UnitType>& kiteLongerRangedUnits);
     void MutaDanceTarget(BWAPI::Unit muta, BWAPI::Unit target);
     BWAPI::Position GetKiteVector(BWAPI::Unit unit, BWAPI::Unit target);
 

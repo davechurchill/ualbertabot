@@ -40,6 +40,7 @@ class Squad
 	TransportManager    _transportManager;
     TankManager         _tankManager;
     MedicManager        _medicManager;
+	const BotMicroConfiguration& _microConfiguration;
 
 	std::map<BWAPI::Unit, bool>	_nearEnemy;
 	BWAPI::Position _lastRegroupPosition;
@@ -66,7 +67,8 @@ public:
 		shared_ptr<UnitInfoManager> unitInfo,
 		shared_ptr<BaseLocationManager> bases,
 		shared_ptr<MapTools> mapTools,
-		std::shared_ptr<AKBot::Logger> logger);
+		std::shared_ptr<AKBot::Logger> logger,
+		const BotMicroConfiguration& microConfiguration);
     ~Squad();
 
 	void                update(shared_ptr<MapTools> map, int currentFrame);

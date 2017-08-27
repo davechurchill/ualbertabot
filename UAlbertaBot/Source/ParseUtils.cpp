@@ -204,10 +204,7 @@ void UAlbertaBot::ParseUtils::ParseConfigFile(
 		auto& modulesOptions = config.Modules;
 
         JSONTools::ReadBool("UseBuildOrderSearch", module, modulesOptions.UsingBuildOrderSearch);
-        JSONTools::ReadBool("UseStrategyIO", module, modulesOptions.UsingStrategyIO);
         JSONTools::ReadBool("UseAutoObserver", module, modulesOptions.UsingAutoObserver);
-		JSONTools::ReadString("ReadDirectory", module, modulesOptions.ReadDir);
-		JSONTools::ReadString("WriteDirectory", module, modulesOptions.WriteDir);
     }
 
     // Parse the Tool Options
@@ -263,6 +260,10 @@ void ParseUtils::ParseStrategy(
 
         // read in the various strategic elements
         JSONTools::ReadBool("ScoutHarassEnemy", strategy, strategyOptions.ScoutHarassEnemy);
+
+		JSONTools::ReadBool("UseStrategyIO", strategy, strategyOptions.UsingStrategyIO);
+		JSONTools::ReadString("ReadDirectory", strategy, strategyOptions.ReadDir);
+		JSONTools::ReadString("WriteDirectory", strategy, strategyOptions.WriteDir);
 
         // if we have set a strategy for the current race, use it
         if (strategy.HasMember(race.c_str()) && strategy[race.c_str()].IsString())

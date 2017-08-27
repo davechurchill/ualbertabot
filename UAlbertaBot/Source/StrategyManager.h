@@ -21,6 +21,7 @@ class StrategyManager
 	shared_ptr<AKBot::OpponentView> _opponentView;
 	shared_ptr<BaseLocationManager> _bases;
 	std::shared_ptr<AKBot::Logger> _logger;
+	BotStrategyConfiguration& _strategyConfiguration;
 
     void        writeResults();
     const int   getScore(BWAPI::Player player) const;
@@ -35,7 +36,8 @@ public:
 		shared_ptr<AKBot::OpponentView> opponentView,
 		shared_ptr<UnitInfoManager> unitInfo,
 		shared_ptr<BaseLocationManager> bases,
-		shared_ptr<AKBot::Logger> logger);
+		shared_ptr<AKBot::Logger> logger,
+		BotStrategyConfiguration& strategyConfiguration);
 
     void update();
     void onEnd(const bool isWinner);

@@ -7,9 +7,13 @@ namespace UAlbertaBot
 {
 class TankManager : public MicroManager
 {
+	const BotMicroConfiguration& _microConfiguration;
 public:
 
-	TankManager(shared_ptr<AKBot::OpponentView> opponentView, shared_ptr<BaseLocationManager> bases);
+	TankManager(
+		shared_ptr<AKBot::OpponentView> opponentView,
+		shared_ptr<BaseLocationManager> bases,
+		const BotMicroConfiguration& microConfiguration);
 	void executeMicro(const std::vector<BWAPI::Unit> & targets, int currentFrame);
 
 	BWAPI::Unit chooseTarget(BWAPI::Unit rangedUnit, const std::vector<BWAPI::Unit> & targets, std::map<BWAPI::Unit, int> & numTargeting);

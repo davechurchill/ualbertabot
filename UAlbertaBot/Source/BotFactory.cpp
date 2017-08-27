@@ -33,7 +33,8 @@ BotPlayer AKBot::createBot(const std::string& mode, const std::string& configura
 			opponentView,
 			unitInfoManager,
 			baseLocationManager,
-			logger));
+			logger,
+			configuration.Strategy));
 		auto mapInformation = std::shared_ptr<MapInformation>(new BWAPIMapInformation());
 		auto mapTools = std::shared_ptr<MapTools>(new MapTools(mapInformation, logger));
 		auto combatCommander = std::shared_ptr<CombatCommander>(new CombatCommander(
@@ -42,7 +43,8 @@ BotPlayer AKBot::createBot(const std::string& mode, const std::string& configura
 			workerManager,
 			unitInfoManager,
 			mapTools,
-			logger));
+			logger,
+			configuration.Micro));
 		auto bossManager = std::shared_ptr<BOSSManager>(new BOSSManager(opponentView));
 		auto scoutManager = std::shared_ptr<ScoutManager>(new ScoutManager(
 			opponentView,
@@ -53,7 +55,8 @@ BotPlayer AKBot::createBot(const std::string& mode, const std::string& configura
 			baseLocationManager,
 			workerManager,
 			mapTools,
-			logger));
+			logger,
+			configuration.Macro));
 		auto productionManager = std::shared_ptr<ProductionManager>(new ProductionManager(
 			opponentView,
 			bossManager,
@@ -73,7 +76,7 @@ BotPlayer AKBot::createBot(const std::string& mode, const std::string& configura
 		));
 		auto& debugConfiguration = configuration.Debug;
 		std::vector<shared_ptr<DebugInfoProvider>> providers = {
-			std::shared_ptr<DebugInfoProvider>(new AKBot::GameCommanderDebug(gameCommander, logger, debugConfiguration)),
+			std::shared_ptr<DebugInfoProvider>(new AKBot::GameCommanderDebug(gameCommander, logger, debugConfiguration, configuration.Strategy)),
 			std::shared_ptr<DebugInfoProvider>(new AKBot::BaseLocationManagerDebug(opponentView, baseLocationManager, mapTools)),
 			std::shared_ptr<DebugInfoProvider>(new AKBot::UnitInfoManagerDebug(opponentView, unitInfoManager, debugConfiguration)),
 			std::shared_ptr<DebugInfoProvider>(new AKBot::WorkerManagerDebug(workerData, debugConfiguration)),

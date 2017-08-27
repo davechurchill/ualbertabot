@@ -10,13 +10,15 @@ SquadData::SquadData(
 	shared_ptr<UnitInfoManager> unitInfo,
 	shared_ptr<BaseLocationManager> bases,
 	shared_ptr<MapTools> mapTools,
-	std::shared_ptr<AKBot::Logger> logger)
+	std::shared_ptr<AKBot::Logger> logger,
+	const BotMicroConfiguration& microConfiguration)
 	: _locationProvider(locationProvider)
 	, _opponentView(opponentView)
 	, _unitInfo(unitInfo)
 	, _bases(bases)
 	, _mapTools(mapTools)
 	, _logger(logger)
+	, _microConfiguration(microConfiguration)
 {
 	
 }
@@ -78,7 +80,17 @@ void SquadData::addSquad(const std::string & squadName, Squad & squad)
 
 void SquadData::addSquad(const std::string & squadName, const SquadOrder & squadOrder, size_t priority)
 {
-	Squad squad(squadName, squadOrder, priority, _locationProvider, _opponentView, _unitInfo, _bases, _mapTools, _logger);
+	Squad squad(
+		squadName,
+		squadOrder,
+		priority,
+		_locationProvider,
+		_opponentView,
+		_unitInfo,
+		_bases,
+		_mapTools,
+		_logger,
+		_microConfiguration);
 	addSquad(squadName, squad);
 }
 

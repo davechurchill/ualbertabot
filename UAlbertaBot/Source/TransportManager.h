@@ -22,6 +22,7 @@ class TransportManager : public MicroManager
 	AKBot::PlayerLocationProvider&	_locationProvider;
 	shared_ptr<AKBot::Logger> _logger;
 	shared_ptr<MapTools> _mapTools;
+	const BotMicroConfiguration& _microConfiguration;
 
 	void							calculateMapEdgeVertices();
 	void							moveTransport(int currentFrame);
@@ -40,7 +41,8 @@ public:
 		shared_ptr<BaseLocationManager> bases,
 		AKBot::PlayerLocationProvider& locationProvider,
 		shared_ptr<MapTools> mapTools,
-		std::shared_ptr<AKBot::Logger> logger);
+		std::shared_ptr<AKBot::Logger> logger,
+		const BotMicroConfiguration& microConfiguration);
 
 	void							executeMicro(const std::vector<BWAPI::Unit> & targets, int currentFrame) override;
 	void							update(shared_ptr<MapTools> mapTools, int currentFrame);
