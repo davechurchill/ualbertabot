@@ -6,9 +6,11 @@ using namespace UAlbertaBot;
 
 CombatSimulation::CombatSimulation(
 	shared_ptr<AKBot::OpponentView> opponentView,
-	std::shared_ptr<AKBot::Logger> logger)
+	std::shared_ptr<AKBot::Logger> logger,
+	const BotSparCraftConfiguration& sparcraftConfiguration)
 	: _opponentView(opponentView)
 	, _logger(logger)
+	, _sparcraftConfiguration(sparcraftConfiguration)
 {
 }
 
@@ -137,8 +139,8 @@ double CombatSimulation::simulateCombat()
         SparCraft::PlayerPtr enemyNOK(new SparCraft::Player_AttackClosest(enemyID));
 
 		auto& aiParameters = SparCraft::AIParameters::Instance();
-        SparCraft::PlayerPtr p1 =  aiParameters.getPlayer(selfID, Config.SparCraft.CombatSimPlayerName);
-        SparCraft::PlayerPtr p2 =  aiParameters.getPlayer(enemyID, Config.SparCraft.CombatSimPlayerName);
+        SparCraft::PlayerPtr p1 =  aiParameters.getPlayer(selfID, _sparcraftConfiguration.CombatSimPlayerName);
+        SparCraft::PlayerPtr p2 =  aiParameters.getPlayer(enemyID, _sparcraftConfiguration.CombatSimPlayerName);
 
 	    SparCraft::Game game (originalState, p1, p2, 2000);
 
@@ -147,23 +149,6 @@ double CombatSimulation::simulateCombat()
 		_evaluatedState = game.getState();
 	    _lastScore = SparCraft::Eval::Eval(_evaluatedState, SparCraft::Players::Player_One, SparCraft::EvaluationMethods::LTD2).val();
         //std::cout << "LTD2: " << SparCraft::Eval::LTD2(g.getState(), 0) << ", " << SparCraft::Eval::LTD2(g.getState(), 1) << "\n";
-
-        if (Config.Debug.DrawCombatSimulationInfo)
-        {
-            std::stringstream ss1;
-            ss1 << "Initial State:\n";
-            ss1 << SparCraft::AITools::StateToStringCompact(this->getSparCraftState()) << "\n\n";
-
-            std::stringstream ss2;
-
-            ss2 << "Predicted Outcome: " << _lastScore << "\n";
-            ss2 << SparCraft::AITools::StateToStringCompact(this->getEvaluatedState()) << "\n";
-
-            BWAPI::Broodwar->drawTextScreen(150,200,"%s", ss1.str().c_str());
-            BWAPI::Broodwar->drawTextScreen(300,200,"%s", ss2.str().c_str());
-
-	        BWAPI::Broodwar->drawTextScreen(240, 280, "Combat Sim : %lf", this->getLastScore());
-        }
         
 	    return _lastScore;
     }

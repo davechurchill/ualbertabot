@@ -23,6 +23,7 @@ class ScoutManager
 	UnitHandler     _onScoutAssigned;
 	shared_ptr<AKBot::OpponentView> _opponentView;
 	shared_ptr<MapTools> _mapTools;
+	bool			_scoutHarassEnemy;
 
 	bool            enemyWorkerInRadius();
     bool            immediateThreat();
@@ -52,5 +53,7 @@ public:
 	const std::string getScoutStatus() const { return _scoutStatus; }
 	const std::vector<BWAPI::Position>& getEnemyRegionVerticies() const { return _enemyRegionVertices; }
 	const BWAPI::Unit& getWorkerScount() const { return _workerScout; }
+	bool getScoutHarassEnemy() const { return _scoutHarassEnemy; }
+	void setScoutHarassEnemy(bool value) { _scoutHarassEnemy = value; }
 };
 }

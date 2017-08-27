@@ -11,7 +11,8 @@ ProductionManager::ProductionManager(
 	shared_ptr<WorkerManager> workerManager,
 	shared_ptr<UnitInfoManager> unitInfo,
 	shared_ptr<BaseLocationManager> bases,
-	shared_ptr<MapTools> mapTools)
+	shared_ptr<MapTools> mapTools,
+	const BotDebugConfiguration& debugConfiguration)
 	: _opponentView(opponentView)
 	, _workerManager(workerManager)
 	, _bossManager(bossManager)
@@ -21,6 +22,7 @@ ProductionManager::ProductionManager(
 	, _haveLocationForThisBuilding   (false)
 	, _enemyCloakedDetected          (false)
 	, _strategyManager(strategyManager)
+	, _debugConfiguration(debugConfiguration)
 {
     
 }
@@ -37,7 +39,7 @@ void ProductionManager::setBuildOrder(const BuildOrder & buildOrder)
 
 void ProductionManager::performBuildOrderSearch(int currentFrame)
 {	
-    if (!Config.Modules.UsingBuildOrderSearch || !canPlanBuildOrderNow())
+    if (!canPlanBuildOrderNow())
     {
         return;
     }
@@ -80,7 +82,10 @@ void ProductionManager::update(int currentFrame)
 	if ((_queue.size() == 0) && (currentFrame > 10))
 	{
 		_emptyQueueDetected = true;
-		performBuildOrderSearch(currentFrame);
+		if (getUseBuildOrderSearch())
+		{
+			performBuildOrderSearch(currentFrame);
+		}
 	}
 
 	auto self = _opponentView->self();
@@ -141,7 +146,7 @@ void ProductionManager::onUnitDestroy(BWAPI::Unit unit, int currentFrame)
 		return;
 	}
 		
-	if (Config.Modules.UsingBuildOrderSearch)
+	if (getUseBuildOrderSearch())
 	{
 		// if it's a worker or a building, we need to re-search for the current goal
 		if ((unit->getType().isWorker() && !_workerManager->isWorkerScout(unit)) || unit->getType().isBuilding())
@@ -510,11 +515,11 @@ void ProductionManager::predictWorkerMovement(const Building & b)
 	
 	// draw a box where the building will be placed
 	int x1 = _predictedTilePosition.x * 32;
-	int x2 = x1 + (b.type.tileWidth()) * 32;
 	int y1 = _predictedTilePosition.y * 32;
-	int y2 = y1 + (b.type.tileHeight()) * 32;
-	if (Config.Debug.DrawWorkerInfo) 
+	if (_debugConfiguration.DrawWorkerInfo)
     {
+		int x2 = x1 + (b.type.tileWidth()) * 32;
+		int y2 = y1 + (b.type.tileHeight()) * 32;
         BWAPI::Broodwar->drawBoxMap(x1, y1, x2, y2, BWAPI::Colors::Blue, false);
     }
 

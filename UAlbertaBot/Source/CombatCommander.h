@@ -21,6 +21,8 @@ class CombatCommander
 	shared_ptr<UnitInfoManager> _unitInfo;
 	shared_ptr<MapTools> _mapTools;
 	shared_ptr<WorkerManager> _workerManager;
+	bool			_supportDropStrategy;
+	const BotMicroConfiguration& _microConfiguration;
 
     void            updateScoutDefenseSquad(int currentFrame);
 	void            updateDefenseSquads(int currentFrame);
@@ -65,9 +67,16 @@ public:
 		shared_ptr<UnitInfoManager> unitInfo,
 		shared_ptr<MapTools> mapTools,
 		shared_ptr<AKBot::Logger> logger,
-		const BotMicroConfiguration& microConfiguration);
+		const BotMicroConfiguration& microConfiguration,
+		const BotSparCraftConfiguration& sparcraftConfiguration,
+		const BotDebugConfiguration& debugConfiguration);
 
 	void update(const std::vector<BWAPI::Unit> & combatUnits, int currentFrame);
 	const SquadData& getSquadData() const;
+	bool getSupportsDropSquad() const { return _supportDropStrategy; }
+	void setSupportsDropSquad(bool value) { _supportDropStrategy = value; }
+	void setRushModeEnabled(bool value) { _squadData.setRushModeEnabled(value); }
+	void setRushUnitType(BWAPI::UnitType rushUnit) { _squadData.setRushUnitType(rushUnit); }
+	void setAllowedRushUnitLoses(int value) { _squadData.setAllowedRushUnitLoses(value); }
 };
 }

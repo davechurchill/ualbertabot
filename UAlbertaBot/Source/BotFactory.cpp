@@ -44,8 +44,10 @@ BotPlayer AKBot::createBot(const std::string& mode, const std::string& configura
 			unitInfoManager,
 			mapTools,
 			logger,
-			configuration.Micro));
-		auto bossManager = std::shared_ptr<BOSSManager>(new BOSSManager(opponentView));
+			configuration.Micro,
+			configuration.SparCraft,
+			configuration.Debug));
+		auto bossManager = std::shared_ptr<BOSSManager>(new BOSSManager(opponentView, configuration.Debug));
 		auto scoutManager = std::shared_ptr<ScoutManager>(new ScoutManager(
 			opponentView,
 			baseLocationManager,
@@ -65,7 +67,8 @@ BotPlayer AKBot::createBot(const std::string& mode, const std::string& configura
 			workerManager,
 			unitInfoManager,
 			baseLocationManager,
-			mapTools));
+			mapTools,
+			configuration.Debug));
 		auto gameCommander = std::shared_ptr<GameCommander>(new GameCommander(
 			opponentView,
 			bossManager,
@@ -85,7 +88,21 @@ BotPlayer AKBot::createBot(const std::string& mode, const std::string& configura
 		shared_ptr<GameDebug> gameDebug = std::shared_ptr<GameDebug>(new GameDebug(providers));
 
 		ParseUtils::ParseStrategy(configurationFile, configuration, strategyManager);
-		strategyManager->setPreferredStrategy(configuration.Strategy.StrategyName);
+		auto strategyName = configuration.Strategy.StrategyName;
+		strategyManager->setPreferredStrategy(strategyName);
+
+		scoutManager->setScoutHarassEnemy(configuration.Strategy.ScoutHarassEnemy);
+		combatCommander->setSupportsDropSquad(strategyName == "Protoss_Drop");
+		if (strategyName == "Protoss_DTRush")
+		{
+			combatCommander->setRushModeEnabled(true);
+			combatCommander->setRushUnitType(BWAPI::UnitTypes::Protoss_Dark_Templar);
+			combatCommander->setAllowedRushUnitLoses(0);
+		}
+
+		productionManager->setUseBuildOrderSearch(configuration.Modules.UsingBuildOrderSearch);
+		workerManager->setWorkersPerRefinery(configuration.Macro.WorkersPerRefinery);
+
 		return BotPlayer(std::shared_ptr<BotModule>(new UAlbertaBot_Tournament(
 			configuration,
 			baseLocationManager,

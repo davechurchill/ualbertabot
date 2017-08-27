@@ -49,12 +49,15 @@
         "BuildingSpacing"           : 1,
         "PylonSpacing"              : 3
     },
+	
+	"Log":
+	{
+		"ErrorLogFilename"          : "bwapi-data/AI/UAlbertaBot_ErrorLog.txt",
+        "LogAssertToErrorFile"      : false,
+	}
 
     "Debug" :
-    {
-        "ErrorLogFilename"          : "bwapi-data/AI/UAlbertaBot_ErrorLog.txt",
-        "LogAssertToErrorFile"      : false,
-        
+    {        
         "DrawGameInfo"              : true,   
         "DrawUnitHealthBars"        : true,
         "DrawProductionInfo"        : true, 

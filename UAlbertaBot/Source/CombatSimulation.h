@@ -27,12 +27,14 @@ class CombatSimulation
 	double						_lastScore;
 	shared_ptr<AKBot::OpponentView> _opponentView;
 	std::shared_ptr<AKBot::Logger> _logger;
+	const BotSparCraftConfiguration& _sparcraftConfiguration;
 
 public:
 
 	CombatSimulation(
 		shared_ptr<AKBot::OpponentView> opponentView,
-		shared_ptr<AKBot::Logger> logger);
+		shared_ptr<AKBot::Logger> logger,
+		const BotSparCraftConfiguration& sparcraftConfiguration);
 
 	void setCombatUnits(
 		const std::vector<BWAPI::Unit> ourCombatUnits,

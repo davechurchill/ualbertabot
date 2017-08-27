@@ -63,6 +63,12 @@ struct BotTournamentConfiguration
 	int GameEndFrame = 86400;
 };
 
+struct BotLogConfiguration
+{
+	std::string ErrorLogFilename = "AKBot_ErrorLog.txt";
+	bool LogAssertToErrorFile = false;
+};
+
 struct BotDebugConfiguration
 {
 	bool DrawGameInfo = true;
@@ -84,9 +90,6 @@ struct BotDebugConfiguration
 	bool DrawSquadInfo = false;
 	bool DrawBOSSStateInfo = false;
 	bool PrintModuleTimeout = false;
-
-	std::string ErrorLogFilename = "AKBot_ErrorLog.txt";
-	bool LogAssertToErrorFile = false;
 
 	BWAPI::Color ColorLineTarget = BWAPI::Colors::White;
 	BWAPI::Color ColorLineMineral = BWAPI::Colors::Cyan;
@@ -133,4 +136,5 @@ struct BotConfiguration
 	BotMicroConfiguration Micro;
 	BotMacroConfiguration Macro;
 	BotToolsConfiguration Tools;
+	BotLogConfiguration Log;
 };

@@ -19,8 +19,18 @@ namespace AKBot
 		auto buildingManager = _productionManager->getBuildingManager();
 		drawBuildingInformation(canvas, buildingManager, 200, 50);
 		auto bossManager = _productionManager->getBOSSManager();
-		if (!_debugConfiguration.DrawBuildOrderSearchInfo)
+		if (bossManager->hasExceptionDuringSearch())
 		{
+			canvas.drawTextScreen(0, 0, "Previous search didn't find a solution, resorting to Naive Build Order");
+		}
+
+		if (_debugConfiguration.DrawBuildOrderSearchInfo)
+		{
+			if (bossManager->getNoSolutionFound())
+			{
+				canvas.drawTextScreen(0, 20, "No legal BuildOrder found, returning empty Build Order");
+			}
+
 			drawSearchInformation(canvas, bossManager, 490, 100);
 			if (_productionManager->getEmptyQueueDetected())
 			{

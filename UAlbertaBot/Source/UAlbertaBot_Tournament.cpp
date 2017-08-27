@@ -80,7 +80,7 @@ void UAlbertaBot_Tournament::onStart()
 	_baseLocationManager->onStart(_mapTools);
 	_gameCommander->onStart();
 
-	if (Config.Debug.DrawUnitTargetInfo)
+	if (_configuration.Debug.DrawUnitTargetInfo)
 	{
 		Micro::SetOnAttackUnit([this](const BWAPI::Unit&attacker, const BWAPI::Unit&target)
 		{

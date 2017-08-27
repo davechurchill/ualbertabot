@@ -23,15 +23,18 @@ CombatCommander::CombatCommander(
 	shared_ptr<UnitInfoManager> unitInfo,
 	shared_ptr<MapTools> mapTools,
 	shared_ptr<AKBot::Logger> logger,
-	const BotMicroConfiguration& microConfiguration)
+	const BotMicroConfiguration& microConfiguration,
+	const BotSparCraftConfiguration& sparcraftConfiguration,
+	const BotDebugConfiguration& debugConfiguration)
     : _initialized(false)
 	, _unitInfo(unitInfo)
 	, _baseLocationManager(baseLocationManager)
 	, _workerManager(workerManager)
 	, _mapTools(mapTools)
 	, _playerLocationProvider(baseLocationManager)
-	, _squadData(_playerLocationProvider, opponentView, unitInfo, baseLocationManager, mapTools, logger, microConfiguration)
+	, _squadData(_playerLocationProvider, opponentView, unitInfo, baseLocationManager, mapTools, logger, microConfiguration, sparcraftConfiguration, debugConfiguration)
 	, _opponentView(opponentView)
+	, _microConfiguration(microConfiguration)
 {
 	_squadData.onUnitRemoved([this](const BWAPI::Unit& unit, int currentFrame)
 	{
@@ -87,7 +90,7 @@ void CombatCommander::update(const std::vector<BWAPI::Unit> & combatUnits, int c
 	{
         updateIdleSquad();
 
-		if (Config.Strategy.StrategyName == "Protoss_Drop")
+		if (this->getSupportsDropSquad())
 		{
 			updateDropSquads();
 		}
@@ -466,7 +469,7 @@ BWAPI::Unit CombatCommander::findClosestDefender(const Squad & defenseSquad, BWA
         }
 
         // add workers to the defense squad if we are being rushed very quickly
-        if (!Config.Micro.WorkersDefendRush || (unit->getType().isWorker() && !zerglingRush && !beingBuildingRushed()))
+        if (!_microConfiguration.WorkersDefendRush || (unit->getType().isWorker() && !zerglingRush && !beingBuildingRushed()))
         {
             continue;
         }

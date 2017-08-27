@@ -84,12 +84,7 @@ void UAlbertaBot::ParseUtils::ParseConfigFile(
 
     if (configContent.length() == 0)
     {
-        std::cerr << "Error: Config File Not Found or is Empty\n";
-        std::cerr << "Config Filename: " << filename << "\n";
-        std::cerr << "The bot will not run without its configuration file\n";
-        std::cerr << "Please check that the file exists and is not empty. Incomplete paths are relative to the bot .exe file\n";
-        std::cerr << "You can change the config file location in Config::ConfigFile::ConfigFileLocation\n";
-		configFileFound = false;
+        configFileFound = false;
         return;
     }
 
@@ -98,12 +93,7 @@ void UAlbertaBot::ParseUtils::ParseConfigFile(
 	bool parsingFailed = doc.HasParseError();
     if (parsingFailed)
     {
-        std::cerr << "Error: Config File Found, but could not be parsed\n";
-        std::cerr << "Config Filename: " << filename << "\n";
-        std::cerr << "The bot will not run without its configuration file\n";
-        std::cerr << "Please check that the file exists, is not empty, and is valid JSON. Incomplete paths are relative to the bot .exe file\n";
-        std::cerr << "You can change the config file location in Config::ConfigFile::ConfigFileLocation\n";
-		configFileParsed = false;
+        configFileParsed = false;
         return;
     }
 
@@ -167,6 +157,15 @@ void UAlbertaBot::ParseUtils::ParseConfigFile(
         JSONTools::ReadInt("BuildingSpacing", macro, macroOptions.BuildingSpacing);
         JSONTools::ReadInt("PylongSpacing", macro, macroOptions.PylonSpacing);
         JSONTools::ReadInt("WorkersPerRefinery", macro, macroOptions.WorkersPerRefinery);
+	}
+
+	// Parse the Debug Options
+	if (doc.HasMember("Log") && doc["Log"].IsObject())
+	{
+		const rapidjson::Value & log = doc["Log"];
+		auto& logOptions = config.Log;
+		JSONTools::ReadString("ErrorLogFilename", log, logOptions.ErrorLogFilename);
+		JSONTools::ReadBool("LogAssertToErrorFile", log, logOptions.LogAssertToErrorFile);
     }
 
     // Parse the Debug Options
@@ -174,8 +173,6 @@ void UAlbertaBot::ParseUtils::ParseConfigFile(
     {
         const rapidjson::Value & debug = doc["Debug"];
 		auto& debugOptions = config.Debug;
-        JSONTools::ReadString("ErrorLogFilename",       debug, debugOptions.ErrorLogFilename);
-        JSONTools::ReadBool("LogAssertToErrorFile",     debug, debugOptions.LogAssertToErrorFile);
         JSONTools::ReadBool("DrawGameInfo",             debug, debugOptions.DrawGameInfo);
         JSONTools::ReadBool("DrawBuildOrderSearchInfo", debug, debugOptions.DrawBuildOrderSearchInfo);
         JSONTools::ReadBool("DrawUnitHealthBars",       debug, debugOptions.DrawUnitHealthBars);

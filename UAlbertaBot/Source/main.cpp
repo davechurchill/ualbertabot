@@ -65,6 +65,23 @@ int main(int argc, const char * argv[])
     // parse the bot's configuration file, if it is not found or isn't valid, the program will exit
 	auto configurationFile = ParseUtils::FindConfigurationLocation(configurationFileName);
 	ParseUtils::ParseConfigFile(configurationFile, Config, ConfigFileFound, ConfigFileParsed);
+	if (!ConfigFileFound)
+	{
+		std::cerr << "Error: Config File Not Found or is Empty\n";
+		std::cerr << "Config Filename: " << configurationFile << "\n";
+		std::cerr << "The bot will not run without its configuration file\n";
+		std::cerr << "Please check that the file exists and is not empty. Incomplete paths are relative to the bot .exe file\n";
+		std::cerr << "You can change the config file location in Config::ConfigFile::ConfigFileLocation\n";
+	}
+
+	if (!ConfigFileParsed)
+	{
+		std::cerr << "Error: Config File Found, but could not be parsed\n";
+		std::cerr << "Config Filename: " << configurationFile << "\n";
+		std::cerr << "The bot will not run without its configuration file\n";
+		std::cerr << "Please check that the file exists, is not empty, and is valid JSON. Incomplete paths are relative to the bot .exe file\n";
+		std::cerr << "You can change the config file location in Config::ConfigFile::ConfigFileLocation\n";		
+	}
 
     size_t gameCount = 0;
 	while (true)
