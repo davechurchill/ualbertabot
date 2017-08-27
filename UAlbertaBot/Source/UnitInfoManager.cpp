@@ -23,7 +23,7 @@ void UnitInfoManager::update()
 
 void UnitInfoManager::updateUnitInfo() 
 {
-	for (auto & unit : UnitUtil::getEnemyUnits())
+	for (auto & unit : UnitUtil::getEnemyUnits(_opponentView))
 	{
 		updateUnit(unit);
 	}

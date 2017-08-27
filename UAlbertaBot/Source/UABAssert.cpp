@@ -1,9 +1,14 @@
 #include "UABAssert.h"
-#include "Config.h"
 #include <BWAPI/Game.h>
 #include "FileLogger.h"
+#include "BotConfiguration.h"
 
 using namespace UAlbertaBot;
+
+namespace
+{
+	BotLogConfiguration logConfiguration;
+}
 
 namespace UAlbertaBot
 {
@@ -48,9 +53,9 @@ namespace Assert
         std::cerr << ss.str();
         BWAPI::Broodwar->printf("%s", ss.str().c_str());
 
-        if (Config::Debug::LogAssertToErrorFile)
+        if (logConfiguration.LogAssertToErrorFile)
         {
-            Logger::LogAppendToFile(Config::Debug::ErrorLogFilename, ss.str());
+            Logger::LogAppendToFile(logConfiguration.ErrorLogFilename, ss.str());
         }
     }
 }

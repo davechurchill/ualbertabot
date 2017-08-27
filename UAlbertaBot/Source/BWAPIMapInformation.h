@@ -11,5 +11,6 @@ namespace AKBot
 		bool isWalkable(int x, int y) const override;
 		bool isVisible(int x, int y) const override;
 		bool isBuildable(int x, int y) const override;
+		bool isExplored(int tileX, int tileY) const override;
 	};
 }

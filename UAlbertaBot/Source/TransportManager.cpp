@@ -9,7 +9,8 @@ TransportManager::TransportManager(
 	shared_ptr<BaseLocationManager> bases,
 	AKBot::PlayerLocationProvider& locationProvider,
 	shared_ptr<MapTools> mapTools,
-	std::shared_ptr<AKBot::Logger> logger)
+	std::shared_ptr<AKBot::Logger> logger,
+	const BotMicroConfiguration& microConfiguration)
 	: MicroManager(opponentView, bases)
 	, _transportShip(NULL)
 	, _currentRegionVertexIndex(-1)
@@ -20,6 +21,7 @@ TransportManager::TransportManager(
 	, _locationProvider(locationProvider)
 	, _mapTools(mapTools)
 	, _logger(logger)
+	, _microConfiguration(microConfiguration)
 {
 }
 
@@ -186,10 +188,12 @@ void TransportManager::followPerimeter(int clockwise, int currentFrame)
 {
 	BWAPI::Position goTo = getFleePosition(clockwise);
 
-	if (Config::Debug::DrawUnitTargetInfo)
+	// Code below now moved to CombatCommanderDebug
+	// I don't know how target variable and _transportShip->getTargetPosition() related right now
+	/*if (_microConfiguration.DrawUnitTargetInfo)
 	{
 		BWAPI::Broodwar->drawCircleMap(goTo, 5, BWAPI::Colors::Red, true);
-	}
+	}*/
 
 	Micro::SmartMove(_transportShip, goTo, currentFrame);
 }

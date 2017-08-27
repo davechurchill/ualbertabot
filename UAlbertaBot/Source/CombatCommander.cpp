@@ -22,15 +22,19 @@ CombatCommander::CombatCommander(
 	shared_ptr<WorkerManager> workerManager,
 	shared_ptr<UnitInfoManager> unitInfo,
 	shared_ptr<MapTools> mapTools,
-	shared_ptr<AKBot::Logger> logger)
+	shared_ptr<AKBot::Logger> logger,
+	const BotMicroConfiguration& microConfiguration,
+	const BotSparCraftConfiguration& sparcraftConfiguration,
+	const BotDebugConfiguration& debugConfiguration)
     : _initialized(false)
 	, _unitInfo(unitInfo)
 	, _baseLocationManager(baseLocationManager)
 	, _workerManager(workerManager)
 	, _mapTools(mapTools)
 	, _playerLocationProvider(baseLocationManager)
-	, _squadData(_playerLocationProvider, opponentView, unitInfo, baseLocationManager, mapTools, logger)
+	, _squadData(_playerLocationProvider, opponentView, unitInfo, baseLocationManager, mapTools, logger, microConfiguration, sparcraftConfiguration, debugConfiguration)
 	, _opponentView(opponentView)
+	, _microConfiguration(microConfiguration)
 {
 	_squadData.onUnitRemoved([this](const BWAPI::Unit& unit, int currentFrame)
 	{
@@ -62,11 +66,8 @@ void CombatCommander::initializeSquads()
     _squadData.addSquad("ScoutDefense", enemyScoutDefense, ScoutDefensePriority);
 
     // add a drop squad if we are using a drop strategy
-    if (Config::Strategy::StrategyName == "Protoss_Drop")
-    {
-        SquadOrder zealotDrop(SquadOrderTypes::Drop, ourBasePosition, 900, "Wait for transport");
-        _squadData.addSquad("Drop", zealotDrop, DropPriority);
-    }
+	SquadOrder zealotDrop(SquadOrderTypes::Drop, ourBasePosition, 900, "Wait for transport");
+	_squadData.addSquad("Drop", zealotDrop, DropPriority);
 
     _initialized = true;
 }
@@ -88,7 +89,12 @@ void CombatCommander::update(const std::vector<BWAPI::Unit> & combatUnits, int c
 	if (isSquadUpdateFrame(currentFrame))
 	{
         updateIdleSquad();
-        updateDropSquads();
+
+		if (this->getSupportsDropSquad())
+		{
+			updateDropSquads();
+		}
+
         updateScoutDefenseSquad(currentFrame);
 		updateDefenseSquads(currentFrame);
 		updateAttackSquads();
@@ -138,11 +144,6 @@ void CombatCommander::updateAttackSquads()
 
 void CombatCommander::updateDropSquads()
 {
-    if (Config::Strategy::StrategyName != "Protoss_Drop")
-    {
-        return;
-    }
-
     Squad & dropSquad = _squadData.getSquad("Drop");
 
     // figure out how many units the drop squad needs
@@ -216,7 +217,7 @@ void CombatCommander::updateScoutDefenseSquad(int currentFrame)
 
     // get all of the enemy units in this region
 	std::vector<BWAPI::Unit> enemyUnitsInRegion;
-    for (auto & unit : UnitUtil::getEnemyUnits())
+    for (auto & unit : UnitUtil::getEnemyUnits(_opponentView))
     {
         if (myBaseLocation->containsPosition(unit->getPosition()))
         {
@@ -293,7 +294,7 @@ void CombatCommander::updateDefenseSquads(int currentFrame)
 
 		// all of the enemy units in this region
 		std::vector<BWAPI::Unit> enemyUnitsInRegion;
-        for (auto & unit : UnitUtil::getEnemyUnits())
+        for (auto & unit : UnitUtil::getEnemyUnits(_opponentView))
         {
             // if it's an overlord, don't worry about it for defense, we don't care what they see
             if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord)
@@ -375,7 +376,7 @@ void CombatCommander::updateDefenseSquads(int currentFrame)
         }
 
         bool enemyUnitInRange = false;
-        for (auto & unit : UnitUtil::getEnemyUnits())
+        for (auto & unit : UnitUtil::getEnemyUnits(_opponentView))
         {
             if (unit->getPosition().getDistance(order.getPosition()) < order.getRadius())
             {
@@ -468,7 +469,7 @@ BWAPI::Unit CombatCommander::findClosestDefender(const Squad & defenseSquad, BWA
         }
 
         // add workers to the defense squad if we are being rushed very quickly
-        if (!Config::Micro::WorkersDefendRush || (unit->getType().isWorker() && !zerglingRush && !beingBuildingRushed()))
+        if (!_microConfiguration.WorkersDefendRush || (unit->getType().isWorker() && !zerglingRush && !beingBuildingRushed()))
         {
             continue;
         }
@@ -566,7 +567,7 @@ int CombatCommander::defendWithWorkers()
 	int defenseRadius = 300;
 
 	// fill the set with the types of units we're concerned about
-	for (auto & unit : UnitUtil::getEnemyUnits())
+	for (auto & unit : UnitUtil::getEnemyUnits(_opponentView))
 	{
 		// if it's a zergling or a worker we want to defend
 		if (unit->getType() == BWAPI::UnitTypes::Zerg_Zergling)
@@ -589,7 +590,7 @@ int CombatCommander::numZerglingsInOurBase()
     BWAPI::Position ourBasePosition = BWAPI::Position(_opponentView->self()->getStartLocation());
     
     // check to see if the enemy has zerglings as the only attackers in our base
-    for (auto & unit : UnitUtil::getEnemyUnits())
+    for (auto & unit : UnitUtil::getEnemyUnits(_opponentView))
     {
         if (unit->getType() != BWAPI::UnitTypes::Zerg_Zergling)
         {
@@ -610,7 +611,7 @@ bool CombatCommander::beingBuildingRushed()
     BWAPI::Position myBasePosition(_opponentView->self()->getStartLocation());
 
     // check to see if the enemy has buildings near our base
-    for (auto & unit : UnitUtil::getEnemyUnits())
+    for (auto & unit : UnitUtil::getEnemyUnits(_opponentView))
     {
         if (unit->getType().isBuilding() && unit->getDistance(myBasePosition) < 1200)
         {
@@ -639,7 +640,13 @@ bool UAlbertaBot::CombatCommander::findEnemyBaseLocation(BWAPI::Position & baseP
 
 			// get all known enemy units in the area
 			std::vector<BWAPI::Unit> enemyUnitsInArea;
-			UnitUtil::getUnitsInRadius(enemyUnitsInArea, enemyBasePosition, 800, false, true);
+			UnitUtil::getUnitsInRadius(
+				_opponentView,
+				enemyUnitsInArea,
+				enemyBasePosition,
+				800,
+				false,
+				true);
 
 			for (auto & unit : enemyUnitsInArea)
 			{
@@ -689,7 +696,7 @@ bool UAlbertaBot::CombatCommander::findEnemyUnit(BWAPI::Position targetPosition,
 
 	bool takeFirst = true;
 	BWAPI::Unit lastUnit = nullptr;
-	for (auto& unit : UnitUtil::getEnemyUnits())
+	for (auto& unit : UnitUtil::getEnemyUnits(_opponentView))
 	{
 		if (!validUnitTypes(unit))
 		{

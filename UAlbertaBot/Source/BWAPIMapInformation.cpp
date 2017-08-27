@@ -25,3 +25,8 @@ bool AKBot::BWAPIMapInformation::isBuildable(int x, int y) const
 {
 	return BWAPI::Broodwar->isBuildable(BWAPI::TilePosition(x, y), false);
 }
+
+bool AKBot::BWAPIMapInformation::isExplored(int tileX, int tileY) const
+{
+	return BWAPI::Broodwar->isExplored(tileX, tileY);
+}

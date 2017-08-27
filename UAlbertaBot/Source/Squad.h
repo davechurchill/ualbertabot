@@ -40,6 +40,12 @@ class Squad
 	TransportManager    _transportManager;
     TankManager         _tankManager;
     MedicManager        _medicManager;
+	const BotMicroConfiguration& _microConfiguration;
+	const BotSparCraftConfiguration& _sparcraftConfiguration;
+	const BotDebugConfiguration& _debugConfiguration;
+	bool				_rushModeEnabled;
+	BWAPI::UnitType		_rushUnitType = BWAPI::UnitTypes::Protoss_Dark_Templar;
+	int					_allowedRushUnitLoses = 0;
 
 	std::map<BWAPI::Unit, bool>	_nearEnemy;
 	BWAPI::Position _lastRegroupPosition;
@@ -66,7 +72,10 @@ public:
 		shared_ptr<UnitInfoManager> unitInfo,
 		shared_ptr<BaseLocationManager> bases,
 		shared_ptr<MapTools> mapTools,
-		std::shared_ptr<AKBot::Logger> logger);
+		std::shared_ptr<AKBot::Logger> logger,
+		const BotMicroConfiguration& microConfiguration,
+		const BotSparCraftConfiguration& sparcraftConfiguration,
+		const BotDebugConfiguration& debugConfiguration);
     ~Squad();
 
 	void                update(shared_ptr<MapTools> map, int currentFrame);
@@ -102,5 +111,12 @@ public:
 	bool isNearEnemy(const BWAPI::Unit& unit) const;
 
 	BWAPI::Position getLastRegroupPosition() const { return _lastRegroupPosition; };
+
+	bool getRushModeEnabled() { return _rushModeEnabled; }
+	void setRushModeEnabled(bool value) { _rushModeEnabled = value; }
+	BWAPI::UnitType	getRushUnitType() { return _rushUnitType; }
+	void setRushUnitType(BWAPI::UnitType rushUnit) { _rushUnitType = rushUnit; }
+	int getAllowedRushUnitLoses() { return _allowedRushUnitLoses; }
+	void setAllowedRushUnitLoses(int value) { _allowedRushUnitLoses = value; }
 };
 }

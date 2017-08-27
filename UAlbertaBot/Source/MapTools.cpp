@@ -282,6 +282,13 @@ bool MapTools::isWalkable(const BWAPI::TilePosition & tile) const
     return _walkable[tile.x][tile.y];
 }
 
+bool MapTools::isExplored(const BWAPI::TilePosition & tile) const
+{
+	UAB_ASSERT(tile.isValid(), "Checking explored of invalid tile");
+
+	return _mapInformation->isExplored(tile.x, tile.y);
+}
+
 bool MapTools::isWalkable(const BWAPI::Position & pos) const
 {
     return isWalkable(BWAPI::TilePosition(pos));

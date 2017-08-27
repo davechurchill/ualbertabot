@@ -20,13 +20,17 @@ class ProductionManager
     BuildOrderQueue     _queue;
     BWAPI::TilePosition _predictedTilePosition;
     bool                _enemyCloakedDetected;
+	bool                _enemyCloakedDetectedThisFrame;
+	bool				_emptyQueueDetected;
+	bool                _queueDeadlockDetected;
     bool                _assignedWorkerForThisBuilding;
     bool                _haveLocationForThisBuilding;
 	shared_ptr<StrategyManager> _strategyManager;
 	shared_ptr<UnitInfoManager> _unitInfo;
 	shared_ptr<WorkerManager> _workerManager;
 	shared_ptr<AKBot::OpponentView> _opponentView;
-	shared_ptr<AKBot::Logger> _logger;
+	bool				_useBuildOrderSearch;
+	const BotDebugConfiguration& _debugConfiguration;
     
     BWAPI::Unit         getClosestUnitToPosition(const std::vector<BWAPI::Unit> & units,BWAPI::Position closestTo);
     BWAPI::Unit         selectUnitOfType(BWAPI::UnitType type,BWAPI::Position closestTo = BWAPI::Position(0,0));
@@ -56,7 +60,7 @@ public:
 		shared_ptr<UnitInfoManager> unitInfo,
 		shared_ptr<BaseLocationManager> bases,
 		shared_ptr<MapTools> mapTools,
-		shared_ptr<AKBot::Logger> logger);
+		const BotDebugConfiguration& debugConfiguration);
     
     void        onStart();
     void        update(int currentFrame);
@@ -69,6 +73,11 @@ public:
 	const shared_ptr<BOSSManager> getBOSSManager() const { return _bossManager; }
 	const shared_ptr<AKBot::OpponentView> getOpponentView() const { return _opponentView; }
 	const BuildOrderQueue& getBuildOrderQueue() const { return _queue; }
+	const bool getEmptyQueueDetected() const { return _emptyQueueDetected; }
+	const bool getQueueDeadlockDetected() const { return _queueDeadlockDetected; }
+	const bool getCloackedUnitDetectedThisFrame() const { return _enemyCloakedDetectedThisFrame; }
+	const bool getUseBuildOrderSearch() const { return _useBuildOrderSearch; }
+	void setUseBuildOrderSearch(bool value) { _useBuildOrderSearch = value; }
 };
 
 

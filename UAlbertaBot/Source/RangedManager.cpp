@@ -6,8 +6,12 @@
 
 using namespace UAlbertaBot;
 
-RangedManager::RangedManager(shared_ptr<AKBot::OpponentView> opponentView, shared_ptr<BaseLocationManager> bases)
+RangedManager::RangedManager(
+	shared_ptr<AKBot::OpponentView> opponentView,
+	shared_ptr<BaseLocationManager> bases,
+	const BotMicroConfiguration& microConfiguration)
 	: MicroManager(opponentView, bases)
+	, _microConfiguration(microConfiguration)
 { 
 }
 
@@ -38,15 +42,16 @@ void RangedManager::assignTargets(const std::vector<BWAPI::Unit> & targets, int 
 			{
 				// find the best target for this zealot
 				BWAPI::Unit target = getTarget(rangedUnit, rangedUnitTargets);
-                
-                if (target && Config::Debug::DrawUnitTargetInfo) 
-	            {
-		            BWAPI::Broodwar->drawLineMap(rangedUnit->getPosition(), rangedUnit->getTargetPosition(), BWAPI::Colors::Purple);
-	            }
 
+				// Code below now moved to CombatCommanderDebug
+				// I don't know how target variable and rangedUnit->getTargetPosition() related right now
+                /*if (target && _microConfiguration.DrawUnitTargetInfo) 
+	            {
+		            canvas.drawLineMap(rangedUnit->getPosition(), rangedUnit->getTargetPosition(), BWAPI::Colors::Purple);
+	            }*/
 
 				// attack it
-                if (Config::Micro::KiteWithRangedUnits)
+                if (_microConfiguration.KiteWithRangedUnits)
                 {
                     if (rangedUnit->getType() == BWAPI::UnitTypes::Zerg_Mutalisk || rangedUnit->getType() == BWAPI::UnitTypes::Terran_Vulture)
                     {
@@ -54,7 +59,7 @@ void RangedManager::assignTargets(const std::vector<BWAPI::Unit> & targets, int 
                     }
                     else
                     {
-                        Micro::SmartKiteTarget(rangedUnit, target, currentFrame);
+                        Micro::SmartKiteTarget(rangedUnit, target, currentFrame, _microConfiguration.KiteLongerRangedUnits);
                     }
                 }
                 else

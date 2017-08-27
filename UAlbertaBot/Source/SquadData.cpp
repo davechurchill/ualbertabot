@@ -10,13 +10,19 @@ SquadData::SquadData(
 	shared_ptr<UnitInfoManager> unitInfo,
 	shared_ptr<BaseLocationManager> bases,
 	shared_ptr<MapTools> mapTools,
-	std::shared_ptr<AKBot::Logger> logger)
+	std::shared_ptr<AKBot::Logger> logger,
+	const BotMicroConfiguration& microConfiguration,
+	const BotSparCraftConfiguration& sparcraftConfiguration,
+	const BotDebugConfiguration& debugConfiguration)
 	: _locationProvider(locationProvider)
 	, _opponentView(opponentView)
 	, _unitInfo(unitInfo)
 	, _bases(bases)
 	, _mapTools(mapTools)
 	, _logger(logger)
+	, _microConfiguration(microConfiguration)
+	, _sparcraftConfiguration(sparcraftConfiguration)
+	, _debugConfiguration(debugConfiguration)
 {
 	
 }
@@ -65,6 +71,30 @@ void UAlbertaBot::SquadData::onUnitRemoved(UnitHandler handler)
 	onRemoveHandler = handler;
 }
 
+void UAlbertaBot::SquadData::setRushModeEnabled(bool value)
+{
+	for (auto& squadEntry : _squads)
+	{
+		squadEntry.second.setRushModeEnabled(value);
+	}
+}
+
+void UAlbertaBot::SquadData::setRushUnitType(BWAPI::UnitType rushUnit)
+{
+	for (auto& squadEntry : _squads)
+	{
+		squadEntry.second.setRushUnitType(rushUnit);
+	}
+}
+
+void UAlbertaBot::SquadData::setAllowedRushUnitLoses(int value)
+{
+	for (auto& squadEntry : _squads)
+	{
+		squadEntry.second.setAllowedRushUnitLoses(value);
+	}
+}
+
 bool SquadData::squadExists(const std::string & squadName)
 {
     return _squads.find(squadName) != _squads.end();
@@ -78,7 +108,19 @@ void SquadData::addSquad(const std::string & squadName, Squad & squad)
 
 void SquadData::addSquad(const std::string & squadName, const SquadOrder & squadOrder, size_t priority)
 {
-	Squad squad(squadName, squadOrder, priority, _locationProvider, _opponentView, _unitInfo, _bases, _mapTools, _logger);
+	Squad squad(
+		squadName,
+		squadOrder,
+		priority,
+		_locationProvider,
+		_opponentView,
+		_unitInfo,
+		_bases,
+		_mapTools,
+		_logger,
+		_microConfiguration,
+		_sparcraftConfiguration,
+		_debugConfiguration);
 	addSquad(squadName, squad);
 }
 

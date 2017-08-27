@@ -6,12 +6,14 @@
 #include "AutoObserver.h"
 #include "ArenaPlayer.h"
 #include "BWAPIScreenCanvas.h"
+#include "BotConfiguration.h"
 
 namespace UAlbertaBot
 {
 
 class UAlbertaBot_Arena : public BotModule
 {
+	const BotConfiguration&			_configuration;
     std::shared_ptr<ArenaPlayer>    _arenaPlayer;
     std::string                     _startDate;
     std::string                     _resultString;
@@ -27,7 +29,7 @@ class UAlbertaBot_Arena : public BotModule
 
 public:
 
-    UAlbertaBot_Arena();
+    UAlbertaBot_Arena(const BotConfiguration& configuration);
 
     void    printInfo();
 

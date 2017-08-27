@@ -12,7 +12,7 @@ ProductionManager::ProductionManager(
 	shared_ptr<UnitInfoManager> unitInfo,
 	shared_ptr<BaseLocationManager> bases,
 	shared_ptr<MapTools> mapTools,
-	shared_ptr<AKBot::Logger> logger)
+	const BotDebugConfiguration& debugConfiguration)
 	: _opponentView(opponentView)
 	, _workerManager(workerManager)
 	, _bossManager(bossManager)
@@ -22,7 +22,7 @@ ProductionManager::ProductionManager(
 	, _haveLocationForThisBuilding   (false)
 	, _enemyCloakedDetected          (false)
 	, _strategyManager(strategyManager)
-	, _logger(logger)
+	, _debugConfiguration(debugConfiguration)
 {
     
 }
@@ -39,7 +39,7 @@ void ProductionManager::setBuildOrder(const BuildOrder & buildOrder)
 
 void ProductionManager::performBuildOrderSearch(int currentFrame)
 {	
-    if (!Config::Modules::UsingBuildOrderSearch || !canPlanBuildOrderNow())
+    if (!canPlanBuildOrderNow())
     {
         return;
     }
@@ -78,31 +78,29 @@ void ProductionManager::update(int currentFrame)
 	manageBuildOrderQueue(currentFrame);
     
 	// if nothing is currently building, get a new goal from the strategy manager
+	_emptyQueueDetected = false;
 	if ((_queue.size() == 0) && (currentFrame > 10))
 	{
-        if (Config::Debug::DrawBuildOrderSearchInfo)
-        {
-		    BWAPI::Broodwar->drawTextScreen(150, 10, "Nothing left to build, new search!");
-        }
-
-		performBuildOrderSearch(currentFrame);
+		_emptyQueueDetected = true;
+		if (getUseBuildOrderSearch())
+		{
+			performBuildOrderSearch(currentFrame);
+		}
 	}
 
 	auto self = _opponentView->self();
 	auto ourRace = self->getRace();
 	
 	// detect if there's a build order deadlock once per second
+	_queueDeadlockDetected = false;
 	if ((currentFrame % 24 == 0) && detectBuildOrderDeadlock())
 	{
-        if (Config::Debug::DrawBuildOrderSearchInfo)
-        {
-		    _logger->log("Supply deadlock detected, building supply!");
-        }
-
+		_queueDeadlockDetected = true;
 		_queue.queueAsHighestPriority(MetaType(ourRace.getSupplyProvider()), true);
 	}
 
 	// if they have cloaked units get a new goal asap
+	_enemyCloakedDetectedThisFrame = false;
 	if (!_enemyCloakedDetected && _unitInfo->enemyHasCloakedUnits())
 	{
 		if (ourRace == BWAPI::Races::Protoss)
@@ -131,13 +129,9 @@ void ProductionManager::update(int currentFrame)
 			    _queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Engineering_Bay), true);
 		    }
         }
-        
-        if (Config::Debug::DrawBuildOrderSearchInfo)
-        {
-		    _logger->log("Enemy Cloaked Unit Detected!");
-        }
 
 		_enemyCloakedDetected = true;
+		_enemyCloakedDetectedThisFrame = true;
 	}
 
     _buildingManager->update(currentFrame);
@@ -152,7 +146,7 @@ void ProductionManager::onUnitDestroy(BWAPI::Unit unit, int currentFrame)
 		return;
 	}
 		
-	if (Config::Modules::UsingBuildOrderSearch)
+	if (getUseBuildOrderSearch())
 	{
 		// if it's a worker or a building, we need to re-search for the current goal
 		if ((unit->getType().isWorker() && !_workerManager->isWorkerScout(unit)) || unit->getType().isBuilding())
@@ -521,11 +515,11 @@ void ProductionManager::predictWorkerMovement(const Building & b)
 	
 	// draw a box where the building will be placed
 	int x1 = _predictedTilePosition.x * 32;
-	int x2 = x1 + (b.type.tileWidth()) * 32;
 	int y1 = _predictedTilePosition.y * 32;
-	int y2 = y1 + (b.type.tileHeight()) * 32;
-	if (Config::Debug::DrawWorkerInfo) 
+	if (_debugConfiguration.DrawWorkerInfo)
     {
+		int x2 = x1 + (b.type.tileWidth()) * 32;
+		int y2 = y1 + (b.type.tileHeight()) * 32;
         BWAPI::Broodwar->drawBoxMap(x1, y1, x2, y2, BWAPI::Colors::Blue, false);
     }
 

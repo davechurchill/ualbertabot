@@ -2,6 +2,7 @@
 #include "Micro.h"
 #include <BWAPI/Game.h>
 #include <BWAPI/Unitset.h>
+#include <assert.h>
 
 using namespace UAlbertaBot;
 
@@ -19,60 +20,70 @@ WorkerData::WorkerData(std::shared_ptr<AKBot::Logger> logger)
 
 void WorkerData::workerDestroyed(BWAPI::Unit unit)
 {
-    if (!unit) { return; }
+    if (!unit) { 
+		return;
+	}
 
     clearPreviousJob(unit);
     _workers.erase(unit);
 }
 
-void WorkerData::addWorker(BWAPI::Unit unit)
+void WorkerData::registerWorker(BWAPI::Unit unit)
 {
-    if (!unit) { return; }
+    if (!unit) { 
+		return;
+	}
 
     _workers.insert(unit);
     _workerJobMap[unit] = Default;
 }
 
-void WorkerData::addWorker(BWAPI::Unit unit,WorkerJob job,BWAPI::Unit jobUnit, int currentFrame)
+void WorkerData::addWorker(BWAPI::Unit worker, WorkerJob job, BWAPI::Unit jobUnit, int currentFrame)
 {
-    if (!unit || !jobUnit) { return; }
+	if (!worker || !jobUnit) { 
+		return;
+	}
 
-    UAB_ASSERT(_workers.find(unit) == _workers.end(),"Worker was already in the set");
+	UAB_ASSERT(_workers.find(worker) == _workers.end(), "Worker was already in the set");
 
-    _workers.insert(unit);
-    setWorkerJob(unit,job,jobUnit, currentFrame);
+	_workers.insert(worker);
+	setWorkerJob(worker, job, jobUnit, currentFrame);
 }
 
-void WorkerData::addWorker(BWAPI::Unit unit,enum WorkerJob job,BWAPI::UnitType jobUnitType)
+void WorkerData::addWorker(BWAPI::Unit unit, enum WorkerJob job, BWAPI::UnitType jobUnitType)
 {
-    if (!unit) { return; }
+	if (!unit) {
+		return;
+	}
 
-    UAB_ASSERT(_workers.find(unit) == _workers.end(),"Worker was already in the set");
-    _workers.insert(unit);
-    setWorkerJob(unit,job,jobUnitType);
+	UAB_ASSERT(_workers.find(unit) == _workers.end(), "Worker was already in the set");
+	_workers.insert(unit);
+	setWorkerJob(unit, job, jobUnitType);
 }
 
-void WorkerData::addDepot(BWAPI::Unit unit)
+void WorkerData::registerResourceDepot(BWAPI::Unit unit)
 {
-    if (!unit) { return; }
+	if (!unit) { return; }
 
-    UAB_ASSERT(_depots.find(unit) == _depots.end(),"Depot was already in the set");
-    _depots.insert(unit);
-    _depotWorkerCount[unit] = 0;
+	UAB_ASSERT(_depots.find(unit) == _depots.end(), "Depot was already in the set");
+	_depots.insert(unit);
+	_depotWorkerCount[unit] = 0;
 }
 
-void WorkerData::removeDepot(BWAPI::Unit unit, int currentFrame)
+void WorkerData::unregisterResourceDepot(BWAPI::Unit resourceDepot, int currentFrame)
 {
-    if (!unit) { return; }
+    if (!resourceDepot) {
+		return;
+	}
 
-    _depots.erase(unit);
-    _depotWorkerCount.erase(unit);
+    _depots.erase(resourceDepot);
+    _depotWorkerCount.erase(resourceDepot);
 
     // re-balance workers in here
     for (auto & worker : _workers)
     {
         // if a worker was working at this depot
-        if (_workerDepotMap[worker] == unit)
+        if (_workerDepotMap[worker] == resourceDepot)
         {
             setWorkerJob(worker,Idle,nullptr, currentFrame);
         }
@@ -504,7 +515,7 @@ int WorkerData::getNumAssignedWorkers(BWAPI::Unit unit) const
 
 char WorkerData::getJobCode(BWAPI::Unit unit) const
 {
-    if (!unit) { return 'X'; }
+    if (!unit) { return 'N'; }
 
     WorkerData::WorkerJob j = getWorkerJob(unit);
 

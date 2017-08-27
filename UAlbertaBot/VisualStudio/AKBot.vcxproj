@@ -26,6 +26,7 @@
     <ClCompile Include="..\Source\BaseLocation.cpp" />
     <ClCompile Include="..\Source\BaseLocationManager.cpp" />
     <ClCompile Include="..\Source\BOSSManager.cpp" />
+    <ClCompile Include="..\Source\BotConfiguration.cpp" />
     <ClCompile Include="..\Source\BotFactory.cpp" />
     <ClCompile Include="..\Source\BotModule.cpp" />
     <ClCompile Include="..\Source\BotPlayer.cpp" />
@@ -39,7 +40,6 @@
     <ClCompile Include="..\Source\CombatCommander.cpp" />
     <ClCompile Include="..\Source\CombatSimulation.cpp" />
     <ClCompile Include="..\Source\Common.cpp" />
-    <ClCompile Include="..\Source\Config.cpp" />
     <ClCompile Include="..\Source\DebugTools.cpp" />
     <ClCompile Include="..\Source\debug\BaseLocationManagerDebug.cpp" />
     <ClCompile Include="..\Source\debug\BWAPIPrintLogger.cpp" />
@@ -91,6 +91,7 @@
     <ClInclude Include="..\Source\BaseLocation.h" />
     <ClInclude Include="..\Source\BaseLocationManager.h" />
     <ClInclude Include="..\Source\BOSSManager.h" />
+    <ClInclude Include="..\Source\BotConfiguration.h" />
     <ClInclude Include="..\Source\BotFactory.h" />
     <ClInclude Include="..\Source\BotModule.h" />
     <ClInclude Include="..\Source\BotPlayer.h" />
@@ -104,7 +105,6 @@
     <ClInclude Include="..\Source\CombatCommander.h" />
     <ClInclude Include="..\Source\CombatSimulation.h" />
     <ClInclude Include="..\Source\Common.h" />
-    <ClInclude Include="..\Source\Config.h" />
     <ClInclude Include="..\Source\DebugTools.h" />
     <ClInclude Include="..\Source\debug\BaseLocationManagerDebug.h" />
     <ClInclude Include="..\Source\debug\BWAPIPrintLogger.h" />
@@ -161,9 +161,9 @@
     <ClInclude Include="..\source\WorkerManager.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>UAlbertaBot</ProjectName>
+    <ProjectName>AKBot</ProjectName>
     <ProjectGuid>{572AF06A-4078-4C5A-ABCE-B29C84050E6D}</ProjectGuid>
-    <RootNamespace>ExampleAIModule</RootNamespace>
+    <RootNamespace>AKBot</RootNamespace>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>

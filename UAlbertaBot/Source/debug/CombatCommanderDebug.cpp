@@ -2,15 +2,18 @@
 
 namespace AKBot
 {
-	CombatCommanderDebug::CombatCommanderDebug(shared_ptr<CombatCommander> combatCommander)
+	CombatCommanderDebug::CombatCommanderDebug(
+		shared_ptr<CombatCommander> combatCommander,
+		const BotDebugConfiguration& debugConfiguration)
 		: _combatCommander(combatCommander)
+		, _debugConfiguration(debugConfiguration)
 	{
 	}
 	void CombatCommanderDebug::draw(ScreenCanvas & canvas) const
 	{
 		auto& squadData = _combatCommander->getSquadData();
 		drawSquadData(canvas, squadData);
-		if (Config::Debug::DrawSquadInfo)
+		if (_debugConfiguration.DrawSquadInfo)
 		{
 			drawSquadInformation(canvas, squadData, 200, 30);
 		}
@@ -77,15 +80,15 @@ namespace AKBot
 			int bottom = unit->getType().dimensionDown();
 
 			auto color = squad.isNearEnemy(unit)
-				? Config::Debug::ColorUnitNearEnemy
-				: Config::Debug::ColorUnitNotNearEnemy;
+				? _debugConfiguration.ColorUnitNearEnemy
+				: _debugConfiguration.ColorUnitNotNearEnemy;
 			canvas.drawBoxMap(x - left, y - top, x + right, y + bottom, color);
 		}
 	}
 
 	void CombatCommanderDebug::drawRegroupPosition(AKBot::ScreenCanvas& canvas, BWAPI::Position regroupPosition) const
 	{
-		if (Config::Debug::DrawCombatSimulationInfo)
+		if (_debugConfiguration.DrawCombatSimulationInfo)
 		{
 			canvas.drawTextScreen(200, 150, "REGROUP");
 		}
@@ -95,7 +98,7 @@ namespace AKBot
 
 	void CombatCommanderDebug::drawSquad(AKBot::ScreenCanvas& canvas, const Squad& squad) const
 	{
-		if (Config::Debug::DrawSquadInfo)
+		if (_debugConfiguration.DrawSquadInfo)
 		{
 			drawRegroupStatus(canvas, squad);
 			drawNearbyUnits(canvas, squad);
@@ -107,7 +110,7 @@ namespace AKBot
 		}
 		else
 		{
-			if (Config::Debug::DrawUnitTargetInfo)
+			if (_debugConfiguration.DrawUnitTargetInfo)
 			{
 				drawOrder(canvas, squad, squad.getSquadOrder());
 			}
@@ -117,26 +120,44 @@ namespace AKBot
 	void CombatCommanderDebug::drawOrder(AKBot::ScreenCanvas& canvas, const Squad& squad, const SquadOrder& order) const
 	{
 		auto& meleeManager = squad.getMeleeManager();
-		for (auto & meleeUnit : meleeManager.getUnits())
+		auto& rangedManager = squad.getRangedManager();
+		auto& tankManager = squad.getTankManager();
+		auto& transportManager = squad.getTransportManager();
+		if (_debugConfiguration.DrawUnitTargetInfo)
 		{
-			if (Config::Debug::DrawUnitTargetInfo)
+			for (auto & meleeUnit : meleeManager.getUnits())
 			{
 				canvas.drawLineMap(
 					meleeUnit->getPosition().x,
 					meleeUnit->getPosition().y,
 					meleeUnit->getTargetPosition().x,
 					meleeUnit->getTargetPosition().y,
-					Config::Debug::ColorLineTarget);
+					_debugConfiguration.ColorLineTarget);
+			}
+
+			for (auto & rangedUnit : rangedManager.getUnits())
+			{
+				canvas.drawLineMap(rangedUnit->getPosition(), rangedUnit->getTargetPosition(), BWAPI::Colors::Purple);
+			}
+
+			for (auto & unit : tankManager.getUnits())
+			{
+				canvas.drawLineMap(unit->getPosition(), unit->getTargetPosition(), BWAPI::Colors::Purple);
+			}
+
+			for (auto & unit : transportManager.getUnits())
+			{
+				canvas.drawLineMap(unit->getPosition(), unit->getTargetPosition(), BWAPI::Colors::Purple);
 			}
 		}
 		
 		drawOrderText(canvas, meleeManager, order);
-		drawOrderText(canvas, squad.getRangedManager(), order);
-		drawOrderText(canvas, squad.getTankManager(), order);
+		drawOrderText(canvas, rangedManager, order);
+		drawOrderText(canvas, tankManager, order);
 		drawOrderText(canvas, squad.getMedicManager(), order);
 		drawOrderText(canvas, squad.getDetectorManager(), order);
 
-		drawTransportInformation(canvas, squad.getTransportManager(), 0, 0);
+		drawTransportInformation(canvas, transportManager, 0, 0);
 	}
 	
 	void CombatCommanderDebug::drawOrderText(AKBot::ScreenCanvas& canvas, const MicroManager& manager, const SquadOrder & order) const

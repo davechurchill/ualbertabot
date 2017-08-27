@@ -4,7 +4,7 @@
 
 using namespace UAlbertaBot;
 
-BaseLocationManager::BaseLocationManager(std::shared_ptr<AKBot::OpponentView> opponentView)
+BaseLocationManager::BaseLocationManager(shared_ptr<AKBot::OpponentView> opponentView)
     : _tileBaseLocations(BWAPI::Broodwar->mapWidth(), std::vector<BaseLocation *>(BWAPI::Broodwar->mapHeight(), nullptr))
 	, _opponentView(opponentView)
 	, _baseLocationPtrs(0)

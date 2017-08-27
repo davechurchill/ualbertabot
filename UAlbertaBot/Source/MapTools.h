@@ -51,6 +51,7 @@ public:
     bool                    isConnected(const BWAPI::Position & from, const BWAPI::Position & to) const;
     bool                    isWalkable(const BWAPI::TilePosition & tile) const;
     bool                    isWalkable(const BWAPI::Position & pos) const;
+	bool                    isExplored(const BWAPI::TilePosition & tile) const;
     bool                    isBuildable(BWAPI::TilePosition tile, BWAPI::UnitType type) const;
     bool                    isBuildableTile(BWAPI::TilePosition tile) const;
     bool                    isDepotBuildableTile(BWAPI::TilePosition tile) const;

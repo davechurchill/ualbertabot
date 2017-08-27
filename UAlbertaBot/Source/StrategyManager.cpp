@@ -12,13 +12,15 @@ StrategyManager::StrategyManager(
 	shared_ptr<AKBot::OpponentView> opponentView,
 	shared_ptr<UnitInfoManager> unitInfo,
 	shared_ptr<BaseLocationManager> bases,
-	std::shared_ptr<AKBot::Logger> logger)
+	std::shared_ptr<AKBot::Logger> logger,
+	BotStrategyConfiguration& strategyConfiguration)
 	: _strategyName("")
 	, _opponentView(opponentView)
 	, _unitInfo(unitInfo)
 	, _bases(bases)
 	, _emptyBuildOrder(opponentView->self()->getRace())
 	, _logger(logger)
+	, _strategyConfiguration(strategyConfiguration)
 {
 }
 
@@ -313,7 +315,7 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal(int currentFrame) co
 
 void StrategyManager::readResults()
 {
-    if (!Config::Modules::UsingStrategyIO)
+    if (!_strategyConfiguration.UsingStrategyIO)
     {
         return;
     }
@@ -328,7 +330,7 @@ void StrategyManager::readResults()
     std::string enemyName = enemy->getName();
     std::replace(enemyName.begin(), enemyName.end(), ' ', '_');
 
-    std::string enemyResultsFile = Config::Strategy::ReadDir + enemyName + ".txt";
+    std::string enemyResultsFile = _strategyConfiguration.ReadDir + enemyName + ".txt";
     
     std::string strategyName;
     int wins = 0;
@@ -348,14 +350,16 @@ void StrategyManager::readResults()
 
             //_logger.log("Results Found: %s %d %d", strategyName.c_str(), wins, losses);
 
-            if (_strategies.find(strategyName) == _strategies.end())
+			auto strategyPtr = _strategies.find(strategyName);
+            if (strategyPtr == _strategies.end())
             {
                 //_logger.log("Warning: Results file has unknown Strategy: %s", strategyName.c_str());
             }
             else
             {
-                _strategies[strategyName]._wins = wins;
-                _strategies[strategyName]._losses = losses;
+				auto& strategy = strategyPtr->second;
+                strategy._wins = wins;
+                strategy._losses = losses;
             }
         }
 
@@ -369,7 +373,7 @@ void StrategyManager::readResults()
 
 void StrategyManager::writeResults()
 {
-    if (!Config::Modules::UsingStrategyIO)
+    if (!_strategyConfiguration.UsingStrategyIO)
     {
         return;
     }
@@ -383,7 +387,7 @@ void StrategyManager::writeResults()
 	std::string enemyName = Global::getEnemy()->getName();
     std::replace(enemyName.begin(), enemyName.end(), ' ', '_');
 
-    std::string enemyResultsFile = Config::Strategy::WriteDir + enemyName + ".txt";
+    std::string enemyResultsFile = _strategyConfiguration.WriteDir + enemyName + ".txt";
 
     std::stringstream ss;
 
@@ -399,7 +403,7 @@ void StrategyManager::writeResults()
 
 void StrategyManager::onEnd(const bool isWinner)
 {
-    if (!Config::Modules::UsingStrategyIO)
+    if (!_strategyConfiguration.UsingStrategyIO)
     {
         return;
     }
@@ -421,7 +425,7 @@ void StrategyManager::setLearnedStrategy()
     // we are currently not using this functionality for the competition so turn it off 
     return;
 
-    if (!Config::Modules::UsingStrategyIO)
+    if (!_strategyConfiguration.UsingStrategyIO)
     {
         return;
     }
@@ -434,7 +438,7 @@ void StrategyManager::setLearnedStrategy()
     double winRate = strategyGamesPlayed > 0 ? currentStrategy._wins / static_cast<double>(strategyGamesPlayed) : 0;
 
     // if we are using an enemy specific strategy
-    if (Config::Strategy::FoundEnemySpecificStrategy)
+    if (_strategyConfiguration.FoundEnemySpecificStrategy)
     {        
         return;
     }
@@ -450,7 +454,7 @@ void StrategyManager::setLearnedStrategy()
     // get the total number of games played so far with this race
     for (auto & kv : _strategies)
     {
-        Strategy & strategy = kv.second;
+        auto& strategy = kv.second;
         if (strategy._race == _opponentView->self()->getRace())
         {
             totalGamesPlayed += strategy._wins + strategy._losses;
@@ -484,7 +488,7 @@ void StrategyManager::setLearnedStrategy()
     _strategyName = bestUCBStrategy;
 
 	// This is to beckward compatibility to be able change some places later on.
-	Config::Strategy::StrategyName = bestUCBStrategy;
+	_strategyConfiguration.StrategyName = bestUCBStrategy;
 }
 
 void UAlbertaBot::StrategyManager::setPreferredStrategy(std::string strategy)

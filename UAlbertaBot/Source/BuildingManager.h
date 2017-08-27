@@ -7,6 +7,7 @@
 #include "BaseLocationManager.h"
 #include "WorkerManager.h"
 #include "Logger.h"
+#include "BotConfiguration.h"
 
 namespace UAlbertaBot
 {
@@ -19,6 +20,7 @@ class BuildingManager
 	shared_ptr<WorkerManager> _workerManager;
 	shared_ptr<MapTools> _mapTools;
 	std::shared_ptr<AKBot::Logger> _logger;
+	const BotMacroConfiguration& _macroConfiguration;
 
     bool            _debugMode;
     int             _reservedMinerals;				// minerals reserved for planned buildings
@@ -43,7 +45,8 @@ public:
 		shared_ptr<BaseLocationManager> bases,
 		shared_ptr<WorkerManager> workerManager,
 		shared_ptr<MapTools> mapTools,
-		shared_ptr<AKBot::Logger> logger);
+		shared_ptr<AKBot::Logger> logger,
+		const BotMacroConfiguration& macroConfiguration);
 
     void                update(int currentFrame);
     void                addBuildingTask(BWAPI::UnitType type,BWAPI::TilePosition desiredLocation);

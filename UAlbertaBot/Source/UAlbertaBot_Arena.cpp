@@ -6,7 +6,6 @@
  */
 
 #include "UAlbertaBot_Arena.h"
-#include "Config.h"
 #include "ParseUtils.h"
 #include "DebugTools.h"
 #include "Micro.h"
@@ -18,8 +17,11 @@
 using namespace UAlbertaBot;
 using namespace AKBot;
 
-UAlbertaBot_Arena::UAlbertaBot_Arena()
-    : _results      (3, 0)  // 0 = wins, 1 = losses, 2 = draws
+
+UAlbertaBot_Arena::UAlbertaBot_Arena(
+	const BotConfiguration& configuration)
+    : _configuration(configuration)
+	, _results      (3, 0)  // 0 = wins, 1 = losses, 2 = draws
     , _battles      (0)
     , _prevIsBattle (false)
 {
@@ -28,15 +30,13 @@ UAlbertaBot_Arena::UAlbertaBot_Arena()
 
 // This gets called when the bot starts!
 void UAlbertaBot_Arena::onStart()
-{
-    // Parse the bot's configuration file if it has one, change this file path to where your config file is
-    // Any relative path name will be relative to Starcraft installation folder
-	auto configurationFile = ParseUtils::FindConfigurationLocation(Config::ConfigFile::ConfigFileLocation);
-    ParseUtils::ParseConfigFile(configurationFile);
-    
+{  
+	auto bwapiOptions = _configuration.BWAPIOptions;
+	auto botInfo = _configuration.BotInfo;
+
     // Set our BWAPI options here    
-    BWAPI::Broodwar->setLocalSpeed(Config::BWAPIOptions::SetLocalSpeed);
-    BWAPI::Broodwar->setFrameSkip(Config::BWAPIOptions::SetFrameSkip);
+    BWAPI::Broodwar->setLocalSpeed(bwapiOptions.SetLocalSpeed);
+    BWAPI::Broodwar->setFrameSkip(bwapiOptions.SetFrameSkip);
 
     // Set the starting date
     _startDate = Assert::currentDateTime();
@@ -44,19 +44,19 @@ void UAlbertaBot_Arena::onStart()
     // set the arena player
     _arenaPlayer = std::shared_ptr<ArenaPlayer>(new ArenaPlayer_AttackClosest());
 
-    if (Config::BWAPIOptions::EnableCompleteMapInformation)
+    if (bwapiOptions.EnableCompleteMapInformation)
     {
         BWAPI::Broodwar->enableFlag(BWAPI::Flag::CompleteMapInformation);
     }
 
-    if (Config::BWAPIOptions::EnableUserInput)
+    if (bwapiOptions.EnableUserInput)
     {
         BWAPI::Broodwar->enableFlag(BWAPI::Flag::UserInput);
     }
 
-    if (Config::BotInfo::PrintInfoOnStart)
+    if (botInfo.PrintInfoOnStart)
     {
-        BWAPI::Broodwar->printf("Hello! I am %s, written by %s", Config::BotInfo::BotName.c_str(), Config::BotInfo::Authors.c_str());
+        BWAPI::Broodwar->printf("Hello! I am %s, written by %s", botInfo.BotName.c_str(), botInfo.Authors.c_str());
     }
 }
 
@@ -134,7 +134,10 @@ int UAlbertaBot_Arena::winner()
 
 void UAlbertaBot_Arena::drawUnitHPBars(ScreenCanvas& canvas) const
 {
-    if (!Config::Debug::DrawUnitHealthBars) { return; }
+    if (!_configuration.Debug.DrawUnitHealthBars)
+	{
+		return;
+	}
 
     for (const auto & unit : BWAPI::Broodwar->getAllUnits())
     {

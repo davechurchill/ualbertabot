@@ -6,6 +6,7 @@
 #include "OpponentView.h"
 #include "BuildingManager.h"
 #include "Strategy.h"
+#include "BotConfiguration.h"
 
 namespace UAlbertaBot
 {
@@ -21,6 +22,10 @@ class BOSSManager
     double                                  _totalPreviousSearchTime;
     std::vector<MetaPair>                   _previousGoalUnits;
     std::string                             _previousStatus;
+	const BotDebugConfiguration&			_debugConfiguration;
+	bool									_hasExceptionDuringSearch;
+	bool									_noSolutionFound;
+	int										_bossFrameLimit = 160;
 
     SearchPtr                               _smartSearch;
 
@@ -45,7 +50,9 @@ class BOSSManager
 
 public:
 	
-	BOSSManager(shared_ptr<AKBot::OpponentView> opponentView);
+	BOSSManager(
+		shared_ptr<AKBot::OpponentView> opponentView,
+		const BotDebugConfiguration& debugConfiguration);
 
 	void						update(double timeLimit, int currentFrame);
     void                        reset();
@@ -56,6 +63,7 @@ public:
 	const std::vector<MetaPair>& getPreviousGoalUnits() const { return _previousGoalUnits; }
 	double getTotalPreviousSearchTime() const { return _totalPreviousSearchTime; }
 	const BOSS::DFBB_BuildOrderSearchResults& getSavedSearchResults() const { return _savedSearchResults; }
+	bool hasExceptionDuringSearch() const { return _hasExceptionDuringSearch; }
 
     void                        startNewSearch(const std::vector<MetaPair> & goalUnits, shared_ptr<BuildingManager> buildingManager, int currentFrame);
     
@@ -63,6 +71,8 @@ public:
     static std::vector<MetaType>			GetMetaVector(const BOSS::BuildOrder & buildOrder);
 	static BOSS::ActionType					GetActionType(const MetaType & t);
 	static MetaType					        GetMetaType(const BOSS::ActionType & a);
+	void setBOSSSFrameLimit(int value) { _bossFrameLimit = value; }
+	bool getNoSolutionFound() const { return _noSolutionFound; }
 };
 
 }

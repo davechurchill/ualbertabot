@@ -152,7 +152,7 @@ void UAlbertaBot::ScoutManager::harrasEnemyBaseIfPossible(const UAlbertaBot::Bas
 		if (!_scoutUnderAttack)
 		{
 			// if there is a worker nearby, harass it
-			if (Config::Strategy::ScoutHarassEnemy && closestWorker && (_workerScout->getDistance(closestWorker) < 800))
+			if (getScoutHarassEnemy() && closestWorker && (_workerScout->getDistance(closestWorker) < 800))
 			{
 				_scoutStatus = "Harass enemy worker";
 				_currentRegionVertexIndex = -1;
@@ -195,7 +195,7 @@ BWAPI::Unit ScoutManager::closestEnemyWorker()
 
 	BWAPI::Unit geyser = getEnemyGeyser();
 	
-	for (auto & unit : UnitUtil::getEnemyUnits())
+	for (auto & unit : UnitUtil::getEnemyUnits(_opponentView))
 	{
 		if (unit->getType().isWorker() && unit->isConstructing())
 		{
@@ -204,7 +204,7 @@ BWAPI::Unit ScoutManager::closestEnemyWorker()
 	}
 
 	// for each enemy worker
-	for (auto & unit : UnitUtil::getEnemyUnits())
+	for (auto & unit : UnitUtil::getEnemyUnits(_opponentView))
 	{
 		if (unit->getType().isWorker())
 		{
@@ -236,7 +236,7 @@ BWAPI::Unit ScoutManager::getEnemyGeyser()
 
 bool ScoutManager::enemyWorkerInRadius()
 {
-	for (auto & unit : UnitUtil::getEnemyUnits())
+	for (auto & unit : UnitUtil::getEnemyUnits(_opponentView))
 	{
 		if (unit->getType().isWorker() && (unit->getDistance(_workerScout) < 300))
 		{
@@ -250,7 +250,7 @@ bool ScoutManager::enemyWorkerInRadius()
 bool ScoutManager::immediateThreat()
 {
 	std::vector<BWAPI::Unit> enemyAttackingWorkers;
-	for (auto & unit : UnitUtil::getEnemyUnits())
+	for (auto & unit : UnitUtil::getEnemyUnits(_opponentView))
 	{
 		if (unit->getType().isWorker() && unit->isAttacking())
 		{
@@ -263,7 +263,7 @@ bool ScoutManager::immediateThreat()
 		return true;
 	}
 
-	for (auto & unit : UnitUtil::getEnemyUnits())
+	for (auto & unit : UnitUtil::getEnemyUnits(_opponentView))
 	{
 		double dist = unit->getDistance(_workerScout);
 		double range = unit->getType().groundWeapon().maxRange();

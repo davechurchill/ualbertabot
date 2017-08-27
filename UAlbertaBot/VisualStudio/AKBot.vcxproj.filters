@@ -4,9 +4,6 @@
     <ClCompile Include="..\Source\Common.cpp">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Config.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\DebugTools.cpp">
       <Filter>common</Filter>
     </ClCompile>
@@ -178,6 +175,9 @@
     <ClCompile Include="..\Source\debug\GameDebug.cpp">
       <Filter>debug</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\BotConfiguration.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="common">
@@ -207,9 +207,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\Common.h">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Config.h">
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\DebugTools.h">
@@ -418,6 +415,9 @@
     </ClInclude>
     <ClInclude Include="..\Source\debug\GameDebug.h">
       <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\BotConfiguration.h">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

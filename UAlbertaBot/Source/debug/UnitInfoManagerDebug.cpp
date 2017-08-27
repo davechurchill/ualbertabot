@@ -10,8 +10,11 @@ namespace AKBot
 
 	UnitInfoManagerDebug::UnitInfoManagerDebug(
 		shared_ptr<OpponentView> opponentView,
-		shared_ptr<UnitInfoManager> unitInfo)
-		: _opponentView(opponentView), _unitInfo(unitInfo)
+		shared_ptr<UnitInfoManager> unitInfo,
+		const BotDebugConfiguration& debugConfiguration)
+		: _opponentView(opponentView)
+		, _unitInfo(unitInfo)
+		, _debugConfiguration(debugConfiguration)
 	{
 	}
 
@@ -23,7 +26,7 @@ namespace AKBot
 
 	void UnitInfoManagerDebug::drawExtendedInterface(AKBot::ScreenCanvas& canvas) const
 	{
-		if (!Config::Debug::DrawUnitHealthBars)
+		if (!_debugConfiguration.DrawUnitHealthBars)
 		{
 			return;
 		}
@@ -59,7 +62,7 @@ namespace AKBot
 
 	void UnitInfoManagerDebug::drawUnitInformation(AKBot::ScreenCanvas& canvas, int x, int y) const
 	{
-		if (!Config::Debug::DrawEnemyUnitInfo)
+		if (!_debugConfiguration.DrawEnemyUnitInfo)
 		{
 			return;
 		}

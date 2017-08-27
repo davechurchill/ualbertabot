@@ -14,6 +14,7 @@ class WorkerManager
 	shared_ptr<WorkerData>  workerData;
     BWAPI::Unit previousClosestWorker;
 	std::shared_ptr<OpponentView> _opponentView;
+	int _workersPerRefinery = 3;
 
     void        setMineralWorker(BWAPI::Unit unit, int currentFrame);
     
@@ -64,7 +65,7 @@ public:
 
     bool        willHaveResources(int mineralsRequired,int gasRequired,double distance) const;
     void        rebalanceWorkers(int currentFrame);
-
+	void		setWorkersPerRefinery(int value) { _workersPerRefinery = value; }
 };
 
 }

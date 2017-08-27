@@ -11,6 +11,7 @@ using namespace UAlbertaBot;
 using namespace AKBot;
 
 UAlbertaBot_Tournament::UAlbertaBot_Tournament(
+	const BotConfiguration& configuration,
 	shared_ptr<BaseLocationManager> baseLocationManager,
 	shared_ptr<AutoObserver> autoObserver,
 	shared_ptr<StrategyManager> strategyManager,
@@ -19,7 +20,8 @@ UAlbertaBot_Tournament::UAlbertaBot_Tournament(
 	shared_ptr<CombatCommander> combatManager,
 	shared_ptr<GameCommander> gameCommander,
 	shared_ptr<AKBot::GameDebug> gameDebug)
-	: _gameDebug(std::move(gameDebug))
+	: _configuration(configuration)
+	, _gameDebug(std::move(gameDebug))
 	, _baseLocationManager(std::move(baseLocationManager))
 	, _autoObserver(std::move(autoObserver))
 	, _unitInfoManager(std::move(unitInfoManager))
@@ -29,8 +31,6 @@ UAlbertaBot_Tournament::UAlbertaBot_Tournament(
 	, _gameCommander(std::move(gameCommander))
 {
 	// parse the configuration file for the bot's strategies
-	auto configurationFile = ParseUtils::FindConfigurationLocation(Config::ConfigFile::ConfigFileLocation);
-	ParseUtils::ParseStrategy(configurationFile, _strategyManager);
 }
 
 UAlbertaBot_Tournament::~UAlbertaBot_Tournament()
@@ -42,32 +42,34 @@ void UAlbertaBot_Tournament::onStart()
 {
 	// Initialize SparCraft, the combat simulation package
 	SparCraft::init();
-	auto configurationFile = ParseUtils::FindConfigurationLocation(Config::SparCraft::SparCraftConfigFile);
+	auto configurationFile = ParseUtils::FindConfigurationLocation(_configuration.SparCraft.SparCraftConfigFile);
 	SparCraft::AIParameters::Instance().parseFile(configurationFile);
 
 	// Initialize BOSS, the Build Order Search System
 	BOSS::init();
 
 	// Set our BWAPI options here    
-	BWAPI::Broodwar->setLocalSpeed(Config::BWAPIOptions::SetLocalSpeed);
-	BWAPI::Broodwar->setFrameSkip(Config::BWAPIOptions::SetFrameSkip);
+	auto& bwapiOptions = _configuration.BWAPIOptions;
+	BWAPI::Broodwar->setLocalSpeed(bwapiOptions.SetLocalSpeed);
+	BWAPI::Broodwar->setFrameSkip(bwapiOptions.SetFrameSkip);
 
-	if (Config::BWAPIOptions::EnableCompleteMapInformation)
+	if (bwapiOptions.EnableCompleteMapInformation)
 	{
 		BWAPI::Broodwar->enableFlag(BWAPI::Flag::CompleteMapInformation);
 	}
 
-	if (Config::BWAPIOptions::EnableUserInput)
+	if (bwapiOptions.EnableUserInput)
 	{
 		BWAPI::Broodwar->enableFlag(BWAPI::Flag::UserInput);
 	}
 
-	if (Config::BotInfo::PrintInfoOnStart)
+	auto& botInfoOptions = _configuration.BotInfo;
+	if (botInfoOptions.PrintInfoOnStart)
 	{
-		BWAPI::Broodwar->printf("Hello! I am %s, written by %s", Config::BotInfo::BotName.c_str(), Config::BotInfo::Authors.c_str());
+		BWAPI::Broodwar->printf("Hello! I am %s, written by %s", botInfoOptions.BotName.c_str(), botInfoOptions.Authors.c_str());
 	}
 
-	if (Config::Modules::UsingStrategyIO)
+	if (_configuration.Strategy.UsingStrategyIO)
 	{
 		_strategyManager->readResults();
 		_strategyManager->setLearnedStrategy();
@@ -78,31 +80,34 @@ void UAlbertaBot_Tournament::onStart()
 	_baseLocationManager->onStart(_mapTools);
 	_gameCommander->onStart();
 
-	Micro::SetOnAttackUnit([this](const BWAPI::Unit&attacker, const BWAPI::Unit&target)
+	if (_configuration.Debug.DrawUnitTargetInfo)
 	{
-		auto& canvas = this->getCanvas();
-		Micro::drawAction(canvas, attacker->getPosition(), target->getPosition(), Micro::AttackUnitColor);
-	});
-	Micro::SetOnAttackMove([this](const BWAPI::Unit&attacker, const BWAPI::Position &targetPosition)
-	{
-		auto& canvas = this->getCanvas();
-		Micro::drawAction(canvas, attacker->getPosition(), targetPosition, Micro::AttackMoveColor);
-	});
-	Micro::SetOnMove([this](const BWAPI::Unit&attacker, const BWAPI::Position &targetPosition)
-	{
-		auto& canvas = this->getCanvas();
-		Micro::drawAction(canvas, attacker->getPosition(), targetPosition, Micro::MoveColor);
-	});
-	Micro::SetOnRepair([this](const BWAPI::Unit& unit, const BWAPI::Unit& target)
-	{
-		auto& canvas = this->getCanvas();
-		Micro::drawAction(canvas, unit->getPosition(), target->getPosition(), Micro::RepairColor);
-	});
-	Micro::SetOnRightClick([this](const BWAPI::Unit& unit, const BWAPI::Unit& target)
-	{
-		auto& canvas = this->getCanvas();
-		Micro::drawAction(canvas, unit->getPosition(), target->getPosition(), Micro::RightClickColor);
-	});
+		Micro::SetOnAttackUnit([this](const BWAPI::Unit&attacker, const BWAPI::Unit&target)
+		{
+			auto& canvas = this->getCanvas();
+			Micro::drawAction(canvas, attacker->getPosition(), target->getPosition(), Micro::AttackUnitColor);
+		});
+		Micro::SetOnAttackMove([this](const BWAPI::Unit&attacker, const BWAPI::Position &targetPosition)
+		{
+			auto& canvas = this->getCanvas();
+			Micro::drawAction(canvas, attacker->getPosition(), targetPosition, Micro::AttackMoveColor);
+		});
+		Micro::SetOnMove([this](const BWAPI::Unit&attacker, const BWAPI::Position &targetPosition)
+		{
+			auto& canvas = this->getCanvas();
+			Micro::drawAction(canvas, attacker->getPosition(), targetPosition, Micro::MoveColor);
+		});
+		Micro::SetOnRepair([this](const BWAPI::Unit& unit, const BWAPI::Unit& target)
+		{
+			auto& canvas = this->getCanvas();
+			Micro::drawAction(canvas, unit->getPosition(), target->getPosition(), Micro::RepairColor);
+		});
+		Micro::SetOnRightClick([this](const BWAPI::Unit& unit, const BWAPI::Unit& target)
+		{
+			auto& canvas = this->getCanvas();
+			Micro::drawAction(canvas, unit->getPosition(), target->getPosition(), Micro::RightClickColor);
+		});
+	}
 }
 
 void UAlbertaBot_Tournament::onEnd(bool isWinner) 
@@ -142,7 +147,7 @@ void UAlbertaBot_Tournament::onFrame()
 	// Draw debug information
 	drawDebugInformation(_canvas);
 
-    if (Config::Modules::UsingAutoObserver)
+    if (_configuration.Modules.UsingAutoObserver)
     {
         _autoObserver->onFrame(currentFrame);
     }

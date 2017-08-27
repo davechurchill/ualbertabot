@@ -85,7 +85,7 @@ void WorkerManager::handleGasWorkers(int currentFrame)
 			int numAssigned = workerData->getNumAssignedWorkers(unit);
 
 			// if it's less than we want it to be, fill 'er up
-			for (int i=0; i<(Config::Macro::WorkersPerRefinery-numAssigned); ++i)
+			for (int i = 0; i < (_workersPerRefinery - numAssigned); ++i)
 			{
 				BWAPI::Unit gasWorker = getGasWorker(unit);
 				if (gasWorker)
@@ -95,7 +95,6 @@ void WorkerManager::handleGasWorkers(int currentFrame)
 			}
 		}
 	}
-
 }
 
 void WorkerManager::handleIdleWorkers(int currentFrame)
@@ -159,7 +158,7 @@ BWAPI::Unit WorkerManager::getClosestEnemyUnit(BWAPI::Unit worker)
 	BWAPI::Unit closestUnit = nullptr;
 	double closestDist = 10000;
 
-	for (auto & unit : UnitUtil::getEnemyUnits())
+	for (auto & unit : UnitUtil::getEnemyUnits(_opponentView))
 	{
 		double dist = unit->getDistance(worker);
 
@@ -508,7 +507,7 @@ void WorkerManager::onUnitMorph(BWAPI::Unit unit)
 	// if something morphs into a worker, add it
 	if (unit->getType().isWorker() && isOwnedUnit && unit->getHitPoints() >= 0)
 	{
-		workerData->addWorker(unit);
+		workerData->registerWorker(unit);
 	}
 
 	// if something morphs into a building, it was a worker?
@@ -526,14 +525,14 @@ void WorkerManager::onUnitShow(BWAPI::Unit unit)
 	// add the depot if it exists
 	if (unit->getType().isResourceDepot() && unit->getPlayer() == _opponentView->self())
 	{
-		workerData->addDepot(unit);
+		workerData->registerResourceDepot(unit);
 	}
 
 	// if something morphs into a worker, add it
 	if (unit->getType().isWorker() && unit->getPlayer() == _opponentView->self() && unit->getHitPoints() >= 0)
 	{
 		//_logger.log("A worker was shown %d", unit->getID());
-		workerData->addWorker(unit);
+		workerData->registerWorker(unit);
 	}
 }
 
@@ -568,7 +567,7 @@ void WorkerManager::onUnitDestroy(BWAPI::Unit unit, int currentFrame)
 
 	if (unit->getType().isResourceDepot() && unit->getPlayer() == _opponentView->self())
 	{
-		workerData->removeDepot(unit, currentFrame);
+		workerData->unregisterResourceDepot(unit, currentFrame);
 	}
 
 	if (unit->getType().isWorker() && unit->getPlayer() == _opponentView->self())

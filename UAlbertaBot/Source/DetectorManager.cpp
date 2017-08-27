@@ -34,7 +34,7 @@ void DetectorManager::executeMicro(const std::vector<BWAPI::Unit> & targets, int
 	std::vector<BWAPI::Unit> cloakedUnits;
 
 	// figure out targets
-	for (auto & unit : UnitUtil::getEnemyUnits())
+	for (auto & unit : UnitUtil::getEnemyUnits(opponentView))
 	{
 		// conditions for targeting
 		if (unit->getType() == BWAPI::UnitTypes::Zerg_Lurker ||

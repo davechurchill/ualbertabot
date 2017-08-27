@@ -10,7 +10,8 @@ BuildingManager::BuildingManager(
 	shared_ptr<BaseLocationManager> bases,
 	shared_ptr<WorkerManager> workerManager,
 	shared_ptr<MapTools> mapTools,
-	std::shared_ptr<AKBot::Logger> logger)
+	std::shared_ptr<AKBot::Logger> logger,
+	const BotMacroConfiguration& macroConfiguration)
     : _debugMode(false)
     , _reservedMinerals(0)
     , _reservedGas(0)
@@ -20,6 +21,7 @@ BuildingManager::BuildingManager(
 	, _opponentView(opponentView)
 	, _buildingPlacer(mapTools->getWidth(), mapTools->getHeight(), opponentView, bases, mapTools)
 	, _logger(logger)
+	, _macroConfiguration(macroConfiguration)
 {
 
 }
@@ -288,16 +290,16 @@ bool BuildingManager::isBuildingPositionExplored(const Building & b) const
     BWAPI::TilePosition tile = b.finalPosition;
 
     // for each tile where the building will be built
-    for (int x=0; x<b.type.tileWidth(); ++x)
-    {
-        for (int y=0; y<b.type.tileHeight(); ++y)
-        {
-            if (!BWAPI::Broodwar->isExplored(tile.x + x,tile.y + y))
-            {
-                return false;
-            }
-        }
-    }
+	for (int x = 0; x < b.type.tileWidth(); ++x)
+	{
+		for (int y = 0; y < b.type.tileHeight(); ++y)
+		{
+			if (!_mapTools->isExplored(BWAPI::TilePosition(tile.x + x, tile.y + y)))
+			{
+				return false;
+			}
+		}
+	}
 
     return true;
 }
@@ -355,10 +357,10 @@ BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
     }
 
     // set the building padding specifically
-    int distance = b.type == BWAPI::UnitTypes::Protoss_Photon_Cannon ? 0 : Config::Macro::BuildingSpacing;
+    int distance = b.type == BWAPI::UnitTypes::Protoss_Photon_Cannon ? 0 : _macroConfiguration.BuildingSpacing;
     if (b.type == BWAPI::UnitTypes::Protoss_Pylon && (numPylons < 3))
     {
-        distance = Config::Macro::PylonSpacing;
+        distance = _macroConfiguration.PylonSpacing;
     }
 
     // get a position within our region

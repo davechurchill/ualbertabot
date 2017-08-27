@@ -13,21 +13,27 @@ Squad::Squad(
 	shared_ptr<UnitInfoManager> unitInfo,
 	shared_ptr<BaseLocationManager> bases,
 	shared_ptr<MapTools> mapTools,
-	std::shared_ptr<AKBot::Logger> logger)
+	std::shared_ptr<AKBot::Logger> logger,
+	const BotMicroConfiguration& microConfiguration,
+	const BotSparCraftConfiguration& sparcraftConfiguration,
+	const BotDebugConfiguration& debugConfiguration)
 	: _name(name)
 	, _order(order)
     , _lastRetreatSwitch(0)
     , _lastRetreatSwitchVal(false)
     , _priority(priority)
-	, _transportManager(opponentView, bases, locationProvider, mapTools, logger)
+	, _transportManager(opponentView, bases, locationProvider, mapTools, logger, microConfiguration)
 	, _opponentView(opponentView)
 	, _unitInfo(unitInfo)
-	, _meleeManager(opponentView, bases)
+	, _meleeManager(opponentView, bases, microConfiguration)
 	, _medicManager(opponentView, bases)
-	, _rangedManager(opponentView, bases)
+	, _rangedManager(opponentView, bases, microConfiguration)
 	, _detectorManager(opponentView, mapTools, bases)
-	, _tankManager(opponentView, bases)
+	, _tankManager(opponentView, bases, microConfiguration)
 	, _logger(logger)
+	, _microConfiguration(microConfiguration)
+	, _sparcraftConfiguration(sparcraftConfiguration)
+	, _debugConfiguration(debugConfiguration)
 {
 }
 
@@ -183,7 +189,7 @@ void Squad::addUnitsToMicroManagers()
 // calculates whether or not to regroup
 bool Squad::needsToRegroup(shared_ptr<MapTools> map, int currentFrame)
 {
-    if (!Config::Micro::UseSparcraftSimulation)
+    if (!_microConfiguration.UseSparcraftSimulation)
     {
         return false;
     }
@@ -239,27 +245,49 @@ bool Squad::needsToRegroup(shared_ptr<MapTools> map, int currentFrame)
     }
 
 	// if we are DT rushing and we haven't lost a DT yet, no retreat!
-	if (Config::Strategy::StrategyName == "Protoss_DTRush"
-		&& (_opponentView->self()->deadUnitCount(BWAPI::UnitTypes::Protoss_Dark_Templar) == 0))
+	if (getRushModeEnabled()
+		&& (_opponentView->self()->deadUnitCount(getRushUnitType()) >= getAllowedRushUnitLoses()))
 	{
-		_regroupStatus = std::string("\x04 DARK TEMPLAR HOOOOO!");
+		_regroupStatus = std::string("\x04 Za Rodinu, Za Stalina!");
 		return false;
 	}
 
 	auto simulationCenter = unitClosest->getPosition();
 	std::vector<BWAPI::Unit> ourCombatUnits;
-	UnitUtil::getUnitsInRadius(ourCombatUnits, simulationCenter, Config::Micro::CombatRegroupRadius, true, false);
+	UnitUtil::getUnitsInRadius(
+		_opponentView,
+		ourCombatUnits,
+		simulationCenter,
+		_microConfiguration.CombatRegroupRadius,
+		true,
+		false);
 
 	std::vector<UnitInfo> enemyCombatUnitsForSimulation;
 	for (auto& enemyPlayer : _opponentView->enemies())
 	{
-		_unitInfo->getNearbyForce(enemyCombatUnitsForSimulation, simulationCenter, enemyPlayer, Config::Micro::CombatRegroupRadius);
+		_unitInfo->getNearbyForce(enemyCombatUnitsForSimulation, simulationCenter, enemyPlayer, _microConfiguration.CombatRegroupRadius);
 	}
 
 	//do the SparCraft Simulation!
-	CombatSimulation sim(_opponentView, _logger);
-	sim.setCombatUnits(ourCombatUnits, enemyCombatUnitsForSimulation, simulationCenter, Config::Micro::CombatRegroupRadius, currentFrame);
+	CombatSimulation sim(_opponentView, _logger, _sparcraftConfiguration);
+	sim.setCombatUnits(ourCombatUnits, enemyCombatUnitsForSimulation, simulationCenter, _microConfiguration.CombatRegroupRadius, currentFrame);
     auto score = sim.simulateCombat();
+	if (_debugConfiguration.DrawCombatSimulationInfo)
+	{
+		std::stringstream ss1;
+		ss1 << "Initial State:\n";
+		ss1 << SparCraft::AITools::StateToStringCompact(sim.getSparCraftState()) << "\n\n";
+
+		std::stringstream ss2;
+
+		ss2 << "Predicted Outcome: " << sim.getLastScore() << "\n";
+		ss2 << SparCraft::AITools::StateToStringCompact(sim.getEvaluatedState()) << "\n";
+
+		BWAPI::Broodwar->drawTextScreen(150, 200, "%s", ss1.str().c_str());
+		BWAPI::Broodwar->drawTextScreen(300, 200, "%s", ss2.str().c_str());
+
+		BWAPI::Broodwar->drawTextScreen(240, 280, "Combat Sim : %lf", sim.getLastScore());
+	}
 
 	bool retreat = score < 0;
     int switchTime = 100;
@@ -323,7 +351,13 @@ bool Squad::unitNearEnemy(shared_ptr<MapTools> map, BWAPI::Unit unit)
 
 	std::vector<BWAPI::Unit> enemyNear;
 
-	UnitUtil::getUnitsInRadius(enemyNear, unit->getPosition(), 400, false, true);
+	UnitUtil::getUnitsInRadius(
+		_opponentView,
+		enemyNear,
+		unit->getPosition(),
+		400,
+		false,
+		true);
 
 	return enemyNear.size() > 0;
 }
@@ -332,11 +366,6 @@ BWAPI::Position Squad::calcCenter()
 {
     if (_units.empty())
     {
-        if (Config::Debug::DrawSquadInfo)
-        {
-            _logger->log("Squad::calcCenter() called on empty squad");
-        }
-
         return BWAPI::Position(0,0);
     }
 

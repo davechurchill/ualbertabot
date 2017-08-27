@@ -11,19 +11,24 @@ using namespace UAlbertaBot;
 AKBot::BWAPIOpponentView opponentView;
 AKBot::BWAPIPrintLogger logger;
 
+bool ConfigFileFound = true;
+bool ConfigFileParsed = true;
+std::string configFileLocation = "AK_Config.json";
+BotConfiguration Config;
+
 UAlbertaBotModule_dll::UAlbertaBotModule_dll()
 {
     // parse the bot's configuration file, if it is not found or isn't valid, the program will exit
-	auto configurationFile = ParseUtils::FindConfigurationLocation(Config::ConfigFile::ConfigFileLocation);
-    ParseUtils::ParseConfigFile(configurationFile);
+	auto configurationFile = ParseUtils::FindConfigurationLocation(configFileLocation);
+    ParseUtils::ParseConfigFile(configurationFile, Config, ConfigFileFound, ConfigFileParsed);
 
-    if (!Config::ConfigFile::ConfigFileFound || !Config::ConfigFile::ConfigFileParsed)
+    if (!ConfigFileFound || !ConfigFileParsed)
     {
         return;
     }
 
-	std::string botMode = Config::BotInfo::BotMode;
-	auto m = createBot(botMode);
+	std::string botMode = Config.BotInfo.BotMode;
+	auto m = createBot(botMode, Config, configurationFile);
 	_module = m.getBot();
 	if (!m.isValid())
 	{
@@ -33,7 +38,7 @@ UAlbertaBotModule_dll::UAlbertaBotModule_dll()
 
 void UAlbertaBotModule_dll::onStart()
 {
-    if (!Config::ConfigFile::ConfigFileFound || !Config::ConfigFile::ConfigFileParsed)
+    if (!ConfigFileFound || !ConfigFileParsed)
     {
         return;
     }
@@ -47,27 +52,28 @@ void UAlbertaBotModule_dll::onFrame()
     char green = '\x07';
     char white = '\x04';
 
-    if (!Config::ConfigFile::ConfigFileFound)
+	auto& botInfo = Config.BotInfo;
+    if (!ConfigFileFound)
     {
         BWAPI::Broodwar->drawBoxScreen(0,0,450,100, BWAPI::Colors::Black, true);
         BWAPI::Broodwar->setTextSize(BWAPI::Text::Size::Huge);
-        BWAPI::Broodwar->drawTextScreen(10, 5, "%c%s Config File Not Found", red, Config::BotInfo::BotName.c_str());
+        BWAPI::Broodwar->drawTextScreen(10, 5, "%c%s Config File Not Found", red, botInfo.BotName.c_str());
         BWAPI::Broodwar->setTextSize(BWAPI::Text::Size::Default);
-        BWAPI::Broodwar->drawTextScreen(10, 30, "%c%s will not run without its configuration file", white, Config::BotInfo::BotName.c_str());
+        BWAPI::Broodwar->drawTextScreen(10, 30, "%c%s will not run without its configuration file", white, botInfo.BotName.c_str());
         BWAPI::Broodwar->drawTextScreen(10, 45, "%cCheck that the file below exists. Incomplete paths are relative to Starcraft directory", white);
         BWAPI::Broodwar->drawTextScreen(10, 60, "%cYou can change this file location in Config::ConfigFile::ConfigFileLocation", white);
-        BWAPI::Broodwar->drawTextScreen(10, 75, "%cFile Not Found (or is empty): %c %s", white, green, Config::ConfigFile::ConfigFileLocation.c_str());
+        BWAPI::Broodwar->drawTextScreen(10, 75, "%cFile Not Found (or is empty): %c %s", white, green, configFileLocation.c_str());
         return;
     }
-    else if (!Config::ConfigFile::ConfigFileParsed)
+    else if (!ConfigFileParsed)
     {
         BWAPI::Broodwar->drawBoxScreen(0,0,450,100, BWAPI::Colors::Black, true);
         BWAPI::Broodwar->setTextSize(BWAPI::Text::Size::Huge);
-        BWAPI::Broodwar->drawTextScreen(10, 5, "%c%s Config File Parse Error", red, Config::BotInfo::BotName.c_str());
+        BWAPI::Broodwar->drawTextScreen(10, 5, "%c%s Config File Parse Error", red, botInfo.BotName.c_str());
         BWAPI::Broodwar->setTextSize(BWAPI::Text::Size::Default);
-        BWAPI::Broodwar->drawTextScreen(10, 30, "%c%s will not run without a properly formatted configuration file", white, Config::BotInfo::BotName.c_str());
+        BWAPI::Broodwar->drawTextScreen(10, 30, "%c%s will not run without a properly formatted configuration file", white, botInfo.BotName.c_str());
         BWAPI::Broodwar->drawTextScreen(10, 45, "%cThe configuration file was found, but could not be parsed. Check that it is valid JSON", white);
-        BWAPI::Broodwar->drawTextScreen(10, 60, "%cFile Not Parsed: %c %s", white, green, Config::ConfigFile::ConfigFileLocation.c_str());
+        BWAPI::Broodwar->drawTextScreen(10, 60, "%cFile Not Parsed: %c %s", white, green, configFileLocation.c_str());
         return;
     }
 

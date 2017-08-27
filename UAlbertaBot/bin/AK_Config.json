@@ -34,6 +34,7 @@
         "KiteWithRangedUnits"       : false,
         "KiteLongerRangedUnits"     : ["Mutalisk", "Vulture"],
         "WorkersDefendRush"         : true,
+        "DrawUnitTargetInfo"        : false,
         "RetreatMeleeUnitShields"   : 0,
         "RetreatMeleeUnitHP"        : 0,
         "InCombatRadius"            : 1000,
@@ -48,12 +49,15 @@
         "BuildingSpacing"           : 1,
         "PylonSpacing"              : 3
     },
+	
+	"Log":
+	{
+		"ErrorLogFilename"          : "bwapi-data/AI/UAlbertaBot_ErrorLog.txt",
+        "LogAssertToErrorFile"      : false,
+	}
 
     "Debug" :
-    {
-        "ErrorLogFilename"          : "bwapi-data/AI/UAlbertaBot_ErrorLog.txt",
-        "LogAssertToErrorFile"      : false,
-        
+    {        
         "DrawGameInfo"              : true,   
         "DrawUnitHealthBars"        : true,
         "DrawProductionInfo"        : true, 
@@ -63,7 +67,6 @@
         "DrawModuleTimers"          : false,
         "DrawResourceInfo"          : false,
         "DrawCombatSimInfo"         : false,
-        "DrawUnitTargetInfo"        : false,
         "DrawBWTAInfo"              : false,
         "DrawLastSeenTileInfo"      : false,
         "DrawSquadInfo"             : false,
@@ -79,7 +82,10 @@
     {
         "UseBuildOrderSearch"       : true,
         "UseStrategyIO"             : true,
-        "UseAutoObserver"           : false
+        "UseAutoObserver"           : false,
+        
+        "ReadDirectory"             : "bwapi-data/read/",
+        "WriteDirectory"            : "bwapi-data/write/"
     },
     
     "Tools" :

@@ -3,6 +3,7 @@
 #include "BaseLocationManager.h"
 #include "ScreenCanvas.h"
 #include "DebugInfoProvider.h"
+#include "BotConfiguration.h"
 
 namespace AKBot
 {
@@ -13,8 +14,12 @@ namespace AKBot
 	{
 		shared_ptr<MapTools> _map;
 		shared_ptr<BaseLocationManager> _bases;
+		const BotDebugConfiguration& _debugConfiguration;
 	public:
-		MapToolsDebug(shared_ptr<MapTools> map, shared_ptr<BaseLocationManager> bases);
+		MapToolsDebug(
+			shared_ptr<MapTools> map,
+			shared_ptr<BaseLocationManager> bases,
+			const BotDebugConfiguration& debugConfiguration);
 		void draw(AKBot::ScreenCanvas& canvas) override;
 	};
 }

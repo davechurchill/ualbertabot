@@ -31,7 +31,17 @@ class WorkerData
 
 public:
 
-    enum WorkerJob { Minerals,Gas,Build,Combat,Idle,Repair,Move,Scout,Default };
+    enum WorkerJob {
+		Minerals,
+		Gas,
+		Build,
+		Combat,
+		Idle,
+		Repair,
+		Move,
+		Scout,
+		Default
+	};
 
 private:
 
@@ -59,9 +69,11 @@ public:
     WorkerData(shared_ptr<AKBot::Logger> logger);
 
     void    workerDestroyed(BWAPI::Unit unit);
-    void    addDepot(BWAPI::Unit unit);
-    void    removeDepot(BWAPI::Unit unit, int currentFrame);
-    void    addWorker(BWAPI::Unit unit);
+	/* Register resource depot */
+    void    registerResourceDepot(BWAPI::Unit resourceDepot);
+	/* Unregister resource depot */
+    void    unregisterResourceDepot(BWAPI::Unit resourceDepot, int currentFrame);
+    void    registerWorker(BWAPI::Unit unit);
     void    addWorker(BWAPI::Unit unit,WorkerJob job,BWAPI::Unit jobUnit, int currentFrame);
     void    addWorker(BWAPI::Unit unit,WorkerJob job,BWAPI::UnitType jobUnitType);
     void    setWorkerJob(BWAPI::Unit unit,WorkerJob job,BWAPI::Unit jobUnit, int currentFrame);

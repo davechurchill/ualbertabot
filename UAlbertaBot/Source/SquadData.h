@@ -18,7 +18,9 @@ class SquadData
 	shared_ptr<UnitInfoManager> _unitInfo;
 	shared_ptr<BaseLocationManager> _bases;
 	shared_ptr<MapTools> _mapTools;
-
+	const BotMicroConfiguration& _microConfiguration;
+	const BotSparCraftConfiguration& _sparcraftConfiguration;
+	const BotDebugConfiguration& _debugConfiguration;
 public:
 
 	SquadData(
@@ -27,7 +29,10 @@ public:
 		shared_ptr<UnitInfoManager> unitInfo,
 		shared_ptr<BaseLocationManager> bases,
 		shared_ptr<MapTools> mapTools,
-		std::shared_ptr<AKBot::Logger> logger);
+		std::shared_ptr<AKBot::Logger> logger,
+		const BotMicroConfiguration& microConfiguration,
+		const BotSparCraftConfiguration& sparcraftConfiguration,
+		const BotDebugConfiguration& debugConfiguration);
 
     void            clearSquadData(int currentFrame);
 
@@ -48,5 +53,8 @@ public:
     const std::map<std::string, Squad> & getSquads() const;
 
 	void onUnitRemoved(UnitHandler handler);
+	void setRushModeEnabled(bool value);
+	void setRushUnitType(BWAPI::UnitType rushUnit);
+	void setAllowedRushUnitLoses(int value);
 };
 }

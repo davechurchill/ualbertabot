@@ -8,12 +8,17 @@
 #pragma warning( pop )
 #include "ArenaPlayer.h"
 #include "ScreenCanvas.h"
+#include "BotConfiguration.h"
 
 namespace UAlbertaBot
 {
     
 class ArenaPlayer_SparCraft : public ArenaPlayer
 {
+	const BotSparCraftConfiguration& _sparCraftConfiguration;
+	const BotArenaConfiguration& _areaConfiguration;
+	SparCraft::AIParameters& _aiParameters;
+
     SparCraft::GameState    GetSparCraftState(int currentFrame) const;
     SparCraft::Unit         GetSparCraftUnit(BWAPI::Unit unit, int currentFrame) const;
     SparCraft::Move         GetSparCraftPlayerMove(const SparCraft::GameState & state, const size_t & playerID) const;
@@ -34,7 +39,10 @@ class ArenaPlayer_SparCraft : public ArenaPlayer
 
 public:
 
-	ArenaPlayer_SparCraft();
+	ArenaPlayer_SparCraft(
+		const BotSparCraftConfiguration& configuration,
+		const BotArenaConfiguration& areaConfiguration, 
+		SparCraft::AIParameters& aiParameters);
 
     void onStart();
     void onFrame();
