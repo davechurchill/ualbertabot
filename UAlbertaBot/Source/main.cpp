@@ -46,6 +46,10 @@ using namespace UAlbertaBot;
 AKBot::BWAPIOpponentView opponentView;
 AKBot::BWAPIPrintLogger logger;
 
+bool ConfigFileFound = true;
+bool ConfigFileParsed = true;
+std::string configurationFileName = "AK_Config.json";
+
 void UAlbertaBot_BWAPIReconnect() 
 {
     while(!BWAPI::BWAPIClient.connect())
@@ -59,8 +63,8 @@ int main(int argc, const char * argv[])
     bool exitIfStarcraftShutdown = true;
 
     // parse the bot's configuration file, if it is not found or isn't valid, the program will exit
-	auto configurationFile = ParseUtils::FindConfigurationLocation(ConfigOld::ConfigFile::ConfigFileLocation);
-	ParseUtils::ParseConfigFile(configurationFile);
+	auto configurationFile = ParseUtils::FindConfigurationLocation(configurationFileName);
+	ParseUtils::ParseConfigFile(configurationFile, ConfigFileFound, ConfigFileParsed);
 
     size_t gameCount = 0;
 	while (true)
@@ -93,7 +97,7 @@ int main(int argc, const char * argv[])
 				std::cout << "Playing game " << gameCount++ << " on map " << BWAPI::Broodwar->mapFileName() << "\n";
 
 				std::string mode = Config.BotInfo.BotMode;
-				auto m = createBot(mode);
+				auto m = createBot(mode, configurationFile);
 				std::cerr << "Bot Address: " << m.getBot().get() << std::endl;
 				if (!m.isValid())
 				{

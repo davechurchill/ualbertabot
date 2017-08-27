@@ -3,11 +3,10 @@
 #include "JSONTools.h"
 #include "BuildOrder.h"
 #include "StrategyManager.h"
-#include <BWAPI.h>
 
 using namespace UAlbertaBot;
 
-inline bool exists_test1(const std::string& name) {
+inline bool file_exists(const std::string& name) {
 	if (FILE *file = fopen(name.c_str(), "r")) {
 		fclose(file);
 		return true;
@@ -40,17 +39,43 @@ std::pair<bool, std::string> findPlayerSpecificStrategy(const rapidjson::Value &
 std::string ParseUtils::FindConfigurationLocation(const std::string & filename)
 {
 	auto bwapiAILocation = "bwapi-data/AI/" + filename;
-	if (exists_test1(bwapiAILocation)) {
+	if (file_exists(bwapiAILocation)) {
 		return bwapiAILocation;
 	}
 
 	return filename;
 }
 
-void ParseUtils::ParseConfigFile(const std::string & filename)
+BWAPI::Race GetRace(const std::string & raceName)
 {
-    rapidjson::Document doc;
+	if (raceName == "Protoss")
+	{
+		return BWAPI::Races::Protoss;
+	}
 
+	if (raceName == "Terran")
+	{
+		return BWAPI::Races::Terran;
+	}
+
+	if (raceName == "Zerg")
+	{
+		return BWAPI::Races::Zerg;
+	}
+
+	if (raceName == "Random")
+	{
+		return BWAPI::Races::Random;
+	}
+
+	UAB_ASSERT_WARNING(false, "Race not found: %s", raceName.c_str());
+	return BWAPI::Races::None;
+}
+
+void UAlbertaBot::ParseUtils::ParseConfigFile(const std::string & filename, bool& configFileFound, bool& configFileParsed)
+{
+	configFileFound = true;
+	configFileParsed = true;
     std::string config = ReadFile(filename);
 
     if (config.length() == 0)
@@ -60,11 +85,13 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
         std::cerr << "The bot will not run without its configuration file\n";
         std::cerr << "Please check that the file exists and is not empty. Incomplete paths are relative to the bot .exe file\n";
         std::cerr << "You can change the config file location in Config::ConfigFile::ConfigFileLocation\n";
-		ConfigOld::ConfigFile::ConfigFileFound = false;
+		configFileFound = false;
         return;
     }
 
-    bool parsingFailed = doc.Parse(config.c_str()).HasParseError();
+	rapidjson::Document doc;
+	doc.Parse(config.c_str());
+	bool parsingFailed = doc.HasParseError();
     if (parsingFailed)
     {
         std::cerr << "Error: Config File Found, but could not be parsed\n";
@@ -72,7 +99,7 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
         std::cerr << "The bot will not run without its configuration file\n";
         std::cerr << "Please check that the file exists, is not empty, and is valid JSON. Incomplete paths are relative to the bot .exe file\n";
         std::cerr << "You can change the config file location in Config::ConfigFile::ConfigFileLocation\n";
-		ConfigOld::ConfigFile::ConfigFileParsed = false;
+		configFileParsed = false;
         return;
     }
 
@@ -293,32 +320,6 @@ void ParseUtils::ParseStrategy(const std::string & filename, shared_ptr<Strategy
             }
         }
     }
-}
-
-BWAPI::Race ParseUtils::GetRace(const std::string & raceName)
-{
-    if (raceName == "Protoss")
-    {
-        return BWAPI::Races::Protoss;
-    }
-
-    if (raceName == "Terran")
-    {
-        return BWAPI::Races::Terran;
-    }
-
-    if (raceName == "Zerg")
-    {
-        return BWAPI::Races::Zerg;
-    }
-
-    if (raceName == "Random")
-    {
-        return BWAPI::Races::Random;
-    }
-
-    UAB_ASSERT_WARNING(false, "Race not found: %s", raceName.c_str());
-    return BWAPI::Races::None;
 }
 
 std::string ParseUtils::ReadFile(const std::string & filename)

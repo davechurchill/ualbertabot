@@ -18,6 +18,7 @@
 using namespace UAlbertaBot;
 using namespace AKBot;
 
+
 UAlbertaBot_Arena::UAlbertaBot_Arena()
     : _results      (3, 0)  // 0 = wins, 1 = losses, 2 = draws
     , _battles      (0)
@@ -29,10 +30,13 @@ UAlbertaBot_Arena::UAlbertaBot_Arena()
 // This gets called when the bot starts!
 void UAlbertaBot_Arena::onStart()
 {
+	bool ConfigFileFound = true;
+	bool ConfigFileParsed = true;
+
     // Parse the bot's configuration file if it has one, change this file path to where your config file is
     // Any relative path name will be relative to Starcraft installation folder
-	auto configurationFile = ParseUtils::FindConfigurationLocation(ConfigOld::ConfigFile::ConfigFileLocation);
-    ParseUtils::ParseConfigFile(configurationFile);
+	auto configurationFile = ParseUtils::FindConfigurationLocation("AK_Config.json");
+    ParseUtils::ParseConfigFile(configurationFile, ConfigFileFound, ConfigFileParsed);
     
     // Set our BWAPI options here    
     BWAPI::Broodwar->setLocalSpeed(Config.BWAPIOptions.SetLocalSpeed);

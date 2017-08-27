@@ -29,8 +29,6 @@ UAlbertaBot_Tournament::UAlbertaBot_Tournament(
 	, _gameCommander(std::move(gameCommander))
 {
 	// parse the configuration file for the bot's strategies
-	auto configurationFile = ParseUtils::FindConfigurationLocation(ConfigOld::ConfigFile::ConfigFileLocation);
-	ParseUtils::ParseStrategy(configurationFile, _strategyManager);
 }
 
 UAlbertaBot_Tournament::~UAlbertaBot_Tournament()

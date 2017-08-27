@@ -4,5 +4,5 @@
 
 namespace AKBot
 {
-	BotPlayer createBot(const std::string& mode);
+	BotPlayer createBot(const std::string& mode, const std::string& configurationFilePath);
 }

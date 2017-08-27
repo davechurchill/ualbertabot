@@ -3,7 +3,8 @@
 
 using namespace UAlbertaBot;
 
-ArenaPlayer_SparCraft::ArenaPlayer_SparCraft()
+ArenaPlayer_SparCraft::ArenaPlayer_SparCraft(const BotSparCraftConfiguration& configuration)
+	: _configuration(configuration)
 {
     _name = "ArenaPlayer_SparCraft";
 }
@@ -16,7 +17,7 @@ void ArenaPlayer_SparCraft::onStart()
         SparCraft::init();
 
         // Read the SparCraft configuration file
-        SparCraft::AIParameters::Instance().parseFile(Config.SparCraft.SparCraftConfigFile);
+        SparCraft::AIParameters::Instance().parseFile(_configuration.SparCraftConfigFile);
        
 
         std::cout << "SparCraft initialized\n";

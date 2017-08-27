@@ -12,10 +12,12 @@
 #include "debug\MapToolsDebug.h"
 #include "debug\DebugInfoProvider.h"
 
+#include "ParseUtils.h"
+
 using namespace AKBot;
 using namespace UAlbertaBot;
 
-BotPlayer AKBot::createBot(const std::string& mode) {
+BotPlayer AKBot::createBot(const std::string& mode, const std::string& configurationFile) {
 	if (mode == "Tournament") {
 		auto logger = std::shared_ptr<AKBot::Logger>(new AKBot::BWAPIPrintLogger());
 		auto opponentView = std::shared_ptr<AKBot::OpponentView>(new AKBot::BWAPIOpponentView());
@@ -77,6 +79,8 @@ BotPlayer AKBot::createBot(const std::string& mode) {
 			std::shared_ptr<DebugInfoProvider>(new AKBot::MapToolsDebug(mapTools, baseLocationManager)),
 		};
 		shared_ptr<GameDebug> gameDebug = std::shared_ptr<GameDebug>(new GameDebug(providers));
+
+		ParseUtils::ParseStrategy(configurationFile, strategyManager);
 		return BotPlayer(std::shared_ptr<BotModule>(new UAlbertaBot_Tournament(
 			baseLocationManager,
 			autoObserver,
