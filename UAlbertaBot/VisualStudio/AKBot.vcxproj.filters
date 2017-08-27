@@ -4,9 +4,6 @@
     <ClCompile Include="..\Source\Common.cpp">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Config.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\DebugTools.cpp">
       <Filter>common</Filter>
     </ClCompile>
@@ -210,9 +207,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\Common.h">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Config.h">
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\DebugTools.h">

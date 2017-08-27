@@ -1,5 +1,4 @@
 #include "UABAssert.h"
-#include "Config.h"
 #include <BWAPI/Game.h>
 #include "FileLogger.h"
 #include "BotConfiguration.h"

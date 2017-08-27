@@ -2,6 +2,7 @@
 #include "Micro.h"
 #include <BWAPI/Game.h>
 #include <BWAPI/Unitset.h>
+#include <assert.h>
 
 using namespace UAlbertaBot;
 

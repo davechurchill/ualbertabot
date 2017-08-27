@@ -17,6 +17,7 @@
 #include "OpponentView.h"
 #include "UnitInfoManager.h"
 #include "Logger.h"
+#include "BotConfiguration.h"
 
 namespace UAlbertaBot
 {

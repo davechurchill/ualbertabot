@@ -1,6 +1,7 @@
 #include "BuildOrderQueue.h"
 #include <BWAPI/WeaponType.h>
 #include <BWAPI/Game.h>
+#include <assert.h>
 
 using namespace UAlbertaBot;
 

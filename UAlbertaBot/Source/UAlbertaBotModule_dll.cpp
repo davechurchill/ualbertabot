@@ -14,6 +14,7 @@ AKBot::BWAPIPrintLogger logger;
 bool ConfigFileFound = true;
 bool ConfigFileParsed = true;
 std::string configFileLocation = "AK_Config.json";
+BotConfiguration Config;
 
 UAlbertaBotModule_dll::UAlbertaBotModule_dll()
 {
@@ -27,7 +28,7 @@ UAlbertaBotModule_dll::UAlbertaBotModule_dll()
     }
 
 	std::string botMode = Config.BotInfo.BotMode;
-	auto m = createBot(botMode, configurationFile);
+	auto m = createBot(botMode, Config, configurationFile);
 	_module = m.getBot();
 	if (!m.isValid())
 	{

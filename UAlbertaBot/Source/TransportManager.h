@@ -4,6 +4,7 @@
 #include "MicroManager.h"
 #include "PlayerLocationProvider.h"
 #include "Logger.h"
+#include "BotConfiguration.h"
 
 namespace UAlbertaBot
 {

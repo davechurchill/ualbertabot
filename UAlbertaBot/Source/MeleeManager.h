@@ -2,6 +2,7 @@
 
 #include <Common.h>
 #include "MicroManager.h"
+#include "BotConfiguration.h"
 
 namespace UAlbertaBot
 {

@@ -22,7 +22,6 @@
 #include <BWAPI/Position.h>
 #pragma warning( pop )
 
-#include "Config.h"
 #include "UABAssert.h"
 
 #define UALBERTABOT_PROJECT

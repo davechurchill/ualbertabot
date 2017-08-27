@@ -5,7 +5,6 @@
 #include <iostream>
 #include <fstream>
 #include "HardCodedInfo.h"
-#include "Config.h"
 #include "AutoObserver.h"
 #include "rapidjson\document.h"
 #include "Global.h"

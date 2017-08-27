@@ -6,6 +6,7 @@
 #include "OpponentView.h"
 #include "BuildingManager.h"
 #include "Strategy.h"
+#include "BotConfiguration.h"
 
 namespace UAlbertaBot
 {

@@ -7,6 +7,7 @@
 #include "UnitInfoManager.h"
 #include "BaseLocationManager.h"
 #include "Logger.h"
+#include "BotConfiguration.h"
 
 namespace UAlbertaBot
 {

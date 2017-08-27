@@ -17,8 +17,7 @@
 using namespace AKBot;
 using namespace UAlbertaBot;
 
-BotPlayer AKBot::createBot(const std::string& mode, const std::string& configurationFile) {
-	auto& configuration = Config;
+BotPlayer AKBot::createBot(const std::string& mode, BotConfiguration& configuration, const std::string& configurationFile) {
 	if (mode == "Tournament") {
 		auto logger = std::shared_ptr<AKBot::Logger>(new AKBot::BWAPIPrintLogger());
 		auto opponentView = std::shared_ptr<AKBot::OpponentView>(new AKBot::BWAPIOpponentView());

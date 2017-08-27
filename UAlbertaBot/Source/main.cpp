@@ -49,6 +49,7 @@ AKBot::BWAPIPrintLogger logger;
 bool ConfigFileFound = true;
 bool ConfigFileParsed = true;
 std::string configurationFileName = "AK_Config.json";
+BotConfiguration Config;
 
 void UAlbertaBot_BWAPIReconnect() 
 {
@@ -114,7 +115,7 @@ int main(int argc, const char * argv[])
 				std::cout << "Playing game " << gameCount++ << " on map " << BWAPI::Broodwar->mapFileName() << "\n";
 
 				std::string mode = Config.BotInfo.BotMode;
-				auto m = createBot(mode, configurationFile);
+				auto m = createBot(mode, Config, configurationFile);
 				std::cerr << "Bot Address: " << m.getBot().get() << std::endl;
 				if (!m.isValid())
 				{
