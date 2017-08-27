@@ -26,9 +26,9 @@
     <ClInclude Include="..\Source\UAlbertaBotModule_dll.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>UAlbertaBot_dll</ProjectName>
+    <ProjectName>AKBot_dll</ProjectName>
     <ProjectGuid>{82F37540-2170-4174-9E7A-CCF3F00515CE}</ProjectGuid>
-    <RootNamespace>ExampleAIModule</RootNamespace>
+    <RootNamespace>AKBot</RootNamespace>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>

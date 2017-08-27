@@ -1,26 +1,26 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.15
+VisualStudioVersion = 15.0.26730.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SparCraft", "..\..\SparCraft\VisualStudio\SparCraft.vcxproj", "{66236439-5968-4756-B2E7-8A29BEA99078}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BOSS", "..\..\BOSS\VisualStudio\BOSS.vcxproj", "{9F8709E3-AC4F-45F2-8105-4A99D8E2A127}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UAlbertaBot", "UAlbertaBot.vcxproj", "{572AF06A-4078-4C5A-ABCE-B29C84050E6D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AKBot", "AKBot.vcxproj", "{572AF06A-4078-4C5A-ABCE-B29C84050E6D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{66236439-5968-4756-B2E7-8A29BEA99078} = {66236439-5968-4756-B2E7-8A29BEA99078}
 		{9F8709E3-AC4F-45F2-8105-4A99D8E2A127} = {9F8709E3-AC4F-45F2-8105-4A99D8E2A127}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UAlbertaBot_exe", "UAlbertaBot_exe.vcxproj", "{2E63AE74-758A-4607-9DE4-D28E814A6E13}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AKBot_exe", "AKBot_exe.vcxproj", "{2E63AE74-758A-4607-9DE4-D28E814A6E13}"
 	ProjectSection(ProjectDependencies) = postProject
 		{66236439-5968-4756-B2E7-8A29BEA99078} = {66236439-5968-4756-B2E7-8A29BEA99078}
 		{572AF06A-4078-4C5A-ABCE-B29C84050E6D} = {572AF06A-4078-4C5A-ABCE-B29C84050E6D}
 		{9F8709E3-AC4F-45F2-8105-4A99D8E2A127} = {9F8709E3-AC4F-45F2-8105-4A99D8E2A127}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UAlbertaBot_dll", "UAlbertaBot_dll.vcxproj", "{82F37540-2170-4174-9E7A-CCF3F00515CE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AKBot_dll", "AKBot_dll.vcxproj", "{82F37540-2170-4174-9E7A-CCF3F00515CE}"
 	ProjectSection(ProjectDependencies) = postProject
 		{66236439-5968-4756-B2E7-8A29BEA99078} = {66236439-5968-4756-B2E7-8A29BEA99078}
 		{572AF06A-4078-4C5A-ABCE-B29C84050E6D} = {572AF06A-4078-4C5A-ABCE-B29C84050E6D}
@@ -156,5 +156,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4A7755F3-0D7E-4071-BE06-FEABE73E9562}
 	EndGlobalSection
 EndGlobal
