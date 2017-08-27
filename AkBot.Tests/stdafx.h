@@ -4,6 +4,8 @@
 //
 
 #pragma once
+#include <stdio.h>  /* defines FILENAME_MAX */
+#include <direct.h>
 
 #include "targetver.h"
 
@@ -11,3 +13,4 @@
 #include <CppUnitTest.h>
 
 // TODO: reference additional headers your program requires here
+

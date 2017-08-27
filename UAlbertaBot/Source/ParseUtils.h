@@ -21,9 +21,8 @@ namespace ParseUtils
 		bool& configFileFound,
 		bool& configFileParsed);
     void ParseStrategy(
-		const std::string & filename,
-		BotConfiguration& config, 
-		std::shared_ptr<StrategyManager> strategyManager);
+		BotStrategyConfiguration& strategyOptions,
+		shared_ptr<StrategyManager> strategyManager);
 
     std::string ReadFile(const std::string & filename);
 }

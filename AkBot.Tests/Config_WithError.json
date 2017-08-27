@@ -12,7 +12,7 @@
         "SetLocalSpeed"             : 0,
         "SetFrameSkip"              : 0,
         "UserInput"                 : true,
-        "CompleteMapInformation"    : false
+        "CompleteMapInformation"    : false,
     },
     
     "Arena" :
