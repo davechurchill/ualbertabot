@@ -86,7 +86,7 @@ BotPlayer AKBot::createBot(const std::string& mode, BotConfiguration& configurat
 		};
 		shared_ptr<GameDebug> gameDebug = std::shared_ptr<GameDebug>(new GameDebug(providers));
 
-		ParseUtils::ParseStrategy(configurationFile, configuration, strategyManager);
+		ParseUtils::ParseStrategy(configuration.Strategy, strategyManager);
 		auto strategyName = configuration.Strategy.StrategyName;
 		strategyManager->setPreferredStrategy(strategyName);
 

@@ -16,26 +16,6 @@ inline bool file_exists(const std::string& name) {
 	}
 }
 
-std::pair<bool, std::string> findPlayerSpecificStrategy(const rapidjson::Value & strategy, const char * ourRace, const BWAPI::Player& player)
-{
-	const auto enemyName = player->getName().c_str();
-	const auto & specific = strategy["EnemySpecificStrategy"];
-
-	// check to see if our current enemy name is listed anywhere in the specific strategies
-	if (specific.HasMember(enemyName) && specific[enemyName].IsObject())
-	{
-		const auto & enemyStrategies = specific[enemyName];
-
-		// if that enemy has a strategy listed for our current race, use it
-		if (enemyStrategies.HasMember(ourRace) && enemyStrategies[ourRace].IsString())
-		{
-			return std::make_pair(true, enemyStrategies[ourRace].GetString());
-		}
-	}
-
-	return std::make_pair(false, std::string());
-}
-
 std::string ParseUtils::FindConfigurationLocation(const std::string & filename)
 {
 	auto bwapiAILocation = "bwapi-data/AI/" + filename;
@@ -80,6 +60,12 @@ void UAlbertaBot::ParseUtils::ParseConfigFile(
 {
 	configFileFound = true;
 	configFileParsed = true;
+	if (!file_exists(filename))
+	{
+		configFileFound = false;
+		return;
+	}
+
     std::string configContent = ReadFile(filename);
 
     if (configContent.length() == 0)
@@ -231,108 +217,153 @@ void UAlbertaBot::ParseUtils::ParseConfigFile(
         JSONTools::ReadInt("ArenaBattles", arena, arenaOptions.ArenaBattles);
         JSONTools::ReadInt("ArenaOutputResults", arena, arenaOptions.ArenaOutputResults);
     }
-}
 
-void ParseUtils::ParseStrategy(
-	const std::string & filename,
-	BotConfiguration& config, 
-	shared_ptr<StrategyManager> strategyManager)
-{
-    BWAPI::Race race = BWAPI::Broodwar->self()->getRace();
-    const char * ourRace = race.getName().c_str();
-    std::string configContent = ReadFile(filename);
-    rapidjson::Document doc;
-    bool parsingFailed = doc.Parse(configContent.c_str()).HasParseError();
-    if (parsingFailed)
-    {
-        std::cerr << "ParseStrategy could not find file: " << filename << ", shutting down.\n";
-        return;
-    }
-
-    // Parse the Strategy Options
-    if (doc.HasMember("Strategy") && doc["Strategy"].IsObject())
-    {
-        const rapidjson::Value & strategy = doc["Strategy"];
+	if (doc.HasMember("Strategy") && doc["Strategy"].IsObject())
+	{
+		const rapidjson::Value & strategy = doc["Strategy"];
 		auto& strategyOptions = config.Strategy;
 
-        // read in the various strategic elements
-        JSONTools::ReadBool("ScoutHarassEnemy", strategy, strategyOptions.ScoutHarassEnemy);
+		// read in the various strategic elements
+		JSONTools::ReadBool("ScoutHarassEnemy", strategy, strategyOptions.ScoutHarassEnemy);
 
 		JSONTools::ReadBool("UseStrategyIO", strategy, strategyOptions.UsingStrategyIO);
 		JSONTools::ReadString("ReadDirectory", strategy, strategyOptions.ReadDir);
 		JSONTools::ReadString("WriteDirectory", strategy, strategyOptions.WriteDir);
 
-        // if we have set a strategy for the current race, use it
-        if (strategy.HasMember(race.c_str()) && strategy[race.c_str()].IsString())
-        {
-			strategyOptions.StrategyName = strategy[race.c_str()].GetString();
-        }
-
-        // check if we are using an enemy specific strategy
-        JSONTools::ReadBool("UseEnemySpecificStrategy", strategy, strategyOptions.UseEnemySpecificStrategy);
-        if (strategyOptions.UseEnemySpecificStrategy && strategy.HasMember("EnemySpecificStrategy") && strategy["EnemySpecificStrategy"].IsObject())
-        {
-			for (const auto& enemy : BWAPI::Broodwar->enemies())
+		// if we have set a strategy for the current race, use it
+		JSONTools::ReadString("Protoss", strategy, strategyOptions.ProtossStrategyName);
+		JSONTools::ReadString("Terran", strategy, strategyOptions.TerranStrategyName);
+		JSONTools::ReadString("Zerg", strategy, strategyOptions.ZergStrategyName);
+		
+		// check if we are using an enemy specific strategy
+		JSONTools::ReadBool("UseEnemySpecificStrategy", strategy, strategyOptions.UseEnemySpecificStrategy);
+		if (strategyOptions.UseEnemySpecificStrategy)
+		{
+			if (strategy.HasMember("EnemySpecificStrategy") && strategy["EnemySpecificStrategy"].IsObject())
 			{
-				auto searchResult = findPlayerSpecificStrategy(strategy, ourRace, enemy);
-				if (searchResult.first)
+				const auto& enemySpecificStrategy = strategy["EnemySpecificStrategy"];
+				for (rapidjson::Value::ConstMemberIterator member = enemySpecificStrategy.MemberBegin(); member != enemySpecificStrategy.MemberEnd(); member++)
 				{
-					strategyOptions.StrategyName = searchResult.second;
+					BotSpecificStrategyInfo botSpecificStrategySet;
+					JSONTools::ReadString("Protoss", member->value, botSpecificStrategySet.ProtossStrategyName);
+					JSONTools::ReadString("Terran", member->value, botSpecificStrategySet.TerranStrategyName);
+					JSONTools::ReadString("Zerg", member->value, botSpecificStrategySet.ZergStrategyName);
+					strategyOptions.EnemySpecificStrategy[member->name.GetString()] = botSpecificStrategySet;
+				}
+			}
+		}
+
+		// Parse all the Strategies
+		if (strategy.HasMember("Strategies") && strategy["Strategies"].IsObject())
+		{
+			const rapidjson::Value & strategies = strategy["Strategies"];
+			for (auto itr = strategies.MemberBegin(); itr != strategies.MemberEnd(); ++itr)
+			{
+				const std::string &         name = itr->name.GetString();
+				const rapidjson::Value &    val = itr->value;
+
+				BWAPI::Race strategyRace;
+				if (val.HasMember("Race") && val["Race"].IsString())
+				{
+					strategyRace = GetRace(val["Race"].GetString());
+				}
+				else
+				{
+					UAB_ASSERT_WARNING(false, "Strategy must have a Race string. Skipping strategy %s", name.c_str());
+					continue;
+				}
+
+				BuildOrder buildOrder(strategyRace);
+				if (val.HasMember("OpeningBuildOrder") && val["OpeningBuildOrder"].IsArray())
+				{
+					const rapidjson::Value & build = val["OpeningBuildOrder"];
+
+					for (size_t b(0); b < build.Size(); ++b)
+					{
+						if (build[b].IsString())
+						{
+							MetaType type(build[b].GetString());
+
+							if (type.getRace() != BWAPI::Races::None)
+							{
+								buildOrder.add(type);
+							}
+						}
+						else
+						{
+							UAB_ASSERT_WARNING(false, "Build order item must be a string %s", name.c_str());
+							continue;
+						}
+					}
+				}
+
+				strategyOptions.Strategies[name] = buildOrder;
+			}
+		}
+	}
+}
+
+void ParseUtils::ParseStrategy(
+	BotStrategyConfiguration& strategyOptions,
+	shared_ptr<StrategyManager> strategyManager)
+{
+    BWAPI::Race race = BWAPI::Broodwar->self()->getRace();
+
+	// if we have set a strategy for the current race, use it
+	if (race == BWAPI::Races::Zerg)
+	{
+		strategyOptions.StrategyName = strategyOptions.ZergStrategyName;
+	}
+
+	if (race == BWAPI::Races::Terran)
+	{
+		strategyOptions.StrategyName = strategyOptions.TerranStrategyName;
+	}
+
+	if (race == BWAPI::Races::Protoss)
+	{
+		strategyOptions.StrategyName = strategyOptions.ProtossStrategyName;
+	}
+
+	// check if we are using an enemy specific strategy
+	if (strategyOptions.UseEnemySpecificStrategy)
+	{
+		for (const auto& enemy : BWAPI::Broodwar->enemies())
+		{
+			auto enemySpecificStrategySearch = strategyOptions.EnemySpecificStrategy.find(enemy->getName());
+			if (enemySpecificStrategySearch != strategyOptions.EnemySpecificStrategy.end())
+			{
+				auto& strategySet = enemySpecificStrategySearch->second;
+				if (race == BWAPI::Races::Zerg)
+				{
+					strategyOptions.StrategyName = strategySet.ZergStrategyName;
+					strategyOptions.FoundEnemySpecificStrategy = true;
+					break;
+				}
+
+				if (race == BWAPI::Races::Terran)
+				{
+					strategyOptions.StrategyName = strategySet.TerranStrategyName;
+					strategyOptions.FoundEnemySpecificStrategy = true;
+					break;
+				}
+
+				if (race == BWAPI::Races::Protoss)
+				{
+					strategyOptions.StrategyName = strategySet.ProtossStrategyName;
 					strategyOptions.FoundEnemySpecificStrategy = true;
 					break;
 				}
 			}
-        }
+		}
+	}
 
-        // Parse all the Strategies
-        if (strategy.HasMember("Strategies") && strategy["Strategies"].IsObject())
-        {
-            const rapidjson::Value & strategies = strategy["Strategies"];
-            for (auto itr = strategies.MemberBegin(); itr != strategies.MemberEnd(); ++itr)
-            {
-                const std::string &         name = itr->name.GetString();
-                const rapidjson::Value &    val  = itr->value;
-        
-                BWAPI::Race strategyRace;
-                if (val.HasMember("Race") && val["Race"].IsString())
-                {
-                    strategyRace = GetRace(val["Race"].GetString());
-                }
-                else
-                {
-                    UAB_ASSERT_WARNING(false, "Strategy must have a Race string. Skipping strategy %s", name.c_str());
-                    continue;
-                }
-
-                BuildOrder buildOrder(strategyRace);
-                if (val.HasMember("OpeningBuildOrder") && val["OpeningBuildOrder"].IsArray())
-                {
-                    const rapidjson::Value & build = val["OpeningBuildOrder"];
-
-                    for (size_t b(0); b < build.Size(); ++b)
-                    {
-                        if (build[b].IsString())
-                        {
-                            MetaType type(build[b].GetString());
-
-                            if (type.getRace() != BWAPI::Races::None)
-                            {
-                                buildOrder.add(type);
-                            }
-                        }
-                        else
-                        {
-                            UAB_ASSERT_WARNING(false, "Build order item must be a string %s", name.c_str());
-                            continue;
-                        }
-                    }
-                }
-
-				Strategy strategyInstance(name, strategyRace, buildOrder);
-                strategyManager->addStrategy(name, strategyInstance);
-            }
-        }
-    }
+	// Parse all the Strategies
+	for (auto strategyPair : strategyOptions.Strategies)
+	{
+		Strategy strategyInstance(strategyPair.first, strategyPair.second.getRace(), strategyPair.second);
+		strategyManager->addStrategy(strategyPair.first, strategyInstance);
+	}
 }
 
 std::string ParseUtils::ReadFile(const std::string & filename)

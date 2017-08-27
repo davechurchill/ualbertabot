@@ -4,6 +4,7 @@
 #include <cassert>
 #include <set>
 #include <string>
+#include "BuildOrder.h"
 
 struct BotInfoConfiguration
 {
@@ -36,6 +37,13 @@ struct BotSparCraftConfiguration
 	std::string CombatSimPlayerName = "AttackC";
 };
 
+struct BotSpecificStrategyInfo
+{
+	std::string ProtossStrategyName;
+	std::string TerranStrategyName;
+	std::string ZergStrategyName;
+};
+
 struct BotStrategyConfiguration
 {
 	std::string ProtossStrategyName = "Protoss_ZealotRush";
@@ -44,6 +52,8 @@ struct BotStrategyConfiguration
 	std::string StrategyName = "Protoss_ZealotRush";
 	bool ScoutHarassEnemy = true;
 	bool UseEnemySpecificStrategy = false;
+	std::map<std::string, BotSpecificStrategyInfo> EnemySpecificStrategy;
+	std::map<std::string, UAlbertaBot::BuildOrder> Strategies;
 	bool FoundEnemySpecificStrategy = false;
 	bool UsingStrategyIO = false;    // toggle the use of file io for strategy
 	std::string ReadDir = "bwapi-data/read/";

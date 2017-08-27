@@ -161,6 +161,7 @@ bool UnitInfoManager::enemyHasCloakedUnits() const
         // assume they're going dts
         if (ui.type == BWAPI::UnitTypes::Protoss_Citadel_of_Adun)
         {
+			std::cout << "Has citadel of Adun" << std::endl;
             return true;
         }
 

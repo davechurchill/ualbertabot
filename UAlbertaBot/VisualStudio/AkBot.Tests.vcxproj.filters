@@ -63,6 +63,9 @@
     <ClCompile Include="..\..\AkBot.Tests\TestLib\ForceImpl.cpp">
       <Filter>TestLib</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\AkBot.Tests\BotConfigurationTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\AkBot.Tests\stdafx.h">
@@ -95,5 +98,13 @@
     <ClInclude Include="..\..\AkBot.Tests\TestLib\Convenience.h">
       <Filter>TestLib</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\AkBot.Tests\AK_Config.json">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\AkBot.Tests\Config_WithError.json">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
