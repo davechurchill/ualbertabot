@@ -15,7 +15,9 @@ namespace UAlbertaBot
     
 class ArenaPlayer_SparCraft : public ArenaPlayer
 {
-	const BotSparCraftConfiguration& _configuration;
+	const BotSparCraftConfiguration& _sparCraftConfiguration;
+	const BotArenaConfiguration& _areaConfiguration;
+	SparCraft::AIParameters& _aiParameters;
 
     SparCraft::GameState    GetSparCraftState(int currentFrame) const;
     SparCraft::Unit         GetSparCraftUnit(BWAPI::Unit unit, int currentFrame) const;
@@ -37,7 +39,10 @@ class ArenaPlayer_SparCraft : public ArenaPlayer
 
 public:
 
-	ArenaPlayer_SparCraft(const BotSparCraftConfiguration& configuration);
+	ArenaPlayer_SparCraft(
+		const BotSparCraftConfiguration& configuration,
+		const BotArenaConfiguration& areaConfiguration, 
+		SparCraft::AIParameters& aiParameters);
 
     void onStart();
     void onFrame();

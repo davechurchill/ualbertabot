@@ -80,7 +80,7 @@ BotPlayer AKBot::createBot(const std::string& mode, const std::string& configura
 		};
 		shared_ptr<GameDebug> gameDebug = std::shared_ptr<GameDebug>(new GameDebug(providers));
 
-		ParseUtils::ParseStrategy(configurationFile, strategyManager);
+		ParseUtils::ParseStrategy(configurationFile, Config, strategyManager);
 		return BotPlayer(std::shared_ptr<BotModule>(new UAlbertaBot_Tournament(
 			baseLocationManager,
 			autoObserver,

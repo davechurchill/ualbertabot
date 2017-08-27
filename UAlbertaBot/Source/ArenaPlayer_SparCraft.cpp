@@ -3,8 +3,13 @@
 
 using namespace UAlbertaBot;
 
-ArenaPlayer_SparCraft::ArenaPlayer_SparCraft(const BotSparCraftConfiguration& configuration)
-	: _configuration(configuration)
+ArenaPlayer_SparCraft::ArenaPlayer_SparCraft(
+	const BotSparCraftConfiguration& sparCraftConfiguration, 
+	const BotArenaConfiguration& areaConfiguration,
+	SparCraft::AIParameters& aiParameters)
+	: _sparCraftConfiguration(sparCraftConfiguration)
+	, _areaConfiguration(areaConfiguration)
+	, _aiParameters(aiParameters)
 {
     _name = "ArenaPlayer_SparCraft";
 }
@@ -17,7 +22,7 @@ void ArenaPlayer_SparCraft::onStart()
         SparCraft::init();
 
         // Read the SparCraft configuration file
-        SparCraft::AIParameters::Instance().parseFile(_configuration.SparCraftConfigFile);
+		_aiParameters.parseFile(_sparCraftConfiguration.SparCraftConfigFile);
        
 
         std::cout << "SparCraft initialized\n";
@@ -46,11 +51,10 @@ void ArenaPlayer_SparCraft::onBattleEnd()
 
 void ArenaPlayer_SparCraft::PlaySparCraftSimulation(const SparCraft::GameState & state)
 {
-	auto& aiParameters = SparCraft::AIParameters::Instance();
 	auto sparcraftSelfPlayer = GetSparCraftPlayerID(BWAPI::Broodwar->self());
 	auto sparcraftEnemyPlayer = GetSparCraftPlayerID(BWAPI::Broodwar->enemy());
-    SparCraft::PlayerPtr player = aiParameters.getPlayer(sparcraftSelfPlayer, Config.Arena.ArenaPlayerName);
-    SparCraft::PlayerPtr enemy =  aiParameters.getPlayer(sparcraftEnemyPlayer, "AttackC");
+    SparCraft::PlayerPtr player = _aiParameters.getPlayer(sparcraftSelfPlayer, _areaConfiguration.ArenaPlayerName);
+    SparCraft::PlayerPtr enemy = _aiParameters.getPlayer(sparcraftEnemyPlayer, "AttackC");
 
     SparCraft::Game g(state, player, enemy);
     g.play();
@@ -58,7 +62,7 @@ void ArenaPlayer_SparCraft::PlaySparCraftSimulation(const SparCraft::GameState &
 
 SparCraft::Move ArenaPlayer_SparCraft::GetSparCraftPlayerMove(const SparCraft::GameState & state, const size_t & playerID) const
 {
-    SparCraft::PlayerPtr player = SparCraft::AIParameters::Instance().getPlayer(playerID, Config.Arena.ArenaPlayerName);
+    SparCraft::PlayerPtr player = _aiParameters.getPlayer(playerID, _areaConfiguration.ArenaPlayerName);
 
     SparCraft::Move move;
     player->getMove(state, move);

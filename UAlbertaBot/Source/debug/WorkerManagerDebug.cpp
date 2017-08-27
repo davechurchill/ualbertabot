@@ -69,10 +69,6 @@ namespace AKBot
 			if (Config.Debug.DrawWorkerInfo)
 			{
 				canvas.drawBoxMap(x - 2, y - 1, x + 75, y + 14, BWAPI::Colors::Black, true);
-			}
-
-			if (Config.Debug.DrawWorkerInfo)
-			{
 				canvas.drawTextMap(x, y, "\x04 Workers: %d", _workerData->getNumAssignedWorkers(depot));
 			}
 

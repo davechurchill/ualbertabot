@@ -64,7 +64,7 @@ int main(int argc, const char * argv[])
 
     // parse the bot's configuration file, if it is not found or isn't valid, the program will exit
 	auto configurationFile = ParseUtils::FindConfigurationLocation(configurationFileName);
-	ParseUtils::ParseConfigFile(configurationFile, ConfigFileFound, ConfigFileParsed);
+	ParseUtils::ParseConfigFile(configurationFile, Config, ConfigFileFound, ConfigFileParsed);
 
     size_t gameCount = 0;
 	while (true)
