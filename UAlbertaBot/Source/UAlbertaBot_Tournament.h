@@ -21,6 +21,7 @@ namespace UAlbertaBot
 
 class UAlbertaBot_Tournament : public BotModule
 {
+	const BotConfiguration& _configuration;
 	shared_ptr<MapTools> _mapTools;
 	shared_ptr<BaseLocationManager> _baseLocationManager;
 	shared_ptr<AutoObserver> _autoObserver;
@@ -36,6 +37,7 @@ class UAlbertaBot_Tournament : public BotModule
 public:
 
     UAlbertaBot_Tournament(
+		const BotConfiguration& configuration,
 		shared_ptr<BaseLocationManager> baseLocationManager,
 		shared_ptr<AutoObserver> autoObserver,
 		shared_ptr<StrategyManager> strategyManager,

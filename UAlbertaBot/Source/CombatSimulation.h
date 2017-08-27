@@ -23,6 +23,8 @@ namespace UAlbertaBot
 class CombatSimulation
 {
 	SparCraft::GameState		_state;
+	SparCraft::GameState		_evaluatedState;
+	double						_lastScore;
 	shared_ptr<AKBot::OpponentView> _opponentView;
 	std::shared_ptr<AKBot::Logger> _logger;
 
@@ -46,7 +48,7 @@ public:
 	const SparCraft::GameState &	getSparCraftState() const;
 
 	const size_t getSparCraftPlayerID(BWAPI::Player player) const;
-
-	void logState(const SparCraft::GameState & state);
+	const double getLastScore() const { return _lastScore; }
+	const SparCraft::GameState& getEvaluatedState() { return _evaluatedState; }
 };
 }

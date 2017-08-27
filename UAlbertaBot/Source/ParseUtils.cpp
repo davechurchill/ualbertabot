@@ -206,6 +206,8 @@ void UAlbertaBot::ParseUtils::ParseConfigFile(
         JSONTools::ReadBool("UseBuildOrderSearch", module, modulesOptions.UsingBuildOrderSearch);
         JSONTools::ReadBool("UseStrategyIO", module, modulesOptions.UsingStrategyIO);
         JSONTools::ReadBool("UseAutoObserver", module, modulesOptions.UsingAutoObserver);
+		JSONTools::ReadString("ReadDirectory", module, modulesOptions.ReadDir);
+		JSONTools::ReadString("WriteDirectory", module, modulesOptions.WriteDir);
     }
 
     // Parse the Tool Options
@@ -261,14 +263,11 @@ void ParseUtils::ParseStrategy(
 
         // read in the various strategic elements
         JSONTools::ReadBool("ScoutHarassEnemy", strategy, strategyOptions.ScoutHarassEnemy);
-        JSONTools::ReadString("ReadDirectory", strategy, strategyOptions.ReadDir);
-        JSONTools::ReadString("WriteDirectory", strategy, strategyOptions.WriteDir);
 
         // if we have set a strategy for the current race, use it
         if (strategy.HasMember(race.c_str()) && strategy[race.c_str()].IsString())
         {
 			strategyOptions.StrategyName = strategy[race.c_str()].GetString();
-			strategyManager->setPreferredStrategy(strategyOptions.StrategyName);
         }
 
         // check if we are using an enemy specific strategy
@@ -282,7 +281,6 @@ void ParseUtils::ParseStrategy(
 				{
 					strategyOptions.StrategyName = searchResult.second;
 					strategyOptions.FoundEnemySpecificStrategy = true;
-					strategyManager->setPreferredStrategy(strategyOptions.StrategyName);
 					break;
 				}
 			}

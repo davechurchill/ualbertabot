@@ -2,18 +2,21 @@
 
 namespace AKBot
 {
-	WorkerManagerDebug::WorkerManagerDebug(shared_ptr<WorkerData> workerData)
+	WorkerManagerDebug::WorkerManagerDebug(
+		shared_ptr<WorkerData> workerData,
+		const BotDebugConfiguration& debugConfiguration)
 		: _workerData(workerData)
+		, _debugConfiguration(debugConfiguration)
 	{
 	}
 	void WorkerManagerDebug::draw(ScreenCanvas & canvas)
 	{
-		if (Config.Debug.DrawResourceInfo)
+		if (_debugConfiguration.DrawResourceInfo)
 		{
 			drawResourceDebugInfo(canvas);
 		}
 
-		if (Config.Debug.DrawWorkerInfo)
+		if (_debugConfiguration.DrawWorkerInfo)
 		{
 			drawWorkerInformation(canvas, 450, 20);
 		}
@@ -66,7 +69,7 @@ namespace AKBot
 			int x = depot->getPosition().x - 64;
 			int y = depot->getPosition().y - 32;
 
-			if (Config.Debug.DrawWorkerInfo)
+			if (_debugConfiguration.DrawWorkerInfo)
 			{
 				canvas.drawBoxMap(x - 2, y - 1, x + 75, y + 14, BWAPI::Colors::Black, true);
 				canvas.drawTextMap(x, y, "\x04 Workers: %d", _workerData->getNumAssignedWorkers(depot));

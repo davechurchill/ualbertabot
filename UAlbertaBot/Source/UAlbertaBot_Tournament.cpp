@@ -11,6 +11,7 @@ using namespace UAlbertaBot;
 using namespace AKBot;
 
 UAlbertaBot_Tournament::UAlbertaBot_Tournament(
+	const BotConfiguration& configuration,
 	shared_ptr<BaseLocationManager> baseLocationManager,
 	shared_ptr<AutoObserver> autoObserver,
 	shared_ptr<StrategyManager> strategyManager,
@@ -19,7 +20,8 @@ UAlbertaBot_Tournament::UAlbertaBot_Tournament(
 	shared_ptr<CombatCommander> combatManager,
 	shared_ptr<GameCommander> gameCommander,
 	shared_ptr<AKBot::GameDebug> gameDebug)
-	: _gameDebug(std::move(gameDebug))
+	: _configuration(configuration)
+	, _gameDebug(std::move(gameDebug))
 	, _baseLocationManager(std::move(baseLocationManager))
 	, _autoObserver(std::move(autoObserver))
 	, _unitInfoManager(std::move(unitInfoManager))
@@ -40,32 +42,34 @@ void UAlbertaBot_Tournament::onStart()
 {
 	// Initialize SparCraft, the combat simulation package
 	SparCraft::init();
-	auto configurationFile = ParseUtils::FindConfigurationLocation(Config.SparCraft.SparCraftConfigFile);
+	auto configurationFile = ParseUtils::FindConfigurationLocation(_configuration.SparCraft.SparCraftConfigFile);
 	SparCraft::AIParameters::Instance().parseFile(configurationFile);
 
 	// Initialize BOSS, the Build Order Search System
 	BOSS::init();
 
 	// Set our BWAPI options here    
-	BWAPI::Broodwar->setLocalSpeed(Config.BWAPIOptions.SetLocalSpeed);
-	BWAPI::Broodwar->setFrameSkip(Config.BWAPIOptions.SetFrameSkip);
+	auto& bwapiOptions = _configuration.BWAPIOptions;
+	BWAPI::Broodwar->setLocalSpeed(bwapiOptions.SetLocalSpeed);
+	BWAPI::Broodwar->setFrameSkip(bwapiOptions.SetFrameSkip);
 
-	if (Config.BWAPIOptions.EnableCompleteMapInformation)
+	if (bwapiOptions.EnableCompleteMapInformation)
 	{
 		BWAPI::Broodwar->enableFlag(BWAPI::Flag::CompleteMapInformation);
 	}
 
-	if (Config.BWAPIOptions.EnableUserInput)
+	if (bwapiOptions.EnableUserInput)
 	{
 		BWAPI::Broodwar->enableFlag(BWAPI::Flag::UserInput);
 	}
 
-	if (Config.BotInfo.PrintInfoOnStart)
+	auto& botInfoOptions = _configuration.BotInfo;
+	if (botInfoOptions.PrintInfoOnStart)
 	{
-		BWAPI::Broodwar->printf("Hello! I am %s, written by %s", Config.BotInfo.BotName.c_str(), Config.BotInfo.Authors.c_str());
+		BWAPI::Broodwar->printf("Hello! I am %s, written by %s", botInfoOptions.BotName.c_str(), botInfoOptions.Authors.c_str());
 	}
 
-	if (Config.Modules.UsingStrategyIO)
+	if (_configuration.Modules.UsingStrategyIO)
 	{
 		_strategyManager->readResults();
 		_strategyManager->setLearnedStrategy();
@@ -140,7 +144,7 @@ void UAlbertaBot_Tournament::onFrame()
 	// Draw debug information
 	drawDebugInformation(_canvas);
 
-    if (Config.Modules.UsingAutoObserver)
+    if (_configuration.Modules.UsingAutoObserver)
     {
         _autoObserver->onFrame(currentFrame);
     }

@@ -8,28 +8,33 @@ namespace AKBot
 {
 	using UAlbertaBot::Global::getEnemy;
 
-	GameCommanderDebug::GameCommanderDebug(shared_ptr<GameCommander> gameCommander)
+	GameCommanderDebug::GameCommanderDebug(
+		shared_ptr<GameCommander> gameCommander,
+		shared_ptr<AKBot::Logger> logger,
+		const BotDebugConfiguration& debugConfiguration)
 		: _gameCommander(gameCommander)
+		, _logger(logger)
+		, _debugConfiguration(debugConfiguration)
 	{
 	}
 
 	void GameCommanderDebug::draw(ScreenCanvas & canvas)
 	{
-		if (Config.Debug.DrawScoutInfo)
+		if (_debugConfiguration.DrawScoutInfo)
 		{
 			ScoutManagerDebug scoutDebug(_gameCommander->getScoutManager());
 			scoutDebug.drawScoutInformation(canvas, 200, 320);
 		}
 
-		ProductionManagerDebug productionDebug(_gameCommander->getProductionManager());
+		ProductionManagerDebug productionDebug(_gameCommander->getProductionManager(), _logger, _debugConfiguration);
 		productionDebug.drawProductionInformation(canvas, 30, 50);
-		CombatCommanderDebug combatDebug(_gameCommander->getCombatCommander());
+		CombatCommanderDebug combatDebug(_gameCommander->getCombatCommander(), _debugConfiguration);
 		combatDebug.draw(canvas);
 
 		drawGameInformation(canvas, 4, 1);
 
 		// draw position of mouse cursor
-		if (Config.Debug.DrawMouseCursorInfo)
+		if (_debugConfiguration.DrawMouseCursorInfo)
 		{
 			int mouseX = BWAPI::Broodwar->getMousePosition().x + BWAPI::Broodwar->getScreenPosition().x;
 			int mouseY = BWAPI::Broodwar->getMousePosition().y + BWAPI::Broodwar->getScreenPosition().y;

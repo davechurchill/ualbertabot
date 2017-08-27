@@ -4,8 +4,13 @@ namespace AKBot
 {
 	using UAlbertaBot::CompareWhenStarted;
 
-	ProductionManagerDebug::ProductionManagerDebug(shared_ptr<ProductionManager> productionManager)
+	ProductionManagerDebug::ProductionManagerDebug(
+		shared_ptr<ProductionManager> productionManager,
+		shared_ptr<AKBot::Logger> logger,
+		const BotDebugConfiguration& debugConfiguration)
 		: _productionManager(productionManager)
+		, _logger(logger)
+		, _debugConfiguration(debugConfiguration)
 	{
 	}
 
@@ -14,10 +19,28 @@ namespace AKBot
 		auto buildingManager = _productionManager->getBuildingManager();
 		drawBuildingInformation(canvas, buildingManager, 200, 50);
 		auto bossManager = _productionManager->getBOSSManager();
-		drawSearchInformation(canvas, bossManager, 490, 100);
+		if (!_debugConfiguration.DrawBuildOrderSearchInfo)
+		{
+			drawSearchInformation(canvas, bossManager, 490, 100);
+			if (_productionManager->getEmptyQueueDetected())
+			{
+				canvas.drawTextScreen(150, 10, "Nothing left to build, new search!");
+			}
+
+			if (_productionManager->getQueueDeadlockDetected())
+			{
+				_logger->log("Supply deadlock detected, building supply!");
+			}
+
+			if (_productionManager->getCloackedUnitDetectedThisFrame())
+			{
+				_logger->log("Enemy Cloaked Unit Detected!");
+			}
+		}
+
 		drawStateInformation(canvas, 250, 0, buildingManager);
 
-		if (!Config.Debug.DrawProductionInfo)
+		if (!_debugConfiguration.DrawProductionInfo)
 		{
 			return;
 		}
@@ -66,13 +89,12 @@ namespace AKBot
 
 	void ProductionManagerDebug::drawQueueInformation(AKBot::ScreenCanvas& canvas, const BuildOrderQueue& buildQueue, int x, int y) const
 	{
-		//x = x + 25;
-
-		if (!Config.Debug.DrawProductionInfo)
+		if (!_debugConfiguration.DrawProductionInfo)
 		{
 			return;
 		}
 
+		//x = x + 25;
 		std::string prefix = "\x04";
 
 		size_t reps = buildQueue.size() < 12 ? buildQueue.size() : 12;
@@ -116,7 +138,7 @@ namespace AKBot
 	{
 		drawReservedTiles(canvas, buildingManager->getBuildingPlacer());
 
-		if (!Config.Debug.DrawBuildingInfo)
+		if (!_debugConfiguration.DrawBuildingInfo)
 		{
 			return;
 		}
@@ -165,11 +187,6 @@ namespace AKBot
 
 	void ProductionManagerDebug::drawSearchInformation(AKBot::ScreenCanvas& canvas, shared_ptr<BOSSManager> bossManager, int x, int y) const
 	{
-		if (!Config.Debug.DrawBuildOrderSearchInfo)
-		{
-			return;
-		}
-
 		// draw the background
 		int width = 155;
 		int height = 80;
@@ -199,7 +216,7 @@ namespace AKBot
 
 	void ProductionManagerDebug::drawStateInformation(AKBot::ScreenCanvas& canvas, int x, int y, shared_ptr<BuildingManager> buildingManager) const
 	{
-		if (!Config.Debug.DrawBOSSStateInfo)
+		if (!_debugConfiguration.DrawBOSSStateInfo)
 		{
 			return;
 		}
@@ -212,7 +229,7 @@ namespace AKBot
 
 	void ProductionManagerDebug::drawReservedTiles(AKBot::ScreenCanvas& canvas, const BuildingPlacer& buildingPlacer) const
 	{
-		if (!Config.Debug.DrawReservedBuildingTiles)
+		if (!_debugConfiguration.DrawReservedBuildingTiles)
 		{
 			return;
 		}

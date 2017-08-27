@@ -328,7 +328,7 @@ void StrategyManager::readResults()
     std::string enemyName = enemy->getName();
     std::replace(enemyName.begin(), enemyName.end(), ' ', '_');
 
-    std::string enemyResultsFile = Config.Strategy.ReadDir + enemyName + ".txt";
+    std::string enemyResultsFile = Config.Modules.ReadDir + enemyName + ".txt";
     
     std::string strategyName;
     int wins = 0;
@@ -348,14 +348,16 @@ void StrategyManager::readResults()
 
             //_logger.log("Results Found: %s %d %d", strategyName.c_str(), wins, losses);
 
-            if (_strategies.find(strategyName) == _strategies.end())
+			auto strategyPtr = _strategies.find(strategyName);
+            if (strategyPtr == _strategies.end())
             {
                 //_logger.log("Warning: Results file has unknown Strategy: %s", strategyName.c_str());
             }
             else
             {
-                _strategies[strategyName]._wins = wins;
-                _strategies[strategyName]._losses = losses;
+				auto& strategy = strategyPtr->second;
+                strategy._wins = wins;
+                strategy._losses = losses;
             }
         }
 
@@ -383,7 +385,7 @@ void StrategyManager::writeResults()
 	std::string enemyName = Global::getEnemy()->getName();
     std::replace(enemyName.begin(), enemyName.end(), ' ', '_');
 
-    std::string enemyResultsFile = Config.Strategy.WriteDir + enemyName + ".txt";
+    std::string enemyResultsFile = Config.Modules.WriteDir + enemyName + ".txt";
 
     std::stringstream ss;
 
@@ -450,7 +452,7 @@ void StrategyManager::setLearnedStrategy()
     // get the total number of games played so far with this race
     for (auto & kv : _strategies)
     {
-        Strategy & strategy = kv.second;
+        auto& strategy = kv.second;
         if (strategy._race == _opponentView->self()->getRace())
         {
             totalGamesPlayed += strategy._wins + strategy._losses;

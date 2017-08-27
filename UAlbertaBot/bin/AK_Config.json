@@ -79,7 +79,10 @@
     {
         "UseBuildOrderSearch"       : true,
         "UseStrategyIO"             : true,
-        "UseAutoObserver"           : false
+        "UseAutoObserver"           : false,
+        
+        "ReadDirectory"             : "bwapi-data/read/",
+        "WriteDirectory"            : "bwapi-data/write/"
     },
     
     "Tools" :

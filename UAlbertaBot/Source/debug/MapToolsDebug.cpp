@@ -4,14 +4,17 @@
 
 namespace AKBot
 {
-	MapToolsDebug::MapToolsDebug(shared_ptr<MapTools> map, shared_ptr<BaseLocationManager> bases)
-		: _map(map), _bases(bases)
+	MapToolsDebug::MapToolsDebug(
+		shared_ptr<MapTools> map,
+		shared_ptr<BaseLocationManager> bases,
+		const BotDebugConfiguration& debugConfiguration)
+		: _map(map), _bases(bases), _debugConfiguration(debugConfiguration)
 	{
 	}
 
 	void MapToolsDebug::draw(AKBot::ScreenCanvas& canvas)
 	{
-		if (!Config.Debug.DrawLastSeenTileInfo)
+		if (!_debugConfiguration.DrawLastSeenTileInfo)
 		{
 			return;
 		}

@@ -18,6 +18,7 @@ using namespace AKBot;
 using namespace UAlbertaBot;
 
 BotPlayer AKBot::createBot(const std::string& mode, const std::string& configurationFile) {
+	auto& configuration = Config;
 	if (mode == "Tournament") {
 		auto logger = std::shared_ptr<AKBot::Logger>(new AKBot::BWAPIPrintLogger());
 		auto opponentView = std::shared_ptr<AKBot::OpponentView>(new AKBot::BWAPIOpponentView());
@@ -61,8 +62,7 @@ BotPlayer AKBot::createBot(const std::string& mode, const std::string& configura
 			workerManager,
 			unitInfoManager,
 			baseLocationManager,
-			mapTools,
-			logger));
+			mapTools));
 		auto gameCommander = std::shared_ptr<GameCommander>(new GameCommander(
 			opponentView,
 			bossManager,
@@ -71,17 +71,20 @@ BotPlayer AKBot::createBot(const std::string& mode, const std::string& configura
 			productionManager,
 			workerManager
 		));
+		auto& debugConfiguration = configuration.Debug;
 		std::vector<shared_ptr<DebugInfoProvider>> providers = {
-			std::shared_ptr<DebugInfoProvider>(new AKBot::GameCommanderDebug(gameCommander)),
+			std::shared_ptr<DebugInfoProvider>(new AKBot::GameCommanderDebug(gameCommander, logger, debugConfiguration)),
 			std::shared_ptr<DebugInfoProvider>(new AKBot::BaseLocationManagerDebug(opponentView, baseLocationManager, mapTools)),
-			std::shared_ptr<DebugInfoProvider>(new AKBot::UnitInfoManagerDebug(opponentView, unitInfoManager)),
-			std::shared_ptr<DebugInfoProvider>(new AKBot::WorkerManagerDebug(workerData)),
-			std::shared_ptr<DebugInfoProvider>(new AKBot::MapToolsDebug(mapTools, baseLocationManager)),
+			std::shared_ptr<DebugInfoProvider>(new AKBot::UnitInfoManagerDebug(opponentView, unitInfoManager, debugConfiguration)),
+			std::shared_ptr<DebugInfoProvider>(new AKBot::WorkerManagerDebug(workerData, debugConfiguration)),
+			std::shared_ptr<DebugInfoProvider>(new AKBot::MapToolsDebug(mapTools, baseLocationManager, debugConfiguration)),
 		};
 		shared_ptr<GameDebug> gameDebug = std::shared_ptr<GameDebug>(new GameDebug(providers));
 
-		ParseUtils::ParseStrategy(configurationFile, Config, strategyManager);
+		ParseUtils::ParseStrategy(configurationFile, configuration, strategyManager);
+		strategyManager->setPreferredStrategy(configuration.Strategy.StrategyName);
 		return BotPlayer(std::shared_ptr<BotModule>(new UAlbertaBot_Tournament(
+			configuration,
 			baseLocationManager,
 			autoObserver,
 			strategyManager,
@@ -92,7 +95,7 @@ BotPlayer AKBot::createBot(const std::string& mode, const std::string& configura
 			gameDebug)));
 	}
 	else if (mode == "Arena") {
-		return BotPlayer(std::shared_ptr<BotModule>(new UAlbertaBot_Arena()));
+		return BotPlayer(std::shared_ptr<BotModule>(new UAlbertaBot_Arena(configuration)));
 	}
 	else {
 		return BotPlayer(std::shared_ptr<BotModule>());

@@ -16,6 +16,8 @@ namespace UAlbertaBot
 		int         _losses;
 		BuildOrder  _buildOrder;
 
+		// TODO: This constructor is not needed and StrategyManager
+		// should be reworked to be able work without default constructor.
 		Strategy()
 			: _name("None")
 			, _race(BWAPI::Races::None)

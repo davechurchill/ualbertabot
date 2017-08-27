@@ -62,11 +62,8 @@ void CombatCommander::initializeSquads()
     _squadData.addSquad("ScoutDefense", enemyScoutDefense, ScoutDefensePriority);
 
     // add a drop squad if we are using a drop strategy
-    if (Config.Strategy.StrategyName == "Protoss_Drop")
-    {
-        SquadOrder zealotDrop(SquadOrderTypes::Drop, ourBasePosition, 900, "Wait for transport");
-        _squadData.addSquad("Drop", zealotDrop, DropPriority);
-    }
+	SquadOrder zealotDrop(SquadOrderTypes::Drop, ourBasePosition, 900, "Wait for transport");
+	_squadData.addSquad("Drop", zealotDrop, DropPriority);
 
     _initialized = true;
 }
@@ -88,7 +85,12 @@ void CombatCommander::update(const std::vector<BWAPI::Unit> & combatUnits, int c
 	if (isSquadUpdateFrame(currentFrame))
 	{
         updateIdleSquad();
-        updateDropSquads();
+
+		if (Config.Strategy.StrategyName == "Protoss_Drop")
+		{
+			updateDropSquads();
+		}
+
         updateScoutDefenseSquad(currentFrame);
 		updateDefenseSquads(currentFrame);
 		updateAttackSquads();
@@ -138,11 +140,6 @@ void CombatCommander::updateAttackSquads()
 
 void CombatCommander::updateDropSquads()
 {
-    if (Config.Strategy.StrategyName != "Protoss_Drop")
-    {
-        return;
-    }
-
     Squad & dropSquad = _squadData.getSquad("Drop");
 
     // figure out how many units the drop squad needs

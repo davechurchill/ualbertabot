@@ -18,6 +18,8 @@ struct BotModulesConfiguration
 	bool UsingBuildOrderSearch = true;     // toggle use of Build Order Search, currently no backup
 	bool UsingAutoObserver = false;
 	bool UsingStrategyIO = false;    // toggle the use of file io for strategy
+	std::string ReadDir = "bwapi-data/read/";
+	std::string WriteDir = "bwapi-data/write/";
 	
 	// extra things, don't enable unless you know what they are
 	bool UsingBuildOrderDemo = false;
@@ -43,8 +45,6 @@ struct BotStrategyConfiguration
 	std::string TerranStrategyName = "Terran_MarineRush";
 	std::string ZergStrategyName = "Zerg_3HatchMuta";
 	std::string StrategyName = "Protoss_ZealotRush";
-	std::string ReadDir = "bwapi-data/read/";
-	std::string WriteDir = "bwapi-data/write/";
 	bool ScoutHarassEnemy = true;
 	bool UseEnemySpecificStrategy = false;
 	bool FoundEnemySpecificStrategy = false;

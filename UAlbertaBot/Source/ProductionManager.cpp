@@ -11,8 +11,7 @@ ProductionManager::ProductionManager(
 	shared_ptr<WorkerManager> workerManager,
 	shared_ptr<UnitInfoManager> unitInfo,
 	shared_ptr<BaseLocationManager> bases,
-	shared_ptr<MapTools> mapTools,
-	shared_ptr<AKBot::Logger> logger)
+	shared_ptr<MapTools> mapTools)
 	: _opponentView(opponentView)
 	, _workerManager(workerManager)
 	, _bossManager(bossManager)
@@ -22,7 +21,6 @@ ProductionManager::ProductionManager(
 	, _haveLocationForThisBuilding   (false)
 	, _enemyCloakedDetected          (false)
 	, _strategyManager(strategyManager)
-	, _logger(logger)
 {
     
 }
@@ -78,13 +76,10 @@ void ProductionManager::update(int currentFrame)
 	manageBuildOrderQueue(currentFrame);
     
 	// if nothing is currently building, get a new goal from the strategy manager
+	_emptyQueueDetected = false;
 	if ((_queue.size() == 0) && (currentFrame > 10))
 	{
-        if (Config.Debug.DrawBuildOrderSearchInfo)
-        {
-		    BWAPI::Broodwar->drawTextScreen(150, 10, "Nothing left to build, new search!");
-        }
-
+		_emptyQueueDetected = true;
 		performBuildOrderSearch(currentFrame);
 	}
 
@@ -92,17 +87,15 @@ void ProductionManager::update(int currentFrame)
 	auto ourRace = self->getRace();
 	
 	// detect if there's a build order deadlock once per second
+	_queueDeadlockDetected = false;
 	if ((currentFrame % 24 == 0) && detectBuildOrderDeadlock())
 	{
-        if (Config.Debug.DrawBuildOrderSearchInfo)
-        {
-		    _logger->log("Supply deadlock detected, building supply!");
-        }
-
+		_queueDeadlockDetected = true;
 		_queue.queueAsHighestPriority(MetaType(ourRace.getSupplyProvider()), true);
 	}
 
 	// if they have cloaked units get a new goal asap
+	_enemyCloakedDetectedThisFrame = false;
 	if (!_enemyCloakedDetected && _unitInfo->enemyHasCloakedUnits())
 	{
 		if (ourRace == BWAPI::Races::Protoss)
@@ -131,13 +124,9 @@ void ProductionManager::update(int currentFrame)
 			    _queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Engineering_Bay), true);
 		    }
         }
-        
-        if (Config.Debug.DrawBuildOrderSearchInfo)
-        {
-		    _logger->log("Enemy Cloaked Unit Detected!");
-        }
 
 		_enemyCloakedDetected = true;
+		_enemyCloakedDetectedThisFrame = true;
 	}
 
     _buildingManager->update(currentFrame);
