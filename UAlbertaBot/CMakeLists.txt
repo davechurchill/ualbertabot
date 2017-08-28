@@ -8,18 +8,52 @@ list(REMOVE_ITEM AKBot_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/TimerManager.
 list(REMOVE_ITEM AKBot_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/CombatData.cpp")
 file(GLOB_RECURSE AKBot_HEADERS "source/*.h")
 
-if (MSVC14)
+if (AKBOT_SSCAIT)	
+	set(BWAPI_INCLUDE_DIR "$ENV{BWAPI_SSCAIT_DIR}/include")
+	if (MSVC14)
+		# For embedding BWAPI 4.1.2 you should manually place Debug.h and starcraftver.h  in the root of BWAPI folder
+		# if use installer and create svnrev.h with approximately following content
+		#
+		# static const int SVN_REV = 4708;
+		# #include "starcraftver.h"
+		# Value of SVN_REV is important, since BWAPI require match of these value with value hardcoded in the BWAPI.dll
+		file(GLOB BWAPILib_SOURCES "$ENV{BWAPI_SSCAIT_DIR}/BWAPILib/Source/*.cpp")
+		file(GLOB BWAPIClient_SOURCES "$ENV{BWAPI_SSCAIT_DIR}/BWAPIClient/Source/*.cpp")
+		file(GLOB BWAPIShared_SOURCES "$ENV{BWAPI_SSCAIT_DIR}/Shared/*.cpp")
+
+		add_library(BWAPILib 
+			${BWAPILib_SOURCES}
+			#${BWAPIClient_SOURCES}
+			${BWAPIShared_SOURCES}
+			"$ENV{BWAPI_SSCAIT_DIR}/BWAPILib/UnitCommand.cpp"
+		)
+		add_library(AKBot::BWAPILib ALIAS BWAPILib)
+
+		target_include_directories(BWAPILib BEFORE PUBLIC
+			"${BWAPI_INCLUDE_DIR}"
+			"${BWAPI_INCLUDE_DIR}/BWAPI/Client"
+			"$ENV{BWAPI_SSCAIT_DIR}/Shared"
+		)
+
+		add_library(BWAPIClient
+			#${BWAPILib_SOURCES}
+			${BWAPIClient_SOURCES}
+			${BWAPIShared_SOURCES}
+		)
+		add_library(AKBot::BWAPIClient ALIAS BWAPIClient)
+
+		target_include_directories(BWAPIClient BEFORE 
+			PUBLIC "${BWAPI_INCLUDE_DIR}"
+			"${BWAPI_INCLUDE_DIR}/BWAPI/Client"
+			PUBLIC "$ENV{BWAPI_SSCAIT_DIR}/Shared"
+			)
+	else()
+		set(BWAPI_LIB_DIR "$ENV{BWAPI_SSCAIT_DIR}/lib")
+	endif()
+else()
 	set(BWAPI_LIB_DIR "$ENV{BWAPI_DIR}/lib")
 	set(BWAPI_INCLUDE_DIR "$ENV{BWAPI_DIR}/include")
-else()
-	set(BWAPI_LIB_DIR "$ENV{BWAPI_SSCAIT_DIR}/lib")
-	set(BWAPI_INCLUDE_DIR "$ENV{BWAPI_SSCAIT_DIR}/include")
 endif()
-
-include_directories(
-    ${BWAPI_INCLUDE_DIR}
-    source
-)
 
 find_package(Boost 1.62.0)
 include_directories(${Boost_INCLUDE_DIRS})
@@ -33,7 +67,15 @@ add_definitions(-DNOMINMAX)
 add_library(AKBot 
     ${AKBot_SOURCES}
 	${AKBot_DEBUG_SOURCES}
+	#${BWAPILib_SOURCES}
+	#${BWAPIClient_SOURCES}
+	#${BWAPIShared_SOURCES}
 )
+target_include_directories(AKBot BEFORE PUBLIC
+	${BWAPI_INCLUDE_DIR}
+    source
+)
+
 add_library(AKBot::Lib ALIAS AKBot)
 add_library(AKBot::SparCraft ALIAS SparCraft)
 add_library(AKBot::BOSS ALIAS BOSS)
@@ -52,7 +94,18 @@ add_executable(
 )
 
 add_dependencies(AKBot_exe AKBot)
-target_link_libraries(AKBot_exe PUBLIC AKBot::Lib AKBot::SparCraft AKBot::BOSS BWAPI.lib BWAPIClient.lib)
+
+IF(CMAKE_BUILD_TYPE MATCHES Debug)
+	if (MSVC14)
+		target_link_libraries(AKBot_exe PUBLIC AKBot::BWAPILib AKBot::BWAPIClient)
+	else()
+		target_link_libraries(AKBot_exe PUBLIC BWAPId.lib BWAPIClientd.lib)
+	endif()
+ELSE()
+	target_link_libraries(AKBot_exe PUBLIC BWAPI.lib BWAPIClient.lib)
+ENDIF()
+
+target_link_libraries(AKBot_exe PUBLIC AKBot::Lib AKBot::SparCraft AKBot::BOSS)
 if (MSVC14)
     target_compile_options(AKBot_exe PRIVATE /await)
 endif()

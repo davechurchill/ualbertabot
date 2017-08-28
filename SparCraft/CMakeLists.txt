@@ -1,12 +1,12 @@
 file(GLOB SparCraft_SOURCES "source/*.cpp")
 file(GLOB_RECURSE SparCraft_HEADERS "source/*.h")
 
-if (MSVC14)
-	set(BWAPI_LIB_DIR "$ENV{BWAPI_DIR}/lib")
-	set(BWAPI_INCLUDE_DIR "$ENV{BWAPI_DIR}/include")
-else()
+if (AKBOT_SSCAIT)
 	set(BWAPI_LIB_DIR "$ENV{BWAPI_SSCAIT_DIR}/lib")
 	set(BWAPI_INCLUDE_DIR "$ENV{BWAPI_SSCAIT_DIR}/include")
+else()
+	set(BWAPI_LIB_DIR "$ENV{BWAPI_DIR}/lib")
+	set(BWAPI_INCLUDE_DIR "$ENV{BWAPI_DIR}/include")
 endif()
 
 include_directories(
