@@ -1,7 +1,6 @@
 #include "Common.h"
 #include "StrategyManager.h"
 #include "UnitUtil.h"
-#include "Global.h"
 #include "ParseUtils.h"
 #include "FileLogger.h"
 
@@ -321,7 +320,7 @@ void StrategyManager::readResults()
     }
 
 	// If we don't have any enemy
-	auto enemy = Global::getEnemy();
+	auto enemy = _opponentView->defaultEnemy();
 	if (enemy == nullptr)
 	{
 		return;
@@ -378,13 +377,13 @@ void StrategyManager::writeResults()
         return;
     }
 
-	auto enemy = Global::getEnemy();
+	auto enemy = _opponentView->defaultEnemy();
 	if (enemy == nullptr)
 	{
 		return;
 	}
 
-	std::string enemyName = Global::getEnemy()->getName();
+	std::string enemyName = _opponentView->defaultEnemy()->getName();
     std::replace(enemyName.begin(), enemyName.end(), ' ', '_');
 
     std::string enemyResultsFile = _strategyConfiguration.WriteDir + enemyName + ".txt";

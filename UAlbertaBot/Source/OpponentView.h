@@ -16,6 +16,10 @@ namespace AKBot
 		 Returns bot's player
 		*/
 		virtual BWAPI::Player self() const = 0;
+		/*
+		Default enemy for current player
+		*/
+		virtual BWAPI::Player defaultEnemy() const = 0;
 		
 		/*
 		 Returns set of opponents to the given bot.

@@ -1,5 +1,4 @@
 #include "MapTools.h"
-#include "Global.h"
 #include "Timer.hpp"
 #include "UnitUtil.h"
 #include <utility>

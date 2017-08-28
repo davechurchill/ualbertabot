@@ -1,5 +1,4 @@
 #include "BaseLocation.h"
-#include "Global.h"
 #include "UnitUtil.h"
 #include <BWAPI.h>
 
@@ -116,7 +115,7 @@ void BaseLocation::setPlayerOccupying(BWAPI::Player player, bool occupying)
     _isPlayerOccupying[player] = occupying;
 
     // if this base is a start location that's occupied by the enemy, it's that enemy's start location
-	bool isEnemyPlayer = player == Global::getEnemy();
+	bool isEnemyPlayer = player == _opponentView->defaultEnemy();
     if (occupying && isEnemyPlayer && isStartLocation() && _isPlayerStartLocation[player] == false)
     {
         _isPlayerStartLocation[player] = true;

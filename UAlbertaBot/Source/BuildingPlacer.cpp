@@ -1,6 +1,5 @@
 #include "Common.h"
 #include "BuildingPlacer.h"
-#include "Global.h"
 #include "UnitUtil.h"
 
 using namespace UAlbertaBot;

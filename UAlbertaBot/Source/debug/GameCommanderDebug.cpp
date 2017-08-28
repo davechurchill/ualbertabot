@@ -1,13 +1,10 @@
 #include "GameCommanderDebug.h"
-#include "Global.h"
 #include "CombatCommanderDebug.h"
 #include "ScoutManagerDebug.h"
 #include "ProductionManagerDebug.h"
 
 namespace AKBot
 {
-	using UAlbertaBot::Global::getEnemy;
-
 	GameCommanderDebug::GameCommanderDebug(
 		shared_ptr<GameCommander> gameCommander,
 		shared_ptr<AKBot::Logger> logger,
@@ -46,7 +43,7 @@ namespace AKBot
 
 	void GameCommanderDebug::drawGameInformation(ScreenCanvas& canvas, int x, int y) const
 	{
-		auto enemy = getEnemy();
+		auto enemy = _gameCommander->getOpponentView()->defaultEnemy();
 		auto self = _gameCommander->getOpponentView()->self();
 		canvas.drawTextScreen(x, y, "\x04Players:");
 		if (enemy != nullptr)

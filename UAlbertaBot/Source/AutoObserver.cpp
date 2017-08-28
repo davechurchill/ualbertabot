@@ -1,5 +1,4 @@
 #include "AutoObserver.h"
-#include "Global.h"
 #include <BWAPI.h>
 
 using namespace UAlbertaBot;

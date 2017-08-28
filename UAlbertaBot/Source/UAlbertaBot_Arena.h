@@ -30,6 +30,7 @@ class UAlbertaBot_Arena : public BotModule
 public:
 
     UAlbertaBot_Arena(const BotConfiguration& configuration);
+	UAlbertaBot_Arena(const UAlbertaBot_Arena&) = delete;
 
     void    printInfo();
 

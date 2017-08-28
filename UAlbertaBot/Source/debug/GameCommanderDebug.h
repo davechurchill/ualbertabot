@@ -22,6 +22,7 @@ namespace AKBot
 			shared_ptr<AKBot::Logger> logger,
 			const BotDebugConfiguration& debugConfiguration,
 			const BotStrategyConfiguration& strategyConfiguration);
+		GameCommanderDebug(const GameCommanderDebug&) = delete;
 		void draw(ScreenCanvas& canvas) override;
 	};
 }

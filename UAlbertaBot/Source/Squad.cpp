@@ -1,6 +1,5 @@
 #include "Squad.h"
 #include "UnitUtil.h"
-#include "Global.h"
 
 using namespace UAlbertaBot;
 
@@ -215,7 +214,7 @@ bool Squad::needsToRegroup(shared_ptr<MapTools> map, int currentFrame)
 
     // if none of our units are in attack range of any enemy units, don't retreat
     std::vector<UnitInfo> enemyCombatUnits;
-    const auto & enemyUnitInfo = _unitInfo->getUnitInfoMap(Global::getEnemy());
+    const auto & enemyUnitInfo = _unitInfo->getUnitInfoMap(_opponentView->defaultEnemy());
 
     bool anyInRange = false;
     for (const auto & eui : enemyUnitInfo)
@@ -439,7 +438,7 @@ BWAPI::Unit Squad::unitClosestToEnemy(std::function<int(const BWAPI::Position & 
 			}
 
 			// the distance to the order position
-			int dist = unit->getDistance(BWAPI::Position(Global::getEnemy()->getStartLocation()));
+			int dist = unit->getDistance(BWAPI::Position(_opponentView->defaultEnemy()->getStartLocation()));
 
 			if (dist != -1 && (!closest || dist < closestDist))
 			{

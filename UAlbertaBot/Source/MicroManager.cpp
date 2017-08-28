@@ -1,5 +1,4 @@
 #include "MicroManager.h"
-#include "Global.h"
 #include "Micro.h"
 #include "UnitUtil.h"
 

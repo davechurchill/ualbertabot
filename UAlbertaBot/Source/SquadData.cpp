@@ -1,5 +1,4 @@
 #include "SquadData.h"
-#include "Global.h"
 
 using namespace UAlbertaBot;
 using namespace AKBot;

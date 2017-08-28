@@ -2,7 +2,6 @@
 #include "GameCommander.h"
 #include "UnitUtil.h"
 #include "Timer.hpp"
-#include "Global.h"
 
 using namespace UAlbertaBot;
 

@@ -70,6 +70,7 @@ public:
 		const BotMicroConfiguration& microConfiguration,
 		const BotSparCraftConfiguration& sparcraftConfiguration,
 		const BotDebugConfiguration& debugConfiguration);
+	CombatCommander(const CombatCommander&) = delete;
 
 	void update(const std::vector<BWAPI::Unit> & combatUnits, int currentFrame);
 	const SquadData& getSquadData() const;

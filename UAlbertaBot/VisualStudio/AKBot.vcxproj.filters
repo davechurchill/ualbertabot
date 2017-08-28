@@ -10,9 +10,6 @@
     <ClCompile Include="..\Source\UABAssert.cpp">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Global.cpp">
-      <Filter>global</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\StrategyManager.cpp">
       <Filter>global</Filter>
     </ClCompile>
@@ -214,9 +211,6 @@
     </ClInclude>
     <ClInclude Include="..\Source\UABAssert.h">
       <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Global.h">
-      <Filter>global</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\StrategyManager.h">
       <Filter>global</Filter>

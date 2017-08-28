@@ -1,5 +1,4 @@
 #include "BaseLocationManager.h"
-#include "Global.h"
 #include "UnitUtil.h"
 
 using namespace UAlbertaBot;
@@ -45,7 +44,7 @@ void BaseLocationManager::onStart(shared_ptr<MapTools> map)
 
     // construct the vectors of base location pointers, this is safe since they will never change
 	auto self = _opponentView->self();
-	auto enemy = Global::getEnemy();
+	auto enemy = _opponentView->defaultEnemy();
 	if (enemy == nullptr)
 	{
 		return;
@@ -123,7 +122,7 @@ void BaseLocationManager::update(shared_ptr<UnitInfoManager> unitManager)
         }
     }
 
-    auto defaultEnemyPlayer = Global::getEnemy();
+    auto defaultEnemyPlayer = _opponentView->defaultEnemy();
 	if (defaultEnemyPlayer == nullptr)
 	{
 		return;
@@ -240,7 +239,7 @@ BWAPI::Position UAlbertaBot::BaseLocationManager::getLeastRecentlySeenPosition(s
 	BWAPI::TilePosition leastSeen(0, 0);
 	const BaseLocation * baseLocation = getPlayerStartingBaseLocation(_opponentView->self());
 
-	const auto enemy = Global::getEnemy();
+	const auto enemy = _opponentView->defaultEnemy();
 	const auto enemyStartLocation = enemy == nullptr ? nullptr : getPlayerStartingBaseLocation(enemy);
 	if (enemyStartLocation != nullptr)
 	{

@@ -1,6 +1,5 @@
 #include "CombatCommander.h"
 #include "UnitUtil.h"
-#include "Global.h"
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm.hpp>
 #include <boost/generator_iterator.hpp>
@@ -270,7 +269,7 @@ void CombatCommander::updateDefenseSquads(int currentFrame)
         return; 
     }
 
-	auto enemy = Global::getEnemy();
+	auto enemy = _opponentView->defaultEnemy();
 	if (enemy == nullptr)
 	{
 		return;

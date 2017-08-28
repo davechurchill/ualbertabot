@@ -1,7 +1,6 @@
 #include "Common.h"
 #include "BuildingManager.h"
 #include "Micro.h"
-#include "Global.h"
 
 using namespace UAlbertaBot;
 

@@ -55,7 +55,6 @@
     <ClCompile Include="..\source\DetectorManager.cpp" />
     <ClCompile Include="..\Source\DistanceMap.cpp" />
     <ClCompile Include="..\Source\GameCommander.cpp" />
-    <ClCompile Include="..\Source\Global.cpp" />
     <ClCompile Include="..\Source\ScreenCanvas.cpp" />
     <ClCompile Include="..\Source\UAlbertaBot_Arena.cpp" />
     <ClCompile Include="..\Source\UAlbertaBot_Tournament.cpp" />
@@ -123,7 +122,6 @@
     <ClInclude Include="..\Source\DistanceMap.h" />
     <ClInclude Include="..\Source\GameCommander.h" />
     <ClInclude Include="..\Source\GameHistory.hpp" />
-    <ClInclude Include="..\Source\Global.h" />
     <ClInclude Include="..\Source\Logger.h" />
     <ClInclude Include="..\Source\MapInformation.h" />
     <ClInclude Include="..\Source\OpponentView.h" />

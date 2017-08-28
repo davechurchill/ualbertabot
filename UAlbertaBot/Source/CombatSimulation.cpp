@@ -1,5 +1,4 @@
 #include "CombatSimulation.h"
-#include "Global.h"
 #include "UnitUtil.h"
 
 using namespace UAlbertaBot;
@@ -133,7 +132,7 @@ double CombatSimulation::simulateCombat()
     {
 	    SparCraft::GameState originalState(_state);
         size_t selfID = getSparCraftPlayerID(_opponentView->self());
-        size_t enemyID = getSparCraftPlayerID(Global::getEnemy());
+        size_t enemyID = getSparCraftPlayerID(_opponentView->defaultEnemy());
 
         SparCraft::PlayerPtr selfNOK(new SparCraft::Player_AttackClosest(selfID));
         SparCraft::PlayerPtr enemyNOK(new SparCraft::Player_AttackClosest(enemyID));
@@ -171,7 +170,7 @@ const size_t CombatSimulation::getSparCraftPlayerID(BWAPI::Player player) const
 	{
 		return SparCraft::Players::Player_One;
 	}
-	else if (player == Global::getEnemy())
+	else if (player == _opponentView->defaultEnemy())
 	{
 		return SparCraft::Players::Player_Two;
 	}

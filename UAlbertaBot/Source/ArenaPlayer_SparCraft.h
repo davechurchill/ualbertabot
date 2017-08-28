@@ -9,15 +9,18 @@
 #include "ArenaPlayer.h"
 #include "ScreenCanvas.h"
 #include "BotConfiguration.h"
+#include "OpponentView.h"
 
 namespace UAlbertaBot
 {
+	using AKBot::OpponentView;
     
 class ArenaPlayer_SparCraft : public ArenaPlayer
 {
 	const BotSparCraftConfiguration& _sparCraftConfiguration;
 	const BotArenaConfiguration& _areaConfiguration;
 	SparCraft::AIParameters& _aiParameters;
+	shared_ptr<OpponentView> _opponentView;
 
     SparCraft::GameState    GetSparCraftState(int currentFrame) const;
     SparCraft::Unit         GetSparCraftUnit(BWAPI::Unit unit, int currentFrame) const;
@@ -42,7 +45,8 @@ public:
 	ArenaPlayer_SparCraft(
 		const BotSparCraftConfiguration& configuration,
 		const BotArenaConfiguration& areaConfiguration, 
-		SparCraft::AIParameters& aiParameters);
+		SparCraft::AIParameters& aiParameters,
+		std::shared_ptr<OpponentView> opponentView);
 
     void onStart();
     void onFrame();
