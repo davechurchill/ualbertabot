@@ -33,6 +33,7 @@ public:
 		const BotMicroConfiguration& microConfiguration,
 		const BotSparCraftConfiguration& sparcraftConfiguration,
 		const BotDebugConfiguration& debugConfiguration);
+	SquadData(const SquadData&) = delete;
 
     void            clearSquadData(int currentFrame);
 

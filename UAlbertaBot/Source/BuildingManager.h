@@ -47,6 +47,7 @@ public:
 		shared_ptr<MapTools> mapTools,
 		shared_ptr<AKBot::Logger> logger,
 		const BotMacroConfiguration& macroConfiguration);
+	BuildingManager(const BuildingManager&) = delete;
 
     void                update(int currentFrame);
     void                addBuildingTask(BWAPI::UnitType type,BWAPI::TilePosition desiredLocation);

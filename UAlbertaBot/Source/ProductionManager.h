@@ -61,6 +61,7 @@ public:
 		shared_ptr<BaseLocationManager> bases,
 		shared_ptr<MapTools> mapTools,
 		const BotDebugConfiguration& debugConfiguration);
+	ProductionManager(const ProductionManager&) = delete;
     
     void        onStart();
     void        update(int currentFrame);

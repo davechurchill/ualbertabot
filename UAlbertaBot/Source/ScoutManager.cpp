@@ -1,5 +1,4 @@
 #include "ScoutManager.h"
-#include "Global.h"
 #include "UnitUtil.h"
 #include "Micro.h"
 
@@ -70,7 +69,7 @@ void ScoutManager::moveScouts(int currentFrame)
     int scoutHP = _workerScout->getHitPoints() + _workerScout->getShields();
     
 	// get the enemy base location, if we have one
-	const BaseLocation * enemyBaseLocation = _baseLocationManager->getPlayerStartingBaseLocation(Global::getEnemy());
+	const BaseLocation * enemyBaseLocation = _baseLocationManager->getPlayerStartingBaseLocation(_opponentView->defaultEnemy());
         
 	// if we know where the enemy region is and where our scout is
 	if (_workerScout && (enemyBaseLocation != nullptr))
@@ -224,7 +223,7 @@ BWAPI::Unit ScoutManager::closestEnemyWorker()
 BWAPI::Unit ScoutManager::getEnemyGeyser()
 {
 	BWAPI::Unit geyser = nullptr;
-	const BaseLocation * enemyBaseLocation = _baseLocationManager->getPlayerStartingBaseLocation(Global::getEnemy());
+	const BaseLocation * enemyBaseLocation = _baseLocationManager->getPlayerStartingBaseLocation(_opponentView->defaultEnemy());
 
 	for (auto & unit : enemyBaseLocation->getGeysers())
 	{

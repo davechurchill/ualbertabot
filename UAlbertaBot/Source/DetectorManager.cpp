@@ -1,5 +1,4 @@
 #include "DetectorManager.h"
-#include "Global.h"
 #include "UnitUtil.h"
 #include "Micro.h"
 #include <boost/range/adaptors.hpp>

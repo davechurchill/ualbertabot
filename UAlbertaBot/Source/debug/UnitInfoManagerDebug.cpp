@@ -1,12 +1,10 @@
 #include "UnitInfoManagerDebug.h"
-#include "Global.h"
 #include "DebugTools.h"
 
 namespace AKBot
 {
 	using UAlbertaBot::UnitInfo;
 	using UAlbertaBot::DebugTools::DrawUnitHPBar;
-	using UAlbertaBot::Global::getEnemy;
 
 	UnitInfoManagerDebug::UnitInfoManagerDebug(
 		shared_ptr<OpponentView> opponentView,
@@ -32,7 +30,7 @@ namespace AKBot
 		}
 
 		// draw enemy units
-		auto enemy = getEnemy();
+		auto enemy = _opponentView->defaultEnemy();
 		if (enemy == nullptr)
 		{
 			return;
@@ -67,7 +65,7 @@ namespace AKBot
 			return;
 		}
 
-		auto enemy = getEnemy();
+		auto enemy = _opponentView->defaultEnemy();
 		if (enemy == __nullptr)
 		{
 			return;

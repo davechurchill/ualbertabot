@@ -6,10 +6,12 @@ using namespace UAlbertaBot;
 ArenaPlayer_SparCraft::ArenaPlayer_SparCraft(
 	const BotSparCraftConfiguration& sparCraftConfiguration, 
 	const BotArenaConfiguration& areaConfiguration,
-	SparCraft::AIParameters& aiParameters)
+	SparCraft::AIParameters& aiParameters,
+	std::shared_ptr<OpponentView> opponentView)
 	: _sparCraftConfiguration(sparCraftConfiguration)
 	, _areaConfiguration(areaConfiguration)
 	, _aiParameters(aiParameters)
+	, _opponentView(opponentView)
 {
     _name = "ArenaPlayer_SparCraft";
 }
@@ -51,8 +53,8 @@ void ArenaPlayer_SparCraft::onBattleEnd()
 
 void ArenaPlayer_SparCraft::PlaySparCraftSimulation(const SparCraft::GameState & state)
 {
-	auto sparcraftSelfPlayer = GetSparCraftPlayerID(BWAPI::Broodwar->self());
-	auto sparcraftEnemyPlayer = GetSparCraftPlayerID(BWAPI::Broodwar->enemy());
+	auto sparcraftSelfPlayer = GetSparCraftPlayerID(_opponentView->self());
+	auto sparcraftEnemyPlayer = GetSparCraftPlayerID(_opponentView->defaultEnemy());
     SparCraft::PlayerPtr player = _aiParameters.getPlayer(sparcraftSelfPlayer, _areaConfiguration.ArenaPlayerName);
     SparCraft::PlayerPtr enemy = _aiParameters.getPlayer(sparcraftEnemyPlayer, "AttackC");
 
@@ -107,11 +109,11 @@ SparCraft::Unit ArenaPlayer_SparCraft::GetSparCraftUnit(BWAPI::Unit unit, int cu
 
 size_t ArenaPlayer_SparCraft::GetSparCraftPlayerID(BWAPI::Player player) const
 {
-    if (player == BWAPI::Broodwar->self())
+    if (player == _opponentView->self())
     {
         return SparCraft::Players::Player_One;
     }
-    else if (player == BWAPI::Broodwar->enemy())
+    else if (player == _opponentView->defaultEnemy())
     {
         return SparCraft::Players::Player_Two;
     }

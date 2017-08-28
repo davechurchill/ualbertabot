@@ -1,6 +1,5 @@
 #include "Common.h"
 #include "UnitInfoManager.h"
-#include "Global.h"
 #include "UnitUtil.h"
 
 using namespace UAlbertaBot;
@@ -48,7 +47,7 @@ const std::map<int, UnitInfo> & UnitInfoManager::getUnitInfoMap(BWAPI::Player pl
 
 bool UnitInfoManager::isEnemyUnit(BWAPI::Unit unit)
 {
-	return unit->getPlayer() == Global::getEnemy();
+	return unit->getPlayer() == _opponentView->defaultEnemy();
 }
 
 void UnitInfoManager::updateUnit(BWAPI::Unit unit)
@@ -138,7 +137,7 @@ const UnitData & UnitInfoManager::getUnitData(BWAPI::Player player) const
 
 bool UnitInfoManager::enemyHasCloakedUnits() const
 {
-	auto enemy = Global::getEnemy();
+	auto enemy = _opponentView->defaultEnemy();
 	if (enemy == nullptr)
 	{
 		return false;

@@ -13,10 +13,10 @@
 #include <BWAPI/Game.h>
 #include <BWAPI/Flag.h>
 #include <BWAPI/Unitset.h>
+#include "BWAPIOpponentView.h"
 
 using namespace UAlbertaBot;
 using namespace AKBot;
-
 
 UAlbertaBot_Arena::UAlbertaBot_Arena(
 	const BotConfiguration& configuration)
@@ -42,7 +42,8 @@ void UAlbertaBot_Arena::onStart()
     _startDate = Assert::currentDateTime();
 
     // set the arena player
-    _arenaPlayer = std::shared_ptr<ArenaPlayer>(new ArenaPlayer_AttackClosest());
+	auto opponentView = std::make_shared<BWAPIOpponentView>();
+    _arenaPlayer = std::shared_ptr<ArenaPlayer>(new ArenaPlayer_AttackClosest(opponentView));
 
     if (bwapiOptions.EnableCompleteMapInformation)
     {

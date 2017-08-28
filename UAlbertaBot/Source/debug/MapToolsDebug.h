@@ -20,6 +20,7 @@ namespace AKBot
 			shared_ptr<MapTools> map,
 			shared_ptr<BaseLocationManager> bases,
 			const BotDebugConfiguration& debugConfiguration);
+		MapToolsDebug(const MapToolsDebug&) = delete;
 		void draw(AKBot::ScreenCanvas& canvas) override;
 	};
 }

@@ -3,7 +3,6 @@
 #include "JSONTools.h"
 #include "ParseUtils.h"
 #include "UnitUtil.h"
-#include "Global.h"
 #include "Micro.h"
 #include "BotFactory.h"
 
@@ -127,7 +126,7 @@ AKBot::ScreenCanvas & UAlbertaBot::UAlbertaBot_Tournament::getCanvas()
 
 void UAlbertaBot_Tournament::onFrame()
 {
-	auto enemy = Global::getEnemy();
+	auto enemy = _gameCommander->getOpponentView()->defaultEnemy();
 	if (enemy == nullptr)
 	{
 		return;

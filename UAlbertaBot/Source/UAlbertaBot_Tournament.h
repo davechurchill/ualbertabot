@@ -7,13 +7,12 @@
 #include "HardCodedInfo.h"
 #include "AutoObserver.h"
 #include "rapidjson\document.h"
-#include "Global.h"
-#include "BWAPIScreenCanvas.h"
 #include "BOSSManager.h"
 #include "debug\GameDebug.h"
 #include "ProductionManager.h"
 #include "CombatCommander.h"
 #include "BOSSManager.h"
+#include "BWAPIScreenCanvas.h"
 
 namespace UAlbertaBot
 {
@@ -45,6 +44,7 @@ public:
 		shared_ptr<CombatCommander> combatManager,
 		shared_ptr<GameCommander> gameCommander,
 		shared_ptr<AKBot::GameDebug> gameDebug);
+	UAlbertaBot_Tournament(const UAlbertaBot_Tournament&) = delete;
     ~UAlbertaBot_Tournament();
 
     void	onStart();

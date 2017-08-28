@@ -53,6 +53,7 @@ public:
 	BOSSManager(
 		shared_ptr<AKBot::OpponentView> opponentView,
 		const BotDebugConfiguration& debugConfiguration);
+	BOSSManager(const BOSSManager&) = delete;
 
 	void						update(double timeLimit, int currentFrame);
     void                        reset();

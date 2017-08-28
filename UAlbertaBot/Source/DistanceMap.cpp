@@ -1,6 +1,5 @@
 #include "DistanceMap.h"
 #include "UABAssert.h"
-#include "Global.h"
 #include "Timer.hpp"
 #include <functional>
 

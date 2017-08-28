@@ -21,6 +21,7 @@ namespace AKBot
 			std::shared_ptr<OpponentView> opponentView,
 			shared_ptr<UnitInfoManager> unitInfo,
 			const BotDebugConfiguration& debugConfiguration);
+		UnitInfoManagerDebug(const UnitInfoManagerDebug&) = delete;
 		void draw(ScreenCanvas& canvas);
 	};
 }
