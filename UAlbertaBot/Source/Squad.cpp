@@ -20,6 +20,7 @@ Squad::Squad(
 	, _order(order)
     , _lastRetreatSwitch(0)
     , _lastRetreatSwitchVal(false)
+	, _rushModeEnabled(false)
     , _priority(priority)
 	, _transportManager(opponentView, bases, locationProvider, mapTools, logger, microConfiguration)
 	, _opponentView(opponentView)
