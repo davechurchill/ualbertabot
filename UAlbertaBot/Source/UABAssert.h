@@ -1,9 +1,7 @@
 #pragma once
 
-#include "Common.h"
 #include <cstdio>
 #include <cstdarg>
-#include "Logger.h"
 #include <sstream>
 #include <stdarg.h>
 
@@ -41,8 +39,6 @@ namespace UAlbertaBot
 {
     namespace Assert
     {
-        void ShutDown();
-
         extern std::string lastErrorMessage;
 
         const std::string currentDateTime();

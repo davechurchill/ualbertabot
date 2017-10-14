@@ -1,23 +1,30 @@
+#include "Common.h"
 #include "Game.h"
+#include "ActionGenerators.h"
 
 using namespace SparCraft;
 
-Game::Game(const GameState & initialState, const size_t & limit)
+Game::Game(const GameState & initialState, size_t turnLimit)
     : _numPlayers(0)
-    , state(initialState)
+    , _state(initialState)
     , _playerToMoveMethod(SparCraft::PlayerToMove::Alternate)
-    , rounds(0)
-    , moveLimit(limit)
+    , _rounds(0)
+    , _moveLimit(turnLimit)
+    , _simulateEveryFrame(false)
 {
-
+    _numMoves[0] = 0;
+    _numMoves[1] = 0;
+    _numActions[0] = 0;
+    _numActions[1] = 0;
 }
 
-Game::Game(const GameState & initialState, PlayerPtr & p1, PlayerPtr & p2, const size_t & limit)
+Game::Game(const GameState & initialState, PlayerPtr p1, PlayerPtr p2, const size_t turnLimit)
     : _numPlayers(0)
-    , state(initialState)
+    , _state(initialState)
     , _playerToMoveMethod(SparCraft::PlayerToMove::Alternate)
-    , rounds(0)
-    , moveLimit(limit)
+    , _rounds(0)
+    , _moveLimit(turnLimit)
+    , _simulateEveryFrame(false)
 {
     // add the players
     _players[Players::Player_One] = p1;
@@ -27,15 +34,12 @@ Game::Game(const GameState & initialState, PlayerPtr & p1, PlayerPtr & p2, const
 // play the game until there is a winner
 void Game::play()
 {
-    scriptMoves[Players::Player_One] = std::vector<Action>(state.numUnits(Players::Player_One));
-    scriptMoves[Players::Player_Two] = std::vector<Action>(state.numUnits(Players::Player_Two));
-
-    t.start();
+    _t.start();
 
     // play until there is no winner
     while (!gameOver())
     {
-        if (moveLimit && rounds >= moveLimit)
+        if (_moveLimit && _rounds >= _moveLimit)
         {
             break;
         }
@@ -43,7 +47,7 @@ void Game::play()
         playNextTurn();
     }
 
-    gameTimeMS = t.getElapsedTimeInMilliSec();
+    _gameTimeMS = _t.getElapsedTimeInMilliSec();
 }
 
 void Game::playNextTurn()
@@ -51,135 +55,74 @@ void Game::playNextTurn()
     Timer frameTimer;
     frameTimer.start();
 
-    scriptMoves[0].clear();
-    scriptMoves[1].clear();
+    const size_t whoCanMove = _state.whoCanMove();
+    if (whoCanMove == Players::Player_None)
+    {
+        _state.setTime(_state.getTime() + 1);
+        return;
+    }
 
     // the player that will move next
-    const IDType playerToMove(getPlayerToMove());
-    PlayerPtr & toMove = _players[playerToMove];
-    PlayerPtr & enemy = _players[state.getEnemy(playerToMove)];
+    const size_t playerToMove   = getPlayerToMove();
+    PlayerPtr player            = _players[playerToMove];
+    PlayerPtr enemy             = _players[_state.getEnemy(playerToMove)];
 
-    // generate the moves possible from this state
-    state.generateMoves(moves[toMove->ID()], toMove->ID());
+    Move playerMove;
+    Move enemyMove;
 
-    // the tuple of moves he wishes to make
-    toMove->getMoves(state, moves[playerToMove], scriptMoves[playerToMove]);
+    player->getMove(_state, playerMove);
         
     // if both players can move, generate the other player's moves
-    if (state.bothCanMove())
+    if (_state.whoCanMove() == Players::Player_Both)
     {
-        state.generateMoves(moves[enemy->ID()], enemy->ID());
-        enemy->getMoves(state, moves[enemy->ID()], scriptMoves[enemy->ID()]);
-
-        state.makeMoves(scriptMoves[enemy->ID()]);
+        enemy->getMove(_state, enemyMove);
     }
 
-    // make the moves
-    state.makeMoves(scriptMoves[toMove->ID()]);
+    _state.doMove(playerMove, enemyMove, !_simulateEveryFrame);
 
-    state.finishedMoving();
-    rounds++;
+    _rounds++;
 }
 
-// play the game until there is a winner
-void Game::playIndividualScripts(UnitScriptData & scriptData)
+void Game::setSimulateEveryFrame(bool sim)
 {
-    // array which will hold all the script moves for players
-    Array2D<std::vector<Action>, Constants::Num_Players, PlayerModels::Size> allScriptMoves;
-
-    scriptMoves[Players::Player_One] = std::vector<Action>(state.numUnits(Players::Player_One));
-    scriptMoves[Players::Player_Two] = std::vector<Action>(state.numUnits(Players::Player_Two));
-
-    t.start();
-
-    // play until there is no winner
-    while (!gameOver())
-    {
-        if (moveLimit && rounds > moveLimit)
-        {
-            break;
-        }
-
-        Timer frameTimer;
-        frameTimer.start();
-
-        // clear all script moves for both players
-        for (IDType p(0); p<Constants::Num_Players; p++)
-        {
-            for (IDType s(0); s<PlayerModels::Size; ++s)
-            {
-                allScriptMoves[p][s].clear();
-            }
-        }
-
-        // clear the moves we will actually be doing
-        scriptMoves[0].clear();
-        scriptMoves[1].clear();
-
-        // the playr that will move next
-        const IDType playerToMove(getPlayerToMove());
-        const IDType enemyPlayer(state.getEnemy(playerToMove));
-
-        // generate the moves possible from this state
-        state.generateMoves(moves[playerToMove], playerToMove);
-
-        // calculate the moves the unit would do given its script preferences
-        scriptData.calculateMoves(playerToMove, moves[playerToMove], state, scriptMoves[playerToMove]);
-
-        // if both players can move, generate the other player's moves
-        if (state.bothCanMove())
-        {
-            state.generateMoves(moves[enemyPlayer], enemyPlayer);
-
-            scriptData.calculateMoves(enemyPlayer, moves[enemyPlayer], state, scriptMoves[enemyPlayer]);
-
-            state.makeMoves(scriptMoves[enemyPlayer]);
-        }
-
-        // make the moves
-        state.makeMoves(scriptMoves[playerToMove]);
-        state.finishedMoving();
-        rounds++;
-    }
-
-    gameTimeMS = t.getElapsedTimeInMilliSec();
+    _simulateEveryFrame = sim;
 }
 
-PlayerPtr Game::getPlayer(const IDType & player)
+PlayerPtr Game::getPlayer(const size_t & player)
 {
     return _players[player];
 }
 
 int Game::getRounds()
 {
-    return rounds;
+    return _rounds;
 }
 
 double Game::getTime()
 {
-    return gameTimeMS;
+    return _gameTimeMS;
 }
 
 // returns whether or not the game is over
 bool Game::gameOver() const
 {
-    return state.isTerminal(); 
+    return _state.gameOver(); 
 }
 
 const GameState & Game::getState() const
 {
-    return state;
+    return _state;
 }
 
 GameState & Game::getState()
 {
-    return state;
+    return _state;
 }
 
 // determine the player to move
-const IDType Game::getPlayerToMove()
+const size_t Game::getPlayerToMove()
 {
-    const IDType whoCanMove(state.whoCanMove());
+    const size_t whoCanMove = _state.whoCanMove();
 
     return (whoCanMove == Players::Player_Both) ? Players::Player_One : whoCanMove;
 }

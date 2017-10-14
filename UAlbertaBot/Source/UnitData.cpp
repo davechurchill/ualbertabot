@@ -1,11 +1,12 @@
 #include "Common.h"
 #include "UnitData.h"
+#include <BWAPI/Game.h>
 
 using namespace UAlbertaBot;
 
 UnitData::UnitData() 
-	: mineralsLost(0)
-	, gasLost(0)
+	: _mineralsLost(0)
+	, _gasLost(0)
 {
 	int maxTypeID(0);
 	for (const BWAPI::UnitType & t : BWAPI::UnitTypes::allUnitTypes())
@@ -13,23 +14,26 @@ UnitData::UnitData()
 		maxTypeID = maxTypeID > t.getID() ? maxTypeID : t.getID();
 	}
 
-	numDeadUnits	    = std::vector<int>(maxTypeID + 1, 0);
-	numUnits		    = std::vector<int>(maxTypeID + 1, 0);
+	_numDeadUnits	    = std::vector<int>(maxTypeID + 1, 0);
+	_numUnits		    = std::vector<int>(maxTypeID + 1, 0);
 }
 
 void UnitData::updateUnit(BWAPI::Unit unit)
 {
-	if (!unit) { return; }
+	if (unit == nullptr) 
+    { 
+        return; 
+    }
 
     bool firstSeen = false;
-    auto & it = unitMap.find(unit);
-    if (it == unitMap.end())
+    const auto & it = _unitMap.find(unit->getID());
+    if (it == _unitMap.end())
     {
         firstSeen = true;
-        unitMap[unit] = UnitInfo();
+        _unitMap[unit->getID()] = UnitInfo();
     }
     
-	UnitInfo & ui   = unitMap[unit];
+	UnitInfo & ui   = _unitMap[unit->getID()];
     ui.unit         = unit;
     ui.player       = unit->getPlayer();
 	ui.lastPosition = unit->getPosition();
@@ -41,30 +45,33 @@ void UnitData::updateUnit(BWAPI::Unit unit)
 
     if (firstSeen)
     {
-        numUnits[unit->getType().getID()]++;
+        _numUnits[unit->getType().getID()]++;
     }
 }
 
 void UnitData::removeUnit(BWAPI::Unit unit)
 {
-	if (!unit) { return; }
+	if (unit == nullptr) 
+    { 
+        return; 
+    }
 
-	mineralsLost += unit->getType().mineralPrice();
-	gasLost += unit->getType().gasPrice();
-	numUnits[unit->getType().getID()]--;
-	numDeadUnits[unit->getType().getID()]++;
+	_mineralsLost += unit->getType().mineralPrice();
+	_gasLost += unit->getType().gasPrice();
+	_numUnits[unit->getType().getID()]--;
+	_numDeadUnits[unit->getType().getID()]++;
 		
-	unitMap.erase(unit);
+	_unitMap.erase(unit->getID());
 }
 
 void UnitData::removeBadUnits()
 {
-	for (auto iter(unitMap.begin()); iter != unitMap.end();)
+	for (auto iter = _unitMap.begin(); iter != _unitMap.end();)
 	{
 		if (badUnitInfo(iter->second))
 		{
-			numUnits[iter->second.type.getID()]--;
-			iter = unitMap.erase(iter);
+			_numUnits[iter->second.type.getID()]--;
+			iter = _unitMap.erase(iter);
 		}
 		else
 		{
@@ -97,25 +104,25 @@ const bool UnitData::badUnitInfo(const UnitInfo & ui) const
 
 int UnitData::getGasLost() const 
 { 
-    return gasLost; 
+    return _gasLost; 
 }
 
 int UnitData::getMineralsLost() const 
 { 
-    return mineralsLost; 
+    return _mineralsLost; 
 }
 
 int UnitData::getNumUnits(BWAPI::UnitType t) const 
 { 
-    return numUnits[t.getID()]; 
+    return _numUnits[t.getID()]; 
 }
 
 int UnitData::getNumDeadUnits(BWAPI::UnitType t) const 
 { 
-    return numDeadUnits[t.getID()]; 
+    return _numDeadUnits[t.getID()]; 
 }
 
-const std::map<BWAPI::Unit,UnitInfo> & UnitData::getUnits() const 
+const std::map<int, UnitInfo> & UnitData::getUnitInfoMap() const 
 { 
-    return unitMap; 
+    return _unitMap; 
 }

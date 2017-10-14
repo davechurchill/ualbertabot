@@ -1,22 +1,20 @@
 #include "Common.h"
 #include "BOSSManager.h"
 #include "UnitUtil.h"
+#include "FileLogger.h"
 
 using namespace UAlbertaBot;
 
-// get an instance of this
-BOSSManager & BOSSManager::Instance() 
-{
-	static BOSSManager instance;
-	return instance;
-}
-
 // constructor
-BOSSManager::BOSSManager() 
-	: _previousSearchStartFrame(0)
+BOSSManager::BOSSManager(
+	shared_ptr<AKBot::OpponentView> opponentView,
+	const BotDebugConfiguration& debugConfiguration)
+	: _opponentView(opponentView)
+	, _previousSearchStartFrame(0)
     , _previousSearchFinishFrame(0)
     , _searchInProgress(false)
     , _previousStatus("No Searches")
+	, _debugConfiguration(debugConfiguration)
 {
 	
 }
@@ -29,10 +27,11 @@ void BOSSManager::reset()
 }
 
 // start a new search for a new goal
-void BOSSManager::startNewSearch(const std::vector<MetaPair> & goalUnits)
+void BOSSManager::startNewSearch(const std::vector<MetaPair> & goalUnits, shared_ptr<BuildingManager> buildingManager, int currentFrame)
 {
-    size_t numWorkers   = UnitUtil::GetAllUnitCount(BWAPI::Broodwar->self()->getRace().getWorker());
-    size_t numDepots    = UnitUtil::GetAllUnitCount(BWAPI::Broodwar->self()->getRace().getCenter())
+	auto self = _opponentView->self();
+    size_t numWorkers   = UnitUtil::GetAllUnitCount(self->getRace().getWorker());
+    size_t numDepots    = UnitUtil::GetAllUnitCount(UnitUtil::getResourceDepot(self->getRace()))
                         + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Lair)
                         + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hive);
 
@@ -53,14 +52,14 @@ void BOSSManager::startNewSearch(const std::vector<MetaPair> & goalUnits)
     {
         BOSS::BuildOrderSearchGoal goal = GetGoal(goalUnits);
 
-        BOSS::GameState initialState(BWAPI::Broodwar, BWAPI::Broodwar->self(), BuildingManager::Instance().buildingsQueued());
+        BOSS::GameState initialState(BWAPI::Broodwar, _opponentView->self(), buildingManager->buildingsQueued());
 
         _smartSearch = SearchPtr(new BOSS::DFBB_BuildOrderSmartSearch(initialState.getRace()));
         _smartSearch->setGoal(GetGoal(goalUnits));
         _smartSearch->setState(initialState);
 
         _searchInProgress = true;
-        _previousSearchStartFrame = BWAPI::Broodwar->getFrameCount();
+        _previousSearchStartFrame = currentFrame;
         _totalPreviousSearchTime = 0;
         _previousGoalUnits = goalUnits;
     }
@@ -70,53 +69,8 @@ void BOSSManager::startNewSearch(const std::vector<MetaPair> & goalUnits)
     }
 }
 
-void BOSSManager::drawSearchInformation(int x, int y) 
-{
-	if (!Config::Debug::DrawBuildOrderSearchInfo)
-    {
-        return;
-    }
-
-    // draw the background
-    int width = 155;
-    int height = 80;
-    BWAPI::Broodwar->drawBoxScreen(BWAPI::Position(x-5,y), BWAPI::Position(x+width, y+height), BWAPI::Colors::Black, true);
-
-    x += 5; y+=3;
-
-    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x, y), "%cBuildOrderSearch:", '\x04');
-    y += 10;
-    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x, y), "%s", _previousStatus.c_str());
-
-    for (size_t i(0); i < _previousGoalUnits.size(); ++i)
-    {
-        if (_previousGoalUnits[i].second > 0)
-        {
-            y += 10;
-            BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x,y), "%d %s", _previousGoalUnits[i].second, _previousGoalUnits[i].first.getName().c_str());
-        }
-    }
-    
-    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x, y+25), "Time (ms): %.3lf", _totalPreviousSearchTime);
-    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x, y+35), "Nodes: %d", _savedSearchResults.nodesExpanded);
-    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x, y+45), "BO Size: %d", (int)_savedSearchResults.buildOrder.size());
-}
-
-void BOSSManager::drawStateInformation(int x, int y) 
-{
-	if (!Config::Debug::DrawBOSSStateInfo)
-    {
-        return;
-    }
-
-    BOSS::GameState currentState(BWAPI::Broodwar, BWAPI::Broodwar->self(), BuildingManager::Instance().buildingsQueued());
-    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x-100, y+30), "\x04%s", currentState.getBuildingData().toString().c_str());
-    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x+150, y), "\x04%s", currentState.toString().c_str());
-    
-}
-
 // tell the search to keep going for however long we have this frame
-void BOSSManager::update(double timeLimit)
+void BOSSManager::update(double timeLimit, int currentFrame)
 {
     // if there's a search in progress, resume it
     if (isSearchInProgress())
@@ -126,7 +80,7 @@ void BOSSManager::update(double timeLimit)
         // give the search at least 5ms to search this frame
         double realTimeLimit = timeLimit < 0 ? 5 : timeLimit;
         _smartSearch->setTimeLimit((int)realTimeLimit);
-        bool caughtException = false;
+		_hasExceptionDuringSearch = false;
 
 		try
         {
@@ -138,29 +92,24 @@ void BOSSManager::update(double timeLimit)
 		catch (const BOSS::BOSSException & exception)
         {
             UAB_ASSERT_WARNING(false, "BOSS SmartSearch Exception: %s", exception.what());
-			BWAPI::Broodwar->drawTextScreen(0, 0, "Previous search didn't find a solution, resorting to Naive Build Order");
             _previousStatus = "BOSSExeption";
-            caughtException = true;
+			_hasExceptionDuringSearch = true;
 		}
 
-        _totalPreviousSearchTime += _smartSearch->getResults().timeElapsed;
+		auto& searchResults = _smartSearch->getResults();
+        _totalPreviousSearchTime += searchResults.timeElapsed;
 
         // after the search finishes for this frame, check to see if we have a solution or if we hit the overall time limit
-        bool searchTimeOut = (BWAPI::Broodwar->getFrameCount() > (_previousSearchStartFrame + Config::Macro::BOSSFrameLimit));
-        bool previousSearchComplete = searchTimeOut || _smartSearch->getResults().solved || caughtException;
+        bool searchTimeOut = currentFrame > (_previousSearchStartFrame + _bossFrameLimit);
+        bool previousSearchComplete = searchTimeOut || searchResults.solved || _hasExceptionDuringSearch;
         if (previousSearchComplete)
         {
-            bool solved = _smartSearch->getResults().solved && _smartSearch->getResults().solutionFound;
+            bool solved = searchResults.solved && searchResults.solutionFound;
 
             // if we've found a solution, let us know
-            if (_smartSearch->getResults().solved && Config::Debug::DrawBuildOrderSearchInfo)
+            if (searchResults.solved)
             {
-                //BWAPI::Broodwar->printf("Build order SOLVED in %d nodes", (int)_smartSearch->getResults().nodesExpanded);
-            }
-
-            if (_smartSearch->getResults().solved)
-            {
-                if (_smartSearch->getResults().solutionFound)
+                if (searchResults.solutionFound)
                 {
                     _previousStatus = std::string("\x07") + "BOSS Solve Solution\n";
                 }
@@ -172,7 +121,7 @@ void BOSSManager::update(double timeLimit)
 
             // re-set all the search information to get read for the next search
             _searchInProgress = false;
-            _previousSearchFinishFrame = BWAPI::Broodwar->getFrameCount();
+            _previousSearchFinishFrame = currentFrame;
             _previousSearchResults = _smartSearch->getResults();
             _savedSearchResults = _previousSearchResults;
             _previousBuildOrder = _previousSearchResults.buildOrder;
@@ -183,6 +132,7 @@ void BOSSManager::update(double timeLimit)
             }
 
             // if our search resulted in a build order of size 0 then something failed
+			_noSolutionFound = false;
             if (!solved && _previousBuildOrder.size() == 0)
             {
                 // log the debug information since this shouldn't happen if everything goes to plan
@@ -206,7 +156,7 @@ void BOSSManager::update(double timeLimit)
                         _previousStatus = std::string("\x02") + "BOSS Timeout\n";
                     }
 
-                    if (caughtException)
+                    if (_hasExceptionDuringSearch)
                     {
                         _previousStatus = std::string("\x02") + "BOSS Exception\n";
                     }
@@ -221,10 +171,7 @@ void BOSSManager::update(double timeLimit)
                 {
                     UAB_ASSERT_WARNING(false, "BOSS Timeout Naive Search Exception: %s", exception.what());
                     _previousStatus += "\x08Naive Exception";
-                    if (Config::Debug::DrawBuildOrderSearchInfo)
-                    {
-					    BWAPI::Broodwar->drawTextScreen(0, 20, "No legal BuildOrder found, returning empty Build Order");
-                    }
+					_noSolutionFound = true;
 					_previousBuildOrder = BOSS::BuildOrder();
 					return;
 				}
@@ -246,7 +193,7 @@ BOSS::BuildOrderSearchGoal BOSSManager::GetGoal(const std::vector<MetaPair> & go
 
 	for (size_t i=0; i<goalUnits.size(); ++i)
 	{
-		goal.setGoal(GetActionType(goalUnits[i].first), goalUnits[i].second);
+		goal.setGoal(GetActionType(goalUnits[i].first), (BOSS::UnitCountType)goalUnits[i].second);
 	}
 
 	return goal;
@@ -263,7 +210,7 @@ BOSS::GameState BOSSManager::getStartState()
 
 const BOSS::RaceID BOSSManager::getRace() const
 {
-    BWAPI::Race r = BWAPI::Broodwar->self()->getRace();
+    BWAPI::Race r = _opponentView->self()->getRace();
     if (r == BWAPI::Races::Protoss)
     {
         return BOSS::Races::Protoss;
@@ -304,7 +251,7 @@ std::vector<MetaType> BOSSManager::GetMetaVector(const BOSS::BuildOrder & buildO
 
 BuildOrder BOSSManager::getBuildOrder()
 {
-    return BuildOrder(BWAPI::Broodwar->self()->getRace(), GetMetaVector(_previousBuildOrder));
+    return BuildOrder(_opponentView->self()->getRace(), GetMetaVector(_previousBuildOrder));
 }
 
 BOSS::ActionType BOSSManager::GetActionType(const MetaType & t)

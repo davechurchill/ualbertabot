@@ -5,28 +5,31 @@ using namespace SparCraft;
 Unit::Unit()
     : _unitType             (BWAPI::UnitTypes::None)
     , _range                (0)
-    , _unitID               (255)
-    , _playerID             (255)
+    , _unitID               (0)
+    , _bwapiID              (0)
+    , _playerID             (0)
     , _currentHP            (0)
-    , _currentEnergy        (0)
     , _timeCanMove          (0)
     , _timeCanAttack        (0)
     , _previousActionTime   (0)
     , _prevCurrentPosTime   (0)
+    , _canAttackGround      (false)
+    , _canAttackAir         (false)
+    , _isFlyer              (false)
 {
     
 }
 
 // test constructor for setting all variables of a unit
-Unit::Unit(const BWAPI::UnitType unitType, const Position & pos, const IDType & unitID, const IDType & playerID, 
+Unit::Unit(const BWAPI::UnitType unitType, const Position & pos, const size_t & unitID, const size_t & playerID, 
            const HealthType & hp, const HealthType & energy, const TimeType & tm, const TimeType & ta) 
     : _unitType             (unitType)
-    , _range                (PlayerWeapon(&PlayerProperties::Get(playerID), unitType.groundWeapon()).GetMaxRange() + Constants::Range_Addition)
+    , _range                (PlayerWeapon(&PlayerProperties::Get(playerID), unitType.groundWeapon()).GetMaxRange() + Config::Units::UnitRangeAddition)
     , _position             (pos)
     , _unitID               (unitID)
+    , _bwapiID              (0)
     , _playerID             (playerID)
     , _currentHP            (hp)
-    , _currentEnergy        (energy)
     , _timeCanMove          (tm)
     , _timeCanAttack        (ta)
     , _previousActionTime   (0)
@@ -34,18 +37,22 @@ Unit::Unit(const BWAPI::UnitType unitType, const Position & pos, const IDType & 
     , _previousPosition     (pos)
     , _prevCurrentPos       (pos)
 {
-    System::checkSupportedUnitType(unitType);
+    _canAttackAir = unitType.airWeapon().damageAmount() > 0;
+    _canAttackGround = unitType.groundWeapon().damageAmount() > 0;
+    _isFlyer = unitType.isFlyer();
+
+    SPARCRAFT_ASSERT(System::UnitTypeSupported(unitType), "Unit type not supported: %s", unitType.getName().c_str());
 }
 
 // constructor for units to construct basic units, sets some things automatically
-Unit::Unit(const BWAPI::UnitType unitType, const IDType & playerID, const Position & pos) 
+Unit::Unit(const BWAPI::UnitType unitType, const size_t & playerID, const Position & pos) 
     : _unitType             (unitType)
-    , _range                (PlayerWeapon(&PlayerProperties::Get(playerID), unitType.groundWeapon()).GetMaxRange() + Constants::Range_Addition)
+    , _range                (PlayerWeapon(&PlayerProperties::Get(playerID), unitType.groundWeapon()).GetMaxRange() + Config::Units::UnitRangeAddition)
     , _position             (pos)
     , _unitID               (0)
+    , _bwapiID              (0)
     , _playerID             (playerID)
     , _currentHP            (maxHP())
-    , _currentEnergy        (unitType == BWAPI::UnitTypes::Terran_Medic ? Constants::Starting_Energy : 0)
     , _timeCanMove          (0)
     , _timeCanAttack        (0)
     , _previousActionTime   (0)
@@ -53,50 +60,21 @@ Unit::Unit(const BWAPI::UnitType unitType, const IDType & playerID, const Positi
     , _previousPosition     (pos)
     , _prevCurrentPos       (pos)
 {
-    System::checkSupportedUnitType(unitType);
+    _canAttackAir = unitType.airWeapon().damageAmount() > 0;
+    _canAttackGround = unitType.groundWeapon().damageAmount() > 0;
+    _isFlyer = unitType.isFlyer();
+
+    SPARCRAFT_ASSERT(System::UnitTypeSupported(unitType), "Unit type not supported: %s", unitType.getName().c_str());
 }
 
-// Less than operator, used for sorting the GameState unit array.
-// Units are sorted in this order:
-//		1) alive < dead
-//		2) firstTimeFree()
-//		3) currentHP()
-//		4) pos()
-const bool Unit::operator < (const Unit & rhs) const
+const bool Unit::canAttackAir() const
 {
-    if (!isAlive())
-    {
-        return false;
-    }
-    else if (!rhs.isAlive())
-    {
-        return true;
-    }
+    return _canAttackAir;
+}
 
-    if (firstTimeFree() == rhs.firstTimeFree())
-    {
-        return ID() < rhs.ID();
-    }
-    else
-    {
-        return firstTimeFree() < rhs.firstTimeFree();
-    }
-
-    /*if (firstTimeFree() == rhs.firstTimeFree())
-    {
-        if (currentHP() == rhs.currentHP())
-        {
-            return pos() < rhs.pos();
-        }
-        else
-        {
-            return currentHP() < rhs.currentHP();
-        }
-    }
-    else
-    {
-        return firstTimeFree() < rhs.firstTimeFree();
-    }*/
+const bool Unit::canAttackGround() const
+{
+    return _canAttackGround;
 }
 
 // compares a unit based on unit id
@@ -109,40 +87,36 @@ bool Unit::canSeeTarget(const Unit & unit, const TimeType & gameTime) const
 {
 
 	// range of this unit attacking
-	PositionType r = type().sightRange();
+	int r = type().sightRange();
 
 	// return whether the target unit is in range
 	return (r * r) >= getDistanceSqToUnit(unit, gameTime);
 }
 
+const bool Unit::canTarget(const Unit & unit) const
+{
+    if (unit.isFlyer() && !canAttackAir())
+    {
+        return false;
+    }
+    else if (!unit.isFlyer() && !canAttackGround())
+    {
+        return false;
+    }
+
+    return true;
+}
+
 // returns whether or not this unit can attack a given unit at a given time
 const bool Unit::canAttackTarget(const Unit & unit, const TimeType & gameTime) const
 {
-    BWAPI::WeaponType weapon = unit.type().isFlyer() ? type().airWeapon() : type().groundWeapon();
-
-    if (weapon.damageAmount() == 0)
+    if (!canTarget(unit))
     {
         return false;
     }
 
     // range of this unit attacking
-    PositionType r = range();
-
-    // return whether the target unit is in range
-    return (r * r) >= getDistanceSqToUnit(unit, gameTime);
-}
-
-const bool Unit::canHealTarget(const Unit & unit, const TimeType & gameTime) const
-{
-    // if the unit can't heal or the target unit is not on the same team
-    if (!canHeal() || !unit.isOrganic() || !(unit.player() == player()) || (unit.currentHP() == unit.maxHP()))
-    {
-        // then it can't heal the target
-        return false;
-    }
-
-    // range of this unit attacking
-    PositionType r = healRange();
+    int r = range();
 
     // return whether the target unit is in range
     return (r * r) >= getDistanceSqToUnit(unit, gameTime);
@@ -153,11 +127,10 @@ const Position & Unit::position() const
     return _position;
 }
 
-// take an attack, subtract the hp
-void Unit::takeAttack(const Unit & attacker)
+const HealthType Unit::damageTakenFrom(const Unit & attacker) const
 {
-    PlayerWeapon    weapon(attacker.getWeapon(*this));
-    HealthType      damage(weapon.GetDamageBase());
+    const PlayerWeapon & weapon = attacker.getWeapon(*this);
+    HealthType damage = weapon.GetDamageBase();
 
     // calculate the damage based on armor and damage types
     damage = std::max((int)((damage-getArmor()) * weapon.GetDamageMultiplier(getSize())), 2);
@@ -168,14 +141,13 @@ void Unit::takeAttack(const Unit & attacker)
         damage *= 2;
     }
 
-    //std::cout << type().getName() << " took " << (int)attacker.player() << " " << damage << "\n";
-
-    updateCurrentHP(_currentHP - damage);
+    return damage;
 }
 
-void Unit::takeHeal(const Unit & healer)
+// take an attack, subtract the hp
+void Unit::takeAttack(const Unit & attacker)
 {
-    updateCurrentHP(_currentHP + healer.healAmount());
+    updateCurrentHP(_currentHP - damageTakenFrom(attacker));
 }
 
 // returns whether or not this unit is alive
@@ -187,6 +159,8 @@ const bool Unit::isAlive() const
 // attack a unit, set the times accordingly
 void Unit::attack(const Action & move, const Unit & target, const TimeType & gameTime)
 {
+    SPARCRAFT_ASSERT(nextAttackActionTime() == gameTime, "Trying to attack when we can't");
+
     // if this is a repeat attack
     if (_previousAction.type() == ActionTypes::ATTACK || _previousAction.type() == ActionTypes::RELOAD)
     {
@@ -195,16 +169,16 @@ void Unit::attack(const Action & move, const Unit & target, const TimeType & gam
         updateMoveActionTime      (gameTime + attackRepeatFrameTime());
         updateAttackActionTime    (gameTime + attackCooldown());
     }
-    // if there previous action was a MOVE action, add the move penalty
+    // if there previous action was a MOVE action
     else if (_previousAction.type() == ActionTypes::MOVE)
     {
-        updateMoveActionTime      (gameTime + attackInitFrameTime() + 2);
-        updateAttackActionTime    (gameTime + attackCooldown() + Constants::Move_Penalty);
+        updateMoveActionTime      (gameTime + attackInitFrameTime() + Config::Units::UnitMoveAfterAttackBuffer);
+        updateAttackActionTime    (gameTime + attackCooldown());
     }
     else
     {
         // add the initial attack animation duration
-        updateMoveActionTime      (gameTime + attackInitFrameTime() + 2);
+        updateMoveActionTime      (gameTime + attackInitFrameTime());
         updateAttackActionTime    (gameTime + attackCooldown());
     }
 
@@ -217,30 +191,15 @@ void Unit::attack(const Action & move, const Unit & target, const TimeType & gam
     setPreviousAction(move, gameTime);
 }
 
-// attack a unit, set the times accordingly
-void Unit::heal(const Action & move, const Unit & target, const TimeType & gameTime)
-{
-    _currentEnergy -= healCost();
-
-    // can't attack again until attack cooldown is up
-    updateAttackActionTime        (gameTime + healCooldown());
-    updateMoveActionTime          (gameTime + healCooldown());
-
-    if (currentEnergy() < healCost())
-    {
-        updateAttackActionTime(1000000);
-    }
-
-    setPreviousAction(move, gameTime);
-}
-
 // unit update for moving based on a given Move
-void Unit::move(const Action & move, const TimeType & gameTime) 
+void Unit::move(const Action & action, const TimeType & gameTime) 
 {
+    SPARCRAFT_ASSERT(nextMoveActionTime() == gameTime, "Trying to move when we can't");
+
     _previousPosition = pos();
 
     // get the distance to the move action destination
-    PositionType dist = move.pos().getDistance(pos());
+    double dist = action.pos().getDistance(pos());
     
     // how long will this move take?
     TimeType moveDuration = (TimeType)((double)dist / speed());
@@ -248,37 +207,43 @@ void Unit::move(const Action & move, const TimeType & gameTime)
     // update the next time we can move, make sure a move always takes 1 time step
     updateMoveActionTime(gameTime + std::max(moveDuration, 1));
 
+    const int movePenalty = isFlyer() ? Config::Units::AirUnitMovePenalty : Config::Units::GroundUnitMovePenalty;
+
     // assume we need 4 frames to turn around after moving
-    updateAttackActionTime(std::max(nextAttackActionTime(), nextMoveActionTime()));
+    updateAttackActionTime(movePenalty + std::max(nextAttackActionTime(), nextMoveActionTime()));
 
     // update the position
     //_position.addPosition(dist * dir.x(), dist * dir.y());
-    _position.moveTo(move.pos());
+    _position.moveTo(action.pos());
 
-    setPreviousAction(move, gameTime);
+    setPreviousAction(action, gameTime);
+
+    SPARCRAFT_ASSERT(_previousActionTime < nextMoveActionTime(), "Move didn't take any time");
 }
 
 // unit is commanded to wait until his attack cooldown is up
-void Unit::waitUntilAttack(const Action & move, const TimeType & gameTime)
+void Unit::reload(const Action & action, const TimeType & gameTime)
 {
+    SPARCRAFT_ASSERT(_timeCanAttack > gameTime, "Attempting to reload when we can attack this frame\n\n%s", debugString().c_str());
+
     // do nothing until we can attack again
     updateMoveActionTime(_timeCanAttack);
-    setPreviousAction(move, gameTime);
+    setPreviousAction(action, gameTime);
 }
 
-void Unit::pass(const Action & move, const TimeType & gameTime)
+void Unit::pass(const Action & action, const TimeType & gameTime)
 {
-    updateMoveActionTime(gameTime + Constants::Pass_Move_Duration);
-    updateAttackActionTime(gameTime + Constants::Pass_Move_Duration);
-    setPreviousAction(move, gameTime);
+    updateMoveActionTime(gameTime + action.getTargetID());
+    updateAttackActionTime(gameTime + action.getTargetID());
+    setPreviousAction(action, gameTime);
 }
 
-const PositionType Unit::getDistanceSqToUnit(const Unit & u, const TimeType & gameTime) const 
+const int Unit::getDistanceSqToUnit(const Unit & u, const TimeType & gameTime) const 
 { 
     return getDistanceSqToPosition(u.currentPosition(gameTime), gameTime); 
 }
 
-const PositionType Unit::getDistanceSqToPosition(const Position & p, const TimeType & gameTime) const	
+const int Unit::getDistanceSqToPosition(const Position & p, const TimeType & gameTime) const	
 { 
     return currentPosition(gameTime).getDistanceSq(p);
 }
@@ -338,14 +303,11 @@ void Unit::setPreviousPosition(const TimeType & gameTime)
 // returns the damage a unit does
 const HealthType Unit::damage() const	
 { 
-    return _unitType == BWAPI::UnitTypes::Protoss_Zealot ? 
-        2 * (HealthType)_unitType.groundWeapon().damageAmount() : 
-    (HealthType)_unitType.groundWeapon().damageAmount(); 
-}
-
-const HealthType Unit::healAmount() const
-{
-    return canHeal() ? 6 : 0;
+    HealthType damage = _unitType == BWAPI::UnitTypes::Protoss_Zealot ? (2 * (HealthType)_unitType.groundWeapon().damageAmount()) : (HealthType)_unitType.groundWeapon().damageAmount(); 
+    
+    damage = std::max(damage, (HealthType)_unitType.airWeapon().damageAmount());
+    
+    return damage;
 }
 
 void Unit::print() const 
@@ -373,9 +335,14 @@ void Unit::setCooldown(TimeType attack, TimeType move)
     _timeCanAttack = attack; _timeCanMove = move; 
 }
 
-void Unit::setUnitID(const IDType & id)
+void Unit::setUnitID(const size_t & id)
 { 
     _unitID = id; 
+}
+
+void Unit::setBWAPIUnitID(const size_t & id)
+{ 
+    _bwapiID = id; 
 }
 
 void Unit::setPreviousAction(const Action & m, const TimeType & previousMoveTime) 
@@ -387,17 +354,12 @@ void Unit::setPreviousAction(const Action & m, const TimeType & previousMoveTime
 
 const bool Unit::canAttackNow() const
 { 
-    return !canHeal() && _timeCanAttack <= _timeCanMove; 
+    return _timeCanAttack <= _timeCanMove; 
 }
 
 const bool Unit::canMoveNow() const
 { 
     return isMobile() && _timeCanMove <= _timeCanAttack; 
-}
-
-const bool Unit::canHealNow() const
-{ 
-    return canHeal() && (currentEnergy() >= healCost()) && (_timeCanAttack <= _timeCanMove); 
 }
 
 const bool Unit::canKite() const
@@ -410,22 +372,17 @@ const bool Unit::isMobile() const
     return _unitType.canMove(); 
 }
 
-const bool Unit::canHeal() const
-{ 
-    return _unitType == BWAPI::UnitTypes::Terran_Medic; 
-}
-
 const bool Unit::isOrganic() const
 { 
     return _unitType.isOrganic(); 
 }
 
-const IDType Unit::ID() const	
+const size_t Unit::getID() const	
 { 
     return _unitID; 
 }
 
-const IDType Unit::player() const
+const size_t Unit::getPlayerID() const
 { 
     return _playerID; 
 }
@@ -435,24 +392,19 @@ const Position & Unit::pos() const
     return _position; 
 }
 
-const PositionType Unit::x() const 
+const int Unit::x() const 
 { 
     return _position.x(); 
 }
 
-const PositionType Unit::y() const 
+const int Unit::y() const 
 { 
     return _position.y(); 
 }
 
-const PositionType Unit::range() const 
+const int Unit::range() const 
 { 
     return _range; 
-}
-
-const PositionType Unit::healRange() const
-{ 
-    return canHeal() ? 96 : 0; 
 }
 
 const HealthType Unit::maxHP() const 
@@ -465,34 +417,26 @@ const HealthType Unit::currentHP() const
     return (HealthType)_currentHP; 
 }
 
-const HealthType Unit::currentEnergy() const 
-{ 
-    return (HealthType)_currentEnergy; 
-}
-
 const HealthType Unit::maxEnergy() const
 { 
     return (HealthType)_unitType.maxEnergy(); 
 }
 
-const HealthType Unit::healCost() const	
-{ 
-    return 3; 
-}
-
 const float Unit::dpf() const 
 { 
-    return (float)std::max(Constants::Min_Unit_DPF, (float)damage() / ((float)attackCooldown() + 1)); 
-}
+    if (damage() == 0 || attackCooldown() == 0)
+    {
+        return 0;
+    }
 
-const TimeType Unit::moveCooldown() const 
-{ 
-    return (TimeType)((double)Constants::Move_Distance / _unitType.topSpeed()); 
+    return (float)damage() / attackCooldown(); 
 }
 
 const TimeType Unit::attackCooldown() const 
 { 
-    return (TimeType)_unitType.groundWeapon().damageCooldown(); 
+    TimeType attackCooldown = _unitType.groundWeapon().damageCooldown(); 
+    if (attackCooldown == 0) attackCooldown = _unitType.airWeapon().damageCooldown();
+    return attackCooldown;
 }
 
 const TimeType Unit::healCooldown() const 
@@ -522,12 +466,12 @@ const TimeType Unit::firstTimeFree() const
 
 const TimeType Unit::attackInitFrameTime() const	
 { 
-    return AnimationFrameData::getAttackFrames(_unitType).first; 
+    return Config::Units::GetAttackFrames(_unitType).first; 
 }
 
 const TimeType Unit::attackRepeatFrameTime() const	
 {
-    return AnimationFrameData::getAttackFrames(_unitType).second; 
+    return Config::Units::GetAttackFrames(_unitType).second; 
 }
 
 const int Unit::typeID() const	
@@ -555,14 +499,19 @@ const BWAPI::UnitSizeType Unit::getSize() const
     return _unitType.size();
 }
 
+const bool Unit::isFlyer() const
+{
+    return _isFlyer;
+}
+
 const PlayerWeapon Unit::getWeapon(const Unit & target) const
 {
-    return PlayerWeapon(&PlayerProperties::Get(player()), target.type().isFlyer() ? _unitType.airWeapon() : _unitType.groundWeapon());
+    return PlayerWeapon(&PlayerProperties::Get(getPlayerID()), target.isFlyer() ? _unitType.airWeapon() : _unitType.groundWeapon());
 }
 
 const HealthType Unit::getArmor() const
 {
-    return UnitProperties::Get(type()).GetArmor(PlayerProperties::Get(player())); 
+    return UnitProperties::Get(type()).GetArmor(PlayerProperties::Get(getPlayerID())); 
 }
 
 const BWAPI::WeaponType Unit::getWeapon(BWAPI::UnitType target) const
@@ -577,32 +526,9 @@ const std::string Unit::name() const
     return n;
 }
 
-// calculates the hash of this unit based on a given game time
-const HashType Unit::calculateHash(const size_t & hashNum, const TimeType & gameTime) const
+const size_t Unit::getBWAPIUnitID() const
 {
-    Position currentPos = currentPosition(gameTime);
-
-    return	  Hash::values[hashNum].positionHash(_playerID, currentPos.x(), currentPos.y()) 
-            ^ Hash::values[hashNum].getAttackHash(_playerID, nextAttackActionTime() - gameTime) 
-            ^ Hash::values[hashNum].getMoveHash(_playerID, nextMoveActionTime() - gameTime)
-            ^ Hash::values[hashNum].getCurrentHPHash(_playerID, currentHP())
-            ^ Hash::values[hashNum].getUnitTypeHash(_playerID, typeID());
-}
-
-// calculates the hash of this unit based on a given game time, and prints debug info
-void Unit::debugHash(const size_t & hashNum, const TimeType & gameTime) const
-{
-    std::cout << " Pos   " << Hash::values[hashNum].positionHash(_playerID, position().x(), position().y());
-    std::cout << " Att   " << Hash::values[hashNum].getAttackHash(_playerID, nextAttackActionTime() - gameTime);
-    std::cout << " Mov   " << Hash::values[hashNum].getMoveHash(_playerID, nextMoveActionTime() - gameTime);
-    std::cout << " HP    " << Hash::values[hashNum].getCurrentHPHash(_playerID, currentHP());
-    std::cout << " Typ   " << Hash::values[hashNum].getUnitTypeHash(_playerID, typeID()) << "\n";;
-
-    HashType hash = Hash::values[hashNum].positionHash(_playerID, position().x(), position().y()); std::cout << hash << "\n";
-    hash ^= Hash::values[hashNum].getAttackHash(_playerID, nextAttackActionTime() - gameTime) ; std::cout << hash << "\n";
-    hash ^= Hash::values[hashNum].getMoveHash(_playerID, nextMoveActionTime() - gameTime); std::cout << hash << "\n";
-    hash ^= Hash::values[hashNum].getCurrentHPHash(_playerID, currentHP()); std::cout << hash << "\n";
-    hash ^= Hash::values[hashNum].getUnitTypeHash(_playerID, typeID()); std::cout << hash << "\n";
+    return _bwapiID;
 }
 
 const std::string Unit::debugString() const
@@ -610,8 +536,8 @@ const std::string Unit::debugString() const
     std::stringstream ss;
 
     ss << "Unit Type:           " << type().getName()                               << "\n";
-    ss << "Unit ID:             " << (int)ID()                                      << "\n";
-    ss << "Player:              " << (int)player()                                  << "\n";
+    ss << "Unit ID:             " << (int)getID()                               << "\n";
+    ss << "Player:              " << (int)getPlayerID()                             << "\n";
     ss << "Range:               " << range()                                        << "\n";
     ss << "Position:            " << "(" << _position.x() << "," << _position.y()   << ")\n";
     ss << "Current HP:          " << currentHP()                                    << "\n";

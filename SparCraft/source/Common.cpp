@@ -1,89 +1,40 @@
 #include "Common.h"
 
-// SEARCH PARAMETERS
-char SPARCRAFT_LOGFILE[100] { "sparcraft_error_log.txt" };
-
 namespace SparCraft
 {
     namespace System
     {
-        void FatalError(const std::string & errorMessage)
-        {
-            std::cerr << "\n\n\nSparCraft Fatal Error: \n\n\n      " << errorMessage << "\n\n";
-
-			/*std::ofstream logStream;
-			logStream.open(SPARCRAFT_LOGFILE, std::ofstream::app);
-			logStream << "\n\n\nSparCraft Fatal Error: \n\n\n      " << errorMessage << "\n\n";
-			logStream.flush();
-			logStream.close();*/
-
-            throw(SPARCRAFT_FATAL_ERROR);
-        }
-        
-        void checkSupportedUnitType(const BWAPI::UnitType & type)
-        {
-            if (type == BWAPI::UnitTypes::None || type == BWAPI::UnitTypes::Unknown)
-            {
-                System::FatalError("Unknown unit type in experiment file, not supported");
-            }
-
-            if (type == BWAPI::UnitTypes::Protoss_Corsair || 
-                type == BWAPI::UnitTypes::Zerg_Devourer || 
-                type == BWAPI::UnitTypes::Zerg_Scourge ||
-                type == BWAPI::UnitTypes::Terran_Valkyrie)
-            {
-                System::FatalError("Units with just air weapons currently not supported correctly: " + type.getName());
-            }
-
-            if (type.isBuilding() && !(type == BWAPI::UnitTypes::Protoss_Photon_Cannon || type == BWAPI::UnitTypes::Zerg_Sunken_Colony || type == BWAPI::UnitTypes::Terran_Missile_Turret))
-            {
-                System::FatalError("Non-attacking buildings not currently supported: " + type.getName());
-            }
-
-            if (type.isSpellcaster())
-            {
-                System::FatalError("Spell casting units not currently supported: " + type.getName());
-            }
-
-             // Don't support units loading other units yet
-            if (type == BWAPI::UnitTypes::Terran_Vulture_Spider_Mine || 
-                type == BWAPI::UnitTypes::Protoss_Carrier || 
-                type == BWAPI::UnitTypes::Protoss_Interceptor || 
-                type == BWAPI::UnitTypes::Protoss_Reaver ||
-                type == BWAPI::UnitTypes::Protoss_Scarab ||
-                type == BWAPI::UnitTypes::Zerg_Broodling)
-            {
-
-                System::FatalError("Units which have unit projectiles not supported: " + type.getName());
-            }
-        }
-
-        bool isSupportedUnitType(const BWAPI::UnitType & type)
+        bool UnitTypeSupported(const BWAPI::UnitType & type)
         {
             if (type == BWAPI::UnitTypes::None || type == BWAPI::UnitTypes::Unknown)
             {
                 return false;
             }
 
-            if (type == BWAPI::UnitTypes::Protoss_Corsair || 
-                type == BWAPI::UnitTypes::Zerg_Devourer || 
-                type == BWAPI::UnitTypes::Zerg_Scourge ||
-                type == BWAPI::UnitTypes::Terran_Valkyrie)
+            if (type.getRace() == BWAPI::Races::None)
+            {
+                return false;
+            }
+            
+            if (type == BWAPI::UnitTypes::Protoss_Photon_Cannon || type == BWAPI::UnitTypes::Zerg_Sunken_Colony 
+                || type == BWAPI::UnitTypes::Zerg_Spore_Colony  || type == BWAPI::UnitTypes::Terran_Missile_Turret)
+            {
+                return true;
+            }
+
+            // only support tower buildings
+            if (type.isBuilding())
             {
                 return false;
             }
 
-            if (type.isBuilding() && !(type == BWAPI::UnitTypes::Protoss_Photon_Cannon || type == BWAPI::UnitTypes::Zerg_Sunken_Colony || type == BWAPI::UnitTypes::Terran_Missile_Turret))
+            // only support units that can attack
+            if (type.groundWeapon() == BWAPI::WeaponTypes::None && type.airWeapon() == BWAPI::WeaponTypes::None)
             {
                 return false;
             }
 
-            if (type.isSpellcaster())
-            {
-                return false;
-            }
-
-            // Don't support units loading other units yet
+            // don't support units loading other units yet
             if (type == BWAPI::UnitTypes::Terran_Vulture_Spider_Mine || 
                 type == BWAPI::UnitTypes::Protoss_Carrier || 
                 type == BWAPI::UnitTypes::Protoss_Interceptor || 
@@ -95,6 +46,30 @@ namespace SparCraft
             }
 
             return true;
+        }
+    }
+
+    namespace FileUtils
+    {
+        std::string ReadFile(const std::string & filename)
+        {
+            std::stringstream ss;
+
+            FILE *file = fopen ( filename.c_str(), "r" );
+            if ( file != NULL )
+            {
+                char line [ 4096 ]; /* or other suitable maximum line size */
+                while ( fgets ( line, sizeof line, file ) != NULL ) /* read a line */
+                {
+                    ss << line;
+                }
+                fclose ( file );
+            }
+            else
+            {
+                SPARCRAFT_ASSERT(false, "Couldn't open file: %s", filename.c_str());
+            }
+            return ss.str();
         }
     }
 };

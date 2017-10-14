@@ -1,27 +1,39 @@
 #include "Common.h"
 #include "BuildingManager.h"
 #include "Micro.h"
-#include "ScoutManager.h"
 
 using namespace UAlbertaBot;
 
-BuildingManager::BuildingManager()
+BuildingManager::BuildingManager(
+	shared_ptr<AKBot::OpponentView> opponentView,
+	shared_ptr<BaseLocationManager> bases,
+	shared_ptr<WorkerManager> workerManager,
+	shared_ptr<MapTools> mapTools,
+	std::shared_ptr<AKBot::Logger> logger,
+	const BotMacroConfiguration& macroConfiguration)
     : _debugMode(false)
     , _reservedMinerals(0)
     , _reservedGas(0)
+	, _bases(bases)
+	, _workerManager(workerManager)
+	, _mapTools(mapTools)
+	, _opponentView(opponentView)
+	, _buildingPlacer(mapTools->getWidth(), mapTools->getHeight(), opponentView, bases, mapTools)
+	, _logger(logger)
+	, _macroConfiguration(macroConfiguration)
 {
 
 }
 
 // gets called every frame from GameCommander
-void BuildingManager::update()
+void BuildingManager::update(int currentFrame)
 {
-    validateWorkersAndBuildings();          // check to see if assigned workers have died en route or while constructing
-    assignWorkersToUnassignedBuildings();   // assign workers to the unassigned buildings and label them 'planned'    
-    constructAssignedBuildings();           // for each planned building, if the worker isn't constructing, send the command    
-    checkForStartedConstruction();          // check to see if any buildings have started construction and update data structures    
-    checkForDeadTerranBuilders();           // if we are terran and a building is under construction without a worker, assign a new one    
-    checkForCompletedBuildings();           // check to see if any buildings have completed and update data structures
+    validateWorkersAndBuildings();				// check to see if assigned workers have died en route or while constructing
+    assignWorkersToUnassignedBuildings();		// assign workers to the unassigned buildings and label them 'planned'    
+    constructAssignedBuildings(currentFrame);   // for each planned building, if the worker isn't constructing, send the command    
+    checkForStartedConstruction(currentFrame);	// check to see if any buildings have started construction and update data structures    
+    checkForDeadTerranBuilders();				// if we are terran and a building is under construction without a worker, assign a new one    
+    checkForCompletedBuildings(currentFrame);   // check to see if any buildings have completed and update data structures
 }
 
 bool BuildingManager::isBeingBuilt(BWAPI::UnitType type)
@@ -73,39 +85,41 @@ void BuildingManager::assignWorkersToUnassignedBuildings()
             continue;
         }
 
-        if (_debugMode) { BWAPI::Broodwar->printf("Assigning Worker To: %s",b.type.getName().c_str()); }
+        if (_debugMode)
+		{ 
+			_logger->log("Assigning Worker To: %s",b.type.getName().c_str()); 
+		}
 
         // grab a worker unit from WorkerManager which is closest to this final position
-        BWAPI::Unit workerToAssign = WorkerManager::Instance().getBuilder(b);
-
-        if (workerToAssign)
+        BWAPI::TilePosition testLocation = getBuildingLocation(b);
+        if (!testLocation.isValid())
         {
-            //BWAPI::Broodwar->printf("VALID WORKER BEING ASSIGNED: %d", workerToAssign->getID());
-
-            // TODO: special case of terran building whose worker died mid construction
-            //       send the right click command to the buildingUnit to resume construction
-            //		 skip the buildingsAssigned step and push it back into buildingsUnderConstruction
-
-            b.builderUnit = workerToAssign;
-
-            BWAPI::TilePosition testLocation = getBuildingLocation(b);
-            if (!testLocation.isValid())
-            {
-                continue;
-            }
-
-            b.finalPosition = testLocation;
-
-            // reserve this building's space
-            BuildingPlacer::Instance().reserveTiles(b.finalPosition,b.type.tileWidth(),b.type.tileHeight());
-
-            b.status = BuildingStatus::Assigned;
+            continue;
         }
+
+        b.finalPosition = testLocation;
+
+        // grab the worker unit from WorkerManager which is closest to this final position
+		auto builderUnit = _workerManager->getBuilder(b);
+		if (builderUnit) {
+			_workerManager->setBuildingWorker(builderUnit, b);
+		}
+
+		b.builderUnit = builderUnit;
+        if (!b.builderUnit)
+        {
+            continue;
+        }
+
+        // reserve this building's space
+        _buildingPlacer.reserveTiles(b.finalPosition,b.type.tileWidth(),b.type.tileHeight());
+
+        b.status = BuildingStatus::Assigned;
     }
 }
 
 // STEP 3: ISSUE CONSTRUCTION ORDERS TO ASSIGN BUILDINGS AS NEEDED
-void BuildingManager::constructAssignedBuildings()
+void BuildingManager::constructAssignedBuildings(int currentFrame)
 {
     for (auto & b : _buildings)
     {
@@ -120,7 +134,7 @@ void BuildingManager::constructAssignedBuildings()
             // if we haven't explored the build position, go there
             if (!isBuildingPositionExplored(b))
             {
-                Micro::SmartMove(b.builderUnit,BWAPI::Position(b.finalPosition));
+                Micro::SmartMove(b.builderUnit,BWAPI::Position(b.finalPosition), currentFrame);
             }
             // if this is not the first time we've sent this guy to build this
             // it must be the case that something was in the way of building
@@ -128,10 +142,10 @@ void BuildingManager::constructAssignedBuildings()
             {
                 // tell worker manager the unit we had is not needed now, since we might not be able
                 // to get a valid location soon enough
-                WorkerManager::Instance().finishedWithWorker(b.builderUnit);
+				_workerManager->finishedWithWorker(b.builderUnit, currentFrame);
 
                 // free the previous location in reserved
-                BuildingPlacer::Instance().freeTiles(b.finalPosition,b.type.tileWidth(),b.type.tileHeight());
+                _buildingPlacer.freeTiles(b.finalPosition,b.type.tileWidth(),b.type.tileHeight());
 
                 // nullify its current builder unit
                 b.builderUnit = nullptr;
@@ -155,10 +169,10 @@ void BuildingManager::constructAssignedBuildings()
 }
 
 // STEP 4: UPDATE DATA STRUCTURES FOR BUILDINGS STARTING CONSTRUCTION
-void BuildingManager::checkForStartedConstruction()
+void BuildingManager::checkForStartedConstruction(int currentFrame)
 {
     // for each building unit which is being constructed
-    for (auto & buildingStarted : BWAPI::Broodwar->self()->getUnits())
+    for (auto & buildingStarted : _opponentView->self()->getUnits())
     {
         // filter out units which aren't buildings under construction
         if (!buildingStarted->getType().isBuilding() || !buildingStarted->isBeingConstructed())
@@ -186,24 +200,14 @@ void BuildingManager::checkForStartedConstruction()
                 b.buildingUnit = buildingStarted;
 
                 // if we are zerg, the buildingUnit now becomes nullptr since it's destroyed
-                if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Zerg)
+                if (_opponentView->self()->getRace() == BWAPI::Races::Zerg)
                 {
                     b.builderUnit = nullptr;
                     // if we are protoss, give the worker back to worker manager
                 }
-                else if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Protoss)
-                {
-                    // if this was the gas steal unit then it's the scout worker so give it back to the scout manager
-                    if (b.isGasSteal)
-                    {
-                        ScoutManager::Instance().setWorkerScout(b.builderUnit);
-                    }
-                    // otherwise tell the worker manager we're finished with this unit
-                    else
-                    {
-                        WorkerManager::Instance().finishedWithWorker(b.builderUnit);
-                    }
-
+                else if (_opponentView->self()->getRace() == BWAPI::Races::Protoss)
+                {    
+					_workerManager->finishedWithWorker(b.builderUnit, currentFrame);
                     b.builderUnit = nullptr;
                 }
 
@@ -211,7 +215,7 @@ void BuildingManager::checkForStartedConstruction()
                 b.status = BuildingStatus::UnderConstruction;
 
                 // free this space
-                BuildingPlacer::Instance().freeTiles(b.finalPosition,b.type.tileWidth(),b.type.tileHeight());
+                _buildingPlacer.freeTiles(b.finalPosition,b.type.tileWidth(),b.type.tileHeight());
 
                 // only one building will match
                 break;
@@ -224,7 +228,7 @@ void BuildingManager::checkForStartedConstruction()
 void BuildingManager::checkForDeadTerranBuilders() {}
 
 // STEP 6: CHECK FOR COMPLETED BUILDINGS
-void BuildingManager::checkForCompletedBuildings()
+void BuildingManager::checkForCompletedBuildings(int currentFrame)
 {
     std::vector<Building> toRemove;
 
@@ -240,17 +244,9 @@ void BuildingManager::checkForCompletedBuildings()
         if (b.buildingUnit->isCompleted())
         {
             // if we are terran, give the worker back to worker manager
-            if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran)
+            if (_opponentView->self()->getRace() == BWAPI::Races::Terran)
             {
-                if (b.isGasSteal)
-                {
-                    ScoutManager::Instance().setWorkerScout(b.builderUnit);
-                }
-                // otherwise tell the worker manager we're finished with this unit
-                else
-                {
-                    WorkerManager::Instance().finishedWithWorker(b.builderUnit);
-                }
+                _workerManager->finishedWithWorker(b.builderUnit, currentFrame);
             }
 
             // remove this unit from the under construction vector
@@ -277,13 +273,12 @@ bool BuildingManager::isEvolvedBuilding(BWAPI::UnitType type)
 }
 
 // add a new building to be constructed
-void BuildingManager::addBuildingTask(BWAPI::UnitType type, BWAPI::TilePosition desiredLocation, bool isGasSteal)
+void BuildingManager::addBuildingTask(BWAPI::UnitType type, BWAPI::TilePosition desiredLocation)
 {
     _reservedMinerals += type.mineralPrice();
     _reservedGas	     += type.gasPrice();
 
     Building b(type, desiredLocation);
-    b.isGasSteal = isGasSteal;
     b.status = BuildingStatus::Unassigned;
 
     _buildings.push_back(b);
@@ -294,20 +289,19 @@ bool BuildingManager::isBuildingPositionExplored(const Building & b) const
     BWAPI::TilePosition tile = b.finalPosition;
 
     // for each tile where the building will be built
-    for (int x=0; x<b.type.tileWidth(); ++x)
-    {
-        for (int y=0; y<b.type.tileHeight(); ++y)
-        {
-            if (!BWAPI::Broodwar->isExplored(tile.x + x,tile.y + y))
-            {
-                return false;
-            }
-        }
-    }
+	for (int x = 0; x < b.type.tileWidth(); ++x)
+	{
+		for (int y = 0; y < b.type.tileHeight(); ++y)
+		{
+			if (!_mapTools->isExplored(BWAPI::TilePosition(tile.x + x, tile.y + y)))
+			{
+				return false;
+			}
+		}
+	}
 
     return true;
 }
-
 
 char BuildingManager::getBuildingWorkerCode(const Building & b) const
 {
@@ -324,59 +318,7 @@ int BuildingManager::getReservedGas()
     return _reservedGas;
 }
 
-void BuildingManager::drawBuildingInformation(int x,int y)
-{
-    if (!Config::Debug::DrawBuildingInfo)
-    {
-        return;
-    }
-
-    for (auto & unit : BWAPI::Broodwar->self()->getUnits())
-    {
-        BWAPI::Broodwar->drawTextMap(unit->getPosition().x,unit->getPosition().y+5,"\x07%d",unit->getID());
-    }
-
-    BWAPI::Broodwar->drawTextScreen(x,y,"\x04 Building Information:");
-    BWAPI::Broodwar->drawTextScreen(x,y+20,"\x04 Name");
-    BWAPI::Broodwar->drawTextScreen(x+150,y+20,"\x04 State");
-
-    int yspace = 0;
-
-    for (const auto & b : _buildings)
-    {
-        if (b.status == BuildingStatus::Unassigned)
-        {
-            BWAPI::Broodwar->drawTextScreen(x,y+40+((yspace)*10),"\x03 %s",b.type.getName().c_str());
-            BWAPI::Broodwar->drawTextScreen(x+150,y+40+((yspace++)*10),"\x03 Need %c",getBuildingWorkerCode(b));
-        }
-        else if (b.status == BuildingStatus::Assigned)
-        {
-            BWAPI::Broodwar->drawTextScreen(x,y+40+((yspace)*10),"\x03 %s %d",b.type.getName().c_str(),b.builderUnit->getID());
-            BWAPI::Broodwar->drawTextScreen(x+150,y+40+((yspace++)*10),"\x03 A %c (%d,%d)",getBuildingWorkerCode(b),b.finalPosition.x,b.finalPosition.y);
-
-            int x1 = b.finalPosition.x*32;
-            int y1 = b.finalPosition.y*32;
-            int x2 = (b.finalPosition.x + b.type.tileWidth())*32;
-            int y2 = (b.finalPosition.y + b.type.tileHeight())*32;
-
-            BWAPI::Broodwar->drawLineMap(b.builderUnit->getPosition().x,b.builderUnit->getPosition().y,(x1+x2)/2,(y1+y2)/2,BWAPI::Colors::Orange);
-            BWAPI::Broodwar->drawBoxMap(x1,y1,x2,y2,BWAPI::Colors::Red,false);
-        }
-        else if (b.status == BuildingStatus::UnderConstruction)
-        {
-            BWAPI::Broodwar->drawTextScreen(x,y+40+((yspace)*10),"\x03 %s %d",b.type.getName().c_str(),b.buildingUnit->getID());
-            BWAPI::Broodwar->drawTextScreen(x+150,y+40+((yspace++)*10),"\x03 Const %c",getBuildingWorkerCode(b));
-        }
-    }
-}
-
-BuildingManager & BuildingManager::Instance()
-{
-    static BuildingManager instance;
-    return instance;
-}
-
-std::vector<BWAPI::UnitType> BuildingManager::buildingsQueued()
+std::vector<BWAPI::UnitType> BuildingManager::buildingsQueued() const
 {
     std::vector<BWAPI::UnitType> buildingsQueued;
 
@@ -391,24 +333,10 @@ std::vector<BWAPI::UnitType> BuildingManager::buildingsQueued()
     return buildingsQueued;
 }
 
-
 BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
 {
-    int numPylons = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Pylon);
-
-    if (b.isGasSteal)
-    {
-        BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
-        UAB_ASSERT(enemyBaseLocation,"Should have enemy base location before attempting gas steal");
-        UAB_ASSERT(enemyBaseLocation->getGeysers().size() > 0,"Should have spotted an enemy geyser");
-
-        for (auto & unit : enemyBaseLocation->getGeysers())
-        {
-            BWAPI::TilePosition tp(unit->getInitialTilePosition());
-            return tp;
-        }
-    }
-
+    int numPylons = _opponentView->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Pylon);
+    
     if (b.type.requiresPsi() && numPylons == 0)
     {
         return BWAPI::TilePositions::None;
@@ -416,33 +344,33 @@ BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
 
     if (b.type.isRefinery())
     {
-        return BuildingPlacer::Instance().getRefineryPosition();
+        return _buildingPlacer.getRefineryPosition();
     }
 
     if (b.type.isResourceDepot())
     {
         // get the location 
-        BWAPI::TilePosition tile = MapTools::Instance().getNextExpansion();
+        BWAPI::TilePosition tile = _bases->getNextExpansion(_opponentView->self());
 
         return tile;
     }
 
     // set the building padding specifically
-    int distance = b.type == BWAPI::UnitTypes::Protoss_Photon_Cannon ? 0 : Config::Macro::BuildingSpacing;
+    int distance = b.type == BWAPI::UnitTypes::Protoss_Photon_Cannon ? 0 : _macroConfiguration.BuildingSpacing;
     if (b.type == BWAPI::UnitTypes::Protoss_Pylon && (numPylons < 3))
     {
-        distance = Config::Macro::PylonSpacing;
+        distance = _macroConfiguration.PylonSpacing;
     }
 
     // get a position within our region
-    return BuildingPlacer::Instance().getBuildLocationNear(b,distance,false);
+    return _buildingPlacer.getBuildLocationNear(b,distance,false);
 }
 
 void BuildingManager::removeBuildings(const std::vector<Building> & toRemove)
 {
     for (auto & b : toRemove)
     {
-        auto & it = std::find(_buildings.begin(), _buildings.end(), b);
+        auto it = std::find(_buildings.begin(), _buildings.end(), b);
 
         if (it != _buildings.end())
         {

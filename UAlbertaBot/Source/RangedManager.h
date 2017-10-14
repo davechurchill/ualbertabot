@@ -2,24 +2,24 @@
 
 #include <Common.h>
 #include "MicroManager.h"
+#include "BotConfiguration.h"
 
 namespace UAlbertaBot
 {
 class RangedManager : public MicroManager
 {
+	const BotMicroConfiguration& _microConfiguration;
 public:
 
-	RangedManager();
-	void executeMicro(const BWAPI::Unitset & targets);
-
-	BWAPI::Unit chooseTarget(BWAPI::Unit rangedUnit, const BWAPI::Unitset & targets, std::map<BWAPI::Unit, int> & numTargeting);
-	BWAPI::Unit closestrangedUnit(BWAPI::Unit target, std::set<BWAPI::Unit> & rangedUnitsToAssign);
-    std::pair<BWAPI::Unit, BWAPI::Unit> findClosestUnitPair(const BWAPI::Unitset & attackers, const BWAPI::Unitset & targets);
+	RangedManager(
+		shared_ptr<AKBot::OpponentView> opponentView,
+		shared_ptr<BaseLocationManager> bases,
+		const BotMicroConfiguration& microConfiguration);
+	void executeMicro(const std::vector<BWAPI::Unit> & targets, int currentFrame);
 
 	int getAttackPriority(BWAPI::Unit rangedUnit, BWAPI::Unit target);
-	BWAPI::Unit getTarget(BWAPI::Unit rangedUnit, const BWAPI::Unitset & targets);
+	BWAPI::Unit getTarget(BWAPI::Unit rangedUnit, const std::vector<BWAPI::Unit> & targets);
 
-    void assignTargetsNew(const BWAPI::Unitset & targets);
-    void assignTargetsOld(const BWAPI::Unitset & targets);
+    void assignTargets(const std::vector<BWAPI::Unit> & targets, int currentFrame);
 };
 }

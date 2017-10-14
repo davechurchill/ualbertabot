@@ -14,7 +14,7 @@ namespace BOSS
 
         const size_t MAX_BUILDINGS          = 70;         // maximum number of buildings allowed
 
-        const size_t BUILDING_ERROR         = -2;        // building error return code
+        const size_t BUILDING_ERROR         = std::numeric_limits<size_t>::max() -2;        // building error return code
 
         const size_t MAX_HATCHERIES         = 10;      // maximum number of hatcheries allowed
 

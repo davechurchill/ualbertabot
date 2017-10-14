@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Shared">
+      <UniqueIdentifier>{1eb8c39c-07f9-4afe-8d19-29bdc273628d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TestLib">
+      <UniqueIdentifier>{9ce128c7-b7c0-40ee-a6fd-0cdb3fcf5745}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\AkBot.Tests\stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AkBot.Tests\unittest1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AkBot.Tests\Shared\BulletShared.cpp">
+      <Filter>Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AkBot.Tests\Shared\ForceShared.cpp">
+      <Filter>Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AkBot.Tests\Shared\GameShared.cpp">
+      <Filter>Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AkBot.Tests\Shared\PlayerShared.cpp">
+      <Filter>Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AkBot.Tests\Shared\RegionShared.cpp">
+      <Filter>Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AkBot.Tests\Shared\UnitShared.cpp">
+      <Filter>Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AkBot.Tests\TestLib\GameImpl.cpp">
+      <Filter>TestLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AkBot.Tests\TestLib\PlayerImpl.cpp">
+      <Filter>TestLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AkBot.Tests\TestLib\RegionImpl.cpp">
+      <Filter>TestLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AkBot.Tests\TestLib\UnitImpl.cpp">
+      <Filter>TestLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AkBot.Tests\TestLib\BulletImpl.cpp">
+      <Filter>TestLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AkBot.Tests\TestLib\ForceImpl.cpp">
+      <Filter>TestLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AkBot.Tests\BotConfigurationTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\AkBot.Tests\stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AkBot.Tests\targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AkBot.Tests\Shared\Templates.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AkBot.Tests\TestLib\ForceImpl.h">
+      <Filter>TestLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AkBot.Tests\TestLib\GameImpl.h">
+      <Filter>TestLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AkBot.Tests\TestLib\PlayerImpl.h">
+      <Filter>TestLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AkBot.Tests\TestLib\RegionImpl.h">
+      <Filter>TestLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AkBot.Tests\TestLib\UnitImpl.h">
+      <Filter>TestLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AkBot.Tests\TestLib\BulletImpl.h">
+      <Filter>TestLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AkBot.Tests\TestLib\Convenience.h">
+      <Filter>TestLib</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\AkBot.Tests\AK_Config.json">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\AkBot.Tests\Config_WithError.json">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+</Project>

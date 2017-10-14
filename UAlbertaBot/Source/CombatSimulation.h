@@ -1,38 +1,57 @@
 #pragma once
 
 #include "Common.h"
-#include "MapGrid.h"
 
 #ifdef USING_VISUALIZATION_LIBRARIES
 	#include "Visualizer.h"
 #endif
 
+#pragma warning( push )
+#pragma warning( disable : 4100)
 #include "..\..\SparCraft\source\GameState.h"
 #include "..\..\SparCraft\source\Game.h"
 #include "..\..\SparCraft\source\Unit.h"
 #include "..\..\SparCraft\source\AllPlayers.h"
-#include "InformationManager.h"
+#pragma warning( pop )
+#include "UnitData.h"
+#include "OpponentView.h"
+#include "UnitInfoManager.h"
+#include "Logger.h"
+#include "BotConfiguration.h"
 
 namespace UAlbertaBot
 {
 class CombatSimulation
 {
-	SparCraft::GameState		state;
+	SparCraft::GameState		_state;
+	SparCraft::GameState		_evaluatedState;
+	double						_lastScore;
+	shared_ptr<AKBot::OpponentView> _opponentView;
+	std::shared_ptr<AKBot::Logger> _logger;
+	const BotSparCraftConfiguration& _sparcraftConfiguration;
 
 public:
 
-	CombatSimulation();
+	CombatSimulation(
+		shared_ptr<AKBot::OpponentView> opponentView,
+		shared_ptr<AKBot::Logger> logger,
+		const BotSparCraftConfiguration& sparcraftConfiguration);
 
-	void setCombatUnits(const BWAPI::Position & center, const int radius);
+	void setCombatUnits(
+		const std::vector<BWAPI::Unit> ourCombatUnits,
+		std::vector<UnitInfo> enemyCombatUnits,
+		const BWAPI::Position & center,
+		const int radius,
+		int currentFrame);
 
-	SparCraft::ScoreType simulateCombat();
+	double simulateCombat();
 
-	const SparCraft::Unit			getSparCraftUnit(const UnitInfo & ui) const;
-    const SparCraft::Unit			getSparCraftUnit(BWAPI::Unit unit) const;
+	const SparCraft::Unit			getSparCraftUnit(const UnitInfo & ui, int currentFrame) const;
+    const SparCraft::Unit			getSparCraftUnit(BWAPI::Unit unit, int currentFrame) const;
 	const SparCraft::GameState &	getSparCraftState() const;
 
-	const SparCraft::IDType getSparCraftPlayerID(BWAPI::Player player) const;
-
-	void logState(const SparCraft::GameState & state);
+	const size_t getSparCraftPlayerID(BWAPI::Player player) const;
+	const double getLastScore() const { return _lastScore; }
+	const SparCraft::GameState& getEvaluatedState() { return _evaluatedState; }
 };
 }

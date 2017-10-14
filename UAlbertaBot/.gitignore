@@ -1,4 +1,13 @@
 VisualStudio/Release
 VisualStudio/Debug
-bin/*
+VisualStudio/.vs
+bin/*.dll
+bin/*.exe
+bin/*.map
+bin/*.lib
+bin/*.exp
+bin/*.ilk
+bin/*.pdb
+bin/results/*
 source/*.o
+*.bwta

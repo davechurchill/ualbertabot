@@ -9,7 +9,7 @@ namespace SparCraft
 class Position
 {
 	// x,y location will be used for Units in a 'grid'
-	PositionType		_x, 
+	int		_x, 
 						_y;
 
 public:
@@ -20,7 +20,7 @@ public:
 	{
 	}
 
-	Position(const PositionType & x, const PositionType & y)
+	Position(const int & x, const int & y)
 		: _x(x)
 		, _y(y)
 	{
@@ -55,13 +55,13 @@ public:
 
 	const Position scale(const float & f) const
 	{
-		return Position((PositionType)(f * x()), (PositionType)(f * y()));
+		return Position((int)(f * x()), (int)(f * y()));
 	}
 
     void scalePosition(const float & f)
     {
-        _x = (PositionType)(f * _x);
-        _y = (PositionType)(f * _y);
+        _x = (int)(f * _x);
+        _y = (int)(f * _y);
     }
 
     void addPosition(const Position & rhs)
@@ -82,24 +82,24 @@ public:
 		_y = pos.y();
 	}
 
-	void addPosition(const PositionType & x, const PositionType & y)
+	void addPosition(const int & x, const int & y)
 	{
 		_x += x;
 		_y += y;
 	}
 
-	void moveTo(const PositionType & x, const PositionType & y)
+	void moveTo(const int & x, const int & y)
 	{
 		_x = x;
 		_y = y;
 	}
 
-	const PositionType x() const
+	const int x() const
 	{
 		return _x;
 	}
 
-	const PositionType y() const
+	const int y() const
 	{
 		return _y;
 	}
@@ -136,28 +136,24 @@ public:
 		return Position(-_x, -_y);
 	}
 
-    inline const PositionType getDistance(const Position & p) const	
+    double getDistance(const Position & p) const	
 	{
-        PositionType dX = x() - p.x();
-        PositionType dY = y() - p.y();
+        double dX = x() - p.x();
+        double dY = y() - p.y();
 
-        if (dX == 0)
-        {
-            return abs(dY);
-        }
-        else if (dY == 0)
-        {
-            return abs(dX);
-        }
-        else
-        {
-            return (PositionType)sqrt((float)(dX*dX - dY*dY));
-        }
+        return sqrt(dX*dX + dY*dY);
 	}
 
-	inline const PositionType getDistanceSq(const Position & p) const	
+    double getLength() const
+    {
+        return sqrt(_x*_x + _y*_y);
+    }
+
+	const int getDistanceSq(const Position & p) const	
 	{
-        return (x()-p.x())*(x()-p.x()) + (y()-p.y())*(y()-p.y());
+        int dx = x() - p.x();
+        int dy = y() - p.y();
+        return (dx*dx) + (dy*dy);
 	}
 
 	void print() const

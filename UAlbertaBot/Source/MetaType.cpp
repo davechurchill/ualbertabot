@@ -1,4 +1,7 @@
 #include "MetaType.h"
+#include <BWAPI/Race.h>
+#include <BWAPI/TechType.h>
+#include <BWAPI/UpgradeType.h>
 
 using namespace UAlbertaBot;
 

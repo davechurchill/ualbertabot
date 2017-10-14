@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Common.h"
-
 #include "MetaType.h"
 
 namespace UAlbertaBot
@@ -11,13 +10,11 @@ struct BuildOrderItem
     MetaType			metaType;		// the thing we want to 'build'
     int					priority;	// the priority at which to place it in the queue
     bool				blocking;	// whether or not we block further items
-    bool                isGasSteal;
 
-    BuildOrderItem(MetaType m,int p,bool b,bool gasSteal = false)
+    BuildOrderItem(MetaType m, int p, bool b)
         : metaType(m)
         , priority(p)
         , blocking(b)
-        , isGasSteal(gasSteal) 
     {
     }
 
@@ -43,7 +40,7 @@ public:
 
     void clearAll();											// clears the entire build order queue
     void skipItem();											// increments skippedItems
-    void queueAsHighestPriority(MetaType m,bool blocking,bool gasSteal = false);		// queues something at the highest priority
+    void queueAsHighestPriority(MetaType m,bool blocking);		// queues something at the highest priority
     void queueAsLowestPriority(MetaType m,bool blocking);		// queues something at the lowest priority
     void queueItem(BuildOrderItem b);			// queues something with a given priority
     void removeHighestPriorityItem();								// removes the highest priority item
@@ -51,7 +48,7 @@ public:
 
     int getHighestPriorityValue();								// returns the highest priority value
     int	getLowestPriorityValue();								// returns the lowest priority value
-    size_t size();													// returns the size of the queue
+    size_t size() const;										// returns the size of the queue
 
     bool isEmpty();
 
@@ -63,9 +60,8 @@ public:
     bool canSkipItem();
     bool hasNextHighestPriorityItem();								// returns the highest priority item
 
-    void drawQueueInformation(int x,int y);
-
     // overload the bracket operator for ease of use
-    BuildOrderItem operator [] (int i);
+    BuildOrderItem operator [] (int i) const;
+	BuildOrderItem operator [] (size_t i) const;
 };
 }

@@ -12,7 +12,11 @@
 #include "AllPlayers.h"
 #include "Game.h"
 #include "GameState.h"
-#include "AnimationFrameData.h"
+#include "Config.h"
+#include "AIParameters.h"
+#include "Eval.h"
+#include "AITools.h"
+#include "JSONTools.h"
 
 namespace SparCraft
 {

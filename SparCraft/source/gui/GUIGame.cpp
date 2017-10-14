@@ -5,60 +5,78 @@
 using namespace SparCraft;
 
 GLfloat White[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+GLfloat Grid[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
 
 GLfloat PlayerColors[2][4] = {{1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}};
-GLfloat PlayerColorsDark[2][4] = {{0.7f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.7f, 0.0f, 1.0f}};
+GLfloat PlayerColorsDark[2][4] = {{0.4f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.4f, 0.0f, 1.0f}};
 
 GUIGame::GUIGame(GUI & gui)
     : _game(GameState(), 0)
     , _gui(gui)
+    , _updateDelayMS(0)
+    , _drawHPBars(true)
+    , _drawCD(true)
+    , _lastGameUpdate(0)
 {
-
+    _updateTimer.start();
 }
 
 void GUIGame::onFrame()
 {
-    drawGame();
-    drawHPBars();
+    //drawHPBars();
 
     Timer turnTimer;
     turnTimer.start();
-    if (!_game.gameOver())
+
+    if (!_game.gameOver() && (_updateTimer.getElapsedTimeInMilliSec() > _updateDelayMS))
     {
         _game.playNextTurn();
         _previousTurnTimer =  turnTimer.getElapsedTimeInMilliSec();
-
-        for (size_t p(0); p < 2; ++p)
-        {
-            Player_UCT *        uct = dynamic_cast<Player_UCT *>        (_game.getPlayer(p).get());
-            Player_AlphaBeta *  ab  = dynamic_cast<Player_AlphaBeta *>  (_game.getPlayer(p).get());
-
-            if (uct) 
-            { 
-                setParams(p, uct->getParams().getDescription());
-                setResults(p, uct->getResults().getDescription());
-            }
-
-            if (ab) 
-            { 
-                setParams(p, ab->getParams().getDescription()); 
-                setResults(p, ab->results().getDescription());
-            }
-        }
+        _updateTimer.start();
     }
-
-    drawParameters(5, 15);
-    drawSearchResults(5, 150);
-    drawInfo();
 }
 
 void GUIGame::drawInfo()
 {
     std::stringstream ss;
-    ss << "Frame Draw Time: " << _previousDrawGameTimer << "ms\n\n";
-    ss << "Turn Time: " << _previousTurnTimer << "ms";
+    ss << "Game Frame:  " << _game.getState().getTime() << "\n\n";
+    ss << "Render Time: " << _previousDrawGameTimer << "ms\n\n";
+    ss << "Player Time: " << _previousTurnTimer << "ms";
 
-    GUITools::DrawString(Position(5, _gui.height()-20), ss.str(), White);
+    GUITools::DrawString(Position(10, _gui.height()-50), ss.str(), White);
+}
+
+void GUIGame::drawEval(int x, int y)
+{
+    double ltd[2] = { Eval::LTD(_game.getState(), 0), Eval::LTD(_game.getState(), 1) };
+    double totalltd[2] = { Eval::TotalLTD(_game.getState(), 0), Eval::TotalLTD(_game.getState(), 1) };
+    double ltd2[2] = { Eval::LTD2(_game.getState(), 0), Eval::LTD2(_game.getState(), 1) };
+    double totalltd2[2] = { Eval::TotalLTD2(_game.getState(), 0), Eval::TotalLTD2(_game.getState(), 1) };
+    double ltdp[2] = { ltd[0] / totalltd[0], ltd[1] / totalltd[1] };
+    double ltd2p[2] = { ltd2[0] / totalltd2[0], ltd2[1] / totalltd2[1] };
+
+    Position barSize(150, 20);
+    int ySkip = barSize.y() + 2;
+    Position ltdpos[2] = { Position(x, y), Position(x, y + ySkip) };
+
+    y += 4*ySkip;
+    Position ltd2pos[2] = { Position(x, y), Position(x, y + ySkip) };
+
+    GUITools::DrawString(ltdpos[0] + Position(0, - 2), "LTD Evaluation", White);
+    GUITools::DrawString(ltd2pos[0] + Position(0, - 2), "LTD2 Evaluation", White);
+
+    for (size_t p(0); p < 2; ++p)
+    {
+        GUITools::DrawPercentageRect(ltdpos[p], ltdpos[p] + barSize, ltdp[p], PlayerColors[p], PlayerColorsDark[p]);
+        std::stringstream ssltd;
+        ssltd << ltd[p];
+        GUITools::DrawString(ltdpos[p] + barSize + Position(10, -barSize.y()/4), ssltd.str(), White);
+
+        GUITools::DrawPercentageRect(ltd2pos[p], ltd2pos[p] + barSize, ltd2p[p], PlayerColors[p], PlayerColorsDark[p]);
+        std::stringstream ssltd2;
+        ssltd2 << ltd2[p];
+        GUITools::DrawString(ltd2pos[p] + barSize + Position(10, -barSize.y() / 4), ssltd2.str(), White);
+    }
 }
 
 void GUIGame::drawGame()
@@ -67,6 +85,45 @@ void GUIGame::drawGame()
     drawGameTimer.start();
 
     const GameState & state = _game.getState();
+
+    // draw the map boundary, if the state has one
+    if (state.getMap().get() != nullptr)
+    {
+        int width = state.getMap()->getPixelWidth();
+        int height = state.getMap()->getPixelHeight();
+
+        for (size_t x(0); x < state.getMap()->getWalkTileWidth(); ++x)
+        {
+            for (size_t y(0); y < state.getMap()->getWalkTileHeight(); ++y)
+            {
+                if (!state.getMap()->isWalkable(x, y))
+                {
+                    GUITools::DrawRect(BWAPI::Position(x * 8, y * 8), BWAPI::Position((x + 1) * 8, (y + 1) * 8), Grid);
+                }
+            }
+        }
+
+        std::stringstream ssbr;
+        ssbr << "(" << width << "," << height << ")";
+
+        GUITools::DrawString(Position(0, -10), "(0,0)", Grid);
+        GUITools::DrawString(Position(width - (8 * ssbr.str().size()), height + 15), ssbr.str(), Grid);
+
+        for (int x(32); x < width; x += 32)
+        {
+            GUITools::DrawLine(Position(x, 0), Position(x, height), 1, Grid);
+        }
+
+        for (int y(32); y < height; y += 32)
+        {
+            GUITools::DrawLine(Position(0, y), Position(width, y), 1, Grid);
+        }
+
+        GUITools::DrawLine(Position(0, 0),          Position(width, 0),      3, Grid);
+        GUITools::DrawLine(Position(width, 0),      Position(width, height), 3, Grid);
+        GUITools::DrawLine(Position(width, height), Position(0, height),     3, Grid);
+        GUITools::DrawLine(Position(0, height),     Position(0, 0),          3, Grid);
+    }
 
     for (size_t p(0); p < 2; ++p)
     {
@@ -79,102 +136,18 @@ void GUIGame::drawGame()
     _previousDrawGameTimer = drawGameTimer.getElapsedTimeInMilliSec();
 }
 
-void GUIGame::drawHPBars()
-{
-    const GameState & state = _game.getState();
-
-    for (IDType p(0); p<Constants::Num_Players; ++p)
-    {
-        for (IDType u(0); u<_initialState.numUnits(p); ++u)
-        {
-            int barHeight = 12;
-
-            const Unit &			unit(state.getUnitDirect(p,u));
-
-            const Position			pos(1000+170*p,40+barHeight*u);
-            const BWAPI::UnitType	type(unit.type());
-
-            const int				x0(pos.x());
-            const int				x1(pos.x() + 150);
-            const int				y0(pos.y());
-            const int				y1(pos.y() + 15);
-
-            // draw the unit HP box
-            double	percHP = (double)unit.currentHP() / (double)unit.maxHP();
-            int		w = 150;
-            int		h = barHeight;
-            int		cw = (int)(w * percHP);
-            int		xx = pos.x() - w/2;
-            int		yy = pos.y() - h - (y1-y0)/2;
-
-            if (unit.isAlive())
-            {
-                GUITools::DrawRectGradient(Position(xx,yy),Position(xx+cw,yy+h),PlayerColors[p], PlayerColorsDark[p]);
-            }
-
-            //if (unit.ID() < 255)
-            //{
-            //	glEnable( GL_TEXTURE_2D );
-            //		glBindTexture( GL_TEXTURE_2D, unit.type().getID() );
-
-            //		// draw the unit to the screen
-            //		glColor4f(1, 1, 1, 1);
-            //		glBegin( GL_QUADS );
-            //			glTexCoord3d(0.0,0.0,.5); glVertex2i(xx, yy);
-            //			glTexCoord3d(0.0,1.0,.5); glVertex2i(xx, yy+h);
-            //			glTexCoord3d(1.0,1.0,.5); glVertex2i(xx+h,yy+h);
-            //			glTexCoord3d(1.0,0.0,.5); glVertex2i(xx+h, yy);
-            //		glEnd();
-            //	glDisable( GL_TEXTURE_2D );
-            //}
-        }
-    }
-}
-
 void GUIGame::drawParameters(int x, int y)
 {
     int size = 11;
     int spacing = 3;
     int colwidth = 175;
-    int playerspacing = 350;
+    int playerSpacing = 200;
 
-    for (size_t pp(0); pp < 2; ++pp)
-    {
-        GUITools::DrawString(Position(x+pp*playerspacing, y), "Player 1 Settings", PlayerColors[pp]);
+    GUITools::DrawString(Position(x, y), "Player 1 Parameters", PlayerColors[0]);
+    GUITools::DrawString(Position(x + playerSpacing, y), "Player 2 Parameters", PlayerColors[1]);
 
-        for (size_t p(0); _params[pp].size() > 0 && p<_params[pp][0].size(); ++p)
-        {
-            GUITools::DrawString(Position(x+pp*playerspacing, y+((p+1)*(size+spacing))), _params[pp][0][p], White);
-            GUITools::DrawString(Position(x+pp*playerspacing+colwidth, y+((p+1)*(size+spacing))), _params[pp][1][p], White);
-        }
-    }
-
-    //// Player 1 Settings
-    //if (_params[0].size() > 0)
-    //{
-    //    GUITools::DrawString(Position(x, y), "Player 1 Settings", PlayerColors[0]);
-
-    //    for (size_t p(0); _params[0].size() > 0 && p<_params[0][0].size(); ++p)
-    //    {
-    //        GUITools::DrawString(Position(x, y+((p+1)*(size+spacing))), _params[0][0][p], White);
-    //        GUITools::DrawString(Position(x+colwidth, y+((p+1)*(size+spacing))), _params[0][1][p], White);
-    //    }
-    //}
-
-    //if (_params[1].size() > 0)
-    //{
-    //    // Player 2 Settings
-    //    x += playerspacing;
-    //    glColor3f(0.0, 1.0, 0.0);
-    //    DrawText(x, y , size, "Player 2 Settings");
-    //    glColor3f(1.0, 1.0, 1.0);
-
-    //    for (size_t p(0); params[1].size() > 0 && p<params[1][0].size(); ++p)
-    //    {
-    //        DrawText(x, y+((p+1)*(size+spacing)), size, params[1][0][p]);
-    //        DrawText(x+colwidth, y+((p+1)*(size+spacing)), size, params[1][1][p]);
-    //    }
-    //}
+    GUITools::DrawString(Position(x, y+12), _game.getPlayer(0)->getDescription(), White);
+    GUITools::DrawString(Position(x + playerSpacing, y + 12), _game.getPlayer(1)->getDescription(), White);
 }
 
 void GUIGame::drawSearchResults(int x, int y)
@@ -182,17 +155,12 @@ void GUIGame::drawSearchResults(int x, int y)
 	int size = 11;
     int spacing = 3;
     int colwidth = 175;
-    int playerspacing = 350;
+    int playerSpacing = 200;
 
     for (size_t pp(0); pp < 2; ++pp)
     {
-        GUITools::DrawString(Position(x+pp*playerspacing, y), "Player 1 Search Results", PlayerColors[pp]);
-
-        for (size_t p(0); _results[pp].size() > 0 && p<_results[pp][0].size(); ++p)
-        {
-            GUITools::DrawString(Position(x+pp*playerspacing, y+((p+1)*(size+spacing))), _results[pp][0][p], White);
-            GUITools::DrawString(Position(x+pp*playerspacing+colwidth, y+((p+1)*(size+spacing))), _results[pp][1][p], White);
-        }
+        GUITools::DrawString(Position(x + pp*playerSpacing, y), "Player Results", PlayerColors[pp]);
+        GUITools::DrawString(Position(x + pp*playerSpacing, y+12), _game.getPlayer(pp)->getResultString(), White);
     }
 }
 
@@ -211,17 +179,23 @@ void GUIGame::drawUnit(const Unit & unit)
 
     _gui.drawUnitType(unit.type(), pos);
 
-    const int x0(pos.x() - type.dimensionUp());
-	const int x1(pos.x() + type.dimensionDown());
+    const int x0(pos.x() - type.dimensionLeft());
+	const int x1(pos.x() + type.dimensionRight());
 	const int y0(pos.y() - type.dimensionUp());
 	const int y1(pos.y() + type.dimensionDown());
 
-    double	percHP = (double)unit.currentHP() / (double)unit.maxHP();
-	int		cw = (int)((x1-x0) * percHP);
-	int		xx = pos.x() - (x1-x0)/2;
-	int		yy = pos.y() - healthBoxHeight - (y1-y0)/2 - 5;
+    double percHP = (double)unit.currentHP() / (double)unit.maxHP();
+    int width = x1 - x0;
+	int xx = pos.x() - width/2;
+	int yy = pos.y() - healthBoxHeight - (y1-y0)/2 - 5;
 
-    GUITools::DrawRect(Position(xx, yy), Position(xx+cw, yy+healthBoxHeight), PlayerColors[unit.player()]);
+    GUITools::DrawPercentageRect(Position(xx, yy), Position(xx + x1 - x0, yy + healthBoxHeight), percHP, PlayerColors[unit.getPlayerID()], nullptr);
+
+    size_t cda = unit.nextAttackActionTime() - _game.getState().getTime();
+    size_t cdm = unit.nextMoveActionTime() - _game.getState().getTime();
+    std::stringstream cdss;
+    cdss << "(" << cdm << "," << cda << ")";
+    //GUITools::DrawString(Position(xx + width + 5, yy+2), cdss.str(), White);
 
     const Action & action = unit.previousAction();
             
@@ -235,10 +209,10 @@ void GUIGame::drawUnit(const Unit & unit)
 	}
 	else if (action.type() == ActionTypes::ATTACK)
 	{
-		const Unit &	target(state.getUnit(state.getEnemy(unit.player()), action.index()));
+		const Unit &	target = state.getUnitByID(action.getTargetID());
 		const Position	targetPos(target.currentPosition(state.getTime()));
 
-        GUITools::DrawLine(pos, targetPos, 1, PlayerColors[unit.player()]);
+        GUITools::DrawLine(pos, targetPos, 1, PlayerColors[unit.getPlayerID()]);
 	}
 }
 
@@ -253,12 +227,22 @@ const Game & GUIGame::getGame() const
     return _game;
 }
 
-void GUIGame::setResults(const IDType & player, const std::vector<std::vector<std::string> > & r)
+void GUIGame::setResults(const size_t & player, const std::vector<std::vector<std::string> > & r)
 {
 	_results[player] = r;
 }
 
-void GUIGame::setParams(const IDType & player, const std::vector<std::vector<std::string> > & p)
+void GUIGame::setParams(const size_t & player, const std::vector<std::vector<std::string> > & p)
 {
 	_params[player] = p;
+}
+
+void GUIGame::setDrawCD(bool draw)
+{
+    _drawCD = draw;
+}
+
+void GUIGame::setUpdateDelayMS(size_t ms)
+{
+    _updateDelayMS = ms;
 }

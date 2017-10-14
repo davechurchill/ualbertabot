@@ -1,7 +1,26 @@
-UAlbertaBot - StarCraft AI Competition Bot
+# AKBot - StarCraft AI Competition Bot
 
-Author:  David Churchill (dave.churchill@gmail.com)
+This bot based on the original UAlberta Bot written by David Churchill (dave.churchill@gmail.com)
 
+Author: Andrey Kurdyumov (kant2002@gmail.com)
+
+## Dependencies
+
+For mamaging dependencies used vcpkg
+
+    # install dependencies
+    vcpkg install boost
+    vcpkg install boost-di
+
+This is additional dependencies to Dave Churchill's bot.
+
+## How to build
+
+For testing locally you need only VS2017, for these you should use Debug and Release solution configuration.
+If you want made submission to SSCAIT, you have to install VS2013 Update 5 from https://www.visualstudio.com/vs/older-downloads/.
+Community version should be enough for building. To make install minimal, you could uncheck all ceckboxes in the installer.
+
+For actual building go to `UAlbertaBot\VisualStudio` and open `UAlbertaBot.sln`
+
+## Documentation
 Please check out the [Wiki](https://github.com/davechurchill/ualbertabot/wiki) for full instructions and documentation!
-
-Please consider the code in this repository as unstable research code. Stable releases can be found in the [stable release section](https://github.com/davechurchill/ualbertabot/tree/master/binary_stable_releases). Note that the instructions included in the wiki may not be correct for older binary releases.

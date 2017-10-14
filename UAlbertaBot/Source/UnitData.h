@@ -1,7 +1,8 @@
 #pragma once
 
 #include "Common.h"
-#include "BWTA.h"
+#include <BWAPI/Unit.h>
+#include <BWAPI/Player.h>
 
 namespace UAlbertaBot
 {
@@ -31,9 +32,9 @@ struct UnitInfo
 
     }
 
-    const bool operator == (BWAPI::Unit unit) const
+    const bool operator == (BWAPI::Unit target) const
     {
-        return unitID == unit->getID();
+        return unitID == target->getID();
     }
 
     const bool operator == (const UnitInfo & rhs) const
@@ -48,19 +49,18 @@ struct UnitInfo
 };
 
 typedef std::vector<UnitInfo> UnitInfoVector;
-typedef std::map<BWAPI::Unit,UnitInfo> UIMap;
 
 class UnitData
 {
-    UIMap unitMap;
+    std::map<int, UnitInfo> _unitMap; // indexed by BWAPI::Unit ID
 
     const bool badUnitInfo(const UnitInfo & ui) const;
 
-    std::vector<int>						numDeadUnits;
-    std::vector<int>						numUnits;
+    std::vector<int> _numDeadUnits;
+    std::vector<int> _numUnits;
 
-    int										mineralsLost;
-    int										gasLost;
+    int _mineralsLost;
+    int	_gasLost;
 
 public:
 
@@ -74,6 +74,6 @@ public:
     int		getMineralsLost()                           const;
     int		getNumUnits(BWAPI::UnitType t)              const;
     int		getNumDeadUnits(BWAPI::UnitType t)          const;
-    const	std::map<BWAPI::Unit,UnitInfo> & getUnits() const;
+    const	std::map<int, UnitInfo> & getUnitInfoMap() const;
 };
 }
