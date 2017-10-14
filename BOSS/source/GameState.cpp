@@ -106,7 +106,7 @@ GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self, c
                     {
                         BWAPI::UnitType trainType = unit->getLastCommand().getUnitType();
 
-                        if (BWAPI::Broodwar->getFrameCount() - unit->getLastCommandFrame() < 2*BWAPI::Broodwar->getLatencyFrames())
+                        if (_currentFrame - unit->getLastCommandFrame() < 2*BWAPI::Broodwar->getLatencyFrames())
                         {
                             constructing = ActionType(trainType);
                             set = true;

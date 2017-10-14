@@ -1,10 +1,13 @@
 Compilation Instructions:
 
-1. Install the required libraries
+1. Install the required libraries for the SparCraft GUI
 
 libsdl2-dev
 libsdl2-image-dev
 
+   If you wish to compile without the GUI enabled, #define SPARCRAFT_NOGUI in source/SparCraftExperiment.cpp
+   When you reach step 6, run 'make SparCraft_NOGUI' instead of just make
+   
 2. Clone the BWAPI github repository somewhere on your system
 
 git clone https://github.com/bwapi/bwapi.git
@@ -16,8 +19,11 @@ BWAPI_DIR=/where_you_cloned_to/bwapi/bwapi  (yes, bwapi/bwapi)
 4. If your BWAPI_DIR doesn't contain the file svnrev.h, you need to generate it using the vbs script in that dir
    (note: this may have to be done in windows, but you can just copy the generated .h files to Linux and it will work)
 
-5. Run 'make' in the SparCraft directory, the binary will go to the 'SparCraft/bin' directory
+5. Depending on your compiler, you may have to make the fix to a BWAPI header outlined here:
+   https://github.com/bwapi/bwapi/issues/678#issuecomment-241218319
+   
+6. Run 'make' in the SparCraft directory, the binary will go to the 'SparCraft/bin' directory
 
-6. cd to 'SparCraft/bin' and run './SparCraft ../sample_experiment/sample_exp.txt'
+7. cd to 'SparCraft/bin' and run ./SparCraft - it will read SparCraft_Config.txt from SparCraft/bin as the config file
 
 Enjoy!

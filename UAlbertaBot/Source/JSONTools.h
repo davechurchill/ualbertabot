@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Common.h"
 #include "rapidjson/rapidjson.h"
 #include "rapidjson/document.h"
+#include "UABAssert.h"
 
 namespace UAlbertaBot
 {

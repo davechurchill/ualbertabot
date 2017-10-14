@@ -2,10 +2,18 @@
 
 namespace BOSS
 {
+    bool isInit = false;
+
     void init()
     {
-        ActionTypeData::Init();
-        ActionTypes::init();
+        if (!isInit)
+        {
+            std::cout << "Initializing BOSS...\n";
+
+            ActionTypeData::Init();
+            ActionTypes::init();
+            isInit = true;
+        }
     }
 
     void printData()

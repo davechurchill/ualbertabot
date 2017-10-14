@@ -1,12 +1,23 @@
 #include "DetectorManager.h"
+#include "UnitUtil.h"
+#include "Micro.h"
+#include <boost/range/adaptors.hpp>
 
 using namespace UAlbertaBot;
 
-DetectorManager::DetectorManager() : unitClosestToEnemy(nullptr) { }
+DetectorManager::DetectorManager(
+	shared_ptr<AKBot::OpponentView> opponentView,
+	shared_ptr<MapTools> mapTools,
+	shared_ptr<BaseLocationManager> bases)
+    : MicroManager(opponentView, bases)
+	, unitClosestToEnemy(nullptr)
+	, _mapTools(mapTools)
+{ 
+}
 
-void DetectorManager::executeMicro(const BWAPI::Unitset & targets) 
+void DetectorManager::executeMicro(const std::vector<BWAPI::Unit> & targets, int currentFrame)
 {
-	const BWAPI::Unitset & detectorUnits = getUnits();
+	const std::vector<BWAPI::Unit> & detectorUnits = getUnits();
 
 	if (detectorUnits.empty())
 	{
@@ -19,17 +30,17 @@ void DetectorManager::executeMicro(const BWAPI::Unitset & targets)
 	}
 
 	cloakedUnitMap.clear();
-	BWAPI::Unitset cloakedUnits;
+	std::vector<BWAPI::Unit> cloakedUnits;
 
 	// figure out targets
-	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
+	for (auto & unit : UnitUtil::getEnemyUnits(opponentView))
 	{
 		// conditions for targeting
 		if (unit->getType() == BWAPI::UnitTypes::Zerg_Lurker ||
 			unit->getType() == BWAPI::UnitTypes::Protoss_Dark_Templar ||
 			unit->getType() == BWAPI::UnitTypes::Terran_Wraith) 
 		{
-			cloakedUnits.insert(unit);
+			cloakedUnits.push_back(unit);
 			cloakedUnitMap[unit] = false;
 		}
 	}
@@ -42,39 +53,33 @@ void DetectorManager::executeMicro(const BWAPI::Unitset & targets)
 		// if we need to regroup, move the detectorUnit to that location
 		if (!detectorUnitInBattle && unitClosestToEnemy && unitClosestToEnemy->getPosition().isValid())
 		{
-			Micro::SmartMove(detectorUnit, unitClosestToEnemy->getPosition());
+			Micro::SmartMove(detectorUnit, unitClosestToEnemy->getPosition(), currentFrame);
 			detectorUnitInBattle = true;
 		}
 		// otherwise there is no battle or no closest to enemy so we don't want our detectorUnit to die
 		// send him to scout around the map
 		else
 		{
-			BWAPI::Position explorePosition = MapGrid::Instance().getLeastExplored();
-			Micro::SmartMove(detectorUnit, explorePosition);
+			auto explorePosition = bases->getLeastRecentlySeenPosition(_mapTools);
+			Micro::SmartMove(detectorUnit, explorePosition, currentFrame);
 		}
 	}
 }
 
 
-BWAPI::Unit DetectorManager::closestCloakedUnit(const BWAPI::Unitset & cloakedUnits, BWAPI::Unit detectorUnit)
+BWAPI::Unit DetectorManager::closestCloakedUnit(const std::vector<BWAPI::Unit> & cloakedUnits, BWAPI::Unit detectorUnit)
 {
-	BWAPI::Unit closestCloaked = nullptr;
-	double closestDist = 100000;
-
-	for (auto & unit : cloakedUnits)
-	{
-		// if we haven't already assigned an detectorUnit to this cloaked unit
-		if (!cloakedUnitMap[unit])
-		{
-			double dist = unit->getDistance(detectorUnit);
-
-			if (!closestCloaked || (dist < closestDist))
-			{
-				closestCloaked = unit;
-				closestDist = dist;
-			}
-		}
-	}
-
-	return closestCloaked;
+	using boost::adaptors::filtered;
+	using boost::adaptors::transformed;
+	auto cloakedUnitsNotInTheList = cloakedUnits
+		| filtered([this](const BWAPI::Unit& unit) { 
+			return !cloakedUnitMap[unit];
+		});
+	/*
+	 This distance to observer map 
+	auto distanceToObserverMap = cloakedUnitsNotInTheList | transformed([&detectorUnit](const BWAPI::Unit const& unit) {
+		return std::make_pair(unit, unit->getDistance(detectorUnit));
+	});
+	*/
+	return UnitUtil::GetClosestsUnitToTarget(cloakedUnitsNotInTheList, detectorUnit);
 }

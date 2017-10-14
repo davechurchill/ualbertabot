@@ -2,6 +2,7 @@
 
 #include <Common.h>
 #include "MicroManager.h"
+#include "MapTools.h"
 
 namespace UAlbertaBot
 {
@@ -9,8 +10,8 @@ class MicroManager;
 
 class DetectorManager : public MicroManager
 {
-
 	std::map<BWAPI::Unit, bool>	cloakedUnitMap;
+	shared_ptr<MapTools> _mapTools;
 
 	bool isAssigned(BWAPI::Unit unit);
 
@@ -18,12 +19,12 @@ class DetectorManager : public MicroManager
 
 public:
 
-	DetectorManager();
+	DetectorManager(shared_ptr<AKBot::OpponentView> opponentView, shared_ptr<MapTools> mapTool, shared_ptr<BaseLocationManager> basess);
 	~DetectorManager() {}
 
 	void setUnitClosestToEnemy(BWAPI::Unit unit) { unitClosestToEnemy = unit; }
-	void executeMicro(const BWAPI::Unitset & targets);
+	void executeMicro(const std::vector<BWAPI::Unit> & targets, int currentFrame);
 
-	BWAPI::Unit closestCloakedUnit(const BWAPI::Unitset & cloakedUnits, BWAPI::Unit detectorUnit);
+	BWAPI::Unit closestCloakedUnit(const std::vector<BWAPI::Unit> & cloakedUnits, BWAPI::Unit detectorUnit);
 };
 }

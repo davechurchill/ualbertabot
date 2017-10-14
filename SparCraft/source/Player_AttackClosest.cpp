@@ -2,33 +2,38 @@
 
 using namespace SparCraft;
 
-Player_AttackClosest::Player_AttackClosest(const IDType & playerID)
+Player_AttackClosest::Player_AttackClosest(const size_t & playerID)
 {
     _playerID = playerID;
 }
 
-void Player_AttackClosest::getMoves(GameState & state,const MoveArray & moves,std::vector<Action> & moveVec)
+void Player_AttackClosest::getMove(const GameState & state, Move & move)
 {
-    moveVec.clear();
-    for (IDType u(0); u<moves.numUnits(); ++u)
+    MoveArray moves;
+    ActionGenerators::GenerateCompassActions(state, _playerID, moves);
+
+    move.clear();
+    for (size_t u(0); u<moves.numUnits(); ++u)
     {
-        bool foundAction(false);
-        size_t actionMoveIndex(0);
-        size_t closestMoveIndex(0);
+        bool foundAction = false;
+        size_t actionMoveIndex = 0;
+        size_t closestMoveIndex = 0;
         unsigned long long actionDistance(std::numeric_limits<unsigned long long>::max());
         unsigned long long closestMoveDist(std::numeric_limits<unsigned long long>::max());
 
-        const Unit & ourUnit(state.getUnit(_playerID,u));
-        const Unit & closestUnit(ourUnit.canHeal() ? state.getClosestOurUnit(_playerID,u) : state.getClosestEnemyUnit(_playerID,u));
+        SPARCRAFT_ASSERT(moves.numMoves(u) > 0, "0 moves found for unit");
+
+        const Unit & ourUnit = state.getUnitByID(moves.getMove(u, 0).getID());
+        const Unit & closestUnit = AITools::GetClosestEnemyUnit(state, _playerID, u);
 
         for (size_t m(0); m<moves.numMoves(u); ++m)
         {
-            const Action move(moves.getMove(u,m));
+            const Action action = moves.getMove(u, m);
 
-            if (move.type() == ActionTypes::ATTACK)
+            if (action.type() == ActionTypes::ATTACK)
             {
-                const Unit & target(state.getUnit(state.getEnemy(move.player()),move.index()));
-                size_t dist(ourUnit.getDistanceSqToUnit(target,state.getTime()));
+                const Unit & target = state.getUnitByID(action.getTargetID());
+                size_t dist = ourUnit.getDistanceSqToUnit(target,state.getTime());
 
                 if (dist < actionDistance)
                 {
@@ -37,19 +42,7 @@ void Player_AttackClosest::getMoves(GameState & state,const MoveArray & moves,st
                     foundAction = true;
                 }
             }
-            if (move.type() == ActionTypes::HEAL)
-            {
-                const Unit & target(state.getUnit(move.player(),move.index()));
-                size_t dist(ourUnit.getDistanceSqToUnit(target,state.getTime()));
-
-                if (dist < actionDistance)
-                {
-                    actionDistance = dist;
-                    actionMoveIndex = m;
-                    foundAction = true;
-                }
-            }
-            else if (move.type() == ActionTypes::RELOAD)
+            else if (action.type() == ActionTypes::RELOAD)
             {
                 if (ourUnit.canAttackTarget(closestUnit,state.getTime()))
                 {
@@ -57,10 +50,9 @@ void Player_AttackClosest::getMoves(GameState & state,const MoveArray & moves,st
                     break;
                 }
             }
-            else if (move.type() == ActionTypes::MOVE)
+            else if (action.type() == ActionTypes::MOVE)
             {
-                Position ourDest(ourUnit.x() + Constants::Move_Dir[move.index()][0],
-                    ourUnit.y() + Constants::Move_Dir[move.index()][1]);
+                Position ourDest(ourUnit.x() + Constants::Move_Dir[action.getTargetID()][0], ourUnit.y() + Constants::Move_Dir[action.getTargetID()][1]);
                 size_t dist(closestUnit.getDistanceSqToPosition(ourDest,state.getTime()));
 
                 if (dist < closestMoveDist)
@@ -71,8 +63,17 @@ void Player_AttackClosest::getMoves(GameState & state,const MoveArray & moves,st
             }
         }
 
-        size_t bestMoveIndex(foundAction ? actionMoveIndex : closestMoveIndex);
+        size_t bestMoveIndex = foundAction ? actionMoveIndex : closestMoveIndex;
 
-        moveVec.push_back(moves.getMove(u,bestMoveIndex));
+        Action toAdd = moves.getMove(u, bestMoveIndex);
+        
+        SPARCRAFT_ASSERT(toAdd.type() != ActionTypes::NONE, "Adding NONE action type");
+
+        move.addAction(toAdd);
     }
+}
+
+PlayerPtr Player_AttackClosest::clone()
+{
+    return PlayerPtr(new Player_AttackClosest(*this));
 }

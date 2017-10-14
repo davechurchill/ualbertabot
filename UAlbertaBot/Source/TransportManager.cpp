@@ -1,20 +1,32 @@
 #include "TransportManager.h"
+#include "Micro.h"
 
 using namespace UAlbertaBot;
 
-TransportManager::TransportManager() :
-	_transportShip(NULL)
+TransportManager::TransportManager(
+	shared_ptr<AKBot::OpponentView> opponentView,
+	shared_ptr<BaseLocationManager> bases,
+	AKBot::PlayerLocationProvider& locationProvider,
+	shared_ptr<MapTools> mapTools,
+	std::shared_ptr<AKBot::Logger> logger,
+	const BotMicroConfiguration& microConfiguration)
+	: MicroManager(opponentView, bases)
+	, _transportShip(NULL)
 	, _currentRegionVertexIndex(-1)
 	, _minCorner(-1,-1)
 	, _maxCorner(-1,-1)
 	, _to(-1,-1)
 	, _from(-1,-1)
+	, _locationProvider(locationProvider)
+	, _mapTools(mapTools)
+	, _logger(logger)
+	, _microConfiguration(microConfiguration)
 {
 }
 
-void TransportManager::executeMicro(const BWAPI::Unitset & targets) 
+void TransportManager::executeMicro(const std::vector<BWAPI::Unit> & targets, int currentFrame)
 {
-	const BWAPI::Unitset & transportUnits = getUnits();
+	const std::vector<BWAPI::Unit> & transportUnits = getUnits();
 
 	if (transportUnits.empty())
 	{
@@ -24,15 +36,15 @@ void TransportManager::executeMicro(const BWAPI::Unitset & targets)
 
 void TransportManager::calculateMapEdgeVertices()
 {
-	BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
+	const BaseLocation * enemyBaseLocation = _locationProvider.getPlayerStartingBaseLocation(opponentView->defaultEnemy());
 
-	if (!enemyBaseLocation)
+	if (enemyBaseLocation == nullptr)
 	{
 		return;
 	}
 
-	const BWAPI::Position basePosition = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
-	const std::vector<BWAPI::TilePosition> & closestTobase = MapTools::Instance().getClosestTilesTo(basePosition);
+	const BWAPI::Position basePosition = BWAPI::Position(opponentView->self()->getStartLocation());
+	const std::vector<BWAPI::TilePosition> & closestTobase = _mapTools->getClosestTilesTo(basePosition);
 
 	std::set<BWAPI::Position> unsortedVertices;
 
@@ -96,26 +108,7 @@ void TransportManager::calculateMapEdgeVertices()
 	_mapEdgeVertices = sortedVertices;
 }
 
-void TransportManager::drawTransportInformation(int x = 0, int y = 0)
-{
-	if (!Config::Debug::DrawUnitTargetInfo)
-	{
-		return;
-	}
-
-	if (x && y)
-	{
-		//BWAPI::Broodwar->drawTextScreen(x, y, "ScoutInfo: %s", _scoutStatus.c_str());
-		//BWAPI::Broodwar->drawTextScreen(x, y + 10, "GasSteal: %s", _gasStealStatus.c_str());
-	}
-	for (size_t i(0); i < _mapEdgeVertices.size(); ++i)
-	{
-		BWAPI::Broodwar->drawCircleMap(_mapEdgeVertices[i], 4, BWAPI::Colors::Green, false);
-		BWAPI::Broodwar->drawTextMap(_mapEdgeVertices[i], "%d", i);
-	}
-}
-
-void TransportManager::update()
+void TransportManager::update(shared_ptr<MapTools> mapTools, int currentFrame)
 {
     if (!_transportShip && getUnits().size() > 0)
     {
@@ -129,12 +122,10 @@ void TransportManager::update()
 	}
 
 	moveTroops();
-	moveTransport();
-	
-	drawTransportInformation();
+	moveTransport(currentFrame);
 }
 
-void TransportManager::moveTransport()
+void TransportManager::moveTransport(int currentFrame)
 {
 	if (!_transportShip || !_transportShip->exists() || !(_transportShip->getHitPoints() > 0))
 	{
@@ -152,11 +143,11 @@ void TransportManager::moveTransport()
 	
 	if (_to.isValid() && _from.isValid())
 	{
-		followPerimeter(_to, _from);
+		followPerimeter(_to, _from, currentFrame);
 	}
 	else
 	{
-		followPerimeter();
+		followPerimeter(1, currentFrame);
 	}
 }
 
@@ -169,7 +160,7 @@ void TransportManager::moveTroops()
 	//unload zealots if close enough or dying
 	int transportHP = _transportShip->getHitPoints() + _transportShip->getShields();
 	
-	BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
+	const BaseLocation * enemyBaseLocation = _locationProvider.getPlayerStartingBaseLocation(opponentView->defaultEnemy());
 
 	if (enemyBaseLocation && (_transportShip->getDistance(enemyBaseLocation->getPosition()) < 300 || transportHP < 100)
 		&& _transportShip->canUnloadAtPosition(_transportShip->getPosition()))
@@ -192,24 +183,26 @@ void TransportManager::moveTroops()
 	
 }
 
-void TransportManager::followPerimeter(int clockwise)
+void TransportManager::followPerimeter(int clockwise, int currentFrame)
 {
 	BWAPI::Position goTo = getFleePosition(clockwise);
 
-	if (Config::Debug::DrawUnitTargetInfo)
+	// Code below now moved to CombatCommanderDebug
+	// I don't know how target variable and _transportShip->getTargetPosition() related right now
+	/*if (_microConfiguration.DrawUnitTargetInfo)
 	{
 		BWAPI::Broodwar->drawCircleMap(goTo, 5, BWAPI::Colors::Red, true);
-	}
+	}*/
 
-	Micro::SmartMove(_transportShip, goTo);
+	Micro::SmartMove(_transportShip, goTo, currentFrame);
 }
 
-void TransportManager::followPerimeter(BWAPI::Position to, BWAPI::Position from)
+void TransportManager::followPerimeter(BWAPI::Position to, BWAPI::Position from, int currentFrame)
 {
 	static int following = 0;
 	if (following)
 	{
-		followPerimeter(following);
+		followPerimeter(following, currentFrame);
 		return;
 	}
 
@@ -223,13 +216,13 @@ void TransportManager::followPerimeter(BWAPI::Position to, BWAPI::Position from)
 		_waypoints.push_back(_mapEdgeVertices[wpIDX.first]);
 		_waypoints.push_back(_mapEdgeVertices[wpIDX.second]);
 
-		BWAPI::Broodwar->printf("WAYPOINTS: [%d] - [%d]", wpIDX.first, wpIDX.second);
+		_logger->log("WAYPOINTS: [%d] - [%d]", wpIDX.first, wpIDX.second);
 
-		Micro::SmartMove(_transportShip, _waypoints[0]);
+		Micro::SmartMove(_transportShip, _waypoints[0], currentFrame);
 	}
 	else if (_waypoints.size() > 1 && _transportShip->getDistance(_waypoints[0]) < 100)
 	{
-		BWAPI::Broodwar->printf("FOLLOW PERIMETER TO SECOND WAYPOINT!");
+		_logger->log("FOLLOW PERIMETER TO SECOND WAYPOINT!");
 		//follow perimeter to second waypoint! 
 		//clockwise or counterclockwise? 
 		int closestPolygonIndex = getClosestVertexIndex(_transportShip);
@@ -238,15 +231,15 @@ void TransportManager::followPerimeter(BWAPI::Position to, BWAPI::Position from)
 		if (_mapEdgeVertices[(closestPolygonIndex + 1) % _mapEdgeVertices.size()].getApproxDistance(_waypoints[1]) <
 			_mapEdgeVertices[(closestPolygonIndex - 1) % _mapEdgeVertices.size()].getApproxDistance(_waypoints[1]))
 		{
-			BWAPI::Broodwar->printf("FOLLOW clockwise");
+			_logger->log("FOLLOW clockwise");
 			following = 1;
-			followPerimeter(following);
+			followPerimeter(following, currentFrame);
 		}
 		else
 		{
-			BWAPI::Broodwar->printf("FOLLOW counter clockwise");
+			_logger->log("FOLLOW counter clockwise");
 			following = -1;
-			followPerimeter(following);
+			followPerimeter(following, currentFrame);
 		}
 
 	}
@@ -254,7 +247,7 @@ void TransportManager::followPerimeter(BWAPI::Position to, BWAPI::Position from)
 	{	
 		//if close to second waypoint, go to destination!
 		following = 0;
-		Micro::SmartMove(_transportShip, to);
+		Micro::SmartMove(_transportShip, to, currentFrame);
 	}
 
 }
@@ -299,18 +292,17 @@ int TransportManager::getClosestVertexIndex(BWAPI::Position p)
 
 std::pair<int,int> TransportManager::findSafePath(BWAPI::Position to, BWAPI::Position from)
 {
-	BWAPI::Broodwar->printf("FROM: [%d,%d]",from.x, from.y);
-	BWAPI::Broodwar->printf("TO: [%d,%d]", to.x, to.y);
-
+	_logger->log("FROM: [%d,%d]",from.x, from.y);
+	_logger->log("TO: [%d,%d]", to.x, to.y);
 
 	//closest map edge point to destination
 	int endPolygonIndex = getClosestVertexIndex(to);
-	//BWAPI::Broodwar->printf("end indx: [%d]", endPolygonIndex);
+	//_logger.log("end indx: [%d]", endPolygonIndex);
 
 	UAB_ASSERT_WARNING(endPolygonIndex != -1, "Couldn't find a closest vertex");
 	BWAPI::Position enemyEdge = _mapEdgeVertices[endPolygonIndex];
 
-	BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
+	const BaseLocation * enemyBaseLocation = _locationProvider.getPlayerStartingBaseLocation(opponentView->defaultEnemy());
 	BWAPI::Position enemyPosition = enemyBaseLocation->getPosition();
 
 	//find the projections on the 4 edges
@@ -322,7 +314,7 @@ std::pair<int,int> TransportManager::findSafePath(BWAPI::Position to, BWAPI::Pos
 	p.push_back(BWAPI::Position(_maxCorner.x, from.y));
 
 	//for (auto _p : p)
-		//BWAPI::Broodwar->printf("p: [%d,%d]", _p.x, _p.y);
+		//_logger.log("p: [%d,%d]", _p.x, _p.y);
 
 	int d1 = p[0].getApproxDistance(enemyPosition);
 	int d2 = p[1].getApproxDistance(enemyPosition);
@@ -350,7 +342,7 @@ std::pair<int,int> TransportManager::findSafePath(BWAPI::Position to, BWAPI::Pos
 		p.erase(p.begin() + maxIndex);
 	}
 
-	//BWAPI::Broodwar->printf("new p: [%d,%d] [%d,%d]", p[0].x, p[0].y, p[1].x, p[1].y);
+	//_logger.log("new p: [%d,%d] [%d,%d]", p[0].x, p[0].y, p[1].x, p[1].y);
 
 	//get the one that works best from the two.
 	BWAPI::Position waypoint = (enemyEdge.getApproxDistance(p[0]) < enemyEdge.getApproxDistance(p[1])) ? p[0] : p[1];
@@ -365,7 +357,7 @@ BWAPI::Position TransportManager::getFleePosition(int clockwise)
 {
 	UAB_ASSERT_WARNING(!_mapEdgeVertices.empty(), "We should have a transport route!");
 
-	//BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
+	//BWTA::BaseLocation * enemyBaseLocation = _locationProvider->getPlayerStartingBaseLocation(Global::getEnemy());
 
 	// if this is the first flee, we will not have a previous perimeter index
 	if (_currentRegionVertexIndex == -1)
@@ -377,7 +369,7 @@ BWAPI::Position TransportManager::getFleePosition(int clockwise)
 
 		if (closestPolygonIndex == -1)
 		{
-			return BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
+			return BWAPI::Position(opponentView->self()->getStartLocation());
 		}
 		else
 		{
@@ -392,9 +384,9 @@ BWAPI::Position TransportManager::getFleePosition(int clockwise)
 		double distanceFromCurrentVertex = _mapEdgeVertices[_currentRegionVertexIndex].getDistance(_transportShip->getPosition());
 
 		// keep going to the next vertex in the perimeter until we get to one we're far enough from to issue another move command
-		while (distanceFromCurrentVertex < 128*2)
+		while (distanceFromCurrentVertex < 128 * 2)
 		{
-			_currentRegionVertexIndex = (_currentRegionVertexIndex + clockwise*1) % _mapEdgeVertices.size();
+			_currentRegionVertexIndex = (_currentRegionVertexIndex + clockwise * 1) % _mapEdgeVertices.size();
 
 			distanceFromCurrentVertex = _mapEdgeVertices[_currentRegionVertexIndex].getDistance(_transportShip->getPosition());
 		}

@@ -57,8 +57,8 @@ class GameFrame
 
 public:
 
-	GameFrame()
-        : _frame(BWAPI::Broodwar->getFrameCount())
+	GameFrame(int frame)
+        : _frame(frame)
     {
         for (const BWAPI::Unit & unit : BWAPI::Broodwar->getAllUnits())
         {
@@ -93,10 +93,10 @@ class GameMap
     
 public:
 
-    GameMap()
-        : _width(BWAPI::Broodwar->mapWidth() * 4)
-        , _height(BWAPI::Broodwar->mapHeight() * 4)
-        , _walkable(BWAPI::Broodwar->mapHeight() * BWAPI::Broodwar->mapWidth() * 16, 0)
+    GameMap(int width, int height)
+        : _width(width * 4)
+        , _height(height * 4)
+        , _walkable(height * width * 16, 0)
     {
         for (int h(0); h < _height; ++h)
         {
@@ -121,8 +121,9 @@ class GameHistory
 
 public:
 
-	GameHistory()
+	GameHistory(int width, int height)
         : _frameSkip(0)
+		, _map(width, height)
     {
     }
 
@@ -131,11 +132,11 @@ public:
         _frameSkip = frames;
     }
 
-    void onFrame()
+    void onFrame(int currentFrame)
     {
-        if (_frames.empty() || (BWAPI::Broodwar->getFrameCount() - _frames.back().getFrame() >= _frameSkip))
+        if (_frames.empty() || (currentFrame - _frames.back().getFrame() >= _frameSkip))
         {
-            _frames.push_back(GameFrame());    
+            _frames.push_back(GameFrame(currentFrame));
         }
     }
 

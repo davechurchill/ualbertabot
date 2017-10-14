@@ -3,50 +3,81 @@
 #include "Common.h"
 #include "Squad.h"
 #include "SquadData.h"
-#include "InformationManager.h"
-#include "StrategyManager.h"
+#include "BaseLocationManager.h"
+#include "DefaultPlayerLocationProvider.h"
+#include "OpponentView.h"
+#include "WorkerManager.h"
 
 namespace UAlbertaBot
 {
 class CombatCommander
 {
 	SquadData       _squadData;
-    BWAPI::Unitset  _combatUnits;
+    std::vector<BWAPI::Unit>  _combatUnits;
     bool            _initialized;
+	shared_ptr<BaseLocationManager> _baseLocationManager;
+	AKBot::DefaultPlayerLocationProvider _playerLocationProvider;
+	shared_ptr<AKBot::OpponentView> _opponentView;
+	shared_ptr<UnitInfoManager> _unitInfo;
+	shared_ptr<MapTools> _mapTools;
+	shared_ptr<WorkerManager> _workerManager;
+	bool			_supportDropStrategy;
+	const BotMicroConfiguration& _microConfiguration;
 
-    void            updateScoutDefenseSquad();
-	void            updateDefenseSquads();
+    void            updateScoutDefenseSquad(int currentFrame);
+	void            updateDefenseSquads(int currentFrame);
 	void            updateAttackSquads();
     void            updateDropSquads();
 	void            updateIdleSquad();
-	bool            isSquadUpdateFrame();
-	int             getNumType(BWAPI::Unitset & units, BWAPI::UnitType type);
+	bool            isSquadUpdateFrame(int currentFrame) const;
+	int             getNumType(std::vector<BWAPI::Unit> & units, BWAPI::UnitType type);
 
-	BWAPI::Unit     findClosestDefender(const Squad & defenseSquad, BWAPI::Position pos, bool flyingDefender);
-    BWAPI::Unit     findClosestWorkerToTarget(BWAPI::Unitset & unitsToAssign, BWAPI::Unit target);
+	BWAPI::Unit     findClosestDefender(const Squad & defenseSquad, BWAPI::Position pos, bool flyingDefender, int currentFrame);
+    BWAPI::Unit     findClosestWorkerToTarget(std::vector<BWAPI::Unit> & unitsToAssign, BWAPI::Unit target);
 
 	BWAPI::Position getDefendLocation();
-    BWAPI::Position getMainAttackLocation();
+    BWAPI::Position getMainAttackLocation(BWAPI::Position squadPosition);
 
     void            initializeSquads();
     void            verifySquadUniqueMembership();
     void            assignFlyingDefender(Squad & squad);
-    void            emptySquad(Squad & squad, BWAPI::Unitset & unitsToAssign);
+    void            emptySquad(Squad & squad, std::vector<BWAPI::Unit> & unitsToAssign);
     int             getNumGroundDefendersInSquad(Squad & squad);
     int             getNumAirDefendersInSquad(Squad & squad);
 
-    void            updateDefenseSquadUnits(Squad & defenseSquad, const size_t & flyingDefendersNeeded, const size_t & groundDefendersNeeded);
+    void            updateDefenseSquadUnits(
+		Squad & defenseSquad,
+		const size_t & flyingDefendersNeeded,
+		const size_t & groundDefendersNeeded,
+		int currentFrame);
     int             defendWithWorkers();
 
     int             numZerglingsInOurBase();
     bool            beingBuildingRushed();
-
+	bool findEnemyBaseLocation(BWAPI::Position& basePosition);
+	bool findEnemyBuilding(BWAPI::Position& buildingPosition);
+	// Find enemy unit which is closest to the given position.
+	bool findEnemyUnit(BWAPI::Position targetPosition, BWAPI::Position& unitPosition);
 public:
 
-	CombatCommander();
+	CombatCommander(
+		shared_ptr<BaseLocationManager> baseLocationManager,
+		shared_ptr<AKBot::OpponentView> opponentView,
+		shared_ptr<WorkerManager> workerManager,
+		shared_ptr<UnitInfoManager> unitInfo,
+		shared_ptr<MapTools> mapTools,
+		shared_ptr<AKBot::Logger> logger,
+		const BotMicroConfiguration& microConfiguration,
+		const BotSparCraftConfiguration& sparcraftConfiguration,
+		const BotDebugConfiguration& debugConfiguration);
+	CombatCommander(const CombatCommander&) = delete;
 
-	void update(const BWAPI::Unitset & combatUnits);
-    
-	void drawSquadInformation(int x, int y);
+	void update(const std::vector<BWAPI::Unit> & combatUnits, int currentFrame);
+	const SquadData& getSquadData() const;
+	bool getSupportsDropSquad() const { return _supportDropStrategy; }
+	void setSupportsDropSquad(bool value) { _supportDropStrategy = value; }
+	void setRushModeEnabled(bool value) { _squadData.setRushModeEnabled(value); }
+	void setRushUnitType(BWAPI::UnitType rushUnit) { _squadData.setRushUnitType(rushUnit); }
+	void setAllowedRushUnitLoses(int value) { _squadData.setAllowedRushUnitLoses(value); }
 };
 }

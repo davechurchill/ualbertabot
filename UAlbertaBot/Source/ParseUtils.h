@@ -1,23 +1,29 @@
 #pragma once
-
-#include "Common.h"
+#include <string>
+#include <memory>
+#include <BWAPI/Race.h>
+#include "BotConfiguration.h"
 
 namespace UAlbertaBot
 {
+
+class StrategyManager;
+
 namespace ParseUtils
 {
-    void ParseConfigFile(const std::string & filename);
-    void ParseTextCommand(const std::string & commandLine);
-    BWAPI::Race GetRace(const std::string & raceName);
+	/**
+	 * Finds location of the configuration file.
+	 */
+	std::string FindConfigurationLocation(const std::string & filename);
+    void ParseConfigFile(
+		const std::string & filename,
+		BotConfiguration& config,
+		bool& configFileFound,
+		bool& configFileParsed);
+    void ParseStrategy(
+		BotStrategyConfiguration& strategyOptions,
+		shared_ptr<StrategyManager> strategyManager);
 
-    int GetIntFromString(const std::string & str);
-    bool GetBoolFromString(const std::string & str);
-
-
-
-
-
-
-
+    std::string ReadFile(const std::string & filename);
 }
 }

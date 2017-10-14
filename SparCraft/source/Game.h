@@ -1,11 +1,9 @@
 #pragma once
 
-#include "Common.h"
 #include "GameState.h"
 #include "Player.h"
 #include "AllPlayers.h"
 #include "Action.h"
-#include "UnitScriptData.h"
 #include <memory>
 #include "Timer.h"
 
@@ -19,44 +17,39 @@ class UnitScriptData;
 class Game
 {
 protected:
-	PlayerPtr			_players[2];
+	
+    GameState           _state;
+    PlayerPtr			_players[2];
 	size_t				_numPlayers;
-	IDType				_playerToMoveMethod;
-	size_t				rounds;
-	Timer				t;
-	double				gameTimeMS;
-	size_t				moveLimit;
-
-	GameState state;
-
-	// moves array to store moves in
-	MoveArray moves[2];
-	std::vector<Action> scriptMoves[2];
-
-    
+    size_t              _numMoves[2];
+    size_t              _numActions[2];
+	size_t				_playerToMoveMethod;
+	size_t				_rounds;
+	Timer				_t;
+	double				_gameTimeMS;
+	size_t				_moveLimit;
+    bool                _simulateEveryFrame;
 
 public:
 	
 	// game constructor
-	Game(const GameState & initialState, PlayerPtr & p1, PlayerPtr & p2, const size_t & limit);
-    Game(const GameState & initialState, const size_t & limit);
+	Game(const GameState & initialState, PlayerPtr p1, PlayerPtr p2, size_t turnLimit = 0);
+    Game(const GameState & initialState, size_t limit = 0);
 
-	void            play();
-    void            playNextTurn();
-    void            playIndividualScripts(UnitScriptData & scriptsChosen);
-	void            storeHistory(const bool & store);
-	bool            gameOver() const;
+	void                play();
+    void                playNextTurn();
+	void                storeHistory(const bool & store);
+    void                setSimulateEveryFrame(bool sim);
+	bool                gameOver() const;
     
+	double              eval(const size_t & evalMethod) const;
 
-	ScoreType       eval(const IDType & evalMethod) const;
-
-	GameState &     getState();
-    const GameState &     getState() const;
-	int             getRounds();
-	double          getTime();
-	const IDType    getPlayerToMove();
-    PlayerPtr       getPlayer(const IDType & player);
-
+	GameState &         getState();
+    const GameState &   getState() const;
+	int                 getRounds();
+	double              getTime();
+	const size_t        getPlayerToMove();
+    PlayerPtr           getPlayer(const size_t & player);
 };
 
 

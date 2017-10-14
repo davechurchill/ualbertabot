@@ -1,38 +1,51 @@
 #pragma once
 
 #include "Common.h"
+#include "ActionGenerators.h"
+#include "AITools.h"
 #include "GameState.h"
 #include "MoveArray.h"
 #include "Unit.h"
+#include "Move.h"
+#include "Timer.h"
 #include <memory>
 
 namespace SparCraft
 {
- 
-class GameState;
+
+class Player;
+typedef std::shared_ptr<Player> PlayerPtr; 
 
 class Player 
 {
 protected:
-    IDType _playerID;
+
+    size_t      _playerID;
+    Timer       _timer;
+    std::string _name;
+    std::string _description;
+    std::string _resultString;
+
+    double      _previousResultTime;
+    double      _totalResultTime;
+    double      _maxResultTime;
+    size_t      _calls;
+
 public:
-    virtual void		getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec);
-    const IDType        ID();
-    void                setID(const IDType & playerid);
-    virtual IDType      getType() { return PlayerModels::None; }
+
+    Player();
+    virtual ~Player();
+    virtual void		    getMove(const GameState & state, Move & move);
+    const size_t            ID();
+    virtual void            setName(const std::string & name);
+    virtual PlayerPtr       clone();
+    virtual void            startTimer();
+    virtual void            stopTimer();
+
+    virtual const std::string & getName();
+    virtual const std::string & getDescription();
+    virtual const std::string & getResultString();
 };
 
-class CompareUnitDPSThreat
-{
-    const bool operator() (Unit * u1, Unit * u2) const
-    {
-        double u1Threat = ((double)u1->damage()/(double)u1->attackCooldown()) / u1->currentHP();
-        double u2Threat = ((double)u2->damage()/(double)u2->attackCooldown()) / u2->currentHP();
-
-        return u1Threat > u2Threat;
-    }
-};
-
-typedef	std::shared_ptr<Player> PlayerPtr; 
 
 }

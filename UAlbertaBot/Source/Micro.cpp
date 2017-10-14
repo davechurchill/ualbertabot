@@ -1,5 +1,9 @@
 #include "Micro.h"
 #include "UnitUtil.h"
+#include <BWAPI/UnitCommand.h>
+#include <BWAPI/Game.h>
+#include <BWAPI/Player.h>
+#include <BWAPI/TechType.h>
 
 using namespace UAlbertaBot;
 
@@ -7,14 +11,56 @@ size_t TotalCommands = 0;
 
 const int dotRadius = 2;
 
-void Micro::drawAPM(int x, int y)
+std::function<void(const BWAPI::Unit& attacker, const BWAPI::Unit& target)> onAttackHandler;
+std::function<void(const BWAPI::Unit& attacker, const BWAPI::Position & targetPosition)> onAttackMoveHandler;
+std::function<void(const BWAPI::Unit& attacker, const BWAPI::Position & targetPosition)> onMoveHandler;
+std::function<void(const BWAPI::Unit& unit, const BWAPI::Unit& target)> onRepairHandler;
+std::function<void(const BWAPI::Unit& unit, const BWAPI::Unit& target)> onRightClickHandler;
+
+void Micro::drawAPM(AKBot::ScreenCanvas& canvas, int x, int y)
 {
     int bwapiAPM = BWAPI::Broodwar->getAPM();
     int myAPM = (int)(TotalCommands / ((double)BWAPI::Broodwar->getFrameCount() / (24*60)));
-    BWAPI::Broodwar->drawTextScreen(x, y, "%d %d", bwapiAPM, myAPM);
+    canvas.drawTextScreen(x, y, "%d %d", bwapiAPM, myAPM);
 }
 
-void Micro::SmartAttackUnit(BWAPI::Unit attacker, BWAPI::Unit target)
+void Micro::drawAction(
+	AKBot::ScreenCanvas& canvas,
+	const BWAPI::Position& attackerPostion,
+	const BWAPI::Position & targetPosition,
+	const BWAPI::Color color)
+{
+	canvas.drawCircleMap(attackerPostion, dotRadius, color, true);
+	canvas.drawCircleMap(targetPosition, dotRadius, color, true);
+	canvas.drawLineMap(attackerPostion, targetPosition, color);
+}
+
+void UAlbertaBot::Micro::SetOnAttackUnit(std::function<void(const BWAPI::Unit&attacker, const BWAPI::Unit&target)> handler)
+{
+	onAttackHandler = handler;
+}
+
+void UAlbertaBot::Micro::SetOnAttackMove(std::function<void(const BWAPI::Unit&attacker, const BWAPI::Position&targetPosition)> handler)
+{
+	onAttackMoveHandler = handler;
+}
+
+void UAlbertaBot::Micro::SetOnMove(std::function<void(const BWAPI::Unit&attacker, const BWAPI::Position&targetPosition)> handler)
+{
+	onMoveHandler = handler;
+}
+
+void UAlbertaBot::Micro::SetOnRepair(std::function<void(const BWAPI::Unit&unit, const BWAPI::Unit&target)> handler)
+{
+	onRepairHandler = handler;
+}
+
+void UAlbertaBot::Micro::SetOnRightClick(std::function<void(const BWAPI::Unit&unit, const BWAPI::Unit&target)> handler)
+{
+	onRightClickHandler = handler;
+}
+
+void Micro::SmartAttackUnit(BWAPI::Unit attacker, BWAPI::Unit target, int currentFrame)
 {
     UAB_ASSERT(attacker, "SmartAttackUnit: Attacker not valid");
     UAB_ASSERT(target, "SmartAttackUnit: Target not valid");
@@ -25,7 +71,7 @@ void Micro::SmartAttackUnit(BWAPI::Unit attacker, BWAPI::Unit target)
     }
 
     // if we have issued a command to this unit already this frame, ignore this one
-    if (attacker->getLastCommandFrame() >= BWAPI::Broodwar->getFrameCount() || attacker->isAttackFrame())
+    if (attacker->getLastCommandFrame() >= currentFrame || attacker->isAttackFrame())
     {
         return;
     }
@@ -43,15 +89,13 @@ void Micro::SmartAttackUnit(BWAPI::Unit attacker, BWAPI::Unit target)
     attacker->attack(target);
     TotalCommands++;
 
-    if (Config::Debug::DrawUnitTargetInfo) 
-    {
-        BWAPI::Broodwar->drawCircleMap(attacker->getPosition(), dotRadius, BWAPI::Colors::Red, true);
-        BWAPI::Broodwar->drawCircleMap(target->getPosition(), dotRadius, BWAPI::Colors::Red, true);
-        BWAPI::Broodwar->drawLineMap( attacker->getPosition(), target->getPosition(), BWAPI::Colors::Red );
-    }
+	if (onAttackHandler)
+	{
+		onAttackHandler(attacker, target);
+	}
 }
 
-void Micro::SmartAttackMove(BWAPI::Unit attacker, const BWAPI::Position & targetPosition)
+void Micro::SmartAttackMove(BWAPI::Unit attacker, const BWAPI::Position & targetPosition, int currentFrame)
 {
     //UAB_ASSERT(attacker, "SmartAttackMove: Attacker not valid");
     //UAB_ASSERT(targetPosition.isValid(), "SmartAttackMove: targetPosition not valid");
@@ -62,7 +106,7 @@ void Micro::SmartAttackMove(BWAPI::Unit attacker, const BWAPI::Position & target
     }
 
     // if we have issued a command to this unit already this frame, ignore this one
-    if (attacker->getLastCommandFrame() >= BWAPI::Broodwar->getFrameCount() || attacker->isAttackFrame())
+    if (attacker->getLastCommandFrame() >= currentFrame || attacker->isAttackFrame())
     {
         return;
     }
@@ -80,26 +124,24 @@ void Micro::SmartAttackMove(BWAPI::Unit attacker, const BWAPI::Position & target
     attacker->attack(targetPosition);
     TotalCommands++;
 
-    if (Config::Debug::DrawUnitTargetInfo) 
-    {
-        BWAPI::Broodwar->drawCircleMap(attacker->getPosition(), dotRadius, BWAPI::Colors::Orange, true);
-        BWAPI::Broodwar->drawCircleMap(targetPosition, dotRadius, BWAPI::Colors::Orange, true);
-        BWAPI::Broodwar->drawLineMap(attacker->getPosition(), targetPosition, BWAPI::Colors::Orange);
-    }
+	if (onAttackMoveHandler)
+	{
+		onAttackMoveHandler(attacker, targetPosition);
+	}
 }
 
-void Micro::SmartMove(BWAPI::Unit attacker, const BWAPI::Position & targetPosition)
+void Micro::SmartMove(BWAPI::Unit attacker, const BWAPI::Position & targetPosition, int currentFrame)
 {
     //UAB_ASSERT(attacker, "SmartAttackMove: Attacker not valid");
     //UAB_ASSERT(targetPosition.isValid(), "SmartAttackMove: targetPosition not valid");
 
-    if (!attacker || !targetPosition.isValid())
+    if (!attacker)
     {
         return;
     }
 
     // if we have issued a command to this unit already this frame, ignore this one
-    if (attacker->getLastCommandFrame() >= BWAPI::Broodwar->getFrameCount() || attacker->isAttackFrame())
+    if (attacker->getLastCommandFrame() >= currentFrame)
     {
         return;
     }
@@ -117,15 +159,13 @@ void Micro::SmartMove(BWAPI::Unit attacker, const BWAPI::Position & targetPositi
     attacker->move(targetPosition);
     TotalCommands++;
 
-    if (Config::Debug::DrawUnitTargetInfo) 
-    {
-        BWAPI::Broodwar->drawCircleMap(attacker->getPosition(), dotRadius, BWAPI::Colors::White, true);
-        BWAPI::Broodwar->drawCircleMap(targetPosition, dotRadius, BWAPI::Colors::White, true);
-        BWAPI::Broodwar->drawLineMap(attacker->getPosition(), targetPosition, BWAPI::Colors::White);
-    }
+	if (onMoveHandler)
+	{
+		onMoveHandler(attacker, targetPosition);
+	}
 }
 
-void Micro::SmartRightClick(BWAPI::Unit unit, BWAPI::Unit target)
+void Micro::SmartRightClick(BWAPI::Unit unit, BWAPI::Unit target, int currentFrame)
 {
     UAB_ASSERT(unit, "SmartRightClick: Unit not valid");
     UAB_ASSERT(target, "SmartRightClick: Target not valid");
@@ -136,7 +176,7 @@ void Micro::SmartRightClick(BWAPI::Unit unit, BWAPI::Unit target)
     }
 
     // if we have issued a command to this unit already this frame, ignore this one
-    if (unit->getLastCommandFrame() >= BWAPI::Broodwar->getFrameCount() || unit->isAttackFrame())
+    if (unit->getLastCommandFrame() >= currentFrame || unit->isAttackFrame())
     {
         return;
     }
@@ -154,12 +194,10 @@ void Micro::SmartRightClick(BWAPI::Unit unit, BWAPI::Unit target)
     unit->rightClick(target);
     TotalCommands++;
 
-    if (Config::Debug::DrawUnitTargetInfo) 
-    {
-        BWAPI::Broodwar->drawCircleMap(unit->getPosition(), dotRadius, BWAPI::Colors::Cyan, true);
-        BWAPI::Broodwar->drawCircleMap(target->getPosition(), dotRadius, BWAPI::Colors::Cyan, true);
-        BWAPI::Broodwar->drawLineMap(unit->getPosition(), target->getPosition(), BWAPI::Colors::Cyan);
-    }
+	if (onRightClickHandler)
+	{
+		onRightClickHandler(unit, target);
+	}
 }
 
 void Micro::SmartLaySpiderMine(BWAPI::Unit unit, BWAPI::Position pos)
@@ -185,7 +223,7 @@ void Micro::SmartLaySpiderMine(BWAPI::Unit unit, BWAPI::Position pos)
     unit->canUseTechPosition(BWAPI::TechTypes::Spider_Mines, pos);
 }
 
-void Micro::SmartRepair(BWAPI::Unit unit, BWAPI::Unit target)
+void Micro::SmartRepair(BWAPI::Unit unit, BWAPI::Unit target, int currentFrame)
 {
     UAB_ASSERT(unit, "SmartRightClick: Unit not valid");
     UAB_ASSERT(target, "SmartRightClick: Target not valid");
@@ -196,7 +234,7 @@ void Micro::SmartRepair(BWAPI::Unit unit, BWAPI::Unit target)
     }
 
     // if we have issued a command to this unit already this frame, ignore this one
-    if (unit->getLastCommandFrame() >= BWAPI::Broodwar->getFrameCount() || unit->isAttackFrame())
+    if (unit->getLastCommandFrame() >= currentFrame || unit->isAttackFrame())
     {
         return;
     }
@@ -214,16 +252,17 @@ void Micro::SmartRepair(BWAPI::Unit unit, BWAPI::Unit target)
     unit->repair(target);
     TotalCommands++;
 
-    if (Config::Debug::DrawUnitTargetInfo) 
-    {
-        BWAPI::Broodwar->drawCircleMap(unit->getPosition(), dotRadius, BWAPI::Colors::Cyan, true);
-        BWAPI::Broodwar->drawCircleMap(target->getPosition(), dotRadius, BWAPI::Colors::Cyan, true);
-        BWAPI::Broodwar->drawLineMap(unit->getPosition(), target->getPosition(), BWAPI::Colors::Cyan);
-    }
+	if (onRepairHandler)
+	{
+		onRepairHandler(unit, target);
+	}
 }
 
-
-void Micro::SmartKiteTarget(BWAPI::Unit rangedUnit, BWAPI::Unit target)
+void Micro::SmartKiteTarget(
+	BWAPI::Unit rangedUnit,
+	BWAPI::Unit target,
+	int currentFrame,
+	const std::set<BWAPI::UnitType>& kiteLongerRangedUnits)
 {
     UAB_ASSERT(rangedUnit, "SmartKiteTarget: Unit not valid");
     UAB_ASSERT(target, "SmartKiteTarget: Target not valid");
@@ -240,11 +279,11 @@ void Micro::SmartKiteTarget(BWAPI::Unit rangedUnit, BWAPI::Unit target)
 	}
 
 	// determine whether the target can be kited
-    bool kiteLonger = Config::Micro::KiteLongerRangedUnits.find(rangedUnit->getType()) != Config::Micro::KiteLongerRangedUnits.end();
+    bool kiteLonger = kiteLongerRangedUnits.find(rangedUnit->getType()) != kiteLongerRangedUnits.end();
 	if (!kiteLonger && (range <= target->getType().groundWeapon().maxRange()))
 	{
 		// if we can't kite it, there's no point
-		Micro::SmartAttackUnit(rangedUnit, target);
+		Micro::SmartAttackUnit(rangedUnit, target, currentFrame);
 		return;
 	}
 
@@ -275,15 +314,14 @@ void Micro::SmartKiteTarget(BWAPI::Unit rangedUnit, BWAPI::Unit target)
 	{
 		BWAPI::Position fleePosition(rangedUnit->getPosition() - target->getPosition() + rangedUnit->getPosition());
 		//BWAPI::Broodwar->drawLineMap(rangedUnit->getPosition(), fleePosition, BWAPI::Colors::Cyan);
-		Micro::SmartMove(rangedUnit, fleePosition);
+		Micro::SmartMove(rangedUnit, fleePosition, currentFrame);
 	}
 	// otherwise shoot
 	else
 	{
-		Micro::SmartAttackUnit(rangedUnit, target);
+		Micro::SmartAttackUnit(rangedUnit, target, currentFrame);
 	}
 }
-
 
 void Micro::MutaDanceTarget(BWAPI::Unit muta, BWAPI::Unit target)
 {

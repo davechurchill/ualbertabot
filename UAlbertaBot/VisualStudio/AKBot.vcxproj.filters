@@ -1,0 +1,417 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\Source\Common.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DebugTools.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\UABAssert.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\StrategyManager.cpp">
+      <Filter>global</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\WorkerManager.cpp">
+      <Filter>global</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\MapTools.cpp">
+      <Filter>global</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\BuildingManager.cpp">
+      <Filter>macro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\BuildingPlacer.cpp">
+      <Filter>macro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\BuildOrder.cpp">
+      <Filter>macro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\BuildOrderQueue.cpp">
+      <Filter>macro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\BOSSManager.cpp">
+      <Filter>macro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\ProductionManager.cpp">
+      <Filter>macro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\WorkerData.cpp">
+      <Filter>macro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DistanceMap.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\CombatCommander.cpp">
+      <Filter>micro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\CombatSimulation.cpp">
+      <Filter>micro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\DetectorManager.cpp">
+      <Filter>micro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\MedicManager.cpp">
+      <Filter>micro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MeleeManager.cpp">
+      <Filter>micro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Micro.cpp">
+      <Filter>micro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MicroManager.cpp">
+      <Filter>micro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\RangedManager.cpp">
+      <Filter>micro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\ScoutManager.cpp">
+      <Filter>micro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Squad.cpp">
+      <Filter>micro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\SquadData.cpp">
+      <Filter>micro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\TankManager.cpp">
+      <Filter>micro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\TransportManager.cpp">
+      <Filter>micro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\AutoObserver.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\JSONTools.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\MetaType.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\ParseUtils.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\UnitData.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\UnitUtil.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\GameCommander.cpp" />
+    <ClCompile Include="..\Source\BaseLocation.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\UnitInfoManager.cpp">
+      <Filter>global</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\BaseLocationManager.cpp">
+      <Filter>global</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\BotModule.cpp" />
+    <ClCompile Include="..\Source\UAlbertaBot_Arena.cpp" />
+    <ClCompile Include="..\Source\UAlbertaBot_Tournament.cpp" />
+    <ClCompile Include="..\Source\ArenaPlayer_SparCraft.cpp">
+      <Filter>arena</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\ArenaPlayer_AttackClosest.cpp">
+      <Filter>arena</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\ArenaPlayer.cpp">
+      <Filter>arena</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\BWAPIScreenCanvas.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\ScreenCanvas.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\BWAPIOpponentView.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DefaultPlayerLocationProvider.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\FileLogger.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\BWAPIMapInformation.cpp">
+      <Filter>global</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\BotPlayer.cpp" />
+    <ClCompile Include="..\Source\BotFactory.cpp" />
+    <ClCompile Include="..\Source\debug\BaseLocationManagerDebug.cpp">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\debug\BWAPIPrintLogger.cpp">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\debug\CombatCommanderDebug.cpp">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\debug\GameCommanderDebug.cpp">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\debug\MapToolsDebug.cpp">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\debug\ProductionManagerDebug.cpp">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\debug\ScoutManagerDebug.cpp">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\debug\UnitInfoManagerDebug.cpp">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\debug\WorkerManagerDebug.cpp">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\debug\GameDebug.cpp">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\BotConfiguration.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="common">
+      <UniqueIdentifier>{13f8152a-3528-43fa-99f3-f0a2d8a2b58e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="global">
+      <UniqueIdentifier>{814d7b22-b852-4f7c-9cee-a810f4a96560}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="macro">
+      <UniqueIdentifier>{fdb3ec6d-7c2d-44ef-b5ae-19bca4dddcfb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="map">
+      <UniqueIdentifier>{b03458ef-5a8d-4b4b-b284-d5202adec9f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="micro">
+      <UniqueIdentifier>{c8ac6d41-b48a-4d90-9169-7d4a1954a6e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util">
+      <UniqueIdentifier>{bf6d7494-4372-49e0-bb4c-49f18c0ed36d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="arena">
+      <UniqueIdentifier>{cbfed59a-0e98-454a-95c8-66cec39afce4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="debug">
+      <UniqueIdentifier>{2c31dc4d-e116-48d4-ba2c-5956cbcc5d1a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Source\Common.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DebugTools.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\UABAssert.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\StrategyManager.h">
+      <Filter>global</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\WorkerManager.h">
+      <Filter>global</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\MapTools.h">
+      <Filter>global</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\BOSSManager.h">
+      <Filter>macro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\BuildingManager.h">
+      <Filter>macro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\BuildingPlacer.h">
+      <Filter>macro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\BuildOrder.h">
+      <Filter>macro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\BuildOrderQueue.h">
+      <Filter>macro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\ProductionManager.h">
+      <Filter>macro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\WorkerData.h">
+      <Filter>macro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DistanceMap.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\CombatCommander.h">
+      <Filter>micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\CombatSimulation.h">
+      <Filter>micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\DetectorManager.h">
+      <Filter>micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\MedicManager.h">
+      <Filter>micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\MeleeManager.h">
+      <Filter>micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Micro.h">
+      <Filter>micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\MicroManager.h">
+      <Filter>micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\RangedManager.h">
+      <Filter>micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\ScoutManager.h">
+      <Filter>micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Squad.h">
+      <Filter>micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\SquadData.h">
+      <Filter>micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\SquadOrder.h">
+      <Filter>micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\TankManager.h">
+      <Filter>micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\TransportManager.h">
+      <Filter>micro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\AutoObserver.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\JSONTools.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\MetaType.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\ParseUtils.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\GameHistory.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Timer.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\UnitUtil.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\UnitData.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\GameCommander.h" />
+    <ClInclude Include="..\Source\BaseLocation.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\UnitInfoManager.h">
+      <Filter>global</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\BaseLocationManager.h">
+      <Filter>global</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\BotModule.h" />
+    <ClInclude Include="..\Source\UAlbertaBot_Arena.h" />
+    <ClInclude Include="..\Source\UAlbertaBot_Tournament.h" />
+    <ClInclude Include="..\Source\ArenaPlayer_SparCraft.h">
+      <Filter>arena</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\ArenaPlayer_AttackClosest.h">
+      <Filter>arena</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\ArenaPlayer.h">
+      <Filter>arena</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\BWAPIScreenCanvas.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\ScreenCanvas.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\UnitHandler.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\OpponentView.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\BWAPIOpponentView.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\PlayerLocationProvider.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DefaultPlayerLocationProvider.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Strategy.h">
+      <Filter>global</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Distance.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Rect.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\FileLogger.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Logger.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\MapInformation.h">
+      <Filter>global</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\BWAPIMapInformation.h">
+      <Filter>global</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\BotFactory.h" />
+    <ClInclude Include="..\Source\BotPlayer.h" />
+    <ClInclude Include="..\Source\debug\BaseLocationManagerDebug.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\debug\BWAPIPrintLogger.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\debug\CombatCommanderDebug.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\debug\GameCommanderDebug.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\debug\MapToolsDebug.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\debug\ProductionManagerDebug.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\debug\ScoutManagerDebug.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\debug\UnitInfoManagerDebug.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\debug\WorkerManagerDebug.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\debug\DebugInfoProvider.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\debug\GameDebug.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\BotConfiguration.h">
+      <Filter>common</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

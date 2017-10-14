@@ -1,5 +1,6 @@
 #include "PlayerProperties.h"
 #include "WeaponProperties.h"
+#include "SparCraftAssert.h"
 
 using namespace SparCraft;
 
@@ -35,16 +36,16 @@ void PlayerProperties::Reset()
 
 void PlayerProperties::SetUpgradeLevel(BWAPI::UpgradeType upgrade, int level)
 {
-	assert(upgrade != BWAPI::UpgradeTypes::None);
-	assert(upgrade != BWAPI::UpgradeTypes::Unknown);
-	assert(level >= 0 && level <= upgrade.maxRepeats());
+	SPARCRAFT_ASSERT(upgrade != BWAPI::UpgradeTypes::None, "Bad Upgrade Type");
+	SPARCRAFT_ASSERT(upgrade != BWAPI::UpgradeTypes::Unknown, "Bad Upgrade Type");
+	SPARCRAFT_ASSERT(level >= 0 && level <= upgrade.maxRepeats(), "Bad Upgrade Level");
 	upgradeLevel[upgrade.getID()] = level;
 }
 
 void PlayerProperties::SetResearched(BWAPI::TechType tech, bool researched)
 {
-	assert(tech != BWAPI::TechTypes::None); 
-	assert(tech != BWAPI::TechTypes::Unknown); 
+	SPARCRAFT_ASSERT(tech != BWAPI::TechTypes::None, "Bad Tech Type"); 
+	SPARCRAFT_ASSERT(tech != BWAPI::TechTypes::Unknown, "Bad Tech Type"); 
 	hasResearched[tech.getID()] = researched;
 }
 

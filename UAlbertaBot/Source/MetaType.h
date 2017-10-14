@@ -1,6 +1,10 @@
 #pragma once
 
 #include "Common.h"
+#include <BWAPI/Race.h>
+#include <BWAPI/UnitType.h>
+#include <BWAPI/TechType.h>
+#include <BWAPI/UpgradeType.h>
 
 namespace UAlbertaBot
 {
