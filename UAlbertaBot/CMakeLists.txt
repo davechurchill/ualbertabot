@@ -9,7 +9,7 @@ list(REMOVE_ITEM AKBot_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/CombatData.cp
 file(GLOB_RECURSE AKBot_HEADERS "source/*.h")
 
 if (AKBOT_SSCAIT)	
-	set(BWAPI_INCLUDE_DIR "$ENV{BWAPI_SSCAIT_DIR}/include")
+	set(BWAPI_INCLUDE_DIR "${BWAPI_SSCAIT_DIR}/include")
 	if (MSVC14)
 		# For embedding BWAPI 4.1.2 you should manually place Debug.h and starcraftver.h  in the root of BWAPI folder
 		# if use installer and create svnrev.h with approximately following content
@@ -17,22 +17,22 @@ if (AKBOT_SSCAIT)
 		# static const int SVN_REV = 4708;
 		# #include "starcraftver.h"
 		# Value of SVN_REV is important, since BWAPI require match of these value with value hardcoded in the BWAPI.dll
-		file(GLOB BWAPILib_SOURCES "$ENV{BWAPI_SSCAIT_DIR}/BWAPILib/Source/*.cpp")
-		file(GLOB BWAPIClient_SOURCES "$ENV{BWAPI_SSCAIT_DIR}/BWAPIClient/Source/*.cpp")
-		file(GLOB BWAPIShared_SOURCES "$ENV{BWAPI_SSCAIT_DIR}/Shared/*.cpp")
+		file(GLOB BWAPILib_SOURCES "${BWAPI_SSCAIT_DIR}/BWAPILib/Source/*.cpp")
+		file(GLOB BWAPIClient_SOURCES "${BWAPI_SSCAIT_DIR}/BWAPIClient/Source/*.cpp")
+		file(GLOB BWAPIShared_SOURCES "${BWAPI_SSCAIT_DIR}/Shared/*.cpp")
 
 		add_library(BWAPILib 
 			${BWAPILib_SOURCES}
 			#${BWAPIClient_SOURCES}
-			${BWAPIShared_SOURCES}
-			"$ENV{BWAPI_SSCAIT_DIR}/BWAPILib/UnitCommand.cpp"
+			"${BWAPIShared_SOURCES}"
+			"${BWAPI_SSCAIT_DIR}/BWAPILib/UnitCommand.cpp"
 		)
 		add_library(AKBot::BWAPILib ALIAS BWAPILib)
 
 		target_include_directories(BWAPILib BEFORE PUBLIC
 			"${BWAPI_INCLUDE_DIR}"
 			"${BWAPI_INCLUDE_DIR}/BWAPI/Client"
-			"$ENV{BWAPI_SSCAIT_DIR}/Shared"
+			"${BWAPI_SSCAIT_DIR}/Shared"
 		)
 
 		add_library(BWAPIClient
@@ -45,14 +45,14 @@ if (AKBOT_SSCAIT)
 		target_include_directories(BWAPIClient BEFORE 
 			PUBLIC "${BWAPI_INCLUDE_DIR}"
 			"${BWAPI_INCLUDE_DIR}/BWAPI/Client"
-			PUBLIC "$ENV{BWAPI_SSCAIT_DIR}/Shared"
+			PUBLIC "${BWAPI_SSCAIT_DIR}/Shared"
 			)
 	else()
 		set(BWAPI_LIB_DIR "$ENV{BWAPI_SSCAIT_DIR}/lib")
 	endif()
 else()
-	set(BWAPI_LIB_DIR "$ENV{BWAPI_DIR}/lib")
-	set(BWAPI_INCLUDE_DIR "$ENV{BWAPI_DIR}/include")
+	set(BWAPI_LIB_DIR "${BWAPI_DIR}/lib")
+	set(BWAPI_INCLUDE_DIR "${BWAPI_DIR}/include")
 endif()
 
 find_package(Boost 1.62.0)
