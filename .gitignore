@@ -6,6 +6,10 @@
 *.exe
 *.o
 .vs
+Debug/
+Release/
+Debug_SSCAIT/
+Release_SSCAIT/
 
 UAlbertaBot/UAB_ErrorLog.txt
 UAlbertaBot/UAB_ErrorLog.txt
