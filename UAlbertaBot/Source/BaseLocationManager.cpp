@@ -29,8 +29,10 @@ void BaseLocationManager::onStart(shared_ptr<MapTools> map)
 	// stores each cluster of resources based on some ground distance
     std::vector<std::vector<BWAPI::Unit>> resourceClusters;
 	addNewResourceClusters(resourceClusters, BWAPI::Broodwar->getStaticMinerals(), distanceFunction, 100, clusterDistance);
+	addNewResourceClusters(resourceClusters, BWAPI::Broodwar->getMinerals(), distanceFunction, 100, clusterDistance);
 	// add geysers only to existing resource clusters
 	addToExistingResourceClusters(resourceClusters, BWAPI::Broodwar->getStaticGeysers(), distanceFunction, 100, clusterDistance);
+	addToExistingResourceClusters(resourceClusters, BWAPI::Broodwar->getGeysers(), distanceFunction, 100, clusterDistance);
 
     // add the base locations if there are more than 4 resouces in the cluster
     int baseID = 0;
@@ -96,7 +98,7 @@ void BaseLocationManager::onStart(shared_ptr<MapTools> map)
     _occupiedBaseLocations[enemy] = std::set<const BaseLocation *>();
 
     // check to see that we have set a base location for ourself
-    UAB_ASSERT(_playerStartingBaseLocations[_opponentView->self()] != nullptr, "We didn't set a valid selfStartLocation in BaseLocations");
+    UAB_ASSERT(_playerStartingBaseLocations[self] != nullptr, "We didn't set a valid selfStartLocation in BaseLocations");
 }
 
 void BaseLocationManager::update(shared_ptr<UnitInfoManager> unitManager)
