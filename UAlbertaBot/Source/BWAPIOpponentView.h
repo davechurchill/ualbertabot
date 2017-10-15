@@ -1,5 +1,6 @@
 #pragma once
 #include "OpponentView.h"
+#include <BWAPI/Game.h>
 
 namespace AKBot
 {
@@ -8,7 +9,13 @@ namespace AKBot
 	*/
 	class BWAPIOpponentView : public OpponentView
 	{
+		BWAPI::Game* _game;
 	public:
+		/*
+		* Initialize new instance of the @see BWAPIOpponentView class
+		* @param game BWAPI game
+		*/
+		BWAPIOpponentView(BWAPI::Game* game);
 		/*
 		Returns bot's player
 		*/

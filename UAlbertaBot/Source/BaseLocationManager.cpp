@@ -3,8 +3,9 @@
 
 using namespace UAlbertaBot;
 
-BaseLocationManager::BaseLocationManager(shared_ptr<AKBot::OpponentView> opponentView)
-    : _tileBaseLocations(BWAPI::Broodwar->mapWidth(), std::vector<BaseLocation *>(BWAPI::Broodwar->mapHeight(), nullptr))
+BaseLocationManager::BaseLocationManager(BWAPI::Game* game, shared_ptr<AKBot::OpponentView> opponentView)
+    : _game(game)
+	, _tileBaseLocations(game->mapWidth(), std::vector<BaseLocation *>(game->mapHeight(), nullptr))
 	, _opponentView(opponentView)
 	, _baseLocationPtrs(0)
 	, _baseLocationData()
@@ -16,33 +17,40 @@ BaseLocationManager::BaseLocationManager(shared_ptr<AKBot::OpponentView> opponen
 	}
 }
 
-void BaseLocationManager::onStart(shared_ptr<MapTools> map)
+void BaseLocationManager::populateBaseLocations(shared_ptr<MapTools> map, std::vector<BaseLocation>& baseLocations)
 {
-    // a BaseLocation will be anything where there are minerals to mine
+	// a BaseLocation will be anything where there are minerals to mine
     // so we will first look over all minerals and cluster them based on some distance
-    const int clusterDistance = 20;
+	const int clusterDistance = 20;
+	const int mineralThreshold = 100;
+	const int gasThreshold = 100;
 
 	auto distanceFunction = [&map](const BWAPI::Position & src, const BWAPI::Position & dest)
 	{
 		return map->getGroundDistance(src, dest);
 	};
 	// stores each cluster of resources based on some ground distance
-    std::vector<std::vector<BWAPI::Unit>> resourceClusters;
-	addNewResourceClusters(resourceClusters, BWAPI::Broodwar->getStaticMinerals(), distanceFunction, 100, clusterDistance);
-	addNewResourceClusters(resourceClusters, BWAPI::Broodwar->getMinerals(), distanceFunction, 100, clusterDistance);
+	std::vector<std::vector<BWAPI::Unit>> resourceClusters;
+	addNewResourceClusters(resourceClusters, _game->getStaticMinerals(), distanceFunction, mineralThreshold, clusterDistance);
+	addNewResourceClusters(resourceClusters, _game->getMinerals(), distanceFunction, mineralThreshold, clusterDistance);
 	// add geysers only to existing resource clusters
-	addToExistingResourceClusters(resourceClusters, BWAPI::Broodwar->getStaticGeysers(), distanceFunction, 100, clusterDistance);
-	addToExistingResourceClusters(resourceClusters, BWAPI::Broodwar->getGeysers(), distanceFunction, 100, clusterDistance);
+	addToExistingResourceClusters(resourceClusters, _game->getStaticGeysers(), distanceFunction, gasThreshold, clusterDistance);
+	addToExistingResourceClusters(resourceClusters, _game->getGeysers(), distanceFunction, gasThreshold, clusterDistance);
 
-    // add the base locations if there are more than 4 resouces in the cluster
-    int baseID = 0;
-    for (auto & cluster : resourceClusters)
-    {
-        if (cluster.size() > 4)
-        {
-            _baseLocationData.push_back(BaseLocation(_opponentView, map, baseID++, cluster));
-        }
-    }
+	// add the base locations if there are more than 4 resouces in the cluster
+	int baseID = 0;
+	for (auto & cluster : resourceClusters)
+	{
+		if (cluster.size() > 4)
+		{
+			baseLocations.push_back(BaseLocation(_opponentView, map, baseID++, cluster));
+		}
+	}
+}
+
+void BaseLocationManager::onStart(shared_ptr<MapTools> map)
+{
+	populateBaseLocations(map, _baseLocationData);
 
     // construct the vectors of base location pointers, this is safe since they will never change
 	auto self = _opponentView->self();
@@ -435,7 +443,7 @@ BWAPI::TilePosition BaseLocationManager::getNextExpansion(BWAPI::Player player) 
             {
                 BWAPI::TilePosition tp(tile.x + x, tile.y + y);
 
-                for (auto & unit : BWAPI::Broodwar->getUnitsOnTile(tp))
+                for (auto & unit : _game->getUnitsOnTile(tp))
                 {
                     if (unit->getType().isBuilding() && !unit->isFlying())
                     {

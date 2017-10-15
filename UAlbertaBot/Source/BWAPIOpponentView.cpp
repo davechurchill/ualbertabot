@@ -1,14 +1,18 @@
 #include "BWAPIOpponentView.h"
 #include <BWAPI\Game.h>
 
+AKBot::BWAPIOpponentView::BWAPIOpponentView(BWAPI::Game* game): _game(game)
+{
+}
+
 BWAPI::Player AKBot::BWAPIOpponentView::self() const
 {
-	return BWAPI::Broodwar->self();
+	return _game->self();
 }
 
 BWAPI::Player AKBot::BWAPIOpponentView::defaultEnemy() const
 {
-	const auto defaultEnemy = BWAPI::Broodwar->enemy();
+	const auto defaultEnemy = _game->enemy();
 	if (defaultEnemy == nullptr)
 	{
 		return nullptr;
@@ -16,7 +20,7 @@ BWAPI::Player AKBot::BWAPIOpponentView::defaultEnemy() const
 
 	if (defaultEnemy->leftGame() || defaultEnemy->isDefeated())
 	{
-		for (const auto& enemy : BWAPI::Broodwar->enemies())
+		for (const auto& enemy : _game->enemies())
 		{
 			if (!enemy->leftGame() && !enemy->isDefeated())
 			{
@@ -30,5 +34,5 @@ BWAPI::Player AKBot::BWAPIOpponentView::defaultEnemy() const
 
 BWAPI::Playerset & AKBot::BWAPIOpponentView::enemies() const
 {
-	return BWAPI::Broodwar->enemies();
+	return _game->enemies();
 }

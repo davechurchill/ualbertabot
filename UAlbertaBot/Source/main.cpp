@@ -43,9 +43,6 @@
 using namespace AKBot;
 using namespace UAlbertaBot;
 
-AKBot::BWAPIOpponentView opponentView;
-AKBot::BWAPIPrintLogger logger;
-
 bool ConfigFileFound = true;
 bool ConfigFileParsed = true;
 std::string configurationFileName = "AK_Config.json";

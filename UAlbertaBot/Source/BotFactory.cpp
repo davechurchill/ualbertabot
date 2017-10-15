@@ -19,14 +19,15 @@ using namespace UAlbertaBot;
 
 BotPlayer AKBot::createBot(const std::string& mode, BotConfiguration& configuration, const std::string& configurationFile) {
 	if (mode == "Tournament") {
+		auto game = BWAPI::BroodwarPtr;
 		auto logger = std::shared_ptr<AKBot::Logger>(new AKBot::BWAPIPrintLogger());
-		auto opponentView = std::shared_ptr<AKBot::OpponentView>(new AKBot::BWAPIOpponentView());
+		auto opponentView = std::shared_ptr<AKBot::OpponentView>(new AKBot::BWAPIOpponentView(game));
 		auto workerData = std::shared_ptr<WorkerData>(new WorkerData(logger));
 		auto workerManager = std::shared_ptr<WorkerManager>(new WorkerManager(
 			opponentView,
 			workerData));
 		auto autoObserver = std::shared_ptr<AutoObserver>(new AutoObserver(opponentView, workerManager));
-		auto baseLocationManager = std::shared_ptr<BaseLocationManager>(new BaseLocationManager(opponentView));
+		auto baseLocationManager = std::shared_ptr<BaseLocationManager>(new BaseLocationManager(game, opponentView));
 		auto unitInfoManager = std::shared_ptr<UnitInfoManager>(new UnitInfoManager(opponentView));
 		auto strategyManager = std::shared_ptr<StrategyManager>(new StrategyManager(
 			opponentView,
@@ -34,7 +35,7 @@ BotPlayer AKBot::createBot(const std::string& mode, BotConfiguration& configurat
 			baseLocationManager,
 			logger,
 			configuration.Strategy));
-		auto mapInformation = std::shared_ptr<MapInformation>(new BWAPIMapInformation());
+		auto mapInformation = std::shared_ptr<MapInformation>(new BWAPIMapInformation(game));
 		auto mapTools = std::shared_ptr<MapTools>(new MapTools(mapInformation, logger));
 		auto combatCommander = std::shared_ptr<CombatCommander>(new CombatCommander(
 			baseLocationManager,

@@ -8,9 +8,6 @@
 
 using namespace UAlbertaBot;
 
-AKBot::BWAPIOpponentView opponentView;
-AKBot::BWAPIPrintLogger logger;
-
 bool ConfigFileFound = true;
 bool ConfigFileParsed = true;
 std::string configFileLocation = "AK_Config.json";
