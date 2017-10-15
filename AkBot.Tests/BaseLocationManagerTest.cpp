@@ -11,7 +11,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 void setP2PForces(BWAPI::GameData* gameData)
 {
-	static std::string forceNames[] = {
+	static char forceNames[][32] = {
 		"Players",
 		"Observers",
 		"Force3",
@@ -21,12 +21,12 @@ void setP2PForces(BWAPI::GameData* gameData)
 	gameData->forceCount = 3;
 	for (auto i = 0; i < gameData->forceCount; i++)
 	{
-		strcpy_s(gameData->forces[i].name, forceNames[i].length(), forceNames[i].c_str());
+		strcpy_s(gameData->forces[i].name, forceNames[i]);
 	}
 }
 void setPlayers(BWAPI::GameData* gameData, int playersCount)
 {
-	static std::string playerNames[] = {
+	static char playerNames[][25] = {
 		"Player1",
 		"Player2",
 		"Player3",
@@ -44,7 +44,7 @@ void setPlayers(BWAPI::GameData* gameData, int playersCount)
 	gameData->playerCount = playersCount;
 	for (auto i = 0; i < gameData->playerCount; i++)
 	{
-		strcpy_s(gameData->players[i].name, playerNames[i].length(), playerNames[i].c_str());
+		strcpy_s(gameData->players[i].name, playerNames[i]);
 	}
 
 	gameData->players[playersCount].isNeutral = true;
@@ -87,6 +87,7 @@ namespace AkBotTests
 			auto baseLocations = std::vector<UAlbertaBot::BaseLocation>();
 			
 			setP2PForces(rawGameData);
+			setPlayers(rawGameData, 2);
 			game->onMatchStart();
 			manager.populateBaseLocations(mapTools, baseLocations);
 			Assert::AreEqual(0U, baseLocations.size(), L"The base locations list should be empty");
