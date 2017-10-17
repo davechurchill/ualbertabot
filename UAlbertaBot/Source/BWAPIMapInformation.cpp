@@ -1,32 +1,41 @@
 #include "BWAPIMapInformation.h"
-#include "BWAPI\Game.h"
+
+AKBot::BWAPIMapInformation::BWAPIMapInformation(BWAPI::Game* game)
+	: _game(game)
+{
+}
 
 int AKBot::BWAPIMapInformation::getWidth() const
 {
-	return BWAPI::Broodwar->mapWidth();
+	return _game->mapWidth();
 }
 
 int AKBot::BWAPIMapInformation::getHeight() const
 {
-	return BWAPI::Broodwar->mapHeight();
+	return _game->mapHeight();
 }
 
 bool AKBot::BWAPIMapInformation::isWalkable(int x, int y) const
 {
-	return BWAPI::Broodwar->isWalkable(x, y);
+	return _game->isWalkable(x, y);
 }
 
 bool AKBot::BWAPIMapInformation::isVisible(int x, int y) const
 {
-	return BWAPI::Broodwar->isVisible(BWAPI::TilePosition(x, y));
+	return _game->isVisible(BWAPI::TilePosition(x, y));
 }
 
 bool AKBot::BWAPIMapInformation::isBuildable(int x, int y) const
 {
-	return BWAPI::Broodwar->isBuildable(BWAPI::TilePosition(x, y), false);
+	return _game->isBuildable(BWAPI::TilePosition(x, y), false);
 }
 
 bool AKBot::BWAPIMapInformation::isExplored(int tileX, int tileY) const
 {
-	return BWAPI::Broodwar->isExplored(tileX, tileY);
+	return _game->isExplored(tileX, tileY);
+}
+
+const BWAPI::Unitset& AKBot::BWAPIMapInformation::getStaticNeutralUnits() const
+{
+	return _game->getStaticNeutralUnits();
 }

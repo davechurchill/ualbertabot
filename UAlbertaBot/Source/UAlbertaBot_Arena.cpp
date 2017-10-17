@@ -42,7 +42,8 @@ void UAlbertaBot_Arena::onStart()
     _startDate = Assert::currentDateTime();
 
     // set the arena player
-	auto opponentView = std::make_shared<BWAPIOpponentView>();
+	auto game = BWAPI::BroodwarPtr;
+	auto opponentView = std::make_shared<BWAPIOpponentView>(game);
     _arenaPlayer = std::shared_ptr<ArenaPlayer>(new ArenaPlayer_AttackClosest(opponentView));
 
     if (bwapiOptions.EnableCompleteMapInformation)

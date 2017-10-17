@@ -33,6 +33,7 @@ namespace AKBot
 		void      saveInitialState();
 
 		UnitImpl(int _id, UnitData data);
+		UnitImpl(const UnitImpl& data);
 
 		virtual int           getID() const override;
 		virtual bool          exists() const override;

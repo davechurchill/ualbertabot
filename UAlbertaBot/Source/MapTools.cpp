@@ -135,7 +135,7 @@ void MapTools::setBWAPIMapData()
     }
 
     // set tiles that static resources are on as unbuildable
-    for (auto & resource : BWAPI::Broodwar->getStaticNeutralUnits())
+    for (auto & resource : _mapInformation->getStaticNeutralUnits())
     {
         if (!resource->getType().isResourceContainer())
         {

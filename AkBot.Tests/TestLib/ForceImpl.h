@@ -14,7 +14,8 @@ namespace AKBot
       const ForceData* self;
       int id;
     public:
-      ForceImpl(int id, ForceData data);
+      ForceImpl(int id, ForceData& data);
+	  ForceImpl(const ForceImpl& data);
       virtual int getID() const override;
       virtual std::string getName() const override;
       virtual Playerset getPlayers() const override;

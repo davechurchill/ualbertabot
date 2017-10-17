@@ -66,6 +66,12 @@
     <ClCompile Include="..\..\AkBot.Tests\BotConfigurationTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\AkBot.Tests\BaseLocationManagerTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AkBot.Tests\NullLogger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\AkBot.Tests\stdafx.h">
@@ -97,6 +103,12 @@
     </ClInclude>
     <ClInclude Include="..\..\AkBot.Tests\TestLib\Convenience.h">
       <Filter>TestLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AkBot.Tests\PlainOpponentView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AkBot.Tests\NullLogger.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

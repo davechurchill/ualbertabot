@@ -8,10 +8,16 @@ using namespace BWAPI;
 
 namespace AKBot
 {
-  ForceImpl::ForceImpl(int _id, ForceData originalData)
+  ForceImpl::ForceImpl(int _id, ForceData& originalData)
     : data(originalData)
 	, self( &data )
     , id(_id)
+  {
+  }
+  ForceImpl::ForceImpl(const ForceImpl& that)
+	  : data(that.data)
+	  , self(&data)
+	  , id(that.id)
   {
   }
   std::string ForceImpl::getName() const

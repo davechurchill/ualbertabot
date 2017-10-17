@@ -16,6 +16,7 @@
 #include <map>
 #include <array>
 #include <memory>
+#include <limits>
 
 #pragma warning( push )
 #pragma warning( disable : 4458)

@@ -21,6 +21,7 @@ namespace AKBot
       Unitset units;
       void clear();
       PlayerImpl(int id, PlayerData data);
+	  PlayerImpl(const PlayerImpl& data);
       virtual int getID() const override;
       virtual std::string getName() const override;
       virtual const Unitset &getUnits() const override;

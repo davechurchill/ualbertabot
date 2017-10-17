@@ -9,6 +9,12 @@ AKBot::UnitImpl::UnitImpl(int _id, BWAPI::UnitData originalData)
 {
 	clear();
 }
+AKBot::UnitImpl::UnitImpl(const UnitImpl& unit)
+	: id(unit.id)
+	, data(unit.data)
+	, self(&data)
+{
+}
 //--------------------------------------------- ISSUE COMMAND ----------------------------------------------
 bool AKBot::UnitImpl::issueCommand(BWAPI::UnitCommand command)
 {
