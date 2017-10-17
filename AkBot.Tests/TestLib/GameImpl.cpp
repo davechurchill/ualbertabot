@@ -21,14 +21,25 @@ namespace AKBot
     : data(_data)
   {
     this->clearAll();
-    for(int i = 0; i < 5; ++i)
-      forceVector.push_back(ForceImpl(i, _data->forces[i]));
-    for(int i = 0; i < 12; ++i)
-      playerVector.push_back(PlayerImpl(i, _data->players[i]));
-    // @TODO: Possible to exceed 10000 here
-    for(int i = 0; i < 10000; ++i)
-      unitVector.push_back(UnitImpl(i, _data->units[i]));
-    for(int i = 0; i < 100; ++i)
+	for (int i = 0; i < 5; ++i)
+	{
+		ForceImpl force(i, _data->forces[i]);
+		forceVector.push_back(force);
+	}
+	
+	for (int i = 0; i < 12; ++i)
+	{
+		auto player = PlayerImpl(i, _data->players[i]);
+		playerVector.push_back(player);
+	}
+	// @TODO: Possible to exceed 10000 here
+	for (int i = 0; i < 10000; ++i)
+	{
+		auto unit = UnitImpl(i, _data->units[i]);
+		unitVector.push_back(unit);
+	}
+	
+	for (int i = 0; i < 100; ++i)
       bulletVector.push_back(BulletImpl(i, _data->bullets[i]));
     
     inGame = false;
@@ -230,8 +241,9 @@ namespace AKBot
       {
         Unit u = &unitVector[id];
         accessibleUnits.insert(u);
-        static_cast<PlayerImpl*>(u->getPlayer())->units.insert(u);
-        if (u->getPlayer()->isNeutral())
+		auto unitPlayer = u->getPlayer();
+        static_cast<PlayerImpl*>(unitPlayer)->units.insert(u);
+        if (unitPlayer->isNeutral())
         {
           neutralUnits.insert(u);
           if ( u->getType().isMineralField() )
@@ -241,7 +253,7 @@ namespace AKBot
         }
         else
         {
-          if (u->getPlayer() == this->self() && u->getType() == UnitTypes::Protoss_Pylon)
+          if (unitPlayer == this->self() && u->getType() == UnitTypes::Protoss_Pylon)
             pylons.insert(u);
         }
       }

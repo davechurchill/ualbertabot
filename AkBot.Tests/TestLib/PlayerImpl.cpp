@@ -13,6 +13,12 @@ namespace AKBot
   {
     clear();
   }
+  PlayerImpl::PlayerImpl(const PlayerImpl& that)
+	  : id(that.id)
+	  , data(that.data)
+	  , self(&data)
+  {
+  }
   void PlayerImpl::clear()
   {
     units.clear();
