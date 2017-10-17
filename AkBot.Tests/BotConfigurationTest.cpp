@@ -20,7 +20,7 @@ inline std::string getLocalFile(std::string fileName)
 	_getcwd(cCurrentPath, sizeof(cCurrentPath));
 
 	std::string baseDirectory = cCurrentPath;
-	baseDirectory = baseDirectory + "\\..\\..\\AkBot.Tests";
+	baseDirectory = baseDirectory + "\\..\\..\\..\\AkBot.Tests";
 	return baseDirectory + "\\" + fileName;
 }
 
