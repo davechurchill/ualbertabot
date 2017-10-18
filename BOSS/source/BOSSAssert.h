@@ -17,8 +17,6 @@ namespace Assert
 }
 }
 
-#define BOSS_ASSERT_ENABLE
-
 #ifdef BOSS_ASSERT_ENABLE
 
     #define BOSS_ASSERT(cond, msg, ...) \
