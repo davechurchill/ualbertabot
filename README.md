@@ -24,3 +24,10 @@ For actual building go to `UAlbertaBot\VisualStudio` and open `UAlbertaBot.sln`
 
 ## Documentation
 Please check out the [Wiki](https://github.com/davechurchill/ualbertabot/wiki) for full instructions and documentation!
+
+## Additional code configuration
+
+### Defines
+- *BOSS_ASSERT_ENABLE* This define allow assertion in the BOSS module. 
+	In original source code it is hardcoded in the source code which results in the very 
+	slow debug builds starting from middle game. Most of the time this is not requried, only helpful when needed debug BOSS.
