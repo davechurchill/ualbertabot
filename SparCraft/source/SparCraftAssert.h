@@ -15,8 +15,6 @@ namespace Assert
 }
 }
 
-#define SPARCRAFT_ASSERT_ENABLE
-
 #ifdef SPARCRAFT_ASSERT_ENABLE
 
     #define SPARCRAFT_ASSERT(cond, msg, ...) \

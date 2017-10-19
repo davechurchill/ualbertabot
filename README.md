@@ -31,3 +31,4 @@ Please check out the [Wiki](https://github.com/davechurchill/ualbertabot/wiki) f
 - *BOSS_ASSERT_ENABLE* This define allow assertion in the BOSS module. 
 	In original source code it is hardcoded in the source code which results in the very 
 	slow debug builds starting from middle game. Most of the time this is not requried, only helpful when needed debug BOSS.
+- *SPARCRAFT_ASSERT_ENABLE* This define allow assertion in the Sparcraft code.

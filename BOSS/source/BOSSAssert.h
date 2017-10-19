@@ -38,6 +38,6 @@ namespace Assert
         } while(0)
 
 #else
-    #define SPARCRAFT_ASSERT(cond, msg, ...) 
-    #define SPARCRAFT_ASSERT_STATE(cond, state, filename, msg, ...) 
+    #define BOSS_ASSERT(cond, msg, ...) 
+    #define BOSS_ASSERT_STATE(cond, state, filename, msg, ...) 
 #endif
