@@ -1,4 +1,5 @@
 #include "UCTSearch.h"
+#include "SparCraftAssert.h"
 
 using namespace SparCraft;
 
@@ -6,18 +7,18 @@ UCTSearch::UCTSearch(const UCTSearchParameters & params)
 	: _params(params)
     , _memoryPool(NULL)
 {
-    for (size_t p(0); p<Constants::Num_Players; ++p)
+    for (size_t p(0); p<Players::Num_Players; ++p)
     {
         // set ordered move script player objects
         for (size_t s(0); s<_params.getOrderedMoveScripts().size(); ++s)
         {
-            _allScripts[p].push_back(AllPlayers::getPlayerPtr(p, _params.getOrderedMoveScripts()[s]));
+            // FIX _allScripts[p].push_back(AllPlayers::getPlayerPtr(p, _params.getOrderedMoveScripts()[s]));
         }
 
         // set player model objects
         if (_params.playerModel(p) != PlayerModels::None)
         {
-            _playerModels[p] = AllPlayers::getPlayerPtr(p, _params.playerModel(p));
+            // FIX _playerModels[p] = AllPlayers::getPlayerPtr(p, _params.playerModel(p));
         }
     }
 }
@@ -27,7 +28,7 @@ void UCTSearch::setMemoryPool(UCTMemoryPool * pool)
     _memoryPool = pool;
 }
 
-void UCTSearch::doSearch(GameState & initialState, std::vector<Action> & move)
+void UCTSearch::doSearch(const GameState & initialState, Move & move)
 {
     Timer t;
     t.start();
@@ -83,10 +84,10 @@ const bool UCTSearch::searchTimeOut()
 
 const bool UCTSearch::terminalState(GameState & state, const size_t & depth) const
 {
-	return (depth <= 0 || state.isTerminal());
+	return (depth <= 0 || state.gameOver());
 }
 
-void UCTSearch::generateOrderedMoves(GameState & state, MoveArray & moves, const IDType & playerToMove)
+void UCTSearch::generateOrderedMoves(GameState & state, const size_t & playerToMove)
 {
 	_orderedMoves.clear();
 
@@ -94,10 +95,10 @@ void UCTSearch::generateOrderedMoves(GameState & state, MoveArray & moves, const
     if (_params.playerModel(playerToMove) != PlayerModels::None)
 	{
         // put the vector into the ordered moves array
-        _orderedMoves.add(std::vector<Action>());
+        _orderedMoves.push_back(Move());
 
         // generate the moves into that vector
-		_playerModels[playerToMove]->getMoves(state, moves, _orderedMoves[0]);
+		_playerModels[playerToMove]->getMove(state, _orderedMoves[0]);
 		
 		return;
 	}
@@ -107,14 +108,14 @@ void UCTSearch::generateOrderedMoves(GameState & state, MoveArray & moves, const
     {
         for (size_t s(0); s<_params.getOrderedMoveScripts().size(); s++)
 	    {
-            std::vector<Action> moveVec;
-		    _allScripts[playerToMove][s]->getMoves(state, moves, moveVec);
-		    _orderedMoves.add(moveVec);
+            Move move;
+		    _allScripts[playerToMove][s]->getMove(state, move);
+            _orderedMoves.push_back(move);
 	    }
     }
 	
 }
-const size_t UCTSearch::getChildNodeType(UCTNode & parent, const GameState & prevState) const
+const size_t UCTSearch::getChildNodeType(const UCTNode & parent, const GameState & prevState) const
 {
     if (!prevState.bothCanMove())
     {
@@ -143,7 +144,7 @@ const size_t UCTSearch::getChildNodeType(UCTNode & parent, const GameState & pre
     return SearchNodeType::Default;
 }
 
-const bool UCTSearch::getNextMove(IDType playerToMove, MoveArray & moves, const size_t & moveNumber, std::vector<Action> & actionVec)
+const bool UCTSearch::getNextMove(size_t playerToMove, MoveArray & moves, const size_t & moveNumber, Move & actionVec)
 {
     if (moveNumber > _params.maxChildren())
     {
@@ -166,7 +167,7 @@ const bool UCTSearch::getNextMove(IDType playerToMove, MoveArray & moves, const 
 	// if this move should be from the ordered list, return it from the list
 	if (moveNumber < _orderedMoves.size())
 	{
-        actionVec.assign(_orderedMoves[moveNumber].begin(), _orderedMoves[moveNumber].end());
+        actionVec = _orderedMoves[moveNumber];
         return true;
 	}
 	// otherwise return the next move vector starting from the beginning
@@ -174,7 +175,7 @@ const bool UCTSearch::getNextMove(IDType playerToMove, MoveArray & moves, const 
 	{
         if (moves.hasMoreMoves())
         {
-            moves.getNextMoveVec(actionVec);
+            moves.getNextmove(actionVec);
             return true;
         }
         else
@@ -184,16 +185,16 @@ const bool UCTSearch::getNextMove(IDType playerToMove, MoveArray & moves, const 
 	}
 }
 
-const IDType UCTSearch::getPlayerToMove(UCTNode & node, const GameState & state) const
+const size_t UCTSearch::getPlayerToMove(const UCTNode & node, const GameState & state) const
 {
-	const IDType whoCanMove(state.whoCanMove());
+	const size_t whoCanMove(state.whoCanMove());
 
 	// if both players can move
 	if (whoCanMove == Players::Player_Both)
 	{
         // pick the first move based on our policy
-		const IDType policy(_params.playerToMoveMethod());
-		const IDType maxPlayer(_params.maxPlayer());
+		const size_t policy(_params.playerToMoveMethod());
+		const size_t maxPlayer(_params.maxPlayer());
 
         // the max player always chooses at the root
         if (isRoot(node))
@@ -202,7 +203,7 @@ const IDType UCTSearch::getPlayerToMove(UCTNode & node, const GameState & state)
         }
 
         // the type of node this is
-        const IDType nodeType = node.getNodeType();
+        const size_t nodeType = node.getNodeType();
 
         // the 2nd player in a sim move is always the enemy of the first
         if (nodeType == SearchNodeType::FirstSimNode)
@@ -226,7 +227,7 @@ const IDType UCTSearch::getPlayerToMove(UCTNode & node, const GameState & state)
 		    }
 
             // we should never get to this state
-		    System::FatalError("UCT Error: Nobody can move for some reason");
+		    SPARCRAFT_ASSERT(false, "UCT Error: Nobody can move for some reason");
 		    return Players::Player_None;
         }
 	}
@@ -292,12 +293,11 @@ void UCTSearch::updateState(UCTNode & node, GameState & state, bool isLeaf)
         if (node.getNodeType() == SearchNodeType::SecondSimNode)
         {
             // make the parent's moves on the state because they haven't been done yet
-            state.makeMoves(node.getParent()->getMove());
+            state.doMove(node.getParent()->getMove());
         }
 
         // do the current node moves and call finished moving
-        state.makeMoves(node.getMove());
-        state.finishedMoving();
+        state.doMove(node.getMove());
     }
 }
 
@@ -315,7 +315,7 @@ StateEvalScore UCTSearch::traverse(UCTNode & node, GameState & currentState)
         updateState(node, currentState, true);
 
         // do the playout
-        playoutVal = currentState.eval(_params.maxPlayer(), _params.evalMethod(), _params.simScript(Players::Player_One), _params.simScript(Players::Player_Two));
+        playoutVal = Eval::Eval(currentState, _params.maxPlayer(), _params.evalMethod(), _params.playoutPlayer(Players::Player_One), _params.playoutPlayer(Players::Player_Two));
 
         _results.nodesVisited++;
     }
@@ -325,9 +325,9 @@ StateEvalScore UCTSearch::traverse(UCTNode & node, GameState & currentState)
         // update the state for a non-leaf node
         updateState(node, currentState, false);
 
-        if (currentState.isTerminal())
+        if (currentState.gameOver())
         {
-            playoutVal = currentState.eval(_params.maxPlayer(), EvaluationMethods::LTD2);
+            playoutVal = Eval::Eval(currentState, _params.maxPlayer(), EvaluationMethods::LTD2);
         }
         else
         {
@@ -361,14 +361,10 @@ StateEvalScore UCTSearch::traverse(UCTNode & node, GameState & currentState)
 void UCTSearch::generateChildren(UCTNode & node, GameState & state)
 {
     // figure out who is next to move in the game
-    const IDType playerToMove(getPlayerToMove(node, state));
-
-    // generate all the moves possible from this state
-	state.generateMoves(_moveArray, playerToMove);
-    _moveArray.shuffleMoveActions();
-
+    const size_t playerToMove(getPlayerToMove(node, state));
+    
     // generate the 'ordered moves' for move ordering
-    generateOrderedMoves(state, _moveArray, playerToMove);
+    generateOrderedMoves(state, playerToMove);
 
     // for each child of this state, add a child to the current node
     for (size_t child(0); (child < _params.maxChildren()) && getNextMove(playerToMove, _moveArray, child, _actionVec); ++child)
@@ -379,20 +375,17 @@ void UCTSearch::generateChildren(UCTNode & node, GameState & state)
     }
 }
 
-StateEvalScore UCTSearch::performPlayout(GameState & state)
+StateEvalScore UCTSearch::performPlayout(const GameState & state)
 {
-    GameState copy(state);
-    copy.finishedMoving();
-
-    return copy.eval(_params.maxPlayer(), _params.evalMethod(), _params.simScript(Players::Player_One), _params.simScript(Players::Player_Two));
+    return Eval::Eval(state, _params.maxPlayer(), _params.evalMethod(), _params.playoutPlayer(Players::Player_One), _params.playoutPlayer(Players::Player_Two));
 }
 
-const bool UCTSearch::isRoot(UCTNode & node) const
+const bool UCTSearch::isRoot(const UCTNode & node) const
 {
     return &node == &_rootNode;
 }
 
-void UCTSearch::printSubTree(UCTNode & node, GameState s, std::string filename)
+void UCTSearch::printSubTree(const UCTNode & node, GameState s, std::string filename)
 {
     std::ofstream out(filename.c_str());
 
@@ -404,7 +397,7 @@ void UCTSearch::printSubTree(UCTNode & node, GameState s, std::string filename)
     G.print(out);
 }
 
-void UCTSearch::printSubTreeGraphViz(UCTNode & node, GraphViz::Graph & g, GameState state)
+void UCTSearch::printSubTreeGraphViz(const UCTNode & node, GraphViz::Graph & g, GameState state)
 {
     if (node.getNodeType() == SearchNodeType::FirstSimNode && node.hasChildren())
     {
@@ -414,11 +407,10 @@ void UCTSearch::printSubTreeGraphViz(UCTNode & node, GraphViz::Graph & g, GameSt
     {
         if (node.getNodeType() == SearchNodeType::SecondSimNode)
         {
-            state.makeMoves(node.getParent()->getMove());
+            state.doMove(node.getParent()->getMove());
         }
 
-        state.makeMoves(node.getMove());
-        state.finishedMoving();
+        state.doMove(node.getMove());
     }
 
     std::stringstream label;
@@ -434,7 +426,7 @@ void UCTSearch::printSubTreeGraphViz(UCTNode & node, GraphViz::Graph & g, GameSt
         move << "root";
     }
 
-    std::string firstSim = SearchNodeType::getName(node.getNodeType());
+    std::string firstSim = "FIX"; //SearchNodeType::getName(node.getNodeType());
 
     Unit p1 = state.getUnit(0,0);
     Unit p2 = state.getUnit(1,0);
@@ -476,7 +468,7 @@ void UCTSearch::printSubTreeGraphViz(UCTNode & node, GraphViz::Graph & g, GameSt
     // recurse for each child
     for (size_t c(0); c<node.numChildren(); ++c)
     {
-        UCTNode & child = node.getChild(c);
+        const UCTNode & child = node.getChild(c);
         if (child.numVisits() > 0)
         {
             GraphViz::Edge edge(getNodeIDString(node), getNodeIDString(child));
@@ -486,7 +478,7 @@ void UCTSearch::printSubTreeGraphViz(UCTNode & node, GraphViz::Graph & g, GameSt
     }
 }
  
-std::string UCTSearch::getNodeIDString(UCTNode & node)
+std::string UCTSearch::getNodeIDString(const UCTNode & node)
 {
     std::stringstream ss;
     ss << (unsigned long long)&node;

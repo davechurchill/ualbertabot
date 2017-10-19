@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Common.h"
+#include "SparCraftException.h"
 #include <cstdarg>
-
 #include <ctime>
 
 namespace SparCraft
@@ -15,8 +14,6 @@ namespace Assert
     void ReportFailure(const GameState * state, const char * condition, const char * file, int line, const char * msg, ...);
 }
 }
-
-#define SPARCRAFT_ASSERT_ENABLE
 
 #ifdef SPARCRAFT_ASSERT_ENABLE
 

@@ -1,12 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug_SSCAIT|Win32">
+      <Configuration>Debug_SSCAIT</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_SSCAIT|x64">
+      <Configuration>Debug_SSCAIT</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_SSCAIT|Win32">
+      <Configuration>Release_SSCAIT</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_SSCAIT|x64">
+      <Configuration>Release_SSCAIT</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
@@ -22,10 +38,16 @@
     <ProjectGuid>{66236439-5968-4756-B2E7-8A29BEA99078}</ProjectGuid>
     <RootNamespace>StarcraftBuildOrderSearch</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath11)</VCTargetsPath>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_SSCAIT|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -34,13 +56,24 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_SSCAIT|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_SSCAIT|x64'" Label="Configuration">
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_SSCAIT|x64'" Label="Configuration">
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -48,32 +81,75 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_SSCAIT|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_SSCAIT|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)\$(Configuration)\$(ProjectName)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug_SSCAIT|Win32'">$(SolutionDir)\$(Configuration)\$(ProjectName)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug_SSCAIT|Win32'">$(SolutionDir)\$(Configuration)\$(ProjectName)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug_SSCAIT|Win32'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)\$(Configuration)\$(ProjectName)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_SSCAIT|Win32'">$(SolutionDir)\$(Configuration)\$(ProjectName)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release_SSCAIT|Win32'">$(SolutionDir)\$(Configuration)\$(ProjectName)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release_SSCAIT|Win32'">false</LinkIncremental>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug_SSCAIT|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug_SSCAIT|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug_SSCAIT|Win32'" />
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release_SSCAIT|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release_SSCAIT|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release_SSCAIT|Win32'" />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <TargetName>$(ProjectName)_d</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_SSCAIT|Win32'">
     <TargetName>$(ProjectName)_d</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(BWAPI_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPId.lib;$(EXTERNAL_LIB_DIR)/SDL.lib;$(EXTERNAL_LIB_DIR)/SDLmain.lib;$(EXTERNAL_LIB_DIR)/opengl32.lib;$(EXTERNAL_LIB_DIR)/SDL_image.lib;$(EXTERNAL_LIB_DIR)/SDL_gfx.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalOptions>/NODEFAULTLIB:msvcrt.lib %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_SSCAIT|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(BWAPI_SSCAIT_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -121,94 +197,120 @@
       <GenerateMapFile>true</GenerateMapFile>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_SSCAIT|Win32'">
+    <ClCompile>
+      <Optimization>Full</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>$(BWAPI_SSCAIT_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;NOMINMAX;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPI.lib;$(EXTERNAL_LIB_DIR)/SDL.lib;$(EXTERNAL_LIB_DIR)/SDLmain.lib;$(EXTERNAL_LIB_DIR)/opengl32.lib;$(EXTERNAL_LIB_DIR)/SDL_image.lib;$(EXTERNAL_LIB_DIR)/SDL_gfx.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+      <Profile>true</Profile>
+      <GenerateMapFile>true</GenerateMapFile>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\source\Action.h" />
+    <ClInclude Include="..\source\ActionGenerators.h" />
+    <ClInclude Include="..\source\AIParameters.h" />
+    <ClInclude Include="..\source\AITools.h" />
     <ClInclude Include="..\source\AllPlayers.h" />
-    <ClInclude Include="..\source\AlphaBetaMove.h" />
-    <ClInclude Include="..\source\AlphaBetaSearch.h" />
-    <ClInclude Include="..\source\AlphaBetaSearchParameters.hpp" />
-    <ClInclude Include="..\source\AlphaBetaSearchResults.hpp" />
-    <ClInclude Include="..\source\AnimationFrameData.h" />
+    <ClInclude Include="..\source\Config.h" />
     <ClInclude Include="..\source\BaseTypes.hpp" />
-    <ClInclude Include="..\source\EnumData.h" />
+    <ClInclude Include="..\source\ConfigTools.h" />
+    <ClInclude Include="..\source\Eval.h" />
     <ClInclude Include="..\source\Game.h" />
     <ClInclude Include="..\source\GameState.h" />
+    <ClInclude Include="..\source\GameStateUnitData.h" />
     <ClInclude Include="..\source\GraphViz.hpp" />
-    <ClInclude Include="..\source\Hash.h" />
-    <ClInclude Include="..\source\Logger.h" />
-    <ClInclude Include="..\source\Map.hpp" />
+    <ClInclude Include="..\source\JSONTools.h" />
+    <ClInclude Include="..\source\Map.h" />
+    <ClInclude Include="..\source\Move.h" />
     <ClInclude Include="..\source\MoveArray.h" />
+    <ClInclude Include="..\source\MoveIterator.h" />
+    <ClInclude Include="..\source\PGSParameters.h" />
     <ClInclude Include="..\source\Player.h" />
     <ClInclude Include="..\source\PlayerProperties.h" />
-    <ClInclude Include="..\source\Player_AlphaBeta.h" />
     <ClInclude Include="..\source\Player_AttackClosest.h" />
-    <ClInclude Include="..\source\Player_AttackDPS.h" />
-    <ClInclude Include="..\source\Player_AttackWeakest.h" />
-    <ClInclude Include="..\source\Player_Cluster.h" />
-    <ClInclude Include="..\source\Player_Kiter.h" />
-    <ClInclude Include="..\source\Player_KiterDPS.h" />
-    <ClInclude Include="..\source\Player_Kiter_NOKDPS.h" />
-    <ClInclude Include="..\source\Player_NOKDPS.h" />
     <ClInclude Include="..\source\Player_PortfolioGreedySearch.h" />
     <ClInclude Include="..\source\Player_Random.h" />
+    <ClInclude Include="..\source\Player_Script.h" />
     <ClInclude Include="..\source\Player_UCT.h" />
     <ClInclude Include="..\source\PortfolioGreedySearch.h" />
     <ClInclude Include="..\source\Random.hpp" />
     <ClInclude Include="..\source\Common.h" />
     <ClInclude Include="..\source\Position.hpp" />
+    <ClInclude Include="..\source\ScriptPlayerPolicy.h" />
     <ClInclude Include="..\source\SparCraft.h" />
     <ClInclude Include="..\source\SparCraftAssert.h" />
     <ClInclude Include="..\source\SparCraftException.h" />
     <ClInclude Include="..\source\Timer.h" />
-    <ClInclude Include="..\source\TranspositionTable.h" />
+    <ClInclude Include="..\source\torch\TorchFrame.h" />
+    <ClInclude Include="..\source\torch\TorchRefcount.h" />
+    <ClInclude Include="..\source\torch\TorchTools.h" />
     <ClInclude Include="..\source\UCTMemoryPool.hpp" />
     <ClInclude Include="..\source\UCTNode.h" />
     <ClInclude Include="..\source\UCTSearch.h" />
     <ClInclude Include="..\source\UCTSearchParameters.hpp" />
     <ClInclude Include="..\source\UCTSearchResults.hpp" />
     <ClInclude Include="..\source\Unit.h" />
-    <ClInclude Include="..\source\Array.hpp" />
     <ClInclude Include="..\source\UnitProperties.h" />
-    <ClInclude Include="..\source\UnitScriptData.h" />
     <ClInclude Include="..\source\WeaponProperties.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\Action.cpp" />
+    <ClCompile Include="..\source\ActionGenerators.cpp" />
+    <ClCompile Include="..\source\AIParameters.cpp" />
+    <ClCompile Include="..\source\AITools.cpp" />
     <ClCompile Include="..\source\AllPlayers.cpp" />
-    <ClCompile Include="..\source\AlphaBetaMove.cpp" />
-    <ClCompile Include="..\source\AlphaBetaSearch.cpp" />
-    <ClCompile Include="..\source\AnimationFrameData.cpp" />
+    <ClCompile Include="..\source\Config.cpp" />
     <ClCompile Include="..\source\Common.cpp" />
-    <ClCompile Include="..\source\EnumData.cpp" />
+    <ClCompile Include="..\source\ConfigTools.cpp" />
+    <ClCompile Include="..\source\Eval.cpp" />
     <ClCompile Include="..\source\Game.cpp" />
     <ClCompile Include="..\source\GameState.cpp" />
-    <ClCompile Include="..\source\Hash.cpp" />
-    <ClCompile Include="..\source\Logger.cpp" />
+    <ClCompile Include="..\source\GameStateUnitData.cpp" />
+    <ClCompile Include="..\source\JSONTools.cpp" />
+    <ClCompile Include="..\source\Map.cpp" />
+    <ClCompile Include="..\source\Move.cpp" />
     <ClCompile Include="..\source\MoveArray.cpp" />
+    <ClCompile Include="..\source\MoveIterator.cpp" />
+    <ClCompile Include="..\source\PGSParameters.cpp" />
     <ClCompile Include="..\source\Player.cpp" />
     <ClCompile Include="..\source\PlayerProperties.cpp" />
-    <ClCompile Include="..\source\Player_AlphaBeta.cpp" />
     <ClCompile Include="..\source\Player_AttackClosest.cpp" />
-    <ClCompile Include="..\source\Player_AttackDPS.cpp" />
-    <ClCompile Include="..\source\Player_AttackWeakest.cpp" />
-    <ClCompile Include="..\source\Player_Cluster.cpp" />
-    <ClCompile Include="..\source\Player_Kiter.cpp" />
-    <ClCompile Include="..\source\Player_KiterDPS.cpp" />
-    <ClCompile Include="..\source\Player_Kiter_NOKDPS.cpp" />
-    <ClCompile Include="..\source\Player_NOKDPS.cpp" />
     <ClCompile Include="..\source\Player_PortfolioGreedySearch.cpp" />
     <ClCompile Include="..\source\Player_Random.cpp" />
+    <ClCompile Include="..\source\Player_Script.cpp" />
     <ClCompile Include="..\source\Player_UCT.cpp" />
     <ClCompile Include="..\source\PortfolioGreedySearch.cpp" />
+    <ClCompile Include="..\source\ScriptPlayerPolicy.cpp" />
     <ClCompile Include="..\source\SparCraft.cpp" />
     <ClCompile Include="..\source\SparCraftAssert.cpp" />
     <ClCompile Include="..\source\SparCraftException.cpp" />
     <ClCompile Include="..\source\Timer.cpp" />
-    <ClCompile Include="..\source\TranspositionTable.cpp" />
+    <ClCompile Include="..\source\torch\TorchFrame.cpp" />
+    <ClCompile Include="..\source\torch\TorchTools.cpp" />
     <ClCompile Include="..\source\UCTSearch.cpp" />
     <ClCompile Include="..\source\Unit.cpp" />
     <ClCompile Include="..\source\UnitProperties.cpp" />
-    <ClCompile Include="..\source\UnitScriptData.cpp" />
     <ClCompile Include="..\source\WeaponProperties.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

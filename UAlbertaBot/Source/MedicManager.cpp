@@ -1,27 +1,35 @@
 #include "MedicManager.h"
 #include "UnitUtil.h"
+#include <BWAPI/Game.h>
+#include <BWAPI/Player.h>
+#include <BWAPI/TechType.h>
+#include <BWAPI/Unitset.h>
+#include "Micro.h"
+#include "UnitUtil.h"
 
 using namespace UAlbertaBot;
+using UAlbertaBot::UnitUtil::GetClosestsUnitToTarget;
 
-MedicManager::MedicManager() 
-{ 
+MedicManager::MedicManager(shared_ptr<AKBot::OpponentView> opponentView, shared_ptr<BaseLocationManager> bases)
+	: MicroManager(opponentView, bases)
+{
 }
 
-void MedicManager::executeMicro(const BWAPI::Unitset & targets) 
+void MedicManager::executeMicro(const std::vector<BWAPI::Unit> & targets, int currentFrame)
 {
-	const BWAPI::Unitset & medics = getUnits();
-    
 	// create a set of all medic targets
-	BWAPI::Unitset medicTargets;
-    for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+	std::vector<BWAPI::Unit> medicTargets;
+    for (auto & unit : opponentView->self()->getUnits())
     {
         if (unit->getHitPoints() < unit->getInitialHitPoints() && !unit->getType().isMechanical() && !unit->getType().isBuilding())
         {
-            medicTargets.insert(unit);
+            medicTargets.push_back(unit);
         }
     }
     
-    BWAPI::Unitset availableMedics(medics);
+	const std::vector<BWAPI::Unit> & medics = getUnits();
+
+	std::vector<BWAPI::Unit> availableMedics(medics);
 
     // for each target, send the closest medic to heal it
     for (auto & target : medicTargets)
@@ -32,37 +40,21 @@ void MedicManager::executeMicro(const BWAPI::Unitset & targets)
             continue;
         }
 
-        double closestMedicDist = std::numeric_limits<double>::infinity();
-        BWAPI::Unit closestMedic = nullptr;
+        auto closestMedic = GetClosestsUnitToTarget(availableMedics, target);
 
-        for (auto & medic : availableMedics)
-        {
-            double dist = medic->getDistance(target);
-
-            if (!closestMedic || (dist < closestMedicDist))
-            {
-                closestMedic = medic;
-                closestMedicDist = dist;
-            }
-        }
+		// if we didn't find a medic which means they're all in use so break
+		if (!closestMedic) {
+			break;
+		}
 
         // if we found a medic, send it to heal the target
-        if (closestMedic)
-        {
-            closestMedic->useTech(BWAPI::TechTypes::Healing, target);
-
-            availableMedics.erase(closestMedic);
-        }
-        // otherwise we didn't find a medic which means they're all in use so break
-        else
-        {
-            break;
-        }
+		closestMedic->useTech(BWAPI::TechTypes::Healing, target);
+		availableMedics.erase(std::remove(availableMedics.begin(), availableMedics.end(), closestMedic), availableMedics.end());
     }
 
     // the remaining medics should head to the squad order position
     for (auto & medic : availableMedics)
     {
-        Micro::SmartAttackMove(medic, order.getPosition());
+        Micro::SmartAttackMove(medic, order.getPosition(), currentFrame);
     }
 }

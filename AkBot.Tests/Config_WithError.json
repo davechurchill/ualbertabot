@@ -1,0 +1,184 @@
+{
+    "Bot Info" :
+    {
+        "BotName"                   : "Andrey Kurdiumov",
+        "Authors"                   : "Andrey Kurdiumov, David Churchill",
+        "PrintInfoOnStart"          : false,
+        "BotMode"                   : "Tournament"
+    },
+        
+    "BWAPI" : 
+    {
+        "SetLocalSpeed"             : 0,
+        "SetFrameSkip"              : 0,
+        "UserInput"                 : true,
+        "CompleteMapInformation"    : false,
+    },
+    
+    "Arena" :
+    {
+        "ArenaPlayerName"           : "HoldWC_NOK",
+        "ArenaOutputResults"        : 10,
+        "ArenaBattles"              : 1000
+    },
+    
+    "SparCraft" :
+    {
+        "SparCraftConfigFile"       : "SparCraft_Config.txt",
+        "CombatSimPlayerName"       : "AttackC"
+    },
+	
+    "Micro" :
+    {
+        "UseSparcraftSimulation"    : true,
+        "KiteWithRangedUnits"       : false,
+        "KiteLongerRangedUnits"     : ["Mutalisk", "Vulture"],
+        "WorkersDefendRush"         : true,
+        "DrawUnitTargetInfo"        : false,
+        "RetreatMeleeUnitShields"   : 0,
+        "RetreatMeleeUnitHP"        : 0,
+        "InCombatRadius"            : 1000,
+        "RegroupRadius"             : 300,
+        "UnitNearEnemyRadius"       : 600
+    },
+    
+    "Macro" :
+    {
+        "BOSSFrameLimit"            : 160,
+        "WorkersPerRefinery"        : 3,
+        "BuildingSpacing"           : 1,
+        "PylonSpacing"              : 3
+    },
+	
+	"Log":
+	{
+		"ErrorLogFilename"          : "bwapi-data/AI/UAlbertaBot_ErrorLog.txt",
+        "LogAssertToErrorFile"      : false
+	},
+
+    "Debug" :
+    {        
+        "DrawGameInfo"              : true,   
+        "DrawUnitHealthBars"        : true,
+        "DrawProductionInfo"        : true, 
+        "DrawBuildOrderSearchInfo"  : false,
+        "DrawScoutInfo"             : false,
+        "DrawEnemyUnitInfo"         : false,
+        "DrawModuleTimers"          : false,
+        "DrawResourceInfo"          : false,
+        "DrawCombatSimInfo"         : false,
+        "DrawBWTAInfo"              : false,
+        "DrawLastSeenTileInfo"      : false,
+        "DrawSquadInfo"             : false,
+        "DrawWorkerInfo"            : false,
+        "DrawMouseCursorInfo"       : false,
+        "DrawBuildingInfo"          : false,
+        "DrawReservedBuildingTiles" : false,
+        "DrawBOSSStateInfo"         : false,
+        "PrintModuleTimeout"        : false
+    },
+    
+    "Modules" :
+    {
+        "UseBuildOrderSearch"       : true,
+        "UseStrategyIO"             : true,
+        "UseAutoObserver"           : false,
+        
+        "ReadDirectory"             : "bwapi-data/read/",
+        "WriteDirectory"            : "bwapi-data/write/"
+    },
+    
+    "Tools" :
+    {
+        "MapGridSize"               : 320
+    },
+    
+    "Strategy" :
+    {
+        "Protoss"                   : "Protoss_ZealotRush",
+        "Terran"                    : "Terran_MarineRush",
+        "Zerg"                      : "Zerg_ZerglingRush",
+        
+        "ScoutHarassEnemy"          : true,
+        
+        "ReadDirectory"             : "bwapi-data/read/",
+        "WriteDirectory"            : "bwapi-data/write/",
+                
+        "UseEnemySpecificStrategy"  : true,
+        "EnemySpecificStrategy"     :
+        {
+            "BotName1"              : { "Protoss" : "Protoss_ZealotRush", "Terran" : "Terran_VultureRush", "Zerg" : "Zerg_ZerglingRush" },
+            "BotName2"              : { "Protoss" : "Protoss_DragoonRush", "Terran" : "Terran_MarineRush", "Zerg" : "Zerg_ZerglingRush" },
+            "LetaBot"               : { "Protoss" : "Protoss_ZealotRush", "Terran" : "Terran_4RaxMarines", "Zerg" : "Zerg_ZerglingRush" }
+        },
+        
+        "Strategies" :
+        {
+			"Protoss_ZealotRush": 
+			{
+				"Race": "Protoss",
+				"OpeningBuildOrder": [ "Probe", "Probe", "Probe", "Probe", "Pylon", "Probe", "Gateway", "Gateway", "Probe", "Probe", "Zealot", "Pylon", "Zealot", "Zealot", "Probe", "Zealot", "Zealot", "Probe", "Pylon", "Zealot", "Gateway", "Probe", "Pylon", "Probe", "Zealot", "Probe", "Zealot", "Zealot", "Zealot", "Zealot", "Pylon", "Probe", "Zealot", "Zealot", "Zealot" ]
+			},
+			"Protoss_DragoonRush": 
+			{
+				"Race": "Protoss",
+				"OpeningBuildOrder": [ "Probe", "Probe", "Probe", "Probe", "Pylon", "Probe", "Probe", "Gateway", "Probe", "Assimilator", "Probe", "Probe", "Cybernetics_Core", "Probe", "Probe", "Gateway", "Singularity_Charge", "Dragoon", "Gateway", "Pylon", "Dragoon", "Dragoon", "Probe", "Gateway", "Pylon", "Probe", "Dragoon", "Dragoon", "Dragoon" ]
+			},
+			"Protoss_DTRush": 
+			{
+				"Race": "Protoss",
+				"OpeningBuildOrder": [ "Probe", "Probe", "Probe", "Probe", "Pylon", "Probe", "Gateway", "Probe", "Assimilator", "Probe", "Cybernetics_Core", "Probe", "Citadel_of_Adun", "Probe", "Templar_Archives", "Gateway", "Dark_Templar", "Dark_Templar", "Pylon", "Dark_Templar", "Dark_Templar", "Probe", "Pylon", "Probe" ]
+			},
+			"Protoss_Drop": 
+			{
+				"Race": "Protoss",
+				"OpeningBuildOrder": [ "Probe", "Probe", "Probe", "Probe", "Pylon", "Probe", "Probe", "Gateway", "Probe", "Assimilator", "Probe", "Probe", "Cybernetics_Core", "Probe", "Gateway", "Robotics Facility" ]
+			},
+			"Terran_MarineRush": 
+			{
+				"Race": "Terran",
+				"OpeningBuildOrder": [ "SCV", "SCV", "SCV", "SCV", "Barracks", "Barracks", "SCV", "Supply Depot", "SCV", "Marine", "Marine", "Marine", "Marine", "Supply Depot" ]
+			},
+			"Terran_TankPush": 
+			{
+				"Race": "Terran",
+				"OpeningBuildOrder": [ "SCV", "SCV", "SCV", "SCV", "SCV", "Supply Depot", "SCV", "Barracks", "Refinery", "SCV", "SCV", "SCV", "SCV", "Factory", "Factory", "SCV", "SCV", "SCV", "SCV", "Machine Shop", "Machine Shop", "Supply Depot", "Tank Siege Mode", "Siege Tank Tank Mode", "Siege Tank Tank Mode", "Siege Tank Tank Mode", "Siege Tank Tank Mode" ]
+			},
+			"Terran_4RaxMarines": 
+			{
+				"Race": "Terran",
+				"OpeningBuildOrder": [ "Barracks", "SCV", "SCV", "Marine", "SCV", "Marine", "Supply Depot", "SCV", "Marine", "Marine", "Marine", "Marine", "Marine", "Marine" ]
+			},
+			"Terran_VultureRush": 
+			{
+				"Race": "Terran",
+				"OpeningBuildOrder": [ "SCV", "SCV", "SCV", "SCV", "SCV", "Supply Depot", "SCV", "SCV", "Barracks", "Refinery", "SCV", "SCV", "SCV", "SCV", "Supply Depot", "Factory", "SCV", "SCV", "SCV", "Vulture", "Vulture" ]
+			},
+			"Zerg_ZerglingRush": 
+			{
+				"Race": "Zerg",
+				"OpeningBuildOrder": [ "Drone", "Spawning Pool", "Zergling", "Zergling", "Zergling", "Zergling" ]
+			},
+			"Zerg_9Pool": 
+			{
+				"Race": "Zerg",
+				"OpeningBuildOrder": [ "Drone", "Drone", "Drone", "Drone", "Drone", "Spawning Pool", "Drone", "Extractor", "Overlord", "Drone", "Zergling", "Zergling", "Zergling", "Hydralisk Den", "Drone", "Drone", "Drone", "Drone" ]
+			},
+			"Zerg_2HatchHydra": 
+			{
+				"Race": "Zerg",
+				"OpeningBuildOrder": [ "Drone", "Drone", "Drone", "Drone", "Drone", "Overlord", "Drone", "Drone", "Drone", "Hatchery", "Spawning Pool", "Drone", "Extractor", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Hydralisk Den", "Drone", "Overlord", "Drone", "Drone", "Drone", "Grooved_Spines", "Hydralisk", "Hydralisk", "Hydralisk", "Hydralisk", "Hydralisk", "Hydralisk", "Hydralisk", "Hydralisk", "Hydralisk", "Hydralisk", "Hydralisk", "Hydralisk", "Hatchery", "Extractor" ]
+			},
+			"Zerg_3HatchMuta": 
+			{
+				"Race": "Zerg",
+				"OpeningBuildOrder": [ "Drone", "Drone", "Drone", "Drone", "Overlord", "Drone", "Drone", "Drone", "Drone", "Hatchery", "Drone", "Drone", "Spawning_Pool", "Drone", "Drone", "Extractor", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Lair", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Spire", "Overlord", "Drone", "Overlord", "Hatchery", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Hatchery" ]
+			},
+			"Zerg_3HatchScourge": 
+			{
+				"Race": "Zerg",
+				"OpeningBuildOrder": [ "Drone", "Drone", "Drone", "Drone", "Overlord", "Drone", "Drone", "Drone", "Drone", "Hatchery", "Drone", "Drone", "Spawning_Pool", "Drone", "Drone", "Extractor", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Lair", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Spire", "Overlord", "Drone", "Overlord", "Hatchery", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Hatchery", "Drone", "Extractor", "Drone", "Hatchery", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Hatchery", "Extractor", "Extractor", "Hatchery" ]
+			}
+        }
+    }
+}

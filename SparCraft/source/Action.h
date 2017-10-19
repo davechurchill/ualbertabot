@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Common.h"
 #include "Position.hpp"
 
 namespace SparCraft
@@ -8,15 +7,15 @@ namespace SparCraft
 
 namespace ActionTypes
 {
-	enum {NONE, ATTACK, RELOAD, MOVE, PASS, HEAL};
+    enum { NONE, ATTACK, MOVE, RELOAD, PASS };
 };
 
 class Action 
 {
-	IDType  _unit;
-	IDType	_player;
-	IDType	_moveType;
-	IDType	_moveIndex;
+	size_t      _unitID;
+	size_t      _playerID;
+	size_t      _actionType;
+	size_t      _targetID;
 
     Position _p;
 
@@ -24,18 +23,17 @@ public:
 
 
 	Action();
+    Action(const size_t & unitIndex, const size_t & player, const size_t & type, const size_t & moveIndex, const Position & dest);
+	Action(const size_t & unitIndex, const size_t & player, const size_t & type, const size_t & moveIndex);
 
-    Action( const IDType & unitIndex, const IDType & player, const IDType & type, const IDType & moveIndex, const Position & dest);
+	bool operator == (const Action & rhs) const;
+    bool operator != (const Action & rhs) const;
 
-	Action( const IDType & unitIndex, const IDType & player, const IDType & type, const IDType & moveIndex);
-
-	const bool operator == (const Action & rhs);
-
-	const IDType & unit()	const;
-	const IDType & player() const;
-	const IDType & type()	const;
-	const IDType & index()	const;
-    const Position & pos()  const;
+	const size_t & getID() const;
+	const size_t & getPlayerID() const;
+	const size_t & type() const;
+	const size_t & getTargetID() const;
+    const Position & pos() const;
 
 	const std::string moveString() const;
 

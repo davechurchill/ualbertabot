@@ -2,33 +2,16 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="..\source\TutorialCode.cpp" />
-    <ClCompile Include="..\source\gui\GUI.cpp">
-      <Filter>gui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\gui\GUIGame.cpp">
-      <Filter>gui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\gui\GUITools.cpp">
-      <Filter>gui</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\main\main.cpp" />
-    <ClCompile Include="..\source\main\SearchExperiment.cpp" />
+    <ClCompile Include="..\source\main\SparCraftExperiment.cpp" />
+    <ClCompile Include="..\source\gui\GUI.cpp" />
+    <ClCompile Include="..\source\gui\GUIGame.cpp" />
+    <ClCompile Include="..\source\gui\GUITools.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\gui\GUI.h">
-      <Filter>gui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\gui\GUIGame.h">
-      <Filter>gui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\gui\GUITools.h">
-      <Filter>gui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\main\SearchExperiment.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Filter Include="gui">
-      <UniqueIdentifier>{ceb05fc9-cc5d-4f5b-808d-c844862d2269}</UniqueIdentifier>
-    </Filter>
+    <ClInclude Include="..\source\main\SparCraftExperiment.h" />
+    <ClInclude Include="..\source\gui\GUI.h" />
+    <ClInclude Include="..\source\gui\GUIGame.h" />
+    <ClInclude Include="..\source\gui\GUITools.h" />
   </ItemGroup>
 </Project>

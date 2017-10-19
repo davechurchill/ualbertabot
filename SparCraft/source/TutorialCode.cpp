@@ -11,13 +11,13 @@ Unit getSampleUnit()
     // Unit has several constructors
     // You will typically only be using this one to construct a 'starting' unit
 
-    // Unit(const BWAPI::UnitType unitType, const IDType & playerID, const Position & pos)
+    // Unit(const BWAPI::UnitType unitType, const size_t & playerID, const Position & pos)
 
     // The BWAPI::UnitType of the unit to be added
     BWAPI::UnitType marine = BWAPI::UnitTypes::Terran_Marine;
 
-    // The player to add this unit to, specified by an IDType
-    IDType player = Players::Player_One;
+    // The player to add this unit to, specified by an PlayerID
+    size_t player = Players::Player_One;
 
     // A Position, measured in Pixel coordinates
     Position p(0,0);
@@ -37,8 +37,8 @@ GameState getSampleState()
     state.addUnit(getSampleUnit());
 
     // Or it can be added to the state via unit construction parameters
-    state.addUnit(BWAPI::UnitTypes::Terran_Marine, Players::Player_One, Position(10,10));
-    state.addUnit(BWAPI::UnitTypes::Protoss_Dragoon, Players::Player_Two, Position(40,40));
+    state.addUnit(Unit(BWAPI::UnitTypes::Terran_Marine, Players::Player_One, Position(10,10)));
+    state.addUnit(Unit(BWAPI::UnitTypes::Protoss_Dragoon, Players::Player_Two, Position(40,40)));
 
     // Units added with those 2 functions will be given a unique unitID inside GameState
     // If you require setting your own unique unitID for a unit, for example when translating a BWAPI::Broodwar state to GameState
@@ -49,14 +49,10 @@ GameState getSampleState()
     // Set the unitID
     u.setUnitID(5);
 
-    // Add it to the state and tell it not to change the unitID.
-    // If a state contains two units with the same ID, an error will occur
-    state.addUnitWithID(u);
-
     return state;
 }
 
-Map getSampleMap()
+std::shared_ptr<Map> getSampleMap()
 {
     // Maps are used to constrain the movement of Units on a battlefield
 
@@ -68,15 +64,15 @@ Map getSampleMap()
     // Example: A Map of size 32*32 BuildTiles has size 128*128 WalkTiles or 1024*1024 pixels
     
     // The Map object constructor takes in size coordinates in BWAPI BuildTile resolution    
-    Map smallMap(32, 32);
+    std::shared_ptr<Map> smallMap(new Map(32, 32));
 
     // We can set the walkable values of WalkTile resolution via
     // void setMapData(const size_t & buildTileX, const size_t & buildTileY, const bool val)
-    smallMap.setMapData(21, 98, false);
+    smallMap->setMapData(21, 98, false);
 
     // The default map sets all tiles to walkable, with an upper-left boundary of (0,0) and a lower-right boundary of (x,y)
     // We can query whether or not a unit can walk at a given position 
-    bool canWalkHere = smallMap.isWalkable(Position(100, 30));
+    bool canWalkHere = smallMap->isWalkable(Position(100, 30));
 
     // You can also construct a Map from a BWAPI::Game object, if you are using this code from within a bot
     // Map gameMap(BWAPI::BroodWar)
@@ -87,7 +83,7 @@ Map getSampleMap()
 
     // We can set the Map of a GameState via a pointer to the map, as Map objects can be quite large:
     GameState state(getSampleState());
-    state.setMap(&smallMap);
+    state.setMap(smallMap);
 
     return smallMap;
 }
@@ -95,7 +91,7 @@ Map getSampleMap()
 // When dealing with players, use a shared pointer, it's safer
 // PlayerPtr is a boost::shared_pointer wrapper for Player *
 
-PlayerPtr getSamplePlayer(const IDType playerID)
+PlayerPtr getSamplePlayer(const size_t playerID)
 {
     // Player is the base class for all Player objects
     //
@@ -107,26 +103,20 @@ PlayerPtr getSamplePlayer(const IDType playerID)
     return attackClosest;
 }
 
-std::vector<Action> getSamplePlayerActionsFromState()
+Move getSamplePlayerActionsFromState()
 {
     // get our sample player
-    IDType currentPlayerID = Players::Player_One;
+    size_t currentPlayerID = Players::Player_One;
     PlayerPtr myPlayer = getSamplePlayer(currentPlayerID);
 
     // Construct a blank vector of Actions, which are individual unit moves
-    std::vector<Action> move;
+    Move move;
 
     // Get a state
     GameState state = getSampleState();
 
-    // Construct a MoveArray. This structure will hold all the legal moves for each unit possible for this state
-    MoveArray moveArray;
-
-    // Generate the moves possible by currentPlayer from state into moveArray
-    state.generateMoves(moveArray, currentPlayerID);
-
-    // Call getMoves with these arguments
-    myPlayer->getMoves(state, moveArray, move);
+    // Call getMove with these arguments
+    myPlayer->getMove(state, move);
     
     return move;
 }
@@ -153,7 +143,7 @@ void runSampleGame()
     GameState finalState = g.getState();
 
     // you can now evaluate the state however you wish. let's use an LTD2 evaluation from the point of view of player one
-    StateEvalScore score = finalState.eval(Players::Player_One, EvaluationMethods::LTD2);
+    StateEvalScore score = Eval::Eval(finalState, Players::Player_One, EvaluationMethods::LTD2);
 
     // StateEvalScore has two components, a numerical score and a number of Movement actions performed by each player
     // with this evaluation, positive val means win, negative means loss, 0 means tie

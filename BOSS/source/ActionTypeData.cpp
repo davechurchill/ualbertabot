@@ -48,7 +48,8 @@ ActionTypeData::ActionTypeData(BWAPI::UnitType t, const ActionID id)
         t == BWAPI::UnitTypes::Zerg_Lurker ||
         t == BWAPI::UnitTypes::Zerg_Guardian ||
         t == BWAPI::UnitTypes::Zerg_Sunken_Colony ||
-        t == BWAPI::UnitTypes::Zerg_Spore_Colony)
+        t == BWAPI::UnitTypes::Zerg_Spore_Colony ||
+        t == BWAPI::UnitTypes::Zerg_Devourer)
     {
         morphed = true;
     }
