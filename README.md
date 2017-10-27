@@ -1,3 +1,7 @@
+NOTE: UAlbertaBot is no longer being actively maintained due to [CommandCenter] bot now being able to play both BW and SC2. I highly recommend using it instead.
+
+
+
 UAlbertaBot - StarCraft AI Competition Bot
 
 Author:  David Churchill (dave.churchill@gmail.com)
