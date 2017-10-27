@@ -1,4 +1,4 @@
-NOTE: UAlbertaBot is no longer being actively maintained due to [CommandCenter] bot now being able to play both BW and SC2. I highly recommend using it instead.
+NOTE: UAlbertaBot is no longer being actively maintained due to [CommandCenter](https://github.com/davechurchill/commandcenter/) bot now being able to play both BW and SC2. I highly recommend using it instead.
 
 
 
