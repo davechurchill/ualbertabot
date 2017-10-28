@@ -181,6 +181,9 @@
     <ClCompile Include="..\Source\commands\BWAPICommandExecutor.cpp">
       <Filter>commands</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\commands\UnitCommandExecutor.cpp">
+      <Filter>commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="common">
@@ -431,6 +434,9 @@
       <Filter>commands</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\commands\BWAPICommandExecutor.h">
+      <Filter>commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\commands\UnitCommandExecutor.h">
       <Filter>commands</Filter>
     </ClInclude>
   </ItemGroup>

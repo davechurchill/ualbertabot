@@ -6,12 +6,13 @@
 #include "Micro.h"
 #include "BotFactory.h"
 #include <commands\BWAPICommandExecutor.h>
+#include <commands\UnitCommandExecutor.h>
 
 using namespace UAlbertaBot;
 using namespace AKBot;
 
 UAlbertaBot_Tournament::UAlbertaBot_Tournament(
-	const BotConfiguration& configuration,
+	BotConfiguration& configuration,
 	shared_ptr<BaseLocationManager> baseLocationManager,
 	shared_ptr<AutoObserver> autoObserver,
 	shared_ptr<StrategyManager> strategyManager,
@@ -31,7 +32,9 @@ UAlbertaBot_Tournament::UAlbertaBot_Tournament(
 	, _gameCommander(std::move(gameCommander))
 {
 	// parse the configuration file for the bot's strategies
-	
+
+	auto unitCommandExecutor = std::make_unique<UnitCommandExecutor>(configuration.Debug);
+	_commandManager.registerExecutor(std::move(unitCommandExecutor));
 	auto executor = std::make_unique<BWAPICommandExecutor>(BWAPI::BroodwarPtr);
 	_commandManager.registerExecutor(std::move(executor));
 }
