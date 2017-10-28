@@ -7,6 +7,7 @@
 #include "BotFactory.h"
 #include <commands\BWAPICommandExecutor.h>
 #include <commands\UnitCommandExecutor.h>
+#include <commands\ProductionCommandExecutor.h>
 
 using namespace UAlbertaBot;
 using namespace AKBot;
@@ -35,6 +36,8 @@ UAlbertaBot_Tournament::UAlbertaBot_Tournament(
 
 	auto unitCommandExecutor = std::make_unique<UnitCommandExecutor>(configuration.Debug);
 	_commandManager.registerExecutor(std::move(unitCommandExecutor));
+	auto productionCommandExecutor = std::make_unique<ProductionCommandExecutor>(configuration.Debug);
+	_commandManager.registerExecutor(std::move(productionCommandExecutor));
 	auto executor = std::make_unique<BWAPICommandExecutor>(BWAPI::BroodwarPtr);
 	_commandManager.registerExecutor(std::move(executor));
 }

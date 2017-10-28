@@ -184,6 +184,9 @@
     <ClCompile Include="..\Source\commands\UnitCommandExecutor.cpp">
       <Filter>commands</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\commands\ProductionCommandExecutor.cpp">
+      <Filter>commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="common">
@@ -437,6 +440,9 @@
       <Filter>commands</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\commands\UnitCommandExecutor.h">
+      <Filter>commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\commands\ProductionCommandExecutor.h">
       <Filter>commands</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,7 +1,9 @@
 #include "UnitCommandExecutor.h"
 
-void toggle(bool& value) {
-	value = !value;
+namespace {
+	void toggle(bool& value) {
+		value = !value;
+	}
 }
 
 AKBot::UnitCommandExecutor::UnitCommandExecutor(BotDebugConfiguration& debugConfiguration)
