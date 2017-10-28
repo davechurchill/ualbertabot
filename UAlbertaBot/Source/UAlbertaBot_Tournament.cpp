@@ -5,6 +5,7 @@
 #include "UnitUtil.h"
 #include "Micro.h"
 #include "BotFactory.h"
+#include <commands\BWAPICommandExecutor.h>
 
 using namespace UAlbertaBot;
 using namespace AKBot;
@@ -30,6 +31,9 @@ UAlbertaBot_Tournament::UAlbertaBot_Tournament(
 	, _gameCommander(std::move(gameCommander))
 {
 	// parse the configuration file for the bot's strategies
+	
+	auto executor = std::make_unique<BWAPICommandExecutor>(BWAPI::BroodwarPtr);
+	_commandManager.registerExecutor(std::move(executor));
 }
 
 UAlbertaBot_Tournament::~UAlbertaBot_Tournament()
@@ -172,7 +176,7 @@ void UAlbertaBot_Tournament::onUnitMorph(BWAPI::Unit unit)
 
 void UAlbertaBot_Tournament::onSendText(std::string text) 
 { 
-    BWAPI::Broodwar->sendText("%s", text.c_str());
+	_commandManager.execute(text);
 }
 
 void UAlbertaBot_Tournament::onUnitCreate(BWAPI::Unit unit)

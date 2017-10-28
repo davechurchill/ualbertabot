@@ -13,9 +13,11 @@
 #include "CombatCommander.h"
 #include "BOSSManager.h"
 #include "BWAPIScreenCanvas.h"
+#include <commands\CommandManager.h>
 
 namespace UAlbertaBot
 {
+	using AKBot::CommandManager;
 
 class UAlbertaBot_Tournament : public BotModule
 {
@@ -30,6 +32,7 @@ class UAlbertaBot_Tournament : public BotModule
 	shared_ptr<CombatCommander> _combatCommander;
 	AKBot::BWAPIScreenCanvas _canvas;
 	shared_ptr<AKBot::GameDebug> _gameDebug;
+	CommandManager _commandManager;
 
 	void drawDebugInformation(AKBot::ScreenCanvas& _canvas);
 public:
@@ -47,17 +50,17 @@ public:
 	UAlbertaBot_Tournament(const UAlbertaBot_Tournament&) = delete;
     ~UAlbertaBot_Tournament();
 
-    void	onStart();
-    void	onFrame();
-    void	onEnd(bool isWinner);
-    void	onUnitDestroy(BWAPI::Unit unit);
-    void	onUnitMorph(BWAPI::Unit unit);
-    void	onSendText(std::string text);
-    void	onUnitCreate(BWAPI::Unit unit);
-    void	onUnitComplete(BWAPI::Unit unit);
-    void	onUnitShow(BWAPI::Unit unit);
-    void	onUnitHide(BWAPI::Unit unit);
-    void	onUnitRenegade(BWAPI::Unit unit);
+    void	onStart() override;
+    void	onFrame() override;
+    void	onEnd(bool isWinner) override;
+    void	onUnitDestroy(BWAPI::Unit unit) override;
+    void	onUnitMorph(BWAPI::Unit unit) override;
+    void	onSendText(std::string text) override;
+    void	onUnitCreate(BWAPI::Unit unit) override;
+    void	onUnitComplete(BWAPI::Unit unit) override;
+    void	onUnitShow(BWAPI::Unit unit) override;
+    void	onUnitHide(BWAPI::Unit unit) override;
+    void	onUnitRenegade(BWAPI::Unit unit) override;
 
     const shared_ptr<UnitInfoManager> UnitInfo() const;
 	AKBot::ScreenCanvas& getCanvas();
