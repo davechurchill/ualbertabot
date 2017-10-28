@@ -9,6 +9,9 @@ void AKBot::CommandManager::registerExecutor(std::unique_ptr<CommandExecutor>&& 
 void AKBot::CommandManager::execute(std::string command)
 {
 	for (auto&& item : _executors) {
-		item->onCommand(command);
+		if (item->isSupported(command)) {
+			item->onCommand(command);
+			return;
+		}
 	}
 }
