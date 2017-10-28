@@ -19,103 +19,109 @@
     <Filter Include="TestLib">
       <UniqueIdentifier>{9ce128c7-b7c0-40ee-a6fd-0cdb3fcf5745}</UniqueIdentifier>
     </Filter>
+    <Filter Include="commands">
+      <UniqueIdentifier>{f4222d05-2802-43ad-b636-3606ed15ebb5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\AkBot.Tests\stdafx.cpp">
+    <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\AkBot.Tests\unittest1.cpp">
+    <ClCompile Include="unittest1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\AkBot.Tests\Shared\BulletShared.cpp">
+    <ClCompile Include="Shared\BulletShared.cpp">
       <Filter>Shared</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\AkBot.Tests\Shared\ForceShared.cpp">
+    <ClCompile Include="Shared\ForceShared.cpp">
       <Filter>Shared</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\AkBot.Tests\Shared\GameShared.cpp">
+    <ClCompile Include="Shared\GameShared.cpp">
       <Filter>Shared</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\AkBot.Tests\Shared\PlayerShared.cpp">
+    <ClCompile Include="Shared\PlayerShared.cpp">
       <Filter>Shared</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\AkBot.Tests\Shared\RegionShared.cpp">
+    <ClCompile Include="Shared\RegionShared.cpp">
       <Filter>Shared</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\AkBot.Tests\Shared\UnitShared.cpp">
+    <ClCompile Include="Shared\UnitShared.cpp">
       <Filter>Shared</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\AkBot.Tests\TestLib\GameImpl.cpp">
+    <ClCompile Include="TestLib\GameImpl.cpp">
       <Filter>TestLib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\AkBot.Tests\TestLib\PlayerImpl.cpp">
+    <ClCompile Include="TestLib\PlayerImpl.cpp">
       <Filter>TestLib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\AkBot.Tests\TestLib\RegionImpl.cpp">
+    <ClCompile Include="TestLib\RegionImpl.cpp">
       <Filter>TestLib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\AkBot.Tests\TestLib\UnitImpl.cpp">
+    <ClCompile Include="TestLib\UnitImpl.cpp">
       <Filter>TestLib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\AkBot.Tests\TestLib\BulletImpl.cpp">
+    <ClCompile Include="TestLib\BulletImpl.cpp">
       <Filter>TestLib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\AkBot.Tests\TestLib\ForceImpl.cpp">
+    <ClCompile Include="TestLib\ForceImpl.cpp">
       <Filter>TestLib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\AkBot.Tests\BotConfigurationTest.cpp">
+    <ClCompile Include="BotConfigurationTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\AkBot.Tests\BaseLocationManagerTest.cpp">
+    <ClCompile Include="BaseLocationManagerTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\AkBot.Tests\NullLogger.cpp">
+    <ClCompile Include="NullLogger.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CommandManagerTest.cpp">
+      <Filter>commands</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\AkBot.Tests\stdafx.h">
+    <ClInclude Include="stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\AkBot.Tests\targetver.h">
+    <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\AkBot.Tests\Shared\Templates.h">
+    <ClInclude Include="Shared\Templates.h">
       <Filter>Shared</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\AkBot.Tests\TestLib\ForceImpl.h">
+    <ClInclude Include="TestLib\ForceImpl.h">
       <Filter>TestLib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\AkBot.Tests\TestLib\GameImpl.h">
+    <ClInclude Include="TestLib\GameImpl.h">
       <Filter>TestLib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\AkBot.Tests\TestLib\PlayerImpl.h">
+    <ClInclude Include="TestLib\PlayerImpl.h">
       <Filter>TestLib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\AkBot.Tests\TestLib\RegionImpl.h">
+    <ClInclude Include="TestLib\RegionImpl.h">
       <Filter>TestLib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\AkBot.Tests\TestLib\UnitImpl.h">
+    <ClInclude Include="TestLib\UnitImpl.h">
       <Filter>TestLib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\AkBot.Tests\TestLib\BulletImpl.h">
+    <ClInclude Include="TestLib\BulletImpl.h">
       <Filter>TestLib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\AkBot.Tests\TestLib\Convenience.h">
+    <ClInclude Include="TestLib\Convenience.h">
       <Filter>TestLib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\AkBot.Tests\PlainOpponentView.h">
+    <ClInclude Include="PlainOpponentView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\AkBot.Tests\NullLogger.h">
+    <ClInclude Include="NullLogger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\AkBot.Tests\AK_Config.json">
+    <None Include="AK_Config.json">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\..\AkBot.Tests\Config_WithError.json">
+    <None Include="Config_WithError.json">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

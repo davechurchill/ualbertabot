@@ -175,6 +175,9 @@
     <ClCompile Include="..\Source\BotConfiguration.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\commands\CommandManager.cpp">
+      <Filter>commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="common">
@@ -200,6 +203,11 @@
     </Filter>
     <Filter Include="debug">
       <UniqueIdentifier>{2c31dc4d-e116-48d4-ba2c-5956cbcc5d1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="commands">
+      <UniqueIdentifier>{d3abcc85-41d9-4149-b1cf-01b5ee7e70be}</UniqueIdentifier>
+      <Extensions>
+      </Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -412,6 +420,12 @@
     </ClInclude>
     <ClInclude Include="..\Source\BotConfiguration.h">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\commands\CommandExecutor.h">
+      <Filter>commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\commands\CommandManager.h">
+      <Filter>commands</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

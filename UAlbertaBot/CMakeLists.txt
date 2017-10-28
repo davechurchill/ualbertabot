@@ -66,6 +66,7 @@ add_definitions(-DNOMINMAX)
 
 add_library(AKBot 
     ${AKBot_SOURCES}
+    source/commands/CommandManager.cpp
 	${AKBot_DEBUG_SOURCES}
 	#${BWAPILib_SOURCES}
 	#${BWAPIClient_SOURCES}
@@ -73,7 +74,6 @@ add_library(AKBot
 )
 target_include_directories(AKBot BEFORE PUBLIC
 	${BWAPI_INCLUDE_DIR}
-    source
 )
 
 add_library(AKBot::Lib ALIAS AKBot)
