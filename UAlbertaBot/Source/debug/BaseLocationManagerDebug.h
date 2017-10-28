@@ -4,6 +4,7 @@
 #include "ScreenCanvas.h"
 #include "OpponentView.h"
 #include "DebugInfoProvider.h"
+#include "BotConfiguration.h"
 
 namespace AKBot
 {
@@ -19,11 +20,13 @@ namespace AKBot
 		std::shared_ptr<OpponentView> _opponentView;
 		shared_ptr<BaseLocationManager> _baseLocationManager;
 		shared_ptr<MapTools> _map;
+		const BotDebugConfiguration& _debugConfiguration;
 	public:
 		BaseLocationManagerDebug(
 			shared_ptr<OpponentView> opponentView,
 			shared_ptr<BaseLocationManager> baseLocationManager,
-			shared_ptr<MapTools> map);
+			shared_ptr<MapTools> map,
+			const BotDebugConfiguration& debugConfiguration);
 		void draw(AKBot::ScreenCanvas& canvas) override;
 		void drawBase(const BaseLocation& base, AKBot::ScreenCanvas& canvas, std::function<bool(BWAPI::TilePosition tile)> isBuildableTile) const;
 	};

@@ -132,15 +132,15 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;UNITTESTPRJ="$(ProjectDir)..\..\AkBot.Tests";NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;UNITTESTPRJ="$(ProjectDir)";NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
-      <AdditionalIncludeDirectories>$(BWAPI_DIR)/include;$(SolutionDir)..\..\UAlbertaBot\Source\;$(SolutionDir)..\..\AKBot.Tests\TestLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BWAPI_DIR)/include;$(SolutionDir)..\..\UAlbertaBot\Source\;$(SolutionDir)TestLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPI.lib;$(Configuration)/SparCraft/SparCraft.lib;$(Configuration)/BOSS/BOSS.lib;../bin/AKBot_lib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPI.lib;$(Configuration)/SparCraft/SparCraft.lib;$(Configuration)/BOSS/BOSS.lib;../UAlbertaBot/bin/AKBot_lib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -153,7 +153,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPId.lib;$(Configuration)/SparCraft/SparCraft_d.lib;$(Configuration)/BOSS/BOSS_d.lib;../bin/AKBot_lib_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPId.lib;$(SolutionDir)$(Configuration)/SparCraft/SparCraft_d.lib;$(SolutionDir)$(Configuration)/BOSS/BOSS_d.lib;../UAlbertaBot/bin/AKBot_lib_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_SSCAIT|Win32'">
@@ -166,7 +166,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPId.lib;$(Configuration)/SparCraft/SparCraft_d.lib;$(Configuration)/BOSS/BOSS_d.lib;../bin/AKBot_lib_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPId.lib;$(SolutionDir)$(Configuration)/SparCraft/SparCraft_d.lib;$(SolutionDir)$(Configuration)/BOSS/BOSS_d.lib;../UAlbertaBot/bin/AKBot_lib_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -211,46 +211,47 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\AkBot.Tests\BaseLocationManagerTest.cpp" />
-    <ClCompile Include="..\..\AkBot.Tests\BotConfigurationTest.cpp" />
-    <ClCompile Include="..\..\AkBot.Tests\NullLogger.cpp" />
-    <ClCompile Include="..\..\AkBot.Tests\Shared\BulletShared.cpp" />
-    <ClCompile Include="..\..\AkBot.Tests\Shared\ForceShared.cpp" />
-    <ClCompile Include="..\..\AkBot.Tests\Shared\GameShared.cpp" />
-    <ClCompile Include="..\..\AkBot.Tests\Shared\PlayerShared.cpp" />
-    <ClCompile Include="..\..\AkBot.Tests\Shared\RegionShared.cpp" />
-    <ClCompile Include="..\..\AkBot.Tests\Shared\UnitShared.cpp" />
-    <ClCompile Include="..\..\AkBot.Tests\stdafx.cpp" />
-    <ClCompile Include="..\..\AkBot.Tests\TestLib\BulletImpl.cpp" />
-    <ClCompile Include="..\..\AkBot.Tests\TestLib\ForceImpl.cpp" />
-    <ClCompile Include="..\..\AkBot.Tests\TestLib\GameImpl.cpp" />
-    <ClCompile Include="..\..\AkBot.Tests\TestLib\PlayerImpl.cpp" />
-    <ClCompile Include="..\..\AkBot.Tests\TestLib\RegionImpl.cpp" />
-    <ClCompile Include="..\..\AkBot.Tests\TestLib\UnitImpl.cpp" />
-    <ClCompile Include="..\..\AkBot.Tests\unittest1.cpp" />
+    <ClCompile Include="BaseLocationManagerTest.cpp" />
+    <ClCompile Include="BotConfigurationTest.cpp" />
+    <ClCompile Include="CommandManagerTest.cpp" />
+    <ClCompile Include="NullLogger.cpp" />
+    <ClCompile Include="Shared\BulletShared.cpp" />
+    <ClCompile Include="Shared\ForceShared.cpp" />
+    <ClCompile Include="Shared\GameShared.cpp" />
+    <ClCompile Include="Shared\PlayerShared.cpp" />
+    <ClCompile Include="Shared\RegionShared.cpp" />
+    <ClCompile Include="Shared\UnitShared.cpp" />
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="TestLib\BulletImpl.cpp" />
+    <ClCompile Include="TestLib\ForceImpl.cpp" />
+    <ClCompile Include="TestLib\GameImpl.cpp" />
+    <ClCompile Include="TestLib\PlayerImpl.cpp" />
+    <ClCompile Include="TestLib\RegionImpl.cpp" />
+    <ClCompile Include="TestLib\UnitImpl.cpp" />
+    <ClCompile Include="unittest1.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="AkBot.vcxproj">
+    <ProjectReference Include="..\UAlbertaBot\VisualStudio\AkBot.vcxproj">
       <Project>{572af06a-4078-4c5a-abce-b29c84050e6d}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\AkBot.Tests\NullLogger.h" />
-    <ClInclude Include="..\..\AkBot.Tests\PlainOpponentView.h" />
-    <ClInclude Include="..\..\AkBot.Tests\Shared\Templates.h" />
-    <ClInclude Include="..\..\AkBot.Tests\stdafx.h" />
-    <ClInclude Include="..\..\AkBot.Tests\targetver.h" />
-    <ClInclude Include="..\..\AkBot.Tests\TestLib\BulletImpl.h" />
-    <ClInclude Include="..\..\AkBot.Tests\TestLib\Convenience.h" />
-    <ClInclude Include="..\..\AkBot.Tests\TestLib\ForceImpl.h" />
-    <ClInclude Include="..\..\AkBot.Tests\TestLib\GameImpl.h" />
-    <ClInclude Include="..\..\AkBot.Tests\TestLib\PlayerImpl.h" />
-    <ClInclude Include="..\..\AkBot.Tests\TestLib\RegionImpl.h" />
-    <ClInclude Include="..\..\AkBot.Tests\TestLib\UnitImpl.h" />
+    <ClInclude Include="NullLogger.h" />
+    <ClInclude Include="PlainOpponentView.h" />
+    <ClInclude Include="Shared\Templates.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="TestLib\BulletImpl.h" />
+    <ClInclude Include="TestLib\Convenience.h" />
+    <ClInclude Include="TestLib\ForceImpl.h" />
+    <ClInclude Include="TestLib\GameImpl.h" />
+    <ClInclude Include="TestLib\PlayerImpl.h" />
+    <ClInclude Include="TestLib\RegionImpl.h" />
+    <ClInclude Include="TestLib\UnitImpl.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\AkBot.Tests\AK_Config.json" />
-    <None Include="..\..\AkBot.Tests\Config_WithError.json" />
+    <None Include="AK_Config.json" />
+    <None Include="Config_WithError.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

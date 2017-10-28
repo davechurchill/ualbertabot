@@ -6,10 +6,12 @@ namespace AKBot
 	BaseLocationManagerDebug::BaseLocationManagerDebug(
 		std::shared_ptr<OpponentView> opponentView,
 		shared_ptr<BaseLocationManager> baseLocationManager,
-		shared_ptr<MapTools> map)
+		shared_ptr<MapTools> map,
+		const BotDebugConfiguration& debugConfiguration)
 		: _opponentView(opponentView)
 		, _baseLocationManager(baseLocationManager)
 		, _map(map)
+		, _debugConfiguration(debugConfiguration)
 	{
 	}
 	void BaseLocationManagerDebug::draw(AKBot::ScreenCanvas & canvas)
@@ -88,31 +90,34 @@ namespace AKBot
 			canvas.drawCircleMap(position, 10, BWAPI::Colors::Red, true);
 		}
 
-		auto & closestTiles = base.getClosestTiles();
-		if (false) for (size_t i = 0; i<200 && i < closestTiles.size(); ++i)
+		if (_debugConfiguration.DrawBaseTiles)
 		{
-			const BWAPI::TilePosition & tile = closestTiles[i];
-
-			BWAPI::Position pos = BWAPI::Position(tile) + BWAPI::Position(16, 16);
-
-			if (!pos.isValid())
+			auto & closestTiles = base.getClosestTiles();
+			for (size_t i = 0; i < 200 && i < closestTiles.size(); ++i)
 			{
-				continue;
-			}
+				const BWAPI::TilePosition & tile = closestTiles[i];
 
-			BWAPI::Color color = isBuildableTile(tile) ? BWAPI::Colors::Green : BWAPI::Colors::Red;
-			if (isBuildableTile(tile) && !_map->isDepotBuildableTile(tile))
-			{
-				color = BWAPI::Colors::Blue;
-			}
+				BWAPI::Position pos = BWAPI::Position(tile) + BWAPI::Position(16, 16);
 
-			if (_map->isBuildable(tile, BWAPI::UnitTypes::Terran_Command_Center))
-			{
-				color = BWAPI::Colors::Purple;
-			}
+				if (!pos.isValid())
+				{
+					continue;
+				}
 
-			canvas.drawCircleMap(pos, 5, color, false);
-			canvas.drawTextMap(pos, "%d", base.getGroundTileDistance(pos));
+				BWAPI::Color color = isBuildableTile(tile) ? BWAPI::Colors::Green : BWAPI::Colors::Red;
+				if (isBuildableTile(tile) && !_map->isDepotBuildableTile(tile))
+				{
+					color = BWAPI::Colors::Blue;
+				}
+
+				if (_map->isBuildable(tile, BWAPI::UnitTypes::Terran_Command_Center))
+				{
+					color = BWAPI::Colors::Purple;
+				}
+
+				canvas.drawCircleMap(pos, 5, color, false);
+				canvas.drawTextMap(pos, "%d", base.getGroundTileDistance(pos));
+			}
 		}
 
 		int ccWidth = BWAPI::UnitTypes::Terran_Command_Center.tileWidth() * 32;

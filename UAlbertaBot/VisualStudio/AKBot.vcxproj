@@ -39,6 +39,12 @@
     <ClCompile Include="..\Source\BWAPIScreenCanvas.cpp" />
     <ClCompile Include="..\Source\CombatCommander.cpp" />
     <ClCompile Include="..\Source\CombatSimulation.cpp" />
+    <ClCompile Include="..\Source\commands\BaseLocationCommandExecutor.cpp" />
+    <ClCompile Include="..\Source\commands\BWAPICommandExecutor.cpp" />
+    <ClCompile Include="..\Source\commands\CommandManager.cpp" />
+    <ClCompile Include="..\Source\commands\ProductionCommandExecutor.cpp" />
+    <ClCompile Include="..\Source\commands\UnitCommandExecutor.cpp" />
+    <ClCompile Include="..\Source\commands\WorkerCommandExecutor.cpp" />
     <ClCompile Include="..\Source\Common.cpp" />
     <ClCompile Include="..\Source\DebugTools.cpp" />
     <ClCompile Include="..\Source\debug\BaseLocationManagerDebug.cpp" />
@@ -103,6 +109,13 @@
     <ClInclude Include="..\Source\BWAPIScreenCanvas.h" />
     <ClInclude Include="..\Source\CombatCommander.h" />
     <ClInclude Include="..\Source\CombatSimulation.h" />
+    <ClInclude Include="..\Source\commands\BaseLocationCommandExecutor.h" />
+    <ClInclude Include="..\Source\commands\BWAPICommandExecutor.h" />
+    <ClInclude Include="..\Source\commands\CommandExecutor.h" />
+    <ClInclude Include="..\Source\commands\CommandManager.h" />
+    <ClInclude Include="..\Source\commands\ProductionCommandExecutor.h" />
+    <ClInclude Include="..\Source\commands\UnitCommandExecutor.h" />
+    <ClInclude Include="..\Source\commands\WorkerCommandExecutor.h" />
     <ClInclude Include="..\Source\Common.h" />
     <ClInclude Include="..\Source\DebugTools.h" />
     <ClInclude Include="..\Source\debug\BaseLocationManagerDebug.h" />

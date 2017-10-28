@@ -5,12 +5,17 @@
 #include "UnitUtil.h"
 #include "Micro.h"
 #include "BotFactory.h"
+#include <commands\BWAPICommandExecutor.h>
+#include <commands\UnitCommandExecutor.h>
+#include <commands\ProductionCommandExecutor.h>
+#include <commands\WorkerCommandExecutor.h>
+#include <commands\BaseLocationCommandExecutor.h>
 
 using namespace UAlbertaBot;
 using namespace AKBot;
 
 UAlbertaBot_Tournament::UAlbertaBot_Tournament(
-	const BotConfiguration& configuration,
+	BotConfiguration& configuration,
 	shared_ptr<BaseLocationManager> baseLocationManager,
 	shared_ptr<AutoObserver> autoObserver,
 	shared_ptr<StrategyManager> strategyManager,
@@ -30,6 +35,17 @@ UAlbertaBot_Tournament::UAlbertaBot_Tournament(
 	, _gameCommander(std::move(gameCommander))
 {
 	// parse the configuration file for the bot's strategies
+
+	auto unitCommandExecutor = std::make_unique<UnitCommandExecutor>(configuration.Debug);
+	_commandManager.registerExecutor(std::move(unitCommandExecutor));
+	auto productionCommandExecutor = std::make_unique<ProductionCommandExecutor>(configuration.Debug);
+	_commandManager.registerExecutor(std::move(productionCommandExecutor));
+	auto workerCommandExecutor = std::make_unique<WorkerCommandExecutor>(configuration.Debug);
+	_commandManager.registerExecutor(std::move(workerCommandExecutor));
+	auto baseLocationCommandExecutor = std::make_unique<BaseLocationCommandExecutor>(configuration.Debug);
+	_commandManager.registerExecutor(std::move(baseLocationCommandExecutor));
+	auto executor = std::make_unique<BWAPICommandExecutor>(BWAPI::BroodwarPtr);
+	_commandManager.registerExecutor(std::move(executor));
 }
 
 UAlbertaBot_Tournament::~UAlbertaBot_Tournament()
@@ -172,7 +188,7 @@ void UAlbertaBot_Tournament::onUnitMorph(BWAPI::Unit unit)
 
 void UAlbertaBot_Tournament::onSendText(std::string text) 
 { 
-    BWAPI::Broodwar->sendText("%s", text.c_str());
+	_commandManager.execute(text);
 }
 
 void UAlbertaBot_Tournament::onUnitCreate(BWAPI::Unit unit)

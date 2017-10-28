@@ -107,14 +107,14 @@
     <RunCodeAnalysis Condition="'$(Configuration)|$(Platform)'=='Release_SSCAIT|Win32'">false</RunCodeAnalysis>
     <CodeAnalysisIgnoreGeneratedCode Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CodeAnalysisIgnoreGeneratedCode>
     <CodeAnalysisIgnoreGeneratedCode Condition="'$(Configuration)|$(Platform)'=='Release_SSCAIT|Win32'">false</CodeAnalysisIgnoreGeneratedCode>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AKBot_d</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug_SSCAIT|Win32'">AKBot_d</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AKBot_exe_d</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug_SSCAIT|Win32'">AKBot_exe_d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <TargetName>AKBot</TargetName>
+    <TargetName>AKBot_exe</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_SSCAIT|Win32'">
-    <TargetName>AKBot</TargetName>
+    <TargetName>AKBot_exe</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
