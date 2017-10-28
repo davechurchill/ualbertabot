@@ -80,7 +80,7 @@ BotPlayer AKBot::createBot(const std::string& mode, BotConfiguration& configurat
 		auto& debugConfiguration = configuration.Debug;
 		std::vector<shared_ptr<DebugInfoProvider>> providers = {
 			std::shared_ptr<DebugInfoProvider>(new AKBot::GameCommanderDebug(gameCommander, logger, debugConfiguration, configuration.Strategy)),
-			std::shared_ptr<DebugInfoProvider>(new AKBot::BaseLocationManagerDebug(opponentView, baseLocationManager, mapTools)),
+			std::shared_ptr<DebugInfoProvider>(new AKBot::BaseLocationManagerDebug(opponentView, baseLocationManager, mapTools, configuration.Debug)),
 			std::shared_ptr<DebugInfoProvider>(new AKBot::UnitInfoManagerDebug(opponentView, unitInfoManager, debugConfiguration)),
 			std::shared_ptr<DebugInfoProvider>(new AKBot::WorkerManagerDebug(workerData, debugConfiguration)),
 			std::shared_ptr<DebugInfoProvider>(new AKBot::MapToolsDebug(mapTools, baseLocationManager, debugConfiguration)),
