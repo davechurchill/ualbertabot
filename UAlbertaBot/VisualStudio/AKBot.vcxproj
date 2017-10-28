@@ -43,6 +43,7 @@
     <ClCompile Include="..\Source\commands\CommandManager.cpp" />
     <ClCompile Include="..\Source\commands\ProductionCommandExecutor.cpp" />
     <ClCompile Include="..\Source\commands\UnitCommandExecutor.cpp" />
+    <ClCompile Include="..\Source\commands\WorkerCommandExecutor.cpp" />
     <ClCompile Include="..\Source\Common.cpp" />
     <ClCompile Include="..\Source\DebugTools.cpp" />
     <ClCompile Include="..\Source\debug\BaseLocationManagerDebug.cpp" />
@@ -112,6 +113,7 @@
     <ClInclude Include="..\Source\commands\CommandManager.h" />
     <ClInclude Include="..\Source\commands\ProductionCommandExecutor.h" />
     <ClInclude Include="..\Source\commands\UnitCommandExecutor.h" />
+    <ClInclude Include="..\Source\commands\WorkerCommandExecutor.h" />
     <ClInclude Include="..\Source\Common.h" />
     <ClInclude Include="..\Source\DebugTools.h" />
     <ClInclude Include="..\Source\debug\BaseLocationManagerDebug.h" />
