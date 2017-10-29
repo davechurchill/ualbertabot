@@ -1,9 +1,9 @@
 #pragma once
-#include "../StrategyExecutor.h"
+#include "../BaseStrategyExecutor.h"
 
 namespace AKBot
 {
-	class DarkTemplarRush : public StrategyExecutor
+	class DarkTemplarRush : public BaseStrategyExecutor
 	{
 	public:
 		void getBuildOrderGoal(MetaPairVector& goal, int currentFrame) const final;

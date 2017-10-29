@@ -232,6 +232,9 @@
     <ClCompile Include="..\Source\commands\StrategyManagerCommandExecutor.cpp">
       <Filter>commands</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\strategies\BaseStrategyExecutor.cpp">
+      <Filter>strategies</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="common">
@@ -428,9 +431,6 @@
     <ClInclude Include="..\Source\DefaultPlayerLocationProvider.h">
       <Filter>map</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Strategy.h">
-      <Filter>global</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\Distance.h">
       <Filter>util</Filter>
     </ClInclude>
@@ -549,6 +549,12 @@
     </ClInclude>
     <ClInclude Include="..\Source\commands\StrategyManagerCommandExecutor.h">
       <Filter>commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\StrategyConfiguration.h">
+      <Filter>global</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\strategies\BaseStrategyExecutor.h">
+      <Filter>strategies</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

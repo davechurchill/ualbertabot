@@ -53,7 +53,7 @@ const BuildOrder & StrategyManager::getOpeningBookBuildOrder() const
     // look for the build order in the build order map
 	if (buildOrderIt != std::end(_strategies))
     {
-        return (*buildOrderIt).second._buildOrder;
+        return buildOrderIt->second->getOpeningBuildOrder();
     }
     else
     {
@@ -100,9 +100,15 @@ const bool StrategyManager::shouldExpandNow(int currentFrame) const
 	return false;
 }
 
-void StrategyManager::addStrategy(const std::string & name, Strategy & strategy)
+void StrategyManager::overrideStrategyOpenBuildOrder(const std::string & name, StrategyConfiguration & strategy)
 {
-    _strategies[name] = strategy;
+    _strategyConfigurations.try_emplace(name, strategy);
+	auto& iterator = _strategies.find(name);
+	if (iterator == std::end(_strategies)) {
+		return;
+	}
+
+	iterator->second->loadOpeningBuildOrder(strategy._buildOrder);
 }
 
 const MetaPairVector StrategyManager::getBuildOrderGoal(int currentFrame) const
@@ -315,8 +321,8 @@ void StrategyManager::readResults()
 
             //_logger.log("Results Found: %s %d %d", strategyName.c_str(), wins, losses);
 
-			auto strategyPtr = _strategies.find(strategyName);
-            if (strategyPtr == _strategies.end())
+			auto strategyPtr = _strategyConfigurations.find(strategyName);
+            if (strategyPtr == _strategyConfigurations.end())
             {
                 //_logger.log("Warning: Results file has unknown Strategy: %s", strategyName.c_str());
             }
@@ -361,9 +367,9 @@ void StrategyManager::writeResults()
 
     std::stringstream ss;
 
-    for (auto & kv : _strategies)
+    for (auto & kv : _strategyConfigurations)
     {
-        const Strategy & strategy = kv.second;
+        const StrategyConfiguration & strategy = kv.second;
 
         ss << strategy._name << " " << strategy._wins << " " << strategy._losses << "\n";
     }
@@ -378,16 +384,26 @@ void StrategyManager::onEnd(const bool isWinner)
         return;
     }
 
+	const auto& strategyIterator = _strategyConfigurations.find(_strategyName);
+	if (std::end(_strategyConfigurations) == strategyIterator) {
+		return;
+	}
+
     if (isWinner)
     {
-        _strategies[_strategyName]._wins++;
+		strategyIterator->second._wins++;
     }
     else
     {
-        _strategies[_strategyName]._losses++;
+		strategyIterator->second._losses++;
     }
 
     writeResults();
+}
+
+void UAlbertaBot::StrategyManager::registerStrategy(std::string strategyName, std::unique_ptr<StrategyExecutor>&& executor)
+{
+	_strategies.try_emplace(strategyName, std::move(executor));
 }
 
 void StrategyManager::setLearnedStrategy()
@@ -400,12 +416,17 @@ void StrategyManager::setLearnedStrategy()
         return;
     }
 
-    const std::string & strategyName = _strategyName;
-    Strategy & currentStrategy = _strategies[strategyName];
+	const auto& strategyIterator = _strategyConfigurations.find(_strategyName);
+	if (std::end(_strategyConfigurations) == strategyIterator) {
+		return;
+	}
+
+    const auto& currentStrategy = strategyIterator->second;
 
     int totalGamesPlayed = 0;
     int strategyGamesPlayed = currentStrategy._wins + currentStrategy._losses;
-    double winRate = strategyGamesPlayed > 0 ? currentStrategy._wins / static_cast<double>(strategyGamesPlayed) : 0;
+    double winRate = strategyGamesPlayed > 0 
+		? currentStrategy._wins / static_cast<double>(strategyGamesPlayed) : 0;
 
     // if we are using an enemy specific strategy
     if (_strategyConfiguration.FoundEnemySpecificStrategy)
@@ -422,7 +443,7 @@ void StrategyManager::setLearnedStrategy()
     }
 
     // get the total number of games played so far with this race
-    for (auto & kv : _strategies)
+    for (auto & kv : _strategyConfigurations)
     {
         auto& strategy = kv.second;
         if (strategy._race == _opponentView->self()->getRace())
@@ -435,9 +456,9 @@ void StrategyManager::setLearnedStrategy()
     double C = 0.5;
     std::string bestUCBStrategy;
     double bestUCBStrategyVal = std::numeric_limits<double>::lowest();
-    for (auto & kv : _strategies)
+    for (auto & kv : _strategyConfigurations)
     {
-        Strategy & strategy = kv.second;
+        StrategyConfiguration & strategy = kv.second;
         if (strategy._race != _opponentView->self()->getRace())
         {
             continue;

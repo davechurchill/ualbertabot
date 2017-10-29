@@ -3,7 +3,8 @@
 #include "Common.h"
 #include <BWAPI/Player.h>
 #include "BuildOrder.h"
-#include "Strategy.h"
+#include "StrategyConfiguration.h"
+#include "strategies\StrategyExecutor.h"
 #include "UnitInfoManager.h"
 #include "BaseLocationManager.h"
 #include "Logger.h"
@@ -11,10 +12,12 @@
 
 namespace UAlbertaBot
 {
+	using AKBot::StrategyExecutor;
 
 class StrategyManager
 {
-    std::map<std::string,Strategy> _strategies;
+    std::map<std::string, StrategyConfiguration> _strategyConfigurations;
+	std::map<std::string, std::unique_ptr<StrategyExecutor>> _strategies;
     int                             _totalGamesPlayed;
     BuildOrder                      _emptyBuildOrder;
 	shared_ptr<UnitInfoManager>			_unitInfo;
@@ -42,7 +45,9 @@ public:
 
     void update();
     void onEnd(const bool isWinner);
-    void addStrategy(const std::string & name,Strategy & strategy);
+	/* Register strategy executor */
+	void registerStrategy(std::string strategyName, std::unique_ptr<StrategyExecutor>&& executor);
+    void overrideStrategyOpenBuildOrder(const std::string & name, StrategyConfiguration & strategy);
     void setLearnedStrategy();
 	void setPreferredStrategy(std::string strategy);
     void readResults();

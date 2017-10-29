@@ -63,6 +63,7 @@
     <ClCompile Include="..\Source\DistanceMap.cpp" />
     <ClCompile Include="..\Source\GameCommander.cpp" />
     <ClCompile Include="..\Source\ScreenCanvas.cpp" />
+    <ClCompile Include="..\Source\strategies\BaseStrategyExecutor.cpp" />
     <ClCompile Include="..\Source\strategies\protoss\DarkTemplarRush.cpp" />
     <ClCompile Include="..\Source\strategies\protoss\DragoonRush.cpp" />
     <ClCompile Include="..\Source\strategies\protoss\ZealotDrop.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="..\Source\PlayerLocationProvider.h" />
     <ClInclude Include="..\Source\Rect.h" />
     <ClInclude Include="..\Source\ScreenCanvas.h" />
+    <ClInclude Include="..\Source\strategies\BaseStrategyExecutor.h" />
     <ClInclude Include="..\Source\strategies\protoss\DarkTemplarRush.h" />
     <ClInclude Include="..\Source\strategies\protoss\DragoonRush.h" />
     <ClInclude Include="..\Source\strategies\protoss\ZealotDrop.h" />
@@ -168,7 +170,7 @@
     <ClInclude Include="..\Source\strategies\zerg\ThreeHatchScourge.h" />
     <ClInclude Include="..\Source\strategies\zerg\TwoHatchHydralisk.h" />
     <ClInclude Include="..\Source\strategies\zerg\ZergelingRush.h" />
-    <ClInclude Include="..\Source\Strategy.h" />
+    <ClInclude Include="..\Source\StrategyConfiguration.h" />
     <ClInclude Include="..\Source\UAlbertaBot_Arena.h" />
     <ClInclude Include="..\Source\UAlbertaBot_Tournament.h" />
     <ClInclude Include="..\Source\UnitHandler.h" />
