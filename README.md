@@ -10,7 +10,6 @@ For mamaging dependencies used vcpkg
 
     # install dependencies
     vcpkg install boost
-    vcpkg install boost-di
 
 This is additional dependencies to Dave Churchill's bot.
 
@@ -20,10 +19,11 @@ For testing locally you need only VS2017, for these you should use Debug and Rel
 If you want made submission to SSCAIT, you have to install VS2013 Update 5 from https://www.visualstudio.com/vs/older-downloads/.
 Community version should be enough for building. To make install minimal, you could uncheck all ceckboxes in the installer.
 
-For actual building go to `UAlbertaBot\VisualStudio` and open `UAlbertaBot.sln`
+For actual building go to `UAlbertaBot\VisualStudio` and open `AKBot.sln`
 
 ## Documentation
-Please check out the [Wiki](https://github.com/davechurchill/ualbertabot/wiki) for full instructions and documentation!
+Please check out the [UAlbertaBot Wiki](https://github.com/davechurchill/ualbertabot/wiki) for full instructions and documentation
+and [Wiki of current project](https://github.com/kant2002/ualbertabot/wiki) for additional information which specific for this project!
 
 ## Additional code configuration
 
