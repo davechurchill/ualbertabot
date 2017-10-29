@@ -54,8 +54,8 @@ namespace AKBot
 
 		y += 12;
 
-		canvas.drawTextScreen(x, y, "\x04Strategy:");
-		canvas.drawTextScreen(x + 50, y, "\x03%s %s", _strategyConfiguration.StrategyName.c_str(), _strategyConfiguration.FoundEnemySpecificStrategy ? "(enemy specific)" : "");
+		canvas.drawTextScreen(x, y, "\x04Initial Strategy:");
+		canvas.drawTextScreen(x + 100, y, "\x03%s %s", _strategyConfiguration.StrategyName.c_str(), _strategyConfiguration.FoundEnemySpecificStrategy ? "(enemy specific)" : "");
 		canvas.setTextSize();
 		y += 12;
 
@@ -67,6 +67,12 @@ namespace AKBot
 		auto frameCount = BWAPI::Broodwar->getFrameCount();
 		canvas.drawTextScreen(x, y, "\x04Time:");
 		canvas.drawTextScreen(x + 50, y, "\x04%d %4dm %3ds", frameCount, (int)(frameCount / (23.8 * 60)), (int)((int)(frameCount / 23.8) % 60));
+		y += 12;
+
+		canvas.drawTextScreen(x, y, "\x04Current Strategy:");
+		canvas.drawTextScreen(x + 100, y, "\x03%s", _gameCommander->getProductionManager()->getStrategyManager()->getPreferredStrategy().c_str());
+		canvas.setTextSize();
+		y += 12;
 	}
 
 }

@@ -361,8 +361,8 @@ void ParseUtils::ParseStrategy(
 	// Parse all the Strategies
 	for (auto strategyPair : strategyOptions.Strategies)
 	{
-		Strategy strategyInstance(strategyPair.first, strategyPair.second.getRace(), strategyPair.second);
-		strategyManager->addStrategy(strategyPair.first, strategyInstance);
+		StrategyConfiguration strategyInstance(strategyPair.first, strategyPair.second.getRace(), strategyPair.second);
+		strategyManager->overrideStrategyOpenBuildOrder(strategyPair.first, strategyInstance);
 	}
 }
 

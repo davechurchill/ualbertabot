@@ -193,6 +193,48 @@
     <ClCompile Include="..\Source\commands\BaseLocationCommandExecutor.cpp">
       <Filter>commands</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\strategies\protoss\ZealotRush.cpp">
+      <Filter>strategies\protoss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\strategies\protoss\DragoonRush.cpp">
+      <Filter>strategies\protoss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\strategies\protoss\ZealotDrop.cpp">
+      <Filter>strategies\protoss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\strategies\protoss\DarkTemplarRush.cpp">
+      <Filter>strategies\protoss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\strategies\terrain\MarineRush.cpp">
+      <Filter>strategies\terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\strategies\terrain\FourBarracksMarine.cpp">
+      <Filter>strategies\terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\strategies\terrain\VultureRush.cpp">
+      <Filter>strategies\terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\strategies\terrain\TankPush.cpp">
+      <Filter>strategies\terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\strategies\zerg\ZergelingRush.cpp">
+      <Filter>strategies\zerg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\strategies\zerg\TwoHatchHydralisk.cpp">
+      <Filter>strategies\zerg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\strategies\zerg\ThreeHatchMutalisk.cpp">
+      <Filter>strategies\zerg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\strategies\zerg\ThreeHatchScourge.cpp">
+      <Filter>strategies\zerg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\commands\StrategyManagerCommandExecutor.cpp">
+      <Filter>commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\strategies\BaseStrategyExecutor.cpp">
+      <Filter>strategies</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="common">
@@ -223,6 +265,18 @@
       <UniqueIdentifier>{d3abcc85-41d9-4149-b1cf-01b5ee7e70be}</UniqueIdentifier>
       <Extensions>
       </Extensions>
+    </Filter>
+    <Filter Include="strategies">
+      <UniqueIdentifier>{6da4c204-5815-413f-95dd-e5fff93d0cec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="strategies\protoss">
+      <UniqueIdentifier>{e0975f66-5051-4929-9386-89fd92dc8d50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="strategies\terrain">
+      <UniqueIdentifier>{9fd1e159-60b3-4d29-a0e8-94fd1d1f5d70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="strategies\zerg">
+      <UniqueIdentifier>{05eb8e58-d05b-43b0-ab93-d798ae21f897}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -377,9 +431,6 @@
     <ClInclude Include="..\Source\DefaultPlayerLocationProvider.h">
       <Filter>map</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Strategy.h">
-      <Filter>global</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\Distance.h">
       <Filter>util</Filter>
     </ClInclude>
@@ -456,6 +507,54 @@
     </ClInclude>
     <ClInclude Include="..\Source\commands\BaseLocationCommandExecutor.h">
       <Filter>commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\strategies\StrategyExecutor.h">
+      <Filter>strategies</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\strategies\protoss\ZealotRush.h">
+      <Filter>strategies\protoss</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\strategies\protoss\DragoonRush.h">
+      <Filter>strategies\protoss</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\strategies\protoss\ZealotDrop.h">
+      <Filter>strategies\protoss</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\strategies\protoss\DarkTemplarRush.h">
+      <Filter>strategies\protoss</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\strategies\terrain\MarineRush.h">
+      <Filter>strategies\terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\strategies\terrain\FourBarracksMarine.h">
+      <Filter>strategies\terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\strategies\terrain\VultureRush.h">
+      <Filter>strategies\terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\strategies\terrain\TankPush.h">
+      <Filter>strategies\terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\strategies\zerg\ZergelingRush.h">
+      <Filter>strategies\zerg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\strategies\zerg\TwoHatchHydralisk.h">
+      <Filter>strategies\zerg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\strategies\zerg\ThreeHatchMutalisk.h">
+      <Filter>strategies\zerg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\strategies\zerg\ThreeHatchScourge.h">
+      <Filter>strategies\zerg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\commands\StrategyManagerCommandExecutor.h">
+      <Filter>commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\StrategyConfiguration.h">
+      <Filter>global</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\strategies\BaseStrategyExecutor.h">
+      <Filter>strategies</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

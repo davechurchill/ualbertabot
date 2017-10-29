@@ -11,11 +11,44 @@
 #include "debug\WorkerManagerDebug.h"
 #include "debug\MapToolsDebug.h"
 #include "debug\DebugInfoProvider.h"
+#include "strategies\protoss\ZealotRush.h"
+#include "strategies\protoss\ZealotDrop.h"
+#include "strategies\protoss\DragoonRush.h"
+#include "strategies\protoss\DarkTemplarRush.h"
+#include "strategies\terrain\MarineRush.h"
+#include "strategies\terrain\FourBarracksMarine.h"
+#include "strategies\terrain\TankPush.h"
+#include "strategies\terrain\VultureRush.h"
+#include "strategies\zerg\ZergelingRush.h"
+#include "strategies\zerg\TwoHatchHydralisk.h"
+#include "strategies\zerg\ThreeHatchMutalisk.h"
+#include "strategies\zerg\ThreeHatchScourge.h"
 
 #include "ParseUtils.h"
 
 using namespace AKBot;
 using namespace UAlbertaBot;
+
+void registerWellKnownStrategies(StrategyManager& strategyManager) {
+	// Well known Protoss strategies.
+	strategyManager.registerStrategy("Protoss_ZealotRush", std::make_unique<ZealotRush>());
+	strategyManager.registerStrategy("Protoss_Drop", std::make_unique<ZealotDrop>());
+	strategyManager.registerStrategy("Protoss_DragoonRush", std::make_unique<DragoonRush>());
+	strategyManager.registerStrategy("Protoss_DTRush", std::make_unique<DarkTemplarRush>());
+
+	// Well known Terrain strategies
+	strategyManager.registerStrategy("Terran_MarineRush", std::make_unique<MarineRush>());
+	strategyManager.registerStrategy("Terran_4RaxMarines", std::make_unique<FourBarracksMarine>());
+	strategyManager.registerStrategy("Terran_TankPush", std::make_unique<TankPush>());
+	strategyManager.registerStrategy("Terran_VultureRush", std::make_unique<VultureRush>());
+
+	// Well known Zerg strategies
+	strategyManager.registerStrategy("Zerg_ZerglingRush", std::make_unique<ZergelingRush>());
+	strategyManager.registerStrategy("Zerg_9Pool", std::make_unique<ZergelingRush>());
+	strategyManager.registerStrategy("Zerg_2HatchHydra", std::make_unique<TwoHatchHydralisk>());
+	strategyManager.registerStrategy("Zerg_3HatchMuta", std::make_unique<ThreeHatchMutalisk>());
+	strategyManager.registerStrategy("Zerg_3HatchScourge", std::make_unique<ThreeHatchScourge>());
+}
 
 BotPlayer AKBot::createBot(const std::string& mode, BotConfiguration& configuration, const std::string& configurationFile) {
 	if (mode == "Tournament") {
@@ -35,6 +68,7 @@ BotPlayer AKBot::createBot(const std::string& mode, BotConfiguration& configurat
 			baseLocationManager,
 			logger,
 			configuration.Strategy));
+		registerWellKnownStrategies(*strategyManager);
 		auto mapInformation = std::shared_ptr<MapInformation>(new BWAPIMapInformation(game));
 		auto mapTools = std::shared_ptr<MapTools>(new MapTools(mapInformation, logger));
 		auto combatCommander = std::shared_ptr<CombatCommander>(new CombatCommander(
