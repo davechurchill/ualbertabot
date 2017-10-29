@@ -10,6 +10,7 @@
 #include <commands\ProductionCommandExecutor.h>
 #include <commands\WorkerCommandExecutor.h>
 #include <commands\BaseLocationCommandExecutor.h>
+#include <commands\StrategyManagerCommandExecutor.h>
 
 using namespace UAlbertaBot;
 using namespace AKBot;
@@ -44,6 +45,9 @@ UAlbertaBot_Tournament::UAlbertaBot_Tournament(
 	_commandManager.registerExecutor(std::move(workerCommandExecutor));
 	auto baseLocationCommandExecutor = std::make_unique<BaseLocationCommandExecutor>(configuration.Debug);
 	_commandManager.registerExecutor(std::move(baseLocationCommandExecutor));
+	auto strategyManagerCommandExecutor = std::make_unique<StrategyManagerCommandExecutor>(*_strategyManager.get());
+	_commandManager.registerExecutor(std::move(strategyManagerCommandExecutor));
+
 	auto executor = std::make_unique<BWAPICommandExecutor>(BWAPI::BroodwarPtr);
 	_commandManager.registerExecutor(std::move(executor));
 }

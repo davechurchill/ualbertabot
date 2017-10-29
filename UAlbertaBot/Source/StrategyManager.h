@@ -46,6 +46,7 @@ public:
     void setLearnedStrategy();
 	void setPreferredStrategy(std::string strategy);
     void readResults();
+	const std::string& getPreferredStrategy() const;
     const MetaPairVector getBuildOrderGoal(int currentFrame) const;
     const BuildOrder & getOpeningBookBuildOrder() const;
 };
