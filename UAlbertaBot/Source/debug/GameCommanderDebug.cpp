@@ -48,7 +48,7 @@ namespace AKBot
 		canvas.drawTextScreen(x, y, "\x04Players:");
 		if (enemy != nullptr)
 		{
-			canvas.drawTextScreen(x + 50, y, "%c%s \x04vs. %c%s", self->getTextColor(), self->getName().c_str(),
+			canvas.drawTextScreen(x + 100, y, "%c%s \x04vs. %c%s", self->getTextColor(), self->getName().c_str(),
 				enemy->getTextColor(), enemy->getName().c_str());
 		}
 
@@ -60,13 +60,13 @@ namespace AKBot
 		y += 12;
 
 		canvas.drawTextScreen(x, y, "\x04Map:");
-		canvas.drawTextScreen(x + 50, y, "\x03%s", BWAPI::Broodwar->mapFileName().c_str());
+		canvas.drawTextScreen(x + 100, y, "\x03%s", BWAPI::Broodwar->mapFileName().c_str());
 		canvas.setTextSize();
 		y += 12;
 
 		auto frameCount = BWAPI::Broodwar->getFrameCount();
 		canvas.drawTextScreen(x, y, "\x04Time:");
-		canvas.drawTextScreen(x + 50, y, "\x04%d %4dm %3ds", frameCount, (int)(frameCount / (23.8 * 60)), (int)((int)(frameCount / 23.8) % 60));
+		canvas.drawTextScreen(x + 100, y, "\x04%d %4dm %3ds", frameCount, (int)(frameCount / (23.8 * 60)), (int)((int)(frameCount / 23.8) % 60));
 		y += 12;
 
 		canvas.drawTextScreen(x, y, "\x04Current Strategy:");

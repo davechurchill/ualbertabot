@@ -289,7 +289,7 @@ bool Squad::needsToRegroup(shared_ptr<MapTools> map, int currentFrame)
 		BWAPI::Broodwar->drawTextScreen(240, 280, "Combat Sim : %lf", sim.getLastScore());
 	}
 
-	bool retreat = score < 0;
+	bool retreat = score < _microConfiguration.RetreatThreshold;
     int switchTime = 100;
     bool waiting = false;
 

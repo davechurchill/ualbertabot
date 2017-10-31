@@ -14,6 +14,7 @@ const size_t AttackPriority = 1;
 const size_t BaseDefensePriority = 2;
 const size_t ScoutDefensePriority = 3;
 const size_t DropPriority = 4;
+const size_t SecondaryAttackPriority = 1;
 
 CombatCommander::CombatCommander(
 	shared_ptr<BaseLocationManager> baseLocationManager,
@@ -58,6 +59,13 @@ void CombatCommander::initializeSquads()
 		"Attack Enemy Base");
 	_squadData.addSquad("MainAttack", mainAttackOrder, AttackPriority);
 
+	SquadOrder secondaryAttackOrder(
+		SquadOrderTypes::Attack,
+		getMainAttackLocation(startPosition),
+		800,
+		"Attack Enemy Base");
+	_squadData.addSquad("SecondaryAttack", secondaryAttackOrder, SecondaryAttackPriority);
+
     BWAPI::Position ourBasePosition = BWAPI::Position(_opponentView->self()->getStartLocation());
 
     // the scout defense squad will handle chasing the enemy worker scout
@@ -73,7 +81,7 @@ void CombatCommander::initializeSquads()
 
 bool CombatCommander::isSquadUpdateFrame(int currentFrame) const
 {
-	return currentFrame % 10 == 0;
+	return currentFrame % _microConfiguration.SquadUpdateFramePeriod == 0;
 }
 
 void CombatCommander::update(const std::vector<BWAPI::Unit> & combatUnits, int currentFrame)
@@ -118,27 +126,37 @@ void CombatCommander::updateIdleSquad()
 void CombatCommander::updateAttackSquads()
 {
     Squad & mainAttackSquad = _squadData.getSquad("MainAttack");
+	updateAttackSquad(mainAttackSquad, 190);
+	Squad & secondaryAttackSquad = _squadData.getSquad("SecondaryAttack");
+	updateAttackSquad(secondaryAttackSquad, 10);
+}
+
+void UAlbertaBot::CombatCommander::updateAttackSquad(UAlbertaBot::Squad & mainAttackSquad, int maxUnitsInSquad)
+{
+	if (mainAttackSquad.getUnits().size() > maxUnitsInSquad) {
+		return;
+	}
 
 	auto hydralistCount = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hydralisk);
-    for (auto & unit : _combatUnits)
-    {
-        if (unit->getType() == BWAPI::UnitTypes::Zerg_Scourge
+	for (auto & unit : _combatUnits)
+	{
+		if (unit->getType() == BWAPI::UnitTypes::Zerg_Scourge
 			&& hydralistCount < 30)
-        {
-            continue;
-        }
+		{
+			continue;
+		}
 
-        // get every unit of a lower priority and put it into the attack squad
-        if (!unit->getType().isWorker() 
-			&& (unit->getType() != BWAPI::UnitTypes::Zerg_Overlord) 
+		// get every unit of a lower priority and put it into the attack squad
+		if (!unit->getType().isWorker()
+			&& (unit->getType() != BWAPI::UnitTypes::Zerg_Overlord)
 			&& _squadData.canAssignUnitToSquad(unit, mainAttackSquad))
-        {
-            _squadData.assignUnitToSquad(unit, mainAttackSquad);
-        }
-    }
+		{
+			_squadData.assignUnitToSquad(unit, mainAttackSquad);
+		}
+	}
 
-    SquadOrder mainAttackOrder(SquadOrderTypes::Attack, getMainAttackLocation(mainAttackSquad.calcCenter()), 800, "Attack Enemy Base");
-    mainAttackSquad.setSquadOrder(mainAttackOrder);
+	SquadOrder mainAttackOrder(SquadOrderTypes::Attack, getMainAttackLocation(mainAttackSquad.calcCenter()), 800, "Attack Enemy Base");
+	mainAttackSquad.setSquadOrder(mainAttackOrder);
 }
 
 void CombatCommander::updateDropSquads()
