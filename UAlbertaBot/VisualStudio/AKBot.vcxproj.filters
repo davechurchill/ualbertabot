@@ -235,6 +235,9 @@
     <ClCompile Include="..\Source\strategies\BaseStrategyExecutor.cpp">
       <Filter>strategies</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\commands\MicroCommandExecutor.cpp">
+      <Filter>commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="common">
@@ -555,6 +558,9 @@
     </ClInclude>
     <ClInclude Include="..\Source\strategies\BaseStrategyExecutor.h">
       <Filter>strategies</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\commands\MicroCommandExecutor.h">
+      <Filter>commands</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

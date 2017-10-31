@@ -119,6 +119,8 @@ struct BotMicroConfiguration
 	int CombatRadius = 1000;     // radius of combat to consider units for Micro Search
 	int CombatRegroupRadius = 300;      // radius of units around frontmost unit we consider in regroup calculation
 	int UnitNearEnemyRadius = 600;      // radius to consider a unit 'near' to an enemy unit
+	double RetreatThreshold = 0.0;
+	int SquadUpdateFramePeriod = 10;
 };
 
 struct BotMacroConfiguration

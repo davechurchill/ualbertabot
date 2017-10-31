@@ -27,6 +27,7 @@ class CombatCommander
     void            updateScoutDefenseSquad(int currentFrame);
 	void            updateDefenseSquads(int currentFrame);
 	void            updateAttackSquads();
+	void updateAttackSquad(UAlbertaBot::Squad & mainAttackSquad, int maxUnitsInSquad);
     void            updateDropSquads();
 	void            updateIdleSquad();
 	bool            isSquadUpdateFrame(int currentFrame) const;
