@@ -16,16 +16,62 @@ namespace AKBot
 	}
 	void BaseLocationManagerDebug::draw(AKBot::ScreenCanvas & canvas)
 	{
+		drawBases(canvas);
+		drawBasesSummary(canvas, 300, 100);
+		drawNextExpansion(canvas);
+	}
+
+	void BaseLocationManagerDebug::drawBases(AKBot::ScreenCanvas & canvas)
+	{
 		auto isBuildableTileCheck = [this](BWAPI::TilePosition tile)
 		{
 			return _map->isBuildableTile(tile);
 		};
 		for (auto baseLocation : _baseLocationManager->getBaseLocations())
 		{
-			// baseLocation->draw(canvas, isBuildableTileCheck);
 			drawBase(*baseLocation, canvas, isBuildableTileCheck);
 		}
+	}
 
+	void BaseLocationManagerDebug::drawBasesSummary(AKBot::ScreenCanvas & canvas, int x, int y)
+	{
+		canvas.drawTextScreen(x, y, "\x03 Id: \x1f Occupied By");
+		y += 12;
+		for (auto baseLocation : _baseLocationManager->getBaseLocations())
+		{
+			std::string owned;
+			bool firstLocation = true;
+			if (baseLocation->isOccupiedByPlayer(_opponentView->self())) {
+				if (firstLocation) {
+					owned = "me";
+					firstLocation = false;
+				}
+				else {
+					owned += ",me";
+				}
+			}
+
+			for (auto player : _opponentView->enemies()) {
+
+				if (baseLocation->isOccupiedByPlayer(player)) {
+					if (firstLocation) {
+						owned = player->getName();
+						firstLocation = false;
+					}
+					else {
+						owned += ",";
+						owned += player->getName();
+					}
+				}
+			}
+
+			canvas.drawTextScreen(x, y, "\x03 %d \x1f %s", baseLocation->getId(), owned.c_str());
+			y += 12;
+		}
+	}
+
+	void BaseLocationManagerDebug::drawNextExpansion(AKBot::ScreenCanvas & canvas)
+	{
 		auto self = _opponentView->self();
 		BWAPI::Position nextExpansionPosition(_baseLocationManager->getNextExpansion(self));
 

@@ -28,6 +28,9 @@ namespace AKBot
 			shared_ptr<MapTools> map,
 			const BotDebugConfiguration& debugConfiguration);
 		void draw(AKBot::ScreenCanvas& canvas) override;
+		void drawNextExpansion(AKBot::ScreenCanvas & canvas);
+		void drawBases(AKBot::ScreenCanvas & canvas);
+		void drawBasesSummary(AKBot::ScreenCanvas & canvas, int x, int y);
 		void drawBase(const BaseLocation& base, AKBot::ScreenCanvas& canvas, std::function<bool(BWAPI::TilePosition tile)> isBuildableTile) const;
 	};
 }

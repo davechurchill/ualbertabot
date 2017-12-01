@@ -71,16 +71,16 @@ void ScoutManager::moveScouts(int currentFrame)
 	// get the enemy base location, if we have one
 	const BaseLocation * enemyBaseLocation = _baseLocationManager->getPlayerStartingBaseLocation(_opponentView->defaultEnemy());
         
-	// if we know where the enemy region is and where our scout is
-	if (_workerScout && (enemyBaseLocation != nullptr))
-	{
-		harrasEnemyBaseIfPossible(enemyBaseLocation, scoutHP, currentFrame);		
-	}
-
 	// Enemy base is unexplored
 	if (!enemyBaseLocation)
 	{
-        if (exploreEnemyBases(currentFrame))
+		// if we know where the enemy region is and where our scout is
+		if (_workerScout)
+		{
+			harrasEnemyBaseIfPossible(enemyBaseLocation, scoutHP, currentFrame);		
+		}
+
+	    if (exploreEnemyBases(currentFrame))
 		{
 			return;
 		}
@@ -107,10 +107,19 @@ bool ScoutManager::exploreEnemyBases(int currentFrame)
 {
 	_scoutStatus = "Enemy base unknown, exploring";
 
-	// for each start location in the level
-	for (const auto startLocation : _baseLocationManager->getStartingBaseLocations())
+	// for each start location candidate in the level.
+	// This is deliberately created as list of location to explore, so these
+	// locations could be prioritized separately from existing information about base locations
+	auto enemyBaseLocationCandidates = _baseLocationManager->getStartingBaseLocations();
+	for (const auto startLocation : enemyBaseLocationCandidates)
 	{
 		// if we haven't explored it yet
+		// When we check just original depot tile position, this could lead to cases when scout reach the point
+		// and did not record fact that base is here. It is sometimes happens in the 3 player games.
+		// This is very significant error which lead to failure of discovery original enemy base.
+		// Possible workaround is create separate rule for checking if base location is explored 
+		// by exploring not single depot location, but instead any location near base, to be more confident.
+		// This lead to speed loss, but increase reliability.
 		if (!BWAPI::Broodwar->isExplored(startLocation->getDepotTilePosition()))
 		{
 			// assign a zergling to go scout it
