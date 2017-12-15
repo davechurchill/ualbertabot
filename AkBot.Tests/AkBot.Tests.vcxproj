@@ -134,13 +134,13 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;UNITTESTPRJ="$(ProjectDir)";NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
-      <AdditionalIncludeDirectories>$(BWAPI_DIR)/include;$(SolutionDir)..\..\UAlbertaBot\Source\;$(SolutionDir)TestLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)../../UAlbertaBot/source;$(SolutionDir)../../AkBot.Tests/TestLib;$(SolutionDir)../../AkBot.Tests/Shared;$(BWAPI_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPI.lib;$(Configuration)/SparCraft/SparCraft.lib;$(Configuration)/BOSS/BOSS.lib;../UAlbertaBot/bin/AKBot_lib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPI.lib;$(SolutionDir)$(Configuration)/SparCraft/SparCraft.lib;$(SolutionDir)$(Configuration)/BOSS/BOSS.lib;../UAlbertaBot/bin/AKBot_lib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -214,6 +214,7 @@
     <ClCompile Include="BaseLocationManagerTest.cpp" />
     <ClCompile Include="BotConfigurationTest.cpp" />
     <ClCompile Include="CommandManagerTest.cpp" />
+    <ClCompile Include="ExplorerManagerTest.cpp" />
     <ClCompile Include="NullLogger.cpp" />
     <ClCompile Include="Shared\BulletShared.cpp" />
     <ClCompile Include="Shared\ForceShared.cpp" />

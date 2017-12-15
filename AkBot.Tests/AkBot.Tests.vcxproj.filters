@@ -78,6 +78,9 @@
     <ClCompile Include="CommandManagerTest.cpp">
       <Filter>commands</Filter>
     </ClCompile>
+    <ClCompile Include="ExplorerManagerTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">

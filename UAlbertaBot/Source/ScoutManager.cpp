@@ -17,6 +17,7 @@ ScoutManager::ScoutManager(
 	, _opponentView(opponentView)
 	, _baseLocationManager(baseLocationManager)
 	, _mapTools(mapTools)
+	, _explorerManager([&](auto& tile) { return _mapTools->isExplored(tile); })
 {
 }
 
@@ -68,28 +69,31 @@ void ScoutManager::moveScouts(int currentFrame)
 
     int scoutHP = _workerScout->getHitPoints() + _workerScout->getShields();
     
-	// get the enemy base location, if we have one
-	const BaseLocation * enemyBaseLocation = _baseLocationManager->getPlayerStartingBaseLocation(_opponentView->defaultEnemy());
-        
+	// first we should ensure that all start bases is discovered
+	// only then harras them.
 	// Enemy base is unexplored
-	if (!enemyBaseLocation)
+	if (!nothingToExplore())
+	{
+		if (updateExplorationTargets(currentFrame))
+		{
+			return;
+		}
+	}
+	else
 	{
 		// if we know where the enemy region is and where our scout is
 		if (_workerScout)
 		{
-			harrasEnemyBaseIfPossible(enemyBaseLocation, scoutHP, currentFrame);		
-		}
+			const BaseLocation * enemyBaseLocation = _baseLocationManager->getPlayerStartingBaseLocation(_opponentView->defaultEnemy());
 
-	    if (exploreEnemyBases(currentFrame))
-		{
-			return;
+			harrasEnemyBaseIfPossible(enemyBaseLocation, scoutHP, currentFrame);		
 		}
 	}
 
     _previousScoutHP = scoutHP;
 }
 
-bool ScoutManager::allEnemyBasesExplored() const
+bool ScoutManager::nothingToExplore() const
 {
 	for (const auto& enemy : _opponentView->enemies())
 	{
@@ -103,7 +107,7 @@ bool ScoutManager::allEnemyBasesExplored() const
 	return true;
 }
 
-bool ScoutManager::exploreEnemyBases(int currentFrame)
+bool ScoutManager::updateExplorationTargets(int currentFrame)
 {
 	_scoutStatus = "Enemy base unknown, exploring";
 
@@ -113,19 +117,14 @@ bool ScoutManager::exploreEnemyBases(int currentFrame)
 	auto enemyBaseLocationCandidates = _baseLocationManager->getStartingBaseLocations();
 	for (const auto startLocation : enemyBaseLocationCandidates)
 	{
-		// if we haven't explored it yet
-		// When we check just original depot tile position, this could lead to cases when scout reach the point
-		// and did not record fact that base is here. It is sometimes happens in the 3 player games.
-		// This is very significant error which lead to failure of discovery original enemy base.
-		// Possible workaround is create separate rule for checking if base location is explored 
-		// by exploring not single depot location, but instead any location near base, to be more confident.
-		// This lead to speed loss, but increase reliability.
-		if (!BWAPI::Broodwar->isExplored(startLocation->getDepotTilePosition()))
-		{
-			// assign a zergling to go scout it
-			Micro::SmartMove(_workerScout, BWAPI::Position(startLocation->getDepotTilePosition()), currentFrame);
-			return true;
-		}
+		_explorerManager.addBaseLocation(startLocation->getDepotTilePosition());
+	}
+
+	if (_explorerManager.locationsToCheckCount() > 0)
+	{
+		auto positionToCheck = _explorerManager.locationsToCheck()[0];
+		Micro::SmartMove(_workerScout, BWAPI::Position(positionToCheck), currentFrame);
+		return true;
 	}
 	
 	return false;
