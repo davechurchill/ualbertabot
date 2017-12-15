@@ -4,6 +4,7 @@
 #include "MicroManager.h"
 #include "UnitHandler.h"
 #include "BaseLocationManager.h"
+#include "ExplorerManager.h"
 
 namespace UAlbertaBot
 {
@@ -11,6 +12,7 @@ namespace UAlbertaBot
 
 class ScoutManager 
 {
+	ExplorerManager _explorerManager;
 	shared_ptr<BaseLocationManager> _baseLocationManager;
 	BWAPI::Unit     _workerScout;
     std::string     _scoutStatus;
@@ -33,8 +35,8 @@ class ScoutManager
 	BWAPI::Unit     closestEnemyWorker();
     //void            followPerimeter();
 	void            moveScouts(int currentFrame);
-	bool exploreEnemyBases(int currentFrame);
-	bool allEnemyBasesExplored() const;
+	bool updateExplorationTargets(int currentFrame);
+	bool nothingToExplore() const;
 	void harrasEnemyBaseIfPossible(const BaseLocation * enemyBaseLocation, int scoutHP, int currentFrame);
     //void            calculateEnemyRegionVertices();
 

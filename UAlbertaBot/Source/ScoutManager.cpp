@@ -17,6 +17,7 @@ ScoutManager::ScoutManager(
 	, _opponentView(opponentView)
 	, _baseLocationManager(baseLocationManager)
 	, _mapTools(mapTools)
+	, _explorerManager([&](auto& tile) { return _mapTools->isExplored(tile); })
 {
 }
 
@@ -68,28 +69,31 @@ void ScoutManager::moveScouts(int currentFrame)
 
     int scoutHP = _workerScout->getHitPoints() + _workerScout->getShields();
     
-	// get the enemy base location, if we have one
-	const BaseLocation * enemyBaseLocation = _baseLocationManager->getPlayerStartingBaseLocation(_opponentView->defaultEnemy());
-        
-	// if we know where the enemy region is and where our scout is
-	if (_workerScout && (enemyBaseLocation != nullptr))
-	{
-		harrasEnemyBaseIfPossible(enemyBaseLocation, scoutHP, currentFrame);		
-	}
-
+	// first we should ensure that all start bases is discovered
+	// only then harras them.
 	// Enemy base is unexplored
-	if (!enemyBaseLocation)
+	if (!nothingToExplore())
 	{
-        if (exploreEnemyBases(currentFrame))
+		if (updateExplorationTargets(currentFrame))
 		{
 			return;
+		}
+	}
+	else
+	{
+		// if we know where the enemy region is and where our scout is
+		if (_workerScout)
+		{
+			const BaseLocation * enemyBaseLocation = _baseLocationManager->getPlayerStartingBaseLocation(_opponentView->defaultEnemy());
+
+			harrasEnemyBaseIfPossible(enemyBaseLocation, scoutHP, currentFrame);		
 		}
 	}
 
     _previousScoutHP = scoutHP;
 }
 
-bool ScoutManager::allEnemyBasesExplored() const
+bool ScoutManager::nothingToExplore() const
 {
 	for (const auto& enemy : _opponentView->enemies())
 	{
@@ -103,20 +107,24 @@ bool ScoutManager::allEnemyBasesExplored() const
 	return true;
 }
 
-bool ScoutManager::exploreEnemyBases(int currentFrame)
+bool ScoutManager::updateExplorationTargets(int currentFrame)
 {
 	_scoutStatus = "Enemy base unknown, exploring";
 
-	// for each start location in the level
-	for (const auto startLocation : _baseLocationManager->getStartingBaseLocations())
+	// for each start location candidate in the level.
+	// This is deliberately created as list of location to explore, so these
+	// locations could be prioritized separately from existing information about base locations
+	auto enemyBaseLocationCandidates = _baseLocationManager->getStartingBaseLocations();
+	for (const auto startLocation : enemyBaseLocationCandidates)
 	{
-		// if we haven't explored it yet
-		if (!BWAPI::Broodwar->isExplored(startLocation->getDepotTilePosition()))
-		{
-			// assign a zergling to go scout it
-			Micro::SmartMove(_workerScout, BWAPI::Position(startLocation->getDepotTilePosition()), currentFrame);
-			return true;
-		}
+		_explorerManager.addBaseLocation(startLocation->getDepotTilePosition());
+	}
+
+	if (_explorerManager.locationsToCheckCount() > 0)
+	{
+		auto positionToCheck = _explorerManager.locationsToCheck()[0];
+		Micro::SmartMove(_workerScout, BWAPI::Position(positionToCheck), currentFrame);
+		return true;
 	}
 	
 	return false;
