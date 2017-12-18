@@ -8,8 +8,9 @@ using namespace UAlbertaBot;
 DetectorManager::DetectorManager(
 	shared_ptr<AKBot::OpponentView> opponentView,
 	shared_ptr<MapTools> mapTools,
-	shared_ptr<BaseLocationManager> bases)
-    : MicroManager(opponentView, bases)
+	shared_ptr<BaseLocationManager> bases,
+	const BotMicroConfiguration& microConfiguration)
+    : MicroManager(opponentView, bases, microConfiguration)
 	, unitClosestToEnemy(nullptr)
 	, _mapTools(mapTools)
 { 

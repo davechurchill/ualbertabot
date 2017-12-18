@@ -18,6 +18,7 @@ class UnitInfoManager
     std::map<BWAPI::Player, UnitData> _unitData;
     std::map<BWAPI::Player, std::set<const BaseLocation *> >  _occupiedBaseLocations;
 	shared_ptr<AKBot::OpponentView> _opponentView;
+	bool _enemyHasCloakedUnits;
 
     void                    updateUnit(BWAPI::Unit unit);
     void                    updateUnitInfo();
@@ -48,6 +49,10 @@ public:
 
     const std::map<int, UnitInfo> & getUnitInfoMap(BWAPI::Player player) const;
     bool                    enemyHasCloakedUnits() const;
+	bool                    enemyHasCloakedUnitsNow() const;
+	
+	// Perform detection of cloacked units.
+	void detectCloackedUnits();
 	const UnitData &        getUnitData(BWAPI::Player player) const;
 
 };

@@ -4,10 +4,19 @@
 
 using namespace UAlbertaBot;
 
-MicroManager::MicroManager(shared_ptr<AKBot::OpponentView> opponentView, shared_ptr<BaseLocationManager> bases)
+MicroManager::MicroManager(
+	shared_ptr<AKBot::OpponentView> opponentView,
+	shared_ptr<BaseLocationManager> bases,
+	const BotMicroConfiguration& microConfiguration)
 	: bases(bases)
 	, opponentView(opponentView)
+	, _microConfiguration(microConfiguration)
 {
+}
+
+const BotMicroConfiguration& MicroManager::configuration() const
+{
+	return _microConfiguration;
 }
 
 void MicroManager::setUnits(const std::vector<BWAPI::Unit> & u) 
@@ -137,7 +146,7 @@ void MicroManager::regroup(shared_ptr<MapTools> map, const BWAPI::Position & reg
         {
             Micro::SmartMove(unit, ourBasePosition, currentFrame);
         }
-		else if (unit->getDistance(regroupPosition) > 100)
+		else if (unit->getDistance(regroupPosition) > _microConfiguration.MoveTargetThreshold)
 		{
 			// regroup it
 			Micro::SmartMove(unit, regroupPosition, currentFrame);

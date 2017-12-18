@@ -10,8 +10,11 @@
 using namespace UAlbertaBot;
 using UAlbertaBot::UnitUtil::GetClosestsUnitToTarget;
 
-MedicManager::MedicManager(shared_ptr<AKBot::OpponentView> opponentView, shared_ptr<BaseLocationManager> bases)
-	: MicroManager(opponentView, bases)
+MedicManager::MedicManager(
+	shared_ptr<AKBot::OpponentView> opponentView,
+	shared_ptr<BaseLocationManager> bases,
+	const BotMicroConfiguration& microConfiguration)
+	: MicroManager(opponentView, bases, microConfiguration)
 {
 }
 

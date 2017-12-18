@@ -3,6 +3,7 @@
 #include "Common.h"
 #include "SquadOrder.h"
 #include "BaseLocationManager.h"
+#include "BotConfiguration.h"
 
 namespace UAlbertaBot
 {
@@ -23,7 +24,7 @@ class MapTools;
 class MicroManager
 {
 	std::vector<BWAPI::Unit> _units;
-
+	const BotMicroConfiguration& _microConfiguration;
 protected:
 	
 	SquadOrder			order;
@@ -36,13 +37,16 @@ protected:
     
 
 public:
-						MicroManager(shared_ptr<AKBot::OpponentView> opponentView, shared_ptr<BaseLocationManager> bases);
+	MicroManager(
+		shared_ptr<AKBot::OpponentView> opponentView,
+		shared_ptr<BaseLocationManager> bases,
+		const BotMicroConfiguration& microConfiguration);
 
 	const std::vector<BWAPI::Unit> & getUnits() const;
 
 	void				setUnits(const std::vector<BWAPI::Unit> & u);
 	void				execute(shared_ptr<MapTools> map, const SquadOrder & order, int currentFrame);
 	void				regroup(shared_ptr<MapTools> map, const BWAPI::Position & regroupPosition, int currentFrame) const;
-
+	const BotMicroConfiguration& configuration() const;
 };
 }

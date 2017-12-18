@@ -121,6 +121,7 @@ struct BotMicroConfiguration
 	int UnitNearEnemyRadius = 600;      // radius to consider a unit 'near' to an enemy unit
 	double RetreatThreshold = 0.0;
 	int SquadUpdateFramePeriod = 10;
+	int MoveTargetThreshold = 100; // Starting from which distance we attempt to move to target location.
 };
 
 struct BotMacroConfiguration

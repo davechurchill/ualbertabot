@@ -5,80 +5,143 @@
 #include "Micro.h"
 
 using namespace UAlbertaBot;
+using AKBot::RangeUnitObservation;
 
 RangedManager::RangedManager(
 	shared_ptr<AKBot::OpponentView> opponentView,
 	shared_ptr<BaseLocationManager> bases,
 	const BotMicroConfiguration& microConfiguration)
-	: MicroManager(opponentView, bases)
-	, _microConfiguration(microConfiguration)
+	: MicroManager(opponentView, bases, microConfiguration)
+	, _rangeUnitTargets()
+	, _observations()
 { 
 }
 
 void RangedManager::executeMicro(const std::vector<BWAPI::Unit> & targets, int currentFrame)
 {
-	assignTargets(targets, currentFrame);
+	// if the order is to attack or defend
+	if (order.getType() == SquadOrderTypes::Attack || order.getType() == SquadOrderTypes::Defend)
+	{
+		const std::vector<BWAPI::Unit> & rangedUnits = getUnits();
+
+		assignTargets(rangedUnits, targets, currentFrame);
+		executePlan(currentFrame);
+	}
 }
 
-
-void RangedManager::assignTargets(const std::vector<BWAPI::Unit> & targets, int currentFrame)
+void RangedManager::populateRangeTargets(const std::vector<BWAPI::Unit> & targets)
 {
-    const std::vector<BWAPI::Unit> & rangedUnits = getUnits();
+	_rangeUnitTargets.clear();
+	std::copy_if(
+		targets.begin(),
+		targets.end(),
+		std::back_inserter(_rangeUnitTargets),
+		[](BWAPI::Unit u) { return u->isVisible(); });
+}
 
-	// figure out targets
-	std::vector<BWAPI::Unit> rangedUnitTargets;
-    std::copy_if(targets.begin(), targets.end(), std::inserter(rangedUnitTargets, rangedUnitTargets.end()), [](BWAPI::Unit u){ return u->isVisible(); });
+void RangedManager::collectObservations(const std::vector<BWAPI::Unit> & rangedUnits, const std::vector<BWAPI::Unit> & targets)
+{
+	_observations.clear();
 
-    for (auto & rangedUnit : rangedUnits)
+	for (auto & rangedUnit : rangedUnits)
 	{
 		// train sub units such as scarabs or interceptors
 		//trainSubUnits(rangedUnit);
+		auto hasRangedTargets = !_rangeUnitTargets.empty();
 
-		// if the order is to attack or defend
-		if (order.getType() == SquadOrderTypes::Attack || order.getType() == SquadOrderTypes::Defend) 
-        {
-			// if there are targets
-			if (!rangedUnitTargets.empty())
+		RangeUnitObservation observation;
+		observation.hasRangedTargets = hasRangedTargets;
+		observation.orderDistance = rangedUnit->getDistance(order.getPosition());
+		_observations[rangedUnit] = observation;
+	}
+}
+
+void RangedManager::generatePlan(const std::vector<BWAPI::Unit> & rangedUnits)
+{
+	for (auto & rangedUnit : rangedUnits)
+	{
+		RangeUnitObservation observation = _observations[rangedUnit];
+		observation.shouldMove = false;
+		observation.shouldAttack = false;
+		observation.shouldMutaDance = false;
+		observation.shouldKiteTarget = false;
+
+		// if there are targets
+		if (observation.hasRangedTargets)
+		{
+			// find the best target for this zealot
+			BWAPI::Unit target = getTarget(rangedUnit, _rangeUnitTargets);
+
+			// attack it
+			if (configuration().KiteWithRangedUnits)
 			{
-				// find the best target for this zealot
-				BWAPI::Unit target = getTarget(rangedUnit, rangedUnitTargets);
-
-				// Code below now moved to CombatCommanderDebug
-				// I don't know how target variable and rangedUnit->getTargetPosition() related right now
-                /*if (target && _microConfiguration.DrawUnitTargetInfo) 
-	            {
-		            canvas.drawLineMap(rangedUnit->getPosition(), rangedUnit->getTargetPosition(), BWAPI::Colors::Purple);
-	            }*/
-
-				// attack it
-                if (_microConfiguration.KiteWithRangedUnits)
-                {
-                    if (rangedUnit->getType() == BWAPI::UnitTypes::Zerg_Mutalisk || rangedUnit->getType() == BWAPI::UnitTypes::Terran_Vulture)
-                    {
-				        Micro::MutaDanceTarget(rangedUnit, target);
-                    }
-                    else
-                    {
-                        Micro::SmartKiteTarget(rangedUnit, target, currentFrame, _microConfiguration.KiteLongerRangedUnits);
-                    }
-                }
-                else
-                {
-                    Micro::SmartAttackUnit(rangedUnit, target, currentFrame);
-                }
-			}
-			// if there are no targets
-			else
-			{
-				// if we're not near the order position
-				if (rangedUnit->getDistance(order.getPosition()) > 100)
+				if (rangedUnit->getType() == BWAPI::UnitTypes::Zerg_Mutalisk || rangedUnit->getType() == BWAPI::UnitTypes::Terran_Vulture)
 				{
-					// move to it
-					Micro::SmartAttackMove(rangedUnit, order.getPosition(), currentFrame);
+					observation.shouldMutaDance = true;
+					observation.targetUnit = target;
+				}
+				else
+				{
+					observation.shouldKiteTarget = true;
+					observation.targetUnit = target;
 				}
 			}
+			else
+			{
+				observation.shouldAttack = true;
+				observation.targetUnit = target;
+			}
+		}
+		// if there are no targets
+		else
+		{
+			// if we're not near the order position
+			if (observation.orderDistance > configuration().MoveTargetThreshold)
+			{
+				// move to it
+				observation.shouldMove = true;
+				observation.targetPosition = order.getPosition();
+			}
+		}
+
+		_observations[rangedUnit] = observation;
+	}
+}
+
+void RangedManager::executePlan(int currentFrame)
+{
+	for (auto & rangedUnitPlanEntry : _observations)
+	{
+		RangeUnitObservation observation = rangedUnitPlanEntry.second;
+		auto& rangedUnit = rangedUnitPlanEntry.first;
+		if (observation.shouldMove)
+		{
+			Micro::SmartAttackMove(rangedUnit, observation.targetPosition, currentFrame);
+		}
+
+		if (observation.shouldAttack)
+		{
+			Micro::SmartAttackUnit(rangedUnit, observation.targetUnit, currentFrame);
+		}
+
+		if (observation.shouldMutaDance)
+		{
+			Micro::MutaDanceTarget(rangedUnit, observation.targetUnit);
+		}
+
+		if (observation.shouldKiteTarget)
+		{
+			Micro::SmartKiteTarget(rangedUnit, observation.targetUnit, currentFrame, configuration().KiteLongerRangedUnits);
 		}
 	}
+}
+
+void RangedManager::assignTargets(const std::vector<BWAPI::Unit> & rangedUnits, const std::vector<BWAPI::Unit> & targets, int currentFrame)
+{
+	// figure out targets
+	populateRangeTargets(targets);
+	collectObservations(rangedUnits, targets);
+	generatePlan(rangedUnits);
 }
 
 // get a target for the zealot to attack
@@ -121,7 +184,6 @@ int RangedManager::getAttackPriority(BWAPI::Unit rangedUnit, BWAPI::Unit target)
     {
         if (target->getType() == BWAPI::UnitTypes::Protoss_Carrier)
         {
-            
             return 100;
         }
 

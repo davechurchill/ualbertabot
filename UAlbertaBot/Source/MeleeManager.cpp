@@ -5,75 +5,129 @@
 #include "Micro.h"
 
 using namespace UAlbertaBot;
+using AKBot::MeeleUnitObservation;
 
 MeleeManager::MeleeManager(
 	shared_ptr<AKBot::OpponentView> opponentView,
 	shared_ptr<BaseLocationManager> bases,
 	const BotMicroConfiguration& microConfiguration)
-	: MicroManager(opponentView, bases)
-	, _microConfiguration(microConfiguration)
-{ 
-
+	: MicroManager(opponentView, bases, microConfiguration)
+	, _meleeUnitTargets()
+	, _observations()
+{
 }
 
 void MeleeManager::executeMicro(const std::vector<BWAPI::Unit> & targets, int currentFrame)
 {
-	assignTargets(targets, currentFrame);
+	if (order.getType() == SquadOrderTypes::Attack || order.getType() == SquadOrderTypes::Defend)
+	{
+		const std::vector<BWAPI::Unit> & meleeUnits = getUnits();
+		assignTargets(meleeUnits, targets);
+		executePlan(currentFrame);
+	}
 }
 
-void MeleeManager::assignTargets(const std::vector<BWAPI::Unit> & targets, int currentFrame)
+bool isMeeleTarget(BWAPI::Unit target)
 {
-    const std::vector<BWAPI::Unit> & meleeUnits = getUnits();
-
-	// figure out targets
-	std::vector<BWAPI::Unit> meleeUnitTargets;
-	for (auto & target : targets) 
+	if (!(target->getType().isFlyer()) &&
+		!(target->isLifted()) &&
+		!(target->getType() == BWAPI::UnitTypes::Zerg_Larva) &&
+		!(target->getType() == BWAPI::UnitTypes::Zerg_Egg) &&
+		target->isVisible())
 	{
-		// conditions for targeting
-		if (!(target->getType().isFlyer()) && 
-			!(target->isLifted()) &&
-			!(target->getType() == BWAPI::UnitTypes::Zerg_Larva) && 
-			!(target->getType() == BWAPI::UnitTypes::Zerg_Egg) &&
-			target->isVisible()) 
-		{
-			meleeUnitTargets.push_back(target);
-		}
+		return true;
 	}
 
-	// for each meleeUnit
+	return false;
+}
+
+void MeleeManager::populateMeleeTargets(const std::vector<BWAPI::Unit> & targets)
+{
+	_meleeUnitTargets.clear();
+	std::copy_if(targets.begin(), targets.end(), std::back_inserter(_meleeUnitTargets), isMeeleTarget);
+}
+
+void MeleeManager::collectObservations(const std::vector<BWAPI::Unit> & meleeUnits, const std::vector<BWAPI::Unit> & targets)
+{
+	auto hasMeeleTargets = !_meleeUnitTargets.empty();
+
+	_observations.clear();
+
+	// Capture basic observations about world.
 	for (auto & meleeUnit : meleeUnits)
 	{
-		// if the order is to attack or defend
-		if (order.getType() == SquadOrderTypes::Attack || order.getType() == SquadOrderTypes::Defend) 
-        {
-            // run away if we meet the retreat critereon
-            if (meleeUnitShouldRetreat(meleeUnit, targets))
-            {
-                BWAPI::Position fleeTo(opponentView->self()->getStartLocation());
+		MeeleUnitObservation observation;
+		observation.shouldRetreat = meleeUnitShouldRetreat(meleeUnit, targets);
+		observation.hasMeeleTargets = hasMeeleTargets;
+		observation.orderDistance = meleeUnit->getDistance(order.getPosition());
+		_observations[meleeUnit] = observation;
+	}
+}
 
-                Micro::SmartMove(meleeUnit, fleeTo, currentFrame);
-            }
-			// if there are targets
-			else if (!meleeUnitTargets.empty())
-			{
-				// find the best target for this meleeUnit
-				BWAPI::Unit target = getTarget(meleeUnit, meleeUnitTargets);
+void MeleeManager::generatePlan(const std::vector<BWAPI::Unit> & meleeUnits)
+{
+	// Do simple reasoning about current status.
+	for (auto & meleeUnit : meleeUnits)
+	{
+		MeeleUnitObservation observation = _observations[meleeUnit];
+		observation.shouldAttack = false;
+		observation.shouldMove = false;
 
-				// attack it
-				Micro::SmartAttackUnit(meleeUnit, target, currentFrame);
-			}
-			// if there are no targets
-			else
+		// run away if we meet the retreat critereon
+		if (observation.shouldRetreat)
+		{
+			BWAPI::Position fleeTo(opponentView->self()->getStartLocation());
+			observation.targetPosition = fleeTo;
+			observation.shouldMove = true;
+		}
+		// if there are targets
+		else if (observation.hasMeeleTargets)
+		{
+			// find the best target for this meleeUnit
+			BWAPI::Unit target = getTarget(meleeUnit, _meleeUnitTargets);
+			observation.targetUnit = target;
+			observation.shouldAttack = true;
+		}
+		// if there are no targets
+		else
+		{
+			// if we're not near the order position
+			if (observation.orderDistance > configuration().MoveTargetThreshold)
 			{
-				// if we're not near the order position
-				if (meleeUnit->getDistance(order.getPosition()) > 100)
-				{
-					// move to it
-					Micro::SmartMove(meleeUnit, order.getPosition(), currentFrame);
-				}
+				// move to it
+				observation.targetPosition = order.getPosition();
+				observation.shouldMove = true;
 			}
 		}
+
+		_observations[meleeUnit] = observation;
 	}
+}
+
+void MeleeManager::executePlan(int currentFrame)
+{
+	// Execute plan of actions.
+	for (auto & meleeUnitPlanEntry : _observations)
+	{
+		MeeleUnitObservation observation = meleeUnitPlanEntry.second;
+		if (observation.shouldMove)
+		{
+			Micro::SmartMove(meleeUnitPlanEntry.first, observation.targetPosition, currentFrame);
+		}
+
+		if (observation.shouldAttack)
+		{
+			Micro::SmartAttackUnit(meleeUnitPlanEntry.first, observation.targetUnit, currentFrame);
+		}
+	}
+}
+
+void MeleeManager::assignTargets(const std::vector<BWAPI::Unit> & meleeUnits, const std::vector<BWAPI::Unit> & targets)
+{
+	// figure out targets
+	populateMeleeTargets(targets);
+	collectObservations(meleeUnits, targets);
+	generatePlan(meleeUnits);
 }
 
 std::pair<BWAPI::Unit, BWAPI::Unit> MeleeManager::findClosestUnitPair(const std::vector<BWAPI::Unit> & attackers, const std::vector<BWAPI::Unit> & targets)
@@ -84,7 +138,7 @@ std::pair<BWAPI::Unit, BWAPI::Unit> MeleeManager::findClosestUnitPair(const std:
     for (auto & attacker : attackers)
     {
         BWAPI::Unit target = getTarget(attacker, targets);
-        double dist = attacker->getDistance(attacker);
+        double dist = attacker->getDistance(target);
 
         if (!closestPair.first || (dist < closestDistance))
         {
@@ -134,8 +188,16 @@ int MeleeManager::getAttackPriority(BWAPI::Unit attacker, BWAPI::Unit unit)
         return 13;
     }
 
-	if (attacker->getType() == BWAPI::UnitTypes::Protoss_Dark_Templar && unit->getType().isWorker())
+	if (attacker->getType() == BWAPI::UnitTypes::Protoss_Dark_Templar && type.isWorker())
 	{
+		// This is probably due to fact, that killing of worker by Dark Templar is very fast
+		// So this is simplification of more generic rule:
+		// Kill as much as possible within specific time frame
+		// Also this priority does not include how safe this attack could be.
+
+		// After some research in Liquipedia - http://wiki.teamliquid.net/starcraft/Dark_Templar
+		// I found out that if unit die in single hit, it will not trigger - your forces is under attack
+		// warning, which probably less interesting for the bot plays.
 		return 12;
 	}
 
@@ -193,7 +255,7 @@ bool MeleeManager::meleeUnitShouldRetreat(BWAPI::Unit meleeUnit, const std::vect
 
     // we don't want to retreat the melee unit if its shields or hit points are above the threshold set in the config file
     // set those values to zero if you never want the unit to retreat from combat individually
-    if (meleeUnit->getShields() > _microConfiguration.RetreatMeleeUnitShields || meleeUnit->getHitPoints() > _microConfiguration.RetreatMeleeUnitHP)
+    if (meleeUnit->getShields() > configuration().RetreatMeleeUnitShields || meleeUnit->getHitPoints() > configuration().RetreatMeleeUnitHP)
     {
         return false;
     }
