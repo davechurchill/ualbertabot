@@ -41,6 +41,7 @@
     <ClCompile Include="..\Source\CombatSimulation.cpp" />
     <ClCompile Include="..\Source\commands\BaseLocationCommandExecutor.cpp" />
     <ClCompile Include="..\Source\commands\BWAPICommandExecutor.cpp" />
+    <ClCompile Include="..\Source\commands\CombatCommanderCommandExecutor.cpp" />
     <ClCompile Include="..\Source\commands\CommandManager.cpp" />
     <ClCompile Include="..\Source\commands\MicroCommandExecutor.cpp" />
     <ClCompile Include="..\Source\commands\ProductionCommandExecutor.cpp" />
@@ -127,6 +128,7 @@
     <ClInclude Include="..\Source\CombatSimulation.h" />
     <ClInclude Include="..\Source\commands\BaseLocationCommandExecutor.h" />
     <ClInclude Include="..\Source\commands\BWAPICommandExecutor.h" />
+    <ClInclude Include="..\Source\commands\CombatCommanderCommandExecutor.h" />
     <ClInclude Include="..\Source\commands\CommandExecutor.h" />
     <ClInclude Include="..\Source\commands\CommandManager.h" />
     <ClInclude Include="..\Source\commands\MicroCommandExecutor.h" />

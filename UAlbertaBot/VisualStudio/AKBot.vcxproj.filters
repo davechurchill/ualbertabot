@@ -241,6 +241,9 @@
     <ClCompile Include="..\Source\ExplorerManager.cpp">
       <Filter>macro</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\commands\CombatCommanderCommandExecutor.cpp">
+      <Filter>commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="common">
@@ -567,6 +570,9 @@
     </ClInclude>
     <ClInclude Include="..\Source\ExplorerManager.h">
       <Filter>macro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\commands\CombatCommanderCommandExecutor.h">
+      <Filter>commands</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

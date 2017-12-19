@@ -48,5 +48,6 @@ public:
 	void				execute(shared_ptr<MapTools> map, const SquadOrder & order, int currentFrame);
 	void				regroup(shared_ptr<MapTools> map, const BWAPI::Position & regroupPosition, int currentFrame) const;
 	const BotMicroConfiguration& configuration() const;
+	void setCurrentOrder(const SquadOrder & inputOrder);
 };
 }

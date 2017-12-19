@@ -12,7 +12,7 @@ namespace AKBot
 	{
 		// Observations about world captured during analysis.
 		bool shouldRetreat;
-		bool hasRangedTargets;
+		size_t rangedTargets;
 		int orderDistance;
 
 		// Execution part of melee manager frame state
@@ -54,6 +54,8 @@ public:
 	int getAttackPriority(BWAPI::Unit rangedUnit, BWAPI::Unit target);
 	BWAPI::Unit getTarget(BWAPI::Unit rangedUnit, const std::vector<BWAPI::Unit> & targets);
 
-    void assignTargets(const std::vector<BWAPI::Unit> & rangedUnits, const std::vector<BWAPI::Unit> & targets, int currentFrame);
+    void assignTargets(const std::vector<BWAPI::Unit> & rangedUnits, const std::vector<BWAPI::Unit> & targets);
+	const std::map<BWAPI::Unit, AKBot::RangeUnitObservation>& getObservations() const;
+	const std::vector<BWAPI::Unit>& getTargets() const;
 };
 }

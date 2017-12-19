@@ -35,10 +35,34 @@ StrategyManager::StrategyManager(
 	, _strategyConfiguration(strategyConfiguration)
 {
 }
-
-void StrategyManager::update()
+std::string StrategyManager::selectOptimalStrategy()
 {
+	auto race = _opponentView->self()->getRace();
+	if (race == BWAPI::Races::Terran)
+	{
+		return "Terran_TankPush";
+	}
 
+	if (race == BWAPI::Races::Protoss)
+	{
+		return "Protoss_DragoonRush";
+	}
+
+	if (race == BWAPI::Races::Zerg)
+	{
+		return "Zerg_3HatchMuta";
+	}
+
+	return _strategyName;
+}
+
+void StrategyManager::update(int currentFrame)
+{
+	if (currentFrame == 20000)
+	{
+		auto newStrategy = selectOptimalStrategy();
+		setPreferredStrategy(newStrategy);
+	}
 }
 
 const int StrategyManager::getScore(BWAPI::Player player) const

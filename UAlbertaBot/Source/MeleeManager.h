@@ -11,7 +11,7 @@ namespace AKBot
 	{
 		// Observations about world captured during analysis.
 		bool shouldRetreat;
-		bool hasMeeleTargets;
+		size_t meleeTargets;
 		int orderDistance;
 
 		// Execution part of melee manager frame state
@@ -55,5 +55,7 @@ public:
     std::pair<BWAPI::Unit, BWAPI::Unit> findClosestUnitPair(const std::vector<BWAPI::Unit> & attackers, const std::vector<BWAPI::Unit> & targets);
 
     void assignTargets(const std::vector<BWAPI::Unit> & meleeUnits, const std::vector<BWAPI::Unit> & targets);
+	const std::map<BWAPI::Unit, AKBot::MeeleUnitObservation>& getObservations() const;
+	const std::vector<BWAPI::Unit>& getTargets() const;
 };
 }

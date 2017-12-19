@@ -29,11 +29,21 @@ void MeleeManager::executeMicro(const std::vector<BWAPI::Unit> & targets, int cu
 
 bool isMeeleTarget(BWAPI::Unit target)
 {
+	if (!target->isVisible())
+	{
+		return false;
+	}
+
+	if (target->getHitPoints() <= 0
+		&& target->getShields() <= 0)
+	{
+		return false;
+	}
+
 	if (!(target->getType().isFlyer()) &&
 		!(target->isLifted()) &&
 		!(target->getType() == BWAPI::UnitTypes::Zerg_Larva) &&
-		!(target->getType() == BWAPI::UnitTypes::Zerg_Egg) &&
-		target->isVisible())
+		!(target->getType() == BWAPI::UnitTypes::Zerg_Egg))
 	{
 		return true;
 	}
@@ -49,8 +59,6 @@ void MeleeManager::populateMeleeTargets(const std::vector<BWAPI::Unit> & targets
 
 void MeleeManager::collectObservations(const std::vector<BWAPI::Unit> & meleeUnits, const std::vector<BWAPI::Unit> & targets)
 {
-	auto hasMeeleTargets = !_meleeUnitTargets.empty();
-
 	_observations.clear();
 
 	// Capture basic observations about world.
@@ -58,7 +66,7 @@ void MeleeManager::collectObservations(const std::vector<BWAPI::Unit> & meleeUni
 	{
 		MeeleUnitObservation observation;
 		observation.shouldRetreat = meleeUnitShouldRetreat(meleeUnit, targets);
-		observation.hasMeeleTargets = hasMeeleTargets;
+		observation.meleeTargets = _meleeUnitTargets.size();
 		observation.orderDistance = meleeUnit->getDistance(order.getPosition());
 		_observations[meleeUnit] = observation;
 	}
@@ -81,7 +89,7 @@ void MeleeManager::generatePlan(const std::vector<BWAPI::Unit> & meleeUnits)
 			observation.shouldMove = true;
 		}
 		// if there are targets
-		else if (observation.hasMeeleTargets)
+		else if (observation.meleeTargets > 0)
 		{
 			// find the best target for this meleeUnit
 			BWAPI::Unit target = getTarget(meleeUnit, _meleeUnitTargets);
@@ -202,13 +210,12 @@ int MeleeManager::getAttackPriority(BWAPI::Unit attacker, BWAPI::Unit unit)
 	}
 
 	// highest priority is something that can attack us or aid in combat
-    if (type ==  BWAPI::UnitTypes::Terran_Bunker)
+    if (type == BWAPI::UnitTypes::Terran_Bunker)
     {
         return 11;
     }
     else if (type == BWAPI::UnitTypes::Terran_Medic || 
 		(type.groundWeapon() != BWAPI::WeaponTypes::None && !type.isWorker()) || 
-		type ==  BWAPI::UnitTypes::Terran_Bunker ||
 		type == BWAPI::UnitTypes::Protoss_High_Templar ||
 		type == BWAPI::UnitTypes::Protoss_Reaver) 
 	{
@@ -255,7 +262,7 @@ bool MeleeManager::meleeUnitShouldRetreat(BWAPI::Unit meleeUnit, const std::vect
 
     // we don't want to retreat the melee unit if its shields or hit points are above the threshold set in the config file
     // set those values to zero if you never want the unit to retreat from combat individually
-    if (meleeUnit->getShields() > configuration().RetreatMeleeUnitShields || meleeUnit->getHitPoints() > configuration().RetreatMeleeUnitHP)
+    if (meleeUnit->getShields() >= configuration().RetreatMeleeUnitShields || meleeUnit->getHitPoints() >= configuration().RetreatMeleeUnitHP)
     {
         return false;
     }
@@ -271,4 +278,14 @@ bool MeleeManager::meleeUnitShouldRetreat(BWAPI::Unit meleeUnit, const std::vect
     }
 
     return true;
+}
+
+const std::map<BWAPI::Unit, AKBot::MeeleUnitObservation>& MeleeManager::getObservations() const
+{
+	return _observations;
+}
+
+const std::vector<BWAPI::Unit>& MeleeManager::getTargets() const
+{
+	return _meleeUnitTargets;
 }

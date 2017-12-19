@@ -12,6 +12,7 @@
 #include <commands\BaseLocationCommandExecutor.h>
 #include <commands\StrategyManagerCommandExecutor.h>
 #include <commands\MicroCommandExecutor.h>
+#include <commands\CombatCommanderCommandExecutor.h>
 
 using namespace UAlbertaBot;
 using namespace AKBot;
@@ -50,6 +51,8 @@ UAlbertaBot_Tournament::UAlbertaBot_Tournament(
 	_commandManager.registerExecutor(std::move(strategyManagerCommandExecutor));
 	auto microCommandExecutor = std::make_unique<MicroCommandExecutor>(configuration.Micro);
 	_commandManager.registerExecutor(std::move(microCommandExecutor));
+	auto combatCommanderCommandExecutor = std::make_unique<CombatCommanderCommandExecutor>(configuration.Debug);
+	_commandManager.registerExecutor(std::move(combatCommanderCommandExecutor));
 
 	auto executor = std::make_unique<BWAPICommandExecutor>(BWAPI::BroodwarPtr);
 	_commandManager.registerExecutor(std::move(executor));
@@ -159,7 +162,7 @@ void UAlbertaBot_Tournament::onFrame()
 
 	// update all of the internal information managers
     _mapTools->update(currentFrame);
-	_strategyManager->update();
+	_strategyManager->update(currentFrame);
     _unitInfoManager->update();
     _baseLocationManager->update(_unitInfoManager);
 

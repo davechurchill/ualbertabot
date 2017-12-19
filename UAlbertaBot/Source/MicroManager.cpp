@@ -23,6 +23,10 @@ void MicroManager::setUnits(const std::vector<BWAPI::Unit> & u)
 { 
 	_units = u; 
 }
+void MicroManager::setCurrentOrder(const SquadOrder & inputOrder)
+{
+	order = inputOrder;
+}
 
 void MicroManager::execute(shared_ptr<MapTools> map, const SquadOrder & inputOrder, int currentFrame)
 {
@@ -32,7 +36,7 @@ void MicroManager::execute(shared_ptr<MapTools> map, const SquadOrder & inputOrd
 		return;
 	}
 
-	order = inputOrder;
+	setCurrentOrder(inputOrder);
 
 	// Discover enemies within region of interest
 	std::vector<BWAPI::Unit> nearbyEnemies;
@@ -70,6 +74,9 @@ void MicroManager::execute(shared_ptr<MapTools> map, const SquadOrder & inputOrd
 				false,
 				true);
 		}
+
+		std::sort(nearbyEnemies.begin(), nearbyEnemies.end());
+		nearbyEnemies.erase(std::unique(nearbyEnemies.begin(), nearbyEnemies.end()), nearbyEnemies.end());
 	}
 
 	// the following block of code attacks all units on the way to the order position

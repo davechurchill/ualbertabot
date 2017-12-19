@@ -1,4 +1,64 @@
 #include "CombatCommanderDebug.h"
+#include <iostream>
+
+using std::ofstream;
+using std::ostream;
+using std::ios;
+using std::endl;
+
+ostream& operator<<(ostream& ost, const BWAPI::Unit& ls)
+{
+	ost << "Unit(Type: " << ls->getType().getName() << ", Position: " << ls->getPosition() << ", " 
+		<< "HP/Shld: " << ls->getHitPoints() << "/" << ls->getShields() 
+		<< ")";
+	return ost;
+}
+
+ostream& operator<<(ostream& ost, const AKBot::RangeUnitObservation& observation)
+{
+	ost << "Has ranged targets: " << observation.rangedTargets << ". "
+		<< "Distance to order target: " << observation.orderDistance << ". "
+		<< "Want retreat: " << observation.shouldRetreat << ". ";
+	if (observation.shouldMove)
+	{
+		ost << "Move with attack to " << observation.targetPosition;
+	}
+
+	if (observation.shouldAttack)
+	{
+		ost << "Attacking " << observation.targetUnit;
+	}
+
+	if (observation.shouldKiteTarget)
+	{
+		ost << "Kite " << observation.targetUnit;
+	}
+
+	if (observation.shouldMutaDance)
+	{
+		ost << "Mutalisk dance for " << observation.targetUnit;
+	}
+
+	return ost;
+}
+
+ostream& operator<<(ostream& ost, const AKBot::MeeleUnitObservation& observation)
+{
+	ost << "Has melee targets: " << observation.meleeTargets << ". "
+		<< "Distance to order target: " << observation.orderDistance << ". "
+		<< "Want retreat: " << observation.shouldRetreat << ". ";
+	if (observation.shouldMove)
+	{
+		ost << "Moving to " << observation.targetPosition;
+	}
+
+	if (observation.shouldAttack)
+	{
+		ost << "Attacking " << observation.targetUnit;
+	}
+
+	return ost;
+}
 
 namespace AKBot
 {
@@ -16,6 +76,11 @@ namespace AKBot
 		if (_debugConfiguration.DrawSquadInfo)
 		{
 			drawSquadInformation(canvas, squadData, 200, 30);
+		}
+
+		if (_debugConfiguration.TraceCombatManagerLogic)
+		{
+			traceCombatManager();
 		}
 	}
 
@@ -181,5 +246,92 @@ namespace AKBot
 			canvas.drawCircleMap(vertices[i], 4, BWAPI::Colors::Green, false);
 			canvas.drawTextMap(vertices[i], "%d", i);
 		}
+	}
+
+	void CombatCommanderDebug::traceCombatManager() const
+	{
+		ofstream outfile;
+		outfile.open("combatmanager.txt", ios::out | ios::app);
+		outfile << "=======================================================" << endl;
+		auto frameCount = BWAPI::Broodwar->getFrameCount();
+		outfile << "Frame: " << frameCount << endl << endl;
+		auto& squadData = _combatCommander->getSquadData();
+		for (auto const & kv : squadData.getSquads())
+		{
+			const auto & squad = kv.second;
+			outfile << "Squad " << squad.getName() << endl;
+			outfile << "Units: ";
+			auto squadUnits = squad.getUnits();
+			if (squadUnits.empty())
+			{
+				outfile << "No units" << endl;
+				continue;
+			}
+
+			outfile << endl;
+
+			for (auto const & squadUnit : squad.getUnits())
+			{
+				outfile << squadUnit << endl;
+			}
+
+			outfile << endl;
+
+			auto const& meleeManager = squad.getMeleeManager();
+			outfile << "Melee Targets:" << endl;
+			auto const& meleeTargets = meleeManager.getTargets();
+			for (auto const& meleeTarget : meleeTargets)
+			{
+				outfile << meleeTarget << endl;
+			}
+
+			outfile << "Melee information: ";
+			auto const& squadMeleeObservations = meleeManager.getObservations();
+			if (!squadMeleeObservations.empty())
+			{
+				outfile << endl;
+				for (auto const & observationData : squadMeleeObservations)
+				{
+					auto unit = observationData.first;
+					auto observation = observationData.second;
+					outfile << unit << ". " << observation << endl;
+				}
+			}
+			else
+			{
+				outfile << "No observations";
+			}
+
+			outfile << endl;
+
+			auto const& rangedManager = squad.getRangedManager();
+			outfile << "Ranged Targets:" << endl;
+			auto const& rangedTargets = rangedManager.getTargets();
+			for (auto const& rangedTarget : rangedTargets)
+			{
+				outfile << rangedTarget << endl;
+			}
+
+			outfile << "Ranged information: ";
+			auto const& squadRangedObservations = rangedManager.getObservations();
+			if (!squadRangedObservations.empty())
+			{
+				outfile << endl;
+				for (auto const & observationData : squadRangedObservations)
+				{
+					auto unit = observationData.first;
+					auto observation = observationData.second;
+					outfile << unit << ". " << observation << endl;
+				}
+			}
+			else
+			{
+				outfile << "No observations";
+			}
+
+			outfile << endl;
+		}
+
+		outfile.close();
 	}
 }

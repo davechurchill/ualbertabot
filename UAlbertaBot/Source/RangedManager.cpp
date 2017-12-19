@@ -24,9 +24,30 @@ void RangedManager::executeMicro(const std::vector<BWAPI::Unit> & targets, int c
 	{
 		const std::vector<BWAPI::Unit> & rangedUnits = getUnits();
 
-		assignTargets(rangedUnits, targets, currentFrame);
+		assignTargets(rangedUnits, targets);
 		executePlan(currentFrame);
 	}
+}
+
+bool isRangedTarget(BWAPI::Unit target)
+{
+	if (!target->isVisible())
+	{
+		return false;
+	}
+
+	if (target->getHitPoints() <= 0
+		&& target->getShields() <= 0)
+	{
+		return false;
+	}
+
+	if (target->getType() == BWAPI::UnitTypes::Unknown)
+	{
+		return false;
+	}
+
+	return true;
 }
 
 void RangedManager::populateRangeTargets(const std::vector<BWAPI::Unit> & targets)
@@ -36,7 +57,7 @@ void RangedManager::populateRangeTargets(const std::vector<BWAPI::Unit> & target
 		targets.begin(),
 		targets.end(),
 		std::back_inserter(_rangeUnitTargets),
-		[](BWAPI::Unit u) { return u->isVisible(); });
+		isRangedTarget);
 }
 
 void RangedManager::collectObservations(const std::vector<BWAPI::Unit> & rangedUnits, const std::vector<BWAPI::Unit> & targets)
@@ -47,10 +68,9 @@ void RangedManager::collectObservations(const std::vector<BWAPI::Unit> & rangedU
 	{
 		// train sub units such as scarabs or interceptors
 		//trainSubUnits(rangedUnit);
-		auto hasRangedTargets = !_rangeUnitTargets.empty();
 
 		RangeUnitObservation observation;
-		observation.hasRangedTargets = hasRangedTargets;
+		observation.rangedTargets = _rangeUnitTargets.size();
 		observation.orderDistance = rangedUnit->getDistance(order.getPosition());
 		_observations[rangedUnit] = observation;
 	}
@@ -67,7 +87,7 @@ void RangedManager::generatePlan(const std::vector<BWAPI::Unit> & rangedUnits)
 		observation.shouldKiteTarget = false;
 
 		// if there are targets
-		if (observation.hasRangedTargets)
+		if (observation.rangedTargets > 0)
 		{
 			// find the best target for this zealot
 			BWAPI::Unit target = getTarget(rangedUnit, _rangeUnitTargets);
@@ -136,7 +156,7 @@ void RangedManager::executePlan(int currentFrame)
 	}
 }
 
-void RangedManager::assignTargets(const std::vector<BWAPI::Unit> & rangedUnits, const std::vector<BWAPI::Unit> & targets, int currentFrame)
+void RangedManager::assignTargets(const std::vector<BWAPI::Unit> & rangedUnits, const std::vector<BWAPI::Unit> & targets)
 {
 	// figure out targets
 	populateRangeTargets(targets);
@@ -193,7 +213,9 @@ int RangedManager::getAttackPriority(BWAPI::Unit rangedUnit, BWAPI::Unit target)
         }
     }
 
-	bool isThreat = rangedType.isFlyer() ? targetType.airWeapon() != BWAPI::WeaponTypes::None : targetType.groundWeapon() != BWAPI::WeaponTypes::None;
+	bool isThreat = rangedType.isFlyer()
+		? targetType.airWeapon() != BWAPI::WeaponTypes::None 
+		: targetType.groundWeapon() != BWAPI::WeaponTypes::None;
 
     if (target->getType().isWorker())
     {
@@ -212,12 +234,15 @@ int RangedManager::getAttackPriority(BWAPI::Unit rangedUnit, BWAPI::Unit target)
 
     // if the target is building something near our base something is fishy
     BWAPI::Position ourBasePosition = BWAPI::Position(opponentView->self()->getStartLocation());
-    if (target->getType().isWorker() && (target->isConstructing() || target->isRepairing()) && target->getDistance(ourBasePosition) < 1200)
+    if (target->getType().isWorker()
+		&& (target->isConstructing() || target->isRepairing()) && target->getDistance(ourBasePosition) < 1200)
     {
         return 100;
     }
 
-    if (target->getType().isBuilding() && (target->isCompleted() || target->isBeingConstructed()) && target->getDistance(ourBasePosition) < 1200)
+    if (target->getType().isBuilding()
+		&& (target->isCompleted() || target->isBeingConstructed())
+		&& target->getDistance(ourBasePosition) < 1200)
     {
         return 90;
     }
@@ -261,4 +286,14 @@ int RangedManager::getAttackPriority(BWAPI::Unit rangedUnit, BWAPI::Unit target)
 	{
 		return 1;
 	}
+}
+
+const std::map<BWAPI::Unit, AKBot::RangeUnitObservation>& RangedManager::getObservations() const
+{
+	return _observations;
+}
+
+const std::vector<BWAPI::Unit>& RangedManager::getTargets() const
+{
+	return _rangeUnitTargets;
 }

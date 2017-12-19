@@ -101,6 +101,7 @@ struct BotDebugConfiguration
 	bool DrawBOSSStateInfo = false;
 	bool PrintModuleTimeout = false;
 	bool DrawBaseTiles = false;
+	bool TraceCombatManagerLogic = false;
 
 	BWAPI::Color ColorLineTarget = BWAPI::Colors::White;
 	BWAPI::Color ColorLineMineral = BWAPI::Colors::Cyan;
