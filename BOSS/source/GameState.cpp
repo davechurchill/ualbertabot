@@ -355,6 +355,10 @@ std::vector<ActionType> GameState::doAction(const ActionType & action)
     const std::string & name = action.getName();
 
     BOSS_ASSERT(ffTime >= 0 && ffTime < 1000000, "FFTime is very strange: %d", ffTime);
+	if (ffTime == std::numeric_limits<int>::max())
+	{
+		return std::vector<ActionType>();
+	}
 
     auto actionsFinished = fastForward(ffTime);
 
