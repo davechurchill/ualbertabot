@@ -43,7 +43,7 @@ public:
 		shared_ptr<AKBot::Logger> logger,
 		BotStrategyConfiguration& strategyConfiguration);
 
-    void update();
+    void update(int currentFrame);
     void onEnd(const bool isWinner);
 	/* Register strategy executor */
 	void registerStrategy(std::string strategyName, std::unique_ptr<StrategyExecutor>&& executor);
@@ -54,5 +54,6 @@ public:
 	const std::string& getPreferredStrategy() const;
     const MetaPairVector getBuildOrderGoal(int currentFrame) const;
     const BuildOrder & getOpeningBookBuildOrder() const;
+	std::string selectOptimalStrategy();
 };
 }

@@ -101,6 +101,7 @@ void ProductionManager::update(int currentFrame)
 
 	// if they have cloaked units get a new goal asap
 	_enemyCloakedDetectedThisFrame = false;
+	_unitInfo->detectCloackedUnits();
 	if (!_enemyCloakedDetected && _unitInfo->enemyHasCloakedUnits())
 	{
 		if (ourRace == BWAPI::Races::Protoss)

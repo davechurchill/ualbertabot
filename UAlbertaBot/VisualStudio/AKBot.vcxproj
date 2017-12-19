@@ -41,6 +41,7 @@
     <ClCompile Include="..\Source\CombatSimulation.cpp" />
     <ClCompile Include="..\Source\commands\BaseLocationCommandExecutor.cpp" />
     <ClCompile Include="..\Source\commands\BWAPICommandExecutor.cpp" />
+    <ClCompile Include="..\Source\commands\CombatCommanderCommandExecutor.cpp" />
     <ClCompile Include="..\Source\commands\CommandManager.cpp" />
     <ClCompile Include="..\Source\commands\MicroCommandExecutor.cpp" />
     <ClCompile Include="..\Source\commands\ProductionCommandExecutor.cpp" />
@@ -68,6 +69,7 @@
     <ClCompile Include="..\Source\strategies\BaseStrategyExecutor.cpp" />
     <ClCompile Include="..\Source\strategies\protoss\DarkTemplarRush.cpp" />
     <ClCompile Include="..\Source\strategies\protoss\DragoonRush.cpp" />
+    <ClCompile Include="..\Source\strategies\protoss\ProtossMiddleGame.cpp" />
     <ClCompile Include="..\Source\strategies\protoss\ZealotDrop.cpp" />
     <ClCompile Include="..\Source\strategies\protoss\ZealotRush.cpp" />
     <ClCompile Include="..\Source\strategies\terrain\FourBarracksMarine.cpp" />
@@ -127,6 +129,7 @@
     <ClInclude Include="..\Source\CombatSimulation.h" />
     <ClInclude Include="..\Source\commands\BaseLocationCommandExecutor.h" />
     <ClInclude Include="..\Source\commands\BWAPICommandExecutor.h" />
+    <ClInclude Include="..\Source\commands\CombatCommanderCommandExecutor.h" />
     <ClInclude Include="..\Source\commands\CommandExecutor.h" />
     <ClInclude Include="..\Source\commands\CommandManager.h" />
     <ClInclude Include="..\Source\commands\MicroCommandExecutor.h" />
@@ -163,6 +166,7 @@
     <ClInclude Include="..\Source\strategies\BaseStrategyExecutor.h" />
     <ClInclude Include="..\Source\strategies\protoss\DarkTemplarRush.h" />
     <ClInclude Include="..\Source\strategies\protoss\DragoonRush.h" />
+    <ClInclude Include="..\Source\strategies\protoss\ProtossMiddleGame.h" />
     <ClInclude Include="..\Source\strategies\protoss\ZealotDrop.h" />
     <ClInclude Include="..\Source\strategies\protoss\ZealotRush.h" />
     <ClInclude Include="..\Source\strategies\StrategyExecutor.h" />

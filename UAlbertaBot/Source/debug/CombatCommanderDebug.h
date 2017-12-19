@@ -26,6 +26,9 @@ namespace AKBot
 		void drawOrder(AKBot::ScreenCanvas& canvas, const Squad& squad, const SquadOrder& order) const;
 		void drawOrderText(AKBot::ScreenCanvas& canvas, const MicroManager& manager, const SquadOrder & order) const;
 		void drawTransportInformation(ScreenCanvas& canvas, const TransportManager& transportManager, int x, int y) const;
+		
+		// Trace information about combat manager to file
+		void traceCombatManager() const;
 	public:
 		CombatCommanderDebug(shared_ptr<CombatCommander> combatCommander, const BotDebugConfiguration& debugConfiguration);
 		void draw(ScreenCanvas& canvas) const;

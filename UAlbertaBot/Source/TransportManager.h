@@ -23,7 +23,6 @@ class TransportManager : public MicroManager
 	AKBot::PlayerLocationProvider&	_locationProvider;
 	shared_ptr<AKBot::Logger> _logger;
 	shared_ptr<MapTools> _mapTools;
-	const BotMicroConfiguration& _microConfiguration;
 
 	void							calculateMapEdgeVertices();
 	void							moveTransport(int currentFrame);

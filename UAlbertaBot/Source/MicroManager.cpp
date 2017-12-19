@@ -4,15 +4,28 @@
 
 using namespace UAlbertaBot;
 
-MicroManager::MicroManager(shared_ptr<AKBot::OpponentView> opponentView, shared_ptr<BaseLocationManager> bases)
+MicroManager::MicroManager(
+	shared_ptr<AKBot::OpponentView> opponentView,
+	shared_ptr<BaseLocationManager> bases,
+	const BotMicroConfiguration& microConfiguration)
 	: bases(bases)
 	, opponentView(opponentView)
+	, _microConfiguration(microConfiguration)
 {
+}
+
+const BotMicroConfiguration& MicroManager::configuration() const
+{
+	return _microConfiguration;
 }
 
 void MicroManager::setUnits(const std::vector<BWAPI::Unit> & u) 
 { 
 	_units = u; 
+}
+void MicroManager::setCurrentOrder(const SquadOrder & inputOrder)
+{
+	order = inputOrder;
 }
 
 void MicroManager::execute(shared_ptr<MapTools> map, const SquadOrder & inputOrder, int currentFrame)
@@ -23,7 +36,7 @@ void MicroManager::execute(shared_ptr<MapTools> map, const SquadOrder & inputOrd
 		return;
 	}
 
-	order = inputOrder;
+	setCurrentOrder(inputOrder);
 
 	// Discover enemies within region of interest
 	std::vector<BWAPI::Unit> nearbyEnemies;
@@ -61,6 +74,9 @@ void MicroManager::execute(shared_ptr<MapTools> map, const SquadOrder & inputOrd
 				false,
 				true);
 		}
+
+		std::sort(nearbyEnemies.begin(), nearbyEnemies.end());
+		nearbyEnemies.erase(std::unique(nearbyEnemies.begin(), nearbyEnemies.end()), nearbyEnemies.end());
 	}
 
 	// the following block of code attacks all units on the way to the order position
@@ -137,7 +153,7 @@ void MicroManager::regroup(shared_ptr<MapTools> map, const BWAPI::Position & reg
         {
             Micro::SmartMove(unit, ourBasePosition, currentFrame);
         }
-		else if (unit->getDistance(regroupPosition) > 100)
+		else if (unit->getDistance(regroupPosition) > _microConfiguration.MoveTargetThreshold)
 		{
 			// regroup it
 			Micro::SmartMove(unit, regroupPosition, currentFrame);

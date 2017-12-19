@@ -19,7 +19,11 @@ class DetectorManager : public MicroManager
 
 public:
 
-	DetectorManager(shared_ptr<AKBot::OpponentView> opponentView, shared_ptr<MapTools> mapTool, shared_ptr<BaseLocationManager> basess);
+	DetectorManager(
+		shared_ptr<AKBot::OpponentView> opponentView,
+		shared_ptr<MapTools> mapTool,
+		shared_ptr<BaseLocationManager> bases,
+		const BotMicroConfiguration& microConfiguration);
 	~DetectorManager() {}
 
 	void setUnitClosestToEnemy(BWAPI::Unit unit) { unitClosestToEnemy = unit; }

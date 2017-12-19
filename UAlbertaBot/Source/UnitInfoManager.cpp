@@ -6,6 +6,7 @@ using namespace UAlbertaBot;
 
 UnitInfoManager::UnitInfoManager(shared_ptr<AKBot::OpponentView> opponentView)
 	: _opponentView(opponentView)
+	, _enemyHasCloakedUnits(false)
 {
 	
 }
@@ -130,6 +131,18 @@ void UnitInfoManager::getNearbyForce(std::vector<UnitInfo> & unitInfo, BWAPI::Po
 	}
 }
 
+void UAlbertaBot::UnitInfoManager::detectCloackedUnits()
+{
+	// Do not perform search for cloacked units twice.
+	// If enemy has cloacked units, they likely not lose this tech,
+	// or if it lose it, then we likely win.
+	if (_enemyHasCloakedUnits) {
+		return;
+	}
+
+	_enemyHasCloakedUnits = enemyHasCloakedUnitsNow();
+}
+
 const UnitData & UnitInfoManager::getUnitData(BWAPI::Player player) const
 {
     return _unitData.find(player)->second;
@@ -137,39 +150,43 @@ const UnitData & UnitInfoManager::getUnitData(BWAPI::Player player) const
 
 bool UnitInfoManager::enemyHasCloakedUnits() const
 {
+	return _enemyHasCloakedUnits;
+}
+
+bool UnitInfoManager::enemyHasCloakedUnitsNow() const
+{
 	auto enemy = _opponentView->defaultEnemy();
 	if (enemy == nullptr)
 	{
 		return false;
 	}
 
-    for (const auto & kv : getUnitData(enemy).getUnitInfoMap())
+	for (const auto & kv : getUnitData(enemy).getUnitInfoMap())
 	{
 		const UnitInfo & ui(kv.second);
 
-        if (ui.type.isCloakable())
-        {
-            return true;
-        }
+		if (ui.type.isCloakable())
+		{
+			return true;
+		}
 
-        if (ui.type == BWAPI::UnitTypes::Zerg_Lurker || ui.type == BWAPI::UnitTypes::Zerg_Lurker_Egg)
-        {
-            return true;
-        }
+		if (ui.type == BWAPI::UnitTypes::Zerg_Lurker || ui.type == BWAPI::UnitTypes::Zerg_Lurker_Egg)
+		{
+			return true;
+		}
 
-        // assume they're going dts
-        if (ui.type == BWAPI::UnitTypes::Protoss_Citadel_of_Adun)
-        {
+		// assume they're going dts
+		if (ui.type == BWAPI::UnitTypes::Protoss_Citadel_of_Adun)
+		{
 			std::cout << "Has citadel of Adun" << std::endl;
-            return true;
-        }
+			return true;
+		}
 
-        if (ui.type == BWAPI::UnitTypes::Protoss_Observatory)
-        {
-            return true;
-        }
-    }
+		if (ui.type == BWAPI::UnitTypes::Protoss_Observatory)
+		{
+			return true;
+		}
+	}
 
-    
 	return false;
 }

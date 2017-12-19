@@ -11,8 +11,7 @@ TankManager::TankManager(
 	shared_ptr<AKBot::OpponentView> opponentView,
 	shared_ptr<BaseLocationManager> bases,
 	const BotMicroConfiguration& microConfiguration)
-	: MicroManager(opponentView, bases)
-	, _microConfiguration(microConfiguration)
+	: MicroManager(opponentView, bases, microConfiguration)
 {
 }
 
@@ -72,14 +71,14 @@ void TankManager::executeMicro(const std::vector<BWAPI::Unit> & targets, int cur
 				// if we're not in siege mode kite the target
 				else
 				{
-					Micro::SmartKiteTarget(tank, target, currentFrame, _microConfiguration.KiteLongerRangedUnits);
+					Micro::SmartKiteTarget(tank, target, currentFrame, configuration().KiteLongerRangedUnits);
 				}
 			}
 			// if there are no targets
 			else
 			{
 				// if we're not near the order position
-				if (tank->getDistance(order.getPosition()) > 100)
+				if (tank->getDistance(order.getPosition()) > configuration().MoveTargetThreshold)
 				{
 					if (tank->canUnsiege())
 					{

@@ -6,68 +6,12 @@
 #include "BWAPIMapInformation.h"
 #include "NullLogger.h"
 #include "MapTools.h"
+#include "UnitHelper.h"
+#include "GameHelper.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+using namespace AKBot::Tests;
 
-void setP2PForces(BWAPI::GameData* gameData)
-{
-	static char forceNames[][32] = {
-		"Players",
-		"Observers",
-		"Force3",
-		"Force4",
-		""
-	};
-	gameData->forceCount = 3;
-	for (auto i = 0; i < gameData->forceCount; i++)
-	{
-		strcpy_s(gameData->forces[i].name, forceNames[i]);
-	}
-}
-void setPlayers(BWAPI::GameData& gameData, int playersCount)
-{
-	static char neutralName[25] = "Neutral";
-	static char playerNames[][25] = {
-		"Player1",
-		"Player2",
-		"Player3",
-		"Player4",
-		"Player5",
-		"Player6",
-		"Player7",
-		"Player8",
-		"Player9",
-		"Player10",
-		"Player11",
-		"Player12"
-	};
-
-	for (auto i = 0; i < playersCount; i++)
-	{
-		strcpy_s(gameData.players[i].name, playerNames[i]);
-	}
-
-	gameData.players[playersCount].isNeutral = true;
-	strcpy_s(gameData.players[playersCount].name, neutralName);
-	gameData.playerCount = playersCount + 1;
-	gameData.neutral = playersCount;
-}
-void placeMineral(BWAPI::UnitData& unitData, int x, int y, int resources)
-{
-	unitData.positionX = x;
-	unitData.positionY = y;
-	unitData.type = BWAPI::UnitTypes::Resource_Mineral_Field;
-	unitData.exists = true;
-	unitData.resources = resources;
-}
-void placeGeyser(BWAPI::UnitData& unitData, int x, int y, int resources)
-{
-	unitData.positionX = x;
-	unitData.positionY = y;
-	unitData.type = BWAPI::UnitTypes::Resource_Vespene_Geyser;
-	unitData.exists = true;
-	unitData.resources = resources;
-}
 void discoverMineral(BWAPI::GameData& gameData, int x, int y, int resources)
 {
 	auto& lastEvent = gameData.events[gameData.eventCount];

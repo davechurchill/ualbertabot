@@ -215,7 +215,10 @@
     <ClCompile Include="BotConfigurationTest.cpp" />
     <ClCompile Include="CommandManagerTest.cpp" />
     <ClCompile Include="ExplorerManagerTest.cpp" />
+    <ClCompile Include="GameHelper.cpp" />
+    <ClCompile Include="MeleeManagerTest.cpp" />
     <ClCompile Include="NullLogger.cpp" />
+    <ClCompile Include="RangedManagerTest.cpp" />
     <ClCompile Include="Shared\BulletShared.cpp" />
     <ClCompile Include="Shared\ForceShared.cpp" />
     <ClCompile Include="Shared\GameShared.cpp" />
@@ -229,6 +232,7 @@
     <ClCompile Include="TestLib\PlayerImpl.cpp" />
     <ClCompile Include="TestLib\RegionImpl.cpp" />
     <ClCompile Include="TestLib\UnitImpl.cpp" />
+    <ClCompile Include="UnitHelper.cpp" />
     <ClCompile Include="unittest1.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -237,6 +241,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameHelper.h" />
     <ClInclude Include="NullLogger.h" />
     <ClInclude Include="PlainOpponentView.h" />
     <ClInclude Include="Shared\Templates.h" />
@@ -249,6 +254,7 @@
     <ClInclude Include="TestLib\PlayerImpl.h" />
     <ClInclude Include="TestLib\RegionImpl.h" />
     <ClInclude Include="TestLib\UnitImpl.h" />
+    <ClInclude Include="UnitHelper.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="AK_Config.json" />

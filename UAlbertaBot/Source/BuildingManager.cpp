@@ -281,6 +281,7 @@ void BuildingManager::addBuildingTask(BWAPI::UnitType type, BWAPI::TilePosition 
     Building b(type, desiredLocation);
     b.status = BuildingStatus::Unassigned;
 
+	// Don't add anymore building if there more then 5 building which are unassigned.
     _buildings.push_back(b);
 }
 

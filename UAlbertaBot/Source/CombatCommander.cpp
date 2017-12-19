@@ -665,6 +665,12 @@ bool UAlbertaBot::CombatCommander::findEnemyBaseLocation(BWAPI::Position & baseP
 				false,
 				true);
 
+			// I should add detection of case when base was discovered earlier
+			// but now it is not visible. I that case isExplored return true, but not units would be produced.
+			// Omission of this case lead to the case when one enemy is eliminated, but our units
+			// does not switch attack to other enemy base, which is already discovered, but instead of that
+			// units just walking around map, seeking for the last seen position.
+
 			for (auto & unit : enemyUnitsInArea)
 			{
 				if (unit->getType() != BWAPI::UnitTypes::Zerg_Overlord)

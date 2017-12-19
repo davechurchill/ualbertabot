@@ -10,7 +10,7 @@ TransportManager::TransportManager(
 	shared_ptr<MapTools> mapTools,
 	std::shared_ptr<AKBot::Logger> logger,
 	const BotMicroConfiguration& microConfiguration)
-	: MicroManager(opponentView, bases)
+	: MicroManager(opponentView, bases, microConfiguration)
 	, _transportShip(NULL)
 	, _currentRegionVertexIndex(-1)
 	, _minCorner(-1,-1)
@@ -20,7 +20,6 @@ TransportManager::TransportManager(
 	, _locationProvider(locationProvider)
 	, _mapTools(mapTools)
 	, _logger(logger)
-	, _microConfiguration(microConfiguration)
 {
 }
 

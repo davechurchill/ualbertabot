@@ -8,7 +8,6 @@ namespace UAlbertaBot
 {
 class TankManager : public MicroManager
 {
-	const BotMicroConfiguration& _microConfiguration;
 public:
 
 	TankManager(

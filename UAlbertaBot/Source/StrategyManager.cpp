@@ -7,6 +7,7 @@
 #include "strategies\protoss\ZealotDrop.h"
 #include "strategies\protoss\DragoonRush.h"
 #include "strategies\protoss\DarkTemplarRush.h"
+#include "strategies\protoss\ProtossMiddleGame.h"
 #include "strategies\terrain\MarineRush.h"
 #include "strategies\terrain\FourBarracksMarine.h"
 #include "strategies\terrain\VultureRush.h"
@@ -35,10 +36,34 @@ StrategyManager::StrategyManager(
 	, _strategyConfiguration(strategyConfiguration)
 {
 }
-
-void StrategyManager::update()
+std::string StrategyManager::selectOptimalStrategy()
 {
+	auto race = _opponentView->self()->getRace();
+	if (race == BWAPI::Races::Terran)
+	{
+		// return "Terran_TankPush";
+	}
 
+	if (race == BWAPI::Races::Protoss)
+	{
+		return "Protoss_MiddleGame";
+	}
+
+	if (race == BWAPI::Races::Zerg)
+	{
+		// return "Zerg_3HatchMuta";
+	}
+
+	return _strategyName;
+}
+
+void StrategyManager::update(int currentFrame)
+{
+	if (currentFrame == 20000)
+	{
+		auto newStrategy = selectOptimalStrategy();
+		setPreferredStrategy(newStrategy);
+	}
 }
 
 const int StrategyManager::getScore(BWAPI::Player player) const
@@ -158,6 +183,11 @@ const MetaPairVector StrategyManager::getProtossBuildOrderGoal(int currentFrame)
 		DarkTemplarRush darkTemplarRush;
 		darkTemplarRush.getBuildOrderGoal(goal, currentFrame);
     }
+	else if (_strategyName == "Protoss_MiddleGame")
+	{
+		ProtossMiddleGame protossMiddleGame;
+		protossMiddleGame.getBuildOrderGoal(goal, currentFrame);
+	}
     else
     {
         UAB_ASSERT_WARNING(false, "Unknown Protoss Strategy Name: %s", _strategyName.c_str());

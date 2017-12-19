@@ -25,6 +25,12 @@ void AKBot::MicroCommandExecutor::onCommand(const std::string & command)
 		auto periodString = command.substr(squadUpdatePeriodPrefix.length(), command.length() - squadUpdatePeriodPrefix.length());
 		_microConfiguration.SquadUpdateFramePeriod = ::atoi(periodString.c_str());
 	}
+
+	std::string squadMoveThresholdPrefix("set squad move threshold ");
+	if (boost::starts_with(command, squadMoveThresholdPrefix)) {
+		auto thresholdString = command.substr(squadMoveThresholdPrefix.length(), command.length() - squadMoveThresholdPrefix.length());
+		_microConfiguration.MoveTargetThreshold = ::atoi(thresholdString.c_str());
+	}
 }
 
 bool AKBot::MicroCommandExecutor::isSupported(const std::string & command) const
@@ -34,6 +40,10 @@ bool AKBot::MicroCommandExecutor::isSupported(const std::string & command) const
 	}
 
 	if (boost::starts_with(command, "set squad update period ")) {
+		return true;
+	}
+
+	if (boost::starts_with(command, "set squad move threshold ")) {
 		return true;
 	}
 
