@@ -69,6 +69,7 @@
     <ClCompile Include="..\Source\strategies\BaseStrategyExecutor.cpp" />
     <ClCompile Include="..\Source\strategies\protoss\DarkTemplarRush.cpp" />
     <ClCompile Include="..\Source\strategies\protoss\DragoonRush.cpp" />
+    <ClCompile Include="..\Source\strategies\protoss\ProtossMiddleGame.cpp" />
     <ClCompile Include="..\Source\strategies\protoss\ZealotDrop.cpp" />
     <ClCompile Include="..\Source\strategies\protoss\ZealotRush.cpp" />
     <ClCompile Include="..\Source\strategies\terrain\FourBarracksMarine.cpp" />
@@ -165,6 +166,7 @@
     <ClInclude Include="..\Source\strategies\BaseStrategyExecutor.h" />
     <ClInclude Include="..\Source\strategies\protoss\DarkTemplarRush.h" />
     <ClInclude Include="..\Source\strategies\protoss\DragoonRush.h" />
+    <ClInclude Include="..\Source\strategies\protoss\ProtossMiddleGame.h" />
     <ClInclude Include="..\Source\strategies\protoss\ZealotDrop.h" />
     <ClInclude Include="..\Source\strategies\protoss\ZealotRush.h" />
     <ClInclude Include="..\Source\strategies\StrategyExecutor.h" />

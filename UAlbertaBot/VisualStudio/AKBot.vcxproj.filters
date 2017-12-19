@@ -244,6 +244,9 @@
     <ClCompile Include="..\Source\commands\CombatCommanderCommandExecutor.cpp">
       <Filter>commands</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\strategies\protoss\ProtossMiddleGame.cpp">
+      <Filter>strategies\protoss</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="common">
@@ -573,6 +576,9 @@
     </ClInclude>
     <ClInclude Include="..\Source\commands\CombatCommanderCommandExecutor.h">
       <Filter>commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\strategies\protoss\ProtossMiddleGame.h">
+      <Filter>strategies\protoss</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
