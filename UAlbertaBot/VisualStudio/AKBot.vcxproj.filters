@@ -247,6 +247,12 @@
     <ClCompile Include="..\Source\strategies\protoss\ProtossMiddleGame.cpp">
       <Filter>strategies\protoss</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\strategies\zerg\ZergMiddleGame.cpp">
+      <Filter>strategies\zerg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\strategies\terrain\TerranMiddleGame.cpp">
+      <Filter>strategies\terrain</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="common">
@@ -579,6 +585,12 @@
     </ClInclude>
     <ClInclude Include="..\Source\strategies\protoss\ProtossMiddleGame.h">
       <Filter>strategies\protoss</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\strategies\zerg\ZergMiddleGame.h">
+      <Filter>strategies\zerg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\strategies\terrain\TerranMiddleGame.h">
+      <Filter>strategies\terrain</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

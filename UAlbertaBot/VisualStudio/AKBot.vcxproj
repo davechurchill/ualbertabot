@@ -74,8 +74,10 @@
     <ClCompile Include="..\Source\strategies\protoss\ZealotRush.cpp" />
     <ClCompile Include="..\Source\strategies\terrain\FourBarracksMarine.cpp" />
     <ClCompile Include="..\Source\strategies\terrain\MarineRush.cpp" />
+    <ClCompile Include="..\Source\strategies\terrain\TerranMiddleGame.cpp" />
     <ClCompile Include="..\Source\strategies\terrain\TankPush.cpp" />
     <ClCompile Include="..\Source\strategies\terrain\VultureRush.cpp" />
+    <ClCompile Include="..\Source\strategies\zerg\ZergMiddleGame.cpp" />
     <ClCompile Include="..\Source\strategies\zerg\ThreeHatchMutalisk.cpp" />
     <ClCompile Include="..\Source\strategies\zerg\ThreeHatchScourge.cpp" />
     <ClCompile Include="..\Source\strategies\zerg\TwoHatchHydralisk.cpp" />
@@ -172,8 +174,10 @@
     <ClInclude Include="..\Source\strategies\StrategyExecutor.h" />
     <ClInclude Include="..\Source\strategies\terrain\FourBarracksMarine.h" />
     <ClInclude Include="..\Source\strategies\terrain\MarineRush.h" />
+    <ClInclude Include="..\Source\strategies\terrain\TerranMiddleGame.h" />
     <ClInclude Include="..\Source\strategies\terrain\TankPush.h" />
     <ClInclude Include="..\Source\strategies\terrain\VultureRush.h" />
+    <ClInclude Include="..\Source\strategies\zerg\ZergMiddleGame.h" />
     <ClInclude Include="..\Source\strategies\zerg\ThreeHatchMutalisk.h" />
     <ClInclude Include="..\Source\strategies\zerg\ThreeHatchScourge.h" />
     <ClInclude Include="..\Source\strategies\zerg\TwoHatchHydralisk.h" />
