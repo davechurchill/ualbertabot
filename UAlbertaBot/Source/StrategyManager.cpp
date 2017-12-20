@@ -43,7 +43,7 @@ std::string StrategyManager::selectOptimalStrategy(int currentFrame)
 	auto race = _opponentView->self()->getRace();
 	if (race == BWAPI::Races::Terran)
 	{
-		if (currentFrame == 30000)
+		if (currentFrame == _strategyConfiguration.TerranStrategySwitchTime)
 		{
 			return "Terran_MiddleGame";
 		}
@@ -51,7 +51,7 @@ std::string StrategyManager::selectOptimalStrategy(int currentFrame)
 
 	if (race == BWAPI::Races::Protoss)
 	{
-		if (currentFrame == 20000)
+		if (currentFrame == _strategyConfiguration.ProtossStrategySwitchTime)
 		{
 			return "Protoss_MiddleGame";
 		}
@@ -59,7 +59,7 @@ std::string StrategyManager::selectOptimalStrategy(int currentFrame)
 
 	if (race == BWAPI::Races::Zerg)
 	{
-		if (currentFrame == 30000)
+		if (currentFrame == _strategyConfiguration.ZergStrategySwitchTime)
 		{
 			return "Zerg_MiddleGame";
 		}

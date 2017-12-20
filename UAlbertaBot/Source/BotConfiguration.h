@@ -56,6 +56,9 @@ struct BotStrategyConfiguration
 	std::map<std::string, UAlbertaBot::BuildOrder> Strategies;
 	bool FoundEnemySpecificStrategy = false;
 	bool UsingStrategyIO = false;    // toggle the use of file io for strategy
+	int ZergStrategySwitchTime = 30000;
+	int TerranStrategySwitchTime = 30000;
+	int ProtossStrategySwitchTime = 20000;
 	std::string ReadDir = "bwapi-data/read/";
 	std::string WriteDir = "bwapi-data/write/";
 };
