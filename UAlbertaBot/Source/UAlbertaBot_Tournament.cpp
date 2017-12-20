@@ -47,7 +47,7 @@ UAlbertaBot_Tournament::UAlbertaBot_Tournament(
 	_commandManager.registerExecutor(std::move(workerCommandExecutor));
 	auto baseLocationCommandExecutor = std::make_unique<BaseLocationCommandExecutor>(configuration.Debug);
 	_commandManager.registerExecutor(std::move(baseLocationCommandExecutor));
-	auto strategyManagerCommandExecutor = std::make_unique<StrategyManagerCommandExecutor>(*_strategyManager.get());
+	auto strategyManagerCommandExecutor = std::make_unique<StrategyManagerCommandExecutor>(*_strategyManager.get(), configuration.Strategy);
 	_commandManager.registerExecutor(std::move(strategyManagerCommandExecutor));
 	auto microCommandExecutor = std::make_unique<MicroCommandExecutor>(configuration.Micro);
 	_commandManager.registerExecutor(std::move(microCommandExecutor));
