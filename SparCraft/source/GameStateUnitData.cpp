@@ -9,7 +9,7 @@ GameStateUnitData::GameStateUnitData()
 
 const Unit & GameStateUnitData::getUnit(const size_t & player, const size_t & index) const
 { 
-    SPARCRAFT_ASSERT(player < 2, "Player exceeds capacity: player=%d", player);
+    SPARCRAFT_ASSERT(player < Players::Num_Players, "Player exceeds capacity: player=%d", player);
     SPARCRAFT_ASSERT(index < numUnits(player), "UnitIndex exceeds live Unit capacity: UnitIndex=%d, capacity=%d", index, numUnits(player));
 
     return _allUnits[_liveUnitIDs[player][index]];
@@ -17,7 +17,7 @@ const Unit & GameStateUnitData::getUnit(const size_t & player, const size_t & in
 
 Unit & GameStateUnitData::getUnit(const size_t & player, const size_t & index)
 {
-    SPARCRAFT_ASSERT(player < 2, "Player exceeds capacity: player=%d", player);
+    SPARCRAFT_ASSERT(player < Players::Num_Players, "Player exceeds capacity: player=%d", player);
     SPARCRAFT_ASSERT(index < numUnits(player), "UnitIndex exceeds live Unit capacity: UnitIndex=%d, capacity=%d", index, numUnits(player));
 
     return _allUnits[_liveUnitIDs[player][index]];
@@ -25,7 +25,7 @@ Unit & GameStateUnitData::getUnit(const size_t & player, const size_t & index)
     
 const size_t GameStateUnitData::numUnits(const size_t & player) const
 {
-    SPARCRAFT_ASSERT(player < 2, "Player exceeds capacity: player=%d", player);
+    SPARCRAFT_ASSERT(player < Players::Num_Players, "Player exceeds capacity: player=%d", player);
 
     return _liveUnitIDs[player].size();
 }
@@ -51,9 +51,17 @@ Unit & GameStateUnitData::addUnit(const Unit & unit)
 
     Unit & unitInVector = _allUnits.back();
 
-    _liveUnitIDs[unitInVector.getPlayerID()].push_back(unitInVector.getID());
-    
-    return unitInVector;
+	auto playerId = unitInVector.getPlayerID();
+	if (playerId >= Players::Num_Players)
+	{
+		// Make sure that is any other players would be assumed
+		// to cooperate with each other.
+		playerId = 1;
+	}
+
+	auto& playerLiveUnits = _liveUnitIDs[playerId];
+	playerLiveUnits.push_back(unitInVector.getID());
+	return unitInVector;
 }
 
 void GameStateUnitData::removeUnit(const size_t & player, const size_t & unitIndex)
