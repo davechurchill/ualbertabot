@@ -127,7 +127,7 @@ const bool StrategyManager::shouldExpandNow(int currentFrame) const
 
 void StrategyManager::overrideStrategyOpenBuildOrder(const std::string & name, StrategyConfiguration & strategy)
 {
-    _strategyConfigurations.try_emplace(name, strategy);
+    _strategyConfigurations.emplace(name, strategy);
 	auto& iterator = _strategies.find(name);
 	if (iterator == std::end(_strategies)) {
 		return;
@@ -433,7 +433,7 @@ void StrategyManager::onEnd(const bool isWinner)
 
 void UAlbertaBot::StrategyManager::registerStrategy(std::string strategyName, std::unique_ptr<StrategyExecutor>&& executor)
 {
-	_strategies.try_emplace(strategyName, std::move(executor));
+	_strategies.emplace(strategyName, std::move(executor));
 }
 
 void StrategyManager::setLearnedStrategy()

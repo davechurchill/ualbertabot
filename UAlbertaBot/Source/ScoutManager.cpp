@@ -17,7 +17,7 @@ ScoutManager::ScoutManager(
 	, _opponentView(opponentView)
 	, _baseLocationManager(baseLocationManager)
 	, _mapTools(mapTools)
-	, _explorerManager([&](auto& tile) { return _mapTools->isExplored(tile); })
+	, _explorerManager([this](const BWAPI::TilePosition tile) { return _mapTools->isExplored(tile); })
 {
 }
 
