@@ -52,15 +52,12 @@ Unit & GameStateUnitData::addUnit(const Unit & unit)
     Unit & unitInVector = _allUnits.back();
 
 	auto playerId = unitInVector.getPlayerID();
-	if (playerId >= Players::Num_Players)
+	if (playerId != Players::Player_None)
 	{
-		// Make sure that is any other players would be assumed
-		// to cooperate with each other.
-		playerId = 1;
+		auto& playerLiveUnits = _liveUnitIDs[playerId];
+		playerLiveUnits.push_back(unitInVector.getID());
 	}
 
-	auto& playerLiveUnits = _liveUnitIDs[playerId];
-	playerLiveUnits.push_back(unitInVector.getID());
 	return unitInVector;
 }
 

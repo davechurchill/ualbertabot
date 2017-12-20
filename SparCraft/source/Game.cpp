@@ -63,7 +63,13 @@ void Game::playNextTurn()
     }
 
     // the player that will move next
-    const size_t playerToMove   = getPlayerToMove();
+    size_t playerToMove   = getPlayerToMove();
+	if (playerToMove > 1)
+	{
+		// TODO: This is workaround for games with more then one opponent.
+		playerToMove = Players::Player_Two;
+	}
+
     PlayerPtr player            = _players[playerToMove];
     PlayerPtr enemy             = _players[_state.getEnemy(playerToMove)];
 
