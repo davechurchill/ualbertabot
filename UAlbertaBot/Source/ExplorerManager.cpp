@@ -45,5 +45,5 @@ const std::vector<BWAPI::TilePosition>& AKBot::ExplorerManager::locationsToCheck
 void AKBot::ExplorerManager::verifyExpored()
 {
 	auto eraseMarker = std::remove_if(_locations.begin(), _locations.end(), _explorationCheck);
-	_locations.erase(eraseMarker);
+	_locations.erase(eraseMarker, _locations.end());
 }

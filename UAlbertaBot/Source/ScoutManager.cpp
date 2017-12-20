@@ -95,6 +95,12 @@ void ScoutManager::moveScouts(int currentFrame)
 
 bool ScoutManager::nothingToExplore() const
 {
+	// If explorer manager has something to explore, then look for it.
+	if (_explorerManager.locationsToCheckCount() > 0)
+	{
+		return false;
+	}
+
 	for (const auto& enemy : _opponentView->enemies())
 	{
 		const auto enemyBaseLocation = _baseLocationManager->getPlayerStartingBaseLocation(enemy);
@@ -120,6 +126,18 @@ bool ScoutManager::updateExplorationTargets(int currentFrame)
 		_explorerManager.addBaseLocation(startLocation->getDepotTilePosition());
 	}
 
+	// Append other locations.
+	for (const auto otherBase : _baseLocationManager->getBaseLocations())
+	{
+		if (otherBase->isStartLocation())
+		{
+			continue;
+		}
+
+		_explorerManager.addBaseLocation(otherBase->getDepotTilePosition());
+	}
+
+	_explorerManager.verifyExpored();
 	if (_explorerManager.locationsToCheckCount() > 0)
 	{
 		auto positionToCheck = _explorerManager.locationsToCheck()[0];
