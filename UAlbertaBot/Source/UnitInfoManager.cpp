@@ -48,7 +48,15 @@ const std::map<int, UnitInfo> & UnitInfoManager::getUnitInfoMap(BWAPI::Player pl
 
 bool UnitInfoManager::isEnemyUnit(BWAPI::Unit unit)
 {
-	return unit->getPlayer() == _opponentView->defaultEnemy();
+	for (auto const& enemyPlayer : _opponentView->enemies())
+	{
+		if (unit->getPlayer()->getID() == enemyPlayer->getID())
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void UnitInfoManager::updateUnit(BWAPI::Unit unit)
