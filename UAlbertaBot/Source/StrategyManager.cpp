@@ -12,10 +12,12 @@
 #include "strategies\terrain\FourBarracksMarine.h"
 #include "strategies\terrain\VultureRush.h"
 #include "strategies\terrain\TankPush.h"
+#include "strategies\terrain\TerranMiddleGame.h"
 #include "strategies\zerg\ZergelingRush.h"
 #include "strategies\zerg\TwoHatchHydralisk.h"
 #include "strategies\zerg\ThreeHatchMutalisk.h"
 #include "strategies\zerg\ThreeHatchScourge.h"
+#include "strategies\zerg\ZergMiddleGame.h"
 
 using namespace UAlbertaBot;
 using namespace AKBot;
@@ -36,22 +38,31 @@ StrategyManager::StrategyManager(
 	, _strategyConfiguration(strategyConfiguration)
 {
 }
-std::string StrategyManager::selectOptimalStrategy()
+std::string StrategyManager::selectOptimalStrategy(int currentFrame)
 {
 	auto race = _opponentView->self()->getRace();
 	if (race == BWAPI::Races::Terran)
 	{
-		// return "Terran_TankPush";
+		if (currentFrame == 30000)
+		{
+			return "Terran_MiddleGame";
+		}
 	}
 
 	if (race == BWAPI::Races::Protoss)
 	{
-		return "Protoss_MiddleGame";
+		if (currentFrame == 20000)
+		{
+			return "Protoss_MiddleGame";
+		}
 	}
 
 	if (race == BWAPI::Races::Zerg)
 	{
-		// return "Zerg_3HatchMuta";
+		if (currentFrame == 30000)
+		{
+			return "Zerg_MiddleGame";
+		}
 	}
 
 	return _strategyName;
@@ -59,11 +70,8 @@ std::string StrategyManager::selectOptimalStrategy()
 
 void StrategyManager::update(int currentFrame)
 {
-	if (currentFrame == 20000)
-	{
-		auto newStrategy = selectOptimalStrategy();
-		setPreferredStrategy(newStrategy);
-	}
+	auto newStrategy = selectOptimalStrategy(currentFrame);
+	setPreferredStrategy(newStrategy);
 }
 
 const int StrategyManager::getScore(BWAPI::Player player) const
@@ -242,6 +250,11 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal(int currentFrame) 
 		TankPush tankPush;
 		tankPush.getBuildOrderGoal(goal, currentFrame);
     }
+	else if (_strategyName == "Terran_MiddleGame")
+	{
+		TerranMiddleGame middleGame;
+		middleGame.getBuildOrderGoal(goal, currentFrame);
+	}
     else
     {
         _logger->log("Warning: No build order goal for Terran Strategy: %s", _strategyName.c_str());
@@ -300,6 +313,11 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal(int currentFrame) co
 		ThreeHatchScourge threeHatchScourge;
 		threeHatchScourge.getBuildOrderGoal(goal, currentFrame);
     }
+	else if (_strategyName == "Zerg_MiddleGame")
+	{
+		ZergMiddleGame middleGame;
+		middleGame.getBuildOrderGoal(goal, currentFrame);
+	}
 	else
 	{
 		_logger->log("Warning: No build order goal for Zerg Strategy: %s", _strategyName.c_str());

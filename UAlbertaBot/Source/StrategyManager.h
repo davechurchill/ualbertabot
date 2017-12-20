@@ -54,6 +54,6 @@ public:
 	const std::string& getPreferredStrategy() const;
     const MetaPairVector getBuildOrderGoal(int currentFrame) const;
     const BuildOrder & getOpeningBookBuildOrder() const;
-	std::string selectOptimalStrategy();
+	std::string selectOptimalStrategy(int currentFrame);
 };
 }
