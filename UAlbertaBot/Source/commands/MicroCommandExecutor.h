@@ -1,6 +1,6 @@
 #pragma once
 #include "CommandExecutor.h"
-#include "BotConfiguration.h"
+#include "..\BotConfiguration.h"
 
 namespace AKBot
 {

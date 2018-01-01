@@ -5,14 +5,14 @@
 #include "UnitUtil.h"
 #include "Micro.h"
 #include "BotFactory.h"
-#include <commands\BWAPICommandExecutor.h>
-#include <commands\UnitCommandExecutor.h>
-#include <commands\ProductionCommandExecutor.h>
-#include <commands\WorkerCommandExecutor.h>
-#include <commands\BaseLocationCommandExecutor.h>
-#include <commands\StrategyManagerCommandExecutor.h>
-#include <commands\MicroCommandExecutor.h>
-#include <commands\CombatCommanderCommandExecutor.h>
+#include "commands\BWAPICommandExecutor.h"
+#include "commands\UnitCommandExecutor.h"
+#include "commands\ProductionCommandExecutor.h"
+#include "commands\WorkerCommandExecutor.h"
+#include "commands\BaseLocationCommandExecutor.h"
+#include "commands\StrategyManagerCommandExecutor.h"
+#include "commands\MicroCommandExecutor.h"
+#include "commands\CombatCommanderCommandExecutor.h"
 
 using namespace UAlbertaBot;
 using namespace AKBot;

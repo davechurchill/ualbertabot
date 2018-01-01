@@ -1,8 +1,8 @@
 #pragma once
-#include "UnitInfoManager.h"
-#include "ScreenCanvas.h"
+#include "..\UnitInfoManager.h"
+#include "..\ScreenCanvas.h"
 #include "DebugInfoProvider.h"
-#include "BotConfiguration.h"
+#include "..\BotConfiguration.h"
 
 namespace AKBot
 {

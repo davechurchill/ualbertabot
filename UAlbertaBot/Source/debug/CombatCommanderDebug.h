@@ -1,7 +1,7 @@
 #pragma once
 
-#include "CombatCommander.h"
-#include "ScreenCanvas.h"
+#include "..\CombatCommander.h"
+#include "..\ScreenCanvas.h"
 
 namespace AKBot
 {

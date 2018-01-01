@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Common.h>
+#include "Common.h"
 #include <BWAPI/UnitType.h>
 #include "ScreenCanvas.h"
 

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "WorkerManager.h"
-#include "ScreenCanvas.h"
+#include "..\WorkerManager.h"
+#include "..\ScreenCanvas.h"
 #include "DebugInfoProvider.h"
-#include "BotConfiguration.h"
+#include "..\BotConfiguration.h"
 
 namespace AKBot
 {

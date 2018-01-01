@@ -13,7 +13,7 @@
 #include "CombatCommander.h"
 #include "BOSSManager.h"
 #include "BWAPIScreenCanvas.h"
-#include <commands\CommandManager.h>
+#include "commands\CommandManager.h"
 
 namespace UAlbertaBot
 {
