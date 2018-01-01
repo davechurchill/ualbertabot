@@ -36,5 +36,5 @@ void BotPlayer::PlayGame()
 		}
 	}
 
-	std::cout << "Game Over\n";
+	std::cout << "Game Over at frame " << BWAPI::Broodwar->getFrameCount() << std::endl;
 }
