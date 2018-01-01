@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Common.h>
+#include "Common.h"
 #include "BuildOrderQueue.h"
 #include "BuildingManager.h"
 #include "StrategyManager.h"

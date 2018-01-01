@@ -1,10 +1,10 @@
 #pragma once
-#include "BaseLocationManager.h"
-#include "MapTools.h"
-#include "ScreenCanvas.h"
-#include "OpponentView.h"
+#include "..\BaseLocationManager.h"
+#include "..\MapTools.h"
+#include "..\ScreenCanvas.h"
+#include "..\OpponentView.h"
 #include "DebugInfoProvider.h"
-#include "BotConfiguration.h"
+#include "..\BotConfiguration.h"
 
 namespace AKBot
 {

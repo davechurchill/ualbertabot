@@ -1,5 +1,5 @@
 #include "UnitInfoManagerDebug.h"
-#include "DebugTools.h"
+#include "..\DebugTools.h"
 
 namespace AKBot
 {

@@ -3,12 +3,12 @@
   "configurations": [
     {
       "name": "x86-Debug",
-      "generator": "Ninja",
+      "generator": "Visual Studio 15 2017",
       "configurationType": "Debug",
       "inheritEnvironments": [ "msvc_x86" ],
-      "buildRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\build\\${name}",
+      "buildRoot": "${workspaceRoot}\\build\\${name}",
       "cmakeCommandArgs": "",
-      "buildCommandArgs": "-v",
+      "buildCommandArgs": "",
       "ctestCommandArgs": ""
     },
     {
@@ -16,19 +16,19 @@
       "generator": "Ninja",
       "configurationType": "Debug",
       "inheritEnvironments": [ "msvc_x86" ],
-      "buildRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\build\\${name}",
+      "buildRoot": "${workspaceRoot}\\build\\${name}",
       "cmakeCommandArgs": "-DAKBOT_SSCAIT=ON",
       "buildCommandArgs": "-v",
       "ctestCommandArgs": ""
     },
     {
       "name": "x86-Release",
-      "generator": "Ninja",
+      "generator": "Visual Studio 15 2017",
       "configurationType": "RelWithDebInfo",
       "inheritEnvironments": [ "msvc_x86" ],
-      "buildRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\build\\${name}",
+      "buildRoot": "${workspaceRoot}\\build\\${name}",
       "cmakeCommandArgs": "",
-      "buildCommandArgs": "-v",
+      "buildCommandArgs": "",
       "ctestCommandArgs": ""
     }
   ]

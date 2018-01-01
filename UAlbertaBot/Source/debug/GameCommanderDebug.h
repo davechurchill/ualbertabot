@@ -1,8 +1,8 @@
 #pragma once
 
 #include "DebugInfoProvider.h"
-#include "GameCommander.h"
-#include "ScreenCanvas.h"
+#include "..\GameCommander.h"
+#include "..\ScreenCanvas.h"
 
 namespace AKBot
 {

@@ -1,5 +1,7 @@
 file(GLOB AKBot_SOURCES "source/*.cpp")
 file(GLOB AKBot_DEBUG_SOURCES "source/debug/*.cpp")
+file(GLOB AKBot_Strategy_SOURCES "source/strategies/**/*.cpp" "source/strategies/*.cpp")
+file(GLOB AKBot_Commands_SOURCES "source/commands/*.cpp")
 list(REMOVE_ITEM AKBot_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/UAlbertaBotModule_dll.cpp")
 list(REMOVE_ITEM AKBot_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/main.cpp")
 list(REMOVE_ITEM AKBot_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/Dll.cpp")
@@ -68,6 +70,8 @@ add_library(AKBot
     ${AKBot_SOURCES}
     source/commands/CommandManager.cpp
 	${AKBot_DEBUG_SOURCES}
+	${AKBot_Strategy_SOURCES}
+	${AKBot_Commands_SOURCES}
 	#${BWAPILib_SOURCES}
 	#${BWAPIClient_SOURCES}
 	#${BWAPIShared_SOURCES}
@@ -94,18 +98,18 @@ add_executable(
 )
 
 add_dependencies(AKBot_exe AKBot)
+target_link_libraries(AKBot_exe PUBLIC AKBot::Lib)
+target_include_directories(AKBot_exe BEFORE PUBLIC
+	${BWAPI_INCLUDE_DIR}
+)
 
 IF(CMAKE_BUILD_TYPE MATCHES Debug)
-	if (MSVC14)
-		target_link_libraries(AKBot_exe PUBLIC AKBot::BWAPILib AKBot::BWAPIClient)
-	else()
-		target_link_libraries(AKBot_exe PUBLIC BWAPId.lib BWAPIClientd.lib)
-	endif()
+	message("Adding debug BWAPI libraries")
+	target_link_libraries(AKBot_exe PUBLIC BWAPId.lib BWAPIClientd.lib)
 ELSE()
 	target_link_libraries(AKBot_exe PUBLIC BWAPI.lib BWAPIClient.lib)
 ENDIF()
 
-target_link_libraries(AKBot_exe PUBLIC AKBot::Lib AKBot::SparCraft AKBot::BOSS)
 if (MSVC14)
     target_compile_options(AKBot_exe PRIVATE /await)
 endif()

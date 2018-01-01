@@ -1,5 +1,5 @@
 #pragma once 
-#include "ScreenCanvas.h"
+#include "..\ScreenCanvas.h"
 
 namespace AKBot
 {

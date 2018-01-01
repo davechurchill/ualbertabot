@@ -1,6 +1,6 @@
 #pragma once
-#include "ScoutManager.h"
-#include "ScreenCanvas.h"
+#include "..\ScoutManager.h"
+#include "..\ScreenCanvas.h"
 
 namespace AKBot
 {
