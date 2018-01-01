@@ -8,7 +8,7 @@
       "inheritEnvironments": [ "msvc_x86" ],
       "buildRoot": "${workspaceRoot}\\build\\${name}",
       "cmakeCommandArgs": "",
-      "buildCommandArgs": "-v",
+      "buildCommandArgs": "",
       "ctestCommandArgs": ""
     },
     {
@@ -28,7 +28,7 @@
       "inheritEnvironments": [ "msvc_x86" ],
       "buildRoot": "${workspaceRoot}\\build\\${name}",
       "cmakeCommandArgs": "",
-      "buildCommandArgs": "-v",
+      "buildCommandArgs": "",
       "ctestCommandArgs": ""
     }
   ]
