@@ -32,3 +32,5 @@ compile/
 /SparCraft/VisualStudio/x64
 /UAlbertaBot/VisualStudio/x64
 /build
+/UAlbertaBot/bin/archive
+/UAlbertaBot/bin/combatmanager*.txt
