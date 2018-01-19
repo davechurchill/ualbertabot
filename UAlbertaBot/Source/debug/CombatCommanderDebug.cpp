@@ -1,5 +1,6 @@
 #include "CombatCommanderDebug.h"
 #include <iostream>
+#include <chrono>
 
 using std::ofstream;
 using std::ostream;
@@ -250,8 +251,15 @@ namespace AKBot
 
 	void CombatCommanderDebug::traceCombatManager() const
 	{
+		// TODO: Name of the file should be calculated on the game start.
+		auto start = std::chrono::system_clock::now();
+		std::ostringstream fileNameBuilder;
+		auto time = std::time(nullptr);
+		fileNameBuilder << "combatmanager_" << std::put_time(std::gmtime(&time), "%Y%m%d_%H%M%S") << ".txt";
+		std::string fileName = fileNameBuilder.str();
+		
 		ofstream outfile;
-		outfile.open("combatmanager.txt", ios::out | ios::app);
+		outfile.open(fileName, ios::out | ios::app);
 		outfile << "=======================================================" << endl;
 		auto frameCount = BWAPI::Broodwar->getFrameCount();
 		outfile << "Frame: " << frameCount << endl << endl;
