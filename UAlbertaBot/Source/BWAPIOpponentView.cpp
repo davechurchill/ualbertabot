@@ -32,7 +32,7 @@ BWAPI::Player AKBot::BWAPIOpponentView::defaultEnemy() const
 	return defaultEnemy;
 }
 
-BWAPI::Playerset & AKBot::BWAPIOpponentView::enemies() const
+const BWAPI::Playerset & AKBot::BWAPIOpponentView::enemies() const
 {
 	return _game->enemies();
 }

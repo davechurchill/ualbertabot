@@ -27,6 +27,7 @@ namespace Micro
     void SmartLaySpiderMine(BWAPI::Unit unit, BWAPI::Position pos);
     void SmartRepair(BWAPI::Unit unit, BWAPI::Unit target, int currentFrame);
     void SmartKiteTarget(
+		BWAPI::Player self,
 		BWAPI::Unit rangedUnit,
 		BWAPI::Unit target,
 		int currentFrame,

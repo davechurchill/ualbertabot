@@ -33,10 +33,15 @@ namespace UnitUtil
     bool CanAttack(BWAPI::Unit attacker, BWAPI::Unit target);
     bool IsMorphedBuildingType(BWAPI::UnitType type);
     double CalculateLTD(BWAPI::Unit attacker, BWAPI::Unit target);
-    int GetAttackRange(BWAPI::Unit attacker, BWAPI::Unit target);
+    int GetAttackRange(
+		BWAPI::Player self,
+		BWAPI::Unit attacker,
+		BWAPI::Unit target);
     int GetAttackRange(BWAPI::UnitType attacker, BWAPI::UnitType target);
     
-    size_t GetAllUnitCount(BWAPI::UnitType type);
+    size_t GetAllUnitCount(
+		BWAPI::Player self,
+		BWAPI::UnitType type);
     BWAPI::Position GetUnitsetCenter(const std::vector<BWAPI::Unit> & cluster);
     
     // BWAPI::Unit GetClosestUnitTypeToTarget(BWAPI::UnitType type, BWAPI::Position target);

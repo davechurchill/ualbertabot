@@ -5,11 +5,16 @@ using UAlbertaBot::MetaPairVector;
 using UAlbertaBot::MetaPair;
 using UAlbertaBot::UnitUtil::GetAllUnitCount;
 
+AKBot::DarkTemplarRush::DarkTemplarRush(BWAPI::Player self)
+	: _self(self)
+{
+}
+
 void AKBot::DarkTemplarRush::getBuildOrderGoal(MetaPairVector& goal, int currentFrame) const
 {
-	int numDragoons = GetAllUnitCount(BWAPI::UnitTypes::Protoss_Dragoon);
-	int numNexusAll = GetAllUnitCount(BWAPI::UnitTypes::Protoss_Nexus);
-	int numDarkTeplar = GetAllUnitCount(BWAPI::UnitTypes::Protoss_Dark_Templar);
+	int numDragoons = GetAllUnitCount(_self, BWAPI::UnitTypes::Protoss_Dragoon);
+	int numNexusAll = GetAllUnitCount(_self, BWAPI::UnitTypes::Protoss_Nexus);
+	int numDarkTeplar = GetAllUnitCount(_self, BWAPI::UnitTypes::Protoss_Dark_Templar);
 
 	goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Dark_Templar, numDarkTeplar + 2));
 

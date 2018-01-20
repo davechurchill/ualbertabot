@@ -7,15 +7,16 @@ namespace AKBot
 	/*
 	 Provide view to the bot opponents using BWAPI
 	*/
-	class BWAPIOpponentView : public OpponentView
+	class BWAPIReplayOpponentView : public OpponentView
 	{
-		BWAPI::Game* _game;
+		BWAPI::Player _self;
+		BWAPI::Playerset _enemies;
 	public:
 		/*
-		* Initialize new instance of the @see BWAPIOpponentView class
+		* Initialize new instance of the @see BWAPIReplayOpponentView class
 		* @param game BWAPI game
 		*/
-		BWAPIOpponentView(BWAPI::Game* game);
+		BWAPIReplayOpponentView(BWAPI::Game* game);
 		/*
 		Returns bot's player
 		*/

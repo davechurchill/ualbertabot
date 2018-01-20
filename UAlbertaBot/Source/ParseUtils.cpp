@@ -304,10 +304,11 @@ void UAlbertaBot::ParseUtils::ParseConfigFile(
 }
 
 void ParseUtils::ParseStrategy(
+	shared_ptr<AKBot::OpponentView> opponentView,
 	BotStrategyConfiguration& strategyOptions,
 	shared_ptr<StrategyManager> strategyManager)
 {
-    BWAPI::Race race = BWAPI::Broodwar->self()->getRace();
+    BWAPI::Race race = opponentView->self()->getRace();
 
 	// if we have set a strategy for the current race, use it
 	if (race == BWAPI::Races::Zerg)
@@ -328,7 +329,7 @@ void ParseUtils::ParseStrategy(
 	// check if we are using an enemy specific strategy
 	if (strategyOptions.UseEnemySpecificStrategy)
 	{
-		for (const auto& enemy : BWAPI::Broodwar->enemies())
+		for (const auto& enemy : opponentView->enemies())
 		{
 			auto enemySpecificStrategySearch = strategyOptions.EnemySpecificStrategy.find(enemy->getName());
 			if (enemySpecificStrategySearch != strategyOptions.EnemySpecificStrategy.end())

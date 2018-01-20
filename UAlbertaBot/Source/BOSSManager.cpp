@@ -30,10 +30,10 @@ void BOSSManager::reset()
 void BOSSManager::startNewSearch(const std::vector<MetaPair> & goalUnits, shared_ptr<BuildingManager> buildingManager, int currentFrame)
 {
 	auto self = _opponentView->self();
-    size_t numWorkers   = UnitUtil::GetAllUnitCount(self->getRace().getWorker());
-    size_t numDepots    = UnitUtil::GetAllUnitCount(UnitUtil::getResourceDepot(self->getRace()))
-                        + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Lair)
-                        + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hive);
+    size_t numWorkers   = UnitUtil::GetAllUnitCount(self, self->getRace().getWorker());
+    size_t numDepots    = UnitUtil::GetAllUnitCount(self, UnitUtil::getResourceDepot(self->getRace()))
+                        + UnitUtil::GetAllUnitCount(self, BWAPI::UnitTypes::Zerg_Lair)
+                        + UnitUtil::GetAllUnitCount(self, BWAPI::UnitTypes::Zerg_Hive);
 
     if (numWorkers == 0)
     {
@@ -50,12 +50,12 @@ void BOSSManager::startNewSearch(const std::vector<MetaPair> & goalUnits, shared
     // convert from UAlbertaBot's meta goal type to BOSS ActionType goal
     try
     {
-        BOSS::BuildOrderSearchGoal goal = GetGoal(goalUnits);
+        BOSS::BuildOrderSearchGoal goal = GetGoal(self, goalUnits);
 
         BOSS::GameState initialState(BWAPI::Broodwar, _opponentView->self(), buildingManager->buildingsQueued());
 
         _smartSearch = SearchPtr(new BOSS::DFBB_BuildOrderSmartSearch(initialState.getRace()));
-        _smartSearch->setGoal(GetGoal(goalUnits));
+        _smartSearch->setGoal(GetGoal(self, goalUnits));
         _smartSearch->setState(initialState);
 
         _searchInProgress = true;
@@ -187,9 +187,9 @@ void BOSSManager::logBadSearch()
     Logger::LogOverwriteToFile("c:/uaberror.txt", s);
 }
 
-BOSS::BuildOrderSearchGoal BOSSManager::GetGoal(const std::vector<MetaPair> & goalUnits)
+BOSS::BuildOrderSearchGoal BOSSManager::GetGoal(BWAPI::Player self, const std::vector<MetaPair> & goalUnits)
 {
-	BOSS::BuildOrderSearchGoal goal(BOSS::Races::GetRaceID(BWAPI::Broodwar->self()->getRace()));
+	BOSS::BuildOrderSearchGoal goal(BOSS::Races::GetRaceID(self->getRace()));
 
 	for (size_t i=0; i<goalUnits.size(); ++i)
 	{

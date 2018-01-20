@@ -253,6 +253,9 @@
     <ClCompile Include="..\Source\strategies\terrain\TerranMiddleGame.cpp">
       <Filter>strategies\terrain</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\BWAPIReplayOpponentView.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="common">
@@ -591,6 +594,9 @@
     </ClInclude>
     <ClInclude Include="..\Source\strategies\terrain\TerranMiddleGame.h">
       <Filter>strategies\terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\BWAPIReplayOpponentView.h">
+      <Filter>map</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
