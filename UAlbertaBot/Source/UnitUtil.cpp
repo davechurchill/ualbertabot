@@ -171,7 +171,10 @@ BWAPI::WeaponType UnitUtil::GetWeapon(BWAPI::UnitType attacker, BWAPI::UnitType 
     return target.isFlyer() ? attacker.airWeapon() : attacker.groundWeapon();
 }
 
-int UnitUtil::GetAttackRange(BWAPI::Unit attacker, BWAPI::Unit target)
+int UnitUtil::GetAttackRange(
+	BWAPI::Player self,
+	BWAPI::Unit attacker,
+	BWAPI::Unit target)
 {
     BWAPI::WeaponType weapon = GetWeapon(attacker, target);
 
@@ -181,7 +184,6 @@ int UnitUtil::GetAttackRange(BWAPI::Unit attacker, BWAPI::Unit target)
     }
 
     int range = weapon.maxRange();
-	auto self = BWAPI::Broodwar->self();
     if ((attacker->getType() == BWAPI::UnitTypes::Protoss_Dragoon) 
         && (attacker->getPlayer() == self)
         && self->getUpgradeLevel(BWAPI::UpgradeTypes::Singularity_Charge))
@@ -204,10 +206,12 @@ int UnitUtil::GetAttackRange(BWAPI::UnitType attacker, BWAPI::UnitType target)
     return weapon.maxRange();
 }
 
-size_t UnitUtil::GetAllUnitCount(BWAPI::UnitType type)
+size_t UnitUtil::GetAllUnitCount(
+	BWAPI::Player self,
+	BWAPI::UnitType type)
 {
     size_t count = 0;
-    for (const auto & unit : BWAPI::Broodwar->self()->getUnits())
+    for (const auto & unit : self->getUnits())
     {
         // trivial case: unit which exists matches the type
         if (unit->getType() == type)
@@ -258,7 +262,7 @@ void UAlbertaBot::UnitUtil::getUnitsInRadius(
 {
 	if (ourUnits)
 	{
-		for (const BWAPI::Unit & unit : BWAPI::Broodwar->self()->getUnits())
+		for (const BWAPI::Unit & unit : opponentView->self()->getUnits())
 		{
 			if (unit->getPosition().getDistance(center) <= radius)
 			{

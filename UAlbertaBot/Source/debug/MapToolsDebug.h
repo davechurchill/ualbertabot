@@ -14,9 +14,11 @@ namespace AKBot
 	{
 		shared_ptr<MapTools> _map;
 		shared_ptr<BaseLocationManager> _bases;
+		shared_ptr<OpponentView> _opponentView;
 		const BotDebugConfiguration& _debugConfiguration;
 	public:
 		MapToolsDebug(
+			shared_ptr<OpponentView> opponentView,
 			shared_ptr<MapTools> map,
 			shared_ptr<BaseLocationManager> bases,
 			const BotDebugConfiguration& debugConfiguration);

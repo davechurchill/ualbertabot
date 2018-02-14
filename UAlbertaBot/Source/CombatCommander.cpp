@@ -133,11 +133,12 @@ void CombatCommander::updateAttackSquads()
 
 void UAlbertaBot::CombatCommander::updateAttackSquad(UAlbertaBot::Squad & mainAttackSquad, int maxUnitsInSquad)
 {
+	auto self = _opponentView->self();
 	if (mainAttackSquad.getUnits().size() > maxUnitsInSquad) {
 		return;
 	}
 
-	auto hydralistCount = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Zerg_Hydralisk);
+	auto hydralistCount = UnitUtil::GetAllUnitCount(self, BWAPI::UnitTypes::Zerg_Hydralisk);
 	for (auto & unit : _combatUnits)
 	{
 		if (unit->getType() == BWAPI::UnitTypes::Zerg_Scourge

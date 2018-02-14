@@ -151,7 +151,7 @@ void RangedManager::executePlan(int currentFrame)
 
 		if (observation.shouldKiteTarget)
 		{
-			Micro::SmartKiteTarget(rangedUnit, observation.targetUnit, currentFrame, configuration().KiteLongerRangedUnits);
+			Micro::SmartKiteTarget(opponentView->self(), rangedUnit, observation.targetUnit, currentFrame, configuration().KiteLongerRangedUnits);
 		}
 	}
 }

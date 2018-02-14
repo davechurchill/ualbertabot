@@ -259,6 +259,7 @@ void Micro::SmartRepair(BWAPI::Unit unit, BWAPI::Unit target, int currentFrame)
 }
 
 void Micro::SmartKiteTarget(
+	BWAPI::Player self,
 	BWAPI::Unit rangedUnit,
 	BWAPI::Unit target,
 	int currentFrame,
@@ -273,7 +274,7 @@ void Micro::SmartKiteTarget(
     }
 
 	double range(rangedUnit->getType().groundWeapon().maxRange());
-	if (rangedUnit->getType() == BWAPI::UnitTypes::Protoss_Dragoon && BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Singularity_Charge))
+	if (rangedUnit->getType() == BWAPI::UnitTypes::Protoss_Dragoon && self->getUpgradeLevel(BWAPI::UpgradeTypes::Singularity_Charge))
 	{
 		range = 6*32;
 	}

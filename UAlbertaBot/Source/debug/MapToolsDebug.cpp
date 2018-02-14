@@ -5,10 +5,11 @@
 namespace AKBot
 {
 	MapToolsDebug::MapToolsDebug(
+		shared_ptr<OpponentView> opponentView,
 		shared_ptr<MapTools> map,
 		shared_ptr<BaseLocationManager> bases,
 		const BotDebugConfiguration& debugConfiguration)
-		: _map(map), _bases(bases), _debugConfiguration(debugConfiguration)
+		: _map(map), _bases(bases), _debugConfiguration(debugConfiguration), _opponentView(opponentView)
 	{
 	}
 
@@ -31,7 +32,7 @@ namespace AKBot
 
 
 		int size = 4;
-		BWAPI::Position homePosition(BWAPI::Broodwar->self()->getStartLocation());
+		BWAPI::Position homePosition(_opponentView->self()->getStartLocation());
 		BWAPI::Position mPos = BWAPI::Broodwar->getMousePosition() + BWAPI::Broodwar->getScreenPosition();
 		BWAPI::TilePosition mTile(mPos);
 

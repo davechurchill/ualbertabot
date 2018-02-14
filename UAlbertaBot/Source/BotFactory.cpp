@@ -2,6 +2,7 @@
 #include "UAlbertaBot_Arena.h"
 #include "UAlbertaBot_Tournament.h"
 #include "BWAPIOpponentView.h"
+#include "BWAPIReplayOpponentView.h"
 #include "BWAPIMapInformation.h"
 
 #include "debug\BWAPIPrintLogger.h"
@@ -29,32 +30,36 @@
 using namespace AKBot;
 using namespace UAlbertaBot;
 
-void registerWellKnownStrategies(StrategyManager& strategyManager) {
+void registerWellKnownStrategies(AKBot::OpponentView& opponentView, StrategyManager& strategyManager) {
+	auto self = opponentView.self();
+
 	// Well known Protoss strategies.
-	strategyManager.registerStrategy("Protoss_ZealotRush", std::make_unique<ZealotRush>());
-	strategyManager.registerStrategy("Protoss_Drop", std::make_unique<ZealotDrop>());
-	strategyManager.registerStrategy("Protoss_DragoonRush", std::make_unique<DragoonRush>());
-	strategyManager.registerStrategy("Protoss_DTRush", std::make_unique<DarkTemplarRush>());
+	strategyManager.registerStrategy("Protoss_ZealotRush", std::make_unique<ZealotRush>(self));
+	strategyManager.registerStrategy("Protoss_Drop", std::make_unique<ZealotDrop>(self));
+	strategyManager.registerStrategy("Protoss_DragoonRush", std::make_unique<DragoonRush>(self));
+	strategyManager.registerStrategy("Protoss_DTRush", std::make_unique<DarkTemplarRush>(self));
 
 	// Well known Terrain strategies
-	strategyManager.registerStrategy("Terran_MarineRush", std::make_unique<MarineRush>());
-	strategyManager.registerStrategy("Terran_4RaxMarines", std::make_unique<FourBarracksMarine>());
-	strategyManager.registerStrategy("Terran_TankPush", std::make_unique<TankPush>());
-	strategyManager.registerStrategy("Terran_VultureRush", std::make_unique<VultureRush>());
+	strategyManager.registerStrategy("Terran_MarineRush", std::make_unique<MarineRush>(self));
+	strategyManager.registerStrategy("Terran_4RaxMarines", std::make_unique<FourBarracksMarine>(self));
+	strategyManager.registerStrategy("Terran_TankPush", std::make_unique<TankPush>(self));
+	strategyManager.registerStrategy("Terran_VultureRush", std::make_unique<VultureRush>(self));
 
 	// Well known Zerg strategies
-	strategyManager.registerStrategy("Zerg_ZerglingRush", std::make_unique<ZergelingRush>());
-	strategyManager.registerStrategy("Zerg_9Pool", std::make_unique<ZergelingRush>());
-	strategyManager.registerStrategy("Zerg_2HatchHydra", std::make_unique<TwoHatchHydralisk>());
-	strategyManager.registerStrategy("Zerg_3HatchMuta", std::make_unique<ThreeHatchMutalisk>());
-	strategyManager.registerStrategy("Zerg_3HatchScourge", std::make_unique<ThreeHatchScourge>());
+	strategyManager.registerStrategy("Zerg_ZerglingRush", std::make_unique<ZergelingRush>(self));
+	strategyManager.registerStrategy("Zerg_9Pool", std::make_unique<ZergelingRush>(self));
+	strategyManager.registerStrategy("Zerg_2HatchHydra", std::make_unique<TwoHatchHydralisk>(self));
+	strategyManager.registerStrategy("Zerg_3HatchMuta", std::make_unique<ThreeHatchMutalisk>(self));
+	strategyManager.registerStrategy("Zerg_3HatchScourge", std::make_unique<ThreeHatchScourge>(self));
 }
 
 BotPlayer AKBot::createBot(const std::string& mode, BotConfiguration& configuration, const std::string& configurationFile) {
 	if (mode == "Tournament") {
 		auto game = BWAPI::BroodwarPtr;
 		auto logger = std::shared_ptr<AKBot::Logger>(new AKBot::BWAPIPrintLogger());
-		auto opponentView = std::shared_ptr<AKBot::OpponentView>(new AKBot::BWAPIOpponentView(game));
+		auto opponentView = game->isReplay()
+			? std::shared_ptr<AKBot::OpponentView>(new AKBot::BWAPIReplayOpponentView(game))
+			: std::shared_ptr<AKBot::OpponentView>(new AKBot::BWAPIOpponentView(game));
 		auto workerData = std::shared_ptr<WorkerData>(new WorkerData(logger));
 		auto workerManager = std::shared_ptr<WorkerManager>(new WorkerManager(
 			opponentView,
@@ -68,7 +73,7 @@ BotPlayer AKBot::createBot(const std::string& mode, BotConfiguration& configurat
 			baseLocationManager,
 			logger,
 			configuration.Strategy));
-		registerWellKnownStrategies(*strategyManager);
+		registerWellKnownStrategies(*opponentView, *strategyManager);
 		auto mapInformation = std::shared_ptr<MapInformation>(new BWAPIMapInformation(game));
 		auto mapTools = std::shared_ptr<MapTools>(new MapTools(mapInformation, logger));
 		auto combatCommander = std::shared_ptr<CombatCommander>(new CombatCommander(
@@ -117,11 +122,11 @@ BotPlayer AKBot::createBot(const std::string& mode, BotConfiguration& configurat
 			std::shared_ptr<DebugInfoProvider>(new AKBot::BaseLocationManagerDebug(opponentView, baseLocationManager, mapTools, configuration.Debug)),
 			std::shared_ptr<DebugInfoProvider>(new AKBot::UnitInfoManagerDebug(opponentView, unitInfoManager, debugConfiguration)),
 			std::shared_ptr<DebugInfoProvider>(new AKBot::WorkerManagerDebug(workerData, debugConfiguration)),
-			std::shared_ptr<DebugInfoProvider>(new AKBot::MapToolsDebug(mapTools, baseLocationManager, debugConfiguration)),
+			std::shared_ptr<DebugInfoProvider>(new AKBot::MapToolsDebug(opponentView, mapTools, baseLocationManager, debugConfiguration)),
 		};
 		shared_ptr<GameDebug> gameDebug = std::shared_ptr<GameDebug>(new GameDebug(providers));
 
-		ParseUtils::ParseStrategy(configuration.Strategy, strategyManager);
+		ParseUtils::ParseStrategy(opponentView, configuration.Strategy, strategyManager);
 		auto strategyName = configuration.Strategy.StrategyName;
 		strategyManager->setPreferredStrategy(strategyName);
 

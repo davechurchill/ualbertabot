@@ -11,7 +11,7 @@ BaseLocationManager::BaseLocationManager(BWAPI::Game* game, shared_ptr<AKBot::Op
 	, _baseLocationData()
 {
     _playerStartingBaseLocations[_opponentView->self()]  = nullptr;
-	for (const auto& enemyPlayer : _opponentView->enemies())
+	for (const auto enemyPlayer : _opponentView->enemies())
 	{
 		_playerStartingBaseLocations[enemyPlayer] = nullptr;
 	}

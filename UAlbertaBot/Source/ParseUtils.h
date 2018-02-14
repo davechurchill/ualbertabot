@@ -3,6 +3,7 @@
 #include <memory>
 #include <BWAPI/Race.h>
 #include "BotConfiguration.h"
+#include "OpponentView.h"
 
 namespace UAlbertaBot
 {
@@ -21,6 +22,7 @@ namespace ParseUtils
 		bool& configFileFound,
 		bool& configFileParsed);
     void ParseStrategy(
+		shared_ptr<AKBot::OpponentView> opponentView,
 		BotStrategyConfiguration& strategyOptions,
 		shared_ptr<StrategyManager> strategyManager);
 

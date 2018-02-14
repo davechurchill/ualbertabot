@@ -5,9 +5,14 @@ using UAlbertaBot::MetaPairVector;
 using UAlbertaBot::MetaPair;
 using UAlbertaBot::UnitUtil::GetAllUnitCount;
 
+AKBot::ZealotDrop::ZealotDrop(BWAPI::Player self)
+	: _self(self)
+{
+}
+
 void AKBot::ZealotDrop::getBuildOrderGoal(MetaPairVector& goal, int currentFrame) const
 {
-	int numZealots = GetAllUnitCount(BWAPI::UnitTypes::Protoss_Zealot);
+	int numZealots = GetAllUnitCount(_self, BWAPI::UnitTypes::Protoss_Zealot);
 
 	if (numZealots == 0)
 	{

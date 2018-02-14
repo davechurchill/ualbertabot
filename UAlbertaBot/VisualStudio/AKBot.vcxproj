@@ -36,6 +36,7 @@
     <ClCompile Include="..\source\BuildOrderQueue.cpp" />
     <ClCompile Include="..\Source\BWAPIMapInformation.cpp" />
     <ClCompile Include="..\Source\BWAPIOpponentView.cpp" />
+    <ClCompile Include="..\Source\BWAPIReplayOpponentView.cpp" />
     <ClCompile Include="..\Source\BWAPIScreenCanvas.cpp" />
     <ClCompile Include="..\Source\CombatCommander.cpp" />
     <ClCompile Include="..\Source\CombatSimulation.cpp" />
@@ -126,6 +127,7 @@
     <ClInclude Include="..\source\BuildOrderQueue.h" />
     <ClInclude Include="..\Source\BWAPIMapInformation.h" />
     <ClInclude Include="..\Source\BWAPIOpponentView.h" />
+    <ClInclude Include="..\Source\BWAPIReplayOpponentView.h" />
     <ClInclude Include="..\Source\BWAPIScreenCanvas.h" />
     <ClInclude Include="..\Source\CombatCommander.h" />
     <ClInclude Include="..\Source\CombatSimulation.h" />

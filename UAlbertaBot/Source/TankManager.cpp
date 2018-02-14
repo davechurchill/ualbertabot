@@ -71,7 +71,7 @@ void TankManager::executeMicro(const std::vector<BWAPI::Unit> & targets, int cur
 				// if we're not in siege mode kite the target
 				else
 				{
-					Micro::SmartKiteTarget(tank, target, currentFrame, configuration().KiteLongerRangedUnits);
+					Micro::SmartKiteTarget(opponentView->self(), tank, target, currentFrame, configuration().KiteLongerRangedUnits);
 				}
 			}
 			// if there are no targets

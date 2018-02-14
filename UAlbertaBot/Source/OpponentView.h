@@ -24,6 +24,6 @@ namespace AKBot
 		/*
 		 Returns set of opponents to the given bot.
 		*/
-		virtual BWAPI::Playerset& enemies() const = 0;
+		virtual const BWAPI::Playerset& enemies() const = 0;
 	};
 }
