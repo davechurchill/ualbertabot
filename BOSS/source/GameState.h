@@ -68,7 +68,10 @@ public:
 // constructor based on BWAPI::Game only makes sense if using VS
 // we won't be using this if we're compiling to emscripten or linux
 #ifdef _MSC_VER
-    GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * player, const std::vector<BWAPI::UnitType> & buildingsQueued);
+    GameState(FrameCountType currentFrame, BWAPI::PlayerInterface * player, const std::vector<BWAPI::UnitType> & buildingsQueued);
+	void addUnits(const BWAPI::Unitset& units);
+	void addPlayerUpgrades(BWAPI::PlayerInterface * self);
+	void addPlayerResearch(BWAPI::PlayerInterface * self);
 #endif
 
 	std::vector<ActionType>     doAction(const ActionType & action);

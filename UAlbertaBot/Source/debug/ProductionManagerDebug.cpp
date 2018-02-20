@@ -232,7 +232,7 @@ namespace AKBot
 		}
 
 		const auto& opponentView = _productionManager->getOpponentView();
-		BOSS::GameState currentState(BWAPI::Broodwar, opponentView->self(), buildingManager->buildingsQueued());
+		BOSS::GameState currentState(BWAPI::Broodwar->getFrameCount(), opponentView->self(), buildingManager->buildingsQueued());
 		canvas.drawTextScreen(BWAPI::Position(x - 100, y + 30), "\x04%s", currentState.getBuildingData().toString().c_str());
 		canvas.drawTextScreen(BWAPI::Position(x + 150, y), "\x04%s", currentState.toString().c_str());
 	}
