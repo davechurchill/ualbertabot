@@ -15,9 +15,9 @@ GameState::GameState(const RaceID r)
 }
 
 #ifdef _MSC_VER
-GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self, const std::vector<BWAPI::UnitType> & buildingsQueued)
+GameState::GameState(int currentFrame, BWAPI::PlayerInterface * self, const std::vector<BWAPI::UnitType> & buildingsQueued)
     : _race                 (Races::GetRaceID(self->getRace()))
-    , _currentFrame         (game->getFrameCount())
+    , _currentFrame         (currentFrame)
     , _lastActionFrame      (0)
     , _units                (Races::GetRaceID(self->getRace()))
     , _minerals             (self->minerals() * Constants::RESOURCE_SCALE)
@@ -27,7 +27,6 @@ GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self, c
     UnitCountType mineralWorkerCount    = 0;
     UnitCountType gasWorkerCount        = 0;
     UnitCountType buildingWorkerCount   = 0;
-    UnitCountType larvaCount            = 0;
 
     _units.setMineralWorkers(mineralWorkerCount);
     _units.setGasWorkers(gasWorkerCount);
@@ -36,18 +35,26 @@ GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self, c
     // add buildings queued like they had just been started
     for (const BWAPI::UnitType & type : buildingsQueued)
     {
-        _units.addActionInProgress(ActionType(type), game->getFrameCount() + type.buildTime(), false);
+        _units.addActionInProgress(ActionType(type), currentFrame + type.buildTime(), false);
     }
 
 	// add each unit we have to the current state
-	for (BWAPI::UnitInterface * unit : self->getUnits())
+	addUnits(self->getUnits());
+	addPlayerUpgrades(self);
+	addPlayerResearch(self);
+}
+
+void GameState::addUnits(const BWAPI::Unitset& units)
+{
+	UnitCountType larvaCount = 0;
+	for (BWAPI::UnitInterface * unit : units)
 	{
-        // if the unit is an egg then we're building a zerg unit, add it with the finish time
-        if (unit->getType() == BWAPI::UnitTypes::Zerg_Egg)
-        {
-            _units.addActionInProgress(ActionType(unit->getBuildType()), game->getFrameCount() + unit->getRemainingBuildTime(), false);
-            continue;
-        }
+		// if the unit is an egg then we're building a zerg unit, add it with the finish time
+		if (unit->getType() == BWAPI::UnitTypes::Zerg_Egg)
+		{
+			_units.addActionInProgress(ActionType(unit->getBuildType()), _currentFrame + unit->getRemainingBuildTime(), false);
+			continue;
+		}
 
 		if (unit->getType() == BWAPI::UnitTypes::Zerg_Larva)
 		{
@@ -55,13 +62,13 @@ GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self, c
 			continue;
 		}
 
-        // don't add any units that we don't have any the action space, this should never happen though
+		// don't add any units that we don't have any the action space, this should never happen though
 		if (!ActionTypes::TypeExists(unit->getType()))
 		{
 			continue;
 		}
 
-        ActionType actionType(unit->getType());
+		ActionType actionType(unit->getType());
 
 		// if the unit is completed
 		if (unit->isCompleted())
@@ -69,122 +76,124 @@ GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self, c
 			// if it is a building that is not an addon
 			if (unit->getType().isBuilding())
 			{
-                // add the building data accordingly
+				// add the building data accordingly
 				FrameCountType  trainTime = unit->getRemainingTrainTime() + unit->getRemainingResearchTime() + unit->getRemainingUpgradeTime();
-                ActionType      constructing;
-                ActionType      addon;
-                bool            isHatchery = unit->getType().isResourceDepot() && unit->getType().getRace() == BWAPI::Races::Zerg;
+				ActionType      constructing;
+				ActionType      addon;
+				bool            isHatchery = unit->getType().isResourceDepot() && unit->getType().getRace() == BWAPI::Races::Zerg;
 
-                // if this is a hatchery subtract the training time which is just larva production time
-                if (isHatchery)
-                {
-                    trainTime -= unit->getRemainingTrainTime();
-                }
-                // if this unit is currently building an addon, set it
-                if (unit->getAddon() && unit->getAddon()->isBeingConstructed())
-                {
-                    constructing = ActionType(unit->getAddon()->getType());
-                } 
-                // if it's a non-hatchery currently training something, add it
-                else if (!isHatchery && unit->getRemainingTrainTime() > 0)
-                {
-                    // find the unit we have that has the same construction time remaining
-                    // this is an awful hack but there seems to be no alternative
-                    bool set = false;
-                    for (auto & u : self->getUnits())
-                    {
-                        if (u->getRemainingBuildTime() > 0 && u->getPosition().getDistance(unit->getPosition()) < 16)
-                        {
-                            constructing = ActionType(u->getType());
-                            set = true;
-                            break;
-                        }
-                    }
+				// if this is a hatchery subtract the training time which is just larva production time
+				if (isHatchery)
+				{
+					trainTime -= unit->getRemainingTrainTime();
+				}
+				// if this unit is currently building an addon, set it
+				if (unit->getAddon() && unit->getAddon()->isBeingConstructed())
+				{
+					constructing = ActionType(unit->getAddon()->getType());
+				}
+				// if it's a non-hatchery currently training something, add it
+				else if (!isHatchery && unit->getRemainingTrainTime() > 0)
+				{
+					// find the unit we have that has the same construction time remaining
+					// this is an awful hack but there seems to be no alternative
+					bool set = false;
+					for (auto & u : units)
+					{
+						if (u->getRemainingBuildTime() > 0 && u->getPosition().getDistance(unit->getPosition()) < 16)
+						{
+							constructing = ActionType(u->getType());
+							set = true;
+							break;
+						}
+					}
 
-                    // check to see if the last order issued was a trianing order and grab the unit type from that
-                    if (!set && unit->getLastCommand().getType() == BWAPI::UnitCommandTypes::Train)
-                    {
-                        BWAPI::UnitType trainType = unit->getLastCommand().getUnitType();
+					// check to see if the last order issued was a trianing order and grab the unit type from that
+					if (!set && unit->getLastCommand().getType() == BWAPI::UnitCommandTypes::Train)
+					{
+						BWAPI::UnitType trainType = unit->getLastCommand().getUnitType();
 
-                        if (_currentFrame - unit->getLastCommandFrame() < 2*BWAPI::Broodwar->getLatencyFrames())
-                        {
-                            constructing = ActionType(trainType);
-                            set = true;
+						if (_currentFrame - unit->getLastCommandFrame() < 2 * BWAPI::Broodwar->getLatencyFrames())
+						{
+							constructing = ActionType(trainType);
+							set = true;
 
-                            // we now need to add this to units in progress, since it won't be detected below as an actual unit in progress
-                            _units.addActionInProgress(trainType, game->getFrameCount() + trainType.buildTime(), false);
-                        }
-                    }
+							// we now need to add this to units in progress, since it won't be detected below as an actual unit in progress
+							_units.addActionInProgress(trainType, _currentFrame + trainType.buildTime(), false);
+						}
+					}
 
-                    if (!set)
-                    {
-                        // if we couldn't find the unit type that this unit is training 
-                        // then we have to treat it as if it doesn't exist otherwise BOSS will act strangely
-                        trainTime = 0;
-                        BWAPI::Broodwar->printf("Couldn't find training unit for %s %s %d %d", unit->getType().getName().c_str(), unit->getBuildType().getName().c_str(), unit->getTrainingQueue().size(), unit->getRemainingTrainTime());
-                    }
-                }
-                // if it's researching something, add it
+					if (!set)
+					{
+						// if we couldn't find the unit type that this unit is training 
+						// then we have to treat it as if it doesn't exist otherwise BOSS will act strangely
+						trainTime = 0;
+						BWAPI::Broodwar->printf("Couldn't find training unit for %s %s %d %d", unit->getType().getName().c_str(), unit->getBuildType().getName().c_str(), unit->getTrainingQueue().size(), unit->getRemainingTrainTime());
+					}
+				}
+				// if it's researching something, add it
 				else if (unit->getRemainingResearchTime() > 0)
 				{
 					constructing = ActionType(unit->getTech());
-					_units.addActionInProgress(constructing, game->getFrameCount() + unit->getRemainingResearchTime(), false);
+					_units.addActionInProgress(constructing, _currentFrame + unit->getRemainingResearchTime(), false);
 				}
-                // if it's upgrading something, add it
+				// if it's upgrading something, add it
 				else if (unit->getRemainingUpgradeTime() > 0)
 				{
 					constructing = ActionType(unit->getUpgrade());
-					_units.addActionInProgress(constructing, game->getFrameCount() + unit->getRemainingUpgradeTime(), false);
+					_units.addActionInProgress(constructing, _currentFrame + unit->getRemainingUpgradeTime(), false);
 				}
 
-                // add addons
-                if (unit->getAddon() != nullptr)
-                {
-                    if (unit->getAddon()->isConstructing())
-                    {
-                        constructing = ActionType(unit->getAddon()->getType());
-                    }
-                    else
-                    {
-                        addon = ActionType(unit->getAddon()->getType());    
-                    }
-                }
+				// add addons
+				if (unit->getAddon() != nullptr)
+				{
+					if (unit->getAddon()->isConstructing())
+					{
+						constructing = ActionType(unit->getAddon()->getType());
+					}
+					else
+					{
+						addon = ActionType(unit->getAddon()->getType());
+					}
+				}
 
-                _units.addCompletedBuilding(actionType, trainTime, constructing, addon, unit->getLarva().size());
+				_units.addCompletedBuilding(actionType, trainTime, constructing, addon, unit->getLarva().size());
 			}
-            // otherwise it is a non-building unit
-            else
-            {
-                if (unit->getType() == BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode)
-                {
-                    actionType = ActionType(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode);
-                }
+			// otherwise it is a non-building unit
+			else
+			{
+				if (unit->getType() == BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode)
+				{
+					actionType = ActionType(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode);
+				}
 
-                // add the unit to the state
-			    _units.addCompletedAction(actionType, false);
+				// add the unit to the state
+				_units.addCompletedAction(actionType, false);
 
-                // set the supply accordingly
-                _units.setCurrentSupply(_units.getCurrentSupply() + actionType.supplyRequired());
-            }
+				// set the supply accordingly
+				_units.setCurrentSupply(_units.getCurrentSupply() + actionType.supplyRequired());
+			}
 		}
-        // the unit is currently under construction
+		// the unit is currently under construction
 		else if ((unit->getRemainingBuildTime() > 0) && !unit->getType().isAddon())
 		{
-            // special case of a zerg building morphing into its upgrade
-            if (actionType.isBuilding() && actionType.isMorphed())
-            {
-                // add the completed building which is morphing into this building
-                _units.addCompletedBuilding(actionType.whatBuildsActionType(), unit->getRemainingBuildTime(), actionType, ActionType(), unit->getLarva().size());
-            }
+			// special case of a zerg building morphing into its upgrade
+			if (actionType.isBuilding() && actionType.isMorphed())
+			{
+				// add the completed building which is morphing into this building
+				_units.addCompletedBuilding(actionType.whatBuildsActionType(), unit->getRemainingBuildTime(), actionType, ActionType(), unit->getLarva().size());
+			}
 
-            // add the unit itself in progress
-			_units.addActionInProgress(actionType, game->getFrameCount() + unit->getRemainingBuildTime(), false);
+			// add the unit itself in progress
+			_units.addActionInProgress(actionType, _currentFrame + unit->getRemainingBuildTime(), false);
 		}
 	}
-
-    for (const BWAPI::UpgradeType & type : BWAPI::UpgradeTypes::allUpgradeTypes())
+}
+void GameState::addPlayerUpgrades(BWAPI::PlayerInterface * self)
+{
+	for (const BWAPI::UpgradeType & type : BWAPI::UpgradeTypes::allUpgradeTypes())
 	{
-        if (!ActionTypes::TypeExists(type))
+		if (!ActionTypes::TypeExists(type))
 		{
 			continue;
 		}
@@ -194,17 +203,20 @@ GameState::GameState(BWAPI::GameWrapper & game, BWAPI::PlayerInterface * self, c
 			_units.addCompletedAction(ActionType(type));
 		}
 	}
-    
-    for (const BWAPI::TechType & type : BWAPI::TechTypes::allTechTypes())
+}
+
+void GameState::addPlayerResearch(BWAPI::PlayerInterface * self)
+{
+	for (const BWAPI::TechType & type : BWAPI::TechTypes::allTechTypes())
 	{
-        if (!ActionTypes::TypeExists(type))
+		if (!ActionTypes::TypeExists(type))
 		{
 			continue;
 		}
 
 		if (self->hasResearched(type))
 		{
-		    _units.addCompletedAction(ActionType(type));
+			_units.addCompletedAction(ActionType(type));
 		}
 	}
 }
