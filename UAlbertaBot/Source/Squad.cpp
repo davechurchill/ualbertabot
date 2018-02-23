@@ -269,27 +269,14 @@ bool Squad::needsToRegroup(shared_ptr<MapTools> map, int currentFrame)
 	}
 
 	//do the SparCraft Simulation!
-	CombatSimulation sim(_opponentView, _logger, _sparcraftConfiguration);
-	sim.setCombatUnits(ourCombatUnits, enemyCombatUnitsForSimulation, simulationCenter, _microConfiguration.CombatRegroupRadius, currentFrame);
-    auto score = sim.simulateCombat();
+	CombatSimulation sim(_opponentView, _logger, _sparcraftConfiguration, _microConfiguration);
+	auto isWinPredicted = sim.isWinPredicted(ourCombatUnits, enemyCombatUnitsForSimulation, currentFrame);
 	if (_debugConfiguration.DrawCombatSimulationInfo)
 	{
-		std::stringstream ss1;
-		ss1 << "Initial State:\n";
-		ss1 << SparCraft::AITools::StateToStringCompact(sim.getSparCraftState()) << "\n\n";
-
-		std::stringstream ss2;
-
-		ss2 << "Predicted Outcome: " << sim.getLastScore() << "\n";
-		ss2 << SparCraft::AITools::StateToStringCompact(sim.getEvaluatedState()) << "\n";
-
-		BWAPI::Broodwar->drawTextScreen(150, 200, "%s", ss1.str().c_str());
-		BWAPI::Broodwar->drawTextScreen(300, 200, "%s", ss2.str().c_str());
-
-		BWAPI::Broodwar->drawTextScreen(240, 280, "Combat Sim : %lf", sim.getLastScore());
+		sim.printDebugInformation(simulationCenter);
 	}
 
-	bool retreat = score < _microConfiguration.RetreatThreshold;
+	bool retreat = !isWinPredicted;
     int switchTime = 100;
     bool waiting = false;
 

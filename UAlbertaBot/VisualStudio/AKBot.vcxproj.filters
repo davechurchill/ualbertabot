@@ -256,6 +256,9 @@
     <ClCompile Include="..\Source\BWAPIReplayOpponentView.cpp">
       <Filter>map</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\simulation\SparCraftCombatEstimator.cpp">
+      <Filter>micro\simulation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="common">
@@ -298,6 +301,9 @@
     </Filter>
     <Filter Include="strategies\zerg">
       <UniqueIdentifier>{05eb8e58-d05b-43b0-ab93-d798ae21f897}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="micro\simulation">
+      <UniqueIdentifier>{5181fbd6-af16-4ecc-9312-6fd1839abeba}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -597,6 +603,12 @@
     </ClInclude>
     <ClInclude Include="..\Source\BWAPIReplayOpponentView.h">
       <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\simulation\CombatEstimator.h">
+      <Filter>micro\simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\simulation\SparCraftCombatEstimator.h">
+      <Filter>micro\simulation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

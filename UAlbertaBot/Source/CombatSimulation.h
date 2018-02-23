@@ -6,52 +6,32 @@
 	#include "Visualizer.h"
 #endif
 
-#pragma warning( push )
-#pragma warning( disable : 4100)
-#include "..\..\SparCraft\source\GameState.h"
-#include "..\..\SparCraft\source\Game.h"
-#include "..\..\SparCraft\source\Unit.h"
-#include "..\..\SparCraft\source\AllPlayers.h"
-#pragma warning( pop )
 #include "UnitData.h"
 #include "OpponentView.h"
 #include "UnitInfoManager.h"
 #include "Logger.h"
 #include "BotConfiguration.h"
+#include "simulation\SparCraftCombatEstimator.h"
 
 namespace UAlbertaBot
 {
 class CombatSimulation
 {
-	SparCraft::GameState		_state;
-	SparCraft::GameState		_evaluatedState;
-	double						_lastScore;
-	shared_ptr<AKBot::OpponentView> _opponentView;
-	std::shared_ptr<AKBot::Logger> _logger;
-	const BotSparCraftConfiguration& _sparcraftConfiguration;
+	AKBot::SparCraftCombatEstimator _sparcraftCombatEstimator;
 
 public:
 
 	CombatSimulation(
 		shared_ptr<AKBot::OpponentView> opponentView,
 		shared_ptr<AKBot::Logger> logger,
-		const BotSparCraftConfiguration& sparcraftConfiguration);
+		const BotSparCraftConfiguration& sparcraftConfiguration,
+		const BotMicroConfiguration& microConfiguration);
 
-	void setCombatUnits(
+	bool isWinPredicted(
 		const std::vector<BWAPI::Unit> ourCombatUnits,
-		std::vector<UnitInfo> enemyCombatUnits,
-		const BWAPI::Position & center,
-		const int radius,
+		std::vector<UAlbertaBot::UnitInfo> enemyCombatUnits,
 		int currentFrame);
 
-	double simulateCombat();
-
-	const SparCraft::Unit			getSparCraftUnit(const UnitInfo & ui, int currentFrame) const;
-    const SparCraft::Unit			getSparCraftUnit(BWAPI::Unit unit, int currentFrame) const;
-	const SparCraft::GameState &	getSparCraftState() const;
-
-	const size_t getSparCraftPlayerID(BWAPI::Player player) const;
-	const double getLastScore() const { return _lastScore; }
-	const SparCraft::GameState& getEvaluatedState() { return _evaluatedState; }
+	void printDebugInformation(BWAPI::Position simulationCenter);
 };
 }
