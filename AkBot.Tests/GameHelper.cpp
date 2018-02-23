@@ -37,6 +37,13 @@ void AKBot::Tests::setPlayers(BWAPI::GameData& gameData, int playersCount)
 	for (auto i = 0; i < playersCount; i++)
 	{
 		strcpy_s(gameData.players[i].name, playerNames[i]);
+		for (auto j = 0; j < playersCount; j++)
+		{
+			if (j != i)
+			{
+				gameData.players[i].isEnemy[j] = true;
+			}
+		}
 	}
 
 	gameData.players[playersCount].isNeutral = true;

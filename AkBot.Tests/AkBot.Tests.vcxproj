@@ -233,6 +233,7 @@
     <ClCompile Include="TestLib\RegionImpl.cpp" />
     <ClCompile Include="TestLib\UnitImpl.cpp" />
     <ClCompile Include="UnitHelper.cpp" />
+    <ClCompile Include="UnitInfoManagerTest.cpp" />
     <ClCompile Include="unittest1.cpp" />
   </ItemGroup>
   <ItemGroup>
