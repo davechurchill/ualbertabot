@@ -112,6 +112,10 @@ void UnitInfoManager::getNearbyForce(std::vector<UnitInfo> & unitInfo, BWAPI::Po
 	for (const auto & kv : getUnitData(player).getUnitInfoMap())
 	{
 		const UnitInfo & ui(kv.second);
+
+		if (!ui.unit->isVisible()) {
+			continue;
+		}
         
 		// if it's a combat unit we care about
 		// and it's finished! 

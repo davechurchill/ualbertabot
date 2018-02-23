@@ -15,6 +15,7 @@ void AKBot::Tests::placeGeyser(BWAPI::UnitData& unitData, int x, int y, int reso
 	unitData.positionY = y;
 	unitData.type = BWAPI::UnitTypes::Resource_Vespene_Geyser;
 	unitData.exists = true;
+	unitData.isCompleted = true;
 	unitData.resources = resources;
 }
 void AKBot::Tests::placeTerrainBunker(BWAPI::UnitData& unitData, int x, int y)
@@ -41,4 +42,5 @@ void AKBot::Tests::placeUnit(BWAPI::UnitData& unitData, BWAPI::UnitType unitType
 	unitData.hitPoints = unitType.maxHitPoints();
 	unitData.shields = unitType.maxShields();
 	unitData.exists = true;
+	unitData.isCompleted = true;
 }
