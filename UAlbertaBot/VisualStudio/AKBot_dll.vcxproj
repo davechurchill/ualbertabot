@@ -25,6 +25,11 @@
   <ItemGroup>
     <ClInclude Include="..\Source\UAlbertaBotModule_dll.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="AKBot.vcxproj">
+      <Project>{572af06a-4078-4c5a-abce-b29c84050e6d}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>AKBot_dll</ProjectName>
     <ProjectGuid>{82F37540-2170-4174-9E7A-CCF3F00515CE}</ProjectGuid>
