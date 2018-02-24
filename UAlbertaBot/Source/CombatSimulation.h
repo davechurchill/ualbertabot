@@ -16,8 +16,7 @@ class CombatSimulation
 	AKBot::SparCraftCombatEstimator _sparcraftCombatEstimator;
 	AKBot::FAPCombatEstimator _fapCombatEstimator;
 
-	// Name of the actual combat estimator which will be used for estimation of combats.
-	std::string _combatEstimatorName;
+	const BotMicroConfiguration& _microConfiguration;
 
 	AKBot::CombatEstimator& getCurrentCombatEstimator();
 public:
@@ -32,9 +31,9 @@ public:
 		const std::vector<BWAPI::Unit> ourCombatUnits,
 		std::vector<UAlbertaBot::UnitInfo> enemyCombatUnits,
 		int currentFrame);
-	void setEstimator(std::string combatEstimatorName);
+
 	// Gets name of the current combat estimator
-	const std::string getEstimator() const { return _combatEstimatorName; }
+	const std::string getEstimator() const { return _microConfiguration.CombatEstimationStrategy; }
 
 	void printDebugInformation(BWAPI::Position simulationCenter);
 };

@@ -126,6 +126,9 @@ struct BotMicroConfiguration
 	double RetreatThreshold = 0.0;
 	int SquadUpdateFramePeriod = 10;
 	int MoveTargetThreshold = 100; // Starting from which distance we attempt to move to target location.
+
+	// Strategy for estimation of the combat results.
+	std::string CombatEstimationStrategy = "sparcraft";
 };
 
 struct BotMacroConfiguration
