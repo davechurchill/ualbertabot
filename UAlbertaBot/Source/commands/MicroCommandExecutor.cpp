@@ -31,6 +31,12 @@ void AKBot::MicroCommandExecutor::onCommand(const std::string & command)
 		auto thresholdString = command.substr(squadMoveThresholdPrefix.length(), command.length() - squadMoveThresholdPrefix.length());
 		_microConfiguration.MoveTargetThreshold = ::atoi(thresholdString.c_str());
 	}
+
+	std::string combatEstimationPrefix("set combat estimation ");
+	if (boost::starts_with(command, combatEstimationPrefix)) {
+		auto combatEstimationString = command.substr(combatEstimationPrefix.length(), command.length() - combatEstimationPrefix.length());
+		_microConfiguration.CombatEstimationStrategy = combatEstimationString;
+	}
 }
 
 bool AKBot::MicroCommandExecutor::isSupported(const std::string & command) const
@@ -44,6 +50,10 @@ bool AKBot::MicroCommandExecutor::isSupported(const std::string & command) const
 	}
 
 	if (boost::starts_with(command, "set squad move threshold ")) {
+		return true;
+	}
+
+	if (boost::starts_with(command, "set combat estimation ")) {
 		return true;
 	}
 

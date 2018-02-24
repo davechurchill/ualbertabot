@@ -5,7 +5,7 @@ using namespace UAlbertaBot;
 
 AKBot::CombatEstimator & UAlbertaBot::CombatSimulation::getCurrentCombatEstimator()
 {
-	if (_combatEstimatorName == "fap")
+	if (_microConfiguration.CombatEstimationStrategy == "fap")
 	{
 		return _fapCombatEstimator;
 	}
@@ -20,7 +20,7 @@ CombatSimulation::CombatSimulation(
 	const BotMicroConfiguration& microConfiguration)
 	: _sparcraftCombatEstimator(opponentView, logger, sparcraftConfiguration, microConfiguration)
 	, _fapCombatEstimator(microConfiguration)
-	, _combatEstimatorName("sparcraft")
+	, _microConfiguration(microConfiguration)
 {
 }
 
@@ -32,11 +32,6 @@ bool CombatSimulation::isWinPredicted(
 	int currentFrame)
 {
 	return getCurrentCombatEstimator().isWinPredicted(ourCombatUnits, enemyCombatUnits, currentFrame);
-}
-
-void UAlbertaBot::CombatSimulation::setEstimator(std::string combatEstimatorName)
-{
-	_combatEstimatorName = combatEstimatorName;
 }
 
 void CombatSimulation::printDebugInformation(BWAPI::Position simulationCenter)
