@@ -32,6 +32,20 @@ struct UnitInfo
 
     }
 
+	UnitInfo(BWAPI::Unit unit)
+		: unitID(unit->getID())
+		, lastHealth(unit->getHitPoints())
+		, lastShields(unit->getShields())
+		, player(unit->getPlayer())
+		, unit(unit)
+		, lastPosition(unit->getPosition())
+		, type(unit->getType())
+		, completed(unit->isCompleted())
+
+	{
+
+	}
+
     const bool operator == (BWAPI::Unit target) const
     {
         return unitID == target->getID();

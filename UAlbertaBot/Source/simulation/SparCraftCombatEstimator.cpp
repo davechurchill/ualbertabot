@@ -1,5 +1,5 @@
 #include "SparCraftCombatEstimator.h"
-#include "UnitUtil.h"
+#include "..\UnitUtil.h"
 
 using namespace AKBot;
 using namespace UAlbertaBot;
