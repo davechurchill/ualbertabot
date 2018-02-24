@@ -259,6 +259,12 @@
     <ClCompile Include="..\Source\simulation\SparCraftCombatEstimator.cpp">
       <Filter>micro\simulation</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\simulation\FAP.cpp">
+      <Filter>micro\simulation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\simulation\FAPCombatEstimator.cpp">
+      <Filter>micro\simulation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="common">
@@ -608,6 +614,12 @@
       <Filter>micro\simulation</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\simulation\SparCraftCombatEstimator.h">
+      <Filter>micro\simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\simulation\FAPCombatEstimator.h">
+      <Filter>micro\simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\simulation\FAP.h">
       <Filter>micro\simulation</Filter>
     </ClInclude>
   </ItemGroup>

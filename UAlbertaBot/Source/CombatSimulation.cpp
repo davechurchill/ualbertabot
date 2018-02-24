@@ -3,12 +3,24 @@
 
 using namespace UAlbertaBot;
 
+AKBot::CombatEstimator & UAlbertaBot::CombatSimulation::getCurrentCombatEstimator()
+{
+	if (_combatEstimatorName == "fap")
+	{
+		return _fapCombatEstimator;
+	}
+
+	return _sparcraftCombatEstimator;
+}
+
 CombatSimulation::CombatSimulation(
 	shared_ptr<AKBot::OpponentView> opponentView,
 	std::shared_ptr<AKBot::Logger> logger,
 	const BotSparCraftConfiguration& sparcraftConfiguration,
 	const BotMicroConfiguration& microConfiguration)
 	: _sparcraftCombatEstimator(opponentView, logger, sparcraftConfiguration, microConfiguration)
+	, _fapCombatEstimator(microConfiguration)
+	, _combatEstimatorName("sparcraft")
 {
 }
 
@@ -19,11 +31,17 @@ bool CombatSimulation::isWinPredicted(
 	std::vector<UnitInfo> enemyCombatUnits,
 	int currentFrame)
 {
-	return _sparcraftCombatEstimator.isWinPredicted(ourCombatUnits, enemyCombatUnits, currentFrame);
+	return getCurrentCombatEstimator().isWinPredicted(ourCombatUnits, enemyCombatUnits, currentFrame);
+}
+
+void UAlbertaBot::CombatSimulation::setEstimator(std::string combatEstimatorName)
+{
+	_combatEstimatorName = combatEstimatorName;
 }
 
 void CombatSimulation::printDebugInformation(BWAPI::Position simulationCenter)
 {
+	auto& estimator = getCurrentCombatEstimator();
 	BWAPI::Broodwar->drawCircleMap(simulationCenter.x, simulationCenter.y, 10, BWAPI::Colors::Red, true);
 	std::stringstream ss1;
 	ss1 << "Initial State:\n";

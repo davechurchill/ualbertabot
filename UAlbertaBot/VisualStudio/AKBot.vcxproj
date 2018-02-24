@@ -59,6 +59,8 @@
     <ClCompile Include="..\Source\ExplorerManager.cpp" />
     <ClCompile Include="..\Source\GameCommander.cpp" />
     <ClCompile Include="..\Source\ScreenCanvas.cpp" />
+    <ClCompile Include="..\Source\simulation\FAP.cpp" />
+    <ClCompile Include="..\Source\simulation\FAPCombatEstimator.cpp" />
     <ClCompile Include="..\Source\simulation\SparCraftCombatEstimator.cpp" />
     <ClCompile Include="..\Source\strategies\BaseStrategyExecutor.cpp" />
     <ClCompile Include="..\Source\strategies\protoss\DarkTemplarRush.cpp" />
@@ -161,6 +163,8 @@
     <ClInclude Include="..\Source\Rect.h" />
     <ClInclude Include="..\Source\ScreenCanvas.h" />
     <ClInclude Include="..\Source\simulation\CombatEstimator.h" />
+    <ClInclude Include="..\Source\simulation\FAP.h" />
+    <ClInclude Include="..\Source\simulation\FAPCombatEstimator.h" />
     <ClInclude Include="..\Source\simulation\SparCraftCombatEstimator.h" />
     <ClInclude Include="..\Source\strategies\BaseStrategyExecutor.h" />
     <ClInclude Include="..\Source\strategies\protoss\DarkTemplarRush.h" />

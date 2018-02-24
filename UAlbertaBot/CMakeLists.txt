@@ -9,6 +9,8 @@ list(REMOVE_ITEM AKBot_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/Dll_Arena.cpp
 list(REMOVE_ITEM AKBot_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/TimerManager.cpp")
 list(REMOVE_ITEM AKBot_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/CombatData.cpp")
 list(APPEND AKBot_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/simulation/SparcraftCombatEstimator.cpp")
+list(APPEND AKBot_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/simulation/FAP.cpp")
+list(APPEND AKBot_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/simulation/FAPCombatEstimator.cpp")
 file(GLOB_RECURSE AKBot_HEADERS "source/*.h")
 
 if (AKBOT_SSCAIT)	
