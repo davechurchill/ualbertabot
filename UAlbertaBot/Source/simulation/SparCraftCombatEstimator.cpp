@@ -151,7 +151,7 @@ double AKBot::SparCraftCombatEstimator::simulateCombat()
 		SparCraft::PlayerPtr p1 = aiParameters.getPlayer(selfID, _sparcraftConfiguration.CombatSimPlayerName);
 		SparCraft::PlayerPtr p2 = aiParameters.getPlayer(enemyID, _sparcraftConfiguration.CombatSimPlayerName);
 
-		SparCraft::Game game(originalState, p1, p2, 2000);
+		SparCraft::Game game(originalState, p1, p2, _microConfiguration.CombatEstimationDepth);
 
 		game.play();
 

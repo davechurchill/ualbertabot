@@ -129,6 +129,7 @@ struct BotMicroConfiguration
 
 	// Strategy for estimation of the combat results.
 	std::string CombatEstimationStrategy = "sparcraft";
+	int CombatEstimationDepth = 96; // Depth of combat simulation depth.
 };
 
 struct BotMacroConfiguration
