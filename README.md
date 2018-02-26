@@ -32,3 +32,23 @@ and [Wiki of current project](https://github.com/kant2002/ualbertabot/wiki) for 
 	In original source code it is hardcoded in the source code which results in the very 
 	slow debug builds starting from middle game. Most of the time this is not requried, only helpful when needed debug BOSS.
 - *SPARCRAFT_ASSERT_ENABLE* This define allow assertion in the Sparcraft code.
+
+## Testing
+
+
+	.\testing\compare_estimator.ps1
+
+	.\testing\run_games.ps1 -Bot1 AKBot_Sparcraft -Bot2 PurpleWave -Games 5
+	.\testing\run_games.ps1 -Bot1 AKBot_Sparcraft -Bot2 100382319 -Games 5
+	.\testing\run_games.ps1 -Bot1 AKBot_Sparcraft -Bot2 "Hao Pan" -Games 5
+	.\testing\run_games.ps1 -Bot1 AKBot_Sparcraft -Bot2 OpprimoBot -Games 5
+	.\testing\run_games.ps1 -Bot1 AKBot_Sparcraft -Bot2 "Marine Hell" -Games 5
+	.\testing\run_games.ps1 -Bot1 AKBot_Sparcraft -Bot2 Goliat -Games 5
+
+	
+	.\testing\run_games.ps1 -Bot1 AKBot_FAP -Bot2 PurpleWave -Games 5
+	.\testing\run_games.ps1 -Bot1 AKBot_FAP -Bot2 100382319 -Games 5
+	.\testing\run_games.ps1 -Bot1 AKBot_FAP -Bot2 "Hao Pan" -Games 5
+	.\testing\run_games.ps1 -Bot1 AKBot_FAP -Bot2 OpprimoBot -Games 5
+	.\testing\run_games.ps1 -Bot1 AKBot_FAP -Bot2 "Marine Hell" -Games 5
+	.\testing\run_games.ps1 -Bot1 AKBot_FAP -Bot2 Goliat -Games 5
