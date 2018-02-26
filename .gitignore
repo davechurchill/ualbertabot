@@ -34,3 +34,4 @@ compile/
 /build
 /UAlbertaBot/bin/archive
 /UAlbertaBot/bin/combatmanager*.txt
+/output.txt
