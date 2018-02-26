@@ -56,7 +56,7 @@ void FAPCombatEstimator::setCombatUnits(
 
 double AKBot::FAPCombatEstimator::simulateCombat()
 {
-	fap.simulate();
+	fap.simulate(_microConfiguration.CombatEstimationDepth);
 	std::pair<int, int> scores = fap.playerScores();
 
 	int score = scores.first - scores.second;

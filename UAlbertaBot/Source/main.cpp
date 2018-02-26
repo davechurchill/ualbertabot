@@ -59,6 +59,11 @@ void UAlbertaBot_BWAPIReconnect()
 int main(int argc, const char * argv[]) 
 {
     bool exitIfStarcraftShutdown = true;
+	if (argc == 2)
+	{
+		// You could pass configuration file as first command line argument.
+		configurationFileName = argv[1];
+	}
 
     // parse the bot's configuration file, if it is not found or isn't valid, the program will exit
 	auto configurationFile = ParseUtils::FindConfigurationLocation(configurationFileName);

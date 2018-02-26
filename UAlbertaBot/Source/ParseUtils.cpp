@@ -18,6 +18,10 @@ inline bool file_exists(const std::string& name) {
 
 std::string ParseUtils::FindConfigurationLocation(const std::string & filename)
 {
+	if (file_exists(filename)) {
+		return filename;
+	}
+
 	auto bwapiAILocation = "bwapi-data/AI/" + filename;
 	if (file_exists(bwapiAILocation)) {
 		return bwapiAILocation;
@@ -118,6 +122,8 @@ void UAlbertaBot::ParseUtils::ParseConfigFile(
         JSONTools::ReadInt("InCombatRadius", micro, microOptions.CombatRadius);
         JSONTools::ReadInt("RegroupRadius", micro, microOptions.CombatRegroupRadius);
         JSONTools::ReadInt("UnitNearEnemyRadius", micro, microOptions.UnitNearEnemyRadius);
+		JSONTools::ReadString("CombatEstimationStrategy", micro, microOptions.CombatEstimationStrategy);
+		JSONTools::ReadInt("CombatEstimationDepth", micro, microOptions.CombatEstimationDepth);
 
         if (micro.HasMember("KiteLongerRangedUnits") && micro["KiteLongerRangedUnits"].IsArray())
         {
