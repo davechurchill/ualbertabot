@@ -26,6 +26,10 @@ void AKBot::Tests::placeTerrainMedic(BWAPI::UnitData& unitData, int x, int y)
 {
 	placeUnit(unitData, BWAPI::UnitTypes::Terran_Medic, x, y);
 }
+void AKBot::Tests::placeTerranMarine(BWAPI::UnitData& unitData, int x, int y)
+{
+	placeUnit(unitData, BWAPI::UnitTypes::Terran_Marine, x, y);
+}
 void AKBot::Tests::placeZergZergeling(BWAPI::UnitData& unitData, int x, int y)
 {
 	placeUnit(unitData, BWAPI::UnitTypes::Zerg_Zergling, x, y);

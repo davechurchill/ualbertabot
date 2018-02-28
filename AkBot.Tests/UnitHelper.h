@@ -10,6 +10,7 @@ namespace AKBot
 		void placeGeyser(BWAPI::UnitData& unitData, int x, int y, int resources);
 		void placeTerrainBunker(BWAPI::UnitData& unitData, int x, int y);
 		void placeTerrainMedic(BWAPI::UnitData& unitData, int x, int y);
+		void placeTerranMarine(BWAPI::UnitData& unitData, int x, int y);
 		
 		void placeZergZergeling(BWAPI::UnitData& unitData, int x, int y);
 		void placeZergUltralisk(BWAPI::UnitData& unitData, int x, int y);
