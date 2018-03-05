@@ -7,7 +7,13 @@ else()
 	set(BWAPI_INCLUDE_DIR "$ENV{BWAPI_DIR}/include")
 	set(BWAPIClient_INCLUDE_DIR "$ENV{BWAPI_DIR}/include/Client")
 endif()
-file(GLOB AKBotTests_SOURCES "../AkBot.Tests/GameHelper.cpp" "../AkBot.Tests/UnitHelper.cpp" "../AkBot.Tests/TestLib/*.cpp" "../AkBot.Tests/Shared/*.cpp")
+file(GLOB AKBotTests_SOURCES
+	"../AkBot.Tests/GameHelper.cpp"
+	"../AkBot.Tests/UnitHelper.cpp"
+	"../AkBot.Tests/NullLogger.cpp"
+	"../AkBot.Tests/TestLib/*.cpp"
+	"../AkBot.Tests/Shared/*.cpp"
+)
 
 link_directories(${BWAPI_LIB_DIR})
 #add_definitions(-DWITH_CMAKE)
