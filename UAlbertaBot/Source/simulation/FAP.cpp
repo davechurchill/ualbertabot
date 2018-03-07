@@ -394,6 +394,7 @@ namespace UAlbertaBot {
 		airDamageType(ui.type.airWeapon().damageType()),
 
 		unitType(ui.type),
+		unitSize(ui.type.size()),
 		isOrganic(ui.type.isOrganic()),
 		score(ui.type.destroyScore()),
 		player(ui.player)

@@ -1,5 +1,6 @@
 file(GLOB SparCraft_SOURCES "source/*.cpp")
 file(GLOB_RECURSE SparCraft_HEADERS "source/*.h")
+file(GLOB_RECURSE SparCraft_Lib "lib/*.lib")
 
 if (AKBOT_SSCAIT)
 	set(BWAPI_LIB_DIR "$ENV{BWAPI_SSCAIT_DIR}/lib")
@@ -22,6 +23,31 @@ add_library(SparCraft
 	source/torch/TorchFrame.cpp
 )
 
-if (MSVC14)
+if(MSVC_VERSION GREATER_EQUAL 1900)
     target_compile_options(SparCraft PRIVATE /await)
 endif()
+
+link_directories(${BWAPI_LIB_DIR})
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib)
+
+add_executable(SparCraft_main
+    source/gui/GUI.cpp
+	source/gui/GUIGame.cpp
+	source/gui/GUITools.cpp
+	source/main/main.cpp
+	source/main/SparCraftExperiment.cpp
+	source/TutorialCode.cpp
+)
+
+
+add_dependencies(SparCraft_main SparCraft)
+message(STATUS "Link dir" ${BWAPI_LIB_DIR})
+target_link_libraries(SparCraft_main PUBLIC SparCraft)
+IF(CMAKE_BUILD_TYPE MATCHES Release)
+	target_link_libraries(SparCraft_main PUBLIC BWAPI.lib)
+ELSE()
+	message("Adding debug BWAPI libraries to SparCraft")
+	target_link_libraries(SparCraft_main PUBLIC BWAPId.lib)
+ENDIF()
+	
+target_link_libraries(SparCraft_main PUBLIC SDL2 SDL2_image opengl32)

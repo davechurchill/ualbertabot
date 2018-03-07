@@ -21,7 +21,7 @@ link_directories(${Boost_LIBRARY_DIRS})
 add_definitions(-DNOMINMAX)
 
 link_directories(${BWAPI_LIB_DIR})
-add_definitions(-DWITH_CMAKE)
+#add_definitions(-DWITH_CMAKE)
 
 add_library(AKBotTests SHARED
     ${AKBotTests_SOURCES}
@@ -38,18 +38,19 @@ add_library(AKBot::Lib ALIAS AKBot)
 add_library(AKBot::SparCraft ALIAS SparCraft)
 add_library(AKBot::BOSS ALIAS BOSS)
 
-
-IF(CMAKE_BUILD_TYPE MATCHES Debug)
+MESSAGE( STATUS "CMAKE_BUILD_TYPE: " ${CMAKE_BUILD_TYPE} )
+MESSAGE( STATUS "MSVC_VERSION: " ${MSVC_VERSION} )
+IF(CMAKE_BUILD_TYPE MATCHES Release)
+	target_link_libraries(AKBotTests PUBLIC BWAPI.lib BWAPIClient.lib)
+ELSE()
 	message("Adding debug BWAPI libraries")
 	target_link_libraries(AKBotTests PUBLIC BWAPId.lib BWAPIClientd.lib)
-ELSE()
-	target_link_libraries(AKBotTests PUBLIC BWAPI.lib BWAPIClient.lib)
 ENDIF()
 
 add_dependencies(AKBotTests AKBot)
 target_link_libraries(AKBotTests PUBLIC AKBot::Lib AKBot::SparCraft AKBot::BOSS)
 
-if (MSVC14)
+if(MSVC_VERSION GREATER_EQUAL 1900)
     target_compile_options(AKBotTests PRIVATE /await)
 endif()
 

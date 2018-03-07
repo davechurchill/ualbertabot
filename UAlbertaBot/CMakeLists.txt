@@ -15,7 +15,7 @@ file(GLOB_RECURSE AKBot_HEADERS "source/*.h")
 
 if (AKBOT_SSCAIT)	
 	set(BWAPI_INCLUDE_DIR "${BWAPI_SSCAIT_DIR}/include")
-	if (MSVC14)
+	if(MSVC_VERSION GREATER_EQUAL 1900)
 		# For embedding BWAPI 4.1.2 you should manually place Debug.h and starcraftver.h  in the root of BWAPI folder
 		# if use installer and create svnrev.h with approximately following content
 		#
@@ -90,7 +90,7 @@ add_library(AKBot::BOSS ALIAS BOSS)
 add_dependencies(AKBot BOSS SparCraft)
 target_link_libraries(AKBot PUBLIC AKBot::Lib AKBot::SparCraft AKBot::BOSS)
 
-if (MSVC14)
+if(MSVC_VERSION GREATER_EQUAL 1900)
     target_compile_options(AKBot PRIVATE /await)
 endif()
 
@@ -106,13 +106,13 @@ target_include_directories(AKBot_exe BEFORE PUBLIC
 	${BWAPI_INCLUDE_DIR}
 )
 
-IF(CMAKE_BUILD_TYPE MATCHES Debug)
+IF(CMAKE_BUILD_TYPE MATCHES Release)
+	target_link_libraries(AKBot_exe PUBLIC BWAPI.lib BWAPIClient.lib)
+ELSE()
 	message("Adding debug BWAPI libraries")
 	target_link_libraries(AKBot_exe PUBLIC BWAPId.lib BWAPIClientd.lib)
-ELSE()
-	target_link_libraries(AKBot_exe PUBLIC BWAPI.lib BWAPIClient.lib)
 ENDIF()
 
-if (MSVC14)
+if(MSVC_VERSION GREATER_EQUAL 1900)
     target_compile_options(AKBot_exe PRIVATE /await)
 endif()
