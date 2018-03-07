@@ -29,15 +29,18 @@ int totalTests = 0;
 BotMicroConfiguration configuration;
 BotSparCraftConfiguration sparcraftConfiguration;
 
+BWAPI::GameData rawGameData;
+
 std::shared_ptr<AKBot::GameImpl> setupFakeGame()
 {
-	auto gameData = std::make_shared<BWAPI::GameData>();
-	auto rawGameData = gameData.get();
-	setP2PForces(rawGameData);
-	setPlayers(*rawGameData, 2);
-	rawGameData->enemy = 1;
+	ZeroMemory(&rawGameData, sizeof(BWAPI::GameData));
+	FillMemory(&rawGameData.getGroundHeight, sizeof(BWAPI::GameData::getGroundHeight), 0);
+	FillMemory(&rawGameData.isVisible, sizeof(BWAPI::GameData::isVisible), true);
+	setP2PForces(&rawGameData);
+	setPlayers(rawGameData, 2);
+	rawGameData.enemy = 1;
 
-	auto currentGame = std::make_shared<AKBot::GameImpl>(rawGameData);
+	auto currentGame = std::make_shared<AKBot::GameImpl>(&rawGameData);
 	currentGame->onMatchStart();
 	return currentGame;
 }
@@ -49,7 +52,7 @@ void doTest(
 	std::function<TCombatEstimator(std::shared_ptr<AKBot::GameImpl>)> estimatorFactory,
 	bool expected)
 {
-	cout << name << endl;
+	cout << name << " ";
 	auto currentGame = setupFakeGame();
 	auto game = currentGame.get();
 	BWAPI::BroodwarPtr = game;
@@ -63,7 +66,7 @@ void doTest(
 	
 	totalTests++;
 	auto result = success ? "SUCCESS" : "FAIL";
-	cout << "Result: " << result << endl;
+	cout << result << endl;
 }
 
 void clearTestCounter()
@@ -130,6 +133,157 @@ bool testMarine2(CombatEstimator& estimator)
 	return estimator.isWinPredicted(ourCombatUnits, enemyCombatUnits, 100);
 }
 
+bool test5MarineVs1SunkenColony(CombatEstimator& estimator)
+{
+	constexpr int MarinesCount = 5;
+	int unitId = 1;
+	int unitIndex = 0;
+	BWAPI::UnitData unitData[MarinesCount];
+	ZeroMemory(&unitData, sizeof(unitData));
+	std::vector<shared_ptr<AKBot::UnitImpl>> units;
+	for (auto i = 0; i < MarinesCount; i++)
+	{
+		placeTerranMarine(unitData[unitIndex], 2, i + 1);
+		unitData[unitIndex].player = 0;
+		auto marineUnitImpl = std::make_shared<AKBot::UnitImpl>(unitId, unitData[unitIndex]);
+		units.push_back(marineUnitImpl);
+		unitIndex++;
+		unitId++;
+	}
+
+	std::vector<BWAPI::Unit> ourCombatUnits;
+	for (auto unit : units)
+	{
+		ourCombatUnits.push_back(unit.get());
+	}
+
+	BWAPI::UnitData sunkenColonyUnitData;
+	placeZergSunkenColony(sunkenColonyUnitData, 1, 3);
+	sunkenColonyUnitData.player = 1;
+	AKBot::UnitImpl sunkenColonyUnitImpl(unitId, sunkenColonyUnitData);
+	unitId++;
+
+	UAlbertaBot::UnitInfo sunkenColony(&sunkenColonyUnitImpl);
+	std::vector<UAlbertaBot::UnitInfo> enemyCombatUnits;
+	enemyCombatUnits.push_back(sunkenColony);
+	return estimator.isWinPredicted(ourCombatUnits, enemyCombatUnits, 100);
+}
+
+bool test8MarineVs1SunkenColony(CombatEstimator& estimator)
+{
+	constexpr int MarinesCount = 8;
+	int unitId = 1;
+	int unitIndex = 0;
+	BWAPI::UnitData unitData[MarinesCount];
+	ZeroMemory(&unitData, sizeof(unitData));
+	std::vector<shared_ptr<AKBot::UnitImpl>> units;
+	for (auto i = 0; i < MarinesCount; i++)
+	{
+		placeTerranMarine(unitData[unitIndex], 2, i + 1);
+		unitData[unitIndex].player = 0;
+		auto marineUnitImpl = std::make_shared<AKBot::UnitImpl>(unitId, unitData[unitIndex]);
+		units.push_back(marineUnitImpl);
+		unitIndex++;
+		unitId++;
+	}
+
+	std::vector<BWAPI::Unit> ourCombatUnits;
+	for (auto unit : units)
+	{
+		ourCombatUnits.push_back(unit.get());
+	}
+
+	BWAPI::UnitData sunkenColonyUnitData;
+	placeZergSunkenColony(sunkenColonyUnitData, 1, 4);
+	sunkenColonyUnitData.player = 1;
+	AKBot::UnitImpl sunkenColonyUnitImpl(unitId, sunkenColonyUnitData);
+	unitId++;
+
+	UAlbertaBot::UnitInfo sunkenColony(&sunkenColonyUnitImpl);
+	std::vector<UAlbertaBot::UnitInfo> enemyCombatUnits;
+	enemyCombatUnits.push_back(sunkenColony);
+	return estimator.isWinPredicted(ourCombatUnits, enemyCombatUnits, 100);
+}
+
+bool test9MarineVs1SunkenColony(CombatEstimator& estimator)
+{
+	constexpr int MarinesCount = 9;
+	int unitId = 1;
+	int unitIndex = 0;
+	BWAPI::UnitData unitData[MarinesCount];
+	ZeroMemory(&unitData, sizeof(unitData));
+	std::vector<shared_ptr<AKBot::UnitImpl>> units;
+	for (auto i = 0; i < MarinesCount; i++)
+	{
+		placeTerranMarine(unitData[unitIndex], 2, i + 1);
+		unitData[unitIndex].player = 0;
+		auto marineUnitImpl = std::make_shared<AKBot::UnitImpl>(unitId, unitData[unitIndex]);
+		units.push_back(marineUnitImpl);
+		unitIndex++;
+		unitId++;
+	}
+
+	std::vector<BWAPI::Unit> ourCombatUnits;
+	for (auto unit : units)
+	{
+		ourCombatUnits.push_back(unit.get());
+	}
+
+	BWAPI::UnitData sunkenColonyUnitData;
+	placeZergSunkenColony(sunkenColonyUnitData, 1, 5);
+	sunkenColonyUnitData.player = 1;
+	AKBot::UnitImpl sunkenColonyUnitImpl(unitId, sunkenColonyUnitData);
+	unitId++;
+
+	UAlbertaBot::UnitInfo sunkenColony(&sunkenColonyUnitImpl);
+	std::vector<UAlbertaBot::UnitInfo> enemyCombatUnits;
+	enemyCombatUnits.push_back(sunkenColony);
+	return estimator.isWinPredicted(ourCombatUnits, enemyCombatUnits, 100);
+}
+
+bool test2MarineVs1Hydralisk(CombatEstimator& estimator)
+{
+	constexpr int MarinesCount = 2;
+	int unitId = 1;
+	int unitIndex = 0;
+	BWAPI::UnitData unitData[MarinesCount];
+	ZeroMemory(&unitData, sizeof(unitData));
+	std::vector<shared_ptr<AKBot::UnitImpl>> units;
+	for (auto i = 0; i < MarinesCount; i++)
+	{
+		auto& currentUnit = unitData[unitIndex];
+		placeTerranMarine(currentUnit, 2, i + 1);
+		currentUnit.player = 0;
+		currentUnit.isVisible[0] = true;
+		currentUnit.isVisible[1] = true;
+		auto marineUnitImpl = std::make_shared<AKBot::UnitImpl>(unitId, currentUnit);
+		units.push_back(marineUnitImpl);
+		unitIndex++;
+		unitId++;
+	}
+
+	std::vector<BWAPI::Unit> ourCombatUnits;
+	for (auto unit : units)
+	{
+		ourCombatUnits.push_back(unit.get());
+	}
+
+	BWAPI::UnitData hydraliskUnitData;
+	ZeroMemory(&hydraliskUnitData, sizeof(hydraliskUnitData));
+	placeZergHydralisk(hydraliskUnitData, 1, 2);
+	hydraliskUnitData.player = 1;
+	hydraliskUnitData.angle = 128;
+	hydraliskUnitData.isVisible[0] = true;
+	hydraliskUnitData.isVisible[1] = true;
+	AKBot::UnitImpl hydraliskUnitImpl(unitId, hydraliskUnitData);
+	unitId++;
+
+	UAlbertaBot::UnitInfo hydralisk(&hydraliskUnitImpl);
+	std::vector<UAlbertaBot::UnitInfo> enemyCombatUnits;
+	enemyCombatUnits.push_back(hydralisk);
+	return estimator.isWinPredicted(ourCombatUnits, enemyCombatUnits, 100);
+}
+
 template<typename TCombatEstimator>
 void testCombatSimulation(
 	std::string name,
@@ -141,6 +295,10 @@ void testCombatSimulation(
 	doTest<TCombatEstimator>("1 Zergling vs empty squad", testZergling1, estimatorFactory, TOTAL_SUCCESS);
 	doTest<TCombatEstimator>("1 Marine vs empty squad", testMarine1, estimatorFactory, TOTAL_SUCCESS);
 	doTest<TCombatEstimator>("1 Marine vs 1 Zergling", testMarine2, estimatorFactory, TOTAL_FAILURE);
+	doTest<TCombatEstimator>("5 Marine vs 1 Sunken Colony", test5MarineVs1SunkenColony, estimatorFactory, TOTAL_FAILURE);
+	doTest<TCombatEstimator>("8 Marine vs 1 Sunken Colony", test8MarineVs1SunkenColony, estimatorFactory, TOTAL_SUCCESS);
+	doTest<TCombatEstimator>("9 Marine vs 1 Sunken Colony", test9MarineVs1SunkenColony, estimatorFactory, TOTAL_SUCCESS);
+	doTest<TCombatEstimator>("2 Marine vs 1 Hydralisk", test2MarineVs1Hydralisk, estimatorFactory, TOTAL_SUCCESS);
 
 	printStatistics();
 }
@@ -168,6 +326,7 @@ SparCraftCombatEstimator getSparCraft(std::shared_ptr<AKBot::GameImpl> gameImpl)
 
 int main(int argc, char *argv[])
 {
+	configuration.CombatEstimationDepth = 2000;
 	testCombatSimulation<FAPCombatEstimator>("FAP", getFap);
 
 	testCombatSimulation<SparCraftCombatEstimator>("SparCraft", getSparCraft);
