@@ -87,8 +87,11 @@ void printStatistics()
 bool testZergling1(CombatEstimator& estimator)
 {
 	BWAPI::UnitData unit;
+	ZeroMemory(&unit, sizeof(unit));
 	placeZergZergeling(unit, 1, 1);
 	unit.player = 0;
+	unit.isVisible[0] = true;
+	unit.isVisible[1] = true;
 	AKBot::UnitImpl unitImpl(1, unit);
 
 	std::vector<BWAPI::Unit> ourCombatUnits;
@@ -101,8 +104,11 @@ bool testZergling1(CombatEstimator& estimator)
 bool testMarine1(CombatEstimator& estimator)
 {
 	BWAPI::UnitData unit;
+	ZeroMemory(&unit, sizeof(unit));
 	placeTerranMarine(unit, 1, 1);
 	unit.player = 0;
+	unit.isVisible[0] = true;
+	unit.isVisible[1] = true;
 	AKBot::UnitImpl unitImpl(1, unit);
 
 	std::vector<BWAPI::Unit> ourCombatUnits;
@@ -115,16 +121,22 @@ bool testMarine1(CombatEstimator& estimator)
 bool testMarine2(CombatEstimator& estimator)
 {
 	BWAPI::UnitData marineUnitData;
+	ZeroMemory(&marineUnitData, sizeof(marineUnitData));
 	placeTerranMarine(marineUnitData, 1, 1);
 	marineUnitData.player = 0;
+	marineUnitData.isVisible[0] = true;
+	marineUnitData.isVisible[1] = true;
 	AKBot::UnitImpl marineUnitImpl(1, marineUnitData);
 
 	std::vector<BWAPI::Unit> ourCombatUnits;
 	ourCombatUnits.push_back(&marineUnitImpl);
 
 	BWAPI::UnitData zerglingUnitData;
+	ZeroMemory(&zerglingUnitData, sizeof(zerglingUnitData));
 	placeZergZergeling(zerglingUnitData, 2, 2);
 	zerglingUnitData.player = 1;
+	zerglingUnitData.isVisible[0] = true;
+	zerglingUnitData.isVisible[1] = true;
 	AKBot::UnitImpl zerglingUnitImpl(2, zerglingUnitData);
 
 	UAlbertaBot::UnitInfo zergling(&zerglingUnitImpl);
@@ -143,9 +155,12 @@ bool test5MarineVs1SunkenColony(CombatEstimator& estimator)
 	std::vector<shared_ptr<AKBot::UnitImpl>> units;
 	for (auto i = 0; i < MarinesCount; i++)
 	{
-		placeTerranMarine(unitData[unitIndex], 2, i + 1);
-		unitData[unitIndex].player = 0;
-		auto marineUnitImpl = std::make_shared<AKBot::UnitImpl>(unitId, unitData[unitIndex]);
+		auto& currentUnit = unitData[unitIndex];
+		placeTerranMarine(currentUnit, 2, i + 1);
+		currentUnit.player = 0;
+		currentUnit.isVisible[0] = true;
+		currentUnit.isVisible[1] = true;
+		auto marineUnitImpl = std::make_shared<AKBot::UnitImpl>(unitId, currentUnit);
 		units.push_back(marineUnitImpl);
 		unitIndex++;
 		unitId++;
@@ -158,8 +173,11 @@ bool test5MarineVs1SunkenColony(CombatEstimator& estimator)
 	}
 
 	BWAPI::UnitData sunkenColonyUnitData;
+	ZeroMemory(&sunkenColonyUnitData, sizeof(sunkenColonyUnitData));
 	placeZergSunkenColony(sunkenColonyUnitData, 1, 3);
 	sunkenColonyUnitData.player = 1;
+	sunkenColonyUnitData.isVisible[0] = true;
+	sunkenColonyUnitData.isVisible[1] = true;
 	AKBot::UnitImpl sunkenColonyUnitImpl(unitId, sunkenColonyUnitData);
 	unitId++;
 
@@ -179,9 +197,12 @@ bool test8MarineVs1SunkenColony(CombatEstimator& estimator)
 	std::vector<shared_ptr<AKBot::UnitImpl>> units;
 	for (auto i = 0; i < MarinesCount; i++)
 	{
-		placeTerranMarine(unitData[unitIndex], 2, i + 1);
-		unitData[unitIndex].player = 0;
-		auto marineUnitImpl = std::make_shared<AKBot::UnitImpl>(unitId, unitData[unitIndex]);
+		auto& currentUnit = unitData[unitIndex];
+		placeTerranMarine(currentUnit, 2, i + 1);
+		currentUnit.player = 0;
+		currentUnit.isVisible[0] = true;
+		currentUnit.isVisible[1] = true;
+		auto marineUnitImpl = std::make_shared<AKBot::UnitImpl>(unitId, currentUnit);
 		units.push_back(marineUnitImpl);
 		unitIndex++;
 		unitId++;
@@ -194,8 +215,11 @@ bool test8MarineVs1SunkenColony(CombatEstimator& estimator)
 	}
 
 	BWAPI::UnitData sunkenColonyUnitData;
+	ZeroMemory(&sunkenColonyUnitData, sizeof(sunkenColonyUnitData));
 	placeZergSunkenColony(sunkenColonyUnitData, 1, 4);
 	sunkenColonyUnitData.player = 1;
+	sunkenColonyUnitData.isVisible[0] = true;
+	sunkenColonyUnitData.isVisible[1] = true;
 	AKBot::UnitImpl sunkenColonyUnitImpl(unitId, sunkenColonyUnitData);
 	unitId++;
 
@@ -230,8 +254,11 @@ bool test9MarineVs1SunkenColony(CombatEstimator& estimator)
 	}
 
 	BWAPI::UnitData sunkenColonyUnitData;
+	ZeroMemory(&sunkenColonyUnitData, sizeof(sunkenColonyUnitData));
 	placeZergSunkenColony(sunkenColonyUnitData, 1, 5);
 	sunkenColonyUnitData.player = 1;
+	sunkenColonyUnitData.isVisible[0] = true;
+	sunkenColonyUnitData.isVisible[1] = true;
 	AKBot::UnitImpl sunkenColonyUnitImpl(unitId, sunkenColonyUnitData);
 	unitId++;
 
