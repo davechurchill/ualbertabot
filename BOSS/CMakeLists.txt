@@ -40,7 +40,7 @@ include_directories(
 
 if (AKBOT_SSCAIT)	
 	set(BWAPI_INCLUDE_DIR "${BWAPI_SSCAIT_DIR}/include")
-	if (MSVC14)
+	if(MSVC_VERSION GREATER_EQUAL 1900)
 		# For embedding BWAPI 4.1.2 you should manually place Debug.h and starcraftver.h  in the root of BWAPI folder
 		# if use installer and create svnrev.h with approximately following content
 		#
@@ -91,9 +91,9 @@ add_executable(BOSS_main
 )
 add_dependencies(BOSS_main BOSS)
 target_link_libraries(BOSS_main PUBLIC BOSS)
-IF(CMAKE_BUILD_TYPE MATCHES Debug)
+IF(CMAKE_BUILD_TYPE MATCHES Release)
+	target_link_libraries(BOSS_main PUBLIC BWAPI.lib)
+ELSE()
 	message("Adding debug BWAPI libraries")
 	target_link_libraries(BOSS_main PUBLIC BWAPId.lib)
-ELSE()
-	target_link_libraries(BOSS_main PUBLIC BWAPI.lib)
 ENDIF()

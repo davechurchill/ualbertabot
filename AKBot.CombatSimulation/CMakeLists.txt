@@ -26,14 +26,14 @@ add_executable(AKBot_CombatSimulation
 	${AKBotTests_SOURCES}
 )
 
-IF(CMAKE_BUILD_TYPE MATCHES Debug)
+IF(CMAKE_BUILD_TYPE MATCHES Release)
 #	message("Adding debug BWAPI libraries")
 	#find_library(BWAPI_LIBRARY BWAPId HINTS ENV BWAPI_DIR)
-	target_link_libraries(AKBot_CombatSimulation PUBLIC BWAPId.lib BWAPIClientd.lib)
+	target_link_libraries(AKBot_CombatSimulation PUBLIC BWAPI.lib BWAPIClient.lib)
 ELSE()
 	#find_library(BWAPI_LIBRARY BWAPI HINTS $ENV{BWAPI_DIR}/lib)
 	#find_library(BWAPI_LIBRARY BWAPI HINTS ENV BWAPI_DIR)
-	target_link_libraries(AKBot_CombatSimulation PUBLIC BWAPI.lib BWAPIClient.lib)
+	target_link_libraries(AKBot_CombatSimulation PUBLIC BWAPId.lib BWAPIClientd.lib)
 ENDIF()
 #target_link_libraries(AKBot_CombatSimulation PUBLIC ${BWAPI_LIBRARY})
 
@@ -50,6 +50,6 @@ target_include_directories(AKBot_CombatSimulation BEFORE PUBLIC
 	"../AkBot.Tests/TestLib/"
 	#"../AkBot.Tests/Shared"
 )
-if (MSVC14)
-    target_compile_options(AKBot_CombatSimulation PRIVATE /await)
+if(MSVC_VERSION GREATER_EQUAL 1900)
+	target_compile_options(AKBot_CombatSimulation PRIVATE /await)
 endif()
