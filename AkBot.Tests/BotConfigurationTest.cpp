@@ -1,18 +1,8 @@
-#include "stdafx.h"
-#include "CppUnitTest.h"
+#include <direct.h>
+#define BOOST_TEST_MODULE BotConfigurationTest
+#include <boost/test/included/unit_test.hpp>
 #include "BotConfiguration.h"
 #include "ParseUtils.h"
-#define STRINGIFY(x) #x
-#define EXPAND(x) STRINGIFY(x)
-
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-
-template <> static std::wstring Microsoft::VisualStudio::CppUnitTestFramework::ToString<BWAPI::Race>(const BWAPI::Race& q)
-{
-	std::wstringstream _s;
-	_s << "Race: " << q.getName().c_str();
-	return _s.str();
-}
 
 inline std::string getLocalFile(std::string fileName)
 {
@@ -21,59 +11,51 @@ inline std::string getLocalFile(std::string fileName)
 
 	std::string baseDirectory = cCurrentPath;
 #if WITH_CMAKE
-	baseDirectory = baseDirectory + "\\..\\..\\..\\..\\AkBot.Tests";
+	baseDirectory = baseDirectory + "\\..\\..";
 #else
 	baseDirectory = baseDirectory + "\\..\\..\\..\\AkBot.Tests";
 #endif
 	return baseDirectory + "\\" + fileName;
 }
 
-namespace AkBotTests
-{		
-	TEST_CLASS(BotConfigurationTest)
-	{
-	public:
-		
-		TEST_METHOD(LoadingStrategyConfiguration)
-		{
-			BotConfiguration configuration;
-			bool fileFound;
-			bool configFileParsed;
-			auto configFile = getLocalFile("AK_Config.json");
-			UAlbertaBot::ParseUtils::ParseConfigFile(configFile, configuration, fileFound, configFileParsed);
+BOOST_AUTO_TEST_CASE(LoadingStrategyConfiguration)
+{
+	BotConfiguration configuration;
+	bool fileFound;
+	bool configFileParsed;
+	auto configFile = getLocalFile("AK_Config.json");
+	UAlbertaBot::ParseUtils::ParseConfigFile(configFile, configuration, fileFound, configFileParsed);
 
-			Assert::AreEqual(true, fileFound, L"File not found");
-			Assert::AreEqual(true, configFileParsed, L"Parsing error");
-			Assert::AreEqual(3u, configuration.Strategy.EnemySpecificStrategy.size(), L"Should be found srtategies for 3 specific bots");
-			
-			Assert::AreEqual(13u, configuration.Strategy.Strategies.size(), L"Should be found srtategies for 13 predefined strategies");
-		
-			auto hatchMuta = configuration.Strategy.Strategies["Zerg_2HatchHydra"];
-			Assert::AreEqual(BWAPI::Races::Zerg, hatchMuta.getRace(), L"Expected Zerg race");
-			Assert::AreEqual(40u, hatchMuta.size(), L"Expected 40 steps deep");
-		}
+	BOOST_TEST(true == fileFound, L"File not found");
+	BOOST_TEST(true == configFileParsed, L"Parsing error");
+	BOOST_TEST(3u == configuration.Strategy.EnemySpecificStrategy.size(), L"Should be found srtategies for 3 specific bots");
 
-		TEST_METHOD(InvalidJsonShouldFailParsing)
-		{
-			BotConfiguration configuration;
-			bool fileFound;
-			bool configFileParsed;
-			auto configFile = getLocalFile("Config_WithError.json");
-			UAlbertaBot::ParseUtils::ParseConfigFile(configFile, configuration, fileFound, configFileParsed);
+	BOOST_TEST(13u == configuration.Strategy.Strategies.size(), L"Should be found srtategies for 13 predefined strategies");
 
-			Assert::AreEqual(true, fileFound, L"File not found");
-			Assert::AreEqual(false, configFileParsed, L"Somehow parsing error was not raised");
-		}
+	auto hatchMuta = configuration.Strategy.Strategies["Zerg_2HatchHydra"];
+	BOOST_TEST(BWAPI::Races::Zerg == hatchMuta.getRace(), L"Expected Zerg race");
+	BOOST_TEST(40u == hatchMuta.size(), L"Expected 40 steps deep");
+}
 
-		TEST_METHOD(NotExistingFileMark)
-		{
-			BotConfiguration configuration;
-			bool fileFound;
-			bool configFileParsed;
-			auto configFile = getLocalFile("UnexistingFlag.json");
-			UAlbertaBot::ParseUtils::ParseConfigFile(configFile, configuration, fileFound, configFileParsed);
+BOOST_AUTO_TEST_CASE(InvalidJsonShouldFailParsing)
+{
+	BotConfiguration configuration;
+	bool fileFound;
+	bool configFileParsed;
+	auto configFile = getLocalFile("Config_WithError.json");
+	UAlbertaBot::ParseUtils::ParseConfigFile(configFile, configuration, fileFound, configFileParsed);
 
-			Assert::AreEqual(false, fileFound, L"File not found");
-		}
-	};
+	BOOST_TEST(true == fileFound, L"File not found");
+	BOOST_TEST(false == configFileParsed, L"Somehow parsing error was not raised");
+}
+
+BOOST_AUTO_TEST_CASE(NotExistingFileMark)
+{
+	BotConfiguration configuration;
+	bool fileFound;
+	bool configFileParsed;
+	auto configFile = getLocalFile("UnexistingFlag.json");
+	UAlbertaBot::ParseUtils::ParseConfigFile(configFile, configuration, fileFound, configFileParsed);
+
+	BOOST_TEST(false == fileFound, L"File not found");
 }

@@ -39,10 +39,14 @@ add_executable(SparCraft_main
 	source/TutorialCode.cpp
 )
 
+find_package(sdl2 REQUIRED)
+#find_package(sdl2-image REQUIRED)
+target_link_libraries(SparCraft_main PRIVATE SDL2::SDL2 SDL2::SDL2main SparCraft SDL2_image opengl32)
 
 add_dependencies(SparCraft_main SparCraft)
 message(STATUS "Link dir" ${BWAPI_LIB_DIR})
 target_link_libraries(SparCraft_main PUBLIC SparCraft)
+
 IF(CMAKE_BUILD_TYPE MATCHES Release)
 	target_link_libraries(SparCraft_main PUBLIC BWAPI.lib)
 ELSE()
@@ -50,4 +54,4 @@ ELSE()
 	target_link_libraries(SparCraft_main PUBLIC BWAPId.lib)
 ENDIF()
 	
-target_link_libraries(SparCraft_main PUBLIC SDL2 SDL2_image opengl32)
+#target_link_libraries(SparCraft_main PUBLIC SDL2 SDL2_image opengl32)

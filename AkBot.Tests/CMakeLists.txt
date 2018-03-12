@@ -1,4 +1,5 @@
-file(GLOB AKBotTests_SOURCES "*.cpp" "TestLib/*.cpp" "Shared/*.cpp")
+file(GLOB AKBotTests_Lib "TestLib/*.cpp" "Shared/*.cpp" "SupportLib/*.cpp")
+file(GLOB AKBotTests_SOURCES "*.cpp")
 file(GLOB_RECURSE AKBotTest_HEADERS "source/*.h")
 
 if (AKBOT_SSCAIT)
@@ -11,7 +12,8 @@ else()
 	set(BWAPIClient_INCLUDE_DIR "$ENV{BWAPI_DIR}/include/Client")
 endif()
 
-find_package(Boost 1.62.0)
+set(Boost_USE_STATIC_LIBS   ON)
+find_package(Boost 1.62.0 REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
 find_path(SDL_INCLUDE_DIR SDL.h)
@@ -23,35 +25,49 @@ add_definitions(-DNOMINMAX)
 link_directories(${BWAPI_LIB_DIR})
 #add_definitions(-DWITH_CMAKE)
 
-add_library(AKBotTests SHARED
-    ${AKBotTests_SOURCES}
-)
-
-target_include_directories(AKBotTests BEFORE PUBLIC
-	${BWAPI_INCLUDE_DIR}
-	${BWAPIClient_INCLUDE_DIR}
-	"../UAlbertaBot/source/"
-	"TestLib"
-)
-
 add_library(AKBot::Lib ALIAS AKBot)
 add_library(AKBot::SparCraft ALIAS SparCraft)
 add_library(AKBot::BOSS ALIAS BOSS)
 
 MESSAGE( STATUS "CMAKE_BUILD_TYPE: " ${CMAKE_BUILD_TYPE} )
 MESSAGE( STATUS "MSVC_VERSION: " ${MSVC_VERSION} )
-IF(CMAKE_BUILD_TYPE MATCHES Release)
-	target_link_libraries(AKBotTests PUBLIC BWAPI.lib BWAPIClient.lib)
-ELSE()
-	message("Adding debug BWAPI libraries")
-	target_link_libraries(AKBotTests PUBLIC BWAPId.lib BWAPIClientd.lib)
-ENDIF()
-
-add_dependencies(AKBotTests AKBot)
-target_link_libraries(AKBotTests PUBLIC AKBot::Lib AKBot::SparCraft AKBot::BOSS)
-
-if(MSVC_VERSION GREATER_EQUAL 1900)
-    target_compile_options(AKBotTests PRIVATE /await)
-endif()
 
 link_directories(${BWAPI_LIB_DIR})
+
+file(GLOB BOOST_TEST_SRCS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *Test.cpp)
+foreach(testSrc ${BOOST_TEST_SRCS})
+	#Extract the filename without an extension (NAME_WE)
+    get_filename_component(testName ${testSrc} NAME_WE)
+
+    #Add compile target
+	add_definitions(-DWITH_CMAKE)
+    add_executable(${testName}
+		${testSrc}
+		${AKBotTests_Lib})
+	target_include_directories(${testName} BEFORE PUBLIC
+		${BWAPI_INCLUDE_DIR}
+		${BWAPIClient_INCLUDE_DIR}
+		"../UAlbertaBot/source/"
+		"TestLib"
+	)
+
+    #link to Boost libraries AND your targets and dependencies
+    #target_link_libraries(${testName} ${Boost_LIBRARIES} [YOUR TARGETS/LIBRARIES])
+	IF(CMAKE_BUILD_TYPE MATCHES Release)
+		target_link_libraries(${testName} PUBLIC BWAPI.lib BWAPIClient.lib)
+	ELSE()
+		target_link_libraries(${testName} PUBLIC BWAPId.lib BWAPIClientd.lib)
+	ENDIF()
+	target_link_libraries(${testName} PUBLIC AKBot::Lib AKBot::SparCraft AKBot::BOSS)
+
+    #I like to move testing binaries into a testBin directory
+    set_target_properties(${testName} PROPERTIES 
+        RUNTIME_OUTPUT_DIRECTORY  ${CMAKE_CURRENT_SOURCE_DIR}/testBin)
+
+    #Finally add it to test execution - 
+    #Notice the WORKING_DIRECTORY and COMMAND
+    add_test(NAME ${testName} 
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/testBin 
+        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/testBin/${testName})
+
+endforeach(testSrc)
