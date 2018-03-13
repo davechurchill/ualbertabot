@@ -8,9 +8,9 @@ else()
 	set(BWAPIClient_INCLUDE_DIR "$ENV{BWAPI_DIR}/include/Client")
 endif()
 file(GLOB AKBotTests_SOURCES
-	"../AkBot.Tests/GameHelper.cpp"
-	"../AkBot.Tests/UnitHelper.cpp"
-	"../AkBot.Tests/NullLogger.cpp"
+	"../AkBot.Tests/SupportLib/GameHelper.cpp"
+	"../AkBot.Tests/SupportLib/UnitHelper.cpp"
+	"../AkBot.Tests/SupportLib/NullLogger.cpp"
 	"../AkBot.Tests/TestLib/*.cpp"
 	"../AkBot.Tests/Shared/*.cpp"
 )

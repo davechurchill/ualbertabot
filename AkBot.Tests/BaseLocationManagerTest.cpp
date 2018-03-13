@@ -1,16 +1,23 @@
-#include "stdafx.h"
+#include <direct.h>
+#define BOOST_TEST_MODULE BaseLocationManagerTest
+#include <boost/test/included/unit_test.hpp>
 #include "BaseLocationManager.h"
-#include "PlainOpponentView.h"
+#include "SupportLib/PlainOpponentView.h"
 #include "GameImpl.h"
 #include "BWAPIOpponentView.h"
 #include "BWAPIMapInformation.h"
-#include "NullLogger.h"
+#include "SupportLib/NullLogger.h"
 #include "MapTools.h"
-#include "UnitHelper.h"
-#include "GameHelper.h"
+#include "SupportLib/UnitHelper.h"
+#include "SupportLib/GameHelper.h"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace AKBot::Tests;
+using namespace AkBotTests;
+using AKBot::OpponentView;
+using AKBot::PlainOpponentView;
+using AKBot::BWAPIOpponentView;
+using AKBot::BWAPIMapInformation;
+using UAlbertaBot::MapTools;
 
 void discoverMineral(BWAPI::GameData& gameData, int x, int y, int resources)
 {
@@ -42,106 +49,89 @@ void setupEmptyMap(BWAPI::GameData& gameData, int width, int height)
 	gameData.mapWidth = width;
 }
 
-namespace AkBotTests
+BOOST_AUTO_TEST_CASE(CreationOfBaseLocationManagerWithEmptyData)
 {
-	using AKBot::OpponentView;
-	using AKBot::PlainOpponentView;
-	using AKBot::BWAPIOpponentView;
-	using AKBot::BWAPIMapInformation;
-	using UAlbertaBot::MapTools;
+	auto gameData = std::make_shared<BWAPI::GameData>();
+	auto gameImpl = std::make_shared<AKBot::GameImpl>(gameData.get());
+	auto game = gameImpl.get();
+	auto opponentView = std::make_shared<BWAPIOpponentView>(game);
+	UAlbertaBot::BaseLocationManager manager(game, opponentView);
+}
 
-	TEST_CLASS(BaseLocationManagerTest)
-	{
-	public:
+BOOST_AUTO_TEST_CASE(CreationOfBaseLocationManagerFromEmptyResources)
+{
+	auto gameData = std::make_shared<BWAPI::GameData>();
+	auto rawGameData = gameData.get();
+	auto gameImpl = std::make_shared<AKBot::GameImpl>(rawGameData);
+	auto game = gameImpl.get();
+	auto opponentView = std::make_shared<BWAPIOpponentView>(BWAPIOpponentView(game));
+	UAlbertaBot::BaseLocationManager manager(game, opponentView);
+	auto mapInformation = std::make_shared<BWAPIMapInformation>(game);
+	auto logger = std::make_shared<NullLogger>();
+	auto mapTools = std::make_shared<MapTools>(mapInformation, logger);
+	auto baseLocations = std::vector<UAlbertaBot::BaseLocation>();
 
-		TEST_METHOD(CreationOfBaseLocationManagerWithEmptyData)
-		{
-			auto gameData = std::make_shared<BWAPI::GameData>();
-			auto gameImpl = std::make_shared<AKBot::GameImpl>(gameData.get());
-			auto game = gameImpl.get();
-			auto opponentView = std::make_shared<BWAPIOpponentView>(game);
-			UAlbertaBot::BaseLocationManager manager(game, opponentView);
-		}
+	setP2PForces(rawGameData);
+	setPlayers(*rawGameData, 2);
+	game->onMatchStart();
+	manager.populateBaseLocations(mapTools, baseLocations);
+	BOOST_TEST(0U == baseLocations.size(), L"The base locations list should be empty");
+}
 
-		BEGIN_TEST_METHOD_ATTRIBUTE(CreationOfBaseLocationManagerFromEmptyResources)
-			TEST_METHOD_ATTRIBUTE(L"TestCategory", L"WIP")
-		END_TEST_METHOD_ATTRIBUTE()
-		TEST_METHOD(CreationOfBaseLocationManagerFromEmptyResources)
-		{
-			auto gameData = std::make_shared<BWAPI::GameData>();
-			auto rawGameData = gameData.get();
-			auto gameImpl = std::make_shared<AKBot::GameImpl>(rawGameData);
-			auto game = gameImpl.get();
-			auto opponentView = std::make_shared<BWAPIOpponentView>(BWAPIOpponentView(game));
-			UAlbertaBot::BaseLocationManager manager(game, opponentView);
-			auto mapInformation = std::make_shared<BWAPIMapInformation>(game);
-			auto logger = std::make_shared<NullLogger>();
-			auto mapTools = std::make_shared<MapTools>(mapInformation, logger);
-			auto baseLocations = std::vector<UAlbertaBot::BaseLocation>();
-			
-			setP2PForces(rawGameData);
-			setPlayers(*rawGameData, 2);
-			game->onMatchStart();
-			manager.populateBaseLocations(mapTools, baseLocations);
-			Assert::AreEqual(0U, baseLocations.size(), L"The base locations list should be empty");
-		}
+BOOST_AUTO_TEST_CASE(ClustersWith4MineralsCounted)
+{
+	auto gameData = std::make_shared<BWAPI::GameData>();
+	auto rawGameData = gameData.get();
+	setP2PForces(rawGameData);
+	setPlayers(*rawGameData, 2);
 
-		TEST_METHOD(ClustersWith4MineralsCounted)
-		{
-			auto gameData = std::make_shared<BWAPI::GameData>();
-			auto rawGameData = gameData.get();
-			setP2PForces(rawGameData);
-			setPlayers(*rawGameData, 2);
+	// Create cluster of 4 minerals
+	discoverMineral(*rawGameData, 1, 1, 200);
+	discoverMineral(*rawGameData, 2, 1, 200);
+	discoverMineral(*rawGameData, 3, 1, 200);
+	discoverMineral(*rawGameData, 4, 1, 200);
+	setupEmptyMap(*rawGameData, 100, 100);
 
-			// Create cluster of 4 minerals
-			discoverMineral(*rawGameData, 1, 1, 200);
-			discoverMineral(*rawGameData, 2, 1, 200);
-			discoverMineral(*rawGameData, 3, 1, 200);
-			discoverMineral(*rawGameData, 4, 1, 200);
-			setupEmptyMap(*rawGameData, 100, 100);
+	auto gameImpl = std::make_shared<AKBot::GameImpl>(rawGameData);
+	auto game = gameImpl.get();
+	BWAPI::BroodwarPtr = game;
+	auto opponentView = std::make_shared<BWAPIOpponentView>(BWAPIOpponentView(game));
+	UAlbertaBot::BaseLocationManager manager(game, opponentView);
+	auto mapInformation = std::make_shared<BWAPIMapInformation>(game);
+	auto logger = std::make_shared<NullLogger>();
+	auto mapTools = std::make_shared<MapTools>(mapInformation, logger);
+	auto baseLocations = std::vector<UAlbertaBot::BaseLocation>();
 
-			auto gameImpl = std::make_shared<AKBot::GameImpl>(rawGameData);
-			auto game = gameImpl.get();
-			BWAPI::BroodwarPtr = game;
-			auto opponentView = std::make_shared<BWAPIOpponentView>(BWAPIOpponentView(game));
-			UAlbertaBot::BaseLocationManager manager(game, opponentView);
-			auto mapInformation = std::make_shared<BWAPIMapInformation>(game);
-			auto logger = std::make_shared<NullLogger>();
-			auto mapTools = std::make_shared<MapTools>(mapInformation, logger);
-			auto baseLocations = std::vector<UAlbertaBot::BaseLocation>();
+	game->onMatchStart();
+	manager.populateBaseLocations(mapTools, baseLocations);
+	BOOST_TEST(1U == baseLocations.size(), L"The base locations list should be empty");
+}
 
-			game->onMatchStart();
-			manager.populateBaseLocations(mapTools, baseLocations);
-			Assert::AreEqual(1U, baseLocations.size(), L"The base locations list should be empty");
-		}
+BOOST_AUTO_TEST_CASE(ClustersCouldContainMineralsAndGeysers)
+{
+	auto gameData = std::make_shared<BWAPI::GameData>();
+	auto rawGameData = gameData.get();
+	setP2PForces(rawGameData);
+	setPlayers(*rawGameData, 2);
 
-		TEST_METHOD(ClustersCouldContainMineralsAndGeysers)
-		{
-			auto gameData = std::make_shared<BWAPI::GameData>();
-			auto rawGameData = gameData.get();
-			setP2PForces(rawGameData);
-			setPlayers(*rawGameData, 2);
+	// Create cluster of 4 minerals
+	discoverMineral(*rawGameData, 1, 1, 200);
+	discoverMineral(*rawGameData, 2, 1, 200);
+	discoverMineral(*rawGameData, 3, 1, 200);
+	discoverGeyser(*rawGameData, 4, 1, 200);
+	setupEmptyMap(*rawGameData, 100, 100);
 
-			// Create cluster of 4 minerals
-			discoverMineral(*rawGameData, 1, 1, 200);
-			discoverMineral(*rawGameData, 2, 1, 200);
-			discoverMineral(*rawGameData, 3, 1, 200);
-			discoverGeyser(*rawGameData, 4, 1, 200);
-			setupEmptyMap(*rawGameData, 100, 100);
+	auto gameImpl = std::make_shared<AKBot::GameImpl>(rawGameData);
+	auto game = gameImpl.get();
+	BWAPI::BroodwarPtr = game;
+	auto opponentView = std::make_shared<BWAPIOpponentView>(BWAPIOpponentView(game));
+	UAlbertaBot::BaseLocationManager manager(game, opponentView);
+	auto mapInformation = std::make_shared<BWAPIMapInformation>(game);
+	auto logger = std::make_shared<NullLogger>();
+	auto mapTools = std::make_shared<MapTools>(mapInformation, logger);
+	auto baseLocations = std::vector<UAlbertaBot::BaseLocation>();
 
-			auto gameImpl = std::make_shared<AKBot::GameImpl>(rawGameData);
-			auto game = gameImpl.get();
-			BWAPI::BroodwarPtr = game;
-			auto opponentView = std::make_shared<BWAPIOpponentView>(BWAPIOpponentView(game));
-			UAlbertaBot::BaseLocationManager manager(game, opponentView);
-			auto mapInformation = std::make_shared<BWAPIMapInformation>(game);
-			auto logger = std::make_shared<NullLogger>();
-			auto mapTools = std::make_shared<MapTools>(mapInformation, logger);
-			auto baseLocations = std::vector<UAlbertaBot::BaseLocation>();
-
-			game->onMatchStart();
-			manager.populateBaseLocations(mapTools, baseLocations);
-			Assert::AreEqual(1U, baseLocations.size(), L"The base locations list should be empty");
-		}
-	};
+	game->onMatchStart();
+	manager.populateBaseLocations(mapTools, baseLocations);
+	BOOST_TEST(1U == baseLocations.size(), L"The base locations list should be empty");
 }

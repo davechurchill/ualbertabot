@@ -1,5 +1,6 @@
 project (AKBot)
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 3.0)
+enable_testing()
 option(AKBOT_SSCAIT "Generate SSCAIT supported version")
 cmake_policy(SET CMP0028 OLD)
 

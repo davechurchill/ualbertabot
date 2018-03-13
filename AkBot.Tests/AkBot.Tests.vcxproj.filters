@@ -27,9 +27,6 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="unittest1.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Shared\BulletShared.cpp">
       <Filter>Shared</Filter>
     </ClCompile>
@@ -65,12 +62,6 @@
     </ClCompile>
     <ClCompile Include="TestLib\ForceImpl.cpp">
       <Filter>TestLib</Filter>
-    </ClCompile>
-    <ClCompile Include="BotConfigurationTest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BaseLocationManagerTest.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="NullLogger.cpp">
       <Filter>Source Files</Filter>
