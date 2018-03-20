@@ -311,6 +311,66 @@ bool test2MarineVs1Hydralisk(CombatEstimator& estimator)
 	return estimator.isWinPredicted(ourCombatUnits, enemyCombatUnits, 100);
 }
 
+bool test1ZealotVs2Zealots(CombatEstimator& estimator)
+{
+	constexpr int MarinesCount = 1;
+	constexpr int EnemyZealotsCount = 2;
+	int unitId = 1;
+	int unitIndex = 0;
+	BWAPI::UnitData unitData[MarinesCount];
+	ZeroMemory(&unitData, sizeof(unitData));
+	std::vector<shared_ptr<AKBot::UnitImpl>> units;
+	for (auto i = 0; i < MarinesCount; i++)
+	{
+		auto& currentUnit = unitData[unitIndex];
+		placeProtossZealot(currentUnit, 2, i + 1);
+		currentUnit.player = 0;
+		currentUnit.isVisible[0] = true;
+		currentUnit.isVisible[1] = true;
+		//auto marineUnitImpl = std::make_shared<AKBot::UnitImpl>(unitId, currentUnit);
+		units.push_back(
+			std::make_shared<AKBot::UnitImpl>(unitId, currentUnit)
+		);
+		unitIndex++;
+		unitId++;
+	}
+
+	std::vector<BWAPI::Unit> ourCombatUnits;
+	for (auto unit : units)
+	{
+		ourCombatUnits.push_back(unit.get());
+	}
+
+	BWAPI::UnitData enemyUnitData[EnemyZealotsCount];
+	ZeroMemory(&enemyUnitData, sizeof(enemyUnitData));
+	
+	std::vector<shared_ptr<AKBot::UnitImpl>> enemyUnits;
+	unitIndex = 0;
+	for (auto i = 0; i < EnemyZealotsCount; i++)
+	{
+		auto& currentUnit = enemyUnitData[unitIndex];
+		placeProtossZealot(currentUnit, 2, i + 1);
+		currentUnit.player = 1;
+		currentUnit.isVisible[0] = true;
+		currentUnit.isVisible[1] = true;
+		//auto marineUnitImpl = std::make_shared<AKBot::UnitImpl>(unitId, currentUnit);
+		enemyUnits.push_back(
+			std::make_shared<AKBot::UnitImpl>(unitId, currentUnit)
+		);
+		unitIndex++;
+		unitId++;
+	}
+
+	std::vector<UAlbertaBot::UnitInfo> enemyCombatUnits;
+	for (auto& enemyUnit : enemyUnits)
+	{
+		UAlbertaBot::UnitInfo enemy(enemyUnit.get());
+		enemyCombatUnits.push_back(enemy);
+	}
+
+	return estimator.isWinPredicted(ourCombatUnits, enemyCombatUnits, 100);
+}
+
 template<typename TCombatEstimator>
 void testCombatSimulation(
 	std::string name,
@@ -326,6 +386,7 @@ void testCombatSimulation(
 	doTest<TCombatEstimator>("8 Marine vs 1 Sunken Colony", test8MarineVs1SunkenColony, estimatorFactory, TOTAL_SUCCESS);
 	doTest<TCombatEstimator>("9 Marine vs 1 Sunken Colony", test9MarineVs1SunkenColony, estimatorFactory, TOTAL_SUCCESS);
 	doTest<TCombatEstimator>("2 Marine vs 1 Hydralisk", test2MarineVs1Hydralisk, estimatorFactory, TOTAL_SUCCESS);
+	doTest<TCombatEstimator>("1 Zealot vs 2 Zealots", test1ZealotVs2Zealots, estimatorFactory, TOTAL_FAILURE);
 
 	printStatistics();
 }

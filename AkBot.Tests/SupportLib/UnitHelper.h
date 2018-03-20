@@ -16,6 +16,8 @@ namespace AKBot
 		void placeZergHydralisk(BWAPI::UnitData& unitData, int x, int y);
 		void placeZergUltralisk(BWAPI::UnitData& unitData, int x, int y);
 		void placeZergSunkenColony(BWAPI::UnitData& unitData, int x, int y);
+
+		void placeProtossZealot(BWAPI::UnitData& unitData, int x, int y);
 		
 		void placeUnit(BWAPI::UnitData& unitData, BWAPI::UnitType unitType, int x, int y);
 	}

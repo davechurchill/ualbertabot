@@ -13,11 +13,11 @@ list(APPEND BOSS_MAIN_SOURCES
 )
 
 if (AKBOT_SSCAIT)
-	set(BWAPI_LIB_DIR "$ENV{BWAPI_SSCAIT_DIR}/lib")
-	set(BWAPI_INCLUDE_DIR "$ENV{BWAPI_SSCAIT_DIR}/include")
+	set(BWAPI_LIB_DIR "${BWAPI_SSCAIT_DIR}/lib")
+	set(BWAPI_INCLUDE_DIR "${BWAPI_SSCAIT_DIR}/include")
 else()
-	set(BWAPI_LIB_DIR "$ENV{BWAPI_DIR}/lib")
-	set(BWAPI_INCLUDE_DIR "$ENV{BWAPI_DIR}/include")
+	set(BWAPI_LIB_DIR "${BWAPI_DIR}/lib")
+	set(BWAPI_INCLUDE_DIR "${BWAPI_DIR}/include")
 endif()
 
 include_directories(
