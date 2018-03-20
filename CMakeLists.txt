@@ -2,7 +2,9 @@ project (AKBot)
 cmake_minimum_required (VERSION 3.0)
 enable_testing()
 option(AKBOT_SSCAIT "Generate SSCAIT supported version")
-cmake_policy(SET CMP0028 OLD)
+
+cmake_policy(SET CMP0028 NEW)
+cmake_policy(SET CMP0003 NEW)
 
 set(BWAPI_SSCAIT_DIR "$ENV{BWAPI_SSCAIT_DIR}")
 set(BWAPI_DIR "$ENV{BWAPI_DIR}")

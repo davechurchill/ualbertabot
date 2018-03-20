@@ -9,7 +9,13 @@
       "buildRoot": "${workspaceRoot}\\build\\${name}",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
-      "ctestCommandArgs": ""
+      "ctestCommandArgs": "",
+      "variables": [
+        {
+          "name": "CMAKE_TOOLCHAIN_FILE",
+          "value": "${env.VCPKG_CMAKE_BUILDFILE}"
+        }
+      ]
     },
     {
       "name": "x86-SSCAIT-Debug",
@@ -29,7 +35,13 @@
       "buildRoot": "${workspaceRoot}\\build\\${name}",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
-      "ctestCommandArgs": ""
+      "ctestCommandArgs": "",
+      "variables": [
+        {
+          "name": "CMAKE_TOOLCHAIN_FILE",
+          "value": "${env.VCPKG_CMAKE_BUILDFILE}"
+        }
+      ]
     }
   ]
 }

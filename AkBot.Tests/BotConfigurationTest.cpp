@@ -11,7 +11,7 @@ inline std::string getLocalFile(std::string fileName)
 
 	std::string baseDirectory = cCurrentPath;
 #if WITH_CMAKE
-	baseDirectory = baseDirectory + "\\..\\..";
+	baseDirectory = baseDirectory + "\\..";
 #else
 	baseDirectory = baseDirectory + "\\..\\..\\..\\AkBot.Tests";
 #endif

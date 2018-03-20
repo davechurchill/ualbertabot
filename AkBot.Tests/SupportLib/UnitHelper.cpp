@@ -46,6 +46,10 @@ void AKBot::Tests::placeZergSunkenColony(BWAPI::UnitData& unitData, int x, int y
 {
 	placeUnit(unitData, BWAPI::UnitTypes::Zerg_Sunken_Colony, x, y);
 }
+void AKBot::Tests::placeProtossZealot(BWAPI::UnitData& unitData, int x, int y)
+{
+	placeUnit(unitData, BWAPI::UnitTypes::Protoss_Zealot, x, y);
+}
 void AKBot::Tests::placeUnit(BWAPI::UnitData& unitData, BWAPI::UnitType unitType, int x, int y)
 {
 	unitData.positionX = x;

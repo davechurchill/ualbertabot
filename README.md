@@ -9,9 +9,13 @@ Author: Andrey Kurdyumov (kant2002@gmail.com)
 For mamaging dependencies used vcpkg
 
     # install dependencies
-    vcpkg install boost
+    vcpkg install boost sdl2 sdl2-image
 
 This is additional dependencies to Dave Churchill's bot.
+
+Create environment variable `VCPKG_CMAKE_BUILDFILE` which point to the file `C:\vcpkg\scripts\buildsystems\vcpkg.cmake` or such.
+See https://github.com/Microsoft/vcpkg/blob/master/docs/users/integration.md#cmake-toolchain-file-recommended-for-open-source-cmake-projects 
+for explanation of purpose of the file
 
 ## How to build
 
