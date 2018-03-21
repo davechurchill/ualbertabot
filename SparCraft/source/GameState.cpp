@@ -88,7 +88,7 @@ void GameState::doMove(const Move & moves)
     const TimeType nextUnitActTime = std::min(getTimeNextUnitCanAct(0), getTimeNextUnitCanAct(1));
     SPARCRAFT_ASSERT(nextUnitActTime > getTime(), "doMove didn't result in game time advancing");
 
-    updateGameTime();
+    updateGameTime(nextUnitActTime);
 }
 
 void GameState::doMove(const Move & m1, const Move & m2, bool advanceGameTime)
@@ -110,7 +110,7 @@ void GameState::doMove(const Move & m1, const Move & m2, bool advanceGameTime)
 
     if (advanceGameTime)
     {
-        updateGameTime();
+        updateGameTime(nextUnitActTime);
     }
 }
 
@@ -235,9 +235,28 @@ TimeType GameState::getTimeNextUnitCanAct(const size_t & player) const
     return minTime;
 }
 
-void GameState::updateGameTime()
+void GameState::updateGameTime(const TimeType nextTime)
 {
-    _currentTime = std::min(getTimeNextUnitCanAct(0), getTimeNextUnitCanAct(1));
+	const TimeType difference = nextTime - _currentTime;
+    _currentTime = nextTime;
+	if (difference > 0)
+	{
+		for (auto& unit : _unitData.getAllUnits())
+		{
+			const auto unitTypeRequireRemoval = unit.type() == BWAPI::UnitTypes::Zerg_Broodling;
+			if (unitTypeRequireRemoval)
+			{
+				const auto timer = unit.getRemoveTimer();
+				const auto newTimer = std::max(0, timer - difference);
+				unit.setRemoveTimer(newTimer);
+				if (newTimer == 0)
+				{
+					unit.updateCurrentHP(0);
+					_unitData.killUnit(unit.getID());
+				}
+			}
+		}
+	}
 }
 
 void GameState::setMap(std::shared_ptr<Map> map)

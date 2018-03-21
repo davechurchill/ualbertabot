@@ -37,6 +37,7 @@ class Unit
 
     mutable TimeType    _prevCurrentPosTime;
     mutable Position    _prevCurrentPos;
+	TimeType			_removeTimer;
 
 public:
 
@@ -54,6 +55,8 @@ public:
 	void                    reload(const Action & move, const TimeType & gameTime);
 	void                    pass(const Action & move, const TimeType & gameTime);
 	void                    takeAttack(const Unit & attacker);
+	void setRemoveTimer(const TimeType removeTimer) { _removeTimer = removeTimer; }
+	const TimeType& getRemoveTimer() const { return _removeTimer; }
 
 	// conditional functions
 	const bool			    isMobile()                  const;

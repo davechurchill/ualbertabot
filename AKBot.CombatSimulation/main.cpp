@@ -241,6 +241,47 @@ bool test2BroodlingVs1Marine(CombatEstimator& estimator)
 	return estimator.isWinPredicted(ourCombatUnits, enemyCombatUnits, 100);
 }
 
+bool test2BroodlingNearRemovalVs1Marine(CombatEstimator& estimator)
+{
+	BWAPI::UnitData broodlingUnitData;
+	UnitBuilder broodlingBuilder(broodlingUnitData);
+	broodlingBuilder
+		.unit(UnitTypes::Zerg_Broodling)
+		.position(TilePosition(1, 1))
+		.my()
+		.visibleToAll();
+	broodlingBuilder.data().removeTimer = 50;
+	AKBot::UnitImpl broodlingUnitImpl(1, broodlingUnitData);
+
+	BWAPI::UnitData broodling2UnitData;
+	UnitBuilder broodling2Builder(broodling2UnitData);
+	broodling2Builder
+		.unit(UnitTypes::Zerg_Broodling)
+		.position(TilePosition(1, 2))
+		.my()
+		.visibleToAll();
+	broodling2Builder.data().removeTimer = 50;
+	AKBot::UnitImpl broodling2UnitImpl(2, broodling2UnitData);
+
+	std::vector<BWAPI::Unit> ourCombatUnits;
+	ourCombatUnits.push_back(&broodlingUnitImpl);
+	ourCombatUnits.push_back(&broodling2UnitImpl);
+
+	BWAPI::UnitData marineUnitData;
+	UnitBuilder marineBuilder(marineUnitData);
+	marineBuilder
+		.unit(UnitTypes::Terran_Marine)
+		.position(TilePosition(2, 2))
+		.player(1)
+		.visibleToAll();
+	AKBot::UnitImpl marineUnitImpl(3, marineUnitData);
+
+	UAlbertaBot::UnitInfo marine(&marineUnitImpl);
+	std::vector<UAlbertaBot::UnitInfo> enemyCombatUnits;
+	enemyCombatUnits.push_back(marine);
+	return estimator.isWinPredicted(ourCombatUnits, enemyCombatUnits, 100);
+}
+
 bool test5MarineVs1SunkenColony(CombatEstimator& estimator)
 {
 	constexpr int MarinesCount = 5;
@@ -486,6 +527,7 @@ void testCombatSimulation(
 	doTest<TCombatEstimator>("1 Marine vs 1 Broodling", test1MarineVs1Broodling, estimatorFactory, TOTAL_SUCCESS);
 	doTest<TCombatEstimator>("1 Broodling vs 1 Marine", test1BroodlingVs1Marine, estimatorFactory, TOTAL_FAILURE);
 	doTest<TCombatEstimator>("2 Broodling vs 1 Marine", test2BroodlingVs1Marine, estimatorFactory, TOTAL_SUCCESS);
+	doTest<TCombatEstimator>("2 Broodling near removal vs 1 Marine", test2BroodlingNearRemovalVs1Marine, estimatorFactory, TOTAL_FAILURE);
 
 	printStatistics();
 }

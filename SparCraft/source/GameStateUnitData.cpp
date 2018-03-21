@@ -102,3 +102,8 @@ const std::vector<Unit> & GameStateUnitData::getAllUnits() const
 {
     return _allUnits;
 }
+
+std::vector<Unit> & GameStateUnitData::getAllUnits()
+{
+	return _allUnits;
+}

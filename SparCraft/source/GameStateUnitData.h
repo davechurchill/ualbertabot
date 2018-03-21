@@ -28,6 +28,7 @@ public:
     const size_t            numUnits(const size_t & player) const;
 
     const std::vector<Unit> & getAllUnits() const;
+	std::vector<Unit> & getAllUnits();
     const std::vector<size_t> & getUnitIDs(const size_t & player) const;
 
     Unit &                  addUnit(const Unit & unit);

@@ -34,6 +34,7 @@ namespace AKBot
 			UnitBuilder& my();
 			UnitBuilder& player(int player);
 			UnitBuilder& visibleToAll();
+			BWAPI::UnitData& data() const { return _unitData; }
 		};
 	}
 }

@@ -34,7 +34,7 @@ public:
     GameState();
 
     // misc functions
-    void                    updateGameTime();
+    void                    updateGameTime(const TimeType nextTime);
     bool                    playerDead(const size_t & player)                                       const;
     bool                    gameOver()                                                              const;
     size_t                  getEnemy(const size_t & player)                                         const;
