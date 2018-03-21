@@ -19,25 +19,30 @@ SparCraftExperiment::SparCraftExperiment()
 
 }
 
-void SparCraftExperiment::parseConfigFile(const std::string & filename)
+std::vector<GameConfiguration> SparCraftExperiment::parseConfigFile(const std::string & filename)
 {
-    rapidjson::Document document;
+	rapidjson::Document document;
 
-    std::string json = FileUtils::ReadFile(filename);
-    bool parsingFailed = document.Parse(json.c_str()).HasParseError();
+	std::string json = FileUtils::ReadFile(filename);
+	bool parsingFailed = document.Parse(json.c_str()).HasParseError();
 
-    if (parsingFailed)
-    {
-        int errorPos = document.GetErrorOffset();
+	if (parsingFailed)
+	{
+		int errorPos = document.GetErrorOffset();
 
-        std::stringstream ss;
-        ss << std::endl << "JSON Parse Error: " << document.GetParseError() << std::endl;
-        ss << "Error Position:   " << errorPos << std::endl;
-        ss << "Error Substring:  " << json.substr(errorPos-5, 10) << std::endl;
+		std::stringstream ss;
+		ss << std::endl << "JSON Parse Error: " << document.GetParseError() << std::endl;
+		ss << "Error Position:   " << errorPos << std::endl;
+		ss << "Error Substring:  " << json.substr(errorPos - 5, 10) << std::endl;
 
-        SPARCRAFT_ASSERT(!parsingFailed, "Error parsing JSON config file: %s", ss.str().c_str());
-    }
+		SPARCRAFT_ASSERT(!parsingFailed, "Error parsing JSON config file: %s", ss.str().c_str());
+	}
 
+	return parseConfig(document);
+}
+
+std::vector<GameConfiguration> SparCraftExperiment::parseConfig(const rapidjson::Document& document)
+{
     SPARCRAFT_ASSERT(document.HasMember("GUI"),              "No 'GUI' Options Found");
     SPARCRAFT_ASSERT(document.HasMember("States"),           "No 'States' Found");
     SPARCRAFT_ASSERT(document.HasMember("Games"),            "No 'Games' Options Found");
@@ -53,15 +58,15 @@ void SparCraftExperiment::parseConfigFile(const std::string & filename)
     _guiHeight = guiValue["Height"].GetInt();
     _frameDelayMS = guiValue["FrameDelayMS"].GetInt();
 
-    parseGamesJSON(document["Games"], document);
+    auto result = parseGamesJSON(document["Games"], document);
 
     printf("Parsing of config file complete\n");
+	return result;
 }
 
-void SparCraftExperiment::parseGamesJSON(const rapidjson::Value & games, const rapidjson::Value & root)
+std::vector<GameConfiguration> SparCraftExperiment::parseGamesJSON(const rapidjson::Value & games, const rapidjson::Value & root)
 {
-    Timer t;
-    t.start();
+	std::vector<GameConfiguration> result;
     for (size_t gg(0); gg<games.Size(); ++gg)
     {
         const rapidjson::Value & game = games[gg];
@@ -78,49 +83,63 @@ void SparCraftExperiment::parseGamesJSON(const rapidjson::Value & games, const r
         SPARCRAFT_ASSERT(game.HasMember("Players") && game["Players"].IsArray(), "Game has no 'Players' array option");
 
         size_t numGames = game["Games"].GetInt();
-        
-        std::vector<int> winners(3,0);
-        for (size_t i(0); i < numGames; ++i)
-        {
-            //std::cout << "Parsing game " << i << " for " << game["Name"].GetString() << std::endl;
-            
-            GameState state = ConfigTools::GetStateFromVariable(game["State"].GetString(), root);
-            
-            PlayerPtr white = AIParameters::Instance().getPlayer(Players::Player_One, game["Players"][0].GetString());
-            PlayerPtr black = AIParameters::Instance().getPlayer(Players::Player_Two, game["Players"][1].GetString());
+		GameConfiguration gameConfiguration;
+		gameConfiguration.name = game["Name"].GetString();
+		gameConfiguration.state = ConfigTools::GetStateFromVariable(game["State"].GetString(), root);
+		gameConfiguration.gamesCount = numGames;
+		auto& playersConfiguration = game["Players"];
+		for (rapidjson::SizeType i = 0; i < playersConfiguration.Size(); i++)
+		{
+			gameConfiguration.players.push_back(playersConfiguration[i].GetString());
+		}
 
-            //std::cout << "Players: " << white->getDescription() << " " << black->getDescription() << "\n\n";
-
-            Game g(state, white, black, 20000);
-            playGame(g);
-
-            if (i % 500 == 0)
-            {
-                double ms = t.getElapsedTimeInMilliSec();
-                double gps = (i * 1000.0) / ms;
-                //std::cout << "Played game " << i << ", time = " << ms/1000.0 << " @ " << gps << " games per second \n";
-            }
-        }
+		result.push_back(gameConfiguration);
     }
+
+	return result;
+}
+
+void SparCraftExperiment::runExperiement(const GameConfiguration& configuration, AIParameters & parameters)
+{
+	for (size_t i = 0; i < configuration.gamesCount; ++i)
+	{
+		PlayerPtr white = parameters.getPlayer(Players::Player_One, configuration.players[0]);
+		PlayerPtr black = parameters.getPlayer(Players::Player_Two, configuration.players[1]);
+		Game g(configuration.state, white, black, 20000);
+		playGame(g);
+	}
 }
 
 void SparCraftExperiment::playGame(Game & game)
 {
+	game.play();
+}
+
 #ifndef SPARCRAFT_NOGUI
-    if (_showGUI)
-    {
-        static GUI gui(_guiWidth, _guiHeight);
-        gui.setGame(game);
+void SparCraftExperiment::runExperiementWithUI(const GameConfiguration& configuration, std::string assetsFolder, AIParameters & parameters)
+{
+	for (size_t i = 0; i < configuration.gamesCount; ++i)
+	{
+		PlayerPtr white = parameters.getPlayer(Players::Player_One, configuration.players[0]);
+		PlayerPtr black = parameters.getPlayer(Players::Player_Two, configuration.players[1]);
+
+		Game g(configuration.state, white, black, 20000);
+		playGameWithUI(g, assetsFolder);
+	}
+}
+
+void SparCraftExperiment::playGameWithUI(Game & game, std::string assetsFolder)
+{
+	if (_showGUI)
+	{
+		static GUI gui(_guiWidth, _guiHeight, assetsFolder);
+		gui.setGame(game);
 		gui.setUpdateDelay(_frameDelayMS);
 
-        while (!gui.getGame().gameOver())
-        {
-            gui.onFrame();
-        }
-    }
-    else
-#endif
-    {
-        game.play();
-    }
+		while (!gui.getGame().gameOver())
+		{
+			gui.onFrame();
+		}
+	}
 }
+#endif

@@ -407,6 +407,7 @@ void AIParameters::parseFile(const std::string & filename)
 {
     //std::cout << "Reading AI Parameters File: " << filename << "\n";
     std::string json = FileUtils::ReadFile(filename);
+	SPARCRAFT_ASSERT(json.size() > 0, "Empty JSON config file: %s", filename.str().c_str());
     
     parseJSONString(json);
 }

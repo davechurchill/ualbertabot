@@ -11,7 +11,7 @@ const int GUI::TextureFont                 = 256;
 GLfloat ColorWhite[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 GLfloat DarkGray[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
 
-GUI::GUI(int width, int height) 
+GUI::GUI(int width, int height, std::string imagesDir) 
     : _initialWidth(width)
     , _initialHeight(height)
     , _cameraX(0)
@@ -26,6 +26,7 @@ GUI::GUI(int width, int height)
     , _guiGame(*this)
 	, _frameDelayMS(0)
     , _zoom(1.0)
+	, _imagesDir(imagesDir)
 {
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
     {
@@ -70,7 +71,7 @@ void GUI::onStart()
     _glcontext = SDL_GL_CreateContext(_window);
 
     // load all the Starcraft textures that we'll need
-    loadTextures();
+    loadTextures(_imagesDir);
 
     // enable alpha blending for transparency
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -213,10 +214,8 @@ void GUI::drawUnitType(const BWAPI::UnitType & type, const Position & p)
     GUITools::DrawTexturedRect(pos, pos + _textureSizes[id], id, ColorWhite);
 }
 
-void GUI::loadTextures()
+void GUI::loadTextures(std::string imageDir)
 {
-    std::string imageDir = "../asset/images/";
-
     // set up the vectors that will hold the textures
     _textures = std::vector<GLuint>(MaxStarCraftTextures, 0);
     _textureSizes = std::vector<Position>(MaxStarCraftTextures);

@@ -42,6 +42,7 @@ class GUI
     SDL_GLContext       _glcontext;
 
     GUIGame             _guiGame;
+	std::string			_imagesDir;
 
     std::vector<GLuint>     _textures;
     std::vector<Position>   _textureSizes;
@@ -53,7 +54,7 @@ class GUI
     void handleEvents();
     void render();
     void renderTextGlut(int x, int y, std::string & s);
-    void loadTextures();
+    void loadTextures(std::string imageDir);
     bool loadTexture(int textureNumber, const std::string & fileName);
     void onResize(SDL_Event & event);
     void drawAllBWAPIUnits();
@@ -71,7 +72,7 @@ public:
     static const int TextureASCIIOffset;
     static const int TextureFont;
     
-    GUI(int width, int height);
+    GUI(int width, int height, std::string imagesDir);
     ~GUI();
 
     int width();
