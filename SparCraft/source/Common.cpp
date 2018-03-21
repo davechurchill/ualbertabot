@@ -39,8 +39,7 @@ namespace SparCraft
                 type == BWAPI::UnitTypes::Protoss_Carrier || 
                 type == BWAPI::UnitTypes::Protoss_Interceptor || 
                 type == BWAPI::UnitTypes::Protoss_Reaver ||
-                type == BWAPI::UnitTypes::Protoss_Scarab ||
-                type == BWAPI::UnitTypes::Zerg_Broodling)
+                type == BWAPI::UnitTypes::Protoss_Scarab)
             {
                 return false;
             }
