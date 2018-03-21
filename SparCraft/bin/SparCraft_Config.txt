@@ -72,13 +72,17 @@
                             "Units":[["Protoss_Corsair", 2], ["Protoss_Zealot", 2]]},
     "Symmetric":        { "Type":"Symmetric", "Border":[128,128], "Centers":[[640,360], [640,360]], "Units":[["Protoss_Dragoon", 16]] },
     "TorchFrame" :      { "Type":"TorchCraftFrame", "File":"FrameData.txt"},
-	"TorchIn" :     	{ "Type":"TorchCraftStdIn", "File":"Torch2.txt"}
+	"TorchIn" :     	{ "Type":"TorchCraftStdIn", "File":"Torch2.txt"},
+    "HydraliskFight" :     { "Type":"StateFile", "Map":"Arena", "File":"HydraliskFight.txt"},
+    "8Marines1SunkenColony" :     { "Type":"StateFile", "Map":"Arena", "File":"8Marines1SunkenColony.txt"}
 },
 
 "Games" :
 [
-	{ "Play":true,  "Name":"Test",  "Games":10, "State":"Separated", "Players":["AttackC", "KiteWC_NOK"] },
-    { "Play":false, "Name":"TorchGame",  "Games":10, "State":"TorchIn", "Players":["AttackC", "AttackC"] }
+	{ "Play":false,  "Name":"Test",  "Games":10, "State":"Separated", "Players":["AttackC", "KiteWC_NOK"] },
+    { "Play":false, "Name":"TorchGame",  "Games":10, "State":"TorchIn", "Players":["AttackC", "AttackC"] },
+    { "Play":false, "Name":"HydraliskFight",  "Games":10, "State":"HydraliskFight", "Players":["AttackC", "AttackC"] },
+    { "Play":true, "Name":"8Marines1SunkenColony",  "Games":10, "State":"8Marines1SunkenColony", "Players":["AttackC", "AttackC"] }
 ],
 
 "Benchmarks" :
