@@ -1,8 +1,17 @@
+Param(
+    [Parameter(Mandatory)]
+	[ValidateNotNullOrEmpty()]
+	[ValidateSet('R','T','Z','P')]
+	[string]$Race = "R",
+	[int]$GamesCount = 0,
+	[string]$BotName = null
+)
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 function Measure-Bot($BotName, $GamesCount, $BotsForTesing)
 {
 	echo "Measure bot $BotName"
+	echo "Run agains each bot $GamesCount games"
 	echo "
 | Bot | Wins | Games | Start | End | Duration | Avg. Duration |
 | --- | ---- | ----- | ----- | --- | -------- | ------------- |"
@@ -21,6 +30,25 @@ $BotsForTesing3 = @("Bryan Weber", "HOLD Z", "Kruecke", "MadMixZ", "AyyyLmao", "
 $BotsForTesing4 = @("Lukas Moravec", "Jakub Trancik", "MadMixT", "UPStarCraftAI 2016", "KaonBot", "Niels Justesen")
 
 $BotsForTesing = $BotsForTesing1 + $BotsForTesing2 + $BotsForTesing3 + $BotsForTesing4
-$GamesCount = (2*3) * (2*2)
-Measure-Bot AKBot_Sparcraft $GamesCount $BotsForTesing
-Measure-Bot AKBot_FAP $GamesCount $BotsForTesing
+if ($GamesCount -eq 0)
+{
+	if ($Race -eq "R")
+	{
+		$GamesCount = (2*3) * (2*2)
+	}
+	else
+	{
+		$GamesCount = (2*2)
+	}
+}
+
+if ($BotName -eq $null)
+{
+	Measure-Bot AKBot_Sparcraft:$Race $GamesCount $BotsForTesing
+	Measure-Bot AKBot_FAP:$Race $GamesCount $BotsForTesing
+}
+else
+{
+	Measure-Bot AKBot_Sparcraft:$Race $GamesCount @($BotName)
+	Measure-Bot AKBot_FAP:$Race $GamesCount @($BotName)
+}
