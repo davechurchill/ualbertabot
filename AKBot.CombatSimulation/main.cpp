@@ -118,7 +118,7 @@ bool testMarine1(CombatEstimator& estimator)
 	return estimator.isWinPredicted(ourCombatUnits, enemyCombatUnits, 100);
 }
 
-bool testMarine2(CombatEstimator& estimator)
+bool test1MarineVs1Zergling(CombatEstimator& estimator)
 {
 	BWAPI::UnitData marineUnitData;
 	ZeroMemory(&marineUnitData, sizeof(marineUnitData));
@@ -142,6 +142,143 @@ bool testMarine2(CombatEstimator& estimator)
 	UAlbertaBot::UnitInfo zergling(&zerglingUnitImpl);
 	std::vector<UAlbertaBot::UnitInfo> enemyCombatUnits;
 	enemyCombatUnits.push_back(zergling);
+	return estimator.isWinPredicted(ourCombatUnits, enemyCombatUnits, 100);
+}
+
+bool test1MarineVs1Broodling(CombatEstimator& estimator)
+{
+	BWAPI::UnitData marineUnitData;
+	ZeroMemory(&marineUnitData, sizeof(marineUnitData));
+	placeTerranMarine(marineUnitData, 1, 1);
+	marineUnitData.player = 0;
+	marineUnitData.isVisible[0] = true;
+	marineUnitData.isVisible[1] = true;
+	AKBot::UnitImpl marineUnitImpl(1, marineUnitData);
+
+	std::vector<BWAPI::Unit> ourCombatUnits;
+	ourCombatUnits.push_back(&marineUnitImpl);
+
+	BWAPI::UnitData broodlingUnitData;
+	UnitBuilder broodlingBuilder(broodlingUnitData);
+	broodlingBuilder
+		.unit(UnitTypes::Zerg_Broodling)
+		.position(2, 2)
+		.player(1)
+		.visibleToAll();
+	AKBot::UnitImpl broodlingUnitImpl(2, broodlingUnitData);
+
+	UAlbertaBot::UnitInfo broodling(&broodlingUnitImpl);
+	std::vector<UAlbertaBot::UnitInfo> enemyCombatUnits;
+	enemyCombatUnits.push_back(broodling);
+	return estimator.isWinPredicted(ourCombatUnits, enemyCombatUnits, 100);
+}
+
+bool test1BroodlingVs1Marine(CombatEstimator& estimator)
+{
+	BWAPI::UnitData broodlingUnitData;
+	UnitBuilder broodlingBuilder(broodlingUnitData);
+	broodlingBuilder
+		.unit(UnitTypes::Zerg_Broodling)
+		.position(TilePosition(1, 1))
+		.my()
+		.visibleToAll();
+	AKBot::UnitImpl broodlingUnitImpl(1, broodlingUnitData);
+
+	std::vector<BWAPI::Unit> ourCombatUnits;
+	ourCombatUnits.push_back(&broodlingUnitImpl);
+
+	BWAPI::UnitData marineUnitData;
+	UnitBuilder marineBuilder(marineUnitData);
+	marineBuilder
+		.unit(UnitTypes::Terran_Marine)
+		.position(TilePosition(2, 2))
+		.player(1)
+		.visibleToAll();
+	AKBot::UnitImpl marineUnitImpl(2, marineUnitData);
+
+	UAlbertaBot::UnitInfo marine(&marineUnitImpl);
+	std::vector<UAlbertaBot::UnitInfo> enemyCombatUnits;
+	enemyCombatUnits.push_back(marine);
+	return estimator.isWinPredicted(ourCombatUnits, enemyCombatUnits, 100);
+}
+
+bool test2BroodlingVs1Marine(CombatEstimator& estimator)
+{
+	BWAPI::UnitData broodlingUnitData;
+	UnitBuilder broodlingBuilder(broodlingUnitData);
+	broodlingBuilder
+		.unit(UnitTypes::Zerg_Broodling)
+		.position(TilePosition(1, 1))
+		.my()
+		.visibleToAll();
+	AKBot::UnitImpl broodlingUnitImpl(1, broodlingUnitData);
+
+	BWAPI::UnitData broodling2UnitData;
+	UnitBuilder broodling2Builder(broodling2UnitData);
+	broodling2Builder
+		.unit(UnitTypes::Zerg_Broodling)
+		.position(TilePosition(1, 2))
+		.my()
+		.visibleToAll();
+	AKBot::UnitImpl broodling2UnitImpl(2, broodling2UnitData);
+
+	std::vector<BWAPI::Unit> ourCombatUnits;
+	ourCombatUnits.push_back(&broodlingUnitImpl);
+	ourCombatUnits.push_back(&broodling2UnitImpl);
+
+	BWAPI::UnitData marineUnitData;
+	UnitBuilder marineBuilder(marineUnitData);
+	marineBuilder
+		.unit(UnitTypes::Terran_Marine)
+		.position(TilePosition(2, 2))
+		.player(1)
+		.visibleToAll();
+	AKBot::UnitImpl marineUnitImpl(3, marineUnitData);
+
+	UAlbertaBot::UnitInfo marine(&marineUnitImpl);
+	std::vector<UAlbertaBot::UnitInfo> enemyCombatUnits;
+	enemyCombatUnits.push_back(marine);
+	return estimator.isWinPredicted(ourCombatUnits, enemyCombatUnits, 100);
+}
+
+bool test2BroodlingNearRemovalVs1Marine(CombatEstimator& estimator)
+{
+	BWAPI::UnitData broodlingUnitData;
+	UnitBuilder broodlingBuilder(broodlingUnitData);
+	broodlingBuilder
+		.unit(UnitTypes::Zerg_Broodling)
+		.position(TilePosition(1, 1))
+		.my()
+		.visibleToAll();
+	broodlingBuilder.data().removeTimer = 50;
+	AKBot::UnitImpl broodlingUnitImpl(1, broodlingUnitData);
+
+	BWAPI::UnitData broodling2UnitData;
+	UnitBuilder broodling2Builder(broodling2UnitData);
+	broodling2Builder
+		.unit(UnitTypes::Zerg_Broodling)
+		.position(TilePosition(1, 2))
+		.my()
+		.visibleToAll();
+	broodling2Builder.data().removeTimer = 50;
+	AKBot::UnitImpl broodling2UnitImpl(2, broodling2UnitData);
+
+	std::vector<BWAPI::Unit> ourCombatUnits;
+	ourCombatUnits.push_back(&broodlingUnitImpl);
+	ourCombatUnits.push_back(&broodling2UnitImpl);
+
+	BWAPI::UnitData marineUnitData;
+	UnitBuilder marineBuilder(marineUnitData);
+	marineBuilder
+		.unit(UnitTypes::Terran_Marine)
+		.position(TilePosition(2, 2))
+		.player(1)
+		.visibleToAll();
+	AKBot::UnitImpl marineUnitImpl(3, marineUnitData);
+
+	UAlbertaBot::UnitInfo marine(&marineUnitImpl);
+	std::vector<UAlbertaBot::UnitInfo> enemyCombatUnits;
+	enemyCombatUnits.push_back(marine);
 	return estimator.isWinPredicted(ourCombatUnits, enemyCombatUnits, 100);
 }
 
@@ -381,12 +518,16 @@ void testCombatSimulation(
 
 	doTest<TCombatEstimator>("1 Zergling vs empty squad", testZergling1, estimatorFactory, TOTAL_SUCCESS);
 	doTest<TCombatEstimator>("1 Marine vs empty squad", testMarine1, estimatorFactory, TOTAL_SUCCESS);
-	doTest<TCombatEstimator>("1 Marine vs 1 Zergling", testMarine2, estimatorFactory, TOTAL_FAILURE);
+	doTest<TCombatEstimator>("1 Marine vs 1 Zergling", test1MarineVs1Zergling, estimatorFactory, TOTAL_FAILURE);
 	doTest<TCombatEstimator>("5 Marine vs 1 Sunken Colony", test5MarineVs1SunkenColony, estimatorFactory, TOTAL_FAILURE);
 	doTest<TCombatEstimator>("8 Marine vs 1 Sunken Colony", test8MarineVs1SunkenColony, estimatorFactory, TOTAL_SUCCESS);
 	doTest<TCombatEstimator>("9 Marine vs 1 Sunken Colony", test9MarineVs1SunkenColony, estimatorFactory, TOTAL_SUCCESS);
 	doTest<TCombatEstimator>("2 Marine vs 1 Hydralisk", test2MarineVs1Hydralisk, estimatorFactory, TOTAL_SUCCESS);
 	doTest<TCombatEstimator>("1 Zealot vs 2 Zealots", test1ZealotVs2Zealots, estimatorFactory, TOTAL_FAILURE);
+	doTest<TCombatEstimator>("1 Marine vs 1 Broodling", test1MarineVs1Broodling, estimatorFactory, TOTAL_SUCCESS);
+	doTest<TCombatEstimator>("1 Broodling vs 1 Marine", test1BroodlingVs1Marine, estimatorFactory, TOTAL_FAILURE);
+	doTest<TCombatEstimator>("2 Broodling vs 1 Marine", test2BroodlingVs1Marine, estimatorFactory, TOTAL_SUCCESS);
+	doTest<TCombatEstimator>("2 Broodling near removal vs 1 Marine", test2BroodlingNearRemovalVs1Marine, estimatorFactory, TOTAL_FAILURE);
 
 	printStatistics();
 }

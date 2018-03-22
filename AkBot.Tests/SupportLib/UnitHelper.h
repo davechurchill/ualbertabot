@@ -20,5 +20,21 @@ namespace AKBot
 		void placeProtossZealot(BWAPI::UnitData& unitData, int x, int y);
 		
 		void placeUnit(BWAPI::UnitData& unitData, BWAPI::UnitType unitType, int x, int y);
+
+		class UnitBuilder
+		{
+			BWAPI::UnitData& _unitData;
+		public:
+			UnitBuilder(BWAPI::UnitData& unitData);
+			UnitBuilder& unit(BWAPI::UnitType unitType);
+			UnitBuilder& position(int x, int y);
+			UnitBuilder& position(BWAPI::Position position);
+			UnitBuilder& position(BWAPI::TilePosition tilePosition);
+			UnitBuilder& angle(double angle);
+			UnitBuilder& my();
+			UnitBuilder& player(int player);
+			UnitBuilder& visibleToAll();
+			BWAPI::UnitData& data() const { return _unitData; }
+		};
 	}
 }

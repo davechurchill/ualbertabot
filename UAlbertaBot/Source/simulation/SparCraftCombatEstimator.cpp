@@ -105,7 +105,7 @@ void AKBot::SparCraftCombatEstimator::setCombatUnits(
 // Gets a SparCraft unit from a BWAPI::Unit, used for our own units since we have all their info
 const SparCraft::Unit AKBot::SparCraftCombatEstimator::getSparCraftUnit(BWAPI::Unit unit, int currentFrame) const
 {
-	return SparCraft::Unit(unit->getType(),
+	SparCraft::Unit sparcraftUnit(unit->getType(),
 		SparCraft::Position(unit->getPosition()),
 		unit->getID(),
 		getSparCraftPlayerID(unit->getPlayer()),
@@ -113,6 +113,12 @@ const SparCraft::Unit AKBot::SparCraftCombatEstimator::getSparCraftUnit(BWAPI::U
 		static_cast<SparCraft::HealthType>(0),
 		static_cast<SparCraft::TimeType>(currentFrame),
 		static_cast<SparCraft::TimeType>(currentFrame));
+	if (unit->getType() == BWAPI::UnitTypes::Zerg_Broodling)
+	{
+		sparcraftUnit.setRemoveTimer(unit->getRemoveTimer());
+	}
+
+	return sparcraftUnit;
 }
 
 // Gets a SparCraft unit from a UnitInfo struct, needed to get units of enemy behind FoW
@@ -126,7 +132,7 @@ const SparCraft::Unit SparCraftCombatEstimator::getSparCraftUnit(const UnitInfo 
 		type = BWAPI::UnitTypes::Terran_Marine;
 	}
 
-	return SparCraft::Unit(ui.type,
+	SparCraft::Unit sparcraftUnit(ui.type,
 		SparCraft::Position(ui.lastPosition),
 		ui.unitID,
 		getSparCraftPlayerID(ui.player),
@@ -134,6 +140,12 @@ const SparCraft::Unit SparCraftCombatEstimator::getSparCraftUnit(const UnitInfo 
 		static_cast<SparCraft::TimeType>(0),
 		static_cast<SparCraft::TimeType>(currentFrame),
 		static_cast<SparCraft::TimeType>(currentFrame));
+	if (ui.type == BWAPI::UnitTypes::Zerg_Broodling)
+	{
+		sparcraftUnit.setRemoveTimer(ui.unit->getRemoveTimer());
+	}
+	
+	return sparcraftUnit;
 }
 
 double AKBot::SparCraftCombatEstimator::simulateCombat()
