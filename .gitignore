@@ -37,3 +37,4 @@ compile/
 /output.txt
 *.pdb
 .vscode/.cmaketools.json
+/.vscode
