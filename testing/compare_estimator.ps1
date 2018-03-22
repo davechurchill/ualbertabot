@@ -4,7 +4,7 @@ Param(
 	[ValidateSet('R','T','Z','P')]
 	[string]$Race = "R",
 	[int]$GamesCount = 0,
-	[string]$BotName = null
+	[string]$BotName = $null
 )
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 
