@@ -198,6 +198,14 @@ void UAlbertaBot_Arena::onUnitRenegade(BWAPI::Unit)
 
 }
 
+void UAlbertaBot_Arena::onNukeDetect(BWAPI::Position target)
+{
+}
+
+void UAlbertaBot_Arena::onUnitEvade(BWAPI::Unit unit)
+{
+}
+
 void UAlbertaBot_Arena::printInfo()
 {
 

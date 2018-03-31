@@ -45,6 +45,8 @@ public:
 	void	onUnitShow(BWAPI::Unit unit);
 	void	onUnitHide(BWAPI::Unit unit);
 	void	onUnitRenegade(BWAPI::Unit unit);
+	void onNukeDetect(BWAPI::Position target) override;
+	void onUnitEvade(BWAPI::Unit unit) override;
 };
 
 }

@@ -24,6 +24,8 @@ public:
     virtual void onUnitShow(BWAPI::Unit unit) = 0;
     virtual void onUnitHide(BWAPI::Unit unit) = 0;
     virtual void onUnitRenegade(BWAPI::Unit unit) = 0;
+	virtual void onUnitEvade(BWAPI::Unit unit) = 0;
+	virtual void onNukeDetect(BWAPI::Position target) = 0;
 };
 
 }

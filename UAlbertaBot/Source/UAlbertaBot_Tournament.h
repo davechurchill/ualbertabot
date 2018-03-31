@@ -61,6 +61,8 @@ public:
     void	onUnitShow(BWAPI::Unit unit) override;
     void	onUnitHide(BWAPI::Unit unit) override;
     void	onUnitRenegade(BWAPI::Unit unit) override;
+	void onNukeDetect(BWAPI::Position target) override;
+	void onUnitEvade(BWAPI::Unit unit) override;
 
     const shared_ptr<UnitInfoManager> UnitInfo() const;
 	AKBot::ScreenCanvas& getCanvas();

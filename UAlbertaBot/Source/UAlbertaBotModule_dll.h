@@ -15,17 +15,20 @@ public:
 
     UAlbertaBotModule_dll();
 
-	void	onStart();
-	void	onFrame();
-	void	onEnd(bool isWinner);
-	void	onUnitDestroy(BWAPI::Unit unit);
-	void	onUnitMorph(BWAPI::Unit unit);
-	void	onSendText(std::string text);
-	void	onUnitCreate(BWAPI::Unit unit);
-	void	onUnitComplete(BWAPI::Unit unit);
-	void	onUnitShow(BWAPI::Unit unit);
-	void	onUnitHide(BWAPI::Unit unit);
-	void	onUnitRenegade(BWAPI::Unit unit);
+	void	onStart() override;
+	void	onFrame() override;
+	void	onEnd(bool isWinner) override;
+	void	onUnitDestroy(BWAPI::Unit unit) override;
+	void	onUnitMorph(BWAPI::Unit unit) override;
+	void	onSendText(std::string text) override;
+	void	onUnitCreate(BWAPI::Unit unit) override;
+	void	onUnitComplete(BWAPI::Unit unit) override;
+	void	onUnitShow(BWAPI::Unit unit) override;
+	void	onUnitHide(BWAPI::Unit unit) override;
+	void	onUnitRenegade(BWAPI::Unit unit) override;
+
+	void onNukeDetect(BWAPI::Position target) override;
+	void onUnitEvade(BWAPI::Unit unit) override;
 };
 
 }

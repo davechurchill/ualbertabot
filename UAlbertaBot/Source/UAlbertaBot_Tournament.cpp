@@ -230,3 +230,11 @@ void UAlbertaBot_Tournament::onUnitRenegade(BWAPI::Unit unit)
 	_unitInfoManager->onUnitRenegade(unit);
     _gameCommander->onUnitRenegade(unit);
 }
+
+void UAlbertaBot_Tournament::onNukeDetect(BWAPI::Position target)
+{
+}
+
+void UAlbertaBot_Tournament::onUnitEvade(BWAPI::Unit unit)
+{
+}
