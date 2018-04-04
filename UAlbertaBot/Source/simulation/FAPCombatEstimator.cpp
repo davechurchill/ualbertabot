@@ -10,8 +10,8 @@ AKBot::FAPCombatEstimator::FAPCombatEstimator(const BotMicroConfiguration & micr
 }
 
 bool FAPCombatEstimator::isWinPredicted(
-	const std::vector<BWAPI::Unit> ourCombatUnits,
-	std::vector<UAlbertaBot::UnitInfo> enemyCombatUnits,
+	const std::vector<BWAPI::Unit>& ourCombatUnits,
+	const std::vector<UAlbertaBot::UnitInfo>& enemyCombatUnits,
 	int currentFrame)
 {
 	setCombatUnits(ourCombatUnits, enemyCombatUnits, currentFrame);
