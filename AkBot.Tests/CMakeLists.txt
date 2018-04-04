@@ -1,6 +1,4 @@
 file(GLOB AKBotTests_Lib "TestLib/*.cpp" "Shared/*.cpp" "SupportLib/*.cpp")
-file(GLOB AKBotTests_SOURCES "*.cpp")
-file(GLOB_RECURSE AKBotTest_HEADERS "source/*.h")
 
 if (AKBOT_SSCAIT)
 	set(BWAPI_LIB_DIR "$ENV{BWAPI_SSCAIT_DIR}/lib")
@@ -34,6 +32,14 @@ MESSAGE( STATUS "MSVC_VERSION: " ${MSVC_VERSION} )
 
 link_directories(${BWAPI_LIB_DIR})
 
+add_library(BotTestLib ${AKBotTests_Lib})
+target_include_directories(BotTestLib BEFORE PUBLIC
+	${BWAPI_INCLUDE_DIR}
+	${BWAPIClient_INCLUDE_DIR}
+	"../UAlbertaBot/source/"
+	"TestLib"
+)
+
 file(GLOB BOOST_TEST_SRCS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *Test.cpp)
 foreach(testSrc ${BOOST_TEST_SRCS})
 	#Extract the filename without an extension (NAME_WE)
@@ -42,8 +48,7 @@ foreach(testSrc ${BOOST_TEST_SRCS})
     #Add compile target
 	add_definitions(-DWITH_CMAKE)
     add_executable(${testName}
-		${testSrc}
-		${AKBotTests_Lib})
+		${testSrc})
 	target_include_directories(${testName} BEFORE PUBLIC
 		${BWAPI_INCLUDE_DIR}
 		${BWAPIClient_INCLUDE_DIR}
@@ -58,7 +63,7 @@ foreach(testSrc ${BOOST_TEST_SRCS})
 	ELSE()
 		target_link_libraries(${testName} PUBLIC BWAPId.lib BWAPIClientd.lib)
 	ENDIF()
-	target_link_libraries(${testName} PUBLIC AKBot::Lib AKBot::SparCraft AKBot::BOSS)
+	target_link_libraries(${testName} PUBLIC AKBot::Lib AKBot::SparCraft AKBot::BOSS BotTestLib)
 
     #I like to move testing binaries into a testBin directory
     set_target_properties(${testName} PROPERTIES 

@@ -360,8 +360,9 @@ void StrategyManager::readResults()
     int wins = 0;
     int losses = 0;
 
-    FILE *file = fopen ( enemyResultsFile.c_str(), "r" );
-    if ( file != nullptr )
+	FILE *file;
+	auto error = fopen_s(&file, enemyResultsFile.c_str(), "r");
+    if (error == 0)
     {
         char line [ 4096 ]; /* or other suitable maximum line size */
         while ( fgets ( line, sizeof line, file ) != nullptr ) /* read a line */

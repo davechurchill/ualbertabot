@@ -20,19 +20,19 @@ void AKBot::StrategyManagerCommandExecutor::onCommand(const std::string & comman
 	std::string setTerranSwitchTimePrefix("set terran switch time ");
 	if (boost::starts_with(command, setTerranSwitchTimePrefix)) {
 		auto terranSwitchTimeString = command.substr(setTerranSwitchTimePrefix.length(), command.length() - setTerranSwitchTimePrefix.length());
-		_strategyConfiguration.TerranStrategySwitchTime = ::atof(terranSwitchTimeString.c_str());
+		_strategyConfiguration.TerranStrategySwitchTime = ::atoi(terranSwitchTimeString.c_str());
 	}
 
 	std::string setZergSwitchTimePrefix("set zerg switch time ");
 	if (boost::starts_with(command, setZergSwitchTimePrefix)) {
 		auto zergSwitchTimeString = command.substr(setZergSwitchTimePrefix.length(), command.length() - setZergSwitchTimePrefix.length());
-		_strategyConfiguration.ZergStrategySwitchTime = ::atof(setZergSwitchTimePrefix.c_str());
+		_strategyConfiguration.ZergStrategySwitchTime = ::atoi(setZergSwitchTimePrefix.c_str());
 	}
 
 	std::string setProtossSwitchTimePrefix("set protoss switch time ");
 	if (boost::starts_with(command, setProtossSwitchTimePrefix)) {
 		auto protossSwitchTimeString = command.substr(setProtossSwitchTimePrefix.length(), command.length() - setProtossSwitchTimePrefix.length());
-		_strategyConfiguration.ProtossStrategySwitchTime = ::atof(protossSwitchTimeString.c_str());
+		_strategyConfiguration.ProtossStrategySwitchTime = ::atoi(protossSwitchTimeString.c_str());
 	}
 }
 
