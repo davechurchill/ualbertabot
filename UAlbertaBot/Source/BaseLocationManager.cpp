@@ -471,7 +471,7 @@ BWAPI::TilePosition BaseLocationManager::getNextExpansion(BWAPI::Player player) 
         if (!closestBase || distanceFromHome < minDistance)
         {
             closestBase = base;
-            minDistance = distanceFromHome;
+            minDistance = (int)distanceFromHome;
         }
     }
 

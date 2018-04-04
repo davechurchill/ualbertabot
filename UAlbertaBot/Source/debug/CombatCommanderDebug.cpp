@@ -255,7 +255,17 @@ namespace AKBot
 		auto start = std::chrono::system_clock::now();
 		std::ostringstream fileNameBuilder;
 		auto time = std::time(nullptr);
-		fileNameBuilder << "combatmanager_" << std::put_time(std::gmtime(&time), "%Y%m%d_%H%M%S") << ".txt";
+		struct tm globalTime;
+		auto error = gmtime_s(&globalTime, &time);
+		if (error == 0)
+		{
+			fileNameBuilder << "combatmanager_" << std::put_time(&globalTime, "%Y%m%d_%H%M%S") << ".txt";
+		}
+		else
+		{
+			fileNameBuilder << "combatmanager_unknown_time.txt";
+		}
+
 		std::string fileName = fileNameBuilder.str();
 		
 		ofstream outfile;

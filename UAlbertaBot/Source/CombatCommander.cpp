@@ -131,7 +131,7 @@ void CombatCommander::updateAttackSquads()
 	updateAttackSquad(secondaryAttackSquad, 10);
 }
 
-void UAlbertaBot::CombatCommander::updateAttackSquad(UAlbertaBot::Squad & mainAttackSquad, int maxUnitsInSquad)
+void UAlbertaBot::CombatCommander::updateAttackSquad(UAlbertaBot::Squad & mainAttackSquad, size_t maxUnitsInSquad)
 {
 	auto self = _opponentView->self();
 	if (mainAttackSquad.getUnits().size() > maxUnitsInSquad) {
