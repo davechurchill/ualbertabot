@@ -46,8 +46,8 @@ namespace AKBot
 			const BotSparCraftConfiguration& sparcraftConfiguration,
 			const BotMicroConfiguration& microConfiguration);
 		bool isWinPredicted(
-			const std::vector<BWAPI::Unit> ourCombatUnits,
-			std::vector<UAlbertaBot::UnitInfo> enemyCombatUnits,
+			const std::vector<BWAPI::Unit>& ourCombatUnits,
+			const std::vector<UAlbertaBot::UnitInfo>& enemyCombatUnits,
 			int currentFrame) override;
 
 		const SparCraft::GameState &	getSparCraftState() const;

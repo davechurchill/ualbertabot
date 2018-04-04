@@ -20,8 +20,8 @@ namespace AKBot
 		FAPCombatEstimator(
 			const BotMicroConfiguration& microConfiguration);
 		bool isWinPredicted(
-			const std::vector<BWAPI::Unit> ourCombatUnits,
-			std::vector<UAlbertaBot::UnitInfo> enemyCombatUnits,
+			const std::vector<BWAPI::Unit>& ourCombatUnits,
+			const std::vector<UAlbertaBot::UnitInfo>& enemyCombatUnits,
 			int currentFrame) override;
 	};
 }

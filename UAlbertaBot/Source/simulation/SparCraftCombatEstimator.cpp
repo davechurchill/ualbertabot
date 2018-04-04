@@ -17,8 +17,8 @@ AKBot::SparCraftCombatEstimator::SparCraftCombatEstimator(
 }
 
 bool AKBot::SparCraftCombatEstimator::isWinPredicted(
-	const std::vector<BWAPI::Unit> ourCombatUnits,
-	std::vector<UAlbertaBot::UnitInfo> enemyCombatUnits,
+	const std::vector<BWAPI::Unit>& ourCombatUnits,
+	const std::vector<UAlbertaBot::UnitInfo>& enemyCombatUnits,
 	int currentFrame)
 {
 	setCombatUnits(ourCombatUnits, enemyCombatUnits, currentFrame);
