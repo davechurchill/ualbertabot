@@ -20,9 +20,6 @@ for explanation of purpose of the file
 ## How to build
 
 For testing locally you need only VS2017, for these you should use Debug and Release solution configuration.
-If you want made submission to SSCAIT, you have to install VS2013 Update 5 from https://www.visualstudio.com/vs/older-downloads/.
-Community version should be enough for building. To make install minimal, you could uncheck all ceckboxes in the installer.
-
 For actual building go to `UAlbertaBot\VisualStudio` and open `AKBot.sln`
 
 ## Documentation
