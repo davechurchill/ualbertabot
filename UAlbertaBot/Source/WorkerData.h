@@ -4,6 +4,7 @@
 #include <BWAPI/Unit.h>
 #include <BWAPI/UnitType.h>
 #include "Logger.h"
+#include "UnitInformation.h"
 
 namespace UAlbertaBot
 {
@@ -61,12 +62,13 @@ private:
 
     std::map<BWAPI::Unit,int>               _workersOnMineralPatch;
 	shared_ptr<AKBot::Logger> _logger;
+	shared_ptr<AKBot::UnitInformation> _unitInformation;
 
     void clearPreviousJob(BWAPI::Unit unit);
 
 public:
 
-    WorkerData(shared_ptr<AKBot::Logger> logger);
+    WorkerData(shared_ptr<AKBot::Logger> logger, shared_ptr<AKBot::UnitInformation> unitInformation);
 
     void    workerDestroyed(BWAPI::Unit unit);
 	/* Register resource depot */

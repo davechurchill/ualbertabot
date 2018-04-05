@@ -14,7 +14,7 @@ namespace AKBot
 		, _debugConfiguration(debugConfiguration)
 	{
 	}
-	void BaseLocationManagerDebug::draw(AKBot::ScreenCanvas & canvas)
+	void BaseLocationManagerDebug::draw(AKBot::ScreenCanvas & canvas, int currentFrame)
 	{
 		drawBases(canvas);
 		drawBasesSummary(canvas, 300, 100);

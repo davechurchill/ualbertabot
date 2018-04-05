@@ -18,7 +18,6 @@
     <ClCompile Include="..\Source\BaseLocation.cpp" />
     <ClCompile Include="..\Source\BaseLocationManager.cpp" />
     <ClCompile Include="..\Source\BOSSManager.cpp" />
-    <ClCompile Include="..\Source\BotConfiguration.cpp" />
     <ClCompile Include="..\Source\BotFactory.cpp" />
     <ClCompile Include="..\Source\BotModule.cpp" />
     <ClCompile Include="..\Source\BotPlayer.cpp" />
@@ -26,10 +25,12 @@
     <ClCompile Include="..\source\BuildingPlacer.cpp" />
     <ClCompile Include="..\source\BuildOrder.cpp" />
     <ClCompile Include="..\source\BuildOrderQueue.cpp" />
+    <ClCompile Include="..\Source\bwapihudinfo.cpp" />
     <ClCompile Include="..\Source\BWAPIMapInformation.cpp" />
     <ClCompile Include="..\Source\BWAPIOpponentView.cpp" />
     <ClCompile Include="..\Source\BWAPIReplayOpponentView.cpp" />
     <ClCompile Include="..\Source\BWAPIScreenCanvas.cpp" />
+    <ClCompile Include="..\Source\BWAPIUnitInformation.cpp" />
     <ClCompile Include="..\Source\CombatCommander.cpp" />
     <ClCompile Include="..\Source\CombatSimulation.cpp" />
     <ClCompile Include="..\Source\commands\BaseLocationCommandExecutor.cpp" />
@@ -41,7 +42,6 @@
     <ClCompile Include="..\Source\commands\StrategyManagerCommandExecutor.cpp" />
     <ClCompile Include="..\Source\commands\UnitCommandExecutor.cpp" />
     <ClCompile Include="..\Source\commands\WorkerCommandExecutor.cpp" />
-    <ClCompile Include="..\Source\Common.cpp" />
     <ClCompile Include="..\Source\DebugTools.cpp" />
     <ClCompile Include="..\Source\debug\BaseLocationManagerDebug.cpp" />
     <ClCompile Include="..\Source\debug\BWAPIPrintLogger.cpp" />
@@ -120,10 +120,12 @@
     <ClInclude Include="..\source\BuildingPlacer.h" />
     <ClInclude Include="..\source\BuildOrder.h" />
     <ClInclude Include="..\source\BuildOrderQueue.h" />
+    <ClInclude Include="..\Source\BWAPIHUDInfo.h" />
     <ClInclude Include="..\Source\BWAPIMapInformation.h" />
     <ClInclude Include="..\Source\BWAPIOpponentView.h" />
     <ClInclude Include="..\Source\BWAPIReplayOpponentView.h" />
     <ClInclude Include="..\Source\BWAPIScreenCanvas.h" />
+    <ClInclude Include="..\Source\BWAPIUnitInformation.h" />
     <ClInclude Include="..\Source\CombatCommander.h" />
     <ClInclude Include="..\Source\CombatSimulation.h" />
     <ClInclude Include="..\Source\commands\BaseLocationCommandExecutor.h" />
@@ -156,6 +158,7 @@
     <ClInclude Include="..\Source\ExplorerManager.h" />
     <ClInclude Include="..\Source\GameCommander.h" />
     <ClInclude Include="..\Source\GameHistory.hpp" />
+    <ClInclude Include="..\Source\hudinfo.h" />
     <ClInclude Include="..\Source\Logger.h" />
     <ClInclude Include="..\Source\MapInformation.h" />
     <ClInclude Include="..\Source\OpponentView.h" />
@@ -209,6 +212,7 @@
     <ClInclude Include="..\source\TransportManager.h" />
     <ClInclude Include="..\Source\UABAssert.h" />
     <ClInclude Include="..\Source\UnitData.h" />
+    <ClInclude Include="..\Source\UnitInformation.h" />
     <ClInclude Include="..\Source\UnitUtil.h" />
     <ClInclude Include="..\source\WorkerData.h" />
     <ClInclude Include="..\source\WorkerManager.h" />
@@ -281,6 +285,7 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalOptions>/await %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPId.lib;$(Configuration)/SparCraft/SparCraft_d.lib;../../BOSS/bin/BOSS_d.lib;$(BWTA_DIR)/lib/BWTAd.lib;$(BWTA_DIR)/lib/libboost_system-vc141-mt-gd-1_64.lib;$(BWTA_DIR)/lib/libboost_thread-vc141-mt-gd-1_64.lib;$(BWTA_DIR)/lib/libboost_filesystem-vc141-mt-gd-1_64.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -308,6 +313,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
       <AdditionalOptions>/await %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>

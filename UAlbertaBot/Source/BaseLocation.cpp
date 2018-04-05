@@ -129,7 +129,7 @@ bool BaseLocation::isOccupiedByPlayer(BWAPI::Player player) const
 
 bool BaseLocation::isExplored() const
 {
-    return BWAPI::Broodwar->isExplored(getDepotTilePosition());
+    return _mapTools->isExplored(getDepotTilePosition());
 }
 
 bool BaseLocation::isPlayerStartLocation(BWAPI::Player player) const

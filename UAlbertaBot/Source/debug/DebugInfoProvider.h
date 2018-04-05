@@ -10,6 +10,6 @@ namespace AKBot
 		/*
 		 Draw debug information on the screen canvas.
 		*/
-		virtual void draw(ScreenCanvas& canvas) = 0;
+		virtual void draw(ScreenCanvas& canvas, int currentFrame) = 0;
 	};
 }

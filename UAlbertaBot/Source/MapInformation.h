@@ -10,8 +10,9 @@ namespace AKBot
 		virtual int getHeight() const = 0;
 		virtual bool isWalkable(int x, int y) const = 0;
 		virtual bool isVisible(int x, int y) const = 0;
-		virtual bool isBuildable(int x, int y) const = 0;
+		virtual bool isBuildable(int tileX, int tileY) const = 0;
 		virtual bool isExplored(int tileX, int tileY) const = 0;
+		virtual bool isOccupied(int tileX, int tileY) const = 0;
 		virtual const BWAPI::Unitset& getStaticNeutralUnits() const = 0;
 	};
 }

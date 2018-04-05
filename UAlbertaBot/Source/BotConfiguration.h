@@ -48,7 +48,7 @@ struct BotStrategyConfiguration
 {
 	std::string ProtossStrategyName = "Protoss_ZealotRush";
 	std::string TerranStrategyName = "Terran_MarineRush";
-	std::string ZergStrategyName = "Zerg_3HatchMuta";
+	std::string ZergStrategyName = "Zerg_ZergelingRush";
 	std::string StrategyName = "Protoss_ZealotRush";
 	bool ScoutHarassEnemy = true;
 	bool UseEnemySpecificStrategy = false;

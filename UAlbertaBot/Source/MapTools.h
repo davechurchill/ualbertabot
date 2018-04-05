@@ -54,6 +54,8 @@ public:
 	bool                    isExplored(const BWAPI::TilePosition & tile) const;
     bool                    isBuildable(BWAPI::TilePosition tile, BWAPI::UnitType type) const;
     bool                    isBuildableTile(BWAPI::TilePosition tile) const;
+	bool                    isVisibleTile(const BWAPI::TilePosition& tile) const;
+	bool                    isOccupiedTile(const BWAPI::TilePosition& tile) const;
     bool                    isDepotBuildableTile(BWAPI::TilePosition tile) const;
     
 

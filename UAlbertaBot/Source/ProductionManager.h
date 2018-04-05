@@ -29,6 +29,7 @@ class ProductionManager
 	shared_ptr<UnitInfoManager> _unitInfo;
 	shared_ptr<WorkerManager> _workerManager;
 	shared_ptr<AKBot::OpponentView> _opponentView;
+	shared_ptr<MapTools> _mapTools;
 	bool				_useBuildOrderSearch;
 	const BotDebugConfiguration& _debugConfiguration;
     

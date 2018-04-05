@@ -45,6 +45,7 @@ public:
 		shared_ptr<BaseLocationManager> bases,
 		shared_ptr<WorkerManager> workerManager,
 		shared_ptr<MapTools> mapTools,
+		shared_ptr<AKBot::UnitInformation> unitInformation,
 		shared_ptr<AKBot::Logger> logger,
 		const BotMacroConfiguration& macroConfiguration);
 	BuildingManager(const BuildingManager&) = delete;

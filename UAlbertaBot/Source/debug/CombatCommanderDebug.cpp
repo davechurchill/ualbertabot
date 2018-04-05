@@ -70,7 +70,7 @@ namespace AKBot
 		, _debugConfiguration(debugConfiguration)
 	{
 	}
-	void CombatCommanderDebug::draw(ScreenCanvas & canvas) const
+	void CombatCommanderDebug::draw(ScreenCanvas & canvas, int currentFrame) const
 	{
 		auto& squadData = _combatCommander->getSquadData();
 		drawSquadData(canvas, squadData);
@@ -81,7 +81,7 @@ namespace AKBot
 
 		if (_debugConfiguration.TraceCombatManagerLogic)
 		{
-			traceCombatManager();
+			traceCombatManager(currentFrame);
 		}
 	}
 
@@ -249,7 +249,7 @@ namespace AKBot
 		}
 	}
 
-	void CombatCommanderDebug::traceCombatManager() const
+	void CombatCommanderDebug::traceCombatManager(int currentFrame) const
 	{
 		// TODO: Name of the file should be calculated on the game start.
 		auto start = std::chrono::system_clock::now();
@@ -271,8 +271,7 @@ namespace AKBot
 		ofstream outfile;
 		outfile.open(fileName, ios::out | ios::app);
 		outfile << "=======================================================" << endl;
-		auto frameCount = BWAPI::Broodwar->getFrameCount();
-		outfile << "Frame: " << frameCount << endl << endl;
+		outfile << "Frame: " << currentFrame << endl << endl;
 		auto& squadData = _combatCommander->getSquadData();
 		for (auto const & kv : squadData.getSquads())
 		{

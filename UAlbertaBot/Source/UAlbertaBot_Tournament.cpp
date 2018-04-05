@@ -170,7 +170,7 @@ void UAlbertaBot_Tournament::onFrame()
 	_gameCommander->update(currentFrame);
 
 	// Draw debug information
-	drawDebugInformation(_canvas);
+	drawDebugInformation(_canvas, currentFrame);
 
     if (_configuration.Modules.UsingAutoObserver)
     {
@@ -178,9 +178,9 @@ void UAlbertaBot_Tournament::onFrame()
     }
 }
 
-void UAlbertaBot_Tournament::drawDebugInformation(AKBot::ScreenCanvas& canvas)
+void UAlbertaBot_Tournament::drawDebugInformation(AKBot::ScreenCanvas& canvas, int currentFrame)
 {
-	_gameDebug->draw(canvas);
+	_gameDebug->draw(canvas, currentFrame);
 }
 
 void UAlbertaBot_Tournament::onUnitDestroy(BWAPI::Unit unit)

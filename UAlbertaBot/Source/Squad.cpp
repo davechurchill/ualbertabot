@@ -214,26 +214,34 @@ bool Squad::needsToRegroup(shared_ptr<MapTools> map, int currentFrame)
 	}
 
     // if none of our units are in attack range of any enemy units, don't retreat
-    std::vector<UnitInfo> enemyCombatUnits;
-    const auto & enemyUnitInfo = _unitInfo->getUnitInfoMap(_opponentView->defaultEnemy());
 
     bool anyInRange = false;
-    for (const auto & eui : enemyUnitInfo)
+    for (const auto& enemy: _opponentView->enemies())
     {
-        bool inRange = false;
-        for (const auto & u : _units)
+        const auto & enemyUnitInfo = _unitInfo->getUnitInfoMap(enemy);
+        for (const auto & eui : enemyUnitInfo)
         {
-            int range = UnitUtil::GetAttackRange(eui.second.type, u->getType());
-            if (range + 128 >= eui.second.lastPosition.getDistance(u->getPosition()))
+            bool inRange = false;
+            for (const auto & u : _units)
             {
-                inRange = true;
+                int range = UnitUtil::GetAttackRange(eui.second.type, u->getType());
+                int distanceToEnemyUnit = (int)eui.second.lastPosition.getDistance(u->getPosition());
+                if (range + 128 >= distanceToEnemyUnit)
+                {
+                    inRange = true;
+                    break;
+                }
+            }
+
+            if (inRange)
+            {
+                anyInRange = true;
                 break;
             }
         }
 
-        if (inRange)
+        if (anyInRange)
         {
-            anyInRange = true;
             break;
         }
     }

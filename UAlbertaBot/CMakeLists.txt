@@ -6,8 +6,6 @@ list(REMOVE_ITEM AKBot_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/UAlbertaBotMo
 list(REMOVE_ITEM AKBot_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/main.cpp")
 list(REMOVE_ITEM AKBot_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/Dll.cpp")
 list(REMOVE_ITEM AKBot_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/Dll_Arena.cpp")
-list(REMOVE_ITEM AKBot_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/TimerManager.cpp")
-list(REMOVE_ITEM AKBot_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/CombatData.cpp")
 list(APPEND AKBot_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/simulation/SparcraftCombatEstimator.cpp")
 list(APPEND AKBot_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/simulation/FAP.cpp")
 list(APPEND AKBot_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/simulation/FAPCombatEstimator.cpp")
@@ -68,6 +66,7 @@ include_directories(${SDL_INCLUDE_DIR}..)
 
 link_directories(${Boost_LIBRARY_DIRS})
 add_definitions(-DNOMINMAX)
+add_definitions(-DBOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE)
 
 add_library(AKBot 
     ${AKBot_SOURCES}

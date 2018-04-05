@@ -25,9 +25,16 @@ bool AKBot::BWAPIMapInformation::isVisible(int x, int y) const
 	return _game->isVisible(BWAPI::TilePosition(x, y));
 }
 
-bool AKBot::BWAPIMapInformation::isBuildable(int x, int y) const
+bool AKBot::BWAPIMapInformation::isBuildable(int tileX, int tileY) const
 {
-	return _game->isBuildable(BWAPI::TilePosition(x, y), false);
+	return _game->isBuildable(BWAPI::TilePosition(tileX, tileY), false);
+}
+
+bool AKBot::BWAPIMapInformation::isOccupied(int tileX, int tileY) const
+{
+	return !_game->isBuildable(BWAPI::TilePosition(tileX, tileY), true)
+		&& this->isBuildable(tileX, tileY)
+		&& this->isVisible(tileX, tileY);
 }
 
 bool AKBot::BWAPIMapInformation::isExplored(int tileX, int tileY) const
