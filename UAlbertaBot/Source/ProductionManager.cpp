@@ -17,6 +17,7 @@ ProductionManager::ProductionManager(
 	, _workerManager(workerManager)
 	, _bossManager(bossManager)
 	, _unitInfo(unitInfo)
+	, _mapTools(mapTools)
     , _buildingManager(buildingManager)
     , _assignedWorkerForThisBuilding (false)
 	, _haveLocationForThisBuilding   (false)
@@ -288,7 +289,7 @@ BWAPI::Unit ProductionManager::getProducer(MetaType t, int currentFrame, BWAPI::
                     BWAPI::TilePosition tilePos(unit->getTilePosition().x + i, unit->getTilePosition().y + j);
 
                     // if the map won't let you build here, we can't build it
-                    if (!BWAPI::Broodwar->isBuildable(tilePos))
+                    if (!_mapTools->isBuildableTile(tilePos))
                     {
                         isBlocked = true;
                         BWAPI::Broodwar->drawBoxMap(tilePos.x*32, tilePos.y*32, tilePos.x*32 + 32, tilePos.y*32 + 32, BWAPI::Colors::Red);

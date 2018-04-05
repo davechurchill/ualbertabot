@@ -650,7 +650,7 @@ bool UAlbertaBot::CombatCommander::findEnemyBaseLocation(BWAPI::Position & baseP
 			BWAPI::Position enemyBasePosition = enemyBaseLocation->getPosition();
 
 			// If the enemy base hasn't been seen yet, go there.
-			if (!BWAPI::Broodwar->isExplored(BWAPI::TilePosition(enemyBasePosition)))
+			if (!_mapTools->isExplored(BWAPI::TilePosition(enemyBasePosition)))
 			{
 				basePosition = enemyBasePosition;
 				return true;

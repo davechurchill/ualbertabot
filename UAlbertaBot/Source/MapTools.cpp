@@ -204,6 +204,16 @@ bool MapTools::isBuildableTile(BWAPI::TilePosition tile) const
     return _buildable[tile.x][tile.y];
 }
 
+bool MapTools::isOccupiedTile(const BWAPI::TilePosition& tile) const
+{
+	if (!tile.isValid())
+	{
+		return false;
+	}
+
+	return _mapInformation->isOccupied(tile.x, tile.y);
+}
+
 bool MapTools::isDepotBuildableTile(BWAPI::TilePosition tile) const
 {
     if (!tile.isValid())
@@ -286,6 +296,13 @@ bool MapTools::isExplored(const BWAPI::TilePosition & tile) const
 	UAB_ASSERT(tile.isValid(), "Checking explored of invalid tile");
 
 	return _mapInformation->isExplored(tile.x, tile.y);
+}
+
+bool MapTools::isVisibleTile(const BWAPI::TilePosition & tile) const
+{
+	UAB_ASSERT(tile.isValid(), "Checking visible of invalid tile");
+
+	return _mapInformation->isVisible(tile.x, tile.y);
 }
 
 bool MapTools::isWalkable(const BWAPI::Position & pos) const

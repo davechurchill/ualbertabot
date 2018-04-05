@@ -9,7 +9,7 @@ namespace AKBot
 		, _debugConfiguration(debugConfiguration)
 	{
 	}
-	void WorkerManagerDebug::draw(ScreenCanvas & canvas)
+	void WorkerManagerDebug::draw(ScreenCanvas & canvas, int currentFrame)
 	{
 		if (_debugConfiguration.DrawResourceInfo)
 		{

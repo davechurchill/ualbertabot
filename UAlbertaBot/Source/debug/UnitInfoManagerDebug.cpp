@@ -9,14 +9,16 @@ namespace AKBot
 	UnitInfoManagerDebug::UnitInfoManagerDebug(
 		shared_ptr<OpponentView> opponentView,
 		shared_ptr<UnitInfoManager> unitInfo,
+		shared_ptr<AKBot::UnitInformation> unitInformation,
 		const BotDebugConfiguration& debugConfiguration)
 		: _opponentView(opponentView)
 		, _unitInfo(unitInfo)
+		, _unitInformation(unitInformation)
 		, _debugConfiguration(debugConfiguration)
 	{
 	}
 
-	void UnitInfoManagerDebug::draw(ScreenCanvas& canvas)
+	void UnitInfoManagerDebug::draw(ScreenCanvas& canvas, int currentFrame)
 	{
 		drawExtendedInterface(canvas);
 		drawUnitInformation(canvas, 425, 30);
@@ -47,7 +49,7 @@ namespace AKBot
 		}
 
 		// draw neutral units and our units
-		for (auto & unit : BWAPI::Broodwar->getAllUnits())
+		for (auto & unit : _unitInformation->getAllUnits())
 		{
 			if (unit->getPlayer() == enemy)
 			{

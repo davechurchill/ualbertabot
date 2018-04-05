@@ -22,6 +22,6 @@ namespace AKBot
 			shared_ptr<WorkerData> workerData,
 			const BotDebugConfiguration& debugConfiguration);
 		WorkerManagerDebug(const WorkerManagerDebug&) = delete;
-		void draw(ScreenCanvas& canvas) override;
+		void draw(ScreenCanvas& canvas, int currentFrame) override;
 	};
 }

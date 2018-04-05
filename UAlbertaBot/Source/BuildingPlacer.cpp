@@ -9,7 +9,8 @@ BuildingPlacer::BuildingPlacer(
 	int height,
 	shared_ptr<AKBot::OpponentView> opponentView,
 	shared_ptr<BaseLocationManager> bases,
-	shared_ptr<MapTools> mapTools)
+	shared_ptr<MapTools> mapTools,
+	shared_ptr<AKBot::UnitInformation> unitInformation)
     : _boxTop       (std::numeric_limits<int>::max())
     , _boxBottom    (std::numeric_limits<int>::lowest())
     , _boxLeft      (std::numeric_limits<int>::max())
@@ -19,6 +20,7 @@ BuildingPlacer::BuildingPlacer(
 	, _opponentView(opponentView)
 	, _bases(bases)
 	, _mapTools(mapTools)
+	, _unitInformation(unitInformation)
 {
     _reserveMap = std::vector< std::vector<bool> >(width,std::vector<bool>(height,false));
 
@@ -44,7 +46,7 @@ void BuildingPlacer::computeResourceBox()
     BWAPI::Position start(self->getStartLocation());
     std::vector<BWAPI::Unit> unitsAroundNexus;
 
-    for (auto & unit : BWAPI::Broodwar->getAllUnits())
+    for (auto & unit : _unitInformation->getAllUnits())
     {
         // if the units are less than 400 away add them if they are resources
         if (unit->getDistance(start) < 300 && unit->getType().isResourceContainer())
@@ -78,7 +80,6 @@ BuildingPlaceCheckStatus BuildingPlacer::canBuildHere(BWAPI::TilePosition positi
     //returns true if we can build this type of unit here. Takes into account reserved tiles.
     if (!BWAPI::Broodwar->canBuildHere(position,b.type,b.builderUnit))
     {
-        //BWAPI::Broodwar->drawCircleMap(BWAPI::Position(position), 8, BWAPI::Colors::Red, true);
         return BuildingPlaceCheckStatus::CannotBuild;
     }
 
@@ -89,7 +90,6 @@ BuildingPlaceCheckStatus BuildingPlacer::canBuildHere(BWAPI::TilePosition positi
         {
             if (_reserveMap[x][y])
             {
-                //BWAPI::Broodwar->drawCircleMap(BWAPI::Position(position), 8, BWAPI::Colors::Blue, true);
                 return BuildingPlaceCheckStatus::LocationReserved;
             }
         }
@@ -98,17 +98,14 @@ BuildingPlaceCheckStatus BuildingPlacer::canBuildHere(BWAPI::TilePosition positi
     // if it overlaps a base location return false
     if (tileOverlapsBaseLocation(position,b.type))
     {
-        //BWAPI::Broodwar->drawCircleMap(BWAPI::Position(position), 8, BWAPI::Colors::Yellow, true);
         return BuildingPlaceCheckStatus::BaseLocationOverlap;
     }
 
     if (isInResourceBox(position.x,position.y))
     {
-        //BWAPI::Broodwar->drawCircleMap(BWAPI::Position(position), 8, BWAPI::Colors::Orange, true);
         return BuildingPlaceCheckStatus::ResourceOverlap;
     }
 
-    //BWAPI::Broodwar->drawCircleMap(BWAPI::Position(position), 8, BWAPI::Colors::Green, true);
     return BuildingPlaceCheckStatus::CanBuild;
 }
 
@@ -281,7 +278,17 @@ bool BuildingPlacer::buildable(const Building & b,int x,int y) const
     BWAPI::TilePosition tp(x,y);
 
     //returns true if this tile is currently buildable, takes into account units on tile
-    if (!tp.isValid() || !BWAPI::Broodwar->isBuildable(x,y, true))
+    if (!tp.isValid())
+    {
+        return false;
+    }
+
+    BWAPI::TilePosition testLocation(x, y);
+    bool isOccupied = _mapTools->isOccupiedTile(testLocation);
+    bool isBuildable = _mapTools->isBuildableTile(testLocation)
+        && _mapTools->isVisibleTile(testLocation)
+        && isOccupied;
+    if (!isBuildable)
     {
         return false;
     }

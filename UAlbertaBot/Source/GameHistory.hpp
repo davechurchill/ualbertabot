@@ -1,9 +1,12 @@
 #pragma once
 
-#include "BWAPI.h"
+#include <BWAPI.h>
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <memory>
+#include "UnitInformation.h"
+#include "MapInformation.h"
 
 class UnitFrameData
 {
@@ -57,10 +60,10 @@ class GameFrame
 
 public:
 
-	GameFrame(int frame)
+	GameFrame(std::shared_ptr<AKBot::UnitInformation> unitInformation, int frame)
         : _frame(frame)
     {
-        for (const BWAPI::Unit & unit : BWAPI::Broodwar->getAllUnits())
+        for (const BWAPI::Unit & unit : unitInformation->getAllUnits())
         {
             if (unit->getPlayer()->getID() != -1)
             {
@@ -93,7 +96,7 @@ class GameMap
     
 public:
 
-    GameMap(int width, int height)
+    GameMap(int width, int height, std::shared_ptr<AKBot::MapInformation> mapInformation)
         : _width(width * 4)
         , _height(height * 4)
         , _walkable(height * width * 16, 0)
@@ -102,7 +105,7 @@ public:
         {
             for (int w(0); w < _width; ++w)
             {
-                _walkable[h*w + w] = BWAPI::Broodwar->isWalkable(h, w);
+                _walkable[h*w + w] = mapInformation->isWalkable(h, w);
             }        
         }
     }
@@ -118,12 +121,14 @@ class GameHistory
     GameMap                 _map;
     std::vector<GameFrame>  _frames;
     int                     _frameSkip;
+	std::shared_ptr<AKBot::UnitInformation> _unitInformation;
 
 public:
 
-	GameHistory(int width, int height)
+	GameHistory(std::shared_ptr<AKBot::UnitInformation> unitInformation, int width, int height)
         : _frameSkip(0)
 		, _map(width, height)
+		, _unitInformation(unitInformation)
     {
     }
 
@@ -136,7 +141,7 @@ public:
     {
         if (_frames.empty() || (currentFrame - _frames.back().getFrame() >= _frameSkip))
         {
-            _frames.push_back(GameFrame(currentFrame));
+            _frames.push_back(GameFrame(_unitInformation, currentFrame));
         }
     }
 

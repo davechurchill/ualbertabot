@@ -9,6 +9,7 @@ BuildingManager::BuildingManager(
 	shared_ptr<BaseLocationManager> bases,
 	shared_ptr<WorkerManager> workerManager,
 	shared_ptr<MapTools> mapTools,
+	shared_ptr<AKBot::UnitInformation> unitInformation,
 	std::shared_ptr<AKBot::Logger> logger,
 	const BotMacroConfiguration& macroConfiguration)
     : _debugMode(false)
@@ -18,7 +19,7 @@ BuildingManager::BuildingManager(
 	, _workerManager(workerManager)
 	, _mapTools(mapTools)
 	, _opponentView(opponentView)
-	, _buildingPlacer(mapTools->getWidth(), mapTools->getHeight(), opponentView, bases, mapTools)
+	, _buildingPlacer(mapTools->getWidth(), mapTools->getHeight(), opponentView, bases, mapTools, unitInformation)
 	, _logger(logger)
 	, _macroConfiguration(macroConfiguration)
 {

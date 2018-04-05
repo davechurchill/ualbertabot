@@ -5,10 +5,10 @@ AKBot::GameDebug::GameDebug(vector<shared_ptr<DebugInfoProvider>> debugProviders
 {
 }
 
-void AKBot::GameDebug::draw(ScreenCanvas & canvas)
+void AKBot::GameDebug::draw(ScreenCanvas & canvas, int currentFrame)
 {
 	for (auto& provider : _debugProviders)
 	{
-		provider->draw(canvas);
+		provider->draw(canvas, currentFrame);
 	}
 }

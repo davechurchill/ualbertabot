@@ -4,7 +4,6 @@
 #include "GameCommander.h"
 #include <iostream>
 #include <fstream>
-#include "HardCodedInfo.h"
 #include "AutoObserver.h"
 #include "rapidjson\document.h"
 #include "BOSSManager.h"
@@ -34,7 +33,7 @@ class UAlbertaBot_Tournament : public BotModule
 	shared_ptr<AKBot::GameDebug> _gameDebug;
 	CommandManager _commandManager;
 
-	void drawDebugInformation(AKBot::ScreenCanvas& _canvas);
+	void drawDebugInformation(AKBot::ScreenCanvas& _canvas, int currentFrame);
 public:
 
     UAlbertaBot_Tournament(

@@ -28,9 +28,9 @@ namespace AKBot
 		void drawTransportInformation(ScreenCanvas& canvas, const TransportManager& transportManager, int x, int y) const;
 		
 		// Trace information about combat manager to file
-		void traceCombatManager() const;
+		void traceCombatManager(int currentFrame) const;
 	public:
 		CombatCommanderDebug(shared_ptr<CombatCommander> combatCommander, const BotDebugConfiguration& debugConfiguration);
-		void draw(ScreenCanvas& canvas) const;
+		void draw(ScreenCanvas& canvas, int currentFrame) const;
 	};
 }

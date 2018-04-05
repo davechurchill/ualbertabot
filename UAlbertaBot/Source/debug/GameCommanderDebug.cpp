@@ -8,16 +8,18 @@ namespace AKBot
 	GameCommanderDebug::GameCommanderDebug(
 		shared_ptr<GameCommander> gameCommander,
 		shared_ptr<AKBot::Logger> logger,
+		shared_ptr<HUDInfo> hudInfo,
 		const BotDebugConfiguration& debugConfiguration,
 		const BotStrategyConfiguration& strategyConfiguration)
 		: _gameCommander(gameCommander)
 		, _logger(logger)
+		, _hudInfo(hudInfo)
 		, _debugConfiguration(debugConfiguration)
 		, _strategyConfiguration(strategyConfiguration)
 	{
 	}
 
-	void GameCommanderDebug::draw(ScreenCanvas & canvas)
+	void GameCommanderDebug::draw(ScreenCanvas & canvas, int currentFrame)
 	{
 		if (_debugConfiguration.DrawScoutInfo)
 		{
@@ -26,22 +28,24 @@ namespace AKBot
 		}
 
 		ProductionManagerDebug productionDebug(_gameCommander->getProductionManager(), _logger, _debugConfiguration);
-		productionDebug.drawProductionInformation(canvas, 30, 50);
+		productionDebug.drawProductionInformation(canvas, currentFrame, 30, 50);
 		CombatCommanderDebug combatDebug(_gameCommander->getCombatCommander(), _debugConfiguration);
-		combatDebug.draw(canvas);
+		combatDebug.draw(canvas, currentFrame);
 
-		drawGameInformation(canvas, 4, 1);
+		drawGameInformation(canvas, currentFrame, 4, 1);
 
 		// draw position of mouse cursor
 		if (_debugConfiguration.DrawMouseCursorInfo)
 		{
-			int mouseX = BWAPI::Broodwar->getMousePosition().x + BWAPI::Broodwar->getScreenPosition().x;
-			int mouseY = BWAPI::Broodwar->getMousePosition().y + BWAPI::Broodwar->getScreenPosition().y;
+			auto mousePosition = _hudInfo->getMousePosition();
+			auto screenPosition = _hudInfo->getScreenPosition();
+			int mouseX = mousePosition.x + screenPosition.x;
+			int mouseY = mousePosition.y + screenPosition.y;
 			canvas.drawTextMap(mouseX + 20, mouseY, " %d %d", mouseX, mouseY);
 		}
 	}
 
-	void GameCommanderDebug::drawGameInformation(ScreenCanvas& canvas, int x, int y) const
+	void GameCommanderDebug::drawGameInformation(ScreenCanvas& canvas, int currentFrame, int x, int y) const
 	{
 		auto enemy = _gameCommander->getOpponentView()->defaultEnemy();
 		auto self = _gameCommander->getOpponentView()->self();
@@ -64,9 +68,8 @@ namespace AKBot
 		canvas.setTextSize();
 		y += 12;
 
-		auto frameCount = BWAPI::Broodwar->getFrameCount();
 		canvas.drawTextScreen(x, y, "\x04Time:");
-		canvas.drawTextScreen(x + 100, y, "\x04%d %4dm %3ds", frameCount, (int)(frameCount / (23.8 * 60)), (int)((int)(frameCount / 23.8) % 60));
+		canvas.drawTextScreen(x + 100, y, "\x04%d %4dm %3ds", currentFrame, (int)(currentFrame / (23.8 * 60)), (int)((int)(currentFrame / 23.8) % 60));
 		y += 12;
 
 		canvas.drawTextScreen(x, y, "\x04Current Strategy:");

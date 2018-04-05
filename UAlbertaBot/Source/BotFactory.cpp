@@ -12,6 +12,8 @@
 #include "debug\WorkerManagerDebug.h"
 #include "debug\MapToolsDebug.h"
 #include "debug\DebugInfoProvider.h"
+#include "BWAPIHUDInfo.h"
+#include "BWAPIUnitInformation.h"
 #include "strategies\protoss\ZealotRush.h"
 #include "strategies\protoss\ZealotDrop.h"
 #include "strategies\protoss\DragoonRush.h"
@@ -60,7 +62,8 @@ BotPlayer AKBot::createBot(const std::string& mode, BotConfiguration& configurat
 		auto opponentView = game->isReplay()
 			? std::shared_ptr<AKBot::OpponentView>(new AKBot::BWAPIReplayOpponentView(game))
 			: std::shared_ptr<AKBot::OpponentView>(new AKBot::BWAPIOpponentView(game));
-		auto workerData = std::shared_ptr<WorkerData>(new WorkerData(logger));
+		auto unitInformation = std::shared_ptr<AKBot::UnitInformation>(new AKBot::BWAPIUnitInformation(game));
+		auto workerData = std::shared_ptr<WorkerData>(new WorkerData(logger, unitInformation));
 		auto workerManager = std::shared_ptr<WorkerManager>(new WorkerManager(
 			opponentView,
 			workerData));
@@ -96,6 +99,7 @@ BotPlayer AKBot::createBot(const std::string& mode, BotConfiguration& configurat
 			baseLocationManager,
 			workerManager,
 			mapTools,
+			unitInformation,
 			logger,
 			configuration.Macro));
 		auto productionManager = std::shared_ptr<ProductionManager>(new ProductionManager(
@@ -117,12 +121,13 @@ BotPlayer AKBot::createBot(const std::string& mode, BotConfiguration& configurat
 			workerManager
 		));
 		auto& debugConfiguration = configuration.Debug;
+		auto hubInfo = std::shared_ptr<HUDInfo>(new BWAPIHUDInfo(game));
 		std::vector<shared_ptr<DebugInfoProvider>> providers = {
-			std::shared_ptr<DebugInfoProvider>(new AKBot::GameCommanderDebug(gameCommander, logger, debugConfiguration, configuration.Strategy)),
+			std::shared_ptr<DebugInfoProvider>(new AKBot::GameCommanderDebug(gameCommander, logger, hubInfo, debugConfiguration, configuration.Strategy)),
 			std::shared_ptr<DebugInfoProvider>(new AKBot::BaseLocationManagerDebug(opponentView, baseLocationManager, mapTools, configuration.Debug)),
-			std::shared_ptr<DebugInfoProvider>(new AKBot::UnitInfoManagerDebug(opponentView, unitInfoManager, debugConfiguration)),
+			std::shared_ptr<DebugInfoProvider>(new AKBot::UnitInfoManagerDebug(opponentView, unitInfoManager, unitInformation, debugConfiguration)),
 			std::shared_ptr<DebugInfoProvider>(new AKBot::WorkerManagerDebug(workerData, debugConfiguration)),
-			std::shared_ptr<DebugInfoProvider>(new AKBot::MapToolsDebug(opponentView, mapTools, baseLocationManager, debugConfiguration)),
+			std::shared_ptr<DebugInfoProvider>(new AKBot::MapToolsDebug(opponentView, mapTools, baseLocationManager, hubInfo, debugConfiguration)),
 		};
 		shared_ptr<GameDebug> gameDebug = std::shared_ptr<GameDebug>(new GameDebug(providers));
 

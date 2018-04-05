@@ -14,7 +14,7 @@ namespace AKBot
 	{
 	}
 
-	void ProductionManagerDebug::drawProductionInformation(AKBot::ScreenCanvas& canvas, int x, int y) const
+	void ProductionManagerDebug::drawProductionInformation(AKBot::ScreenCanvas& canvas, int currentFrame, int x, int y) const
 	{
 		auto buildingManager = _productionManager->getBuildingManager();
 		drawBuildingInformation(canvas, buildingManager, 200, 50);
@@ -48,7 +48,7 @@ namespace AKBot
 			}
 		}
 
-		drawStateInformation(canvas, 250, 0, buildingManager);
+		drawStateInformation(canvas, currentFrame, 250, 0, buildingManager);
 
 		if (!_debugConfiguration.DrawProductionInfo)
 		{
@@ -224,7 +224,7 @@ namespace AKBot
 		canvas.drawTextScreen(BWAPI::Position(x, y + 45), "BO Size: %d", (int)savedSearchResults.buildOrder.size());
 	}
 
-	void ProductionManagerDebug::drawStateInformation(AKBot::ScreenCanvas& canvas, int x, int y, shared_ptr<BuildingManager> buildingManager) const
+	void ProductionManagerDebug::drawStateInformation(AKBot::ScreenCanvas& canvas, int currentFrame, int x, int y, shared_ptr<BuildingManager> buildingManager) const
 	{
 		if (!_debugConfiguration.DrawBOSSStateInfo)
 		{
@@ -232,7 +232,7 @@ namespace AKBot
 		}
 
 		const auto& opponentView = _productionManager->getOpponentView();
-		BOSS::GameState currentState(BWAPI::Broodwar->getFrameCount(), opponentView->self(), buildingManager->buildingsQueued());
+		BOSS::GameState currentState(currentFrame, opponentView->self(), buildingManager->buildingsQueued());
 		canvas.drawTextScreen(BWAPI::Position(x - 100, y + 30), "\x04%s", currentState.getBuildingData().toString().c_str());
 		canvas.drawTextScreen(BWAPI::Position(x + 150, y), "\x04%s", currentState.toString().c_str());
 	}

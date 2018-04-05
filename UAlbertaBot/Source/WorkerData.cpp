@@ -6,10 +6,11 @@
 
 using namespace UAlbertaBot;
 
-WorkerData::WorkerData(std::shared_ptr<AKBot::Logger> logger)
+WorkerData::WorkerData(std::shared_ptr<AKBot::Logger> logger, shared_ptr<AKBot::UnitInformation> unitInformation)
 	: _logger(logger)
+	, _unitInformation(unitInformation)
 {
-    for (auto & unit : BWAPI::Broodwar->getAllUnits())
+    for (auto & unit : _unitInformation->getAllUnits())
     {
         if ((unit->getType() == BWAPI::UnitTypes::Resource_Mineral_Field))
         {
@@ -323,7 +324,7 @@ std::vector<BWAPI::Unit> WorkerData::getMineralPatchesNearDepot(BWAPI::Unit depo
 
     int radius = 300;
 
-    for (auto & unit : BWAPI::Broodwar->getAllUnits())
+    for (auto & unit : _unitInformation->getAllUnits())
     {
         if ((unit->getType() == BWAPI::UnitTypes::Resource_Mineral_Field) && unit->getDistance(depot) < radius)
         {
@@ -334,7 +335,7 @@ std::vector<BWAPI::Unit> WorkerData::getMineralPatchesNearDepot(BWAPI::Unit depo
     // if we didn't find any, use the whole map
     if (mineralsNearDepot.empty())
     {
-        for (auto & unit : BWAPI::Broodwar->getAllUnits())
+        for (auto & unit : _unitInformation->getAllUnits())
         {
             if ((unit->getType() == BWAPI::UnitTypes::Resource_Mineral_Field))
             {
@@ -352,7 +353,7 @@ int WorkerData::getMineralsNearDepot(BWAPI::Unit depot)
 
     int mineralsNearDepot = 0;
 
-    for (auto & unit : BWAPI::Broodwar->getAllUnits())
+    for (auto & unit : _unitInformation->getAllUnits())
     {
         if ((unit->getType() == BWAPI::UnitTypes::Resource_Mineral_Field) && unit->getDistance(depot) < 200)
         {

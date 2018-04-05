@@ -339,7 +339,7 @@ BWAPI::Position ScoutManager::getFleePosition()
 
     //UAB_ASSERT_WARNING(!_enemyRegionVertices.empty(), "We should have an enemy region vertices if we are fleeing");
     //
-    //const BaseLocation * enemyBaseLocation = _baseLocationManager.getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
+    //const BaseLocation * enemyBaseLocation = _baseLocationManager.getPlayerStartingBaseLocation(_opponentView->defaultEnemy());
 
     //// if this is the first flee, we will not have a previous perimeter index
     //if (_currentRegionVertexIndex == -1)
@@ -379,7 +379,7 @@ BWAPI::Position ScoutManager::getFleePosition()
 
 //void ScoutManager::calculateEnemyRegionVertices()
 //{
-//    const BaseLocation * enemyBaseLocation = _baseLocationManager.getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
+//    const BaseLocation * enemyBaseLocation = _baseLocationManager.getPlayerStartingBaseLocation(_opponentView->defaultEnemy());
 //    //UAB_ASSERT_WARNING(enemyBaseLocation, "We should have an enemy base location if we are fleeing");
 //
 //    if (!enemyBaseLocation)

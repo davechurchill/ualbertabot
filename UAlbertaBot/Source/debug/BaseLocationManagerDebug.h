@@ -27,7 +27,7 @@ namespace AKBot
 			shared_ptr<BaseLocationManager> baseLocationManager,
 			shared_ptr<MapTools> map,
 			const BotDebugConfiguration& debugConfiguration);
-		void draw(AKBot::ScreenCanvas& canvas) override;
+		void draw(AKBot::ScreenCanvas& canvas, int currentFrame) override;
 		void drawNextExpansion(AKBot::ScreenCanvas & canvas);
 		void drawBases(AKBot::ScreenCanvas & canvas);
 		void drawBasesSummary(AKBot::ScreenCanvas & canvas, int x, int y);

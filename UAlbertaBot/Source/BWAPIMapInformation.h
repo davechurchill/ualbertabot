@@ -13,8 +13,9 @@ namespace AKBot
 		int getHeight() const override;
 		bool isWalkable(int x, int y) const override;
 		bool isVisible(int x, int y) const override;
-		bool isBuildable(int x, int y) const override;
+		bool isBuildable(int tileX, int tileY) const override;
 		bool isExplored(int tileX, int tileY) const override;
+		bool isOccupied(int tileX, int tileY) const override;
 		const BWAPI::Unitset& getStaticNeutralUnits() const override;
 	};
 }
