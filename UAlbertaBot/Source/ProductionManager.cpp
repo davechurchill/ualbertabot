@@ -10,6 +10,7 @@ ProductionManager::ProductionManager(
 	shared_ptr<StrategyManager> strategyManager,
 	shared_ptr<WorkerManager> workerManager,
 	shared_ptr<UnitInfoManager> unitInfo,
+	shared_ptr<AKBot::UnitInformation> unitInformation,
 	shared_ptr<BaseLocationManager> bases,
 	shared_ptr<MapTools> mapTools,
 	const BotDebugConfiguration& debugConfiguration)
@@ -17,6 +18,7 @@ ProductionManager::ProductionManager(
 	, _workerManager(workerManager)
 	, _bossManager(bossManager)
 	, _unitInfo(unitInfo)
+	, _unitInformation(unitInformation)
 	, _mapTools(mapTools)
     , _buildingManager(buildingManager)
     , _assignedWorkerForThisBuilding (false)
@@ -240,6 +242,8 @@ BWAPI::Unit ProductionManager::getProducer(MetaType t, int currentFrame, BWAPI::
 
     // make a set of all candidate producers
     std::vector<BWAPI::Unit> candidateProducers;
+	_addonPositions.clear();
+	_blockedTiles.clear();
     for (auto & unit : _opponentView->self()->getUnits())
     {
         UAB_ASSERT(unit != nullptr, "Unit was null");
@@ -280,7 +284,7 @@ BWAPI::Unit ProductionManager::getProducer(MetaType t, int currentFrame, BWAPI::
 
             // if the unit doesn't have space to build an addon, it can't make one
             BWAPI::TilePosition addonPosition(unit->getTilePosition().x + unit->getType().tileWidth(), unit->getTilePosition().y + unit->getType().tileHeight() - t.getUnitType().tileHeight());
-            BWAPI::Broodwar->drawBoxMap(addonPosition.x*32, addonPosition.y*32, addonPosition.x*32 + 64, addonPosition.y*32 + 64, BWAPI::Colors::Red);
+			_addonPositions.push_back(addonPosition);
             
             for (int i=0; i<unit->getType().tileWidth() + t.getUnitType().tileWidth(); ++i)
             {
@@ -292,15 +296,15 @@ BWAPI::Unit ProductionManager::getProducer(MetaType t, int currentFrame, BWAPI::
                     if (!_mapTools->isBuildableTile(tilePos))
                     {
                         isBlocked = true;
-                        BWAPI::Broodwar->drawBoxMap(tilePos.x*32, tilePos.y*32, tilePos.x*32 + 32, tilePos.y*32 + 32, BWAPI::Colors::Red);
+						_blockedTiles.push_back(tilePos);
                     }
 
                     // if there are any units on the addon tile, we can't build it
-                    auto uot = BWAPI::Broodwar->getUnitsOnTile(tilePos.x, tilePos.y);
+                    auto uot = _unitInformation->getUnitsOnTile(tilePos.x, tilePos.y);
                     if (uot.size() > 0 && !(uot.size() == 1 && *(uot.begin()) == unit))
                     {
-                        isBlocked = true;;
-                        BWAPI::Broodwar->drawBoxMap(tilePos.x*32, tilePos.y*32, tilePos.x*32 + 32, tilePos.y*32 + 32, BWAPI::Colors::Red);
+                        isBlocked = true;
+						_blockedTiles.push_back(tilePos);
                     }
                 }
             }

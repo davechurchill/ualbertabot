@@ -4,6 +4,7 @@
 #include "SquadOrder.h"
 #include "BaseLocationManager.h"
 #include "BotConfiguration.h"
+#include "UnitInformation.h"
 
 namespace UAlbertaBot
 {
@@ -32,7 +33,7 @@ protected:
 	shared_ptr<AKBot::OpponentView> opponentView;
 
 	virtual void        executeMicro(const std::vector<BWAPI::Unit> & targets, int currentFrame) = 0;
-	bool                checkPositionWalkable(BWAPI::Position pos);
+	bool                checkPositionWalkable(shared_ptr<AKBot::MapInformation> map, shared_ptr<AKBot::UnitInformation> unitInformation, BWAPI::Position pos);
 	void                trainSubUnits(BWAPI::Unit unit) const;
     
 
