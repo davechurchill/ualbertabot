@@ -169,19 +169,19 @@ void MicroManager::regroup(shared_ptr<MapTools> map, const BWAPI::Position & reg
 // a) is walkable
 // b) doesn't have buildings on it
 // c) doesn't have a unit on it that can attack ground
-bool MicroManager::checkPositionWalkable(BWAPI::Position pos) 
+bool MicroManager::checkPositionWalkable(shared_ptr<AKBot::MapInformation> map, shared_ptr<AKBot::UnitInformation> unitInformation, BWAPI::Position pos)
 {
 	// get x and y from the position
 	int x(pos.x), y(pos.y);
 
 	// walkable tiles exist every 8 pixels
-	bool good = BWAPI::Broodwar->isWalkable(x/8, y/8);
+	bool good = map->isWalkable(x/8, y/8);
 	
 	// if it's not walkable throw it out
 	if (!good) return false;
 	
 	// for each of those units, if it's a building or an attacking enemy unit we don't want to go there
-	for (auto & unit : BWAPI::Broodwar->getUnitsOnTile(x/32, y/32)) 
+	for (auto & unit : unitInformation->getUnitsOnTile(x/32, y/32))
 	{
 		if	(unit->getType().isBuilding() || unit->getType().isResourceContainer() || 
 			(unit->getPlayer() != opponentView->self() && unit->getType().groundWeapon() != BWAPI::WeaponTypes::None))

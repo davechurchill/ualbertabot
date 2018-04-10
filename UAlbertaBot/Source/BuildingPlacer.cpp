@@ -114,7 +114,7 @@ bool BuildingPlacer::tileBlocksAddon(BWAPI::TilePosition position) const
 
     for (int i=0; i<=2; ++i)
     {
-        for (auto & unit : BWAPI::Broodwar->getUnitsOnTile(position.x - i,position.y))
+        for (auto & unit : _unitInformation->getUnitsOnTile(position.x - i,position.y))
         {
             if (unit->getType() == BWAPI::UnitTypes::Terran_Command_Center ||
                 unit->getType() == BWAPI::UnitTypes::Terran_Factory ||

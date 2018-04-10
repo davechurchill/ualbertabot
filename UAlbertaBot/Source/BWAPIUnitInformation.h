@@ -10,5 +10,6 @@ namespace AKBot
 	public:
 		BWAPIUnitInformation(BWAPI::Game* game);
 		const BWAPI::Unitset& getAllUnits() const override;
+		const BWAPI::Unitset getUnitsOnTile(int tileX, int tileY) const override;
 	};
 }

@@ -140,7 +140,7 @@ void WorkerManager::handleCombatWorkers(int currentFrame)
 
 		if (workerData->getWorkerJob(worker) == WorkerData::Combat)
 		{
-			BWAPI::Broodwar->drawCircleMap(worker->getPosition().x, worker->getPosition().y, 4, BWAPI::Colors::Yellow, true);
+			//BWAPI::Broodwar->drawCircleMap(worker->getPosition().x, worker->getPosition().y, 4, BWAPI::Colors::Yellow, true);
 			BWAPI::Unit target = getClosestEnemyUnit(worker);
 
 			if (target)

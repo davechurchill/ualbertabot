@@ -8,6 +8,7 @@
 #include "BuildOrder.h"
 #include "StrategyManager.h"
 #include "WorkerManager.h"
+#include "UnitInformation.h"
 
 namespace UAlbertaBot
 {
@@ -29,9 +30,13 @@ class ProductionManager
 	shared_ptr<UnitInfoManager> _unitInfo;
 	shared_ptr<WorkerManager> _workerManager;
 	shared_ptr<AKBot::OpponentView> _opponentView;
+	shared_ptr<AKBot::UnitInformation> _unitInformation;
 	shared_ptr<MapTools> _mapTools;
 	bool				_useBuildOrderSearch;
 	const BotDebugConfiguration& _debugConfiguration;
+
+	std::vector<BWAPI::TilePosition> _addonPositions;
+	std::vector<BWAPI::TilePosition> _blockedTiles;
     
     BWAPI::Unit         getClosestUnitToPosition(const std::vector<BWAPI::Unit> & units,BWAPI::Position closestTo);
     BWAPI::Unit         selectUnitOfType(BWAPI::UnitType type,BWAPI::Position closestTo = BWAPI::Position(0,0));
@@ -59,6 +64,7 @@ public:
 		shared_ptr<StrategyManager> strategyManager,
 		shared_ptr<WorkerManager> workerManager,
 		shared_ptr<UnitInfoManager> unitInfo,
+		shared_ptr<AKBot::UnitInformation> unitInformation,
 		shared_ptr<BaseLocationManager> bases,
 		shared_ptr<MapTools> mapTools,
 		const BotDebugConfiguration& debugConfiguration);
@@ -80,6 +86,8 @@ public:
 	const bool getCloackedUnitDetectedThisFrame() const { return _enemyCloakedDetectedThisFrame; }
 	const bool getUseBuildOrderSearch() const { return _useBuildOrderSearch; }
 	void setUseBuildOrderSearch(bool value) { _useBuildOrderSearch = value; }
+	const std::vector<BWAPI::TilePosition>& getAddonPosition() const { return _addonPositions; }
+	const std::vector<BWAPI::TilePosition>& getBlockedTiles() const { return _blockedTiles; }
 };
 
 

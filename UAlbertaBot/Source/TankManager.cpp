@@ -135,7 +135,7 @@ BWAPI::Unit TankManager::getTarget(BWAPI::Unit tank, const std::vector<BWAPI::Un
 		double LTD = UnitUtil::CalculateLTD(target, tank);
 		int priority = getAttackPriority(tank, target);
 		bool targetIsThreat = LTD > 0;
-		BWAPI::Broodwar->drawTextMap(target->getPosition(), "%d", priority);
+		//BWAPI::Broodwar->drawTextMap(target->getPosition(), "%d", priority);
 
 		if (!closestTarget || (priority > highPriority) || (priority == highPriority && distance < closestDist))
 		{

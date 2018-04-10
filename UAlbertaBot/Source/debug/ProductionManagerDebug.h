@@ -23,6 +23,7 @@ namespace AKBot
 		void drawStateInformation(AKBot::ScreenCanvas& canvas, int currentFrame, int x, int y, shared_ptr<BuildingManager> buildingManager) const;
 		void drawSearchInformation(AKBot::ScreenCanvas& canvas, shared_ptr<BOSSManager> bossManager, int x, int y) const;
 		void drawReservedTiles(AKBot::ScreenCanvas& canvas, const BuildingPlacer& buildingPlacer) const;
+		void drawProducerInformation(AKBot::ScreenCanvas& canvas) const;
 	public:
 		ProductionManagerDebug(
 			shared_ptr<ProductionManager> productionManager,

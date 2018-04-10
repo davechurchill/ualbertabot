@@ -49,6 +49,7 @@ namespace AKBot
 		}
 
 		drawStateInformation(canvas, currentFrame, 250, 0, buildingManager);
+		drawProducerInformation(canvas);
 
 		if (!_debugConfiguration.DrawProductionInfo)
 		{
@@ -261,6 +262,29 @@ namespace AKBot
 					canvas.drawBoxMap(x1, y1, x2, y2, BWAPI::Colors::Yellow, false);
 				}
 			}
+		}
+	}
+	void ProductionManagerDebug::drawProducerInformation(AKBot::ScreenCanvas& canvas) const
+	{
+		for (auto addonPosition : _productionManager->getAddonPosition())
+		{
+			canvas.drawBoxMap(
+				addonPosition.x * 32,
+				addonPosition.y * 32,
+				addonPosition.x * 32 + 64,
+				addonPosition.y * 32 + 64,
+				BWAPI::Colors::Red);
+		}
+
+
+		for (auto tilePos : _productionManager->getBlockedTiles())
+		{
+			canvas.drawBoxMap(
+				tilePos.x * 32,
+				tilePos.y * 32,
+				tilePos.x * 32 + 32,
+				tilePos.y * 32 + 32,
+				BWAPI::Colors::Red);
 		}
 	}
 }

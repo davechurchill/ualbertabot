@@ -190,7 +190,7 @@ void TransportManager::followPerimeter(int clockwise, int currentFrame)
 	// I don't know how target variable and _transportShip->getTargetPosition() related right now
 	/*if (_microConfiguration.DrawUnitTargetInfo)
 	{
-		BWAPI::Broodwar->drawCircleMap(goTo, 5, BWAPI::Colors::Red, true);
+		//BWAPI::Broodwar->drawCircleMap(goTo, 5, BWAPI::Colors::Red, true);
 	}*/
 
 	Micro::SmartMove(_transportShip, goTo, currentFrame);

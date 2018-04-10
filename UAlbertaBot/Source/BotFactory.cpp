@@ -109,6 +109,7 @@ BotPlayer AKBot::createBot(const std::string& mode, BotConfiguration& configurat
 			strategyManager,
 			workerManager,
 			unitInfoManager,
+			unitInformation,
 			baseLocationManager,
 			mapTools,
 			configuration.Debug));

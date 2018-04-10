@@ -11,3 +11,4 @@ bin/*.pdb
 bin/results/*
 source/*.o
 *.bwta
+!Source/debug
