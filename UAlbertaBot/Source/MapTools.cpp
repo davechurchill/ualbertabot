@@ -17,7 +17,7 @@ MapTools::MapTools(shared_ptr<AKBot::MapInformation> mapInformation, std::shared
     : _width            (mapInformation->getWidth())
     , _height           (mapInformation->getHeight())
 	, _mapInformation(mapInformation)
-    , _walkable         (mapInformation->getWidth(), std::vector<bool>(mapInformation->getHeight(), false))
+    , _walkable         (4 * mapInformation->getWidth(), std::vector<bool>(4 * mapInformation->getHeight(), false))
     , _buildable        (mapInformation->getWidth(), std::vector<bool>(mapInformation->getHeight(), true))
     , _depotBuildable   (mapInformation->getWidth(), std::vector<bool>(mapInformation->getHeight(), true))
     , _lastSeen         (mapInformation->getWidth(), std::vector<int> (mapInformation->getHeight(), 0))
@@ -284,6 +284,11 @@ int & MapTools::getSectorNumber(const BWAPI::TilePosition & tile)
     return _sectorNumber[tile.x][tile.y];
 }
 
+bool MapTools::isWalkable(const BWAPI::WalkPosition & walkPosition) const
+{
+	return _mapInformation->isWalkable(walkPosition.x, walkPosition.y);
+}
+
 bool MapTools::isWalkable(const BWAPI::TilePosition & tile) const
 {
     UAB_ASSERT(tile.isValid(), "Checking walkable of invalid tile");
@@ -307,7 +312,7 @@ bool MapTools::isVisibleTile(const BWAPI::TilePosition & tile) const
 
 bool MapTools::isWalkable(const BWAPI::Position & pos) const
 {
-    return isWalkable(BWAPI::TilePosition(pos));
+    return isWalkable(BWAPI::WalkPosition(pos));
 }
 
 bool MapTools::isConnected(const BWAPI::TilePosition & from, const BWAPI::TilePosition & to) const
