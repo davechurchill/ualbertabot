@@ -42,7 +42,7 @@ void AKBot::MapCommandExecutor::onCommand(const std::string & command)
 		{
 			for (auto x = 0; x < (4 * _map.getWidth()); x++)
 			{
-				auto walkable = _map.isWalkable(BWAPI::Position(BWAPI::WalkPosition(x, y)));
+				auto walkable = _map.isWalkable(BWAPI::WalkPosition(x, y));
 				if (x != 0)
 				{
 					map_walkable << ",";
