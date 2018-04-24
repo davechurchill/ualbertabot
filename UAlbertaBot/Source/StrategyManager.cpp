@@ -298,7 +298,8 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal(int currentFrame) co
 	int mutasWanted = numMutas + 6;
 	int hydrasWanted = numHydras + 6;
 
-    if (_strategyName == "Zerg_ZerglingRush")
+    if ((_strategyName == "Zerg_ZerglingRush")
+		|| (_strategyName == "Zerg_ZergelingRush"))
     {
 		ZergelingRush zergelingRush(self);
 		zergelingRush.getBuildOrderGoal(goal, currentFrame);
