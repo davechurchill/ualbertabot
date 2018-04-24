@@ -9,16 +9,35 @@
 #include "simulation\SparCraftCombatEstimator.h"
 #include "simulation\FAPCombatEstimator.h"
 
+namespace AKBot
+{
+	struct CombatEstimatorDebugProvider
+	{
+		virtual void printDebugInformation(BWAPI::Position simulationCenter) = 0;
+	};
+
+	struct CombatSimulationEntry
+	{
+		std::unique_ptr<CombatEstimator> estimator;
+		std::unique_ptr<CombatEstimatorDebugProvider> debugProvider;
+	};
+}
+
 namespace UAlbertaBot
 {
 class CombatSimulation
 {
-	AKBot::SparCraftCombatEstimator _sparcraftCombatEstimator;
-	AKBot::FAPCombatEstimator _fapCombatEstimator;
-
 	const BotMicroConfiguration& _microConfiguration;
+	std::map<std::string, AKBot::CombatSimulationEntry> registry;
 
 	AKBot::CombatEstimator& getCurrentCombatEstimator();
+	const AKBot::CombatSimulationEntry& getCurrentSimulationEntry();
+
+	// Register custom FAP estimator.
+	void registerFAPEstimator(
+		const char* name,
+		std::function<double(const AKBot::FAPPlayerState&)> playerScoreFunction,
+		std::function<double(const AKBot::FAPCombatEstimator&)> scoreFunction);
 public:
 
 	CombatSimulation(

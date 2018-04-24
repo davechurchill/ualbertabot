@@ -5,7 +5,7 @@
 
 namespace UAlbertaBot {
 
-	class FastAPproximation {
+	struct FastAPproximation {
 		struct FAPUnit {
 			FAPUnit(BWAPI::Unit u);
 			FAPUnit(UnitInfo ui);
@@ -90,8 +90,7 @@ namespace UAlbertaBot {
 			void unitDeath(const FAPUnit & fu, std::vector <FAPUnit> &itsFriendlies);
 			void convertToUnitType(const FAPUnit &fu, BWAPI::UnitType ut);
 
-	};
-
+	}; 
 }
 
 extern UAlbertaBot::FastAPproximation fap;

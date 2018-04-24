@@ -4,9 +4,75 @@
 using namespace AKBot;
 using namespace UAlbertaBot;
 
+double AKBot::defaultScoreFunction(const AKBot::FAPCombatEstimator& estimator)
+{
+	auto scores = estimator.playerScores();
+
+	int score = scores.first - scores.second;
+	return double(score);
+}
+
+double AKBot::deltaScoreFunction(const AKBot::FAPCombatEstimator& estimator)
+{
+	auto initialScores = estimator.getInitialScores();
+	auto scores = estimator.playerScores();
+
+	auto firstPlayerDamage = initialScores.first - scores.first;
+	auto secondPlayerDamage = initialScores.second - scores.second;
+	int score = firstPlayerDamage - secondPlayerDamage;
+
+	// Reverse to indicate that positive score is where we have less
+	// damage then enemy.
+	return double(1 - score);
+}
+
+double AKBot::unitHealthScore(const FAPPlayerState& state)
+{
+	double result;
+	for (auto & u : state) {
+		if (u.health && u.maxHealth) {
+			result += (u.score * u.health) / (u.maxHealth * 2);
+		}
+	}
+
+	return result;
+}
+
+double AKBot::economicalCostScore(const FAPPlayerState& state)
+{
+	double result;
+	for (auto & u : state) {
+		if (u.health && u.maxHealth) {
+			result += u.unitType.mineralPrice() + u.unitType.gasPrice();
+		}
+	}
+
+	return result;
+}
+
 AKBot::FAPCombatEstimator::FAPCombatEstimator(const BotMicroConfiguration & microConfiguration)
 	: _microConfiguration(microConfiguration)
+	, _scoreFunction(AKBot::defaultScoreFunction)
+	, _playerScoreFunction(unitHealthScore)
 {
+}
+
+AKBot::FAPCombatEstimator::FAPCombatEstimator(
+	std::function<double(const FAPPlayerState&)> playerScoreFunction,
+	std::function<double(const FAPCombatEstimator&)> scoreFunction,
+	const BotMicroConfiguration & microConfiguration)
+	: _microConfiguration(microConfiguration)
+	, _scoreFunction(scoreFunction)
+	, _playerScoreFunction(playerScoreFunction)
+{
+}
+
+std::pair<double, double> AKBot::FAPCombatEstimator::calculateScore(std::function<double(const FAPPlayerState&)> playerScoreFunction)
+{
+	auto& state = getState();
+	return std::make_pair(
+		playerScoreFunction(*state.first),
+		playerScoreFunction(*state.second));
 }
 
 bool FAPCombatEstimator::isWinPredicted(
@@ -56,9 +122,9 @@ void FAPCombatEstimator::setCombatUnits(
 
 double AKBot::FAPCombatEstimator::simulateCombat()
 {
-	fap.simulate(_microConfiguration.CombatEstimationDepth);
-	std::pair<int, int> scores = fap.playerScores();
+	initialScores = calculateScore(_playerScoreFunction);
 
-	int score = scores.first - scores.second;
-	return double(score);
+	fap.simulate(_microConfiguration.CombatEstimationDepth);
+	finalScores = calculateScore(_playerScoreFunction);
+	return _scoreFunction(*this);
 }
