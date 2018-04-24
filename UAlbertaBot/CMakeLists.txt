@@ -105,11 +105,11 @@ target_include_directories(AKBot_exe BEFORE PUBLIC
 	${BWAPI_INCLUDE_DIR}
 )
 
-IF(CMAKE_BUILD_TYPE MATCHES Release)
-	target_link_libraries(AKBot_exe PUBLIC BWAPI.lib BWAPIClient.lib)
-ELSE()
+IF(CMAKE_CONFIGURATION_TYPES MATCHES Debug)
 	message("Adding debug BWAPI libraries")
 	target_link_libraries(AKBot_exe PUBLIC BWAPId.lib BWAPIClientd.lib)
+ELSE()
+	target_link_libraries(AKBot_exe PUBLIC BWAPI.lib BWAPIClient.lib)
 ENDIF()
 
 if(MSVC_VERSION GREATER_EQUAL 1900)

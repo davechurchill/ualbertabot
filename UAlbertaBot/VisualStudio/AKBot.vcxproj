@@ -37,6 +37,7 @@
     <ClCompile Include="..\Source\commands\BWAPICommandExecutor.cpp" />
     <ClCompile Include="..\Source\commands\CombatCommanderCommandExecutor.cpp" />
     <ClCompile Include="..\Source\commands\CommandManager.cpp" />
+    <ClCompile Include="..\Source\commands\MapCommandExecutor.cpp" />
     <ClCompile Include="..\Source\commands\MicroCommandExecutor.cpp" />
     <ClCompile Include="..\Source\commands\ProductionCommandExecutor.cpp" />
     <ClCompile Include="..\Source\commands\StrategyManagerCommandExecutor.cpp" />
@@ -133,6 +134,7 @@
     <ClInclude Include="..\Source\commands\CombatCommanderCommandExecutor.h" />
     <ClInclude Include="..\Source\commands\CommandExecutor.h" />
     <ClInclude Include="..\Source\commands\CommandManager.h" />
+    <ClInclude Include="..\Source\commands\MapCommandExecutor.h" />
     <ClInclude Include="..\Source\commands\MicroCommandExecutor.h" />
     <ClInclude Include="..\Source\commands\ProductionCommandExecutor.h" />
     <ClInclude Include="..\Source\commands\StrategyManagerCommandExecutor.h" />
