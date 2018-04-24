@@ -27,7 +27,7 @@ add_library(AKBot::Lib ALIAS AKBot)
 add_library(AKBot::SparCraft ALIAS SparCraft)
 add_library(AKBot::BOSS ALIAS BOSS)
 
-MESSAGE( STATUS "CMAKE_BUILD_TYPE: " ${CMAKE_BUILD_TYPE} )
+MESSAGE( STATUS "CMAKE_BUILD_TYPE: " ${CMAKE_CONFIGURATION_TYPES} )
 MESSAGE( STATUS "MSVC_VERSION: " ${MSVC_VERSION} )
 
 link_directories(${BWAPI_LIB_DIR})
@@ -58,10 +58,10 @@ foreach(testSrc ${BOOST_TEST_SRCS})
 
     #link to Boost libraries AND your targets and dependencies
     #target_link_libraries(${testName} ${Boost_LIBRARIES} [YOUR TARGETS/LIBRARIES])
-	IF(CMAKE_BUILD_TYPE MATCHES Release)
-		target_link_libraries(${testName} PUBLIC BWAPI.lib BWAPIClient.lib)
-	ELSE()
+	IF(CMAKE_CONFIGURATION_TYPES MATCHES Debug)
 		target_link_libraries(${testName} PUBLIC BWAPId.lib BWAPIClientd.lib)
+	ELSE()
+		target_link_libraries(${testName} PUBLIC BWAPI.lib BWAPIClient.lib)
 	ENDIF()
 	target_link_libraries(${testName} PUBLIC AKBot::Lib AKBot::SparCraft AKBot::BOSS BotTestLib)
 

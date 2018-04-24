@@ -261,6 +261,9 @@
     </ClCompile>
     <ClCompile Include="..\Source\bwapihudinfo.cpp" />
     <ClCompile Include="..\Source\BWAPIUnitInformation.cpp" />
+    <ClCompile Include="..\Source\commands\MapCommandExecutor.cpp">
+      <Filter>commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="common">
@@ -622,5 +625,8 @@
     <ClInclude Include="..\Source\BWAPIUnitInformation.h" />
     <ClInclude Include="..\Source\hudinfo.h" />
     <ClInclude Include="..\Source\UnitInformation.h" />
+    <ClInclude Include="..\Source\commands\MapCommandExecutor.h">
+      <Filter>commands</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
