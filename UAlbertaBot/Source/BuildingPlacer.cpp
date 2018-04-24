@@ -287,7 +287,7 @@ bool BuildingPlacer::buildable(const Building & b,int x,int y) const
     bool isOccupied = _mapTools->isOccupiedTile(testLocation);
     bool isBuildable = _mapTools->isBuildableTile(testLocation)
         && _mapTools->isVisibleTile(testLocation)
-        && isOccupied;
+        && !isOccupied;
     if (!isBuildable)
     {
         return false;
