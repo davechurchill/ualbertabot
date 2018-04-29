@@ -10,6 +10,7 @@
 #include "MapTools.h"
 #include "SupportLib/UnitHelper.h"
 #include "SupportLib/GameHelper.h"
+#include "basedetection/ClusterBaseDetector.h"
 
 using namespace AKBot::Tests;
 using namespace AkBotTests;
@@ -51,30 +52,38 @@ void setupEmptyMap(BWAPI::GameData& gameData, int width, int height)
 
 BOOST_AUTO_TEST_CASE(CreationOfBaseLocationManagerWithEmptyData)
 {
+	BotBaseDetectionConfiguration configuration;
 	auto gameData = std::make_shared<BWAPI::GameData>();
 	auto gameImpl = std::make_shared<AKBot::GameImpl>(gameData.get());
 	auto game = gameImpl.get();
 	auto opponentView = std::make_shared<BWAPIOpponentView>(game);
-	UAlbertaBot::BaseLocationManager manager(game, opponentView);
+	UAlbertaBot::BaseLocationManager manager(game, opponentView, configuration);
 }
 
 BOOST_AUTO_TEST_CASE(CreationOfBaseLocationManagerFromEmptyResources)
 {
+	BotBaseDetectionConfiguration configuration;
 	auto gameData = std::make_shared<BWAPI::GameData>();
 	auto rawGameData = gameData.get();
 	auto gameImpl = std::make_shared<AKBot::GameImpl>(rawGameData);
 	auto game = gameImpl.get();
 	auto opponentView = std::make_shared<BWAPIOpponentView>(BWAPIOpponentView(game));
-	UAlbertaBot::BaseLocationManager manager(game, opponentView);
+	UAlbertaBot::BaseLocationManager manager(game, opponentView, configuration);
 	auto mapInformation = std::make_shared<BWAPIMapInformation>(game);
 	auto logger = std::make_shared<NullLogger>();
 	auto mapTools = std::make_shared<MapTools>(mapInformation, logger);
+	manager.registerBaseDetector(
+		"uab",
+		std::make_unique<AKBot::ClusterBaseDetector>(
+			game,
+			opponentView,
+			mapTools));
 	auto baseLocations = std::vector<UAlbertaBot::BaseLocation>();
 
 	setP2PForces(rawGameData);
 	setPlayers(*rawGameData, 2);
 	game->onMatchStart();
-	manager.populateBaseLocations(mapTools, baseLocations);
+	manager.getCurrentBaseDetector().detectBases(baseLocations);
 	BOOST_TEST(0U == baseLocations.size(), L"The base locations list should be empty");
 }
 
@@ -96,14 +105,21 @@ BOOST_AUTO_TEST_CASE(ClustersWith4MineralsCounted)
 	auto game = gameImpl.get();
 	BWAPI::BroodwarPtr = game;
 	auto opponentView = std::make_shared<BWAPIOpponentView>(BWAPIOpponentView(game));
-	UAlbertaBot::BaseLocationManager manager(game, opponentView);
+	BotBaseDetectionConfiguration configuration;
+	UAlbertaBot::BaseLocationManager manager(game, opponentView, configuration);
 	auto mapInformation = std::make_shared<BWAPIMapInformation>(game);
 	auto logger = std::make_shared<NullLogger>();
 	auto mapTools = std::make_shared<MapTools>(mapInformation, logger);
+	manager.registerBaseDetector(
+		"uab",
+		std::make_unique<AKBot::ClusterBaseDetector>(
+			game,
+			opponentView,
+			mapTools));
 	auto baseLocations = std::vector<UAlbertaBot::BaseLocation>();
 
 	game->onMatchStart();
-	manager.populateBaseLocations(mapTools, baseLocations);
+	manager.getCurrentBaseDetector().detectBases(baseLocations);
 	BOOST_TEST(1U == baseLocations.size(), L"The base locations list should be empty");
 }
 
@@ -124,14 +140,21 @@ BOOST_AUTO_TEST_CASE(ClustersCouldContainMineralsAndGeysers)
 	auto gameImpl = std::make_shared<AKBot::GameImpl>(rawGameData);
 	auto game = gameImpl.get();
 	BWAPI::BroodwarPtr = game;
+	BotBaseDetectionConfiguration configuration;
 	auto opponentView = std::make_shared<BWAPIOpponentView>(BWAPIOpponentView(game));
-	UAlbertaBot::BaseLocationManager manager(game, opponentView);
+	UAlbertaBot::BaseLocationManager manager(game, opponentView, configuration);
 	auto mapInformation = std::make_shared<BWAPIMapInformation>(game);
 	auto logger = std::make_shared<NullLogger>();
 	auto mapTools = std::make_shared<MapTools>(mapInformation, logger);
+	manager.registerBaseDetector(
+		"uab",
+		std::make_unique<AKBot::ClusterBaseDetector>(
+			game,
+			opponentView,
+			mapTools));
 	auto baseLocations = std::vector<UAlbertaBot::BaseLocation>();
 
 	game->onMatchStart();
-	manager.populateBaseLocations(mapTools, baseLocations);
+	manager.getCurrentBaseDetector().detectBases(baseLocations);
 	BOOST_TEST(1U == baseLocations.size(), L"The base locations list should be empty");
 }

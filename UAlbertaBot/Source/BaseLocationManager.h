@@ -6,6 +6,16 @@
 #include "BaseLocation.h"
 #include "Distance.h"
 #include "UnitInfoManager.h"
+#include "basedetection\BaseDetector.h"
+#include "BotConfiguration.h"
+
+namespace AKBot
+{
+	struct BaseDetectorEntry
+	{
+		std::unique_ptr<AKBot::BaseDetector> baseDetector;
+	};
+}
 
 namespace UAlbertaBot
 {
@@ -15,6 +25,7 @@ namespace UAlbertaBot
 	class BaseLocationManager
 	{
 		BWAPI::Game* _game;
+		const BotBaseDetectionConfiguration& _baseDetectionConfiguration;
 		std::vector<BaseLocation>   _baseLocationData;
 		std::shared_ptr<AKBot::OpponentView> _opponentView;
 
@@ -22,32 +33,24 @@ namespace UAlbertaBot
 		std::vector<const BaseLocation *> _startingBaseLocations;
 		std::map<BWAPI::Player, const BaseLocation *> _playerStartingBaseLocations;
 		std::map<BWAPI::Player, std::set<const BaseLocation *>> _occupiedBaseLocations;
+		std::map<std::string, AKBot::BaseDetectorEntry> _registry;
 
 		std::vector<std::vector<BaseLocation *>> _tileBaseLocations;  // precomputed base locations for each tile on the map, nullptr if not in a base
 
 		BaseLocation * _getBaseLocation(BWAPI::TilePosition pos) const;
 		BaseLocation * _getBaseLocation(BWAPI::Position pos) const;
-		// Append list of resource clusters bases on existing resources
-		void addNewResourceClusters(
-			std::vector<std::vector<BWAPI::Unit>>& resourceClusters,
-			const BWAPI::Unitset& resources,
-			AKBot::DistanceFunction distanceFunction,
-			const int resourceThreshold,
-			const int clusterDistance);
-		// Add resources to existing clusters
-		void addToExistingResourceClusters(
-			std::vector<std::vector<BWAPI::Unit>>& resourceClusters,
-			const BWAPI::Unitset& resources,
-			AKBot::DistanceFunction distanceFunction,
-			const int resourceThreshold,
-			const int clusterDistance);
 
 		/*
 			Reset the player occupation information for each location
 		*/
 		void resetPlayerOccupation();
+
+		const AKBot::BaseDetectorEntry& getBaseDetectorEntry();
 	public:
-		BaseLocationManager(BWAPI::Game* game, std::shared_ptr<AKBot::OpponentView> opponentView);
+		BaseLocationManager(
+			BWAPI::Game* game,
+			std::shared_ptr<AKBot::OpponentView> opponentView,
+			const BotBaseDetectionConfiguration& baseDetectionConfiguration);
 
 		void update(shared_ptr<UnitInfoManager> unitManager);
 		void onStart(shared_ptr<MapTools> map);
@@ -62,7 +65,10 @@ namespace UAlbertaBot
 		const BaseLocation * getBaseLocation(BWAPI::Position pos) const;
 		BWAPI::Position         getLeastRecentlySeenPosition(shared_ptr<MapTools> bases) const;
 
-		void populateBaseLocations(shared_ptr<MapTools> map, std::vector<BaseLocation>& baseLocations);
+		// Gets name of the current base detecor name
+		const std::string getBaseDetector() const { return _baseDetectionConfiguration.BaseDetectionStrategy; }
+		AKBot::BaseDetector& getCurrentBaseDetector();
+		void registerBaseDetector(std::string name, std::unique_ptr<AKBot::BaseDetector> detector);
 	};
 
 }
