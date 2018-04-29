@@ -37,6 +37,7 @@
         "DrawUnitTargetInfo"        : false,
         "RetreatMeleeUnitShields"   : 0,
         "RetreatMeleeUnitHP"        : 0,
+        "CombatEstimationStrategy"  : "sparcraft",
         "InCombatRadius"            : 1000,
         "RegroupRadius"             : 300,
         "UnitNearEnemyRadius"       : 600
@@ -92,7 +93,12 @@
     {
         "MapGridSize"               : 320
     },
-    
+
+    "BaseDetection": 
+    {
+         "BaseDetectionStrategy"    : "uab"
+    }
+
     "Strategy" :
     {
         "Protoss"                   : "Protoss_ZealotRush",

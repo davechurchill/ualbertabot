@@ -23,7 +23,8 @@ BOOST_FIXTURE_TEST_CASE(EmptySquadDoesNotGenerateActions, BroodwarFixture)
 	auto gameImpl = std::make_shared<AKBot::GameImpl>(gameData.get());
 	auto game = gameImpl.get();
 	auto opponentView = std::make_shared<BWAPIOpponentView>(game);
-	auto baseLocationManager = std::make_shared<UAlbertaBot::BaseLocationManager>(game, opponentView);
+	BotBaseDetectionConfiguration baseDetectionConfiguration;
+	auto baseLocationManager = std::make_shared<UAlbertaBot::BaseLocationManager>(game, opponentView, baseDetectionConfiguration);
 	BotMicroConfiguration microConfiguration;
 	RangedManager sut(opponentView, baseLocationManager, microConfiguration);
 
@@ -62,7 +63,8 @@ BOOST_FIXTURE_TEST_CASE(HiddenLurkerIsIgnored, BroodwarFixture)
 	setP2PForces(rawGameData);
 	setPlayers(*rawGameData, 2);
 	auto opponentView = std::make_shared<BWAPIOpponentView>(game);
-	auto baseLocationManager = std::make_shared<UAlbertaBot::BaseLocationManager>(game, opponentView);
+	BotBaseDetectionConfiguration baseDetectionConfiguration;
+	auto baseLocationManager = std::make_shared<UAlbertaBot::BaseLocationManager>(game, opponentView, baseDetectionConfiguration);
 	BotMicroConfiguration microConfiguration;
 	RangedManager sut(opponentView, baseLocationManager, microConfiguration);
 

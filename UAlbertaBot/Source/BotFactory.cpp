@@ -26,6 +26,7 @@
 #include "strategies\zerg\TwoHatchHydralisk.h"
 #include "strategies\zerg\ThreeHatchMutalisk.h"
 #include "strategies\zerg\ThreeHatchScourge.h"
+#include "basedetection\ClusterBaseDetector.h"
 
 #include "ParseUtils.h"
 
@@ -68,7 +69,18 @@ BotPlayer AKBot::createBot(const std::string& mode, BotConfiguration& configurat
 			opponentView,
 			workerData));
 		auto autoObserver = std::shared_ptr<AutoObserver>(new AutoObserver(opponentView, workerManager));
-		auto baseLocationManager = std::shared_ptr<BaseLocationManager>(new BaseLocationManager(game, opponentView));
+		auto mapInformation = std::shared_ptr<MapInformation>(new BWAPIMapInformation(game));
+		auto mapTools = std::shared_ptr<MapTools>(new MapTools(mapInformation, logger));
+		auto baseLocationManager = std::shared_ptr<BaseLocationManager>(new BaseLocationManager(
+			game,
+			opponentView,
+			configuration.BaseDetection));
+		baseLocationManager->registerBaseDetector(
+			"uab",
+			std::make_unique<AKBot::ClusterBaseDetector>(
+				game,
+				opponentView,
+				mapTools));
 		auto unitInfoManager = std::shared_ptr<UnitInfoManager>(new UnitInfoManager(opponentView));
 		auto strategyManager = std::shared_ptr<StrategyManager>(new StrategyManager(
 			opponentView,
@@ -77,8 +89,6 @@ BotPlayer AKBot::createBot(const std::string& mode, BotConfiguration& configurat
 			logger,
 			configuration.Strategy));
 		registerWellKnownStrategies(*opponentView, *strategyManager);
-		auto mapInformation = std::shared_ptr<MapInformation>(new BWAPIMapInformation(game));
-		auto mapTools = std::shared_ptr<MapTools>(new MapTools(mapInformation, logger));
 		auto combatCommander = std::shared_ptr<CombatCommander>(new CombatCommander(
 			baseLocationManager,
 			opponentView,

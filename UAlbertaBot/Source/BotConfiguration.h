@@ -145,6 +145,11 @@ struct BotToolsConfiguration
 	int MAP_GRID_SIZE = 320;      // size of grid spacing in MapGrid
 };
 
+struct BotBaseDetectionConfiguration
+{
+	std::string BaseDetectionStrategy = "uab";
+};
+
 struct BotConfiguration
 {
 	BotModulesConfiguration Modules;
@@ -158,5 +163,6 @@ struct BotConfiguration
 	BotMicroConfiguration Micro;
 	BotMacroConfiguration Macro;
 	BotToolsConfiguration Tools;
+	BotBaseDetectionConfiguration BaseDetection;
 	BotLogConfiguration Log;
 };

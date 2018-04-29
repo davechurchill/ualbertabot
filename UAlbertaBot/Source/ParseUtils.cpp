@@ -226,6 +226,14 @@ void UAlbertaBot::ParseUtils::ParseConfigFile(
         JSONTools::ReadInt("ArenaOutputResults", arena, arenaOptions.ArenaOutputResults);
     }
 
+	// Parse the BaseDetection Options
+	if (doc.HasMember("BaseDetection") && doc["BaseDetection"].IsObject())
+	{
+		const rapidjson::Value & baseDetection = doc["BaseDetection"];
+		auto& baseDetectionOptions = config.BaseDetection;
+		JSONTools::ReadString("BaseDetectionStrategy", baseDetection, baseDetectionOptions.BaseDetectionStrategy);
+	}
+
 	if (doc.HasMember("Strategy") && doc["Strategy"].IsObject())
 	{
 		const rapidjson::Value & strategy = doc["Strategy"];

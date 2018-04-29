@@ -2,55 +2,37 @@
 #include "UnitUtil.h"
 
 using namespace UAlbertaBot;
+using namespace std;
 
-BaseLocationManager::BaseLocationManager(BWAPI::Game* game, shared_ptr<AKBot::OpponentView> opponentView)
+BaseLocationManager::BaseLocationManager(
+	BWAPI::Game* game,
+	shared_ptr<AKBot::OpponentView> opponentView,
+	const BotBaseDetectionConfiguration& baseDetectionConfiguration)
     : _game(game)
 	, _tileBaseLocations(game->mapWidth(), std::vector<BaseLocation *>(game->mapHeight(), nullptr))
 	, _opponentView(opponentView)
+	, _baseDetectionConfiguration(baseDetectionConfiguration)
 	, _baseLocationPtrs(0)
 	, _baseLocationData()
 {
-    _playerStartingBaseLocations[_opponentView->self()]  = nullptr;
+	_playerStartingBaseLocations[_opponentView->self()]  = nullptr;
 	for (const auto enemyPlayer : _opponentView->enemies())
 	{
 		_playerStartingBaseLocations[enemyPlayer] = nullptr;
 	}
 }
 
-void BaseLocationManager::populateBaseLocations(shared_ptr<MapTools> map, std::vector<BaseLocation>& baseLocations)
+void BaseLocationManager::registerBaseDetector(std::string name, std::unique_ptr<AKBot::BaseDetector> detector)
 {
-	// a BaseLocation will be anything where there are minerals to mine
-    // so we will first look over all minerals and cluster them based on some distance
-	const int clusterDistance = 20;
-	const int mineralThreshold = 100;
-	const int gasThreshold = 100;
-
-	auto distanceFunction = [&map](const BWAPI::Position & src, const BWAPI::Position & dest)
-	{
-		return map->getGroundDistance(src, dest);
-	};
-	// stores each cluster of resources based on some ground distance
-	std::vector<std::vector<BWAPI::Unit>> resourceClusters;
-	addNewResourceClusters(resourceClusters, _game->getStaticMinerals(), distanceFunction, mineralThreshold, clusterDistance);
-	addNewResourceClusters(resourceClusters, _game->getMinerals(), distanceFunction, mineralThreshold, clusterDistance);
-	// add geysers only to existing resource clusters
-	addToExistingResourceClusters(resourceClusters, _game->getStaticGeysers(), distanceFunction, gasThreshold, clusterDistance);
-	addToExistingResourceClusters(resourceClusters, _game->getGeysers(), distanceFunction, gasThreshold, clusterDistance);
-
-	// add the base locations if there are more than 4 resouces in the cluster
-	int baseID = 0;
-	for (auto & cluster : resourceClusters)
-	{
-		if (cluster.size() > 4)
-		{
-			baseLocations.push_back(BaseLocation(_opponentView, map, baseID++, cluster));
-		}
-	}
+	AKBot::BaseDetectorEntry uapEntry;
+	uapEntry.baseDetector = std::move(detector);
+	_registry.insert(std::make_pair(name, std::move(uapEntry)));
 }
 
 void BaseLocationManager::onStart(shared_ptr<MapTools> map)
 {
-	populateBaseLocations(map, _baseLocationData);
+	auto& baseDetector = getCurrentBaseDetector();
+	baseDetector.detectBases(_baseLocationData);
 
     // construct the vectors of base location pointers, this is safe since they will never change
 	auto self = _opponentView->self();
@@ -334,70 +316,6 @@ BaseLocation * BaseLocationManager::_getBaseLocation(BWAPI::Position pos) const
     return _getBaseLocation(BWAPI::TilePosition(pos));
 }
 
-void BaseLocationManager::addNewResourceClusters(
-	std::vector<std::vector<BWAPI::Unit>>& resourceClusters,
-	const BWAPI::Unitset& resources,
-	AKBot::DistanceFunction distanceFunction,
-	const int resourceThreshold,
-	const int clusterDistance)
-{
-	for (auto & mineral : resources)
-	{
-		// skip minerals that don't have more than 100 starting minerals
-		// these are probably stupid map-blocking minerals to confuse us
-		if (mineral->getResources() <= resourceThreshold)
-		{
-			continue;
-		}
-
-		bool foundCluster = false;
-		for (std::vector<BWAPI::Unit> & cluster : resourceClusters)
-		{
-			int groundDist = distanceFunction(mineral->getPosition(), UnitUtil::GetUnitsetCenter(cluster));
-
-			if (groundDist >= 0 && groundDist < clusterDistance)
-			{
-				cluster.push_back(mineral);
-				foundCluster = true;
-				break;
-			}
-		}
-
-		if (!foundCluster)
-		{
-			resourceClusters.push_back(std::vector<BWAPI::Unit>());
-			resourceClusters.back().push_back(mineral);
-		}
-	}
-}
-
-void BaseLocationManager::addToExistingResourceClusters(
-	std::vector<std::vector<BWAPI::Unit>>& resourceClusters,
-	const BWAPI::Unitset& resources,
-	AKBot::DistanceFunction distanceFunction,
-	const int resourceThreshold,
-	const int clusterDistance)
-{
-	for (auto & geyser : resources)
-	{
-		if (geyser->getResources() <= resourceThreshold)
-		{
-			continue;
-		}
-
-		for (std::vector<BWAPI::Unit> & cluster : resourceClusters)
-		{
-			int groundDist = distanceFunction(geyser->getPosition(), UnitUtil::GetUnitsetCenter(cluster));
-
-			if (groundDist >= 0 && groundDist < clusterDistance)
-			{
-				cluster.push_back(geyser);
-				break;
-			}
-		}
-	}
-}
-
 
 const BaseLocation * BaseLocationManager::getBaseLocation(BWAPI::Position pos) const
 {
@@ -483,4 +401,21 @@ BWAPI::TilePosition BaseLocationManager::getNextExpansion(BWAPI::Player player) 
     {
         return BWAPI::TilePositions::None;
     }
+}
+
+AKBot::BaseDetector & UAlbertaBot::BaseLocationManager::getCurrentBaseDetector()
+{
+	auto& entry = getBaseDetectorEntry();
+	return *entry.baseDetector.get();
+}
+
+const AKBot::BaseDetectorEntry & UAlbertaBot::BaseLocationManager::getBaseDetectorEntry()
+{
+	auto element = _registry.find(getBaseDetector());
+	if (element == _registry.cend())
+	{
+		element = _registry.find("uab");
+	}
+
+	return element->second;
 }
