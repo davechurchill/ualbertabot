@@ -8,7 +8,7 @@ double AKBot::defaultScoreFunction(const AKBot::FAPCombatEstimator& estimator)
 {
 	auto scores = estimator.playerScores();
 
-	int score = scores.first - scores.second;
+	auto score = scores.first - scores.second;
 	return double(score);
 }
 
@@ -19,7 +19,7 @@ double AKBot::deltaScoreFunction(const AKBot::FAPCombatEstimator& estimator)
 
 	auto firstPlayerDamage = initialScores.first - scores.first;
 	auto secondPlayerDamage = initialScores.second - scores.second;
-	int score = firstPlayerDamage - secondPlayerDamage;
+	auto score = firstPlayerDamage - secondPlayerDamage;
 
 	// Reverse to indicate that positive score is where we have less
 	// damage then enemy.
@@ -28,7 +28,7 @@ double AKBot::deltaScoreFunction(const AKBot::FAPCombatEstimator& estimator)
 
 double AKBot::unitHealthScore(const FAPPlayerState& state)
 {
-	double result;
+	double result = 0.0;
 	for (auto & u : state) {
 		if (u.health && u.maxHealth) {
 			result += (u.score * u.health) / (u.maxHealth * 2);
@@ -40,7 +40,7 @@ double AKBot::unitHealthScore(const FAPPlayerState& state)
 
 double AKBot::economicalCostScore(const FAPPlayerState& state)
 {
-	double result;
+	double result = 0.0;
 	for (auto & u : state) {
 		if (u.health && u.maxHealth) {
 			result += u.unitType.mineralPrice() + u.unitType.gasPrice();
@@ -69,7 +69,7 @@ AKBot::FAPCombatEstimator::FAPCombatEstimator(
 
 std::pair<double, double> AKBot::FAPCombatEstimator::calculateScore(std::function<double(const FAPPlayerState&)> playerScoreFunction)
 {
-	auto& state = getState();
+	auto state = getState();
 	return std::make_pair(
 		playerScoreFunction(*state.first),
 		playerScoreFunction(*state.second));
@@ -93,6 +93,7 @@ void FAPCombatEstimator::setCombatUnits(
 	std::vector<UnitInfo> enemyCombatUnits,
 	int currentFrame)
 {
+	std::ignore = currentFrame;
 	for (auto & unit : ourCombatUnits)
 	{
 		if (unit->getType().isWorker() || unit->getHitPoints() == 0 || unit->getType().isBuilding())

@@ -15,6 +15,7 @@
     <ClCompile Include="..\Source\ArenaPlayer_AttackClosest.cpp" />
     <ClCompile Include="..\Source\ArenaPlayer_SparCraft.cpp" />
     <ClCompile Include="..\Source\AutoObserver.cpp" />
+    <ClCompile Include="..\Source\basedetection\ClusterBaseDetector.cpp" />
     <ClCompile Include="..\Source\BaseLocation.cpp" />
     <ClCompile Include="..\Source\BaseLocationManager.cpp" />
     <ClCompile Include="..\Source\BOSSManager.cpp" />
@@ -110,6 +111,8 @@
     <ClInclude Include="..\Source\ArenaPlayer_AttackClosest.h" />
     <ClInclude Include="..\Source\ArenaPlayer_SparCraft.h" />
     <ClInclude Include="..\Source\AutoObserver.h" />
+    <ClInclude Include="..\Source\basedetection\BaseDetector.h" />
+    <ClInclude Include="..\Source\basedetection\ClusterBaseDetector.h" />
     <ClInclude Include="..\Source\BaseLocation.h" />
     <ClInclude Include="..\Source\BaseLocationManager.h" />
     <ClInclude Include="..\Source\BOSSManager.h" />

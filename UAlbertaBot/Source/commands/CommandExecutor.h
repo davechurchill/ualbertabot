@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <tuple>
 
 namespace AKBot
 {
@@ -13,6 +14,9 @@ namespace AKBot
 		/*
 		 * Checks whether command is supported
 		 */
-		virtual bool isSupported(const std::string& command) const { return true; }
+		virtual bool isSupported(const std::string& command) const {
+			std::ignore = command;
+			return true;
+		}
 	};
 }

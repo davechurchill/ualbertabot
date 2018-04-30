@@ -264,6 +264,9 @@
     <ClCompile Include="..\Source\commands\MapCommandExecutor.cpp">
       <Filter>commands</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\basedetection\ClusterBaseDetector.cpp">
+      <Filter>basedetection</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="common">
@@ -309,6 +312,9 @@
     </Filter>
     <Filter Include="micro\simulation">
       <UniqueIdentifier>{5181fbd6-af16-4ecc-9312-6fd1839abeba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="basedetection">
+      <UniqueIdentifier>{a1ee2b63-1374-4366-b170-7c23cac107c8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -627,6 +633,12 @@
     <ClInclude Include="..\Source\UnitInformation.h" />
     <ClInclude Include="..\Source\commands\MapCommandExecutor.h">
       <Filter>commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\basedetection\BaseDetector.h">
+      <Filter>basedetection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\basedetection\ClusterBaseDetector.h">
+      <Filter>basedetection</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
