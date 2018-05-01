@@ -1,5 +1,6 @@
 #pragma once
 #include <BWAPI\Client\UnitData.h>
+#include <BWAPI\Client\GameData.h>
 #include <BWAPI\UnitType.h>
 
 namespace AKBot
@@ -26,6 +27,7 @@ namespace AKBot
 			BWAPI::UnitData& _unitData;
 		public:
 			UnitBuilder(BWAPI::UnitData& unitData);
+			UnitBuilder(BWAPI::UnitData& unitData, int unitId);
 			UnitBuilder& unit(BWAPI::UnitType unitType);
 			UnitBuilder& position(int x, int y);
 			UnitBuilder& position(BWAPI::Position position);
@@ -34,6 +36,8 @@ namespace AKBot
 			UnitBuilder& my();
 			UnitBuilder& player(int player);
 			UnitBuilder& visibleToAll();
+			UnitBuilder& mineral(int amount);
+			UnitBuilder& geyser(int amount);
 			BWAPI::UnitData& data() const { return _unitData; }
 		};
 	}

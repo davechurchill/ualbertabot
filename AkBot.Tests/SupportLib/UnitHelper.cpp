@@ -65,6 +65,13 @@ AKBot::Tests::UnitBuilder::UnitBuilder(BWAPI::UnitData& unitData)
 	ZeroMemory(&unitData, sizeof(unitData));
 }
 
+AKBot::Tests::UnitBuilder::UnitBuilder(BWAPI::UnitData& unitData, int unitId)
+	: _unitData(unitData)
+{
+	ZeroMemory(&unitData, sizeof(unitData));
+	unitData.id = unitId;
+}
+
 UnitBuilder& UnitBuilder::unit(BWAPI::UnitType unitType)
 {
 	_unitData.type = unitType;
@@ -124,5 +131,23 @@ UnitBuilder& UnitBuilder::visibleToAll()
 {
 	_unitData.isVisible[0] = true;
 	_unitData.isVisible[1] = true;
+	return *this;
+}
+
+UnitBuilder& UnitBuilder::mineral(int amount)
+{
+	_unitData.type = BWAPI::UnitTypes::Resource_Mineral_Field;
+	_unitData.exists = true;
+	_unitData.isCompleted = true;
+	_unitData.resources = amount;
+	return *this;
+}
+
+UnitBuilder& UnitBuilder::geyser(int amount)
+{
+	_unitData.type = BWAPI::UnitTypes::Resource_Vespene_Geyser;
+	_unitData.exists = true;
+	_unitData.isCompleted = true;
+	_unitData.resources = amount;
 	return *this;
 }
