@@ -4,36 +4,6 @@
 
 using namespace AKBot::Tests;
 
-void AKBot::Tests::placeTerranMarine(BWAPI::UnitData& unitData, int x, int y)
-{
-	placeUnit(unitData, BWAPI::UnitTypes::Terran_Marine, x, y);
-}
-void AKBot::Tests::placeZergZergeling(BWAPI::UnitData& unitData, int x, int y)
-{
-	placeUnit(unitData, BWAPI::UnitTypes::Zerg_Zergling, x, y);
-}
-void AKBot::Tests::placeZergHydralisk(BWAPI::UnitData& unitData, int x, int y)
-{
-	placeUnit(unitData, BWAPI::UnitTypes::Zerg_Hydralisk, x, y);
-}
-void AKBot::Tests::placeZergUltralisk(BWAPI::UnitData& unitData, int x, int y)
-{
-	placeUnit(unitData, BWAPI::UnitTypes::Zerg_Ultralisk, x, y);
-}
-void AKBot::Tests::placeZergSunkenColony(BWAPI::UnitData& unitData, int x, int y)
-{
-	placeUnit(unitData, BWAPI::UnitTypes::Zerg_Sunken_Colony, x, y);
-}
-void AKBot::Tests::placeProtossZealot(BWAPI::UnitData& unitData, int x, int y)
-{
-	placeUnit(unitData, BWAPI::UnitTypes::Protoss_Zealot, x, y);
-}
-void AKBot::Tests::placeUnit(BWAPI::UnitData& unitData, BWAPI::UnitType unitType, int x, int y)
-{
-	UnitBuilder builder(unitData);
-	builder.unit(unitType).position(x, y);
-}
-
 AKBot::Tests::UnitBuilder::UnitBuilder(BWAPI::UnitData& unitData)
 	: _unitData(unitData)
 {
