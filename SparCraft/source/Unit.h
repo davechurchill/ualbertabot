@@ -15,6 +15,8 @@ class Unit
 {
     BWAPI::UnitType     _unitType;				// the BWAPI unit type that we are mimicing
     int                 _range;
+	int                 _rangeBonus;			// Additional range bonus given to the unit
+												// This bonus for example could be used for the units which are inside the bunker.
 	
 	Position            _position;				// current location in a possibly infinite space
 	
@@ -86,6 +88,8 @@ public:
 	const int      x()                         const;
 	const int      y()                         const;
 	const int      range()                     const;
+	const int      rangeBonus()                const;
+	void setRangeBonus(int newValue);
 	const int      healRange()                 const;
 	const int      getDistanceSqToUnit(const Unit & u, const TimeType & gameTime) const;
 	const int      getDistanceSqToPosition(const Position & p, const TimeType & gameTime) const;
