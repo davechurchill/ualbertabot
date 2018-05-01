@@ -97,7 +97,7 @@
     "BaseDetection": 
     {
          "BaseDetectionStrategy"    : "uab"
-    }
+    },
 
     "Strategy" :
     {
