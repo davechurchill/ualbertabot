@@ -117,7 +117,7 @@ int main(int argc, const char * argv[])
 				std::cout << "Playing game " << gameCount++ << " on map " << BWAPI::Broodwar->mapFileName() << "\n";
 
 				std::string mode = Config.BotInfo.BotMode;
-				auto m = createBot(mode, Config, configurationFile);
+				auto m = createBot(BWAPI::BroodwarPtr, mode, Config, configurationFile);
 				std::cerr << "Bot Address: " << m.getBot().get() << std::endl;
 				if (!m.isValid())
 				{

@@ -56,9 +56,8 @@ void registerWellKnownStrategies(AKBot::OpponentView& opponentView, StrategyMana
 	strategyManager.registerStrategy("Zerg_3HatchScourge", std::make_unique<ThreeHatchScourge>(self));
 }
 
-BotPlayer AKBot::createBot(const std::string& mode, BotConfiguration& configuration, const std::string& configurationFile) {
+BotPlayer AKBot::createBot(BWAPI::Game* game, const std::string& mode, BotConfiguration& configuration, const std::string& configurationFile) {
 	if (mode == "Tournament") {
-		auto game = BWAPI::BroodwarPtr;
 		auto logger = std::shared_ptr<AKBot::Logger>(new AKBot::BWAPIPrintLogger());
 		auto opponentView = game->isReplay()
 			? std::shared_ptr<AKBot::OpponentView>(new AKBot::BWAPIReplayOpponentView(game))
