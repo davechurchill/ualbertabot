@@ -5,6 +5,7 @@ using namespace SparCraft;
 Unit::Unit()
     : _unitType             (BWAPI::UnitTypes::None)
     , _range                (0)
+	, _rangeBonus			(0)
     , _unitID               (0)
     , _bwapiID              (0)
     , _playerID             (0)
@@ -25,6 +26,7 @@ Unit::Unit(const BWAPI::UnitType unitType, const Position & pos, const size_t & 
            const HealthType & hp, const HealthType & energy, const TimeType & tm, const TimeType & ta) 
     : _unitType             (unitType)
     , _range                (PlayerWeapon(&PlayerProperties::Get(playerID), unitType.groundWeapon()).GetMaxRange() + Config::Units::UnitRangeAddition)
+	, _rangeBonus(0)
     , _position             (pos)
     , _unitID               (unitID)
     , _bwapiID              (0)
@@ -116,7 +118,7 @@ const bool Unit::canAttackTarget(const Unit & unit, const TimeType & gameTime) c
     }
 
     // range of this unit attacking
-    int r = range();
+    int r = range() + rangeBonus();
 
     // return whether the target unit is in range
     return (r * r) >= getDistanceSqToUnit(unit, gameTime);
@@ -407,6 +409,16 @@ const int Unit::range() const
     return _range; 
 }
 
+const int Unit::rangeBonus() const
+{
+	return _rangeBonus;
+}
+
+void Unit::setRangeBonus(int newValue)
+{
+	_rangeBonus = newValue;
+}
+
 const HealthType Unit::maxHP() const 
 { 
     return (HealthType)_unitType.maxHitPoints() + (HealthType)_unitType.maxShields(); 
@@ -536,10 +548,11 @@ const std::string Unit::debugString() const
     std::stringstream ss;
 
     ss << "Unit Type:           " << type().getName()                               << "\n";
-    ss << "Unit ID:             " << (int)getID()                               << "\n";
+    ss << "Unit ID:             " << (int)getID()									<< "\n";
     ss << "Player:              " << (int)getPlayerID()                             << "\n";
     ss << "Range:               " << range()                                        << "\n";
-    ss << "Position:            " << "(" << _position.x() << "," << _position.y()   << ")\n";
+	ss << "Range bonus:         " << rangeBonus()									<< "\n";
+	ss << "Position:            " << "(" << _position.x() << "," << _position.y()   << ")\n";
     ss << "Current HP:          " << currentHP()                                    << "\n";
     ss << "Next Move Time:      " << nextMoveActionTime()                           << "\n";
     ss << "Next Attack Time:    " << nextAttackActionTime()                         << "\n";
