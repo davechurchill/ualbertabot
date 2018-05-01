@@ -7,10 +7,6 @@ namespace AKBot
 {
 	namespace Tests
 	{
-		void placeMineral(BWAPI::UnitData& unitData, int x, int y, int resources);
-		void placeGeyser(BWAPI::UnitData& unitData, int x, int y, int resources);
-		void placeTerrainBunker(BWAPI::UnitData& unitData, int x, int y);
-		void placeTerrainMedic(BWAPI::UnitData& unitData, int x, int y);
 		void placeTerranMarine(BWAPI::UnitData& unitData, int x, int y);
 		
 		void placeZergZergeling(BWAPI::UnitData& unitData, int x, int y);
@@ -32,10 +28,12 @@ namespace AKBot
 			UnitBuilder& position(int x, int y);
 			UnitBuilder& position(BWAPI::Position position);
 			UnitBuilder& position(BWAPI::TilePosition tilePosition);
+			UnitBuilder& hidden();
 			UnitBuilder& angle(double angle);
 			UnitBuilder& my();
 			UnitBuilder& player(int player);
 			UnitBuilder& visibleToAll();
+			UnitBuilder& playerVisibility(int playerId, bool visible);
 			UnitBuilder& mineral(int amount);
 			UnitBuilder& geyser(int amount);
 			BWAPI::UnitData& data() const { return _unitData; }

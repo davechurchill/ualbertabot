@@ -35,6 +35,7 @@ namespace AKBot
 			GameBuilder& discoverGeyser(int x, int y, int resources);
 			GameBuilder& setP2PForces();
 			GameBuilder& setPlayers(int playersCount);
+			GameBuilder& setEnemy(int enemyId);
 			GameBuilder& setupEmptyMap(int width, int height);
 			UnitBuilder nextUnit();
 		};

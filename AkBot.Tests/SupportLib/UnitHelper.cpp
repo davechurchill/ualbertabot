@@ -4,31 +4,6 @@
 
 using namespace AKBot::Tests;
 
-void AKBot::Tests::placeMineral(BWAPI::UnitData& unitData, int x, int y, int resources)
-{
-	unitData.positionX = x;
-	unitData.positionY = y;
-	unitData.type = BWAPI::UnitTypes::Resource_Mineral_Field;
-	unitData.exists = true;
-	unitData.resources = resources;
-}
-void AKBot::Tests::placeGeyser(BWAPI::UnitData& unitData, int x, int y, int resources)
-{
-	unitData.positionX = x;
-	unitData.positionY = y;
-	unitData.type = BWAPI::UnitTypes::Resource_Vespene_Geyser;
-	unitData.exists = true;
-	unitData.isCompleted = true;
-	unitData.resources = resources;
-}
-void AKBot::Tests::placeTerrainBunker(BWAPI::UnitData& unitData, int x, int y)
-{
-	placeUnit(unitData, BWAPI::UnitTypes::Terran_Bunker, x, y);
-}
-void AKBot::Tests::placeTerrainMedic(BWAPI::UnitData& unitData, int x, int y)
-{
-	placeUnit(unitData, BWAPI::UnitTypes::Terran_Medic, x, y);
-}
 void AKBot::Tests::placeTerranMarine(BWAPI::UnitData& unitData, int x, int y)
 {
 	placeUnit(unitData, BWAPI::UnitTypes::Terran_Marine, x, y);
@@ -127,10 +102,23 @@ UnitBuilder& UnitBuilder::player(int player)
 	return *this;
 }
 
+UnitBuilder& UnitBuilder::hidden()
+{
+	_unitData.hitPoints = 0;
+	_unitData.shields = 0;
+	return *this;
+}
+
 UnitBuilder& UnitBuilder::visibleToAll()
 {
 	_unitData.isVisible[0] = true;
 	_unitData.isVisible[1] = true;
+	return *this;
+}
+
+UnitBuilder& UnitBuilder::playerVisibility(int playerId, bool visible)
+{
+	_unitData.isVisible[playerId] = visible;
 	return *this;
 }
 

@@ -67,6 +67,12 @@ GameBuilder & AKBot::Tests::GameBuilder::setP2PForces()
 	return *this;
 }
 
+GameBuilder & AKBot::Tests::GameBuilder::setEnemy(int enemyId)
+{
+	_data->enemy = enemyId;
+	return *this;
+}
+
 GameBuilder & AKBot::Tests::GameBuilder::setPlayers(int playersCount)
 {
 	static char neutralName[25] = "Neutral";

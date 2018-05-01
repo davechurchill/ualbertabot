@@ -5,6 +5,8 @@
 #include "BWAPIOpponentView.h"
 #include "SupportLib\UnitHelper.h"
 #include "SupportLib\GameHelper.h"
+#include "SupportLib/GameBuilder.h"
+#include "SupportLib/BWAPISession.h"
 
 using namespace AKBot::Tests;
 using UAlbertaBot::RangedManager;
@@ -12,16 +14,11 @@ using AKBot::BWAPIOpponentView;
 using UAlbertaBot::SquadOrder;
 using namespace UAlbertaBot::SquadOrderTypes;
 
-struct BroodwarFixture
+BOOST_AUTO_TEST_CASE(EmptySquadDoesNotGenerateActions)
 {
-	~BroodwarFixture() { BWAPI::BroodwarPtr = nullptr; }
-};
+	AKBot::Tests::GameBuilder builder;
+	auto game = builder.getGame();
 
-BOOST_FIXTURE_TEST_CASE(EmptySquadDoesNotGenerateActions, BroodwarFixture)
-{
-	auto gameData = std::make_shared<BWAPI::GameData>();
-	auto gameImpl = std::make_shared<AKBot::GameImpl>(gameData.get());
-	auto game = gameImpl.get();
 	auto opponentView = std::make_shared<BWAPIOpponentView>(game);
 	BotBaseDetectionConfiguration baseDetectionConfiguration;
 	auto baseLocationManager = std::make_shared<UAlbertaBot::BaseLocationManager>(game, opponentView, baseDetectionConfiguration);
@@ -37,31 +34,36 @@ BOOST_FIXTURE_TEST_CASE(EmptySquadDoesNotGenerateActions, BroodwarFixture)
 	// Should be added 5 elements for checking locations
 	BOOST_TEST(0U == observation.size(), L"Zero actions generated for empty squad");
 }
-BOOST_FIXTURE_TEST_CASE(HiddenLurkerIsIgnored, BroodwarFixture)
+
+BOOST_AUTO_TEST_CASE(HiddenLurkerIsIgnored)
 {
 	// This test case is checking that hidden Lurker would not affect
 	// results of the game, by blocking the actual targetting logic.
-	auto gameData = std::make_shared<BWAPI::GameData>();
-	auto rawGameData = gameData.get();
+	AKBot::Tests::GameBuilder builder;
+	builder.setP2PForces()
+		.setPlayers(2);
 
-	placeUnit(gameData->units[0], BWAPI::UnitTypes::Zerg_Spire, 100, 100);
-	gameData->units[0].player = 1;
-	gameData->units[0].isVisible[0] = true;
-	placeUnit(gameData->units[1], BWAPI::UnitTypes::Zerg_Lurker, 100, 120);
-	gameData->units[1].hitPoints = 0;
-	gameData->units[1].shields = 0;
-	gameData->units[1].player = 1;
-	gameData->units[1].isVisible[0] = true;
-	placeUnit(gameData->units[2], BWAPI::UnitTypes::Protoss_Dragoon, 120, 110);
-	gameData->units[2].player = 0;
-	gameData->units[2].isVisible[0] = true;
+	auto spire = builder.nextUnit()
+		.unit(BWAPI::UnitTypes::Zerg_Spire)
+		.position(100, 100)
+		.player(1)
+		.playerVisibility(0, true);
+	auto lurker = builder.nextUnit()
+		.unit(BWAPI::UnitTypes::Zerg_Lurker)
+		.position(100, 120)
+		.player(1)
+		.playerVisibility(0, true)
+		.hidden();
+	auto dragoon = builder.nextUnit()
+		.unit(BWAPI::UnitTypes::Protoss_Dragoon)
+		.position(120, 110)
+		.player(0)
+		.playerVisibility(0, true);
 
-	auto gameImpl = std::make_shared<AKBot::GameImpl>(gameData.get());
-	auto game = gameImpl.get();
-	BWAPI::BroodwarPtr = game;
+	auto game = builder.getGame();
+	BWAPISession session(game);
 
-	setP2PForces(rawGameData);
-	setPlayers(*rawGameData, 2);
+	game->onMatchStart();
 	auto opponentView = std::make_shared<BWAPIOpponentView>(game);
 	BotBaseDetectionConfiguration baseDetectionConfiguration;
 	auto baseLocationManager = std::make_shared<UAlbertaBot::BaseLocationManager>(game, opponentView, baseDetectionConfiguration);
@@ -76,14 +78,12 @@ BOOST_FIXTURE_TEST_CASE(HiddenLurkerIsIgnored, BroodwarFixture)
 	targets.push_back(game->getUnit(1));
 	rangedUnits.push_back(game->getUnit(2));
 
-	game->onMatchStart();
-
 	sut.setCurrentOrder(SquadOrder(Attack, BWAPI::Position(0, 0), 800));
 	sut.assignTargets(rangedUnits, targets);
 
 	auto const& observations = sut.getObservations();
-	// Should be added 5 elements for checking locations
-	BOOST_TEST(1U == observations.size(), L"Zero actions generated for empty squad");
+
+	BOOST_TEST(1U == observations.size(), L"Single action should be generated");
 	auto unit = observations.begin()->first;
 	auto observation = observations.begin()->second;
 	auto attackOrderIssued = observation.shouldAttack || observation.shouldKiteTarget || observation.shouldMutaDance;
