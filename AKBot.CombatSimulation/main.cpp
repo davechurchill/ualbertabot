@@ -87,11 +87,11 @@ void printStatistics()
 bool testZergling1(CombatEstimator& estimator)
 {
 	BWAPI::UnitData unit;
-	ZeroMemory(&unit, sizeof(unit));
-	placeZergZergeling(unit, 1, 1);
-	unit.player = 0;
-	unit.isVisible[0] = true;
-	unit.isVisible[1] = true;
+	UnitBuilder zerglingBuilder(unit);
+	zerglingBuilder
+		.unit(UnitTypes::Zerg_Zergling)
+		.position(1, 1)
+		.visibleToAll();
 	AKBot::UnitImpl unitImpl(1, unit);
 
 	std::vector<BWAPI::Unit> ourCombatUnits;
@@ -103,13 +103,13 @@ bool testZergling1(CombatEstimator& estimator)
 
 bool testMarine1(CombatEstimator& estimator)
 {
-	BWAPI::UnitData unit;
-	ZeroMemory(&unit, sizeof(unit));
-	placeTerranMarine(unit, 1, 1);
-	unit.player = 0;
-	unit.isVisible[0] = true;
-	unit.isVisible[1] = true;
-	AKBot::UnitImpl unitImpl(1, unit);
+	BWAPI::UnitData marineUnitData;
+	UnitBuilder marineBuilder(marineUnitData);
+	marineBuilder
+		.unit(UnitTypes::Terran_Marine)
+		.position(1, 1)
+		.visibleToAll();
+	AKBot::UnitImpl unitImpl(1, marineUnitData);
 
 	std::vector<BWAPI::Unit> ourCombatUnits;
 	ourCombatUnits.push_back(&unitImpl);
@@ -121,22 +121,23 @@ bool testMarine1(CombatEstimator& estimator)
 bool test1MarineVs1Zergling(CombatEstimator& estimator)
 {
 	BWAPI::UnitData marineUnitData;
-	ZeroMemory(&marineUnitData, sizeof(marineUnitData));
-	placeTerranMarine(marineUnitData, 1, 1);
-	marineUnitData.player = 0;
-	marineUnitData.isVisible[0] = true;
-	marineUnitData.isVisible[1] = true;
+	UnitBuilder marineBuilder(marineUnitData);
+	marineBuilder
+		.unit(UnitTypes::Terran_Marine)
+		.position(1, 1)
+		.visibleToAll();
 	AKBot::UnitImpl marineUnitImpl(1, marineUnitData);
 
 	std::vector<BWAPI::Unit> ourCombatUnits;
 	ourCombatUnits.push_back(&marineUnitImpl);
 
 	BWAPI::UnitData zerglingUnitData;
-	ZeroMemory(&zerglingUnitData, sizeof(zerglingUnitData));
-	placeZergZergeling(zerglingUnitData, 2, 2);
-	zerglingUnitData.player = 1;
-	zerglingUnitData.isVisible[0] = true;
-	zerglingUnitData.isVisible[1] = true;
+	UnitBuilder zerglingBuilder(zerglingUnitData);
+	zerglingBuilder
+		.unit(UnitTypes::Zerg_Zergling)
+		.position(2, 2)
+		.player(1)
+		.visibleToAll();
 	AKBot::UnitImpl zerglingUnitImpl(2, zerglingUnitData);
 
 	UAlbertaBot::UnitInfo zergling(&zerglingUnitImpl);
@@ -148,11 +149,11 @@ bool test1MarineVs1Zergling(CombatEstimator& estimator)
 bool test1MarineVs1Broodling(CombatEstimator& estimator)
 {
 	BWAPI::UnitData marineUnitData;
-	ZeroMemory(&marineUnitData, sizeof(marineUnitData));
-	placeTerranMarine(marineUnitData, 1, 1);
-	marineUnitData.player = 0;
-	marineUnitData.isVisible[0] = true;
-	marineUnitData.isVisible[1] = true;
+	UnitBuilder marineBuilder(marineUnitData);
+	marineBuilder
+		.unit(UnitTypes::Terran_Marine)
+		.position(1, 1)
+		.visibleToAll();
 	AKBot::UnitImpl marineUnitImpl(1, marineUnitData);
 
 	std::vector<BWAPI::Unit> ourCombatUnits;
@@ -293,10 +294,11 @@ bool test5MarineVs1SunkenColony(CombatEstimator& estimator)
 	for (auto i = 0; i < MarinesCount; i++)
 	{
 		auto& currentUnit = unitData[unitIndex];
-		placeTerranMarine(currentUnit, 2, i + 1);
-		currentUnit.player = 0;
-		currentUnit.isVisible[0] = true;
-		currentUnit.isVisible[1] = true;
+		UnitBuilder currentBuilder(currentUnit);
+		currentBuilder
+			.unit(UnitTypes::Terran_Marine)
+			.position(2, i+1)
+			.visibleToAll();
 		auto marineUnitImpl = std::make_shared<AKBot::UnitImpl>(unitId, currentUnit);
 		units.push_back(marineUnitImpl);
 		unitIndex++;
@@ -310,11 +312,12 @@ bool test5MarineVs1SunkenColony(CombatEstimator& estimator)
 	}
 
 	BWAPI::UnitData sunkenColonyUnitData;
-	ZeroMemory(&sunkenColonyUnitData, sizeof(sunkenColonyUnitData));
-	placeZergSunkenColony(sunkenColonyUnitData, 1, 3);
-	sunkenColonyUnitData.player = 1;
-	sunkenColonyUnitData.isVisible[0] = true;
-	sunkenColonyUnitData.isVisible[1] = true;
+	UnitBuilder sunken(sunkenColonyUnitData);
+	sunken
+		.unit(UnitTypes::Zerg_Sunken_Colony)
+		.position(1, 3)
+		.player(1)
+		.visibleToAll();
 	AKBot::UnitImpl sunkenColonyUnitImpl(unitId, sunkenColonyUnitData);
 	unitId++;
 
@@ -335,10 +338,11 @@ bool test8MarineVs1SunkenColony(CombatEstimator& estimator)
 	for (auto i = 0; i < MarinesCount; i++)
 	{
 		auto& currentUnit = unitData[unitIndex];
-		placeTerranMarine(currentUnit, 2, i + 1);
-		currentUnit.player = 0;
-		currentUnit.isVisible[0] = true;
-		currentUnit.isVisible[1] = true;
+		UnitBuilder currentBuilder(currentUnit);
+		currentBuilder
+			.unit(UnitTypes::Terran_Marine)
+			.position(2, i + 1)
+			.visibleToAll();
 		auto marineUnitImpl = std::make_shared<AKBot::UnitImpl>(unitId, currentUnit);
 		units.push_back(marineUnitImpl);
 		unitIndex++;
@@ -352,11 +356,12 @@ bool test8MarineVs1SunkenColony(CombatEstimator& estimator)
 	}
 
 	BWAPI::UnitData sunkenColonyUnitData;
-	ZeroMemory(&sunkenColonyUnitData, sizeof(sunkenColonyUnitData));
-	placeZergSunkenColony(sunkenColonyUnitData, 1, 4);
-	sunkenColonyUnitData.player = 1;
-	sunkenColonyUnitData.isVisible[0] = true;
-	sunkenColonyUnitData.isVisible[1] = true;
+	UnitBuilder sunken(sunkenColonyUnitData);
+	sunken
+		.unit(UnitTypes::Zerg_Sunken_Colony)
+		.position(1, 3)
+		.player(1)
+		.visibleToAll();
 	AKBot::UnitImpl sunkenColonyUnitImpl(unitId, sunkenColonyUnitData);
 	unitId++;
 
@@ -376,8 +381,12 @@ bool test9MarineVs1SunkenColony(CombatEstimator& estimator)
 	std::vector<shared_ptr<AKBot::UnitImpl>> units;
 	for (auto i = 0; i < MarinesCount; i++)
 	{
-		placeTerranMarine(unitData[unitIndex], 2, i + 1);
-		unitData[unitIndex].player = 0;
+		auto& currentUnit = unitData[unitIndex];
+		UnitBuilder currentBuilder(currentUnit);
+		currentBuilder
+			.unit(UnitTypes::Terran_Marine)
+			.position(2, i + 1)
+			.visibleToAll();
 		auto marineUnitImpl = std::make_shared<AKBot::UnitImpl>(unitId, unitData[unitIndex]);
 		units.push_back(marineUnitImpl);
 		unitIndex++;
@@ -391,11 +400,12 @@ bool test9MarineVs1SunkenColony(CombatEstimator& estimator)
 	}
 
 	BWAPI::UnitData sunkenColonyUnitData;
-	ZeroMemory(&sunkenColonyUnitData, sizeof(sunkenColonyUnitData));
-	placeZergSunkenColony(sunkenColonyUnitData, 1, 5);
-	sunkenColonyUnitData.player = 1;
-	sunkenColonyUnitData.isVisible[0] = true;
-	sunkenColonyUnitData.isVisible[1] = true;
+	UnitBuilder sunken(sunkenColonyUnitData);
+	sunken
+		.unit(UnitTypes::Zerg_Sunken_Colony)
+		.position(1, 3)
+		.player(1)
+		.visibleToAll();
 	AKBot::UnitImpl sunkenColonyUnitImpl(unitId, sunkenColonyUnitData);
 	unitId++;
 
@@ -416,10 +426,11 @@ bool test2MarineVs1Hydralisk(CombatEstimator& estimator)
 	for (auto i = 0; i < MarinesCount; i++)
 	{
 		auto& currentUnit = unitData[unitIndex];
-		placeTerranMarine(currentUnit, 2, i + 1);
-		currentUnit.player = 0;
-		currentUnit.isVisible[0] = true;
-		currentUnit.isVisible[1] = true;
+		UnitBuilder currentBuilder(currentUnit);
+		currentBuilder
+			.unit(UnitTypes::Terran_Marine)
+			.position(2, i + 1)
+			.visibleToAll();
 		auto marineUnitImpl = std::make_shared<AKBot::UnitImpl>(unitId, currentUnit);
 		units.push_back(marineUnitImpl);
 		unitIndex++;
@@ -433,12 +444,13 @@ bool test2MarineVs1Hydralisk(CombatEstimator& estimator)
 	}
 
 	BWAPI::UnitData hydraliskUnitData;
-	ZeroMemory(&hydraliskUnitData, sizeof(hydraliskUnitData));
-	placeZergHydralisk(hydraliskUnitData, 1, 2);
-	hydraliskUnitData.player = 1;
-	hydraliskUnitData.angle = 128;
-	hydraliskUnitData.isVisible[0] = true;
-	hydraliskUnitData.isVisible[1] = true;
+	UnitBuilder hydraliskBuilder(hydraliskUnitData);
+	hydraliskBuilder
+		.unit(UnitTypes::Zerg_Hydralisk)
+		.position(1, 2)
+		.player(1)
+		.angle(128)
+		.visibleToAll();
 	AKBot::UnitImpl hydraliskUnitImpl(unitId, hydraliskUnitData);
 	unitId++;
 
@@ -460,11 +472,11 @@ bool test1ZealotVs2Zealots(CombatEstimator& estimator)
 	for (auto i = 0; i < MarinesCount; i++)
 	{
 		auto& currentUnit = unitData[unitIndex];
-		placeProtossZealot(currentUnit, 2, i + 1);
-		currentUnit.player = 0;
-		currentUnit.isVisible[0] = true;
-		currentUnit.isVisible[1] = true;
-		//auto marineUnitImpl = std::make_shared<AKBot::UnitImpl>(unitId, currentUnit);
+		UnitBuilder currentBuilder(currentUnit);
+		currentBuilder
+			.unit(UnitTypes::Protoss_Zealot)
+			.position(2, i + 1)
+			.visibleToAll();
 		units.push_back(
 			std::make_shared<AKBot::UnitImpl>(unitId, currentUnit)
 		);
@@ -486,11 +498,11 @@ bool test1ZealotVs2Zealots(CombatEstimator& estimator)
 	for (auto i = 0; i < EnemyZealotsCount; i++)
 	{
 		auto& currentUnit = enemyUnitData[unitIndex];
-		placeProtossZealot(currentUnit, 2, i + 1);
-		currentUnit.player = 1;
-		currentUnit.isVisible[0] = true;
-		currentUnit.isVisible[1] = true;
-		//auto marineUnitImpl = std::make_shared<AKBot::UnitImpl>(unitId, currentUnit);
+		UnitBuilder currentBuilder(currentUnit);
+		currentBuilder
+			.unit(UnitTypes::Protoss_Zealot)
+			.position(2, i + 1)
+			.visibleToAll();
 		enemyUnits.push_back(
 			std::make_shared<AKBot::UnitImpl>(unitId, currentUnit)
 		);

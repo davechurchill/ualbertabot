@@ -39,7 +39,7 @@ ENDIF()
 
 add_library(AKBot::Lib ALIAS AKBot)
 add_dependencies(AKBot_CombatSimulation AKBot)
-target_link_libraries(AKBot_CombatSimulation PUBLIC AKBot::Lib AKBot::SparCraft AKBot::BOSS)
+target_link_libraries(AKBot_CombatSimulation PUBLIC AKBot::Lib AKBot::SparCraft AKBot::BOSS BotTestLib)
 
 target_include_directories(AKBot_CombatSimulation BEFORE PUBLIC
 	"${BWAPI_INCLUDE_DIR}"

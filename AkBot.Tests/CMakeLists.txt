@@ -40,7 +40,7 @@ target_include_directories(BotTestLib BEFORE PUBLIC
 	"TestLib"
 )
 
-file(GLOB BOOST_TEST_SRCS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *Test.cpp)
+file(GLOB BOOST_TEST_SRCS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *Test.cpp basedetection/*Test.cpp)
 foreach(testSrc ${BOOST_TEST_SRCS})
 	#Extract the filename without an extension (NAME_WE)
     get_filename_component(testName ${testSrc} NAME_WE)
