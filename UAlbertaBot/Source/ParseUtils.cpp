@@ -126,6 +126,7 @@ void UAlbertaBot::ParseUtils::ParseConfigFile(
         JSONTools::ReadInt("UnitNearEnemyRadius", micro, microOptions.UnitNearEnemyRadius);
 		JSONTools::ReadString("CombatEstimationStrategy", micro, microOptions.CombatEstimationStrategy);
 		JSONTools::ReadInt("CombatEstimationDepth", micro, microOptions.CombatEstimationDepth);
+		JSONTools::ReadBool("IncludeWorkers", micro, microOptions.IncludeWorkers);
 
         if (micro.HasMember("KiteLongerRangedUnits") && micro["KiteLongerRangedUnits"].IsArray())
         {
