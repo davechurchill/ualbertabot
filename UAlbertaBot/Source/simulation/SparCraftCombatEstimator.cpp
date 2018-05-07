@@ -59,7 +59,14 @@ void AKBot::SparCraftCombatEstimator::setCombatUnits(
 
 	for (UnitInfo & ui : enemyCombatUnits)
 	{
-		if (ui.type.isWorker() || ui.lastHealth == 0 || ui.type == BWAPI::UnitTypes::Unknown)
+		if (ui.lastHealth == 0 || ui.type == BWAPI::UnitTypes::Unknown)
+		{
+			continue;
+		}
+
+		// Workers posible should be taken into account.
+		auto includeWorkers = _microConfiguration.IncludeWorkers;
+		if (ui.type.isWorker() && !includeWorkers)
 		{
 			continue;
 		}
@@ -77,7 +84,10 @@ void AKBot::SparCraftCombatEstimator::setCombatUnits(
 				static_cast<SparCraft::HealthType>(0),
 				static_cast<SparCraft::TimeType>(currentFrame),
 				static_cast<SparCraft::TimeType>(currentFrame));
-
+			
+			// Add bonus which indicate that unit has additional range
+			// increase
+			// marine.setRangeBonus(32);
 			for (size_t i(0); i < 5; ++i)
 			{
 				s.addUnit(marine);
