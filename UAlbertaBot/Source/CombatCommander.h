@@ -1,5 +1,5 @@
 #pragma once
-
+#include <experimental/generator>
 #include "Common.h"
 #include "Squad.h"
 #include "SquadData.h"
@@ -23,7 +23,14 @@ class CombatCommander
 	shared_ptr<WorkerManager> _workerManager;
 	bool			_supportDropStrategy;
 	const BotMicroConfiguration& _microConfiguration;
+	int totalGroundUnitsNearBases;
+	int totalFlyingUnitsNearBases;
+	size_t totalGroundDefendersAdded;
+	size_t totalFlyingDefendersAdded;
+	size_t totalGroundDefendersNeeded;
+	size_t totalFlyingDefendersNeeded;
 
+	std::experimental::generator<const BaseLocation *> getBasesToProtect();
     void            updateScoutDefenseSquad(int currentFrame);
 	void            updateDefenseSquads(int currentFrame);
 	void            updateAttackSquads();
@@ -33,8 +40,7 @@ class CombatCommander
 	bool            isSquadUpdateFrame(int currentFrame) const;
 	int             getNumType(std::vector<BWAPI::Unit> & units, BWAPI::UnitType type);
 
-	BWAPI::Unit     findClosestDefender(const Squad & defenseSquad, BWAPI::Position pos, bool flyingDefender, int currentFrame);
-    BWAPI::Unit     findClosestWorkerToTarget(std::vector<BWAPI::Unit> & unitsToAssign, BWAPI::Unit target);
+	BWAPI::Unit     findClosestWorkerToTarget(std::vector<BWAPI::Unit> & unitsToAssign, BWAPI::Unit target);
 
 	BWAPI::Position getDefendLocation();
     BWAPI::Position getMainAttackLocation(BWAPI::Position squadPosition);
@@ -45,16 +51,10 @@ class CombatCommander
     void            emptySquad(Squad & squad, std::vector<BWAPI::Unit> & unitsToAssign);
     int             getNumGroundDefendersInSquad(Squad & squad);
     int             getNumAirDefendersInSquad(Squad & squad);
-
-    void            updateDefenseSquadUnits(
-		Squad & defenseSquad,
-		const size_t & flyingDefendersNeeded,
-		const size_t & groundDefendersNeeded,
-		int currentFrame);
     int             defendWithWorkers();
 
-    int             numZerglingsInOurBase();
-    bool            beingBuildingRushed();
+    int             numUnitsInOurBase(BWAPI::UnitType unitType, BWAPI::Position basePosition, int radius);
+    bool            beingBuildingRushed(BWAPI::Position basePosition);
 	bool findEnemyBaseLocation(BWAPI::Position& basePosition);
 	bool findEnemyBuilding(BWAPI::Position& buildingPosition);
 	// Find enemy unit which is closest to the given position.
@@ -80,5 +80,12 @@ public:
 	void setRushModeEnabled(bool value) { _squadData.setRushModeEnabled(value); }
 	void setRushUnitType(BWAPI::UnitType rushUnit) { _squadData.setRushUnitType(rushUnit); }
 	void setAllowedRushUnitLoses(int value) { _squadData.setAllowedRushUnitLoses(value); }
+
+	int getTotalGroundUnitsNearBases() const { return totalGroundUnitsNearBases; }
+	int getTotalFlyingUnitsNearBases() const { return totalFlyingUnitsNearBases; }
+	int getTotalGroundDefendersAdded() const { return totalGroundDefendersAdded; }
+	int getTotalFlyingDefendersAdded() const { return totalFlyingDefendersAdded; }
+	int getTotalGroundDefendersNeeded() const { return totalGroundDefendersNeeded; }
+	int getTotalFlyingDefendersNeeded() const { return totalFlyingDefendersNeeded; }
 };
 }

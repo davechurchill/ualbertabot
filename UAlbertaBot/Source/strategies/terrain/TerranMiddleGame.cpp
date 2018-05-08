@@ -12,6 +12,10 @@ AKBot::TerranMiddleGame::TerranMiddleGame(BWAPI::Player self)
 
 void AKBot::TerranMiddleGame::getBuildOrderGoal(MetaPairVector& goal, int currentFrame) const
 {
+	if (_self->supplyUsed(_self->getRace()) == 200) {
+		return;
+	}
+
 	int numMarines = GetAllUnitCount(_self, BWAPI::UnitTypes::Terran_Marine);
 	int numGoliath = GetAllUnitCount(_self, BWAPI::UnitTypes::Terran_Goliath);
 	int numTanks = GetAllUnitCount(_self, BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode);

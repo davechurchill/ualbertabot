@@ -10,6 +10,8 @@ list(APPEND AKBot_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/simulation/Sparcra
 list(APPEND AKBot_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/simulation/FAP.cpp")
 list(APPEND AKBot_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/simulation/FAPCombatEstimator.cpp")
 list(APPEND AKBot_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/basedetection/ClusterBaseDetector.cpp")
+list(APPEND AKBot_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/combat/BaseDefenceManager.cpp")
+list(APPEND AKBot_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/combat/BasesDefenceManager.cpp")
 file(GLOB_RECURSE AKBot_HEADERS "source/*.h")
 
 if (AKBOT_SSCAIT)	

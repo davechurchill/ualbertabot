@@ -26,6 +26,7 @@ class ScoutManager
 	shared_ptr<AKBot::OpponentView> _opponentView;
 	shared_ptr<MapTools> _mapTools;
 	bool			_scoutHarassEnemy;
+	int _currentFrame = 0;
 
 	bool            enemyWorkerInRadius();
     bool            immediateThreat();
@@ -57,5 +58,6 @@ public:
 	const BWAPI::Unit& getWorkerScount() const { return _workerScout; }
 	bool getScoutHarassEnemy() const { return _scoutHarassEnemy; }
 	void setScoutHarassEnemy(bool value) { _scoutHarassEnemy = value; }
+	bool verifyExplored(BWAPI::TilePosition tile);
 };
 }

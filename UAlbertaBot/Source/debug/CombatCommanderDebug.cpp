@@ -87,6 +87,10 @@ namespace AKBot
 
 	void CombatCommanderDebug::drawSquadData(AKBot::ScreenCanvas& canvas, const SquadData& squadData) const
 	{
+		canvas.drawTextScreen(250, 5,          "                      G F", _combatCommander->getTotalGroundUnitsNearBases(), _combatCommander->getTotalFlyingUnitsNearBases());
+		canvas.drawTextScreen(250, 5 + 12,     "Enemies near bases: %d %d", _combatCommander->getTotalGroundUnitsNearBases(), _combatCommander->getTotalFlyingUnitsNearBases());
+		canvas.drawTextScreen(250, 5 + 2 * 12, "Defenders needed  : %d %d", _combatCommander->getTotalGroundDefendersNeeded(), _combatCommander->getTotalFlyingDefendersNeeded());
+		canvas.drawTextScreen(250, 5 + 3 * 12, "Defenders added   : %d %d", _combatCommander->getTotalGroundDefendersAdded(), _combatCommander->getTotalFlyingDefendersAdded());
 		for (const auto & kv : squadData.getSquads())
 		{
 			auto& squad = kv.second;

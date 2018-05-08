@@ -171,40 +171,19 @@ const MetaPairVector StrategyManager::getProtossBuildOrderGoal(int currentFrame)
 	// the goal to return
 	MetaPairVector goal;
 	auto self = _opponentView->self();
-	int numNexusCompleted   = self->completedUnitCount(BWAPI::UnitTypes::Protoss_Nexus);
-	int numNexusAll         = UnitUtil::GetAllUnitCount(self, BWAPI::UnitTypes::Protoss_Nexus);
-
-    if (_strategyName == "Protoss_ZealotRush")
-    {
-		ZealotRush zealotRush(self);
-		zealotRush.getBuildOrderGoal(goal, currentFrame);
-    }
-    else if (_strategyName == "Protoss_DragoonRush")
-    {
-		DragoonRush dragoonRush(self);
-		dragoonRush.getBuildOrderGoal(goal, currentFrame);
-    }
-    else if (_strategyName == "Protoss_Drop")
-    {
-		ZealotDrop zealotDrop(self);
-		zealotDrop.getBuildOrderGoal(goal, currentFrame);
-    }
-    else if (_strategyName == "Protoss_DTRush")
-    {
-		DarkTemplarRush darkTemplarRush(self);
-		darkTemplarRush.getBuildOrderGoal(goal, currentFrame);
-    }
-	else if (_strategyName == "Protoss_MiddleGame")
+	auto strategy = getCurrentStrategy();
+	if (strategy)
 	{
-		ProtossMiddleGame protossMiddleGame(self);
-		protossMiddleGame.getBuildOrderGoal(goal, currentFrame);
+		strategy->getBuildOrderGoal(goal, currentFrame);
 	}
-    else
-    {
-        UAB_ASSERT_WARNING(false, "Unknown Protoss Strategy Name: %s", _strategyName.c_str());
-    }
+	else
+	{
+		_logger->log("Warning: No build order goal for Protoss Strategy: %s", _strategyName.c_str());
+	}
 
-    // if we have 3 nexus, make an observer
+	int numNexusCompleted = self->completedUnitCount(BWAPI::UnitTypes::Protoss_Nexus);
+	
+	// if we have 3 nexus, make an observer
     if (numNexusCompleted >= 3)
     {
         goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Observer, 1));
@@ -219,10 +198,21 @@ const MetaPairVector StrategyManager::getProtossBuildOrderGoal(int currentFrame)
     // if we want to expand, insert a nexus into the build order
 	if (shouldExpandNow(currentFrame))
 	{
+		int numNexusAll = UnitUtil::GetAllUnitCount(self, BWAPI::UnitTypes::Protoss_Nexus);
 		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Nexus, numNexusAll + 1));
 	}
 
 	return goal;
+}
+
+StrategyExecutor* StrategyManager::getCurrentStrategy() const
+{
+	auto strategy = _strategies.find(_strategyName);
+	if (strategy == _strategies.cend()) {
+		return nullptr;
+	}
+
+	return strategy->second.get();
 }
 
 const MetaPairVector StrategyManager::getTerranBuildOrderGoal(int currentFrame) const
@@ -231,42 +221,22 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal(int currentFrame) 
 	auto self = _opponentView->self();
 	std::vector<MetaPair> goal;
 
-    int numWorkers      = UnitUtil::GetAllUnitCount(self, BWAPI::UnitTypes::Terran_SCV);
-    int numCC           = UnitUtil::GetAllUnitCount(self, BWAPI::UnitTypes::Terran_Command_Center);
-
-    if (_strategyName == "Terran_MarineRush")
-    {
-		MarineRush marineRush(self);
-		marineRush.getBuildOrderGoal(goal, currentFrame);
-    }
-    else if (_strategyName == "Terran_4RaxMarines")
-    {
-		FourBarracksMarine fourBarracksMarine(self);
-		fourBarracksMarine.getBuildOrderGoal(goal, currentFrame);
-    }
-    else if (_strategyName == "Terran_VultureRush")
-    {
-		VultureRush vultureRush(self);
-		vultureRush.getBuildOrderGoal(goal, currentFrame);
-    }
-    else if (_strategyName == "Terran_TankPush")
-    {
-		TankPush tankPush(self);
-		tankPush.getBuildOrderGoal(goal, currentFrame);
-    }
-	else if (_strategyName == "Terran_MiddleGame")
+    auto strategy = getCurrentStrategy();
+	if (strategy)
 	{
-		TerranMiddleGame middleGame(self);
-		middleGame.getBuildOrderGoal(goal, currentFrame);
+		strategy->getBuildOrderGoal(goal, currentFrame);
 	}
-    else
-    {
-        _logger->log("Warning: No build order goal for Terran Strategy: %s", _strategyName.c_str());
-    }
+	else
+	{
+		_logger->log("Warning: No build order goal for Terran Strategy: %s", _strategyName.c_str());
+	}
 
-    if (shouldExpandNow(currentFrame))
+	if (shouldExpandNow(currentFrame))
     {
-        goal.push_back(MetaPair(BWAPI::UnitTypes::Terran_Command_Center, numCC + 1));
+		int numWorkers = UnitUtil::GetAllUnitCount(self, BWAPI::UnitTypes::Terran_SCV);
+		int numCC = UnitUtil::GetAllUnitCount(self, BWAPI::UnitTypes::Terran_Command_Center);
+
+		goal.push_back(MetaPair(BWAPI::UnitTypes::Terran_Command_Center, numCC + 1));
         goal.push_back(MetaPair(BWAPI::UnitTypes::Terran_SCV, numWorkers + 10));
     }
 
@@ -284,45 +254,10 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal(int currentFrame) co
 	auto self = _opponentView->self();
 	std::vector<MetaPair> goal;
 	
-    int numWorkers      = UnitUtil::GetAllUnitCount(self, BWAPI::UnitTypes::Zerg_Drone);
-    int numCC           = UnitUtil::GetAllUnitCount(self, BWAPI::UnitTypes::Zerg_Hatchery)
-                        + UnitUtil::GetAllUnitCount(self, BWAPI::UnitTypes::Zerg_Lair)
-                        + UnitUtil::GetAllUnitCount(self, BWAPI::UnitTypes::Zerg_Hive);
-	int numMutas        = UnitUtil::GetAllUnitCount(self, BWAPI::UnitTypes::Zerg_Mutalisk);
-    int numDrones       = UnitUtil::GetAllUnitCount(self, BWAPI::UnitTypes::Zerg_Drone);
-    int zerglings       = UnitUtil::GetAllUnitCount(self, BWAPI::UnitTypes::Zerg_Zergling);
-	int numHydras       = UnitUtil::GetAllUnitCount(self, BWAPI::UnitTypes::Zerg_Hydralisk);
-    int numScourge      = UnitUtil::GetAllUnitCount(self, BWAPI::UnitTypes::Zerg_Scourge);
-    int numGuardians    = UnitUtil::GetAllUnitCount(self, BWAPI::UnitTypes::Zerg_Guardian);
-
-	int mutasWanted = numMutas + 6;
-	int hydrasWanted = numHydras + 6;
-
-    if ((_strategyName == "Zerg_ZerglingRush")
-		|| (_strategyName == "Zerg_ZergelingRush"))
-    {
-		ZergelingRush zergelingRush(self);
-		zergelingRush.getBuildOrderGoal(goal, currentFrame);
-    }
-    else if (_strategyName == "Zerg_2HatchHydra")
-    {
-		TwoHatchHydralisk twoHatchHydralisk(self);
-		twoHatchHydralisk.getBuildOrderGoal(goal, currentFrame);
-    }
-    else if (_strategyName == "Zerg_3HatchMuta")
-    {
-		ThreeHatchMutalisk threeHatchMutalisk(self);
-		threeHatchMutalisk.getBuildOrderGoal(goal, currentFrame);
-    }
-    else if (_strategyName == "Zerg_3HatchScourge")
-    {
-		ThreeHatchScourge threeHatchScourge(self);
-		threeHatchScourge.getBuildOrderGoal(goal, currentFrame);
-    }
-	else if (_strategyName == "Zerg_MiddleGame")
+    auto strategy = getCurrentStrategy();
+	if (strategy)
 	{
-		ZergMiddleGame middleGame(self);
-		middleGame.getBuildOrderGoal(goal, currentFrame);
+		strategy->getBuildOrderGoal(goal, currentFrame);
 	}
 	else
 	{
@@ -331,7 +266,12 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal(int currentFrame) co
 
     if (shouldExpandNow(currentFrame))
     {
-        goal.push_back(MetaPair(BWAPI::UnitTypes::Zerg_Hatchery, numCC + 1));
+		int numWorkers = UnitUtil::GetAllUnitCount(self, BWAPI::UnitTypes::Zerg_Drone);
+		int numCC = UnitUtil::GetAllUnitCount(self, BWAPI::UnitTypes::Zerg_Hatchery)
+			+ UnitUtil::GetAllUnitCount(self, BWAPI::UnitTypes::Zerg_Lair)
+			+ UnitUtil::GetAllUnitCount(self, BWAPI::UnitTypes::Zerg_Hive);
+
+		goal.push_back(MetaPair(BWAPI::UnitTypes::Zerg_Hatchery, numCC + 1));
         goal.push_back(MetaPair(BWAPI::UnitTypes::Zerg_Drone, numWorkers + 10));
     }
 

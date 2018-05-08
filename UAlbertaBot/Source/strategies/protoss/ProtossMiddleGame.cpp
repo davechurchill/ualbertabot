@@ -12,6 +12,10 @@ AKBot::ProtossMiddleGame::ProtossMiddleGame(BWAPI::Player self)
 
 void AKBot::ProtossMiddleGame::getBuildOrderGoal(MetaPairVector& goal, int currentFrame) const
 {
+	if (_self->supplyUsed(_self->getRace()) == 200) {
+		return;
+	}
+
 	int numZealots = GetAllUnitCount(_self, BWAPI::UnitTypes::Protoss_Zealot);
 	int numDragoons = GetAllUnitCount(_self, BWAPI::UnitTypes::Protoss_Dragoon);
 
