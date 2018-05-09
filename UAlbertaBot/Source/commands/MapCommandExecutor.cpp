@@ -17,9 +17,9 @@ void AKBot::MapCommandExecutor::onCommand(const std::string & command)
 	if (command == "dump map") {
 		ofstream map_buildable("buildable.txt");
 		map_buildable << _map.getWidth() << " " << _map.getHeight() << endl;
-		for (auto y = 0; y < _map.getHeight(); y++)
+		for (auto y = 0u; y < _map.getHeight(); y++)
 		{
-			for (auto x = 0; x < _map.getWidth(); x++)
+			for (auto x = 0u; x < _map.getWidth(); x++)
 			{
 				auto buildable = _map.isBuildableTile(BWAPI::TilePosition(x, y));
 				if (x != 0)

@@ -738,10 +738,10 @@ const FrameCountType GameState::whenMineralsReady(const ActionType & action) con
     ResourceCountType difference            = action.mineralPrice() - _minerals;
 
     // loop through each action in progress, adding the minerals we would gather from each interval
-    for (size_t i(0); i<_units.getNumActionsInProgress(); ++i)
+    for (UnitCountType i(0); i<_units.getNumActionsInProgress(); ++i)
     {
         // the vector is sorted in descending order
-        size_t progressIndex = _units.getNumActionsInProgress() - i - 1;
+		UnitCountType progressIndex = _units.getNumActionsInProgress() - i - 1;
 
         // the time elapsed and the current minerals per frame
         FrameCountType elapsed = _units.getFinishTimeByIndex(progressIndex) - lastActionFinishFrame;
@@ -833,10 +833,10 @@ const FrameCountType GameState::whenGasReady(const ActionType & action) const
     ResourceCountType difference            = action.gasPrice() - _gas;
 
     // loop through each action in progress, adding the minerals we would gather from each interval
-    for (size_t i(0); i<_units.getNumActionsInProgress(); ++i)
+    for (UnitCountType i(0); i<_units.getNumActionsInProgress(); ++i)
     {
         // the vector is sorted in descending order
-        size_t progressIndex = _units.getNumActionsInProgress() - i - 1;
+		UnitCountType progressIndex = _units.getNumActionsInProgress() - i - 1;
 
         // the time elapsed and the current minerals per frame
         FrameCountType elapsed = _units.getFinishTimeByIndex(progressIndex) - lastActionFinishFrame;

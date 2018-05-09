@@ -2,7 +2,7 @@
 
 using namespace BOSS;
 
-DFBB_BuildOrderSearchResults::DFBB_BuildOrderSearchResults()
+DFBB_BuildOrderSearchResults::DFBB_BuildOrderSearchResults() noexcept
     : solved(false)
     , timedOut(false)
     , solutionFound(false)

@@ -2,7 +2,7 @@
 
 using namespace BOSS;
 
-ActionsInProgress::ActionsInProgress() 
+ActionsInProgress::ActionsInProgress() noexcept
     : _numProgress(Constants::MAX_ACTIONS, 0)
 {
 	
@@ -68,7 +68,7 @@ FrameCountType ActionsInProgress::nextActionFinishTime(const ActionType & a) con
 {
 	BOSS_ASSERT(numInProgress(a) > 0, "Tried to get next finish time from empty set");
 		
-	for (size_t i=_inProgress.size()-1; i >=0; --i)
+	for (int i = _inProgress.size() - 1; i >= 0; --i)
 	{
 		if (_inProgress[i]._action == a)
 		{

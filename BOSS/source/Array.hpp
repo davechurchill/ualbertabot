@@ -14,7 +14,7 @@ class Vec
 
 public:
 
-    Vec<T,max_capacity>()
+    Vec<T,max_capacity>() noexcept
         : _size(0)
         ,_capacity(max_capacity)
     {

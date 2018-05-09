@@ -62,7 +62,7 @@ BuildOrder Tools::GetNaiveBuildOrderAddWorkersOld(const GameState & state, const
     std::vector<size_t> buildOrderActionTypeCount(ActionTypes::GetAllActionTypes(state.getRace()).size(), 0);
 
     // add everything from the goal to the needed set
-    for (size_t a(0); a < ActionTypes::GetAllActionTypes(state.getRace()).size(); ++a)
+    for (ActionID a(0); a < ActionTypes::GetAllActionTypes(state.getRace()).size(); ++a)
     {
         const ActionType & actionType = ActionTypes::GetActionType(state.getRace(), a);
         UnitCountType numCompleted = state.getUnitData().getNumTotal(actionType);
@@ -84,7 +84,7 @@ BuildOrder Tools::GetNaiveBuildOrderAddWorkersOld(const GameState & state, const
 
     // Add the required units to a preliminary build order
     BuildOrder buildOrder;
-    for (size_t a(0); a < requiredToBuild.size(); ++a)
+    for (UnitCountType a(0); a < requiredToBuild.size(); ++a)
     {
         const ActionType & type = requiredToBuild.getActionType(a);
         buildOrder.add(type);
@@ -100,7 +100,7 @@ BuildOrder Tools::GetNaiveBuildOrderAddWorkersOld(const GameState & state, const
     }
 
     // Add the goal units to the end of the build order 
-    for (size_t a(0); a < ActionTypes::GetAllActionTypes(state.getRace()).size(); ++a)
+    for (UnitCountType a(0); a < ActionTypes::GetAllActionTypes(state.getRace()).size(); ++a)
     {
         const ActionType & actionType = ActionTypes::GetActionType(state.getRace(), a);
         int need = (int)goal.getGoal(actionType);
@@ -346,7 +346,7 @@ FrameCountType Tools::GetLowerBound(const GameState & state, const BuildOrderSea
     PrerequisiteSet wanted;
 
     // add everything from the goal to the needed set
-    for (size_t a(0); a < ActionTypes::GetAllActionTypes(state.getRace()).size(); ++a)
+    for (UnitCountType a(0); a < ActionTypes::GetAllActionTypes(state.getRace()).size(); ++a)
     {
         const ActionType & actionType = ActionTypes::GetActionType(state.getRace(), a);
         UnitCountType numCompleted = state.getUnitData().getNumTotal(actionType);
@@ -369,7 +369,7 @@ void Tools::CalculatePrerequisitesRequiredToBuild(const GameState & state, const
     const ActionType & refinery = ActionTypes::GetRefinery(state.getRace());
     if (!needed.contains(refinery) && (state.getUnitData().getNumCompleted(refinery) == 0) && !added.contains(refinery))
     {
-        for (size_t n(0); n<needed.size(); ++n)
+        for (UnitCountType n(0); n<needed.size(); ++n)
         {
             if (needed.getActionType(n).gasPrice() > 0)
             {
@@ -379,7 +379,7 @@ void Tools::CalculatePrerequisitesRequiredToBuild(const GameState & state, const
         }
     }
 
-    for (size_t n(0); n<allNeeded.size(); ++n)
+    for (UnitCountType n(0); n<allNeeded.size(); ++n)
     {
         const ActionType & neededType = allNeeded.getActionType(n);
 
@@ -406,7 +406,7 @@ void Tools::CalculatePrerequisitesRequiredToBuild(const GameState & state, const
 FrameCountType Tools::CalculatePrerequisitesLowerBound(const GameState & state, const PrerequisiteSet & needed, FrameCountType timeSoFar, int depth)
 {
     FrameCountType max = 0;
-    for (size_t n(0); n<needed.size(); ++n)
+    for (UnitCountType n(0); n<needed.size(); ++n)
     {
         const ActionType & neededType = needed.getActionType(n);
         FrameCountType thisActionTime = 0;

@@ -404,8 +404,6 @@ void UAlbertaBot::StrategyManager::registerStrategy(std::string strategyName, st
 void StrategyManager::setLearnedStrategy()
 {
     // we are currently not using this functionality for the competition so turn it off 
-    return;
-
     if (!_strategyConfiguration.UsingStrategyIO)
     {
         return;

@@ -22,7 +22,7 @@ public:
 	ActionType 		_action;
 	FrameCountType 	_time;
 	
-	ActionInProgress() 
+	ActionInProgress() noexcept
         : _time(0) 
     {  
     }

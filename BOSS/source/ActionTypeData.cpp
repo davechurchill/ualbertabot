@@ -4,7 +4,7 @@
 using namespace BOSS;
 
 // default constructor, should never be called
-ActionTypeData::ActionTypeData() 
+ActionTypeData::ActionTypeData() noexcept
     : type(Error) 
 { 
    

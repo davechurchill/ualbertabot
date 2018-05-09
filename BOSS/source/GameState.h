@@ -25,7 +25,7 @@ public:
     ResourceCountType   mineralsWhenQueued;
     ResourceCountType   gasWhenQueued;
 
-    ActionPerformed()
+    ActionPerformed() noexcept
         : actionQueuedFrame(0)
         , mineralsWhenQueued(0)
         , gasWhenQueued(0)

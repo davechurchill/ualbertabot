@@ -101,7 +101,7 @@ UnitCountType DFBB_BuildOrderSmartSearch::calculateRefineriesRequired()
 
     // loop to check if we need gas
     bool gasRequired = false;
-    for (size_t a(0); a < ActionTypes::GetAllActionTypes(getRace()).size(); ++a)
+    for (ActionID a(0); a < ActionTypes::GetAllActionTypes(getRace()).size(); ++a)
     {
         const ActionType & actionType = ActionTypes::GetActionType(getRace(), a);
 
@@ -134,7 +134,7 @@ void DFBB_BuildOrderSmartSearch::setPrerequisiteGoalMax()
         // vector which stores the number of goal units which are built by [index]
         std::vector<UnitCountType> numGoalUnitsBuiltBy(ActionTypes::GetAllActionTypes(getRace()).size(), 0);
 
-        for (size_t a(0); a < numGoalUnitsBuiltBy.size(); ++a)
+        for (ActionID a(0); a < numGoalUnitsBuiltBy.size(); ++a)
         {
             const ActionType & actionType = ActionTypes::GetActionType(getRace(), a);
 
@@ -150,7 +150,7 @@ void DFBB_BuildOrderSmartSearch::setPrerequisiteGoalMax()
 
         UnitCountType additionalProductionBuildingLimit = 2;
 
-        for (size_t a(0); a < numGoalUnitsBuiltBy.size(); ++a)
+        for (ActionID a(0); a < numGoalUnitsBuiltBy.size(); ++a)
         {
             const ActionType & actionType = ActionTypes::GetActionType(getRace(), a);
 
@@ -200,7 +200,7 @@ void DFBB_BuildOrderSmartSearch::recurseOverStrictDependencies(const ActionType 
 
     PrerequisiteSet recursivePrerequisites = actionType.getRecursivePrerequisites();
 
-    for (size_t a(0); a < recursivePrerequisites.size(); ++a)
+    for (ActionID a(0); a < recursivePrerequisites.size(); ++a)
     {
         const ActionType & actionType = recursivePrerequisites.getActionType(a);
 
@@ -216,7 +216,7 @@ void DFBB_BuildOrderSmartSearch::recurseOverStrictDependencies(const ActionType 
 void DFBB_BuildOrderSmartSearch::setRelevantActions()
 {
     _relevantActions.clear();
-    for (size_t a(0); a < ActionTypes::GetAllActionTypes(getRace()).size(); ++a)
+    for (ActionID a(0); a < ActionTypes::GetAllActionTypes(getRace()).size(); ++a)
     {
         const ActionType & actionType = ActionTypes::GetActionType(getRace(), a);
 
@@ -237,7 +237,7 @@ UnitCountType DFBB_BuildOrderSmartSearch::calculateSupplyProvidersRequired()
     int supplyNeeded = _goal.getGoalMax(worker) * worker.supplyRequired();
 
     // for each prerequisite of things in the goal which aren't production facilities set one of
-    for (size_t a(0); a < ActionTypes::GetAllActionTypes(getRace()).size(); ++a)
+    for (ActionID a(0); a < ActionTypes::GetAllActionTypes(getRace()).size(); ++a)
     {
         const ActionType & actionType = ActionTypes::GetActionType(getRace(), a);
 
@@ -266,7 +266,7 @@ void DFBB_BuildOrderSmartSearch::setRepetitions()
     //_params.setRepetitionThreshold(supplyProvider, 3);
 
     // for each action
-    for (size_t a(0); a < ActionTypes::GetAllActionTypes(getRace()).size(); ++a)
+    for (ActionID a(0); a < ActionTypes::GetAllActionTypes(getRace()).size(); ++a)
     {
         const ActionType & actionType = ActionTypes::GetActionType(getRace(), a);
 

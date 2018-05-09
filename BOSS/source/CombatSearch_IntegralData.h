@@ -23,7 +23,7 @@ public:
     
     }
     
-    IntegralData()
+    IntegralData() noexcept
         : eval(0)
         , integral(0)
         , timeAdded(0)

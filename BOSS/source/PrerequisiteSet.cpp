@@ -41,7 +41,7 @@ const bool PrerequisiteSet::isEmpty() const
 
 const bool PrerequisiteSet::contains(const ActionType & action) const
 {
-    for (size_t i(0); i<_actionCounts.size(); ++i)
+    for (UnitCountType i(0); i<_actionCounts.size(); ++i)
     {
         if (getActionType(i) == action)
         {
@@ -77,7 +77,7 @@ void PrerequisiteSet::addUnique(const ActionType & action, const UnitCountType c
 
 void PrerequisiteSet::addUnique(const PrerequisiteSet & set)
 {
-    for (size_t i(0); i<set.size(); ++i)
+    for (UnitCountType i(0); i<set.size(); ++i)
     {
         addUnique(set.getActionType(i), set.getActionTypeCount(i));
     }
@@ -85,7 +85,7 @@ void PrerequisiteSet::addUnique(const PrerequisiteSet & set)
 
 void PrerequisiteSet::remove(const ActionType & action)
 {
-    for (size_t i(0); i<_actionCounts.size(); ++i)
+    for (UnitCountType i(0); i<_actionCounts.size(); ++i)
     {
         if (_actionCounts[i].getAction() == action)
         {
@@ -102,7 +102,7 @@ void PrerequisiteSet::remove(const PrerequisiteSet & set)
         return;
     }
 
-    for (size_t i(0); i < set.size(); ++i)
+    for (UnitCountType i(0); i < set.size(); ++i)
     {
         remove(set.getActionType(i));
     }
@@ -112,7 +112,7 @@ const std::string PrerequisiteSet::toString() const
 {
     std::stringstream ss;
     
-    for (size_t i(0); i<size(); ++i)
+    for (UnitCountType i(0); i<size(); ++i)
     {
         ss << "    Prereq:   " << (int)getActionTypeCount(i) << " " << getActionType(i).getName() << "\n";
     }
