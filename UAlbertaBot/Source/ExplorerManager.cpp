@@ -28,6 +28,13 @@ void AKBot::ExplorerManager::addLocation(const BWAPI::TilePosition & position)
 		return;
 	}
 
+	auto index = std::find(_locations.cbegin(), _locations.cend(), position);
+	if (index != _locations.cend())
+	{
+		// Skip already added location.
+		return;
+	}
+
 	// Add location to the list of items to explore if location still unexplored.
 	_locations.push_back(position);
 }

@@ -20,7 +20,7 @@ MapTools::MapTools(shared_ptr<AKBot::MapInformation> mapInformation, std::shared
     , _walkable         (4 * mapInformation->getWidth(), std::vector<bool>(4 * mapInformation->getHeight(), false))
     , _buildable        (mapInformation->getWidth(), std::vector<bool>(mapInformation->getHeight(), true))
     , _depotBuildable   (mapInformation->getWidth(), std::vector<bool>(mapInformation->getHeight(), true))
-    , _lastSeen         (mapInformation->getWidth(), std::vector<int> (mapInformation->getHeight(), 0))
+    , _lastSeen         (mapInformation->getWidth(), std::vector<int> (mapInformation->getHeight(), std::numeric_limits<int>::min()))
     , _sectorNumber     (mapInformation->getWidth(), std::vector<int> (mapInformation->getHeight(), 0))
 	, _logger(logger)
 {

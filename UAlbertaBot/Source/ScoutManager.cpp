@@ -35,7 +35,7 @@ void ScoutManager::update(int currentFrame)
     {
         calculateEnemyRegionVertices();
     }*/
-
+	_currentFrame = currentFrame;
 	moveScouts(currentFrame);
 }
 
