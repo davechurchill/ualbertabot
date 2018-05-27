@@ -34,6 +34,7 @@ class StrategyManager
     const MetaPairVector getTerranBuildOrderGoal(int currentFrame) const;
     const MetaPairVector getZergBuildOrderGoal(int currentFrame) const;
 
+	StrategyExecutor* getCurrentStrategy() const;
 public:
 
     StrategyManager(

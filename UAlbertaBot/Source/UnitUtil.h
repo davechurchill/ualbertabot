@@ -1,16 +1,19 @@
 #pragma once
 
 #include <BWAPI/Unit.h>
-#if _MSC_VER >= 1900
-#include <experimental/generator>
-typedef std::experimental::generator<BWAPI::Unit> UnitCollection;
-#else
 #include <vector>
 typedef std::vector<BWAPI::Unit> UnitCollection;
+#if _MSC_VER >= 1900
+#include <experimental/generator>
+typedef std::experimental::generator<BWAPI::Unit> UnitGenerator;
+#else
+typedef std::vector<BWAPI::Unit> UnitGenerator;
 #endif
 #include <numeric>
 #include <memory>
 #include "OpponentView.h"
+
+typedef std::function<bool(const BWAPI::Unit&)> UnitFilter;
 
 using std::shared_ptr;
 
@@ -31,7 +34,9 @@ namespace UnitUtil
     bool CanAttackAir(BWAPI::Unit unit);
     bool CanAttackGround(BWAPI::Unit unit);
     bool CanAttack(BWAPI::Unit attacker, BWAPI::Unit target);
-    bool IsMorphedBuildingType(BWAPI::UnitType type);
+	bool IsGroundUnit(BWAPI::Unit unit);
+	bool IsFlyingUnit(BWAPI::Unit unit);
+	bool IsMorphedBuildingType(BWAPI::UnitType type);
     double CalculateLTD(BWAPI::Unit attacker, BWAPI::Unit target);
     int GetAttackRange(
 		BWAPI::Player self,
@@ -48,7 +53,7 @@ namespace UnitUtil
 	template<typename TUnitCollection>
 	BWAPI::Unit GetClosestsUnit(
 		const TUnitCollection& units,
-		std::function<bool(const BWAPI::Unit&)> distance)
+		UnitFilter distance)
 	{
 		double closestDist = std::numeric_limits<double>::infinity();
 		BWAPI::Unit closestUnit = nullptr;
@@ -82,7 +87,7 @@ namespace UnitUtil
     double GetDistanceBetweenTwoRectangles(Rect & rect1, Rect & rect2);
     Rect GetRect(BWAPI::Unit unit);
 
-	UnitCollection getEnemyUnits(shared_ptr<AKBot::OpponentView> opponentView);
+	UnitGenerator getEnemyUnits(shared_ptr<AKBot::OpponentView> opponentView);
 	const BWAPI::UnitType getResourceDepot(const BWAPI::Race& race);
 
 	// get units within radius of center and add to units

@@ -321,7 +321,7 @@ const bool UnitData::hasPrerequisites(const PrerequisiteSet & required) const
     static const ActionType & Spire         = ActionTypes::GetActionType("Zerg_Spire");
     static const ActionType & GreaterSpire  = ActionTypes::GetActionType("Zerg_Greater_Spire");
 
-    for (size_t a(0); a<required.size(); ++a)
+    for (UnitCountType a(0); a<required.size(); ++a)
     {
         const ActionType & type = required.getActionType(a);
         const size_t & req = required.getActionTypeCount(a);
@@ -411,7 +411,7 @@ const PrerequisiteSet UnitData::getPrerequistesInProgress(const ActionType & act
 {
     PrerequisiteSet inProgress;
 
-    for (size_t a(0); a<action.getPrerequisites().size(); ++a)
+    for (UnitCountType a(0); a<action.getPrerequisites().size(); ++a)
     {
         const ActionType & actionType = action.getPrerequisites().getActionType(a);
         if (getNumInProgress(actionType) > 0 && getNumCompleted(actionType) == 0)

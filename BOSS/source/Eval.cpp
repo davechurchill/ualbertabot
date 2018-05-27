@@ -86,7 +86,7 @@ namespace Eval
         }
 
         // if we have less of any unit than the other state we are not dominating it
-        for (size_t a(0); a < ActionTypes::GetAllActionTypes(state.getRace()).size(); ++a)
+        for (ActionID a(0); a < ActionTypes::GetAllActionTypes(state.getRace()).size(); ++a)
         {
             const ActionType & action = ActionTypes::GetActionType(state.getRace(), a);
 

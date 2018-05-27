@@ -63,7 +63,7 @@ private:
     ActionID            whatBuildsActionID;	// the action that builds this 
 
     // Private Constructors
-    ActionTypeData();
+    ActionTypeData() noexcept;
     ActionTypeData(BWAPI::UnitType t, const ActionID id);
     ActionTypeData(BWAPI::UpgradeType t, const ActionID id);
     ActionTypeData(BWAPI::TechType t, const ActionID id);

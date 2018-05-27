@@ -24,7 +24,7 @@ public:
     UnitCountType       repetitionValue;
     UnitCountType       completedRepetitions;
     
-    StackData()
+    StackData() noexcept
         : currentChildIndex(0)
         , repetitionValue(1)
         , completedRepetitions(0)

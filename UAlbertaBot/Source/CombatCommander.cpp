@@ -3,18 +3,13 @@
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm.hpp>
 #include <boost/generator_iterator.hpp>
+#include "combat/BasesDefenceManager.h"
+#include "combat/CombatPriorities.h"
 
 using namespace UAlbertaBot;
 using namespace AKBot;
 
 using boost::adaptors::filtered;
-
-const size_t IdlePriority = 0;
-const size_t AttackPriority = 1;
-const size_t BaseDefensePriority = 2;
-const size_t ScoutDefensePriority = 3;
-const size_t DropPriority = 4;
-const size_t SecondaryAttackPriority = 1;
 
 CombatCommander::CombatCommander(
 	shared_ptr<BaseLocationManager> baseLocationManager,
@@ -67,6 +62,10 @@ void CombatCommander::initializeSquads()
 	_squadData.addSquad("SecondaryAttack", secondaryAttackOrder, SecondaryAttackPriority);
 
     BWAPI::Position ourBasePosition = BWAPI::Position(_opponentView->self()->getStartLocation());
+	auto initialBaseDefenceSquadName = BasesDefenceManager::getBaseDefenceSquadName(ourBasePosition);
+	
+	SquadOrder baseDefense(SquadOrderTypes::Defend, ourBasePosition, 900, "Defend the base");
+	_squadData.addSquad(initialBaseDefenceSquadName, baseDefense, ScoutDefensePriority);
 
     // the scout defense squad will handle chasing the enemy worker scout
     SquadOrder enemyScoutDefense(SquadOrderTypes::Defend, ourBasePosition, 900, "Get the scout");
@@ -283,10 +282,10 @@ void CombatCommander::updateScoutDefenseSquad(int currentFrame)
 
 void CombatCommander::updateDefenseSquads(int currentFrame)
 {
-	if (_combatUnits.empty()) 
-    { 
-        return; 
-    }
+	if (_combatUnits.empty())
+	{
+		return;
+	}
 
 	auto enemy = _opponentView->defaultEnemy();
 	if (enemy == nullptr)
@@ -294,213 +293,39 @@ void CombatCommander::updateDefenseSquads(int currentFrame)
 		return;
 	}
 
-    const BaseLocation * enemyBaseLocation = _baseLocationManager->getPlayerStartingBaseLocation(enemy);
+	UnitCollection enemyUnits;
+	auto enemyUnitsGenerator = UnitUtil::getEnemyUnits(_opponentView);
+	std::copy(enemyUnitsGenerator.begin(), enemyUnitsGenerator.end(), std::back_inserter(enemyUnits));
+	std::vector<const BaseLocation *> basesToProtect;
+	auto basesGenerator = getBasesToProtect();
+	std::copy(basesGenerator.begin(), basesGenerator.end(), std::back_inserter(basesToProtect));
+	BasesDefenceManager baseDefence(_squadData, basesToProtect, _combatUnits, enemyUnits, _microConfiguration);
+	baseDefence.update(currentFrame);
+
+	totalGroundUnitsNearBases = baseDefence.getTotalGroundUnitsNearBases();
+	totalFlyingUnitsNearBases = baseDefence.getTotalFlyingUnitsNearBases();
+	totalGroundDefendersAdded = baseDefence.getTotalGroundDefendersAdded();
+	totalFlyingDefendersAdded = baseDefence.getTotalFlyingDefendersAdded();
+	totalGroundDefendersNeeded = baseDefence.getTotalGroundDefendersNeeded();
+	totalFlyingDefendersNeeded = baseDefence.getTotalFlyingDefendersNeeded();
+}
+
+std::experimental::generator<const BaseLocation *> CombatCommander::getBasesToProtect()
+{
+	auto enemy = _opponentView->defaultEnemy();
+	const BaseLocation * enemyBaseLocation = _baseLocationManager->getPlayerStartingBaseLocation(enemy);
 
 	// for each of our occupied regions
 	for (const BaseLocation * myBaseLocation : _baseLocationManager->getOccupiedBaseLocations(_opponentView->self()))
 	{
-        // don't defend inside the enemy region, this will end badly when we are stealing gas
-        if (myBaseLocation == enemyBaseLocation)
-        {
-            continue;
-        }
+		// don't defend inside the enemy region, this will end badly when we are stealing gas
+		if (myBaseLocation == enemyBaseLocation)
+		{
+			continue;
+		}
 
-		BWAPI::Position basePosition = myBaseLocation->getPosition();
-
-		// start off assuming all enemy units in region are just workers
-		int numDefendersPerEnemyUnit = 2;
-
-		// all of the enemy units in this region
-		std::vector<BWAPI::Unit> enemyUnitsInRegion;
-        for (auto & unit : UnitUtil::getEnemyUnits(_opponentView))
-        {
-            // if it's an overlord, don't worry about it for defense, we don't care what they see
-            if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord)
-            {
-                continue;
-            }
-
-            if (myBaseLocation->containsPosition(unit->getPosition()))
-            {
-                enemyUnitsInRegion.push_back(unit);
-            }
-        }
-
-        // we can ignore the first enemy worker in our region since we assume it is a scout
-        for (auto & unit : enemyUnitsInRegion)
-        {
-            if (unit->getType().isWorker())
-            {
-                enemyUnitsInRegion.erase(std::remove(enemyUnitsInRegion.begin(), enemyUnitsInRegion.end(), unit), enemyUnitsInRegion.end());
-                break;
-            }
-        }
-
-        int numEnemyFlyingInRegion = std::count_if(enemyUnitsInRegion.begin(), enemyUnitsInRegion.end(), [](BWAPI::Unit u) { return u->isFlying(); });
-        int numEnemyGroundInRegion = std::count_if(enemyUnitsInRegion.begin(), enemyUnitsInRegion.end(), [](BWAPI::Unit u) { return !u->isFlying(); });
-
-        std::stringstream squadName;
-        squadName << "Base Defense " << basePosition.x << " " << basePosition.y; 
-        
-        // if there's nothing in this region to worry about
-        if (enemyUnitsInRegion.empty())
-        {
-            // if a defense squad for this region exists, remove it
-            if (_squadData.squadExists(squadName.str()))
-            {
-                _squadData.getSquad(squadName.str()).clear(currentFrame);
-            }
-            
-            // and return, nothing to defend here
-            continue;
-        }
-        else 
-        {
-            // if we don't have a squad assigned to this region already, create one
-            if (!_squadData.squadExists(squadName.str()))
-            {
-                SquadOrder defendRegion(SquadOrderTypes::Defend, basePosition, 32 * 25, "Defend Region!");
-                _squadData.addSquad(squadName.str(), defendRegion, BaseDefensePriority);
-            }
-        }
-
-        // assign units to the squad
-        if (_squadData.squadExists(squadName.str()))
-        {
-            Squad & defenseSquad = _squadData.getSquad(squadName.str());
-
-            // figure out how many units we need on defense
-	        int flyingDefendersNeeded = numDefendersPerEnemyUnit * numEnemyFlyingInRegion;
-	        int groundDefensersNeeded = numDefendersPerEnemyUnit * numEnemyGroundInRegion;
-
-            updateDefenseSquadUnits(defenseSquad, flyingDefendersNeeded, groundDefensersNeeded, currentFrame);
-        }
-        else
-        {
-            UAB_ASSERT_WARNING(false, "Squad should have existed: %s", squadName.str().c_str());
-        }
+		co_yield myBaseLocation;
 	}
-
-    // for each of our defense squads, if there aren't any enemy units near the position, remove the squad
-    std::set<std::string> uselessDefenseSquads;
-    for (const auto & kv : _squadData.getSquads())
-    {
-        const Squad & squad = kv.second;
-        const SquadOrder & order = squad.getSquadOrder();
-
-        if (order.getType() != SquadOrderTypes::Defend)
-        {
-            continue;
-        }
-
-        bool enemyUnitInRange = false;
-        for (auto & unit : UnitUtil::getEnemyUnits(_opponentView))
-        {
-            if (unit->getPosition().getDistance(order.getPosition()) < order.getRadius())
-            {
-                enemyUnitInRange = true;
-                break;
-            }
-        }
-
-        if (!enemyUnitInRange)
-        {
-            _squadData.getSquad(squad.getName()).clear(currentFrame);
-        }
-    }
-}
-
-void CombatCommander::updateDefenseSquadUnits(
-	Squad & defenseSquad,
-	const size_t & flyingDefendersNeeded,
-	const size_t & groundDefendersNeeded,
-	int currentFrame)
-{
-    auto & squadUnits = defenseSquad.getUnits();
-    size_t flyingDefendersInSquad = std::count_if(squadUnits.begin(), squadUnits.end(), UnitUtil::CanAttackAir);
-    size_t groundDefendersInSquad = std::count_if(squadUnits.begin(), squadUnits.end(), UnitUtil::CanAttackGround);
-
-    // if there's nothing left to defend, clear the squad
-    if (flyingDefendersNeeded == 0 && groundDefendersNeeded == 0)
-    {
-        defenseSquad.clear(currentFrame);
-        return;
-    }
-
-    // add flying defenders if we still need them
-    size_t flyingDefendersAdded = 0;
-    while (flyingDefendersNeeded > flyingDefendersInSquad + flyingDefendersAdded)
-    {
-        BWAPI::Unit defenderToAdd = findClosestDefender(defenseSquad, defenseSquad.getSquadOrder().getPosition(), true, currentFrame);
-
-        // if we find a valid flying defender, add it to the squad
-        if (defenderToAdd)
-        {
-            _squadData.assignUnitToSquad(defenderToAdd, defenseSquad);
-            ++flyingDefendersAdded;
-        }
-        // otherwise we'll never find another one so break out of this loop
-        else
-        {
-            break;
-        }
-    }
-
-    // add ground defenders if we still need them
-    size_t groundDefendersAdded = 0;
-    while (groundDefendersNeeded > groundDefendersInSquad + groundDefendersAdded)
-    {
-        BWAPI::Unit defenderToAdd = findClosestDefender(defenseSquad, defenseSquad.getSquadOrder().getPosition(), false, currentFrame);
-
-        // if we find a valid ground defender add it
-        if (defenderToAdd)
-        {
-            _squadData.assignUnitToSquad(defenderToAdd, defenseSquad);
-            ++groundDefendersAdded;
-        }
-        // otherwise we'll never find another one so break out of this loop
-        else
-        {
-            break;
-        }
-    }
-}
-
-BWAPI::Unit CombatCommander::findClosestDefender(const Squad & defenseSquad, BWAPI::Position pos, bool flyingDefender, int currentFrame) 
-{
-	BWAPI::Unit closestDefender = nullptr;
-	double minDistance = std::numeric_limits<double>::max();
-
-    int zerglingsInOurBase = numZerglingsInOurBase();
-    bool zerglingRush = zerglingsInOurBase > 0 && currentFrame < 5000;
-
-	for (auto & unit : _combatUnits) 
-	{
-		if ((flyingDefender && !UnitUtil::CanAttackAir(unit)) || (!flyingDefender && !UnitUtil::CanAttackGround(unit)))
-        {
-            continue;
-        }
-
-        if (!_squadData.canAssignUnitToSquad(unit, defenseSquad))
-        {
-            continue;
-        }
-
-        // add workers to the defense squad if we are being rushed very quickly
-        if (!_microConfiguration.WorkersDefendRush || (unit->getType().isWorker() && !zerglingRush && !beingBuildingRushed()))
-        {
-            continue;
-        }
-
-        double dist = unit->getDistance(pos);
-        if (!closestDefender || (dist < minDistance))
-        {
-            closestDefender = unit;
-            minDistance = dist;
-        }
-	}
-
-	return closestDefender;
 }
 
 BWAPI::Position CombatCommander::getDefendLocation()
@@ -599,45 +424,6 @@ int CombatCommander::defendWithWorkers()
 
 	// if there are enemy units near our workers, we want to defend
 	return enemyUnitsNearWorkers;
-}
-
-int CombatCommander::numZerglingsInOurBase()
-{
-    int concernRadius = 600;
-    int zerglings = 0;
-    BWAPI::Position ourBasePosition = BWAPI::Position(_opponentView->self()->getStartLocation());
-    
-    // check to see if the enemy has zerglings as the only attackers in our base
-    for (auto & unit : UnitUtil::getEnemyUnits(_opponentView))
-    {
-        if (unit->getType() != BWAPI::UnitTypes::Zerg_Zergling)
-        {
-            continue;
-        }
-
-        if (unit->getDistance(ourBasePosition) < concernRadius)
-        {
-            zerglings++;
-        }
-    }
-
-    return zerglings;
-}
-
-bool CombatCommander::beingBuildingRushed()
-{
-    BWAPI::Position myBasePosition(_opponentView->self()->getStartLocation());
-
-    // check to see if the enemy has buildings near our base
-    for (auto & unit : UnitUtil::getEnemyUnits(_opponentView))
-    {
-        if (unit->getType().isBuilding() && unit->getDistance(myBasePosition) < 1200)
-        {
-            return true;
-        }
-    }
-
-    return false;
 }
 
 bool UAlbertaBot::CombatCommander::findEnemyBaseLocation(BWAPI::Position & basePosition)

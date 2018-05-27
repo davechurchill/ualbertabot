@@ -19,4 +19,10 @@ void AKBot::MarineRush::getBuildOrderGoal(MetaPairVector& goal, int currentFrame
 	{
 		goal.push_back(MetaPair(BWAPI::UnitTypes::Terran_Engineering_Bay, 1));
 	}
+
+	if (numMarines > 10)
+	{
+		// this should be depending on the enemy race at least.
+		goal.push_back(MetaPair(BWAPI::UpgradeTypes::Terran_Infantry_Weapons, 1));
+	}
 }

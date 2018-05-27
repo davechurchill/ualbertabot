@@ -15,7 +15,7 @@ class Position
 
 public:
  
-    Position()
+    Position() noexcept
         : _x(0)
         , _y(0)
     {

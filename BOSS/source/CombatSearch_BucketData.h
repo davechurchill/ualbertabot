@@ -15,7 +15,7 @@ public:
     BuildOrder                  buildOrder;
     GameState                   state;
 
-    BucketData()
+    BucketData() noexcept
         : eval(0)
     {
     }

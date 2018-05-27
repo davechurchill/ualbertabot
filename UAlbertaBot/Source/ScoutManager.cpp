@@ -17,8 +17,15 @@ ScoutManager::ScoutManager(
 	, _opponentView(opponentView)
 	, _baseLocationManager(baseLocationManager)
 	, _mapTools(mapTools)
-	, _explorerManager([this](const BWAPI::TilePosition tile) { return _mapTools->isExplored(tile); })
+	, _explorerManager([this](const BWAPI::TilePosition tile) { return verifyExplored(tile); })
 {
+}
+
+bool ScoutManager::verifyExplored(BWAPI::TilePosition tile)
+{
+	auto isExplored = _mapTools->isExplored(tile);
+	auto seenRecently = _mapTools->getLastSeen(tile.x, tile.y) + 3000 > _currentFrame;
+	return isExplored || seenRecently;
 }
 
 void ScoutManager::update(int currentFrame)
@@ -69,6 +76,10 @@ void ScoutManager::moveScouts(int currentFrame)
 
     int scoutHP = _workerScout->getHitPoints() + _workerScout->getShields();
     
+	if (currentFrame % 1000 == 999) {
+		updateExplorationTargets(currentFrame);
+	}
+
 	// first we should ensure that all start bases is discovered
 	// only then harras them.
 	// Enemy base is unexplored

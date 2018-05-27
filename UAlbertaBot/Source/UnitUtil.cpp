@@ -20,6 +20,16 @@ bool UnitUtil::IsCombatUnit(BWAPI::Unit unit)
 
 }
 
+bool UnitUtil::IsGroundUnit(BWAPI::Unit unit)
+{
+	return !unit->getType().isFlyer();
+}
+
+bool UnitUtil::IsFlyingUnit(BWAPI::Unit unit)
+{
+	return unit->getType().isFlyer();
+}
+
 bool UnitUtil::IsCombatUnitType(BWAPI::UnitType type)
 {
     // check for various types of combat units
@@ -99,7 +109,7 @@ Rect UnitUtil::GetRect(BWAPI::Unit unit)
     return r;
 }
 
-UnitCollection UAlbertaBot::UnitUtil::getEnemyUnits(shared_ptr<AKBot::OpponentView> opponentView)
+UnitGenerator UAlbertaBot::UnitUtil::getEnemyUnits(shared_ptr<AKBot::OpponentView> opponentView)
 {
 #if _MSC_VER < 1900
 	UnitCollection result;

@@ -39,7 +39,7 @@ class Timer
 
 public:
 
-	Timer()
+	Timer() noexcept
 	{
 		#ifdef WIN32
 			QueryPerformanceFrequency(&frequency);

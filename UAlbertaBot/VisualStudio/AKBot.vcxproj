@@ -34,6 +34,8 @@
     <ClCompile Include="..\Source\BWAPIUnitInformation.cpp" />
     <ClCompile Include="..\Source\CombatCommander.cpp" />
     <ClCompile Include="..\Source\CombatSimulation.cpp" />
+    <ClCompile Include="..\Source\combat\BaseDefenceManager.cpp" />
+    <ClCompile Include="..\Source\combat\basesdefencemanager.cpp" />
     <ClCompile Include="..\Source\commands\BaseLocationCommandExecutor.cpp" />
     <ClCompile Include="..\Source\commands\BWAPICommandExecutor.cpp" />
     <ClCompile Include="..\Source\commands\CombatCommanderCommandExecutor.cpp" />
@@ -132,6 +134,9 @@
     <ClInclude Include="..\Source\BWAPIUnitInformation.h" />
     <ClInclude Include="..\Source\CombatCommander.h" />
     <ClInclude Include="..\Source\CombatSimulation.h" />
+    <ClInclude Include="..\Source\combat\BaseDefenceManager.h" />
+    <ClInclude Include="..\Source\combat\BasesDefenceManager.h" />
+    <ClInclude Include="..\Source\combat\CombatPriorities.h" />
     <ClInclude Include="..\Source\commands\BaseLocationCommandExecutor.h" />
     <ClInclude Include="..\Source\commands\BWAPICommandExecutor.h" />
     <ClInclude Include="..\Source\commands\CombatCommanderCommandExecutor.h" />

@@ -267,6 +267,12 @@
     <ClCompile Include="..\Source\basedetection\ClusterBaseDetector.cpp">
       <Filter>basedetection</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\combat\BaseDefenceManager.cpp">
+      <Filter>combat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\combat\basesdefencemanager.cpp">
+      <Filter>combat</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="common">
@@ -315,6 +321,9 @@
     </Filter>
     <Filter Include="basedetection">
       <UniqueIdentifier>{a1ee2b63-1374-4366-b170-7c23cac107c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="combat">
+      <UniqueIdentifier>{52392c4f-c5b4-4283-be4e-1278061eb4a2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -639,6 +648,15 @@
     </ClInclude>
     <ClInclude Include="..\Source\basedetection\ClusterBaseDetector.h">
       <Filter>basedetection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\combat\BaseDefenceManager.h">
+      <Filter>combat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\combat\BasesDefenceManager.h">
+      <Filter>combat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\combat\CombatPriorities.h">
+      <Filter>combat</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

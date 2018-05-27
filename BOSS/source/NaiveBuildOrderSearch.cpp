@@ -52,7 +52,7 @@ const BuildOrder & NaiveBuildOrderSearch::solve()
     const ActionType & worker = ActionTypes::GetWorker(_state.getRace());
 
     // add everything from the goal to the needed set
-    for (size_t a(0); a < ActionTypes::GetAllActionTypes(_state.getRace()).size(); ++a)
+    for (ActionID a(0); a < ActionTypes::GetAllActionTypes(_state.getRace()).size(); ++a)
     {
         const ActionType & actionType = ActionTypes::GetActionType(_state.getRace(), a);
         UnitCountType numCompleted = _state.getUnitData().getNumTotal(actionType);
@@ -74,7 +74,7 @@ const BuildOrder & NaiveBuildOrderSearch::solve()
 
     // Add the required units to a preliminary build order
     BuildOrder buildOrder;
-    for (size_t a(0); a < requiredToBuild.size(); ++a)
+    for (ActionID a(0); a < requiredToBuild.size(); ++a)
     {
         const ActionType & type = requiredToBuild.getActionType(a);
         buildOrder.add(type);
@@ -85,7 +85,7 @@ const BuildOrder & NaiveBuildOrderSearch::solve()
     buildOrder.add(worker, requiredWorkers);
 
     // Add the goal units to the end of the build order 
-    for (size_t a(0); a < ActionTypes::GetAllActionTypes(_state.getRace()).size(); ++a)
+    for (ActionID a(0); a < ActionTypes::GetAllActionTypes(_state.getRace()).size(); ++a)
     {
         const ActionType & actionType = ActionTypes::GetActionType(_state.getRace(), a);
         int need = (int)_goal.getGoal(actionType);
@@ -102,7 +102,7 @@ const BuildOrder & NaiveBuildOrderSearch::solve()
         for (size_t t=0; t<2; ++t)
         {
             std::vector<size_t> neededMorphers(ActionTypes::GetAllActionTypes(_state.getRace()).size(), 0);
-            for (size_t i(0); i < ActionTypes::GetAllActionTypes(_state.getRace()).size(); ++i)
+            for (ActionID i(0); i < ActionTypes::GetAllActionTypes(_state.getRace()).size(); ++i)
             {
                 const ActionType & type = ActionTypes::GetActionType(Races::Zerg, i);
 
@@ -124,7 +124,7 @@ const BuildOrder & NaiveBuildOrderSearch::solve()
             }
             
             // add the morphers to the build order
-            for (size_t i(0); i<neededMorphers.size(); ++i)
+            for (ActionID i(0); i<neededMorphers.size(); ++i)
             {
                 buildOrder.add(ActionTypes::GetActionType(Races::Zerg, i), neededMorphers[i]);
             }
@@ -188,7 +188,7 @@ const BuildOrder & NaiveBuildOrderSearch::solve()
     // special case for zerg: buildings consume drones
     if (_state.getRace() == Races::Zerg)
     {
-        for (size_t i(0); i < ActionTypes::GetAllActionTypes(_state.getRace()).size(); ++i)
+        for (ActionID i(0); i < ActionTypes::GetAllActionTypes(_state.getRace()).size(); ++i)
         {
             const ActionType & type = ActionTypes::GetActionType(Races::Zerg, i);
 

@@ -26,7 +26,7 @@ public:
 
     GameState                   finalState;
 	
-	DFBB_BuildOrderSearchResults();
+	DFBB_BuildOrderSearchResults() noexcept;
 	DFBB_BuildOrderSearchResults(bool s, int len, unsigned long long n, double t, std::vector<ActionType> solution);
 		
 	void printResults(bool pbo = true) const;

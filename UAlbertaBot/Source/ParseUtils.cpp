@@ -176,6 +176,7 @@ void UAlbertaBot::ParseUtils::ParseConfigFile(
         JSONTools::ReadBool("DrawProductionInfo",       debug, debugOptions.DrawProductionInfo);
         JSONTools::ReadBool("DrawScoutInfo",            debug, debugOptions.DrawScoutInfo);
         JSONTools::ReadBool("DrawSquadInfo",            debug, debugOptions.DrawSquadInfo);
+		JSONTools::ReadBool("DrawBaseDefenceSquadInfo", debug, debugOptions.DrawBaseDefenceSquadInfo);
         JSONTools::ReadBool("DrawCombatSimInfo",        debug, debugOptions.DrawCombatSimulationInfo);
         JSONTools::ReadBool("DrawBuildingInfo",         debug, debugOptions.DrawBuildingInfo);
         JSONTools::ReadBool("DrawModuleTimers",         debug, debugOptions.DrawModuleTimers);
@@ -187,6 +188,7 @@ void UAlbertaBot::ParseUtils::ParseConfigFile(
         JSONTools::ReadBool("DrawReservedBuildingTiles",debug, debugOptions.DrawReservedBuildingTiles);
         JSONTools::ReadBool("DrawBOSSStateInfo",        debug, debugOptions.DrawBOSSStateInfo); 
         JSONTools::ReadBool("PrintModuleTimeout",       debug, debugOptions.PrintModuleTimeout);
+        JSONTools::ReadBool("TraceCombatManagerLogic",  debug, debugOptions.TraceCombatManagerLogic);
     }
 
     // Parse the Module Options

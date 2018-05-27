@@ -25,5 +25,9 @@ namespace AKBot
 				canvas.drawCircleMap(workerScout->getPosition(), 10, BWAPI::Colors::Purple, true);
 			}
 		}
+		else
+		{
+			canvas.drawTextScreen(x, y + 12, "Worker scout missing");
+		}
 	}
 }

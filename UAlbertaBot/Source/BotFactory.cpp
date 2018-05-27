@@ -14,18 +14,25 @@
 #include "debug\DebugInfoProvider.h"
 #include "BWAPIHUDInfo.h"
 #include "BWAPIUnitInformation.h"
+
 #include "strategies\protoss\ZealotRush.h"
 #include "strategies\protoss\ZealotDrop.h"
 #include "strategies\protoss\DragoonRush.h"
 #include "strategies\protoss\DarkTemplarRush.h"
+#include "strategies\protoss\ProtossMiddleGame.h"
+
 #include "strategies\terrain\MarineRush.h"
 #include "strategies\terrain\FourBarracksMarine.h"
 #include "strategies\terrain\TankPush.h"
 #include "strategies\terrain\VultureRush.h"
+#include "strategies\terrain\TerranMiddleGame.h"
+
 #include "strategies\zerg\ZergelingRush.h"
 #include "strategies\zerg\TwoHatchHydralisk.h"
 #include "strategies\zerg\ThreeHatchMutalisk.h"
 #include "strategies\zerg\ThreeHatchScourge.h"
+#include "strategies\zerg\ZergMiddleGame.h"
+
 #include "basedetection\ClusterBaseDetector.h"
 
 #include "ParseUtils.h"
@@ -41,19 +48,23 @@ void registerWellKnownStrategies(AKBot::OpponentView& opponentView, StrategyMana
 	strategyManager.registerStrategy("Protoss_Drop", std::make_unique<ZealotDrop>(self));
 	strategyManager.registerStrategy("Protoss_DragoonRush", std::make_unique<DragoonRush>(self));
 	strategyManager.registerStrategy("Protoss_DTRush", std::make_unique<DarkTemplarRush>(self));
+	strategyManager.registerStrategy("Protoss_MiddleGame", std::make_unique<ProtossMiddleGame>(self));
 
 	// Well known Terrain strategies
 	strategyManager.registerStrategy("Terran_MarineRush", std::make_unique<MarineRush>(self));
 	strategyManager.registerStrategy("Terran_4RaxMarines", std::make_unique<FourBarracksMarine>(self));
 	strategyManager.registerStrategy("Terran_TankPush", std::make_unique<TankPush>(self));
 	strategyManager.registerStrategy("Terran_VultureRush", std::make_unique<VultureRush>(self));
+	strategyManager.registerStrategy("Terran_MiddleGame", std::make_unique<TerranMiddleGame>(self));
 
 	// Well known Zerg strategies
 	strategyManager.registerStrategy("Zerg_ZerglingRush", std::make_unique<ZergelingRush>(self));
+	strategyManager.registerStrategy("Zerg_ZergelingRush", std::make_unique<ZergelingRush>(self));
 	strategyManager.registerStrategy("Zerg_9Pool", std::make_unique<ZergelingRush>(self));
 	strategyManager.registerStrategy("Zerg_2HatchHydra", std::make_unique<TwoHatchHydralisk>(self));
 	strategyManager.registerStrategy("Zerg_3HatchMuta", std::make_unique<ThreeHatchMutalisk>(self));
 	strategyManager.registerStrategy("Zerg_3HatchScourge", std::make_unique<ThreeHatchScourge>(self));
+	strategyManager.registerStrategy("Zerg_MiddleGame", std::make_unique<ZergMiddleGame>(self));
 }
 
 BotPlayer AKBot::createBot(BWAPI::Game* game, const std::string& mode, BotConfiguration& configuration, const std::string& configurationFile) {

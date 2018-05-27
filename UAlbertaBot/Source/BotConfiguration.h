@@ -101,6 +101,7 @@ struct BotDebugConfiguration
 	bool DrawLastSeenTileInfo = false;
 	bool DrawUnitTargetInfo = false;
 	bool DrawSquadInfo = false;
+	bool DrawBaseDefenceSquadInfo = false;
 	bool DrawBOSSStateInfo = false;
 	bool PrintModuleTimeout = false;
 	bool DrawBaseTiles = false;
@@ -117,7 +118,7 @@ struct BotMicroConfiguration
 	bool UseSparcraftSimulation = true;
 	bool KiteWithRangedUnits = true;
 	std::set<BWAPI::UnitType> KiteLongerRangedUnits;
-	bool WorkersDefendRush = false;
+	bool WorkersDefendRush = true;
 	int RetreatMeleeUnitShields = 0;
 	int RetreatMeleeUnitHP = 0;
 	int CombatRadius = 1000;     // radius of combat to consider units for Micro Search
@@ -130,7 +131,7 @@ struct BotMicroConfiguration
 	// Strategy for estimation of the combat results.
 	std::string CombatEstimationStrategy = "sparcraft";
 	int CombatEstimationDepth = 96; // Depth of combat simulation depth.
-	bool IncludeWorkers = false;
+	bool IncludeWorkers = true;
 };
 
 struct BotMacroConfiguration
