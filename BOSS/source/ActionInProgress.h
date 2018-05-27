@@ -48,7 +48,7 @@ class ActionsInProgress
 	
 public:
 
-	ActionsInProgress() noexcept;
+	ActionsInProgress();
 	
 	UnitCountType operator [] (const ActionType & action) const;
 	UnitCountType numInProgress(const ActionType & action) const;

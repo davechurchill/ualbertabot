@@ -2,7 +2,7 @@
 
 using namespace BOSS;
 
-ActionsInProgress::ActionsInProgress() noexcept
+ActionsInProgress::ActionsInProgress()
     : _numProgress(Constants::MAX_ACTIONS, 0)
 {
 	
