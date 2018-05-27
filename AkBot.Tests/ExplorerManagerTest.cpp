@@ -69,3 +69,14 @@ BOOST_AUTO_TEST_CASE(ExploredLocationsRemovedFromTargets)
 	sut.verifyExpored();
 	BOOST_TEST(0U == sut.locationsToCheckCount(), L"The location should be removed if it is explored");
 }
+
+BOOST_AUTO_TEST_CASE(LocationAddedTwiceIgnored)
+{
+	ExplorerManager sut(neverExplored);
+
+	// Add base location to the search element
+	sut.addLocation(BWAPI::TilePosition(10, 20));
+	sut.addLocation(BWAPI::TilePosition(10, 20));
+	// Should be added 5 elements for checking locations
+	BOOST_TEST(1U == sut.locationsToCheckCount(), L"1 locations should be explored for regular location");
+}
