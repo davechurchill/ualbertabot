@@ -43,12 +43,15 @@ class ProductionManager
 
     bool                meetsReservedResources(MetaType type);
     void                setBuildOrder(const BuildOrder & buildOrder);
+	void                queueAsLowestPriority(const BuildOrder & buildOrder);
+	void                queueAsHighestPriority(const BuildOrder & buildOrder);
     void                create(BWAPI::Unit producer,BuildOrderItem & item);
     void                manageBuildOrderQueue(int currentFrame);
     void                performCommand(BWAPI::UnitCommandType t);
     bool                canMakeNow(BWAPI::Unit producer,MetaType t);
     void                predictWorkerMovement(const Building & b);
-
+	BuildOrder			getDetectorBuildOrder();
+	BuildOrder			getQueueUnlockBuildOrder();
     bool                detectBuildOrderDeadlock();
 
     int                 getFreeMinerals();

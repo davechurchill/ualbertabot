@@ -33,10 +33,22 @@ ProductionManager::ProductionManager(
 void ProductionManager::setBuildOrder(const BuildOrder & buildOrder)
 {
 	_queue.clearAll();
+	queueAsLowestPriority(buildOrder);
+}
 
+void ProductionManager::queueAsLowestPriority(const BuildOrder & buildOrder)
+{
 	for (size_t i(0); i<buildOrder.size(); ++i)
 	{
 		_queue.queueAsLowestPriority(buildOrder[i], true);
+	}
+}
+
+void ProductionManager::queueAsHighestPriority(const BuildOrder & buildOrder)
+{
+	for (size_t i(0); i<buildOrder.size(); ++i)
+	{
+		_queue.queueAsHighestPriority(buildOrder[i], true);
 	}
 }
 
@@ -75,6 +87,51 @@ void ProductionManager::onStart()
 	setBuildOrder(strategyManager->getOpeningBookBuildOrder());
 }
 
+BuildOrder ProductionManager::getDetectorBuildOrder()
+{
+	auto self = _opponentView->self();
+	auto ourRace = self->getRace();
+
+	BuildOrder result;
+	if (ourRace == BWAPI::Races::Protoss)
+	{
+		if (self->allUnitCount(BWAPI::UnitTypes::Protoss_Photon_Cannon) < 2)
+		{
+			result.add(MetaType(BWAPI::UnitTypes::Protoss_Photon_Cannon));
+			result.add(MetaType(BWAPI::UnitTypes::Protoss_Photon_Cannon));
+		}
+
+		if (self->allUnitCount(BWAPI::UnitTypes::Protoss_Forge) == 0)
+		{
+			result.add(MetaType(BWAPI::UnitTypes::Protoss_Forge));
+		}
+	}
+	else if (ourRace == BWAPI::Races::Terran)
+	{
+		if (self->allUnitCount(BWAPI::UnitTypes::Terran_Missile_Turret) < 2)
+		{
+			result.add(MetaType(BWAPI::UnitTypes::Terran_Missile_Turret));
+			result.add(MetaType(BWAPI::UnitTypes::Terran_Missile_Turret));
+		}
+
+		if (self->allUnitCount(BWAPI::UnitTypes::Terran_Engineering_Bay) == 0)
+		{
+			result.add(MetaType(BWAPI::UnitTypes::Terran_Engineering_Bay));
+		}
+	}
+
+	return result;
+}
+
+BuildOrder ProductionManager::getQueueUnlockBuildOrder()
+{
+	auto self = _opponentView->self();
+	auto ourRace = self->getRace();
+	BuildOrder result;
+	result.add(MetaType(ourRace.getSupplyProvider()));
+	return result;
+}
+
 void ProductionManager::update(int currentFrame) 
 {
 	// check the _queue for stuff we can build
@@ -99,7 +156,7 @@ void ProductionManager::update(int currentFrame)
 	if ((currentFrame % 24 == 0) && detectBuildOrderDeadlock())
 	{
 		_queueDeadlockDetected = true;
-		_queue.queueAsHighestPriority(MetaType(ourRace.getSupplyProvider()), true);
+		queueAsHighestPriority(getQueueUnlockBuildOrder());
 	}
 
 	// if they have cloaked units get a new goal asap
@@ -107,32 +164,7 @@ void ProductionManager::update(int currentFrame)
 	_unitInfo->detectCloackedUnits();
 	if (!_enemyCloakedDetected && _unitInfo->enemyHasCloakedUnits())
 	{
-		if (ourRace == BWAPI::Races::Protoss)
-        {
-		    if (self->allUnitCount(BWAPI::UnitTypes::Protoss_Photon_Cannon) < 2)
-		    {
-			    _queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Protoss_Photon_Cannon), true);
-			    _queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Protoss_Photon_Cannon), true);
-		    }
-
-		    if (self->allUnitCount(BWAPI::UnitTypes::Protoss_Forge) == 0)
-		    {
-			    _queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Protoss_Forge), true);
-		    }
-        }
-        else if (ourRace == BWAPI::Races::Terran)
-        {
-            if (self->allUnitCount(BWAPI::UnitTypes::Terran_Missile_Turret) < 2)
-		    {
-			    _queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Missile_Turret), true);
-			    _queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Missile_Turret), true);
-		    }
-
-		    if (self->allUnitCount(BWAPI::UnitTypes::Terran_Engineering_Bay) == 0)
-		    {
-			    _queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Engineering_Bay), true);
-		    }
-        }
+		queueAsHighestPriority(getDetectorBuildOrder());
 
 		_enemyCloakedDetected = true;
 		_enemyCloakedDetectedThisFrame = true;
