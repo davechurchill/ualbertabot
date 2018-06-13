@@ -95,6 +95,9 @@ int main(int argc, const char * argv[])
 {
     bool exitIfStarcraftShutdown = true;
 
+    JSONTools::OutputTypeDataJSON("BWData.json");
+    exit(0);
+
     // parse the bot's configuration file, if it is not found or isn't valid, the program will exit
     ParseUtils::ParseConfigFile(Config::ConfigFile::ConfigFileLocation);
 

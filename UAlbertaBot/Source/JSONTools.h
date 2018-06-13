@@ -2,6 +2,7 @@
 
 #include "rapidjson/rapidjson.h"
 #include "rapidjson/document.h"
+#include <iostream>
 
 namespace UAlbertaBot
 {
@@ -19,5 +20,7 @@ namespace JSONTools
 
     void ReadBool(const char * key, const rapidjson::Value & value, bool & dest);
     void ReadString(const char * key, const rapidjson::Value & value, std::string & dest);
+    void OutputTypeDataJSON(const std::string & filename);
+    std::string GetShortName(const std::string & name);
 }
 }

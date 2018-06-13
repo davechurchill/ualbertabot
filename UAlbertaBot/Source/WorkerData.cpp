@@ -14,7 +14,7 @@ WorkerData::WorkerData()
     }
 }
 
-void WorkerData::workerDestroyed(BWAPI::Unit unit)
+void WorkerData::workerDestroyed(const BWAPI::Unit unit)
 {
     if (!unit) { return; }
 

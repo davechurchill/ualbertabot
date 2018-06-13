@@ -262,6 +262,7 @@ void ParseUtils::ParseTextCommand(const std::string & commandString)
     std::string command;
     std::transform(command.begin(), command.end(), command.begin(), ::tolower);
 
+
     std::string variableName;
     std::transform(variableName.begin(), variableName.end(), variableName.begin(), ::tolower);
 
@@ -270,8 +271,6 @@ void ParseUtils::ParseTextCommand(const std::string & commandString)
     ss >> command;
     ss >> variableName;
     ss >> val;
-
-    
 }
 
 BWAPI::Race ParseUtils::GetRace(const std::string & raceName)

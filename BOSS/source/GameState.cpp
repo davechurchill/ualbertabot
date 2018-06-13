@@ -2,7 +2,6 @@
 
 using namespace BOSS;
 
-
 GameState::GameState(const RaceID r)
     : _race                 (r)
     , _units                (r)

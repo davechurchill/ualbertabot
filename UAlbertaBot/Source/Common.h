@@ -22,6 +22,7 @@
 #include "Config.h"
 #include "UABAssert.h"
 
+
 #define UALBERTABOT_PROJECT
 
 struct double2
