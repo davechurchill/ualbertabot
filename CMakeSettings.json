@@ -1,9 +1,8 @@
-{
-    // See https://go.microsoft.com//fwlink//?linkid=834763 for more information about this file.
+﻿{
   "configurations": [
     {
       "name": "x86-Debug",
-      "generator": "Visual Studio 15 2017",
+      "generator": "Visual Studio 16 2019",
       "configurationType": "Debug",
       "inheritEnvironments": [ "msvc_x86" ],
       "buildRoot": "${workspaceRoot}\\build\\${name}",
@@ -13,7 +12,8 @@
       "variables": [
         {
           "name": "CMAKE_TOOLCHAIN_FILE",
-          "value": "${env.VCPKG_CMAKE_BUILDFILE}"
+          "value": "${env.VCPKG_CMAKE_BUILDFILE}",
+          "type": "STRING"
         }
       ]
     },
@@ -25,7 +25,8 @@
       "buildRoot": "${workspaceRoot}\\build\\${name}",
       "cmakeCommandArgs": "-DAKBOT_SSCAIT=ON",
       "buildCommandArgs": "-v",
-      "ctestCommandArgs": ""
+      "ctestCommandArgs": "",
+      "variables": []
     },
     {
       "name": "x86-Release",
@@ -39,13 +40,14 @@
       "variables": [
         {
           "name": "CMAKE_TOOLCHAIN_FILE",
-          "value": "${env.VCPKG_CMAKE_BUILDFILE}"
+          "value": "${env.VCPKG_CMAKE_BUILDFILE}",
+          "type": "STRING"
         }
       ]
     },
     {
       "name": "x86-Release No Debug",
-      "generator": "Visual Studio 15 2017",
+      "generator": "Visual Studio 16 2019",
       "configurationType": "Release",
       "inheritEnvironments": [ "msvc_x86" ],
       "buildRoot": "${workspaceRoot}\\build\\${name}",
@@ -55,13 +57,14 @@
       "variables": [
         {
           "name": "CMAKE_TOOLCHAIN_FILE",
-          "value": "${env.VCPKG_CMAKE_BUILDFILE}"
+          "value": "${env.VCPKG_CMAKE_BUILDFILE}",
+          "type": "STRING"
         }
       ]
     },
     {
       "name": "x86-Release MinSize",
-      "generator": "Visual Studio 15 2017",
+      "generator": "Visual Studio 16 2019",
       "configurationType": "MinSizeRel",
       "inheritEnvironments": [ "msvc_x86" ],
       "buildRoot": "${workspaceRoot}\\build\\${name}",
@@ -71,7 +74,8 @@
       "variables": [
         {
           "name": "CMAKE_TOOLCHAIN_FILE",
-          "value": "${env.VCPKG_CMAKE_BUILDFILE}"
+          "value": "${env.VCPKG_CMAKE_BUILDFILE}",
+          "type": "STRING"
         }
       ]
     }

@@ -9,7 +9,7 @@ Author: Andrey Kurdyumov (kant2002@gmail.com)
 For mamaging dependencies used vcpkg
 
     # install dependencies
-    vcpkg install boost sdl2 sdl2-image
+    vcpkg install sdl2 sdl2-image
 
 This is additional dependencies to Dave Churchill's bot.
 
@@ -21,6 +21,12 @@ for explanation of purpose of the file
 
 For testing locally you need only VS2017, for these you should use Debug and Release solution configuration.
 For actual building go to `UAlbertaBot\VisualStudio` and open `AKBot.sln`
+
+You can build using CMake
+
+    mkdir build
+    cd build
+    cmake -G "Visual Studio 16 2019" ..
 
 ## Documentation
 Please check out the [UAlbertaBot Wiki](https://github.com/davechurchill/ualbertabot/wiki) for full instructions and documentation
