@@ -1,4 +1,6 @@
 #include "MoveArray.h"
+#include <algorithm>
+#include <random>
 
 using namespace SparCraft;
 
@@ -30,6 +32,9 @@ void MoveArray::clear()
 // this should be the case unless you change the move generation ordering
 void MoveArray::shuffleMoveActions()
 {
+    std::random_device rng;
+    std::mt19937 urng(rng());
+
     // for each unit
     for (size_t u(0); u<numUnits(); ++u)
     {
@@ -67,7 +72,7 @@ void MoveArray::shuffleMoveActions()
         // shuffle the movement actions for this unit
         if (moveEnd != -1 && moveBegin != -1 && moveEnd != moveBegin)
         {
-            std::random_shuffle(&_moves[u][moveBegin], &_moves[u][moveEnd]);
+            std::shuffle(&_moves[u][moveBegin], &_moves[u][moveEnd], urng);
             resetMoveIterator();
         }
     }

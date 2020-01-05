@@ -58,7 +58,7 @@ public:
 
     static const std::string & getName(const IDType & ID)
     {
-        if (ID > size())
+        if ((int)ID > size())
         {
             std::stringstream ss;
             ss << ID;

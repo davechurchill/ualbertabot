@@ -7,9 +7,9 @@ namespace SparCraft
 {
 
     // type definitions for storing data
-    typedef		unsigned char		IDType;
-    typedef		unsigned char		UnitCountType;
-    typedef		unsigned char		ChildCountType;
+    typedef		size_t		        IDType;
+    typedef		size_t		        UnitCountType;
+    typedef		size_t		        ChildCountType;
     typedef 	int					PositionType;
     typedef 	int					TimeType;
     typedef		short				HealthType;

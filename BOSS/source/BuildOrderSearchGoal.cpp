@@ -140,7 +140,7 @@ bool BuildOrderSearchGoal::isAchievedBy(const GameState & state)
             }
         }
 
-        if (have < getGoal(actionType))
+        if (have < (int)getGoal(actionType))
         {
             return false;
         }

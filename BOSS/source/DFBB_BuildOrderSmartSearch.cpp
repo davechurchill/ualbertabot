@@ -62,7 +62,7 @@ void DFBB_BuildOrderSmartSearch::calculateSearchSettings()
     _goal.setGoalMax(refinery, std::min((UnitCountType)3, calculateRefineriesRequired()));
 
     // set the maximum number of workers to an initial ridiculously high upper bound
-    _goal.setGoalMax(worker, std::min(_initialState.getUnitData().getNumTotal(worker) + 20, 100));
+    _goal.setGoalMax(worker, std::min((int)_initialState.getUnitData().getNumTotal(worker) + 20, 100));
 
     // set the number of supply providers required
     _goal.setGoalMax(supplyProvider, calculateSupplyProvidersRequired());
@@ -77,12 +77,12 @@ void DFBB_BuildOrderSmartSearch::calculateSearchSettings()
     setRepetitions();
 
     int maxWorkers = 45;
-    if (_goal.getGoal(worker) > maxWorkers)
+    if ((int)_goal.getGoal(worker) > maxWorkers)
     {
         _goal.setGoal(worker, maxWorkers);
     }
 
-    if (_goal.getGoalMax(worker) > maxWorkers)
+    if ((int)_goal.getGoalMax(worker) > maxWorkers)
     {
         _goal.setGoalMax(worker, maxWorkers);
     }
@@ -161,7 +161,7 @@ void DFBB_BuildOrderSmartSearch::setPrerequisiteGoalMax()
                 if (numGoalUnitsBuiltBy[actionType.ID()] > 0)
                 {
                     // set the goal max to how many units
-                    _goal.setGoalMax(actionType, std::min(_initialState.getUnitData().getNumTotal(actionType) + additionalProductionBuildingLimit, (int)numGoalUnitsBuiltBy[actionType.ID()]));
+                    _goal.setGoalMax(actionType, std::min((int)(_initialState.getUnitData().getNumTotal(actionType) + additionalProductionBuildingLimit), (int)numGoalUnitsBuiltBy[actionType.ID()]));
                 }
             }
         }
