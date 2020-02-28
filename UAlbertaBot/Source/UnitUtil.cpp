@@ -78,7 +78,7 @@ double UnitUtil::GetDistanceBetweenTwoRectangles(Rect & rect1, Rect & rect2)
 
 bool UnitUtil::CanAttack(BWAPI::Unit attacker, BWAPI::Unit target)
 {
-    return GetWeapon(attacker, target) != BWAPI::UnitTypes::None;
+    return GetWeapon(attacker, target) != BWAPI::WeaponTypes::None;
 }
 
 bool UnitUtil::CanAttackAir(BWAPI::Unit unit)
