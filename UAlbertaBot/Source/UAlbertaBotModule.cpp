@@ -18,6 +18,11 @@
 
 using namespace UAlbertaBot;
 
+UAlbertaBotModule::UAlbertaBotModule()
+{
+
+}
+
 // This gets called when the bot starts!
 void UAlbertaBotModule::onStart()
 {

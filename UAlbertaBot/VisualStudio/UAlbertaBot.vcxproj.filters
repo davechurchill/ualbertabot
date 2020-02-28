@@ -39,12 +39,6 @@
     <ClCompile Include="..\Source\CombatCommander.cpp">
       <Filter>game\combat</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Dll.cpp">
-      <Filter>module</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\UAlbertaBotModule.cpp">
-      <Filter>module</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\MapGrid.cpp">
       <Filter>game\util\map</Filter>
     </ClCompile>
@@ -153,13 +147,16 @@
     <ClCompile Include="..\Source\Logger.cpp">
       <Filter>util</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\Client.cpp">
+      <Filter>module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\UAlbertaBotModule.cpp">
+      <Filter>module</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\CombatCommander.h">
       <Filter>game\combat</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\UAlbertaBotModule.h">
-      <Filter>module</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\MapTools.h">
       <Filter>game\util\map</Filter>
@@ -277,6 +274,9 @@
     </ClInclude>
     <ClInclude Include="..\Source\GameHistory.hpp">
       <Filter>game\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\UAlbertaBotModule.h">
+      <Filter>module</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

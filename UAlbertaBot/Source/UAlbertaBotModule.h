@@ -15,13 +15,14 @@
 namespace UAlbertaBot
 {
 
-class UAlbertaBotModule : public BWAPI::AIModule
+class UAlbertaBotModule
 {
 	GameCommander   _gameCommander;
     AutoObserver    _autoObserver;
 
 public:
 
+	UAlbertaBotModule();
 	void	onStart();
 	void	onFrame();
 	void	onEnd(bool isWinner);
