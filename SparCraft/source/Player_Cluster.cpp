@@ -2,7 +2,7 @@
 
 using namespace SparCraft;
 
-Player_Cluster::Player_Cluster (const IDType & playerID) 
+Player_Cluster::Player_Cluster (const size_t & playerID) 
 {
 	_playerID = playerID;
 }
@@ -10,7 +10,7 @@ Player_Cluster::Player_Cluster (const IDType & playerID)
 void Player_Cluster::getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec)
 {
     moveVec.clear();
-	IDType enemy(state.getEnemy(_playerID));
+	size_t enemy(state.getEnemy(_playerID));
 
     // compute the centroid of our unit cluster
     Position avgPos(0,0);
@@ -21,7 +21,7 @@ void Player_Cluster::getMoves(GameState & state, const MoveArray & moves, std::v
 
     avgPos.scalePosition(1.0f / state.numUnits(_playerID));
 
-	for (IDType u(0); u<moves.numUnits(); ++u)
+	for (size_t u(0); u<moves.numUnits(); ++u)
 	{
 		bool foundMoveAction					(false);
 		double actionHighestDPS					(0);

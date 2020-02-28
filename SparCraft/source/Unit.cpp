@@ -18,7 +18,7 @@ Unit::Unit()
 }
 
 // test constructor for setting all variables of a unit
-Unit::Unit(const BWAPI::UnitType unitType, const Position & pos, const IDType & unitID, const IDType & playerID, 
+Unit::Unit(const BWAPI::UnitType unitType, const Position & pos, const size_t & unitID, const size_t & playerID, 
            const HealthType & hp, const HealthType & energy, const TimeType & tm, const TimeType & ta) 
     : _unitType             (unitType)
     , _range                (PlayerWeapon(&PlayerProperties::Get(playerID), unitType.groundWeapon()).GetMaxRange() + Constants::Range_Addition)
@@ -38,7 +38,7 @@ Unit::Unit(const BWAPI::UnitType unitType, const Position & pos, const IDType & 
 }
 
 // constructor for units to construct basic units, sets some things automatically
-Unit::Unit(const BWAPI::UnitType unitType, const IDType & playerID, const Position & pos) 
+Unit::Unit(const BWAPI::UnitType unitType, const size_t & playerID, const Position & pos) 
     : _unitType             (unitType)
     , _range                (PlayerWeapon(&PlayerProperties::Get(playerID), unitType.groundWeapon()).GetMaxRange() + Constants::Range_Addition)
     , _position             (pos)
@@ -373,7 +373,7 @@ void Unit::setCooldown(TimeType attack, TimeType move)
     _timeCanAttack = attack; _timeCanMove = move; 
 }
 
-void Unit::setUnitID(const IDType & id)
+void Unit::setUnitID(const size_t & id)
 { 
     _unitID = id; 
 }
@@ -420,12 +420,12 @@ const bool Unit::isOrganic() const
     return _unitType.isOrganic(); 
 }
 
-const IDType Unit::ID() const	
+const size_t Unit::ID() const	
 { 
     return _unitID; 
 }
 
-const IDType Unit::player() const
+const size_t Unit::player() const
 { 
     return _playerID; 
 }

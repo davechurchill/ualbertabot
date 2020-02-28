@@ -11,7 +11,7 @@ Action::Action()
 
 }
 
-Action::Action( const IDType & unitIndex, const IDType & player, const IDType & type, const IDType & moveIndex, const Position & dest)
+Action::Action( const size_t & unitIndex, const size_t & player, const size_t & type, const size_t & moveIndex, const Position & dest)
     : _unit(unitIndex)
     , _player(player)
     , _moveType(type)
@@ -21,7 +21,7 @@ Action::Action( const IDType & unitIndex, const IDType & player, const IDType & 
         
 }
 
-Action::Action( const IDType & unitIndex, const IDType & player, const IDType & type, const IDType & moveIndex)
+Action::Action( const size_t & unitIndex, const size_t & player, const size_t & type, const size_t & moveIndex)
 	: _unit(unitIndex)
 	, _player(player)
 	, _moveType(type)
@@ -35,22 +35,22 @@ const bool Action::operator == (const Action & rhs)
 	return _unit == rhs._unit && _player == rhs._player && _moveType == rhs._moveType && _moveIndex == rhs._moveIndex && _p == rhs._p;
 }
 
-const IDType & Action::unit() const	
+const size_t & Action::unit() const	
 { 
     return _unit; 
 }
 
-const IDType & Action::player() const	
+const size_t & Action::player() const	
 { 
     return _player; 
 }
 
-const IDType & Action::type() const	
+const size_t & Action::type() const	
 { 
     return _moveType; 
 }
 
-const IDType & Action::index() const	
+const size_t & Action::index() const	
 { 
     return _moveIndex; 
 }

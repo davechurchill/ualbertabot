@@ -27,7 +27,7 @@ typedef std::shared_ptr<SparCraft::Player> PlayerPtr;
 
 namespace AllPlayers
 {
-    Player * getPlayer(const IDType & playerID, const IDType & type);
-    PlayerPtr getPlayerPtr(const IDType & playerID, const IDType & type);
+    Player * getPlayer(const size_t & playerID, const size_t & type);
+    PlayerPtr getPlayerPtr(const size_t & playerID, const size_t & type);
 }
 }

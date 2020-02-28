@@ -8,12 +8,12 @@ void Player::getMoves(GameState & state, const MoveArray & moves, std::vector<Ac
 	// not implemented
 }
 
-const IDType Player::ID() 
+const size_t Player::ID() 
 { 
 	return _playerID; 
 }
 
-void Player::setID(const IDType & playerID)
+void Player::setID(const size_t & playerID)
 {
 	_playerID = playerID;
 }

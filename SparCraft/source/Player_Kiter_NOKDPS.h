@@ -17,8 +17,8 @@ namespace SparCraft
 class Player_Kiter_NOKDPS : public Player
 {
 public:
-	Player_Kiter_NOKDPS (const IDType & playerID);
+	Player_Kiter_NOKDPS (const size_t & playerID);
 	void getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec);
-	IDType getType() { return PlayerModels::Kiter_NOKDPS; }
+	size_t getType() { return PlayerModels::Kiter_NOKDPS; }
 };
 }

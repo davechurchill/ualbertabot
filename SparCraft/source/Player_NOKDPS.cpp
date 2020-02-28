@@ -2,7 +2,7 @@
 
 using namespace SparCraft;
 
-Player_NOKDPS::Player_NOKDPS (const IDType & playerID) 
+Player_NOKDPS::Player_NOKDPS (const size_t & playerID) 
 {
 	_playerID = playerID;
 }
@@ -10,16 +10,16 @@ Player_NOKDPS::Player_NOKDPS (const IDType & playerID)
 void Player_NOKDPS::getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec)
 {
     moveVec.clear();
-	IDType enemy(state.getEnemy(_playerID));
+	size_t enemy(state.getEnemy(_playerID));
 
 	Array<int, Constants::Max_Units> hpRemaining;
 
-	for (IDType u(0); u<state.numUnits(enemy); ++u)
+	for (size_t u(0); u<state.numUnits(enemy); ++u)
 	{
 		hpRemaining[u] = state.getUnit(enemy,u).currentHP();
 	}
 
-	for (IDType u(0); u<moves.numUnits(); ++u)
+	for (size_t u(0); u<moves.numUnits(); ++u)
 	{
 		bool foundAction						(false);
 		size_t actionMoveIndex					(0);

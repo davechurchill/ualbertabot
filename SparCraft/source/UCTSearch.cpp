@@ -86,7 +86,7 @@ const bool UCTSearch::terminalState(GameState & state, const size_t & depth) con
 	return (depth <= 0 || state.isTerminal());
 }
 
-void UCTSearch::generateOrderedMoves(GameState & state, MoveArray & moves, const IDType & playerToMove)
+void UCTSearch::generateOrderedMoves(GameState & state, MoveArray & moves, const size_t & playerToMove)
 {
 	_orderedMoves.clear();
 
@@ -143,7 +143,7 @@ const size_t UCTSearch::getChildNodeType(UCTNode & parent, const GameState & pre
     return SearchNodeType::Default;
 }
 
-const bool UCTSearch::getNextMove(IDType playerToMove, MoveArray & moves, const size_t & moveNumber, std::vector<Action> & actionVec)
+const bool UCTSearch::getNextMove(size_t playerToMove, MoveArray & moves, const size_t & moveNumber, std::vector<Action> & actionVec)
 {
     if (moveNumber > _params.maxChildren())
     {
@@ -184,16 +184,16 @@ const bool UCTSearch::getNextMove(IDType playerToMove, MoveArray & moves, const 
 	}
 }
 
-const IDType UCTSearch::getPlayerToMove(UCTNode & node, const GameState & state) const
+const size_t UCTSearch::getPlayerToMove(UCTNode & node, const GameState & state) const
 {
-	const IDType whoCanMove(state.whoCanMove());
+	const size_t whoCanMove(state.whoCanMove());
 
 	// if both players can move
 	if (whoCanMove == Players::Player_Both)
 	{
         // pick the first move based on our policy
-		const IDType policy(_params.playerToMoveMethod());
-		const IDType maxPlayer(_params.maxPlayer());
+		const size_t policy(_params.playerToMoveMethod());
+		const size_t maxPlayer(_params.maxPlayer());
 
         // the max player always chooses at the root
         if (isRoot(node))
@@ -202,7 +202,7 @@ const IDType UCTSearch::getPlayerToMove(UCTNode & node, const GameState & state)
         }
 
         // the type of node this is
-        const IDType nodeType = node.getNodeType();
+        const size_t nodeType = node.getNodeType();
 
         // the 2nd player in a sim move is always the enemy of the first
         if (nodeType == SearchNodeType::FirstSimNode)
@@ -361,7 +361,7 @@ StateEvalScore UCTSearch::traverse(UCTNode & node, GameState & currentState)
 void UCTSearch::generateChildren(UCTNode & node, GameState & state)
 {
     // figure out who is next to move in the game
-    const IDType playerToMove(getPlayerToMove(node, state));
+    const size_t playerToMove(getPlayerToMove(node, state));
 
     // generate all the moves possible from this state
 	state.generateMoves(_moveArray, playerToMove);

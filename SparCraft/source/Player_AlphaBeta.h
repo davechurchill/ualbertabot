@@ -23,15 +23,15 @@ class Player_AlphaBeta : public Player
 	TTPtr TT;
 	AlphaBetaSearchParameters _params;
 public:
-	Player_AlphaBeta (const IDType & playerID);
-	Player_AlphaBeta (const IDType & playerID, const AlphaBetaSearchParameters & params, TTPtr table);
+	Player_AlphaBeta (const size_t & playerID);
+	Player_AlphaBeta (const size_t & playerID, const AlphaBetaSearchParameters & params, TTPtr table);
     virtual ~Player_AlphaBeta();
 	void getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec);
 	void setParameters(AlphaBetaSearchParameters & p);
 	AlphaBetaSearchParameters & getParams();
 	void setTranspositionTable(TTPtr table);
 	AlphaBetaSearchResults & results();
-	IDType getType() { return PlayerModels::AlphaBeta; }
+	size_t getType() { return PlayerModels::AlphaBeta; }
 };
 
 }

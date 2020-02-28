@@ -2,7 +2,7 @@
 
 using namespace SparCraft;
 
-Player_Kiter::Player_Kiter (const IDType & playerID) 
+Player_Kiter::Player_Kiter (const size_t & playerID) 
 {
 	_playerID = playerID;
 }
@@ -10,20 +10,20 @@ Player_Kiter::Player_Kiter (const IDType & playerID)
 void Player_Kiter::getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec)
 {
     moveVec.clear();
-	for (IDType u(0); u<moves.numUnits(); ++u)
+	for (size_t u(0); u<moves.numUnits(); ++u)
 	{
 		bool foundAction						(false);
-		IDType actionMoveIndex					(0);
-		IDType furthestMoveIndex				(0);
+		size_t actionMoveIndex					(0);
+		size_t furthestMoveIndex				(0);
 		size_t furthestMoveDist					(0);
-		IDType closestMoveIndex					(0);
+		size_t closestMoveIndex					(0);
 		int actionDistance						(std::numeric_limits<int>::max());
 		unsigned long long closestMoveDist		(std::numeric_limits<unsigned long long>::max());
 
 		const Unit & ourUnit					(state.getUnit(_playerID, u));
 		const Unit & closestUnit				(ourUnit.canHeal() ? state.getClosestOurUnit(_playerID, u) : state.getClosestEnemyUnit(_playerID, u));
 
-		for (IDType m(0); m<moves.numMoves(u); ++m)
+		for (size_t m(0); m<moves.numMoves(u); ++m)
 		{
 			const Action move						(moves.getMove(u, m));
 				

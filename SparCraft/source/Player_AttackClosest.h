@@ -20,7 +20,7 @@ namespace SparCraft
 class SparCraft::Player_AttackClosest : public SparCraft::Player
 {
 public:
-	Player_AttackClosest (const IDType & playerID);
+	Player_AttackClosest (const size_t & playerID);
 	void getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec);
-	IDType getType() { return PlayerModels::AttackClosest; }
+	size_t getType() { return PlayerModels::AttackClosest; }
 };

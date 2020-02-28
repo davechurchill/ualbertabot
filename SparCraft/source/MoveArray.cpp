@@ -39,7 +39,7 @@ void MoveArray::shuffleMoveActions()
         // reverse through the list of actions for this unit
         for (int a(numMoves(u)-1); a >= 0; --a)
         {
-            IDType moveType(getMove(u, a).type());
+            size_t moveType(getMove(u, a).type());
 
             // mark the end of the move actions
             if (moveEnd == -1 && (moveType == ActionTypes::MOVE))
@@ -179,12 +179,12 @@ bool MoveArray::validateMoves()
 	return true;
 }
 
-const IDType MoveArray::getUnitID(const IDType & unit) const
+const size_t MoveArray::getUnitID(const size_t & unit) const
 {
 	return getMove(unit, 0).unit();
 }
 
-const IDType MoveArray::getPlayerID(const IDType & unit) const
+const size_t MoveArray::getPlayerID(const size_t & unit) const
 {
 	return getMove(unit, 0).player();
 }

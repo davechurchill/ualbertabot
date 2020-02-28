@@ -44,7 +44,7 @@ public:
         nameMap[s] = ID;
     }
 
-    static const IDType getID(const std::string & s)
+    static const size_t getID(const std::string & s)
     {
         const std::map<std::string, int>::const_iterator it(nameMap.find(s));
 
@@ -56,9 +56,9 @@ public:
         return it->second;
     }
 
-    static const std::string & getName(const IDType & ID)
+    static const std::string & getName(const size_t & ID)
     {
-        if (ID > size())
+        if (ID > (size_t)size())
         {
             std::stringstream ss;
             ss << ID;

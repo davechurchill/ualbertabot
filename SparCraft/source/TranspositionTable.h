@@ -28,7 +28,7 @@ public:
 
 	TTEntry();
 	TTEntry(const HashType & hash2, const StateEvalScore & score, const size_t & depth, const int & type, 
-			const IDType & firstPlayer, const AlphaBetaMove & bestFirstMove, const AlphaBetaMove & bestSecondMove);
+			const size_t & firstPlayer, const AlphaBetaMove & bestFirstMove, const AlphaBetaMove & bestSecondMove);
 
 	const bool hashMatches(const HashType & hash2) const;
 
@@ -38,8 +38,8 @@ public:
 	const StateEvalScore & getScore()							const;
 	const size_t & getDepth()									const;
 	const int & getType()										const;
-	const TTBestMove & getBestMove(const IDType & player)		const;
-	void setBestMove(const IDType &firstPlayer, const AlphaBetaMove & bestFirstMove, const AlphaBetaMove & bestSecondMove);
+	const TTBestMove & getBestMove(const size_t & player)		const;
+	void setBestMove(const size_t &firstPlayer, const AlphaBetaMove & bestFirstMove, const AlphaBetaMove & bestSecondMove);
 
 	void print() const
 	{
@@ -112,7 +112,7 @@ public:
 	void save(const HashType & hash1, const TTEntry & entry) ;
 
 	void save(	const HashType & hash1, const HashType & hash2, const StateEvalScore & value, const size_t & depth, const int & type,
-				const IDType & firstPlayer, const AlphaBetaMove & bestFirstMove, const AlphaBetaMove & bestSecondMove);
+				const size_t & firstPlayer, const AlphaBetaMove & bestFirstMove, const AlphaBetaMove & bestSecondMove);
 
 	TTEntry * lookup(const size_t & index, const HashType & hash2);
 	TTEntry * lookupScan(const HashType & hash1, const HashType & hash2);

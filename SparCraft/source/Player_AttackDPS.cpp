@@ -2,7 +2,7 @@
 
 using namespace SparCraft;
 
-Player_AttackDPS::Player_AttackDPS (const IDType & playerID) 
+Player_AttackDPS::Player_AttackDPS (const size_t & playerID) 
 {
 	_playerID = playerID;
 }
@@ -10,7 +10,7 @@ Player_AttackDPS::Player_AttackDPS (const IDType & playerID)
 void Player_AttackDPS::getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec)
 {
     moveVec.clear();
-	for (IDType u(0); u<moves.numUnits(); ++u)
+	for (size_t u(0); u<moves.numUnits(); ++u)
 	{
 		bool foundAction						(false);
 		size_t actionMoveIndex					(0);

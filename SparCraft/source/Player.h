@@ -14,12 +14,12 @@ class GameState;
 class Player 
 {
 protected:
-    IDType _playerID;
+    size_t _playerID;
 public:
     virtual void		getMoves(GameState & state, const MoveArray & moves, std::vector<Action> & moveVec);
-    const IDType        ID();
-    void                setID(const IDType & playerid);
-    virtual IDType      getType() { return PlayerModels::None; }
+    const size_t        ID();
+    void                setID(const size_t & playerid);
+    virtual size_t      getType() { return PlayerModels::None; }
 };
 
 class CompareUnitDPSThreat
