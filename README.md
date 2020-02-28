@@ -2,8 +2,11 @@ UAlbertaBot - StarCraft AI Competition Bot
 
 Author:  David Churchill (dave.churchill@gmail.com)
 
-Please check out the [Wiki](https://github.com/davechurchill/ualbertabot/wiki) for full instructions and documentation!
+Update: Feb 27, 2020
+- UAlbertaBot now uses VS2019
+- UAlbertaBot now uses BWAPI 4.4.0
+- UAlbertaBot no longer uses BWTA - it is replaced with the custom BaseLocationManager from CommandCenter
 
-Please consider the code in this repository as unstable research code. Stable releases can be found in the [stable release section](https://github.com/davechurchill/ualbertabot/tree/master/binary_stable_releases). Note that the instructions included in the wiki may not be correct for older binary releases.
+Please check out the [Wiki](https://github.com/davechurchill/ualbertabot/wiki) for full instructions and documentation!
 
 NOTE: If you're looking for a StarCraft II bot please check out [CommandCenter](https://github.com/davechurchill/commandcenter/)
