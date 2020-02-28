@@ -26,6 +26,11 @@ inline int MapTools::getIndex(int row,int col)
     return row * _cols + col;
 }
 
+bool MapTools::isWalkable(const BWAPI::TilePosition & tile)
+{
+	return tile.isValid() ? _map[getIndex(tile.x, tile.y)] : false;
+}
+
 bool MapTools::unexplored(DistanceMap & dmap,const int index) const
 {
     return (index != -1) && dmap[index] == -1 && _map[index];

@@ -1,6 +1,7 @@
 #include "Common.h"
 #include "GameCommander.h"
 #include "UnitUtil.h"
+#include "BaseLocationManager.h"
 
 using namespace UAlbertaBot;
 
@@ -55,8 +56,10 @@ void GameCommander::update()
 	_timerManager.startTimer(TimerManager::Scout);
     ScoutManager::Instance().update();
 	_timerManager.stopTimer(TimerManager::Scout);
-		
+
 	_timerManager.stopTimer(TimerManager::All);
+
+	BaseLocationManager::Instance().onFrame();
 
 	drawDebugInterface();
 }

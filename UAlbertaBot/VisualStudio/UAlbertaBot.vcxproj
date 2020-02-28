@@ -115,6 +115,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\AutoObserver.cpp" />
+    <ClCompile Include="..\Source\BaseLocation.cpp" />
+    <ClCompile Include="..\Source\BaseLocationManager.cpp" />
     <ClCompile Include="..\Source\BOSSManager.cpp" />
     <ClCompile Include="..\source\BuildingManager.cpp" />
     <ClCompile Include="..\source\BuildingPlacer.cpp" />
@@ -124,7 +126,8 @@
     <ClCompile Include="..\Source\CombatCommander.cpp" />
     <ClCompile Include="..\Source\Common.cpp" />
     <ClCompile Include="..\source\DetectorManager.cpp" />
-    <ClCompile Include="..\Source\Client.cpp" />
+    <ClCompile Include="..\Source\DMap.cpp" />
+    <ClCompile Include="..\Source\main.cpp" />
     <ClCompile Include="..\Source\GameCommander.cpp" />
     <ClCompile Include="..\Source\InformationManager.cpp" />
     <ClCompile Include="..\source\JSONTools.cpp" />
@@ -156,6 +159,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\AutoObserver.h" />
+    <ClInclude Include="..\Source\BaseLocation.h" />
+    <ClInclude Include="..\Source\BaseLocationManager.h" />
     <ClInclude Include="..\Source\BOSSManager.h" />
     <ClInclude Include="..\source\BuildingManager.h" />
     <ClInclude Include="..\source\BuildingPlacer.h" />
@@ -166,6 +171,7 @@
     <ClInclude Include="..\Source\Common.h" />
     <ClInclude Include="..\source\DetectorManager.h" />
     <ClInclude Include="..\Source\DistanceMap.hpp" />
+    <ClInclude Include="..\Source\DMap.h" />
     <ClInclude Include="..\Source\GameCommander.h" />
     <ClInclude Include="..\Source\GameHistory.hpp" />
     <ClInclude Include="..\Source\InformationManager.h" />

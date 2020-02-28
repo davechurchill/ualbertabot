@@ -19,9 +19,6 @@
     <Filter Include="game\util\map">
       <UniqueIdentifier>{8ac87511-27d4-42ea-8402-6491d9206435}</UniqueIdentifier>
     </Filter>
-    <Filter Include="module">
-      <UniqueIdentifier>{b5d87a96-0443-4319-afc9-f457d890d031}</UniqueIdentifier>
-    </Filter>
     <Filter Include="common">
       <UniqueIdentifier>{849d54bf-a76a-4425-8399-099fbe0360c4}</UniqueIdentifier>
     </Filter>
@@ -147,12 +144,11 @@
     <ClCompile Include="..\Source\Logger.cpp">
       <Filter>util</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Client.cpp">
-      <Filter>module</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\UAlbertaBotModule.cpp">
-      <Filter>module</Filter>
-    </ClCompile>
+    <ClCompile Include="..\Source\main.cpp" />
+    <ClCompile Include="..\Source\UAlbertaBotModule.cpp" />
+    <ClCompile Include="..\Source\BaseLocation.cpp" />
+    <ClCompile Include="..\Source\BaseLocationManager.cpp" />
+    <ClCompile Include="..\Source\DMap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\CombatCommander.h">
@@ -275,8 +271,9 @@
     <ClInclude Include="..\Source\GameHistory.hpp">
       <Filter>game\util</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\UAlbertaBotModule.h">
-      <Filter>module</Filter>
-    </ClInclude>
+    <ClInclude Include="..\Source\UAlbertaBotModule.h" />
+    <ClInclude Include="..\Source\BaseLocation.h" />
+    <ClInclude Include="..\Source\BaseLocationManager.h" />
+    <ClInclude Include="..\Source\DMap.h" />
   </ItemGroup>
 </Project>

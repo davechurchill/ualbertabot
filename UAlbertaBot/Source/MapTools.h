@@ -35,6 +35,7 @@ public:
 
     static MapTools &       Instance();
 
+	bool					isWalkable(const BWAPI::TilePosition & tile);
     void                    parseMap();
     void                    search(DistanceMap & dmap,const int sR,const int sC);
     void                    fill(const int index,const int region);
