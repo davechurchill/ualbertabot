@@ -2,7 +2,6 @@
 
 #include "BWAPI.h"
 #include <cassert>
-#include <set>
 
 namespace Config
 {

@@ -18,7 +18,7 @@ BuildOrder Tools::GetOptimizedNaiveBuildOrderOld(const GameState & state, const 
         FrameCountType completionTime = buildOrder.getCompletionTime(state);
         UnitCountType workers = buildOrder.getTypeCount(ActionTypes::GetWorker(state.getRace()));
         
-        if ((int)completionTime <= (int)(minCompletionTime + ((workers-bestNumWorkers)*24)))
+        if (completionTime <= minCompletionTime + ((workers-bestNumWorkers)*24))
         {
             minCompletionTime = completionTime;
             bestBuildOrder = buildOrder;

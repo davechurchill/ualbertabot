@@ -56,7 +56,7 @@ public:
     const double    getUCTVal()                 const           { return _uctVal; }
     const bool      hasChildren()               const           { return numChildren() > 0; }
     const size_t    getNodeType()               const           { return _nodeType; }
-    const IDType    getPlayer()                 const           { return (IDType)_player; }
+    const IDType    getPlayer()                 const           { return _player; }
 
     UCTNode *       getParent()                 const           { return _parent; }
     UCTNode &       getChild(const size_t & c)                  { return _children[c]; }

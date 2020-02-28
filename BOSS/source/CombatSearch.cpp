@@ -46,7 +46,7 @@ void CombatSearch::generateLegalActions(const GameState & state, ActionSet & leg
         }
 
         // prune the action if we have too many of them already
-        if ((params.getMaxActions(action) != -1) && ((int)state.getUnitData().getNumTotal(action) >= params.getMaxActions(action)))
+        if ((params.getMaxActions(action) != -1) && (state.getUnitData().getNumTotal(action) >= params.getMaxActions(action)))
         {
             continue;
         }

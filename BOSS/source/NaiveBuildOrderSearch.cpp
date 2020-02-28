@@ -258,7 +258,7 @@ const BuildOrder & NaiveBuildOrderSearch::solve()
 
 		// insert 1 or more supply providers if needed
         // TODO: don't go over 200 supply
-		while (!nextAction.isMorphed() && !nextAction.isSupplyProvider() && ((UnitCountType)nextAction.supplyRequired() > (maxSupply + supplyInProgress - currentSupply)))
+		while (!nextAction.isMorphed() && !nextAction.isSupplyProvider() && (nextAction.supplyRequired() > (maxSupply + supplyInProgress - currentSupply)))
 		{
 			BOSS_ASSERT(_state.isLegal(supplyProvider), "Should be able to build more supply here. Max: %d", maxSupply);
 			finalBuildOrder.add(supplyProvider);

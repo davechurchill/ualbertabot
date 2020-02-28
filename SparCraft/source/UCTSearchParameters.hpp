@@ -71,7 +71,7 @@ public:
     void setCValue(const double & c)					                { _cValue = c; }
     void setMaxTraversals(const size_t & traversals)                    { _maxTraversals = traversals; }
     void setMaxChildren(const size_t & children)                        { _maxChildren = children; }
-    void setMoveOrderingMethod(const size_t & method)                   { _moveOrdering = (IDType)method; }
+    void setMoveOrderingMethod(const size_t & method)                   { _moveOrdering = method; }
     void setEvalMethod(const IDType & eval)						        { _evalMethod = eval; }
     void setPlayerToMoveMethod(const IDType & method)				    { _playerToMoveMethod = method; }
     void setSimScripts(const IDType & p1, const IDType & p2)		    { _simScripts[0] = p1; _simScripts[1] = p2; }

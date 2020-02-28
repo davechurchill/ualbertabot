@@ -269,7 +269,7 @@ bool GameState::isLegal(const ActionType & action) const
     }
 	
     // if it's a unit and we are out of supply and aren't making an overlord, it's not legal
-	if (!action.isMorphed() && !action.isSupplyProvider() && ((_units.getCurrentSupply() + action.supplyRequired()) > (_units.getMaxSupply() + (SupplyCountType)_units.getSupplyInProgress())))
+	if (!action.isMorphed() && !action.isSupplyProvider() && ((_units.getCurrentSupply() + action.supplyRequired()) > (_units.getMaxSupply() + _units.getSupplyInProgress())))
     {
         return false;
     }
@@ -552,7 +552,7 @@ const FrameCountType GameState::whenWorkerReady(const ActionType & action) const
     }
 
     // if we have a mineral worker, then it is ready right now
-    if ((int)getNumMineralWorkers() > 3*refineriesInProgress)
+    if (getNumMineralWorkers() > 3*refineriesInProgress)
     {
         return _currentFrame;
     }
@@ -598,7 +598,7 @@ const FrameCountType GameState::whenSupplyReady(const ActionType & action) const
 
         // if we don't have the resources, this action would only be legal if there is an
         // overlord in progress, so check to see when the first overlord will finish
-        for (int i(0); i<(int)_units.getNumActionsInProgress(); ++i)
+        for (int i(0); i<_units.getNumActionsInProgress(); ++i)
         {
             // so, if the unit provides the supply we need
             if (_units.getActionInProgressByIndex(i).supplyProvided() > supplyNeeded)
@@ -1042,7 +1042,7 @@ const std::string GameState::toString() const
     }
 
 	ss << "\nUnits In Progress:\n";
-    for (int i(0); i<(int)_units.getNumActionsInProgress(); i++) 
+    for (int i(0); i<_units.getNumActionsInProgress(); i++) 
     {
 		ss << "\t" << (int)_units.getFinishTimeByIndex(i) << "\t" << _units.getActionInProgressByIndex(i).getName() << "\n";
     }
@@ -1122,7 +1122,7 @@ std::string GameState::whyIsNotLegal(const ActionType & action) const
     }
 	
     // if it's a unit and we are out of supply and aren't making an overlord, it's not legal
-	if (!action.isMorphed() && !action.isSupplyProvider() && ((_units.getCurrentSupply() + action.supplyRequired()) > (_units.getMaxSupply() + (SupplyCountType)_units.getSupplyInProgress())))
+	if (!action.isMorphed() && !action.isSupplyProvider() && ((_units.getCurrentSupply() + action.supplyRequired()) > (_units.getMaxSupply() + _units.getSupplyInProgress())))
     {
         ss << action.getName() << " - Reason: Not enough supply" << std::endl;
         return ss.str();
