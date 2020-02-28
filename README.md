@@ -8,6 +8,7 @@ Update: Feb 27, 2020
 - UAlbertaBot no longer uses BWTA - it is replaced with the custom BaseLocationManager from CommandCenter
 - UAlbertaBot now uses the Client .exe compilation method instead of module DLL
 - The bot will only work for the first game played after the .exe is run, so AUTO_RESTART won't work well. I'll fix this later
+- You can download StarCraft 1.16.1 here: http://ftp.blizzard.com/pub/broodwar/patches/PC/BW-1161.exe
 
 Please check out the [Wiki](https://github.com/davechurchill/ualbertabot/wiki) for full instructions and documentation!
 
