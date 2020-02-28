@@ -87,9 +87,6 @@
     <ClCompile Include="..\source\RangedManager.cpp">
       <Filter>game\combat\micro</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\ScoutManager.cpp">
-      <Filter>game\combat\micro</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\TransportManager.cpp">
       <Filter>game\combat\micro</Filter>
     </ClCompile>
@@ -149,6 +146,9 @@
     <ClCompile Include="..\Source\BaseLocation.cpp" />
     <ClCompile Include="..\Source\BaseLocationManager.cpp" />
     <ClCompile Include="..\Source\DMap.cpp" />
+    <ClCompile Include="..\source\ScoutManager.cpp">
+      <Filter>game\combat\micro</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\CombatCommander.h">
@@ -214,9 +214,6 @@
     <ClInclude Include="..\source\RangedManager.h">
       <Filter>game\combat\micro</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\ScoutManager.h">
-      <Filter>game\combat\micro</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\BuildOrderQueue.h">
       <Filter>game\macro\buildorders</Filter>
     </ClInclude>
@@ -275,5 +272,8 @@
     <ClInclude Include="..\Source\BaseLocation.h" />
     <ClInclude Include="..\Source\BaseLocationManager.h" />
     <ClInclude Include="..\Source\DMap.h" />
+    <ClInclude Include="..\source\ScoutManager.h">
+      <Filter>game\combat\micro</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

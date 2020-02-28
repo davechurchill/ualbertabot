@@ -29,7 +29,6 @@ class ScoutManager
     void                            followPerimeter();
 	void                            moveScouts();
     void                            drawScoutInformation(int x, int y);
-    void                            calculateEnemyRegionVertices();
 
 	ScoutManager();
 

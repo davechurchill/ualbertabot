@@ -36,7 +36,7 @@ void BaseLocationManager::onStart()
 {
 	m_tileBaseLocations = std::vector<std::vector<BaseLocation *>>(BWAPI::Broodwar->mapWidth(), std::vector<BaseLocation *>(BWAPI::Broodwar->mapHeight(), nullptr));
     m_playerStartingBaseLocations[BWAPI::Broodwar->self()]  = nullptr;
-	m_playerStartingBaseLocations[BWAPI::Broodwar->self()] = nullptr;
+	m_playerStartingBaseLocations[BWAPI::Broodwar->enemy()] = nullptr;
     
     // a BaseLocation will be anything where there are minerals to mine
     // so we will first look over all minerals and cluster them based on some distance
