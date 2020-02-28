@@ -1,4 +1,4 @@
-UAlbertaBot - StarCraft AI Competition Bot - David Churchill (dave.churchill@gmail.com)
+**UAlbertaBot** - StarCraft AI Competition Bot - David Churchill (dave.churchill@gmail.com)
 
 **Update: Feb 28, 2020**
 - UAlbertaBot now uses VS2019
