@@ -7,7 +7,7 @@ InformationManager::InformationManager()
     : _self(BWAPI::Broodwar->self())
     , _enemy(BWAPI::Broodwar->enemy())
 {
-	initializeRegionInformation();
+	
 }
 
 InformationManager & InformationManager::Instance() 
@@ -19,7 +19,6 @@ InformationManager & InformationManager::Instance()
 void InformationManager::update() 
 {
 	updateUnitInfo();
-	updateBaseLocationInfo();
 }
 
 void InformationManager::updateUnitInfo() 
@@ -39,152 +38,9 @@ void InformationManager::updateUnitInfo()
 	_unitData[_self].removeBadUnits();
 }
 
-void InformationManager::initializeRegionInformation() 
-{
-	// set initial pointers to null
-	_mainBaseLocations[_self] = BWTA::getStartLocation(BWAPI::Broodwar->self());
-	_mainBaseLocations[_enemy] = BWTA::getStartLocation(BWAPI::Broodwar->enemy());
-
-	// push that region into our occupied vector
-	updateOccupiedRegions(BWTA::getRegion(_mainBaseLocations[_self]->getTilePosition()), BWAPI::Broodwar->self());
-}
-
-
-void InformationManager::updateBaseLocationInfo() 
-{
-	_occupiedRegions[_self].clear();
-	_occupiedRegions[_enemy].clear();
-		
-	// if we haven't found the enemy main base location yet
-	if (!_mainBaseLocations[_enemy]) 
-	{ 
-		// how many start locations have we explored
-		int exploredStartLocations = 0;
-		bool baseFound = false;
-
-		// an undexplored base location holder
-		BWTA::BaseLocation * unexplored = nullptr;
-
-		for (BWTA::BaseLocation * startLocation : BWTA::getStartLocations()) 
-		{
-			if (isEnemyBuildingInRegion(BWTA::getRegion(startLocation->getTilePosition()))) 
-			{
-                if (Config::Debug::DrawScoutInfo)
-                {
-				    BWAPI::Broodwar->printf("Enemy base found by seeing it");
-                }
-
-				baseFound = true;
-				_mainBaseLocations[_enemy] = startLocation;
-				updateOccupiedRegions(BWTA::getRegion(startLocation->getTilePosition()), BWAPI::Broodwar->enemy());
-			}
-
-			// if it's explored, increment
-			if (BWAPI::Broodwar->isExplored(startLocation->getTilePosition())) 
-			{
-				exploredStartLocations++;
-
-			// otherwise set the unexplored base
-			} 
-			else 
-			{
-				unexplored = startLocation;
-			}
-		}
-
-		// if we've explored every start location except one, it's the enemy
-		if (!baseFound && exploredStartLocations == ((int)BWTA::getStartLocations().size() - 1)) 
-		{
-            if (Config::Debug::DrawScoutInfo)
-            {
-                BWAPI::Broodwar->printf("Enemy base found by process of elimination");
-            }
-			
-			_mainBaseLocations[_enemy] = unexplored;
-			updateOccupiedRegions(BWTA::getRegion(unexplored->getTilePosition()), BWAPI::Broodwar->enemy());
-		}
-	// otherwise we do know it, so push it back
-	} 
-	else 
-	{
-		updateOccupiedRegions(BWTA::getRegion(_mainBaseLocations[_enemy]->getTilePosition()), BWAPI::Broodwar->enemy());
-	}
-
-	// for each enemy unit we know about
-	for (const auto & kv : _unitData[_enemy].getUnits())
-	{
-		const UnitInfo & ui(kv.second);
-		BWAPI::UnitType type = ui.type;
-
-		// if the unit is a building
-		if (type.isBuilding()) 
-		{
-			// update the enemy occupied regions
-			updateOccupiedRegions(BWTA::getRegion(BWAPI::TilePosition(ui.lastPosition)), BWAPI::Broodwar->enemy());
-		}
-	}
-
-	// for each of our units
-	for (const auto & kv : _unitData[_self].getUnits())
-	{
-		const UnitInfo & ui(kv.second);
-		BWAPI::UnitType type = ui.type;
-
-		// if the unit is a building
-		if (type.isBuilding()) 
-		{
-			// update the enemy occupied regions
-			updateOccupiedRegions(BWTA::getRegion(BWAPI::TilePosition(ui.lastPosition)), BWAPI::Broodwar->self());
-		}
-	}
-}
-
-void InformationManager::updateOccupiedRegions(BWTA::Region * region, BWAPI::Player player) 
-{
-	// if the region is valid (flying buildings may be in nullptr regions)
-	if (region)
-	{
-		// add it to the list of occupied regions
-		_occupiedRegions[player].insert(region);
-	}
-}
-
-bool InformationManager::isEnemyBuildingInRegion(BWTA::Region * region) 
-{
-	// invalid regions aren't considered the same, but they will both be null
-	if (!region)
-	{
-		return false;
-	}
-
-	for (const auto & kv : _unitData[_enemy].getUnits())
-	{
-		const UnitInfo & ui(kv.second);
-		if (ui.type.isBuilding()) 
-		{
-			if (BWTA::getRegion(BWAPI::TilePosition(ui.lastPosition)) == region) 
-			{
-				return true;
-			}
-		}
-	}
-
-	return false;
-}
-
 const UIMap & InformationManager::getUnitInfo(BWAPI::Player player) const
 {
 	return getUnitData(player).getUnits();
-}
-
-std::set<BWTA::Region *> & InformationManager::getOccupiedRegions(BWAPI::Player player)
-{
-	return _occupiedRegions[player];
-}
-
-BWTA::BaseLocation * InformationManager::getMainBaseLocation(BWAPI::Player player) 
-{
-	return _mainBaseLocations[player];
 }
 
 void InformationManager::drawExtendedInterface()
@@ -394,56 +250,7 @@ void InformationManager::drawMapInformation()
         return;
     }
 
-	//we will iterate through all the base locations, and draw their outlines.
-	for (std::set<BWTA::BaseLocation*>::const_iterator i = BWTA::getBaseLocations().begin(); i != BWTA::getBaseLocations().end(); i++)
-	{
-		BWAPI::TilePosition p = (*i)->getTilePosition();
-		BWAPI::Position c = (*i)->getPosition();
-
-		//draw outline of center location
-		BWAPI::Broodwar->drawBoxMap(p.x * 32, p.y * 32, p.x * 32 + 4 * 32, p.y * 32 + 3 * 32, BWAPI::Colors::Blue);
-
-		//draw a circle at each mineral patch
-		for (BWAPI::Unitset::iterator j = (*i)->getStaticMinerals().begin(); j != (*i)->getStaticMinerals().end(); j++)
-		{
-			BWAPI::Position q = (*j)->getInitialPosition();
-			BWAPI::Broodwar->drawCircleMap(q.x, q.y, 30, BWAPI::Colors::Cyan);
-		}
-
-		//draw the outlines of vespene geysers
-		for (BWAPI::Unitset::iterator j = (*i)->getGeysers().begin(); j != (*i)->getGeysers().end(); j++)
-		{
-			BWAPI::TilePosition q = (*j)->getInitialTilePosition();
-			BWAPI::Broodwar->drawBoxMap(q.x * 32, q.y * 32, q.x * 32 + 4 * 32, q.y * 32 + 2 * 32, BWAPI::Colors::Orange);
-		}
-
-		//if this is an island expansion, draw a yellow circle around the base location
-		if ((*i)->isIsland())
-			BWAPI::Broodwar->drawCircleMap(c, 80, BWAPI::Colors::Yellow);
-	}
-
-	//we will iterate through all the regions and draw the polygon outline of it in green.
-	for (std::set<BWTA::Region*>::const_iterator r = BWTA::getRegions().begin(); r != BWTA::getRegions().end(); r++)
-	{
-		BWTA::Polygon p = (*r)->getPolygon();
-		for (int j = 0; j<(int)p.size(); j++)
-		{
-			BWAPI::Position point1 = p[j];
-			BWAPI::Position point2 = p[(j + 1) % p.size()];
-			BWAPI::Broodwar->drawLineMap(point1, point2, BWAPI::Colors::Green);
-		}
-	}
-
-	//we will visualize the chokepoints with red lines
-	for (std::set<BWTA::Region*>::const_iterator r = BWTA::getRegions().begin(); r != BWTA::getRegions().end(); r++)
-	{
-		for (std::set<BWTA::Chokepoint*>::const_iterator c = (*r)->getChokepoints().begin(); c != (*r)->getChokepoints().end(); c++)
-		{
-			BWAPI::Position point1 = (*c)->getSides().first;
-			BWAPI::Position point2 = (*c)->getSides().second;
-			BWAPI::Broodwar->drawLineMap(point1, point2, BWAPI::Colors::Red);
-		}
-	}
+	
 }
 
 void InformationManager::updateUnit(BWAPI::Unit unit)

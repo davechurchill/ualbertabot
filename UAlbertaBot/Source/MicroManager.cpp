@@ -1,4 +1,5 @@
 #include "MicroManager.h"
+#include "BaseLocationManager.h"
 
 using namespace UAlbertaBot;
 
@@ -94,10 +95,10 @@ void MicroManager::execute(const SquadOrder & inputOrder)
                     // if it is a worker
                     else
                     {
-                        for (BWTA::Region * enemyRegion : InformationManager::Instance().getOccupiedRegions(BWAPI::Broodwar->enemy()))
+                        for (auto enemyBase : BaseLocationManager::Instance().getOccupiedBaseLocations(BWAPI::Broodwar->enemy()))
                         {
                             // only add it if it's in their region
-                            if (BWTA::getRegion(BWAPI::TilePosition(enemyUnit->getPosition())) == enemyRegion)
+							if (enemyBase->containsPosition(enemyUnit->getPosition()))
                             {
                                 workersRemoved.insert(enemyUnit);
                             }
@@ -198,14 +199,7 @@ void MicroManager::trainSubUnits(BWAPI::Unit unit) const
 
 bool MicroManager::unitNearChokepoint(BWAPI::Unit unit) const
 {
-	for (BWTA::Chokepoint * choke : BWTA::getChokepoints())
-	{
-		if (unit->getDistance(choke->getCenter()) < 80)
-		{
-			return true;
-		}
-	}
-
+	// TODO: Chokepoint
 	return false;
 }
 

@@ -42,7 +42,7 @@ BWAPI::Position MapGrid::getLeastExplored()
 			BWAPI::Position cellCenter = getCellCenter(r,c);
 
 			// don't worry about places that aren't connected to our start locatin
-			if (!BWTA::isConnected(BWAPI::TilePosition(cellCenter), BWAPI::Broodwar->self()->getStartLocation()))
+			if (MapTools::Instance().getGroundDistance(cellCenter, BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation())) > 0)
 			{
 				continue;
 			}

@@ -1,6 +1,7 @@
 #include "Common.h"
 #include "BuildingPlacer.h"
 #include "MapGrid.h"
+#include "BaseLocationManager.h"
 
 using namespace UAlbertaBot;
 
@@ -245,11 +246,11 @@ bool BuildingPlacer::tileOverlapsBaseLocation(BWAPI::TilePosition tile,BWAPI::Un
     int ty2 = ty1 + type.tileHeight();
 
     // for each base location
-    for (BWTA::BaseLocation * base : BWTA::getBaseLocations())
+    for (auto base : BaseLocationManager::Instance().getBaseLocations())
     {
         // dimensions of the base location
-        int bx1 = base->getTilePosition().x;
-        int by1 = base->getTilePosition().y;
+        int bx1 = base->getDepotPosition().x;
+		int by1 = base->getDepotPosition().y;
         int bx2 = bx1 + BWAPI::Broodwar->self()->getRace().getCenter().tileWidth();
         int by2 = by1 + BWAPI::Broodwar->self()->getRace().getCenter().tileHeight();
 

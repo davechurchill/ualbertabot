@@ -214,10 +214,7 @@ BWAPI::TilePosition MapTools::getTilePosition(int index)
     return BWAPI::TilePosition(index % _cols,index / _cols);
 }
 
-BWAPI::TilePosition MapTools::getNextExpansion()
-{
-    return getNextExpansion(BWAPI::Broodwar->self());
-}
+
 
 void MapTools::drawHomeDistanceMap()
 {
@@ -232,75 +229,6 @@ void MapTools::drawHomeDistanceMap()
 
             BWAPI::Broodwar->drawTextMap(pos + BWAPI::Position(16,16), "%d", dist);
         }
-    }
-}
-
-BWAPI::TilePosition MapTools::getNextExpansion(BWAPI::Player player)
-{
-    BWTA::BaseLocation * closestBase = nullptr;
-    double minDistance = 100000;
-
-    BWAPI::TilePosition homeTile = player->getStartLocation();
-
-    // for each base location
-    for (BWTA::BaseLocation * base : BWTA::getBaseLocations())
-    {
-        // if the base has gas
-        if (!base->isMineralOnly() && !(base == BWTA::getStartLocation(player)))
-        {
-            // get the tile position of the base
-            BWAPI::TilePosition tile = base->getTilePosition();
-            bool buildingInTheWay = false;
-
-            for (int x = 0; x < BWAPI::Broodwar->self()->getRace().getCenter().tileWidth(); ++x)
-            {
-                for (int y = 0; y < BWAPI::Broodwar->self()->getRace().getCenter().tileHeight(); ++y)
-                {
-                    BWAPI::TilePosition tp(tile.x + x, tile.y + y);
-
-                    for (auto & unit : BWAPI::Broodwar->getUnitsOnTile(tp))
-                    {
-                        if (unit->getType().isBuilding() && !unit->isFlying())
-                        {
-                            buildingInTheWay = true;
-                            break;
-                        }
-                    }
-                }
-            }
-            
-            if (buildingInTheWay)
-            {
-                continue;
-            }
-
-            // the base's distance from our main nexus
-            BWAPI::Position myBasePosition(player->getStartLocation());
-            BWAPI::Position thisTile = BWAPI::Position(tile);
-            double distanceFromHome = MapTools::Instance().getGroundDistance(thisTile,myBasePosition);
-
-            // if it is not connected, continue
-            if (!BWTA::isConnected(homeTile,tile) || distanceFromHome < 0)
-            {
-                continue;
-            }
-
-            if (!closestBase || distanceFromHome < minDistance)
-            {
-                closestBase = base;
-                minDistance = distanceFromHome;
-            }
-        }
-
-    }
-
-    if (closestBase)
-    {
-        return closestBase->getTilePosition();
-    }
-    else
-    {
-        return BWAPI::TilePositions::None;
     }
 }
 

@@ -288,7 +288,7 @@ void BaseLocationManager::drawBaseLocations()
     // draw a purple sphere at the next expansion location
     BWAPI::TilePosition nextExpansionPosition = getNextExpansion(BWAPI::Broodwar->self());
 
-    BWAPI::Broodwar->drawCircleMap(BWAPI::Position(nextExpansionPosition), 1, BWAPI::Color(255, 0, 255));
+    BWAPI::Broodwar->drawCircleMap(BWAPI::Position(nextExpansionPosition), 32, BWAPI::Color(255, 0, 255), true);
 	BWAPI::Broodwar->drawTextMap(BWAPI::Position(nextExpansionPosition), "Next Expansion Location", BWAPI::Color(255, 0, 255));
 }
 

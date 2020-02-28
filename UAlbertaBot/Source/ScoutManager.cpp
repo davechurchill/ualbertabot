@@ -1,5 +1,6 @@
 #include "ScoutManager.h"
 #include "ProductionManager.h"
+#include "BaseLocationManager.h"
 
 using namespace UAlbertaBot;
 
@@ -79,7 +80,7 @@ void ScoutManager::moveScouts()
     gasSteal();
 
 	// get the enemy base location, if we have one
-	BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
+	auto enemyBaseLocation = BaseLocationManager::Instance().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
 
     int scoutDistanceThreshold = 30;
 
@@ -171,13 +172,15 @@ void ScoutManager::moveScouts()
 	{
         _scoutStatus = "Enemy base unknown, exploring";
 
-		for (BWTA::BaseLocation * startLocation : BWTA::getStartLocations()) 
+		
+
+		for (auto startLocation : BaseLocationManager::Instance().getStartingBaseLocations())
 		{
 			// if we haven't explored it yet
-			if (!BWAPI::Broodwar->isExplored(startLocation->getTilePosition())) 
+			if (!BWAPI::Broodwar->isExplored(BWAPI::TilePosition(startLocation->getPosition()))) 
 			{
 				// assign a zergling to go scout it
-				Micro::SmartMove(_workerScout, BWAPI::Position(startLocation->getTilePosition()));			
+				Micro::SmartMove(_workerScout, startLocation->getPosition());			
 				return;
 			}
 		}
@@ -217,7 +220,7 @@ void ScoutManager::gasSteal()
         return;
     }
 
-    BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
+	auto enemyBaseLocation = BaseLocationManager::Instance().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
     if (!enemyBaseLocation)
     {
         _gasStealStatus = "No enemy base location found";
@@ -277,7 +280,7 @@ BWAPI::Unit ScoutManager::closestEnemyWorker()
 BWAPI::Unit ScoutManager::getEnemyGeyser()
 {
 	BWAPI::Unit geyser = nullptr;
-	BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
+	auto enemyBaseLocation = BaseLocationManager::Instance().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
 
 	for (auto & unit : enemyBaseLocation->getGeysers())
 	{
@@ -352,7 +355,7 @@ BWAPI::Position ScoutManager::getFleePosition()
 {
     UAB_ASSERT_WARNING(!_enemyRegionVertices.empty(), "We should have an enemy region vertices if we are fleeing");
     
-    BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
+	auto enemyBaseLocation = BaseLocationManager::Instance().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
 
     // if this is the first flee, we will not have a previous perimeter index
     if (_currentRegionVertexIndex == -1)
@@ -360,7 +363,7 @@ BWAPI::Position ScoutManager::getFleePosition()
         // so return the closest position in the polygon
         int closestPolygonIndex = getClosestVertexIndex(_workerScout);
 
-        UAB_ASSERT_WARNING(closestPolygonIndex != -1, "Couldn't find a closest vertex");
+        //UAB_ASSERT_WARNING(closestPolygonIndex != -1, "Couldn't find a closest vertex");
 
         if (closestPolygonIndex == -1)
         {
@@ -393,18 +396,10 @@ BWAPI::Position ScoutManager::getFleePosition()
 
 void ScoutManager::calculateEnemyRegionVertices()
 {
-    BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
+	/*auto enemyBaseLocation = BaseLocationManager::Instance().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
     //UAB_ASSERT_WARNING(enemyBaseLocation, "We should have an enemy base location if we are fleeing");
 
     if (!enemyBaseLocation)
-    {
-        return;
-    }
-
-    BWTA::Region * enemyRegion = enemyBaseLocation->getRegion();
-    //UAB_ASSERT_WARNING(enemyRegion, "We should have an enemy region if we are fleeing");
-
-    if (!enemyRegion)
     {
         return;
     }
@@ -419,7 +414,7 @@ void ScoutManager::calculateEnemyRegionVertices()
     {
         const BWAPI::TilePosition & tp = closestTobase[i];
 
-        if (BWTA::getRegion(tp) != enemyRegion)
+        if (BaseLocationManager::Instance().get != enemyRegion)
         {
             continue;
         }
@@ -537,5 +532,5 @@ void ScoutManager::calculateEnemyRegionVertices()
         sortedVertices = temp;
     }
 
-    _enemyRegionVertices = sortedVertices;
+    _enemyRegionVertices = sortedVertices;*/
 }

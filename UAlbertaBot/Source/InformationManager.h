@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Common.h"
-#include "BWTA.h"
 
 #include "UnitData.h"
 
@@ -20,17 +19,10 @@ class InformationManager
     BWAPI::Player       _enemy;
 
     std::map<BWAPI::Player, UnitData>                   _unitData;
-    std::map<BWAPI::Player, BWTA::BaseLocation *>       _mainBaseLocations;
-    std::map<BWAPI::Player, std::set<BWTA::Region *> >  _occupiedRegions;
-
     int                     getIndex(BWAPI::Player player) const;
 
     void                    updateUnit(BWAPI::Unit unit);
-    void                    initializeRegionInformation();
-    void                    initializeBaseInfoVector();
     void                    updateUnitInfo();
-    void                    updateBaseLocationInfo();
-    void                    updateOccupiedRegions(BWTA::Region * region,BWAPI::Player player);
     bool                    isValidUnit(BWAPI::Unit unit);
 
 public:
@@ -49,7 +41,6 @@ public:
     void					onUnitRenegade(BWAPI::Unit unit)    { updateUnit(unit); }
     void					onUnitDestroy(BWAPI::Unit unit);
 
-    bool					isEnemyBuildingInRegion(BWTA::Region * region);
     int						getNumUnits(BWAPI::UnitType type,BWAPI::Player player);
     bool					nearbyForceHasCloaked(BWAPI::Position p,BWAPI::Player player,int radius);
     bool					isCombatUnit(BWAPI::UnitType type) const;
@@ -57,10 +48,7 @@ public:
     void                    getNearbyForce(std::vector<UnitInfo> & unitInfo,BWAPI::Position p,BWAPI::Player player,int radius);
 
     const UIMap &           getUnitInfo(BWAPI::Player player) const;
-
-    std::set<BWTA::Region *> &  getOccupiedRegions(BWAPI::Player player);
-    BWTA::BaseLocation *    getMainBaseLocation(BWAPI::Player player);
-
+	
     bool                    enemyHasCloakedUnits();
 
     void                    drawExtendedInterface();

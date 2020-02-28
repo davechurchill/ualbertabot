@@ -1,6 +1,7 @@
 #include "Common.h"
 #include "StrategyManager.h"
 #include "UnitUtil.h"
+#include "BaseLocationManager.h"
 
 using namespace UAlbertaBot;
 
@@ -44,7 +45,7 @@ const BuildOrder & StrategyManager::getOpeningBookBuildOrder() const
 const bool StrategyManager::shouldExpandNow() const
 {
 	// if there is no place to expand to, we can't expand
-	if (MapTools::Instance().getNextExpansion() == BWAPI::TilePositions::None)
+	if (BaseLocationManager::Instance().getNextExpansion(BWAPI::Broodwar->self()) == BWAPI::TilePositions::None)
 	{
         BWAPI::Broodwar->printf("No valid expansion location");
 		return false;

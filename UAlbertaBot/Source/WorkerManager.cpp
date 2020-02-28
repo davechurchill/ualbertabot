@@ -1,6 +1,7 @@
 #include "Common.h"
 #include "WorkerManager.h"
 #include "Micro.h"
+#include "BaseLocationManager.h"
 
 using namespace UAlbertaBot;
 
@@ -101,7 +102,7 @@ void WorkerManager::handleGasWorkers()
 
 bool WorkerManager::isGasStealRefinery(BWAPI::Unit unit)
 {
-    BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
+	auto * enemyBaseLocation = BaseLocationManager::Instance().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
     if (!enemyBaseLocation)
     {
         return false;

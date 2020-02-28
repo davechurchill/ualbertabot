@@ -2,6 +2,7 @@
 #include "BuildingManager.h"
 #include "Micro.h"
 #include "ScoutManager.h"
+#include "BaseLocationManager.h"
 
 using namespace UAlbertaBot;
 
@@ -398,7 +399,7 @@ BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
 
     if (b.isGasSteal)
     {
-        BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
+		auto enemyBaseLocation = BaseLocationManager::Instance().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
         UAB_ASSERT(enemyBaseLocation,"Should have enemy base location before attempting gas steal");
         UAB_ASSERT(enemyBaseLocation->getGeysers().size() > 0,"Should have spotted an enemy geyser");
 
@@ -422,7 +423,7 @@ BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
     if (b.type.isResourceDepot())
     {
         // get the location 
-        BWAPI::TilePosition tile = MapTools::Instance().getNextExpansion();
+		auto tile = BaseLocationManager::Instance().getNextExpansion(BWAPI::Broodwar->self());
 
         return tile;
     }

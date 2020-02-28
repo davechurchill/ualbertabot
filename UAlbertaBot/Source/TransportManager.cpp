@@ -1,4 +1,5 @@
 #include "TransportManager.h"
+#include "BaseLocationManager.h"
 
 using namespace UAlbertaBot;
 
@@ -24,7 +25,7 @@ void TransportManager::executeMicro(const BWAPI::Unitset & targets)
 
 void TransportManager::calculateMapEdgeVertices()
 {
-	BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
+	auto enemyBaseLocation = BaseLocationManager::Instance().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
 
 	if (!enemyBaseLocation)
 	{
@@ -169,7 +170,7 @@ void TransportManager::moveTroops()
 	//unload zealots if close enough or dying
 	int transportHP = _transportShip->getHitPoints() + _transportShip->getShields();
 	
-	BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
+	auto enemyBaseLocation = BaseLocationManager::Instance().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
 
 	if (enemyBaseLocation && (_transportShip->getDistance(enemyBaseLocation->getPosition()) < 300 || transportHP < 100)
 		&& _transportShip->canUnloadAtPosition(_transportShip->getPosition()))
@@ -310,7 +311,7 @@ std::pair<int,int> TransportManager::findSafePath(BWAPI::Position to, BWAPI::Pos
 	UAB_ASSERT_WARNING(endPolygonIndex != -1, "Couldn't find a closest vertex");
 	BWAPI::Position enemyEdge = _mapEdgeVertices[endPolygonIndex];
 
-	BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
+	auto * enemyBaseLocation = BaseLocationManager::Instance().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
 	BWAPI::Position enemyPosition = enemyBaseLocation->getPosition();
 
 	//find the projections on the 4 edges
@@ -364,8 +365,6 @@ std::pair<int,int> TransportManager::findSafePath(BWAPI::Position to, BWAPI::Pos
 BWAPI::Position TransportManager::getFleePosition(int clockwise)
 {
 	UAB_ASSERT_WARNING(!_mapEdgeVertices.empty(), "We should have a transport route!");
-
-	//BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
 
 	// if this is the first flee, we will not have a previous perimeter index
 	if (_currentRegionVertexIndex == -1)

@@ -28,14 +28,7 @@ void TankManager::executeMicro(const BWAPI::Unitset & targets)
 		//trainSubUnits(rangedUnit);
 
         bool tankNearChokepoint = false; 
-        for (auto & choke : BWTA::getChokepoints())
-        {
-            if (choke->getCenter().getDistance(tank->getPosition()) < 64)
-            {
-                tankNearChokepoint = true;
-                break;
-            }
-        }
+        // TODO: chokepoint
 
 		// if the order is to attack or defend
 		if (order.getType() == SquadOrderTypes::Attack || order.getType() == SquadOrderTypes::Defend) 

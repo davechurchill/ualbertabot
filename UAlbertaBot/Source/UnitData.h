@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Common.h"
-#include "BWTA.h"
 
 namespace UAlbertaBot
 {

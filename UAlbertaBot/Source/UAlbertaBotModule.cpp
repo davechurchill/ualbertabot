@@ -58,9 +58,6 @@ void UAlbertaBotModule::onStart()
     // Call BWTA to read and analyze the current map
     if (Config::Modules::UsingGameCommander)
 	{
-		BWTA::readMap();
-		BWTA::analyze();
-
         if (Config::Modules::UsingStrategyIO)
         {
             StrategyManager::Instance().readResults();
