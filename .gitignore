@@ -11,3 +11,8 @@ UAlbertaBot/UAB_ErrorLog.txt
 UAlbertaBot/UAB_ErrorLog.txt
 BOSS/VisualStudio/BOSS.VC.db
 *.bwta
+*.db
+*.ipch
+*.opendb
+*.db-shm
+*.db-wal
