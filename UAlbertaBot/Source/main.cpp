@@ -5,18 +5,9 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
-#include <string>
 
 using namespace BWAPI;
 using namespace UAlbertaBot;
-
-void drawStats();
-void drawBullets();
-void drawVisibilityData();
-void showPlayers();
-void showForces();
-bool show_bullets;
-bool show_visibility_data;
 
 void UAlbertaBot_BWAPIReconnect()
 {
