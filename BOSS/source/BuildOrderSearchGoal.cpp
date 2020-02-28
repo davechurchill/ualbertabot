@@ -14,7 +14,7 @@ BuildOrderSearchGoal::BuildOrderSearchGoal(const RaceID race)
 void BuildOrderSearchGoal::calculateSupplyRequired()
 {
     _supplyRequiredVal = 0;
-    for (ActionID a(0); a<_goalUnits.size(); ++a)
+    for (ActionID a(0); a< (int)_goalUnits.size(); ++a)
     {
         _supplyRequiredVal += _goalUnits[a] * ActionTypes::GetActionType(_race, a).supplyRequired();
     }
@@ -22,7 +22,7 @@ void BuildOrderSearchGoal::calculateSupplyRequired()
 
 bool BuildOrderSearchGoal::operator == (const BuildOrderSearchGoal & g)
 {
-    for (ActionID a(0); a<_goalUnits.size(); ++a)
+    for (ActionID a(0); a< (int)_goalUnits.size(); ++a)
     {
         if ((_goalUnits[a] != g._goalUnits[a]) || (_goalUnitsMax[a] != g._goalUnitsMax[a]))
         {
@@ -35,7 +35,7 @@ bool BuildOrderSearchGoal::operator == (const BuildOrderSearchGoal & g)
 
 void BuildOrderSearchGoal::setGoal(const ActionType & a, const UnitCountType num)
 {
-    BOSS_ASSERT(a.ID() >= 0 && a.ID() < _goalUnits.size(), "Action type not valid");
+    BOSS_ASSERT(a.ID() >= 0 && a.ID() < (int)_goalUnits.size(), "Action type not valid");
     BOSS_ASSERT(a.getRace() == _race, "Action type race doesn't match this goal object");
 
     _goalUnits[a.ID()] = num;
@@ -45,7 +45,7 @@ void BuildOrderSearchGoal::setGoal(const ActionType & a, const UnitCountType num
 
 bool BuildOrderSearchGoal::hasGoal() const
 {
-    for (ActionID a(0); a<_goalUnits.size(); ++a)
+    for (ActionID a(0); a< (int)_goalUnits.size(); ++a)
     {
         if (_goalUnits[a] > 0)
         {
@@ -58,7 +58,7 @@ bool BuildOrderSearchGoal::hasGoal() const
 
 void BuildOrderSearchGoal::setGoalMax(const ActionType & a, const UnitCountType num)
 {
-    BOSS_ASSERT(a.ID() >= 0 && a.ID() < _goalUnitsMax.size(), "Action type not valid");
+    BOSS_ASSERT(a.ID() >= 0 && a.ID() < (int)_goalUnitsMax.size(), "Action type not valid");
     BOSS_ASSERT(a.getRace() == _race, "Action type race doesn't match this goal object");
 
     _goalUnitsMax[a.ID()] = num;
@@ -66,7 +66,7 @@ void BuildOrderSearchGoal::setGoalMax(const ActionType & a, const UnitCountType 
 
 UnitCountType BuildOrderSearchGoal::getGoal(const ActionType & a) const
 {
-    BOSS_ASSERT(a.ID() >= 0 && a.ID() < _goalUnits.size(), "Action type not valid");
+    BOSS_ASSERT(a.ID() >= 0 && a.ID() < (int)_goalUnits.size(), "Action type not valid");
     BOSS_ASSERT(a.getRace() == _race, "Action type race doesn't match this goal object");
 
     return _goalUnits[a.ID()];
@@ -74,7 +74,7 @@ UnitCountType BuildOrderSearchGoal::getGoal(const ActionType & a) const
 
 UnitCountType BuildOrderSearchGoal::getGoalMax(const ActionType & a) const
 {
-    BOSS_ASSERT(a.ID() >= 0 && a.ID() < _goalUnitsMax.size(), "Action type not valid");
+    BOSS_ASSERT(a.ID() >= 0 && a.ID() < (int)_goalUnitsMax.size(), "Action type not valid");
     BOSS_ASSERT(a.getRace() == _race, "Action type race doesn't match this goal object");
 
     return _goalUnitsMax[a.ID()];
@@ -90,7 +90,7 @@ std::string BuildOrderSearchGoal::toString() const
     std::stringstream ss;
     ss << "\nSearch Goal Information\n\n";
 
-    for (ActionID a(0); a<_goalUnits.size(); ++a)
+    for (ActionID a(0); a< (int)_goalUnits.size(); ++a)
     {
         if (_goalUnits[a] > 0)
         {
@@ -98,7 +98,7 @@ std::string BuildOrderSearchGoal::toString() const
         }
     }
 
-    for (ActionID a(0); a<_goalUnitsMax.size(); ++a)
+    for (ActionID a(0); a< (int)_goalUnitsMax.size(); ++a)
     {
         if (_goalUnitsMax[a] > 0)
         {

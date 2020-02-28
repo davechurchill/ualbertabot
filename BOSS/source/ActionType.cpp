@@ -234,7 +234,7 @@ namespace ActionTypes
 
     const ActionType & GetActionType(const RaceID & race, const ActionID & id)
     {
-        BOSS_ASSERT(race < Races::NUM_RACES && id < ActionTypes::GetAllActionTypes(race).size(), "Race / Action does not exist");
+        BOSS_ASSERT(race < Races::NUM_RACES && id < (int)ActionTypes::GetAllActionTypes(race).size(), "Race / Action does not exist");
 
         return allActionTypes[race][id];
     }

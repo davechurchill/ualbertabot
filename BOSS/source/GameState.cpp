@@ -237,7 +237,7 @@ const RaceID GameState::getRace() const
 void GameState::getAllLegalActions(ActionSet & actions) const
 {
     const std::vector<ActionType> & allActions = ActionTypes::GetAllActionTypes(getRace());
-	for (ActionID i(0); i<allActions.size(); ++i)
+	for (ActionID i(0); i< (int)allActions.size(); ++i)
 	{
         const ActionType & action = allActions[i];
 
@@ -279,7 +279,7 @@ bool GameState::isLegal(const ActionType & action) const
     if (action.isBuilding() && !action.isMorphed() && !action.isAddon())
     {
         // be very strict about when we can make refineries to ensure we have enough workers to go in gas
-        if (action.isRefinery() && (getNumMineralWorkers() <= (4 + 3*refineriesInProgress)))
+        if (action.isRefinery() && (getNumMineralWorkers() <= (int)(4 + 3*refineriesInProgress)))
         {
             return false;
         }
@@ -722,10 +722,10 @@ const FrameCountType GameState::whenMineralsReady(const ActionType & action) con
     ResourceCountType difference            = action.mineralPrice() - _minerals;
 
     // loop through each action in progress, adding the minerals we would gather from each interval
-    for (size_t i(0); i<_units.getNumActionsInProgress(); ++i)
+    for (int i(0); i< (int)_units.getNumActionsInProgress(); ++i)
     {
         // the vector is sorted in descending order
-        size_t progressIndex = _units.getNumActionsInProgress() - i - 1;
+        int progressIndex = _units.getNumActionsInProgress() - i - 1;
 
         // the time elapsed and the current minerals per frame
         FrameCountType elapsed = _units.getFinishTimeByIndex(progressIndex) - lastActionFinishFrame;
@@ -817,10 +817,10 @@ const FrameCountType GameState::whenGasReady(const ActionType & action) const
     ResourceCountType difference            = action.gasPrice() - _gas;
 
     // loop through each action in progress, adding the minerals we would gather from each interval
-    for (size_t i(0); i<_units.getNumActionsInProgress(); ++i)
+    for (int i(0); i<_units.getNumActionsInProgress(); ++i)
     {
         // the vector is sorted in descending order
-        size_t progressIndex = _units.getNumActionsInProgress() - i - 1;
+        int progressIndex = _units.getNumActionsInProgress() - i - 1;
 
         // the time elapsed and the current minerals per frame
         FrameCountType elapsed = _units.getFinishTimeByIndex(progressIndex) - lastActionFinishFrame;
@@ -1032,7 +1032,7 @@ const std::string GameState::toString() const
 
 	ss << "Units Completed:\n";
     const std::vector<ActionType> & allActions = ActionTypes::GetAllActionTypes(getRace());
-	for (ActionID i(0); i<allActions.size(); ++i)
+	for (ActionID i(0); i< (int)allActions.size(); ++i)
 	{
         const ActionType & action = allActions[i];
         if (_units.getNumCompleted(action) > 0) 
@@ -1059,7 +1059,7 @@ const std::string GameState::toString() const
     ss << "\nLegal Actions:\n";
     ActionSet legalActions;
     getAllLegalActions(legalActions);
-    for (UnitCountType a(0); a<legalActions.size(); ++a)
+    for (UnitCountType a(0); a< (int)legalActions.size(); ++a)
     {
         ss << "\t" << legalActions[a].getName() << "\n";
     }
@@ -1133,7 +1133,7 @@ std::string GameState::whyIsNotLegal(const ActionType & action) const
     if (action.isBuilding() && !action.isMorphed() && !action.isAddon())
     {
         // be very strict about when we can make refineries to ensure we have enough workers to go in gas
-        if (action.isRefinery() && (getNumMineralWorkers() <= (4 + 3*refineriesInProgress)))
+        if (action.isRefinery() && (getNumMineralWorkers() <= (int)(4 + 3*refineriesInProgress)))
         {
             ss << action.getName() << " - Reason: Not enough workers for refinery" << std::endl;
             return ss.str();

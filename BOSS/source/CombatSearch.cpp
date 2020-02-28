@@ -35,7 +35,7 @@ void CombatSearch::generateLegalActions(const GameState & state, ActionSet & leg
 {
     // prune actions we have too many of already
     const ActionSet & allActions = params.getRelevantActions();
-    for (ActionID a(0); a<allActions.size(); ++a)
+    for (ActionID a(0); a<(int)allActions.size(); ++a)
     {
         const ActionType & action = allActions[a];
         bool isLegal = state.isLegal(action);

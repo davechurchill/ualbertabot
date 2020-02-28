@@ -9,7 +9,7 @@ namespace Eval
         ResourceCountType sum(0);
 	    
         const std::vector<ActionType> & allActions = ActionTypes::GetAllActionTypes(state.getRace());
-	    for (ActionID i(0); i<allActions.size(); ++i)
+	    for (ActionID i(0); i< (int)allActions.size(); ++i)
 	    {
             const ActionType & a = allActions[i];
 	        if (!a.isBuilding() && !a.isWorker() && !a.isSupplyProvider())
@@ -27,7 +27,7 @@ namespace Eval
         ResourceCountType sum(0);
 	    
 	    const std::vector<ActionType> & allActions = ActionTypes::GetAllActionTypes(state.getRace());
-	    for (ActionID i(0); i<allActions.size(); ++i)
+	    for (ActionID i(0); i< (int)allActions.size(); ++i)
 	    {
             const ActionType & a = allActions[i];
 	        if (!a.isBuilding() && !a.isWorker() && !a.isSupplyProvider())

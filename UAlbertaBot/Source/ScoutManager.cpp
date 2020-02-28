@@ -166,15 +166,13 @@ void ScoutManager::moveScouts()
 	{
         _scoutStatus = "Enemy base unknown, exploring";
 
-		
-
-		for (auto startLocation : BaseLocationManager::Instance().getStartingBaseLocations())
+		for (auto startLocation : BWAPI::Broodwar->getStartLocations())
 		{
 			// if we haven't explored it yet
-			if (!BWAPI::Broodwar->isExplored(BWAPI::TilePosition(startLocation->getPosition()))) 
+			if (!BWAPI::Broodwar->isExplored(startLocation)) 
 			{
 				// assign a zergling to go scout it
-				Micro::SmartMove(_workerScout, startLocation->getPosition());			
+				Micro::SmartMove(_workerScout, BWAPI::Position(startLocation));			
 				return;
 			}
 		}

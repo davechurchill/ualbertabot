@@ -32,7 +32,7 @@ void CombatSearch_Bucket::doSearch(const GameState & state, size_t depth)
     ActionSet legalActions;
     generateLegalActions(state, legalActions, _params);
     
-    for (UnitCountType a(0); a < legalActions.size(); ++a)
+    for (UnitCountType a(0); a < (int)legalActions.size(); ++a)
     {
         GameState child(state);
         child.doAction(legalActions[a]);

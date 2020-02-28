@@ -171,7 +171,7 @@ const SparCraft::GameState & CombatSimulation::getSparCraftState() const
 	return state;
 }
 
-const SparCraft::IDType CombatSimulation::getSparCraftPlayerID(BWAPI::Player player) const
+const size_t CombatSimulation::getSparCraftPlayerID(BWAPI::Player player) const
 {
 	if (player == BWAPI::Broodwar->self())
 	{

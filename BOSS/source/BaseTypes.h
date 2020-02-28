@@ -2,10 +2,10 @@
 
 namespace BOSS
 {
-    typedef		int             ResourceCountType;
-    typedef 	int             SupplyCountType;
-    typedef 	int             FrameCountType;
-    typedef 	unsigned short  UnitCountType;
-    typedef     unsigned char   ActionID;
-    typedef     unsigned char   RaceID;
+    typedef		int     ResourceCountType;
+    typedef 	int     SupplyCountType;
+    typedef 	int     FrameCountType;
+    typedef 	int     UnitCountType;
+    typedef     int     ActionID;
+    typedef     int     RaceID;
 }

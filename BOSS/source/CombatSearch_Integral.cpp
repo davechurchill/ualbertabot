@@ -26,7 +26,7 @@ void CombatSearch_Integral::doSearch(const GameState & state, size_t depth)
     ActionSet legalActions;
     generateLegalActions(state, legalActions, _params);
     
-    for (UnitCountType a(0); a < legalActions.size(); ++a)
+    for (UnitCountType a(0); a < (int)legalActions.size(); ++a)
     {
         const UnitCountType index = legalActions.size()-1-a;
 

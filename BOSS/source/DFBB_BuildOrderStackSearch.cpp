@@ -86,13 +86,13 @@ void DFBB_BuildOrderStackSearch::generateLegalActions(const GameState & state, A
             }
 
             // if we already have more than the goal it's not legal
-            if (goal.getGoal(actionType) && (numTotal >= goal.getGoal(actionType)))
+            if (goal.getGoal(actionType) && ((int)numTotal >= goal.getGoal(actionType)))
             {
                 continue;
             }
 
             // if we already have more than the goal max it's not legal
-            if (goal.getGoalMax(actionType) && (numTotal >= goal.getGoalMax(actionType)))
+            if (goal.getGoalMax(actionType) && ((int)numTotal >= goal.getGoalMax(actionType)))
             {
                 continue;
             }
@@ -162,11 +162,11 @@ UnitCountType DFBB_BuildOrderStackSearch::getRepetitions(const GameState & state
     // make sure we don't repeat to more than we need for this unit type
     if (_params.goal.getGoal(a))
     {
-        repeat = std::min(repeat, _params.goal.getGoal(a) - state.getUnitData().getNumTotal(a));
+        repeat = std::min(repeat, (int)(_params.goal.getGoal(a) - state.getUnitData().getNumTotal(a)));
     }
     else if (_params.goal.getGoalMax(a))
     {
-        repeat = std::min(repeat, _params.goal.getGoalMax(a) - state.getUnitData().getNumTotal(a));
+        repeat = std::min(repeat, (int)(_params.goal.getGoalMax(a) - state.getUnitData().getNumTotal(a)));
     }
     
     return repeat;
@@ -265,7 +265,7 @@ SEARCH_BEGIN:
 
 SEARCH_RETURN:
 
-        for (size_t r(0); r < COMPLETED_REPS; ++r)
+        for (int r(0); r < COMPLETED_REPS; ++r)
         {
             _buildOrder.pop_back();
         }

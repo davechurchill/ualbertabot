@@ -107,14 +107,14 @@ FrameCountType ActionsInProgress::nextBuildingFinishTime() const
 	
 const ActionType & ActionsInProgress::getAction(const UnitCountType i) const
 {
-    BOSS_ASSERT(i < _inProgress.size(), "index out of bounds");
+    BOSS_ASSERT(i < (int)_inProgress.size(), "index out of bounds");
 
 	return _inProgress[i]._action;
 }
 	
 FrameCountType ActionsInProgress::getTime(const UnitCountType i) const
 {
-    BOSS_ASSERT(i < _inProgress.size(), "index out of bounds");
+    BOSS_ASSERT(i < (int)_inProgress.size(), "index out of bounds");
 
 	return _inProgress[i]._time;
 }
@@ -156,7 +156,7 @@ FrameCountType ActionsInProgress::whenActionsFinished(const PrerequisiteSet & ac
 	int totalMax = 0;
 	
 	// if there are actions still left
-	for (UnitCountType uc(0); uc < actions.size(); ++uc)
+	for (UnitCountType uc(0); uc < (int)actions.size(); ++uc)
 	{	
 		// pop an action off the set
 		const ActionType & a = actions.getActionType(uc);

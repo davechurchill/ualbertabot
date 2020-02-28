@@ -23,7 +23,7 @@ DFBB_BuildOrderSearchParameters::DFBB_BuildOrderSearchParameters(const RaceID & 
 
 void DFBB_BuildOrderSearchParameters::setRepetitions(const ActionType & a, const UnitCountType & repetitions)
 { 
-    BOSS_ASSERT(a.ID() >= 0 && a.ID() < repetitionValues.size(), "Action type not valid");
+    BOSS_ASSERT(a.ID() >= 0 && a.ID() < (int)repetitionValues.size(), "Action type not valid");
     BOSS_ASSERT(a.getRace() == race, "Action type race doesn't match this parameter object");
 
     repetitionValues[a.ID()] = repetitions; 
@@ -31,7 +31,7 @@ void DFBB_BuildOrderSearchParameters::setRepetitions(const ActionType & a, const
 
 void DFBB_BuildOrderSearchParameters::setRepetitionThreshold(const ActionType & a, const UnitCountType & thresh)	
 { 
-    BOSS_ASSERT(a.ID() >= 0 && a.ID() < repetitionThresholds.size(), "Action type not valid");
+    BOSS_ASSERT(a.ID() >= 0 && a.ID() < (int)repetitionThresholds.size(), "Action type not valid");
     BOSS_ASSERT(a.getRace() == race, "Action type race doesn't match this parameter object");
 
     repetitionThresholds[a.ID()] = thresh; 
@@ -39,7 +39,7 @@ void DFBB_BuildOrderSearchParameters::setRepetitionThreshold(const ActionType & 
 
 const UnitCountType & DFBB_BuildOrderSearchParameters::getRepetitions(const ActionType & a)
 { 
-    BOSS_ASSERT(a.ID() >= 0 && a.ID() < repetitionValues.size(), "Action type not valid");
+    BOSS_ASSERT(a.ID() >= 0 && a.ID() < (int)repetitionValues.size(), "Action type not valid");
     BOSS_ASSERT(a.getRace() == race, "Action type race doesn't match this parameter object");
 
     return repetitionValues[a.ID()]; 
@@ -47,7 +47,7 @@ const UnitCountType & DFBB_BuildOrderSearchParameters::getRepetitions(const Acti
 
 const UnitCountType & DFBB_BuildOrderSearchParameters::getRepetitionThreshold(const ActionType & a)				
 { 
-    BOSS_ASSERT(a.ID() >= 0 && a.ID() < repetitionThresholds.size(), "Action type not valid");
+    BOSS_ASSERT(a.ID() >= 0 && a.ID() < (int)repetitionThresholds.size(), "Action type not valid");
     BOSS_ASSERT(a.getRace() == race, "Action type race doesn't match this parameter object");
 
     return repetitionThresholds[a.ID()]; 
@@ -69,7 +69,7 @@ std::string DFBB_BuildOrderSearchParameters::toString() const
     ss << (useSupplyBounding ?                 "\tUSE      Supply Bounding\n" : "");
     ss << ("\n");
 
-    for (ActionID a(0); a < repetitionValues.size(); ++a)
+    for (ActionID a(0); a < (int)repetitionValues.size(); ++a)
     {
         if (repetitionValues[a] != 1)
         {
@@ -77,7 +77,7 @@ std::string DFBB_BuildOrderSearchParameters::toString() const
         }
     }
 
-    for (ActionID a(0); a < repetitionThresholds.size(); ++a)
+    for (ActionID a(0); a < (int)repetitionThresholds.size(); ++a)
     {
         if (repetitionThresholds[a] != 0)
         {
