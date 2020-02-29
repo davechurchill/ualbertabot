@@ -4,6 +4,9 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include "Global.h"
+#include "../../SparCraft/source/SparCraft.h"
+#include "../../BOSS/source/BOSS.h"
 
 using namespace BWAPI;
 using namespace UAlbertaBot;
@@ -62,6 +65,12 @@ int main(int argc, char * argv[])
 
 	bool exitIfStarcraftShutdown = true;
     
+    // Initialize SparCraft, the combat simulation package
+    SparCraft::init();
+
+    // Initialize BOSS, the Build Order Search System
+    BOSS::init();
+
 	size_t gameCount = 0;
 	while (true)
 	{

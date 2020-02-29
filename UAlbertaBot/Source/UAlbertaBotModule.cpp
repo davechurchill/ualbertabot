@@ -17,25 +17,17 @@
 #include "UnitUtil.h"
 #include "Global.h"
 #include "StrategyManager.h"
-#include "../../SparCraft/source/SparCraft.h"
-#include "../../BOSS/source/BOSS.h"
 
 using namespace UAlbertaBot;
 
 UAlbertaBotModule::UAlbertaBotModule()
 {
-
+    Global::GameStart();
 }
 
 // This gets called when the bot starts!
 void UAlbertaBotModule::onStart()
 {
-    // Initialize SparCraft, the combat simulation package
-    SparCraft::init();
-
-    // Initialize BOSS, the Build Order Search System
-    BOSS::init();
-
     // Parse the bot's configuration file if it has one, change this file path to where your config file is
     // Any relative path name will be relative to Starcraft installation folder
     ParseUtils::ParseConfigFile(Config::ConfigFile::ConfigFileLocation);

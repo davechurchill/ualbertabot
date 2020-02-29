@@ -18,8 +18,8 @@ class ScoutManager;
 
 class Global
 {
-    /*std::shared_ptr<MapTools>            m_mapTools;
-    std::shared_ptr<BuildingPlacer>      m_buildingPlacer;
+    std::shared_ptr<MapTools>            m_mapTools;
+    std::shared_ptr<BuildingPlacerManager> m_buildingPlacer;
     std::shared_ptr<BaseLocationManager> m_baseLocationManager;
     std::shared_ptr<InformationManager>  m_informationManager;
     std::shared_ptr<StrategyManager>     m_strategyManager;
@@ -27,14 +27,16 @@ class Global
     std::shared_ptr<BOSSManager>         m_bossManager;
     std::shared_ptr<ProductionManager>   m_productionManager;
     std::shared_ptr<BuildingManager>     m_buildingManager;
-    std::shared_ptr<ScoutManager>        m_scoutManager;*/
+    std::shared_ptr<ScoutManager>        m_scoutManager;
     
+
     Global();
-    void init();
     static Global & Instance();
+    void init();
 
 public:
-
+    
+    static void GameStart();
     static BuildingPlacerManager & BuildingPlacer();
     static MapTools & Map();
     static BaseLocationManager & Bases();

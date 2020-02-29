@@ -18,6 +18,8 @@ StrategyManager::StrategyManager()
 	
 }
 
+
+
 const int StrategyManager::getScore(BWAPI::Player player) const
 {
 	return player->getBuildingScore() + player->getKillScore() + player->getRazingScore() + player->getUnitScore();

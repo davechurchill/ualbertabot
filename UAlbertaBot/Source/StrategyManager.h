@@ -43,8 +43,8 @@ class StrategyManager
 	BWAPI::Race					    _selfRace;
 	BWAPI::Race					    _enemyRace;
     std::map<std::string, Strategy> _strategies;
-    int                             _totalGamesPlayed;
-    BuildOrder                _emptyBuildOrder;
+    int                             _totalGamesPlayed = 0;
+    BuildOrder                      _emptyBuildOrder;
 
 	        void	                writeResults();
 	const	int					    getScore(BWAPI::Player player) const;
