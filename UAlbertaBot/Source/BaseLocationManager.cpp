@@ -1,5 +1,6 @@
 #include "BaseLocationManager.h"
 #include "InformationManager.h"
+#include "MapTools.h"
 
 using namespace UAlbertaBot;
 
@@ -45,25 +46,30 @@ void BaseLocationManager::onStart()
     
     // stores each cluster of resources based on some ground distance
 	std::vector<std::vector<BWAPI::Unit>> resourceClusters;
-    for (auto & mineral : BWAPI::Broodwar->getAllUnits())
+    for (auto & mineral : BWAPI::Broodwar->getStaticNeutralUnits())
     {
         // skip minerals that don't have more than 100 starting minerals
         // these are probably stupid map-blocking minerals to confuse us
-        if (!mineral->getType().isMineralField())
-        {
-            continue;
-        }
+        if (!mineral->getType().isMineralField()) { continue; }
 		
         bool foundCluster = false;
         for (auto & cluster : resourceClusters)
         {
+            const BWAPI::Position clusterCenter = calcCenter(cluster);
+
+            // if the mineral is not connected to this cluster via ground travel, skpip it
+            if (!MapTools::Instance().isConnected(clusterCenter, mineral->getPosition())) { continue; }
+
+            // get the air travel distance as a first cutoff for the mineral
             const int dist = mineral->getDistance(calcCenter(cluster));
             
             // quick initial air distance check to eliminate most resources
             if (dist < clusterDistance)
             {
                 // now do a more expensive ground distance check
-                const int groundDist = dist; //m_bot.Map().getGroundDistance(mineral.pos, Util::CalcCenter(cluster));
+                const int groundDist = 32*MapTools::Instance().getGroundDistance(mineral->getPosition(), calcCenter(cluster));
+                //const int groundDist = dist; //m_bot.Map().getGroundDistance(mineral.pos, Util::CalcCenter(cluster));
+
                 if (groundDist >= 0 && groundDist < clusterDistance)
                 {
                     cluster.push_back(mineral);
@@ -81,17 +87,14 @@ void BaseLocationManager::onStart()
     }
 
     // add geysers only to existing resource clusters
-    for (auto & geyser : BWAPI::Broodwar->getAllUnits())
+    for (auto & geyser : BWAPI::Broodwar->getStaticNeutralUnits())
     {
-        if (!geyser->getType() == BWAPI::UnitTypes::Resource_Vespene_Geyser)
-        {
-            continue;
-        }
+        if (geyser->getType() != BWAPI::UnitTypes::Resource_Vespene_Geyser) { continue; }
 
         for (auto & cluster : resourceClusters)
         {
-            //int groundDist = m_bot.Map().getGroundDistance(geyser.pos, Util::CalcCenter(cluster));
-            const int groundDist = geyser->getDistance(calcCenter(cluster));
+            const int groundDist = 32*MapTools::Instance().getGroundDistance(geyser->getPosition(), calcCenter(cluster));
+            //const int groundDist = geyser->getDistance(calcCenter(cluster));
 
             if (groundDist >= 0 && groundDist < clusterDistance)
             {

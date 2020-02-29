@@ -1,4 +1,5 @@
 #include "BaseLocation.h"
+#include "MapTools.h"
 #include <sstream>
 #include <iostream>
 
@@ -58,24 +59,25 @@ BaseLocation::BaseLocation(int baseID, const std::vector<BWAPI::Unit> & resource
     // from the center of its recourses to every other tile on the map
     m_distanceMap = DistanceMap(); 
     m_distanceMap.computeDistanceMap(BWAPI::TilePosition(m_centerOfResources));
-
-
-    
+        
     std::cout << "BaseLocation " << m_baseID << " " << m_depotPosition.x << " " << m_depotPosition.y << "\n";
     // check to see if this is a start location for the map
-    for (auto & starTilePos : BWAPI::Broodwar->getStartLocations())
+    for (auto & startTilePos : BWAPI::Broodwar->getStartLocations())
     { 
-        auto groundDistance = getGroundDistance(starTilePos);
+        auto groundDistance = getGroundDistance(startTilePos);
         
-        std::cout << "    StarLocation " << groundDistance << " : " << starTilePos.x << " " << starTilePos.y << "\n";
+        std::cout << "    StarLocation " << groundDistance << " : " << startTilePos.x << " " << startTilePos.y << "\n";
 
-        if (containsPosition(BWAPI::Position(starTilePos)))
+        if (containsPosition(BWAPI::Position(startTilePos)))
         {
             m_isStartLocation = true;
-            m_depotPosition = BWAPI::TilePosition(starTilePos);
+            m_depotPosition = BWAPI::TilePosition(startTilePos);
+            m_startPosition = startTilePos;
             break;
         }
     }
+    std::cout << "    IsStart " << (isStartLocation() ? "T" : "F") << "\n";
+
 
     // if this base location position is near our own resource depot, it's our start location
     for (auto & unit : BWAPI::Broodwar->getAllUnits())
@@ -207,9 +209,14 @@ const std::vector<BWAPI::TilePosition> & BaseLocation::getClosestTiles() const
 
 void BaseLocation::draw()
 {
-    int radius = 32;
+    int radius = 16;
 
-    BWAPI::Broodwar->drawCircleMap(m_centerOfResources, radius, BWAPI::Color(255, 255, 0));
+    BWAPI::Broodwar->drawCircleMap(m_centerOfResources, 16, BWAPI::Color(255, 255, 0), true);
+    
+    if (m_startPosition.x != 0)
+    {
+        BWAPI::Broodwar->drawLineMap(m_centerOfResources, BWAPI::Position(m_startPosition), BWAPI::Colors::Red);
+    }
 
     std::stringstream ss;
     ss << "BaseLocation: " << m_baseID << "\n";
@@ -237,25 +244,25 @@ void BaseLocation::draw()
     BWAPI::Broodwar->drawLineMap(m_right, m_top, m_right, m_bottom, BWAPI::Colors::White);
     BWAPI::Broodwar->drawLineMap(m_right, m_bottom, m_left, m_bottom, BWAPI::Colors::White);
     BWAPI::Broodwar->drawLineMap(m_left, m_bottom, m_left, m_top, BWAPI::Colors::White);
-
-    for (int x=m_left; x < m_right; x += 32)
-    {
-        BWAPI::Broodwar->drawLineMap(x, m_top, x, m_bottom, BWAPI::Color(160, 160, 160));
-    }
-
-    for (int y=m_bottom; y<m_top; y += 32)
-    {
-        BWAPI::Broodwar->drawLineMap(m_left, y, m_right, y, BWAPI::Color(160, 160, 160));
-    }
-
+    
     for (auto & mineralPos : m_mineralPositions)
     {
-        BWAPI::Broodwar->drawCircleMap(mineralPos, radius, BWAPI::Color(0, 128, 128));
+        const BWAPI::TilePosition mineralTile(mineralPos);
+        MapTools::Instance().drawTile(mineralTile.x, mineralTile.y, BWAPI::Color(0, 255, 255));
+        MapTools::Instance().drawTile(mineralTile.x-1, mineralTile.y, BWAPI::Color(0, 255, 255));
     }
 
     for (auto & geyserPos : m_geyserPositions)
     {
-        BWAPI::Broodwar->drawCircleMap(geyserPos, radius, BWAPI::Color(0, 255, 0));
+        const BWAPI::TilePosition geyserTile(geyserPos);
+        MapTools::Instance().drawTile(geyserTile.x, geyserTile.y, BWAPI::Color(0, 255, 0));
+        MapTools::Instance().drawTile(geyserTile.x-1, geyserTile.y, BWAPI::Color(0, 255, 0));
+        MapTools::Instance().drawTile(geyserTile.x-2, geyserTile.y, BWAPI::Color(0, 255, 0));
+        MapTools::Instance().drawTile(geyserTile.x, geyserTile.y-1, BWAPI::Color(0, 255, 0));
+        MapTools::Instance().drawTile(geyserTile.x-1, geyserTile.y-1, BWAPI::Color(0, 255, 0));
+        MapTools::Instance().drawTile(geyserTile.x-2, geyserTile.y-1, BWAPI::Color(0, 255, 0));
+
+        BWAPI::Broodwar->drawCircleMap(geyserPos, radius, BWAPI::Color(0, 255, 0), true);
     }
 
     if (m_isStartLocation)

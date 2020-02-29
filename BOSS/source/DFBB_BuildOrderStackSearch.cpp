@@ -34,7 +34,7 @@ void DFBB_BuildOrderStackSearch::search()
             _stack[0].state = _params.initialState;
             _firstSearch = false;
             //BWAPI::Broodwar->printf("Upper bound is %d", _results.upperBound);
-            std::cout << "Upper bound is: " << _results.upperBound << std::endl;
+            //std::cout << "Upper bound is: " << _results.upperBound << std::endl;
         }
 
         try 

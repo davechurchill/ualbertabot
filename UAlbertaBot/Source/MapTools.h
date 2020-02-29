@@ -28,7 +28,6 @@ class MapTools
     int getSectorNumber(int x, int y) const;
         
     void printMap() const;
-    void drawTile(int tileX, int tileY, const BWAPI::Color & color) const;
 
     bool canBuild(int tileX, int tileY) const;
     bool canWalk(int tileX, int tileY) const;
@@ -56,6 +55,7 @@ public:
     bool    isExplored(const BWAPI::TilePosition & pos) const;
     bool    isVisible(int tileX, int tileY) const;
     bool    canBuildTypeAtPosition(int tileX, int tileY, const BWAPI::UnitType & type) const;
+    void    drawTile(int tileX, int tileY, const BWAPI::Color & color) const;
 
     const   DistanceMap & getDistanceMap(const BWAPI::TilePosition & tile) const;
     const   DistanceMap & getDistanceMap(const BWAPI::Position & tile) const;
