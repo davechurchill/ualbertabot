@@ -26,22 +26,39 @@ Global & Global::Instance()
 
 void Global::init()
 {
-    m_mapTools              = std::shared_ptr<MapTools>();
-    m_informationManager    = std::shared_ptr<InformationManager>();
-    m_workerManager         = std::shared_ptr<WorkerManager>();
-    m_productionManager     = std::shared_ptr<ProductionManager>();
-    m_baseLocationManager   = std::shared_ptr<BaseLocationManager>();
-    m_strategyManager       = std::shared_ptr<StrategyManager>();
-    m_bossManager           = std::shared_ptr<BOSSManager>();
-    m_buildingManager       = std::shared_ptr<BuildingManager>();
-    m_scoutManager          = std::shared_ptr<ScoutManager>();
-    m_buildingPlacer        = std::shared_ptr<BuildingPlacerManager>();
+    reset(m_mapTools);
+    reset(m_informationManager);
+    reset(m_workerManager);
+    reset(m_productionManager);
+    reset(m_baseLocationManager);
+    reset(m_strategyManager);
+    reset(m_bossManager);
+    reset(m_buildingManager);
+    reset(m_scoutManager);
+    reset(m_buildingPlacer);
 }
 
 void Global::GameStart()
 {
     Instance().init();
 }
+
+BuildingPlacerManager & Global::BuildingPlacer() { return *get(Instance().m_buildingPlacer);      }
+MapTools &              Global::Map()            { return *get(Instance().m_mapTools);            }
+BaseLocationManager &   Global::Bases()          { return *get(Instance().m_baseLocationManager); }
+InformationManager &    Global::Info()           { return *get(Instance().m_informationManager);  }
+StrategyManager &       Global::Strategy()       { return *get(Instance().m_strategyManager);     }
+WorkerManager &         Global::Workers()        { return *get(Instance().m_workerManager);       }
+BOSSManager &           Global::BOSS()           { return *get(Instance().m_bossManager);         }
+ProductionManager &     Global::Production()     { return *get(Instance().m_productionManager);   }
+BuildingManager &       Global::Buildings()      { return *get(Instance().m_buildingManager);     }
+ScoutManager &          Global::Scout()          { return *get(Instance().m_scoutManager);        }
+
+
+
+
+
+
 
 /*
 BuildingPlacerManager & Global::BuildingPlacer()
@@ -113,93 +130,3 @@ ScoutManager & Global::Scout()
     return instance;
 }
 */
-
-BuildingPlacerManager & Global::BuildingPlacer() 
-{ 
-    if (!Instance().m_buildingPlacer) 
-    { 
-        Instance().m_buildingPlacer = std::shared_ptr<BuildingPlacerManager>(new BuildingPlacerManager()); 
-    }
-    return *Instance().m_buildingPlacer; 
-}
-
-MapTools & Global::Map() 
-{ 
-    if (!Instance().m_mapTools) 
-    { 
-        Instance().m_mapTools = std::shared_ptr<MapTools>(new MapTools()); 
-    }
-    return *Instance().m_mapTools; 
-}
-
-BaseLocationManager & Global::Bases() 
-{ 
-    if (!Instance().m_baseLocationManager) 
-    { 
-        Instance().m_baseLocationManager = std::shared_ptr<BaseLocationManager>(new BaseLocationManager()); 
-    }
-    return *Instance().m_baseLocationManager; 
-}
-
-InformationManager & Global::Info() 
-{ 
-    if (!Instance().m_informationManager) 
-    { 
-        Instance().m_informationManager = std::shared_ptr<InformationManager>(new InformationManager()); 
-    }
-    return *Instance().m_informationManager; 
-}
-
-StrategyManager & Global::Strategy() 
-{  
-    if (!Instance().m_strategyManager) 
-    { 
-        Instance().m_strategyManager = std::shared_ptr<StrategyManager>(new StrategyManager()); 
-    }
-    return *Instance().m_strategyManager; 
-}
-
-WorkerManager & Global::Workers()
-{ 
-    if (!Instance().m_workerManager) 
-    { 
-        Instance().m_workerManager = std::shared_ptr<WorkerManager>(new WorkerManager()); 
-    }
-    return *Instance().m_workerManager; 
-}
-
-BOSSManager & Global::BOSS() 
-{ 
-    if (!Instance().m_bossManager) 
-    { 
-        Instance().m_bossManager = std::shared_ptr<BOSSManager>(new BOSSManager()); 
-    }
-    return *Instance().m_bossManager; 
-}
-
-ProductionManager & Global::Production() 
-{ 
-    if (!Instance().m_productionManager) 
-    { 
-        Instance().m_productionManager = std::shared_ptr<ProductionManager>(new ProductionManager()); 
-    }
-    return *Instance().m_productionManager; 
-}
-
-BuildingManager & Global::Buildings() 
-{ 
-    if (!Instance().m_buildingManager) 
-    { 
-        Instance().m_buildingManager = std::shared_ptr<BuildingManager>(new BuildingManager()); 
-    }
-    return *Instance().m_buildingManager; 
-}
-
-ScoutManager & Global::Scout() 
-{ 
-    if (!Instance().m_scoutManager) 
-    { 
-        Instance().m_scoutManager = std::shared_ptr<ScoutManager>(new ScoutManager()); 
-    }
-    return *Instance().m_scoutManager; 
-}

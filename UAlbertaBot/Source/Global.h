@@ -16,19 +16,33 @@ class ProductionManager;
 class BuildingManager;
 class ScoutManager;
 
+
 class Global
 {
-    std::shared_ptr<MapTools>            m_mapTools;
-    std::shared_ptr<BuildingPlacerManager> m_buildingPlacer;
-    std::shared_ptr<BaseLocationManager> m_baseLocationManager;
-    std::shared_ptr<InformationManager>  m_informationManager;
-    std::shared_ptr<StrategyManager>     m_strategyManager;
-    std::shared_ptr<WorkerManager>       m_workerManager;
-    std::shared_ptr<BOSSManager>         m_bossManager;
-    std::shared_ptr<ProductionManager>   m_productionManager;
-    std::shared_ptr<BuildingManager>     m_buildingManager;
-    std::shared_ptr<ScoutManager>        m_scoutManager;
+    MapTools *            m_mapTools            = nullptr;
+    BuildingPlacerManager * m_buildingPlacer    = nullptr;
+    BaseLocationManager * m_baseLocationManager = nullptr;
+    InformationManager *  m_informationManager  = nullptr;
+    StrategyManager *     m_strategyManager     = nullptr;
+    WorkerManager *       m_workerManager       = nullptr;
+    BOSSManager *         m_bossManager         = nullptr;
+    ProductionManager *   m_productionManager   = nullptr;
+    BuildingManager *     m_buildingManager     = nullptr;
+    ScoutManager *        m_scoutManager        = nullptr;
     
+    template <class T>
+    void reset(T *& ptr)
+    {
+        delete ptr;
+        ptr = nullptr;
+    }
+
+    template <class T>
+    static T * get(T *& ptr)
+    {
+        if (ptr == nullptr) { ptr = new T(); }
+        return ptr;
+    }
 
     Global();
     static Global & Instance();
