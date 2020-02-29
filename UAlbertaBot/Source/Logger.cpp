@@ -1,3 +1,4 @@
+#include "Common.h"
 #include "Logger.h"
 #include "UABAssert.h"
 #include <stdarg.h>

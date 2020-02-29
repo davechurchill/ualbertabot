@@ -2,13 +2,6 @@
 
 #include "Common.h"
 #include "CombatCommander.h"
-#include "InformationManager.h"
-#include "MapGrid.h"
-#include "WorkerManager.h"
-#include "ProductionManager.h"
-#include "BuildingManager.h"
-#include "ScoutManager.h"
-#include "StrategyManager.h"
 #include "TimerManager.h"
 
 namespace UAlbertaBot

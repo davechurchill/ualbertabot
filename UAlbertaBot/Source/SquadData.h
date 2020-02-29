@@ -1,9 +1,11 @@
 #pragma once
 
+#include "Common.h"
 #include "Squad.h"
 
 namespace UAlbertaBot
 {
+
 class SquadData
 {
 	std::map<std::string, Squad> _squads;

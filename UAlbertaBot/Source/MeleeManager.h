@@ -1,12 +1,9 @@
-#pragma once;
+#pragma once
 
-#include <Common.h>
 #include "MicroManager.h"
 
 namespace UAlbertaBot
 {
-class MicroManager;
-
 class MeleeManager : public MicroManager
 {
 

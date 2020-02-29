@@ -1,5 +1,6 @@
 #include "Common.h"
 #include "InformationManager.h"
+#include "UnitData.h"
 
 using namespace UAlbertaBot;
 
@@ -7,13 +8,7 @@ InformationManager::InformationManager()
     : _self(BWAPI::Broodwar->self())
     , _enemy(BWAPI::Broodwar->enemy())
 {
-	
-}
-
-InformationManager & InformationManager::Instance() 
-{
-	static InformationManager instance;
-	return instance;
+	update();
 }
 
 void InformationManager::update() 
@@ -23,6 +18,8 @@ void InformationManager::update()
 
 void InformationManager::updateUnitInfo() 
 {
+    PROFILE_FUNCTION();
+
 	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
 	{
 		updateUnit(unit);

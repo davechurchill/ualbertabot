@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Common.h"
-#include "MapGrid.h"
 
 #ifdef USING_VISUALIZATION_LIBRARIES
 	#include "Visualizer.h"
@@ -11,10 +10,10 @@
 #include "..\..\SparCraft\source\Game.h"
 #include "..\..\SparCraft\source\Unit.h"
 #include "..\..\SparCraft\source\AllPlayers.h"
-#include "InformationManager.h"
 
 namespace UAlbertaBot
 {
+struct UnitInfo;
 class CombatSimulation
 {
 	SparCraft::GameState		state;

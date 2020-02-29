@@ -1,16 +1,8 @@
 #pragma once
 
-#include <BWAPI.h>
+#include "Common.h"
 #include "GameCommander.h"
-#include <iostream>
-#include <fstream>
-#include "Logger.h"
-#include "MapTools.h"
-#include "HardCodedInfo.h"
-#include "Config.h"
 #include "AutoObserver.h"
-
-#include "rapidjson\document.h"
 
 namespace UAlbertaBot
 {

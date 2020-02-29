@@ -3,11 +3,14 @@
 #include "JSONTools.h"
 #include "BuildOrder.h"
 #include "StrategyManager.h"
+#include "Global.h"
 
 using namespace UAlbertaBot;
 
 void ParseUtils::ParseConfigFile(const std::string & filename)
 {
+    PROFILE_FUNCTION();
+
     rapidjson::Document doc;
     BWAPI::Race race = BWAPI::Broodwar->self()->getRace();
     const char * ourRace = race.getName().c_str();
@@ -218,7 +221,7 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
                     }
                 }
 
-                StrategyManager::Instance().addStrategy(name, Strategy(name, strategyRace, buildOrder));
+                Global::Strategy().addStrategy(name, Strategy(name, strategyRace, buildOrder));
             }
         }
     }

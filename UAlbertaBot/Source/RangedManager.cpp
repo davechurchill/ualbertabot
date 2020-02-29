@@ -1,5 +1,6 @@
 #include "RangedManager.h"
 #include "UnitUtil.h"
+#include "Micro.h"
 
 using namespace UAlbertaBot;
 

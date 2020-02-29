@@ -3,6 +3,10 @@
 #include "Micro.h"
 #include "ScoutManager.h"
 #include "BaseLocationManager.h"
+#include "Global.h"
+#include "BuildingData.h"
+#include "WorkerManager.h"
+#include "BuildingPlacerManager.h"
 
 using namespace UAlbertaBot;
 
@@ -17,6 +21,8 @@ BuildingManager::BuildingManager()
 // gets called every frame from GameCommander
 void BuildingManager::update()
 {
+    PROFILE_FUNCTION();
+
     validateWorkersAndBuildings();          // check to see if assigned workers have died en route or while constructing
     assignWorkersToUnassignedBuildings();   // assign workers to the unassigned buildings and label them 'planned'    
     constructAssignedBuildings();           // for each planned building, if the worker isn't constructing, send the command    
@@ -41,6 +47,8 @@ bool BuildingManager::isBeingBuilt(BWAPI::UnitType type)
 // STEP 1: DO BOOK KEEPING ON WORKERS WHICH MAY HAVE DIED
 void BuildingManager::validateWorkersAndBuildings()
 {
+    PROFILE_FUNCTION();
+
     // TODO: if a terran worker dies while constructing and its building
     //       is under construction, place unit back into buildingsNeedingBuilders
 
@@ -66,6 +74,8 @@ void BuildingManager::validateWorkersAndBuildings()
 // STEP 2: ASSIGN WORKERS TO BUILDINGS WITHOUT THEM
 void BuildingManager::assignWorkersToUnassignedBuildings()
 {
+    PROFILE_FUNCTION();
+
     // for each building that doesn't have a builder, assign one
     for (Building & b : _buildings)
     {
@@ -77,7 +87,7 @@ void BuildingManager::assignWorkersToUnassignedBuildings()
         if (_debugMode) { BWAPI::Broodwar->printf("Assigning Worker To: %s",b.type.getName().c_str()); }
 
         // grab a worker unit from WorkerManager which is closest to this final position
-        BWAPI::Unit workerToAssign = WorkerManager::Instance().getBuilder(b);
+        BWAPI::Unit workerToAssign = Global::Workers().getBuilder(b);
 
         if (workerToAssign)
         {
@@ -98,7 +108,7 @@ void BuildingManager::assignWorkersToUnassignedBuildings()
             b.finalPosition = testLocation;
 
             // reserve this building's space
-            BuildingPlacer::Instance().reserveTiles(b.finalPosition,b.type.tileWidth(),b.type.tileHeight());
+            Global::BuildingPlacer().reserveTiles(b.finalPosition,b.type.tileWidth(),b.type.tileHeight());
 
             b.status = BuildingStatus::Assigned;
         }
@@ -108,6 +118,8 @@ void BuildingManager::assignWorkersToUnassignedBuildings()
 // STEP 3: ISSUE CONSTRUCTION ORDERS TO ASSIGN BUILDINGS AS NEEDED
 void BuildingManager::constructAssignedBuildings()
 {
+    PROFILE_FUNCTION();
+
     for (auto & b : _buildings)
     {
         if (b.status != BuildingStatus::Assigned)
@@ -129,10 +141,10 @@ void BuildingManager::constructAssignedBuildings()
             {
                 // tell worker manager the unit we had is not needed now, since we might not be able
                 // to get a valid location soon enough
-                WorkerManager::Instance().finishedWithWorker(b.builderUnit);
+                Global::Workers().finishedWithWorker(b.builderUnit);
 
                 // free the previous location in reserved
-                BuildingPlacer::Instance().freeTiles(b.finalPosition,b.type.tileWidth(),b.type.tileHeight());
+                Global::BuildingPlacer().freeTiles(b.finalPosition,b.type.tileWidth(),b.type.tileHeight());
 
                 // nullify its current builder unit
                 b.builderUnit = nullptr;
@@ -158,6 +170,8 @@ void BuildingManager::constructAssignedBuildings()
 // STEP 4: UPDATE DATA STRUCTURES FOR BUILDINGS STARTING CONSTRUCTION
 void BuildingManager::checkForStartedConstruction()
 {
+    PROFILE_FUNCTION();
+
     // for each building unit which is being constructed
     for (auto & buildingStarted : BWAPI::Broodwar->self()->getUnits())
     {
@@ -197,12 +211,12 @@ void BuildingManager::checkForStartedConstruction()
                     // if this was the gas steal unit then it's the scout worker so give it back to the scout manager
                     if (b.isGasSteal)
                     {
-                        ScoutManager::Instance().setWorkerScout(b.builderUnit);
+                        Global::Scout().setWorkerScout(b.builderUnit);
                     }
                     // otherwise tell the worker manager we're finished with this unit
                     else
                     {
-                        WorkerManager::Instance().finishedWithWorker(b.builderUnit);
+                        Global::Workers().finishedWithWorker(b.builderUnit);
                     }
 
                     b.builderUnit = nullptr;
@@ -212,7 +226,7 @@ void BuildingManager::checkForStartedConstruction()
                 b.status = BuildingStatus::UnderConstruction;
 
                 // free this space
-                BuildingPlacer::Instance().freeTiles(b.finalPosition,b.type.tileWidth(),b.type.tileHeight());
+                Global::BuildingPlacer().freeTiles(b.finalPosition,b.type.tileWidth(),b.type.tileHeight());
 
                 // only one building will match
                 break;
@@ -227,6 +241,8 @@ void BuildingManager::checkForDeadTerranBuilders() {}
 // STEP 6: CHECK FOR COMPLETED BUILDINGS
 void BuildingManager::checkForCompletedBuildings()
 {
+    PROFILE_FUNCTION();
+
     std::vector<Building> toRemove;
 
     // for each of our buildings under construction
@@ -245,12 +261,12 @@ void BuildingManager::checkForCompletedBuildings()
             {
                 if (b.isGasSteal)
                 {
-                    ScoutManager::Instance().setWorkerScout(b.builderUnit);
+                    Global::Scout().setWorkerScout(b.builderUnit);
                 }
                 // otherwise tell the worker manager we're finished with this unit
                 else
                 {
-                    WorkerManager::Instance().finishedWithWorker(b.builderUnit);
+                    Global::Workers().finishedWithWorker(b.builderUnit);
                 }
             }
 
@@ -332,6 +348,8 @@ void BuildingManager::drawBuildingInformation(int x,int y)
         return;
     }
 
+    PROFILE_FUNCTION();
+
     for (auto & unit : BWAPI::Broodwar->self()->getUnits())
     {
         BWAPI::Broodwar->drawTextMap(unit->getPosition().x,unit->getPosition().y+5,"\x07%d",unit->getID());
@@ -371,12 +389,6 @@ void BuildingManager::drawBuildingInformation(int x,int y)
     }
 }
 
-BuildingManager & BuildingManager::Instance()
-{
-    static BuildingManager instance;
-    return instance;
-}
-
 std::vector<BWAPI::UnitType> BuildingManager::buildingsQueued()
 {
     std::vector<BWAPI::UnitType> buildingsQueued;
@@ -399,7 +411,7 @@ BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
 
     if (b.isGasSteal)
     {
-		auto enemyBaseLocation = BaseLocationManager::Instance().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
+		auto enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
         UAB_ASSERT(enemyBaseLocation,"Should have enemy base location before attempting gas steal");
         UAB_ASSERT(enemyBaseLocation->getGeysers().size() > 0,"Should have spotted an enemy geyser");
 
@@ -417,13 +429,13 @@ BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
 
     if (b.type.isRefinery())
     {
-        return BuildingPlacer::Instance().getRefineryPosition();
+        return Global::BuildingPlacer().getRefineryPosition();
     }
 
     if (b.type.isResourceDepot())
     {
         // get the location 
-		auto tile = BaseLocationManager::Instance().getNextExpansion(BWAPI::Broodwar->self());
+		auto tile = Global::Bases().getNextExpansion(BWAPI::Broodwar->self());
 
         return tile;
     }
@@ -436,7 +448,7 @@ BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
     }
 
     // get a position within our region
-    return BuildingPlacer::Instance().getBuildLocationNear(b,distance,false);
+    return Global::BuildingPlacer().getBuildLocationNear(b,distance,false);
 }
 
 void BuildingManager::removeBuildings(const std::vector<Building> & toRemove)

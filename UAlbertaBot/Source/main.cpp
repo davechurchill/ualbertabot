@@ -1,7 +1,6 @@
 #include <BWAPI.h>
 #include <BWAPI/Client.h>
 #include "UAlbertaBotModule.h"
-
 #include <iostream>
 #include <thread>
 #include <chrono>
@@ -19,6 +18,8 @@ void UAlbertaBot_BWAPIReconnect()
 
 void UAlbertaBot_PlayGame()
 {
+    PROFILE_FUNCTION();
+
 	UAlbertaBotModule bot;
 
 	// The main game loop, which continues while we are connected to BWAPI and in a game
@@ -57,8 +58,10 @@ void UAlbertaBot_PlayGame()
 
 int main(int argc, char * argv[])
 {
-	bool exitIfStarcraftShutdown = true;
+    PROFILE_FUNCTION();
 
+	bool exitIfStarcraftShutdown = true;
+    
 	size_t gameCount = 0;
 	while (true)
 	{

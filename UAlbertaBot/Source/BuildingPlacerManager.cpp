@@ -1,28 +1,21 @@
 #include "Common.h"
-#include "BuildingPlacer.h"
-#include "MapGrid.h"
+#include "BuildingPlacerManager.h"
 #include "BaseLocationManager.h"
+#include "Global.h"
+#include "BuildingData.h"
+#include "Global.h"
+#include "MapTools.h"
 
 using namespace UAlbertaBot;
 
-BuildingPlacer::BuildingPlacer()
-    : _boxTop       (std::numeric_limits<int>::max())
-    , _boxBottom    (std::numeric_limits<int>::lowest())
-    , _boxLeft      (std::numeric_limits<int>::max())
-    , _boxRight     (std::numeric_limits<int>::lowest())
+BuildingPlacerManager::BuildingPlacerManager()
 {
     _reserveMap = std::vector< std::vector<bool> >(BWAPI::Broodwar->mapWidth(),std::vector<bool>(BWAPI::Broodwar->mapHeight(),false));
 
     computeResourceBox();
 }
 
-BuildingPlacer & BuildingPlacer::Instance() 
-{
-    static BuildingPlacer instance;
-    return instance;
-}
-
-bool BuildingPlacer::isInResourceBox(int x, int y) const
+bool BuildingPlacerManager::isInResourceBox(int x, int y) const
 {
     int posX(x * 32);
     int posY(y * 32);
@@ -30,8 +23,10 @@ bool BuildingPlacer::isInResourceBox(int x, int y) const
     return (posX >= _boxLeft) && (posX < _boxRight) && (posY >= _boxTop) && (posY < _boxBottom);
 }
 
-void BuildingPlacer::computeResourceBox()
+void BuildingPlacerManager::computeResourceBox()
 {
+    PROFILE_FUNCTION();
+
     BWAPI::Position start(BWAPI::Broodwar->self()->getStartLocation());
     BWAPI::Unitset unitsAroundNexus;
 
@@ -64,9 +59,9 @@ void BuildingPlacer::computeResourceBox()
 }
 
 // makes final checks to see if a building can be built at a certain location
-bool BuildingPlacer::canBuildHere(BWAPI::TilePosition position,const Building & b) const
+bool BuildingPlacerManager::canBuildHere(BWAPI::TilePosition position,const Building & b) const
 {
-    /*if (!b.type.isRefinery() && !InformationManager::Instance().tileContainsUnit(position))
+    /*if (!b.type.isRefinery() && !Global::Info().tileContainsUnit(position))
     {
     return false;
     }*/
@@ -98,7 +93,7 @@ bool BuildingPlacer::canBuildHere(BWAPI::TilePosition position,const Building & 
     return true;
 }
 
-bool BuildingPlacer::tileBlocksAddon(BWAPI::TilePosition position) const
+bool BuildingPlacerManager::tileBlocksAddon(BWAPI::TilePosition position) const
 {
 
     for (int i=0; i<=2; ++i)
@@ -120,8 +115,10 @@ bool BuildingPlacer::tileBlocksAddon(BWAPI::TilePosition position) const
 
 //returns true if we can build this type of unit here with the specified amount of space.
 //space value is stored in this->buildDistance.
-bool BuildingPlacer::canBuildHereWithSpace(BWAPI::TilePosition position,const Building & b,int buildDist,bool horizontalOnly) const
+bool BuildingPlacerManager::canBuildHereWithSpace(BWAPI::TilePosition position,const Building & b,int buildDist,bool horizontalOnly) const
 {
+    PROFILE_FUNCTION();
+
     BWAPI::UnitType type = b.type;
 
     //if we can't build here, we of course can't build here with space
@@ -191,20 +188,17 @@ bool BuildingPlacer::canBuildHereWithSpace(BWAPI::TilePosition position,const Bu
     return true;
 }
 
-BWAPI::TilePosition BuildingPlacer::GetBuildLocation(const Building & b,int padding) const
+BWAPI::TilePosition BuildingPlacerManager::GetBuildLocation(const Building & b,int padding) const
 {
     return BWAPI::TilePosition(0,0);
 }
 
-BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b,int buildDist,bool horizontalOnly) const
+BWAPI::TilePosition BuildingPlacerManager::getBuildLocationNear(const Building & b,int buildDist,bool horizontalOnly) const
 {
-    SparCraft::Timer t;
-    t.start();
+    PROFILE_FUNCTION();
 
     // get the precomputed vector of tile positions which are sorted closes to this location
-    const std::vector<BWAPI::TilePosition> & closestToBuilding = MapTools::Instance().getClosestTilesTo(b.desiredPosition);
-
-    double ms1 = t.getElapsedTimeInMilliSec();
+    const std::vector<BWAPI::TilePosition> & closestToBuilding = Global::Map().getClosestTilesTo(b.desiredPosition);
 
     // special easy case of having no pylons
     int numPylons = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Pylon);
@@ -218,20 +212,16 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b,int 
     {
         if (canBuildHereWithSpace(closestToBuilding[i],b,buildDist,horizontalOnly))
         {
-            double ms = t.getElapsedTimeInMilliSec();
             //BWAPI::Broodwar->printf("Building Placer Took %d iterations, lasting %lf ms @ %lf iterations/ms, %lf setup ms", i, ms, (i / ms), ms1);
 
             return closestToBuilding[i];
         }
     }
 
-    double ms = t.getElapsedTimeInMilliSec();
-    //BWAPI::Broodwar->printf("Building Placer Took %lf ms", ms);
-
     return  BWAPI::TilePositions::None;
 }
 
-bool BuildingPlacer::tileOverlapsBaseLocation(BWAPI::TilePosition tile,BWAPI::UnitType type) const
+bool BuildingPlacerManager::tileOverlapsBaseLocation(BWAPI::TilePosition tile,BWAPI::UnitType type) const
 {
     // if it's a resource depot we don't care if it overlaps
     if (type.isResourceDepot())
@@ -246,7 +236,7 @@ bool BuildingPlacer::tileOverlapsBaseLocation(BWAPI::TilePosition tile,BWAPI::Un
     int ty2 = ty1 + type.tileHeight();
 
     // for each base location
-    for (auto base : BaseLocationManager::Instance().getBaseLocations())
+    for (auto base : Global::Bases().getBaseLocations())
     {
         // dimensions of the base location
         int bx1 = base->getDepotPosition().x;
@@ -268,7 +258,7 @@ bool BuildingPlacer::tileOverlapsBaseLocation(BWAPI::TilePosition tile,BWAPI::Un
     return false;
 }
 
-bool BuildingPlacer::buildable(const Building & b,int x,int y) const
+bool BuildingPlacerManager::buildable(const Building & b,int x,int y) const
 {
     BWAPI::TilePosition tp(x,y);
 
@@ -299,7 +289,7 @@ bool BuildingPlacer::buildable(const Building & b,int x,int y) const
     return true;
 }
 
-void BuildingPlacer::reserveTiles(BWAPI::TilePosition position,int width,int height)
+void BuildingPlacerManager::reserveTiles(BWAPI::TilePosition position,int width,int height)
 {
     int rwidth = _reserveMap.size();
     int rheight = _reserveMap[0].size();
@@ -312,12 +302,14 @@ void BuildingPlacer::reserveTiles(BWAPI::TilePosition position,int width,int hei
     }
 }
 
-void BuildingPlacer::drawReservedTiles()
+void BuildingPlacerManager::drawReservedTiles()
 {
     if (!Config::Debug::DrawReservedBuildingTiles)
     {
         return;
     }
+
+    PROFILE_FUNCTION();
 
     int rwidth = _reserveMap.size();
     int rheight = _reserveMap[0].size();
@@ -339,7 +331,7 @@ void BuildingPlacer::drawReservedTiles()
     }
 }
 
-void BuildingPlacer::freeTiles(BWAPI::TilePosition position, int width, int height)
+void BuildingPlacerManager::freeTiles(BWAPI::TilePosition position, int width, int height)
 {
     int rwidth = _reserveMap.size();
     int rheight = _reserveMap[0].size();
@@ -353,7 +345,7 @@ void BuildingPlacer::freeTiles(BWAPI::TilePosition position, int width, int heig
     }
 }
 
-BWAPI::TilePosition BuildingPlacer::getRefineryPosition()
+BWAPI::TilePosition BuildingPlacerManager::getRefineryPosition()
 {
     BWAPI::TilePosition closestGeyser = BWAPI::TilePositions::None;
     double minGeyserDistanceFromHome = std::numeric_limits<double>::max();
@@ -395,7 +387,7 @@ BWAPI::TilePosition BuildingPlacer::getRefineryPosition()
     return closestGeyser;
 }
 
-bool BuildingPlacer::isReserved(int x, int y) const
+bool BuildingPlacerManager::isReserved(int x, int y) const
 {
     int rwidth = _reserveMap.size();
     int rheight = _reserveMap[0].size();

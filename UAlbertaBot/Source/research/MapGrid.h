@@ -26,15 +26,16 @@ public:
 
 class MapGrid 
 {
+    friend class Global;
+
 	MapGrid();
-	MapGrid(int mapWidth, int mapHeight, int cellSize);
 
 	int							cellSize;
 	int							mapWidth, mapHeight;
 	int							rows, cols;
 	int							lastUpdated;
 
-	std::vector< GridCell >		cells;
+	std::vector<GridCell>		cells;
 
 	void						calculateCellCenters();
 
@@ -44,9 +45,6 @@ class MapGrid
 	BWAPI::Position				naturalExpansion;
 
 public:
-
-	// yay for singletons!
-	static MapGrid &	Instance();
 
 	void				update();
 	void				GetUnits(BWAPI::Unitset & units, BWAPI::Position center, int radius, bool ourUnits, bool oppUnits);

@@ -1,5 +1,6 @@
 #include "TankManager.h"
 #include "UnitUtil.h"
+#include "Micro.h"
 
 using namespace UAlbertaBot;
 

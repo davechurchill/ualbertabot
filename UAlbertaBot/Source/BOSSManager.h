@@ -1,18 +1,20 @@
 #pragma once
 
 #include "Common.h"
-#include "WorkerManager.h"
 #include "../../BOSS/source/BOSS.h"
-#include "StrategyManager.h"
 #include <memory>
+#include "MetaType.h"
 
 namespace UAlbertaBot
 {
     
 typedef std::shared_ptr<BOSS::DFBB_BuildOrderSmartSearch> SearchPtr;
+class BuildOrder;
 
 class BOSSManager
 {
+    friend class Global;
+
     int                                     _previousSearchStartFrame;
     int                                     _savedSearchStartFrame;
     int                                     _previousSearchFinishFrame;
@@ -43,8 +45,6 @@ class BOSSManager
 	BOSSManager();
 
 public:
-
-	static BOSSManager &	    Instance();
 
 	void						update(double timeLimit);
     void                        reset();

@@ -1,5 +1,6 @@
 #include "MapTools.h"
 #include "BaseLocationManager.h"
+#include "Global.h"
 
 #include <iostream>
 #include <sstream>
@@ -12,24 +13,16 @@ const size_t LegalActions = 4;
 const int actionX[LegalActions] ={1, -1, 0, 0};
 const int actionY[LegalActions] ={0, 0, 1, -1};
 
-typedef std::vector<std::vector<bool>> vvb;
-typedef std::vector<std::vector<int>>  vvi;
-typedef std::vector<std::vector<float>>  vvf;
-
 // constructor for MapTools
 MapTools::MapTools()
 {
     onStart();
 }
 
-MapTools & MapTools::Instance()
-{
-    static MapTools instance;
-    return instance;
-}
-
 void MapTools::onStart()
 {
+    PROFILE_FUNCTION();
+
     m_width  = BWAPI::Broodwar->mapWidth();
     m_height = BWAPI::Broodwar->mapHeight();
 
@@ -89,6 +82,8 @@ void MapTools::onStart()
 
 void MapTools::onFrame()
 {
+    PROFILE_FUNCTION();
+
     for (int x=0; x<m_width; ++x)
     {
         for (int y=0; y<m_height; ++y)
@@ -106,6 +101,8 @@ void MapTools::onFrame()
 
 void MapTools::computeConnectivity()
 {
+    PROFILE_FUNCTION();
+
     // the fringe data structe we will use to do our BFS searches
     std::vector<std::array<int, 2>> fringe;
     fringe.reserve(m_width*m_height);
@@ -358,7 +355,7 @@ BWAPI::TilePosition MapTools::getLeastRecentlySeenTile() const
 {
     int minSeen = std::numeric_limits<int>::max();
     BWAPI::TilePosition leastSeen;
-    const BaseLocation * baseLocation = BaseLocationManager::Instance().getPlayerStartingBaseLocation(BWAPI::Broodwar->self());
+    const BaseLocation * baseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->self());
     UAB_ASSERT(baseLocation, "Null self baselocation is insanely bad");
 
     for (auto & tile : baseLocation->getClosestTiles())
@@ -429,4 +426,44 @@ void MapTools::draw() const
             }
         }
     }
+}
+
+void MapTools::getUnits(BWAPI::Unitset & units, BWAPI::Position center, int radius, bool ourUnits, bool oppUnits)
+{
+	const int radiusSq(radius * radius);
+
+	if (ourUnits)
+	{
+		for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+		{
+			BWAPI::Position d(unit->getPosition() - center);
+			if(d.x * d.x + d.y * d.y <= radiusSq)
+			{
+				if (!units.contains(unit)) 
+				{
+					units.insert(unit);
+				}
+			}
+		}
+	}
+
+	if (oppUnits)
+	{
+		for (auto & unit : BWAPI::Broodwar->enemy()->getUnits()) 
+		{
+            if (unit->getType() == BWAPI::UnitTypes::Unknown || !unit->isVisible())
+            {
+                continue;
+            }
+
+			BWAPI::Position d(unit->getPosition() - center);
+			if(d.x * d.x + d.y * d.y <= radiusSq)
+			{
+				if (!units.contains(unit))
+				{ 
+					units.insert(unit); 
+				}
+			}
+		}
+	}
 }

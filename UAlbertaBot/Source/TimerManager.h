@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Config.h"
 #include "Common.h"
 #include "../../BOSS/source/Timer.hpp"
 

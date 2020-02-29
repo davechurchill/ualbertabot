@@ -190,7 +190,7 @@ void DFBB_BuildOrderStackSearch::updateResults(const GameState & state)
         _results.finalState = state;
         _results.buildOrder = _buildOrder;
 
-        _results.printResults(true);
+        //_results.printResults(true);
     }
 }
 

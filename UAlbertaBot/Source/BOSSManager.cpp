@@ -1,15 +1,13 @@
 #include "Common.h"
 #include "BOSSManager.h"
 #include "UnitUtil.h"
+#include "Global.h"
+#include "BuildingManager.h"
+#include "WorkerManager.h"
+#include "StrategyManager.h"
+#include "Logger.h"
 
 using namespace UAlbertaBot;
-
-// get an instance of this
-BOSSManager & BOSSManager::Instance() 
-{
-	static BOSSManager instance;
-	return instance;
-}
 
 // constructor
 BOSSManager::BOSSManager() 
@@ -53,7 +51,7 @@ void BOSSManager::startNewSearch(const std::vector<MetaPair> & goalUnits)
     {
         BOSS::BuildOrderSearchGoal goal = GetGoal(goalUnits);
 
-        BOSS::GameState initialState(BWAPI::Broodwar, BWAPI::Broodwar->self(), BuildingManager::Instance().buildingsQueued());
+        BOSS::GameState initialState(BWAPI::Broodwar, BWAPI::Broodwar->self(), Global::Buildings().buildingsQueued());
 
         _smartSearch = SearchPtr(new BOSS::DFBB_BuildOrderSmartSearch(initialState.getRace()));
         _smartSearch->setGoal(GetGoal(goalUnits));
@@ -109,7 +107,7 @@ void BOSSManager::drawStateInformation(int x, int y)
         return;
     }
 
-    BOSS::GameState currentState(BWAPI::Broodwar, BWAPI::Broodwar->self(), BuildingManager::Instance().buildingsQueued());
+    BOSS::GameState currentState(BWAPI::Broodwar, BWAPI::Broodwar->self(), Global::Buildings().buildingsQueued());
     BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x-100, y+30), "\x04%s", currentState.getBuildingData().toString().c_str());
     BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x+150, y), "\x04%s", currentState.toString().c_str());
     
@@ -118,6 +116,8 @@ void BOSSManager::drawStateInformation(int x, int y)
 // tell the search to keep going for however long we have this frame
 void BOSSManager::update(double timeLimit)
 {
+    PROFILE_FUNCTION();
+
     // if there's a search in progress, resume it
     if (isSearchInProgress())
     {
@@ -237,7 +237,6 @@ void BOSSManager::logBadSearch()
 {
     std::string s = _smartSearch->getParameters().toString();
 
-    Logger::LogOverwriteToFile("c:/uaberror.txt", s);
 }
 
 BOSS::BuildOrderSearchGoal BOSSManager::GetGoal(const std::vector<MetaPair> & goalUnits)

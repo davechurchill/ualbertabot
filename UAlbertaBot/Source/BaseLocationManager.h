@@ -7,6 +7,8 @@ namespace UAlbertaBot
 
 class BaseLocationManager
 {
+    friend class Global;
+
 	std::vector<BaseLocation>								m_baseLocationData;
 	std::vector<const BaseLocation *>						m_baseLocationPtrs;
 	std::vector<const BaseLocation *>						m_startingBaseLocations;
@@ -19,8 +21,6 @@ class BaseLocationManager
 	BaseLocationManager();
 
 public:
-
-	static BaseLocationManager & Instance();
 
 	void onStart();
 	void onFrame();

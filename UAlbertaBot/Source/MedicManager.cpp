@@ -1,5 +1,7 @@
+#include "Common.h"
 #include "MedicManager.h"
 #include "UnitUtil.h"
+#include "Micro.h"
 
 using namespace UAlbertaBot;
 

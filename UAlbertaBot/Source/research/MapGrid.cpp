@@ -1,28 +1,22 @@
 #include "Common.h"
 #include "MapGrid.h"
+#include "Global.h"
 
 using namespace UAlbertaBot;
 
-MapGrid & MapGrid::Instance() 
+MapGrid::MapGrid() 
 {
-	static MapGrid instance(BWAPI::Broodwar->mapWidth()*32, BWAPI::Broodwar->mapHeight()*32, Config::Tools::MAP_GRID_SIZE);
-	return instance;
-}
+    mapWidth = BWAPI::Broodwar->mapWidth()*32;
+    mapHeight = BWAPI::Broodwar->mapHeight()*32;
+    cellSize =  Config::Tools::MAP_GRID_SIZE;
+    cols = (mapWidth + cellSize - 1) / cellSize;
+    rows = (mapHeight + cellSize - 1) / cellSize;
+    cells = std::vector<GridCell>(rows * cols);
+    lastUpdated = 0;
 
-MapGrid::MapGrid() {}
+    calculateCellCenters();
+}
 	
-MapGrid::MapGrid(int mapWidth, int mapHeight, int cellSize) 
-	: mapWidth(mapWidth)
-	, mapHeight(mapHeight)
-	, cellSize(cellSize)
-	, cols((mapWidth + cellSize - 1) / cellSize)
-	, rows((mapHeight + cellSize - 1) / cellSize)
-	, cells(rows * cols)
-	, lastUpdated(0)
-{
-	calculateCellCenters();
-}
-
 BWAPI::Position MapGrid::getNaturalExpansion() 
 {
 	return naturalExpansion;
@@ -42,7 +36,7 @@ BWAPI::Position MapGrid::getLeastExplored()
 			BWAPI::Position cellCenter = getCellCenter(r,c);
 
 			// don't worry about places that aren't connected to our start locatin
-			if (MapTools::Instance().getGroundDistance(cellCenter, BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation())) > 0)
+			if (Global::Map().getGroundDistance(cellCenter, BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation())) > 0)
 			{
 				continue;
 			}
@@ -65,6 +59,8 @@ BWAPI::Position MapGrid::getLeastExplored()
 
 void MapGrid::calculateCellCenters()
 {
+    PROFILE_FUNCTION();
+
 	for (int r=0; r < rows; ++r)
 	{
 		for (int c=0; c < cols; ++c)
@@ -131,6 +127,8 @@ void MapGrid::clearGrid() {
 // populate the grid with units
 void MapGrid::update() 
 {
+    PROFILE_FUNCTION();
+
     if (Config::Debug::DrawMapGrid) 
     {
 	    for (int i=0; i<cols; i++) 

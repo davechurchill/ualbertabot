@@ -2,17 +2,18 @@
 
 #include <Common.h>
 #include "BuildOrderQueue.h"
-#include "BuildingManager.h"
-#include "StrategyManager.h"
-#include "BOSSManager.h"
-#include "BuildOrder.h"
 
 namespace UAlbertaBot
 {
 typedef unsigned char Action;
 
+class Building;
+class BuildOrder;
+
 class ProductionManager
 {
+    friend class Global;
+
     ProductionManager();
     
     BuildOrderQueue     _queue;
@@ -42,8 +43,6 @@ class ProductionManager
     bool                canPlanBuildOrderNow() const;
 
 public:
-
-    static ProductionManager &	Instance();
 
     void        drawQueueInformation(std::map<BWAPI::UnitType,int> & numUnits,int x,int y,int index);
     void        update();

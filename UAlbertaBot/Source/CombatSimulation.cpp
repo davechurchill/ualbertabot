@@ -1,4 +1,8 @@
 #include "CombatSimulation.h"
+#include "Global.h"
+#include "MapTools.h"
+#include "UnitData.h"
+#include "InformationManager.h"
 
 using namespace UAlbertaBot;
 
@@ -18,8 +22,8 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
 	BWAPI::Unitset ourCombatUnits;
 	std::vector<UnitInfo> enemyCombatUnits;
 
-	MapGrid::Instance().GetUnits(ourCombatUnits, center, Config::Micro::CombatRegroupRadius, true, false);
-	InformationManager::Instance().getNearbyForce(enemyCombatUnits, center, BWAPI::Broodwar->enemy(), Config::Micro::CombatRegroupRadius);
+	Global::Map().getUnits(ourCombatUnits, center, Config::Micro::CombatRegroupRadius, true, false);
+	Global::Info().getNearbyForce(enemyCombatUnits, center, BWAPI::Broodwar->enemy(), Config::Micro::CombatRegroupRadius);
 
 	for (auto & unit : ourCombatUnits)
 	{
@@ -28,7 +32,7 @@ void CombatSimulation::setCombatUnits(const BWAPI::Position & center, const int 
             continue;
         }
 
-        if (InformationManager::Instance().isCombatUnit(unit->getType()) && SparCraft::System::isSupportedUnitType(unit->getType()))
+        if (Global::Info().isCombatUnit(unit->getType()) && SparCraft::System::isSupportedUnitType(unit->getType()))
 		{
             try
             {
@@ -125,6 +129,8 @@ const SparCraft::Unit CombatSimulation::getSparCraftUnit(const UnitInfo & ui) co
 
 SparCraft::ScoreType CombatSimulation::simulateCombat()
 {
+    PROFILE_FUNCTION();
+
     try
     {
 	    SparCraft::GameState s1(state);

@@ -1,13 +1,12 @@
 #pragma once
 
 #include "Common.h"
-#include "Squad.h"
 #include "SquadData.h"
-#include "InformationManager.h"
-#include "StrategyManager.h"
 
 namespace UAlbertaBot
 {
+
+class Squad;
 class CombatCommander
 {
 	SquadData       _squadData;

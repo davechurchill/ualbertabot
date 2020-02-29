@@ -1,6 +1,14 @@
 #include "CombatCommander.h"
 #include "UnitUtil.h"
 #include "BaseLocationManager.h"
+#include "Global.h"
+#include "WorkerManager.h"
+#include "UnitData.h"
+#include "MapTools.h"
+#include "InformationManager.h"
+#include "StrategyManager.h"
+#include "Squad.h"
+#include "SquadData.h"
 
 using namespace UAlbertaBot;
 
@@ -48,6 +56,8 @@ bool CombatCommander::isSquadUpdateFrame()
 
 void CombatCommander::update(const BWAPI::Unitset & combatUnits)
 {
+    PROFILE_FUNCTION();
+
     if (!Config::Modules::UsingCombatCommander)
     {
         return;
@@ -181,7 +191,7 @@ void CombatCommander::updateScoutDefenseSquad()
   
     // get the region that our base is located in
 
-	auto myBase = BaseLocationManager::Instance().getPlayerStartingBaseLocation(BWAPI::Broodwar->self());
+	auto myBase = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->self());
 
     // get all of the enemy units in this region
 	BWAPI::Unitset enemyUnitsInRegion;
@@ -210,7 +220,7 @@ void CombatCommander::updateScoutDefenseSquad()
 			// grab it from the worker manager and put it in the squad
             if (_squadData.canAssignUnitToSquad(workerDefender, scoutDefenseSquad))
             {
-			    WorkerManager::Instance().setCombatWorker(workerDefender);
+			    Global::Workers().setCombatWorker(workerDefender);
                 _squadData.assignUnitToSquad(workerDefender, scoutDefenseSquad);
             }
 		}
@@ -223,7 +233,7 @@ void CombatCommander::updateScoutDefenseSquad()
             unit->stop();
             if (unit->getType().isWorker())
             {
-                WorkerManager::Instance().finishedWithWorker(unit);
+                Global::Workers().finishedWithWorker(unit);
             }
         }
 
@@ -239,8 +249,8 @@ void CombatCommander::updateDefenseSquads()
 	}
 
 	// for each of our occupied regions
-	const BaseLocation * enemyBaseLocation = BaseLocationManager::Instance().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
-	for (const BaseLocation * myBaseLocation : BaseLocationManager::Instance().getOccupiedBaseLocations(BWAPI::Broodwar->self()))
+	const BaseLocation * enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
+	for (const BaseLocation * myBaseLocation : Global::Bases().getOccupiedBaseLocations(BWAPI::Broodwar->self()))
 	{
 		// don't defend inside the enemy region, this will end badly when we are stealing gas or cannon rushing
 		if (myBaseLocation == enemyBaseLocation)
@@ -467,7 +477,7 @@ void CombatCommander::drawSquadInformation(int x, int y)
 
 BWAPI::Position CombatCommander::getMainAttackLocation()
 {
-    const BaseLocation * enemyBaseLocation = BaseLocationManager::Instance().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
+    const BaseLocation * enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
 
     // First choice: Attack an enemy region if we can see units inside it
     if (enemyBaseLocation)
@@ -476,7 +486,7 @@ BWAPI::Position CombatCommander::getMainAttackLocation()
 
         // get all known enemy units in the area
         BWAPI::Unitset enemyUnitsInArea;
-		MapGrid::Instance().GetUnits(enemyUnitsInArea, enemyBasePosition, 800, false, true);
+		Global::Map().getUnits(enemyUnitsInArea, enemyBasePosition, 800, false, true);
 
         bool onlyOverlords = true;
         for (auto & unit : enemyUnitsInArea)
@@ -497,7 +507,7 @@ BWAPI::Position CombatCommander::getMainAttackLocation()
     }
 
     // Second choice: Attack known enemy buildings
-    for (const auto & kv : InformationManager::Instance().getUnitInfo(BWAPI::Broodwar->enemy()))
+    for (const auto & kv : Global::Info().getUnitInfo(BWAPI::Broodwar->enemy()))
     {
         const UnitInfo & ui = kv.second;
 
@@ -522,7 +532,7 @@ BWAPI::Position CombatCommander::getMainAttackLocation()
 	}
 
     // Fourth choice: We can't see anything so explore the map attacking along the way
-    return MapGrid::Instance().getLeastExplored();
+    return BWAPI::Position(Global::Map().getLeastRecentlySeenTile());
 }
 
 BWAPI::Unit CombatCommander::findClosestWorkerToTarget(BWAPI::Unitset & unitsToAssign, BWAPI::Unit target)
@@ -546,7 +556,7 @@ BWAPI::Unit CombatCommander::findClosestWorkerToTarget(BWAPI::Unitset & unitsToA
         }
 
 		// if it is a move worker
-        if (WorkerManager::Instance().isFree(unit)) 
+        if (Global::Workers().isFree(unit)) 
 		{
 			double dist = unit->getDistance(target);
 

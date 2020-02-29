@@ -1,15 +1,10 @@
 #pragma once
 
 #include "Common.h"
-#include "BuildOrderQueue.h"
-#include "InformationManager.h"
-#include "WorkerManager.h"
 #include "BuildOrder.h"
 
 namespace UAlbertaBot
 {
-typedef std::pair<MetaType, size_t> MetaPair;
-typedef std::vector<MetaPair> MetaPairVector;
 
 struct Strategy
 {
@@ -41,13 +36,15 @@ struct Strategy
 
 class StrategyManager 
 {
+    friend class Global;
+
 	StrategyManager();
 
 	BWAPI::Race					    _selfRace;
 	BWAPI::Race					    _enemyRace;
     std::map<std::string, Strategy> _strategies;
     int                             _totalGamesPlayed;
-    const BuildOrder                _emptyBuildOrder;
+    BuildOrder                _emptyBuildOrder;
 
 	        void	                writeResults();
 	const	int					    getScore(BWAPI::Player player) const;
@@ -59,8 +56,6 @@ class StrategyManager
 
 public:
     
-	static	StrategyManager &	    Instance();
-
 			void				    onEnd(const bool isWinner);
             void                    addStrategy(const std::string & name, Strategy & strategy);
             void                    setLearnedStrategy();

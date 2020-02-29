@@ -2,6 +2,10 @@
 #include "StrategyManager.h"
 #include "UnitUtil.h"
 #include "BaseLocationManager.h"
+#include "Global.h"
+#include "InformationManager.h"
+#include "WorkerManager.h"
+#include "Logger.h"
 
 using namespace UAlbertaBot;
 
@@ -12,13 +16,6 @@ StrategyManager::StrategyManager()
     , _emptyBuildOrder(BWAPI::Broodwar->self()->getRace())
 {
 	
-}
-
-// get an instance of this
-StrategyManager & StrategyManager::Instance() 
-{
-	static StrategyManager instance;
-	return instance;
 }
 
 const int StrategyManager::getScore(BWAPI::Player player) const
@@ -45,7 +42,7 @@ const BuildOrder & StrategyManager::getOpeningBookBuildOrder() const
 const bool StrategyManager::shouldExpandNow() const
 {
 	// if there is no place to expand to, we can't expand
-	if (BaseLocationManager::Instance().getNextExpansion(BWAPI::Broodwar->self()) == BWAPI::TilePositions::None)
+	if (Global::Bases().getNextExpansion(BWAPI::Broodwar->self()) == BWAPI::TilePositions::None)
 	{
         BWAPI::Broodwar->printf("No valid expansion location");
 		return false;
@@ -60,7 +57,7 @@ const bool StrategyManager::shouldExpandNow() const
     int minute          = frame / (24*60);
 
 	// if we have a ton of idle workers then we need a new expansion
-	if (WorkerManager::Instance().getNumIdleWorkers() > 10)
+	if (Global::Workers().getNumIdleWorkers() > 10)
 	{
 		return true;
 	}
@@ -175,7 +172,7 @@ const MetaPairVector StrategyManager::getProtossBuildOrderGoal() const
     }
     
     // add observer to the goal if the enemy has cloaked units
-	if (InformationManager::Instance().enemyHasCloakedUnits())
+	if (Global::Info().enemyHasCloakedUnits())
 	{
 		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Robotics_Facility, 1));
 		

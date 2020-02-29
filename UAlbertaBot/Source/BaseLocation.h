@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Common.h"
 #include "DistanceMap.h"
 #include <map>
 #include <vector>

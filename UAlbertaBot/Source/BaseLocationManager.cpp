@@ -1,18 +1,16 @@
+
+#include "Common.h"
 #include "BaseLocationManager.h"
 #include "InformationManager.h"
 #include "MapTools.h"
+#include "Global.h"
+#include "UnitData.h"
 
 using namespace UAlbertaBot;
 
 BaseLocationManager::BaseLocationManager()
 {
 	onStart();
-}
-
-BaseLocationManager & BaseLocationManager::Instance()
-{
-	static BaseLocationManager instance;
-	return instance;
 }
 
 BWAPI::Position BaseLocationManager::calcCenter(const std::vector<BWAPI::Unit> & units)
@@ -36,6 +34,8 @@ BWAPI::Position BaseLocationManager::calcCenter(const std::vector<BWAPI::Unit> &
 
 void BaseLocationManager::onStart()
 {
+    PROFILE_FUNCTION();
+
 	m_tileBaseLocations = std::vector<std::vector<BaseLocation *>>(BWAPI::Broodwar->mapWidth(), std::vector<BaseLocation *>(BWAPI::Broodwar->mapHeight(), nullptr));
     m_playerStartingBaseLocations[BWAPI::Broodwar->self()]  = nullptr;
 	m_playerStartingBaseLocations[BWAPI::Broodwar->enemy()] = nullptr;
@@ -58,7 +58,7 @@ void BaseLocationManager::onStart()
             const BWAPI::Position clusterCenter = calcCenter(cluster);
 
             // if the mineral is not connected to this cluster via ground travel, skpip it
-            if (!MapTools::Instance().isConnected(clusterCenter, mineral->getPosition())) { continue; }
+            if (!Global::Map().isConnected(clusterCenter, mineral->getPosition())) { continue; }
 
             // get the air travel distance as a first cutoff for the mineral
             const int dist = mineral->getDistance(calcCenter(cluster));
@@ -67,7 +67,7 @@ void BaseLocationManager::onStart()
             if (dist < clusterDistance)
             {
                 // now do a more expensive ground distance check
-                const int groundDist = 32*MapTools::Instance().getGroundDistance(mineral->getPosition(), calcCenter(cluster));
+                const int groundDist = 32*Global::Map().getGroundDistance(mineral->getPosition(), calcCenter(cluster));
                 //const int groundDist = dist; //m_bot.Map().getGroundDistance(mineral.pos, Util::CalcCenter(cluster));
 
                 if (groundDist >= 0 && groundDist < clusterDistance)
@@ -93,7 +93,7 @@ void BaseLocationManager::onStart()
 
         for (auto & cluster : resourceClusters)
         {
-            const int groundDist = 32*MapTools::Instance().getGroundDistance(geyser->getPosition(), calcCenter(cluster));
+            const int groundDist = 32*Global::Map().getGroundDistance(geyser->getPosition(), calcCenter(cluster));
             //const int groundDist = geyser->getDistance(calcCenter(cluster));
 
             if (groundDist >= 0 && groundDist < clusterDistance)
@@ -163,6 +163,8 @@ void BaseLocationManager::onStart()
 
 void BaseLocationManager::onFrame()
 {   
+    PROFILE_FUNCTION();
+
     drawBaseLocations();
 
     // reset the player occupation information for each location
@@ -190,7 +192,7 @@ void BaseLocationManager::onFrame()
     }
 
     // update enemy base occupations
-    for (const auto & kv : InformationManager::Instance().getUnitInfo(BWAPI::Broodwar->enemy()))
+    for (const auto & kv : Global::Info().getUnitInfo(BWAPI::Broodwar->enemy()))
     {
         const UnitInfo & ui = kv.second;
 
@@ -293,7 +295,6 @@ BaseLocation * BaseLocationManager::getBaseLocation(const BWAPI::Position & pos)
 
 void BaseLocationManager::drawBaseLocations()
 {
-    
     for (auto & baseLocation : m_baseLocationData)
     {
         baseLocation.draw();
@@ -329,6 +330,8 @@ const std::set<const BaseLocation *> & BaseLocationManager::getOccupiedBaseLocat
 
 BWAPI::TilePosition BaseLocationManager::getNextExpansion(BWAPI::Player player) const
 {
+    PROFILE_FUNCTION();
+
     const BaseLocation * homeBase = getPlayerStartingBaseLocation(player);
     const BaseLocation * closestBase = nullptr;
     int minDistance = std::numeric_limits<int>::max();

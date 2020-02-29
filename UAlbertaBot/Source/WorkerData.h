@@ -80,12 +80,12 @@ public:
 	int						getMineralsNearDepot(BWAPI::Unit depot);
 
 	int						getNumAssignedWorkers(BWAPI::Unit unit);
-	BWAPI::Unit   getMineralToMine(BWAPI::Unit worker);
+	BWAPI::Unit             getMineralToMine(BWAPI::Unit worker);
 
 	enum WorkerJob			getWorkerJob(BWAPI::Unit unit);
-	BWAPI::Unit   getWorkerResource(BWAPI::Unit unit);
-	BWAPI::Unit   getWorkerDepot(BWAPI::Unit unit);
-	BWAPI::Unit   getWorkerRepairUnit(BWAPI::Unit unit);
+	BWAPI::Unit             getWorkerResource(BWAPI::Unit unit);
+	BWAPI::Unit             getWorkerDepot(BWAPI::Unit unit);
+	BWAPI::Unit             getWorkerRepairUnit(BWAPI::Unit unit);
 	BWAPI::UnitType			getWorkerBuildingType(BWAPI::Unit unit);
 	WorkerMoveData			getWorkerMoveData(BWAPI::Unit unit);
 

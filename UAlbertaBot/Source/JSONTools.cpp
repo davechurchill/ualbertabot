@@ -1,5 +1,5 @@
+#include "Common.h"
 #include "JSONTools.h"
-
 
 namespace UAlbertaBot
 {

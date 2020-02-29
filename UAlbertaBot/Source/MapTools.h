@@ -9,11 +9,12 @@ namespace UAlbertaBot
 
 class MapTools
 {
+    friend class Global;
+
     int     m_width = 0;
     int     m_height = 0;
     int     m_frame = 0;
     
-
     // a cache of already computed distance maps, which is mutable since it only acts as a cache
     mutable std::map<std::pair<int,int>, DistanceMap>   m_allMaps;   
 
@@ -24,20 +25,15 @@ class MapTools
     Grid<int> m_sectorNumber;   // connectivity sector number, two tiles are ground connected if they have the same number
     
     void computeConnectivity();
-
-    int getSectorNumber(int x, int y) const;
-        
+    int  getSectorNumber(int x, int y) const;
     void printMap() const;
-
     bool canBuild(int tileX, int tileY) const;
     bool canWalk(int tileX, int tileY) const;
 
     MapTools();
 
 public:
-
-    static MapTools & Instance();
-
+    
     void    onStart();
     void    onFrame();
     void    draw() const;
@@ -70,6 +66,8 @@ public:
     bool    isBuildable(const BWAPI::TilePosition & tile) const;
     bool    isDepotBuildableTile(int tileX, int tileY) const;
     
+    void    getUnits(BWAPI::Unitset & units, BWAPI::Position center, int radius, bool ourUnits, bool oppUnits);
+
     BWAPI::TilePosition getLeastRecentlySeenTile() const;
 
     // returns a list of all tiles on the map, sorted by 4-direcitonal walk distance from the given position

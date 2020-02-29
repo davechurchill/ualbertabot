@@ -1,6 +1,12 @@
 #include "ScoutManager.h"
 #include "ProductionManager.h"
 #include "BaseLocationManager.h"
+#include "Global.h"
+#include "MicroManager.h"
+#include "InformationManager.h"
+#include "Micro.h"
+#include "WorkerManager.h"
+#include "MapTools.h"
 
 using namespace UAlbertaBot;
 
@@ -16,14 +22,10 @@ ScoutManager::ScoutManager()
 {
 }
 
-ScoutManager & ScoutManager::Instance() 
-{
-	static ScoutManager instance;
-	return instance;
-}
-
 void ScoutManager::update()
 {
+    PROFILE_FUNCTION();
+
     if (!Config::Modules::UsingScoutManager)
     {
         return;
@@ -38,11 +40,11 @@ void ScoutManager::setWorkerScout(BWAPI::Unit unit)
     // if we have a previous worker scout, release it back to the worker manager
     if (m_workerScout)
     {
-        WorkerManager::Instance().finishedWithWorker(m_workerScout);
+        Global::Workers().finishedWithWorker(m_workerScout);
     }
 
     m_workerScout = unit;
-    WorkerManager::Instance().setScoutWorker(m_workerScout);
+    Global::Workers().setScoutWorker(m_workerScout);
 }
 
 void ScoutManager::drawScoutInformation(int x, int y)
@@ -68,7 +70,7 @@ void ScoutManager::moveScouts()
     gasSteal();
 
 	// get the enemy base location, if we have one
-	const BaseLocation * enemyBaseLocation = BaseLocationManager::Instance().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
+	const BaseLocation * enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
 
     const int scoutDistanceThreshold = 30;
 
@@ -89,10 +91,27 @@ void ScoutManager::moveScouts()
         m_gasStealFinished = true;
     }
     
+	// for each start location in the level
+	if (!enemyBaseLocation)
+	{
+        m_scoutStatus = "Enemy base unknown, exploring";
+
+		for (auto startLocation : BWAPI::Broodwar->getStartLocations())
+		{
+			// if we haven't explored it yet, explore it
+			if (!BWAPI::Broodwar->isExplored(startLocation)) 
+			{
+				Micro::SmartMove(m_workerScout, BWAPI::Position(startLocation));	
+                BWAPI::Broodwar->drawCircleMap(BWAPI::Position(startLocation), 32, BWAPI::Colors::Purple);
+				return;
+			}
+		}
+	}
+    
 	// if we know where the enemy region is and where our scout is
 	if (enemyBaseLocation)
 	{
-        const int scoutDistanceToEnemy = MapTools::Instance().getGroundDistance(m_workerScout->getPosition(), enemyBaseLocation->getPosition());
+        const int scoutDistanceToEnemy = Global::Map().getGroundDistance(m_workerScout->getPosition(), enemyBaseLocation->getPosition());
         const bool scoutInRangeOfenemy = scoutDistanceToEnemy <= scoutDistanceThreshold;
         
         // we only care if the scout is under attack within the enemy region
@@ -126,7 +145,7 @@ void ScoutManager::moveScouts()
 				else
 				{
                     m_scoutStatus = "Following perimeter";
-					fleeScout();
+					Micro::SmartMove(m_workerScout, BWAPI::Position(enemyBaseLocation->getPosition()));
                 }
 				
 			}
@@ -149,27 +168,11 @@ void ScoutManager::moveScouts()
             m_scoutStatus = "Enemy region known, going there";
 
 			// move to the enemy region
-			fleeScout();
+			Micro::SmartMove(m_workerScout, BWAPI::Position(enemyBaseLocation->getPosition()));
         }
 		
 	}
 
-	// for each start location in the level
-	if (!enemyBaseLocation)
-	{
-        m_scoutStatus = "Enemy base unknown, exploring";
-
-		for (auto startLocation : BWAPI::Broodwar->getStartLocations())
-		{
-			// if we haven't explored it yet
-			if (!BWAPI::Broodwar->isExplored(startLocation)) 
-			{
-				// assign a zergling to go scout it
-				Micro::SmartMove(m_workerScout, BWAPI::Position(startLocation));			
-				return;
-			}
-		}
-	}
 
     m_previousScoutHP = scoutHP;
 }
@@ -205,7 +208,7 @@ void ScoutManager::gasSteal()
         return;
     }
 
-	auto enemyBaseLocation = BaseLocationManager::Instance().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
+	auto enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
     if (!enemyBaseLocation)
     {
         m_gasStealStatus = "No enemy base location found";
@@ -221,7 +224,7 @@ void ScoutManager::gasSteal()
 
     if (!m_didGasSteal)
     {
-        ProductionManager::Instance().queueGasSteal();
+        Global::Production().queueGasSteal();
         m_didGasSteal = true;
         Micro::SmartMove(m_workerScout, enemyGeyser->getPosition());
         m_gasStealStatus = "Did Gas Steal";
@@ -265,7 +268,7 @@ BWAPI::Unit ScoutManager::closestEnemyWorker()
 BWAPI::Unit ScoutManager::getEnemyGeyser()
 {
 	BWAPI::Unit geyser = nullptr;
-	auto enemyBaseLocation = BaseLocationManager::Instance().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
+	auto enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
 
 	for (auto & unit : enemyBaseLocation->getGeysers())
 	{

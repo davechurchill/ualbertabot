@@ -1,4 +1,11 @@
 #include "ProductionManager.h"
+#include "Global.h"
+#include "BuildingData.h"
+#include "BuildingManager.h"
+#include "StrategyManager.h"
+#include "BOSSManager.h"
+#include "InformationManager.h"
+#include "WorkerManager.h"
 
 using namespace UAlbertaBot;
 
@@ -7,7 +14,7 @@ ProductionManager::ProductionManager()
 	, _haveLocationForThisBuilding   (false)
 	, _enemyCloakedDetected          (false)
 {
-    setBuildOrder(StrategyManager::Instance().getOpeningBookBuildOrder());
+    setBuildOrder(Global::Strategy().getOpeningBookBuildOrder());
 }
 
 void ProductionManager::setBuildOrder(const BuildOrder & buildOrder)
@@ -27,24 +34,28 @@ void ProductionManager::performBuildOrderSearch()
         return;
     }
 
-	BuildOrder & buildOrder = BOSSManager::Instance().getBuildOrder();
+    PROFILE_FUNCTION();
+
+	BuildOrder & buildOrder = Global::BOSS().getBuildOrder();
 
     if (buildOrder.size() > 0)
     {
 	    setBuildOrder(buildOrder);
-        BOSSManager::Instance().reset();
+        Global::BOSS().reset();
     }
     else
     {
-        if (!BOSSManager::Instance().isSearchInProgress())
+        if (!Global::BOSS().isSearchInProgress())
         {
-			BOSSManager::Instance().startNewSearch(StrategyManager::Instance().getBuildOrderGoal());
+			Global::BOSS().startNewSearch(Global::Strategy().getBuildOrderGoal());
         }
     }
 }
 
 void ProductionManager::update() 
 {
+    PROFILE_FUNCTION();
+
 	// check the _queue for stuff we can build
 	manageBuildOrderQueue();
     
@@ -70,7 +81,7 @@ void ProductionManager::update()
 	}
 
 	// if they have cloaked units get a new goal asap
-	if (!_enemyCloakedDetected && InformationManager::Instance().enemyHasCloakedUnits())
+	if (!_enemyCloakedDetected && Global::Info().enemyHasCloakedUnits())
 	{
         if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Protoss)
         {
@@ -120,7 +131,7 @@ void ProductionManager::onUnitDestroy(BWAPI::Unit unit)
 	if (Config::Modules::UsingBuildOrderSearch)
 	{
 		// if it's a worker or a building, we need to re-search for the current goal
-		if ((unit->getType().isWorker() && !WorkerManager::Instance().isWorkerScout(unit)) || unit->getType().isBuilding())
+		if ((unit->getType().isWorker() && !Global::Workers().isWorkerScout(unit)) || unit->getType().isBuilding())
 		{
 			if (unit->getType() != BWAPI::UnitTypes::Zerg_Drone)
 			{
@@ -132,6 +143,8 @@ void ProductionManager::onUnitDestroy(BWAPI::Unit unit)
 
 void ProductionManager::manageBuildOrderQueue() 
 {
+    PROFILE_FUNCTION();
+
 	// if there is nothing in the _queue, oh well
 	if (_queue.isEmpty()) 
 	{
@@ -165,7 +178,7 @@ void ProductionManager::manageBuildOrderQueue()
             b.isGasSteal = currentItem.isGasSteal;
 
 			// set the producer as the closest worker, but do not set its job yet
-			producer = WorkerManager::Instance().getBuilder(b, false);
+			producer = Global::Workers().getBuilder(b, false);
 
 			// predict the worker movement to that building location
 			predictWorkerMovement(b);
@@ -204,6 +217,8 @@ void ProductionManager::manageBuildOrderQueue()
 
 BWAPI::Unit ProductionManager::getProducer(MetaType t, BWAPI::Position closestTo)
 {
+    PROFILE_FUNCTION();
+
     // get the type of unit that builds this
     BWAPI::UnitType producerType = t.whatBuilds();
 
@@ -332,6 +347,8 @@ void ProductionManager::create(BWAPI::Unit producer, BuildOrderItem & item)
         return;
     }
 
+    PROFILE_FUNCTION();
+
     MetaType t = item.metaType;
 
     // if we're dealing with a building
@@ -342,7 +359,7 @@ void ProductionManager::create(BWAPI::Unit producer, BuildOrderItem & item)
         && !t.getUnitType().isAddon())
     {
         // send the building task to the building manager
-        BuildingManager::Instance().addBuildingTask(t.getUnitType(), BWAPI::Broodwar->self()->getStartLocation(), item.isGasSteal);
+        Global::Buildings().addBuildingTask(t.getUnitType(), BWAPI::Broodwar->self()->getStartLocation(), item.isGasSteal);
     }
     else if (t.getUnitType().isAddon())
     {
@@ -416,7 +433,7 @@ bool ProductionManager::detectBuildOrderDeadlock()
 	}
 
 	// are any supply providers being built currently
-	bool supplyInProgress =	BuildingManager::Instance().isBeingBuilt(BWAPI::Broodwar->self()->getRace().getSupplyProvider());
+	bool supplyInProgress =	Global::Buildings().isBeingBuilt(BWAPI::Broodwar->self()->getRace().getSupplyProvider());
 
     for (auto & unit : BWAPI::Broodwar->self()->getUnits())
     {
@@ -439,7 +456,7 @@ bool ProductionManager::detectBuildOrderDeadlock()
 	if ((supplyAvailable < supplyCost) && !supplyInProgress)
 	{
         // if we're zerg, check to see if a building is planned to be built
-        if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Zerg && BuildingManager::Instance().buildingsQueued().size() > 0)
+        if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Zerg && Global::Buildings().buildingsQueued().size() > 0)
         {
             return false;
         }
@@ -464,7 +481,7 @@ void ProductionManager::predictWorkerMovement(const Building & b)
 	// get a possible building location for the building
 	if (!_haveLocationForThisBuilding)
 	{
-		_predictedTilePosition = BuildingManager::Instance().getBuildingLocation(b);
+		_predictedTilePosition = Global::Buildings().getBuildingLocation(b);
 	}
 
 	if (_predictedTilePosition != BWAPI::TilePositions::None)
@@ -494,7 +511,7 @@ void ProductionManager::predictWorkerMovement(const Building & b)
 	int gasRequired						= std::max(0, b.type.gasPrice() - getFreeGas());
 
 	// get a candidate worker to move to this location
-	BWAPI::Unit moveWorker			= WorkerManager::Instance().getMoveWorker(walkToPosition);
+	BWAPI::Unit moveWorker			= Global::Workers().getMoveWorker(walkToPosition);
 
 	// Conditions under which to move the worker: 
 	//		- there's a valid worker to move
@@ -502,13 +519,13 @@ void ProductionManager::predictWorkerMovement(const Building & b)
 	//		- the build position is valid
 	//		- we will have the required resources by the time the worker gets there
 	if (moveWorker && _haveLocationForThisBuilding && !_assignedWorkerForThisBuilding && (_predictedTilePosition != BWAPI::TilePositions::None) &&
-		WorkerManager::Instance().willHaveResources(mineralsRequired, gasRequired, moveWorker->getDistance(walkToPosition)) )
+		Global::Workers().willHaveResources(mineralsRequired, gasRequired, moveWorker->getDistance(walkToPosition)) )
 	{
 		// we have assigned a worker
 		_assignedWorkerForThisBuilding = true;
 
 		// tell the worker manager to move this worker
-		WorkerManager::Instance().setMoveWorker(mineralsRequired, gasRequired, walkToPosition);
+		Global::Workers().setMoveWorker(mineralsRequired, gasRequired, walkToPosition);
 	}
 }
 
@@ -535,12 +552,12 @@ void ProductionManager::performCommand(BWAPI::UnitCommandType t)
 
 int ProductionManager::getFreeMinerals()
 {
-	return BWAPI::Broodwar->self()->minerals() - BuildingManager::Instance().getReservedMinerals();
+	return BWAPI::Broodwar->self()->minerals() - Global::Buildings().getReservedMinerals();
 }
 
 int ProductionManager::getFreeGas()
 {
-	return BWAPI::Broodwar->self()->gas() - BuildingManager::Instance().getReservedGas();
+	return BWAPI::Broodwar->self()->gas() - Global::Buildings().getReservedGas();
 }
 
 // return whether or not we meet resources, including building reserves
@@ -660,12 +677,6 @@ void ProductionManager::drawProductionInformation(int x, int y)
 	}
 
 	_queue.drawQueueInformation(x, yy+10);
-}
-
-ProductionManager & ProductionManager::Instance()
-{
-	static ProductionManager instance;
-	return instance;
 }
 
 void ProductionManager::queueGasSteal()

@@ -1,6 +1,11 @@
 #include "Config.h"
 #include "UABAssert.h"
 
+namespace Bot
+{
+
+}
+
 namespace Config
 {
     namespace ConfigFile

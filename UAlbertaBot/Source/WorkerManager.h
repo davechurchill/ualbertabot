@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Common.h>
-#include "BuildingManager.h"
 #include "WorkerData.h"
 
 namespace UAlbertaBot
@@ -10,8 +9,10 @@ class Building;
 
 class WorkerManager
 {
+    friend class Global;
+
     WorkerData  workerData;
-    BWAPI::Unit previousClosestWorker;
+    BWAPI::Unit previousClosestWorker = nullptr;
 
     void        setMineralWorker(BWAPI::Unit unit);
     bool        isGasStealRefinery(BWAPI::Unit unit);
@@ -64,7 +65,5 @@ public:
 
     bool        willHaveResources(int mineralsRequired,int gasRequired,double distance);
     void        rebalanceWorkers();
-
-    static WorkerManager &  Instance();
 };
 }

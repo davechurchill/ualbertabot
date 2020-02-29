@@ -9,7 +9,6 @@ namespace MetaTypes
 {
     enum {Unit, Tech, Upgrade, Command, Default};
 }
-
 class MetaType 
 {
 	size_t                  _type;
@@ -48,4 +47,8 @@ public:
 	BWAPI::UnitType whatBuilds() const;
 	std::string getName() const;
 };
+
+typedef std::pair<MetaType, size_t> MetaPair;
+typedef std::vector<MetaPair> MetaPairVector;
+
 }

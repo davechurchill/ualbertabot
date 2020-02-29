@@ -4,9 +4,6 @@
     <Filter Include="game">
       <UniqueIdentifier>{56aebc46-135f-424b-b9a1-d1dd9ac3caf3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="game\macro">
-      <UniqueIdentifier>{a78e9ab8-4a81-4640-b6eb-f1eed3e4b1af}</UniqueIdentifier>
-    </Filter>
     <Filter Include="game\combat">
       <UniqueIdentifier>{8e8c1957-bc1d-4bc8-90b0-95beab19d8a9}</UniqueIdentifier>
     </Filter>
@@ -25,19 +22,22 @@
     <Filter Include="game\combat\squad">
       <UniqueIdentifier>{32554737-6cf9-47c8-87c9-6db0b6ffcc51}</UniqueIdentifier>
     </Filter>
-    <Filter Include="game\macro\buildorders">
-      <UniqueIdentifier>{0984e4fa-2fbf-40e9-8c0d-304344df9718}</UniqueIdentifier>
-    </Filter>
     <Filter Include="util">
       <UniqueIdentifier>{59599488-4576-44ab-8522-7d65a6425e15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="game\scout">
+      <UniqueIdentifier>{d7b83446-5d9e-48be-819b-2cc865f52591}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="game\economy">
+      <UniqueIdentifier>{a78e9ab8-4a81-4640-b6eb-f1eed3e4b1af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="game\economy\buildorders">
+      <UniqueIdentifier>{0984e4fa-2fbf-40e9-8c0d-304344df9718}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\CombatCommander.cpp">
       <Filter>game\combat</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\MapGrid.cpp">
-      <Filter>game\util\map</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\MapTools.cpp">
       <Filter>game\util\map</Filter>
@@ -61,19 +61,16 @@
       <Filter>common</Filter>
     </ClCompile>
     <ClCompile Include="..\source\BuildingManager.cpp">
-      <Filter>game\macro</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\BuildingPlacer.cpp">
-      <Filter>game\macro</Filter>
+      <Filter>game\economy</Filter>
     </ClCompile>
     <ClCompile Include="..\source\ProductionManager.cpp">
-      <Filter>game\macro</Filter>
+      <Filter>game\economy</Filter>
     </ClCompile>
     <ClCompile Include="..\source\WorkerData.cpp">
-      <Filter>game\macro</Filter>
+      <Filter>game\economy</Filter>
     </ClCompile>
     <ClCompile Include="..\source\WorkerManager.cpp">
-      <Filter>game\macro</Filter>
+      <Filter>game\economy</Filter>
     </ClCompile>
     <ClCompile Include="..\source\DetectorManager.cpp">
       <Filter>game\combat\micro</Filter>
@@ -91,16 +88,16 @@
       <Filter>game\combat\micro</Filter>
     </ClCompile>
     <ClCompile Include="..\source\BuildOrderQueue.cpp">
-      <Filter>game\macro\buildorders</Filter>
+      <Filter>game\economy\buildorders</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\BOSSManager.cpp">
-      <Filter>game\macro\buildorders</Filter>
+      <Filter>game\economy\buildorders</Filter>
     </ClCompile>
     <ClCompile Include="..\source\BuildOrder.cpp">
-      <Filter>game\macro\buildorders</Filter>
+      <Filter>game\economy\buildorders</Filter>
     </ClCompile>
     <ClCompile Include="..\source\MetaType.cpp">
-      <Filter>game\macro</Filter>
+      <Filter>game\economy</Filter>
     </ClCompile>
     <ClCompile Include="..\source\TimerManager.cpp">
       <Filter>game\util</Filter>
@@ -143,9 +140,6 @@
     </ClCompile>
     <ClCompile Include="..\Source\main.cpp" />
     <ClCompile Include="..\Source\UAlbertaBotModule.cpp" />
-    <ClCompile Include="..\source\ScoutManager.cpp">
-      <Filter>game\combat\micro</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\BaseLocation.cpp">
       <Filter>util</Filter>
     </ClCompile>
@@ -155,15 +149,22 @@
     <ClCompile Include="..\Source\DistanceMap.cpp">
       <Filter>game\util\map</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\ScoutManager.cpp">
+      <Filter>game\scout</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Global.cpp" />
+    <ClCompile Include="..\Source\BuildingData.cpp">
+      <Filter>game\economy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\BuildingPlacerManager.cpp">
+      <Filter>game\economy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\CombatCommander.h">
       <Filter>game\combat</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\MapTools.h">
-      <Filter>game\util\map</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\MapGrid.h">
       <Filter>game\util\map</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\GameCommander.h">
@@ -188,19 +189,16 @@
       <Filter>game\combat</Filter>
     </ClInclude>
     <ClInclude Include="..\source\BuildingManager.h">
-      <Filter>game\macro</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\BuildingPlacer.h">
-      <Filter>game\macro</Filter>
+      <Filter>game\economy</Filter>
     </ClInclude>
     <ClInclude Include="..\source\ProductionManager.h">
-      <Filter>game\macro</Filter>
+      <Filter>game\economy</Filter>
     </ClInclude>
     <ClInclude Include="..\source\WorkerData.h">
-      <Filter>game\macro</Filter>
+      <Filter>game\economy</Filter>
     </ClInclude>
     <ClInclude Include="..\source\WorkerManager.h">
-      <Filter>game\macro</Filter>
+      <Filter>game\economy</Filter>
     </ClInclude>
     <ClInclude Include="..\source\DetectorManager.h">
       <Filter>game\combat\micro</Filter>
@@ -218,16 +216,16 @@
       <Filter>game\combat\micro</Filter>
     </ClInclude>
     <ClInclude Include="..\source\BuildOrderQueue.h">
-      <Filter>game\macro\buildorders</Filter>
+      <Filter>game\economy\buildorders</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\BOSSManager.h">
-      <Filter>game\macro\buildorders</Filter>
+      <Filter>game\economy\buildorders</Filter>
     </ClInclude>
     <ClInclude Include="..\source\BuildOrder.h">
-      <Filter>game\macro\buildorders</Filter>
+      <Filter>game\economy\buildorders</Filter>
     </ClInclude>
     <ClInclude Include="..\source\MetaType.h">
-      <Filter>game\macro</Filter>
+      <Filter>game\economy</Filter>
     </ClInclude>
     <ClInclude Include="..\source\TimerManager.h">
       <Filter>game\util</Filter>
@@ -272,9 +270,6 @@
       <Filter>game\util</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\UAlbertaBotModule.h" />
-    <ClInclude Include="..\source\ScoutManager.h">
-      <Filter>game\combat\micro</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\BaseLocation.h">
       <Filter>util</Filter>
     </ClInclude>
@@ -286,6 +281,19 @@
     </ClInclude>
     <ClInclude Include="..\Source\DistanceMap.h">
       <Filter>game\util\map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\ScoutManager.h">
+      <Filter>game\scout</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Profiler.hpp">
+      <Filter>game\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Global.h" />
+    <ClInclude Include="..\Source\BuildingData.h">
+      <Filter>game\economy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\BuildingPlacerManager.h">
+      <Filter>game\economy</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

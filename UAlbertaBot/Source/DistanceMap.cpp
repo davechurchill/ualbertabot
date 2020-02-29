@@ -1,5 +1,6 @@
 #include "DistanceMap.h"
 #include "MapTools.h"
+#include "Global.h"
 
 using namespace UAlbertaBot;
 
@@ -38,6 +39,8 @@ const std::vector<BWAPI::TilePosition> & DistanceMap::getSortedTiles() const
 // Uses BFS, since the map is quite large and DFS may cause a stack overflow
 void DistanceMap::computeDistanceMap(const BWAPI::TilePosition & startTile)
 {
+    PROFILE_FUNCTION();
+
     m_startTile = startTile;
     m_width     = BWAPI::Broodwar->mapWidth();
 	m_height    = BWAPI::Broodwar->mapHeight();
@@ -62,7 +65,7 @@ void DistanceMap::computeDistanceMap(const BWAPI::TilePosition & startTile)
 			const BWAPI::TilePosition nextTile(tile.x + actionX[a], tile.y + actionY[a]);
 
             // if the new tile is inside the map bounds, is walkable, and has not been visited yet, set the distance of its parent + 1
-            if (MapTools::Instance().isWalkable(nextTile) && getDistance(nextTile) == -1)
+            if (Global::Map().isWalkable(nextTile) && getDistance(nextTile) == -1)
             {
                 m_dist.set(nextTile.x, nextTile.y, m_dist.get(tile.x, tile.y) + 1);
                 fringe.push_back(nextTile);

@@ -2,22 +2,20 @@
 #include "WorkerManager.h"
 #include "Micro.h"
 #include "BaseLocationManager.h"
+#include "Global.h"
+#include "BuildingData.h"
 
 using namespace UAlbertaBot;
 
 WorkerManager::WorkerManager() 
 {
-    previousClosestWorker = nullptr;
-}
-
-WorkerManager & WorkerManager::Instance() 
-{
-	static WorkerManager instance;
-	return instance;
+    
 }
 
 void WorkerManager::update() 
 {
+    PROFILE_FUNCTION();
+
 	updateWorkerStatus();
 	handleGasWorkers();
 	handleIdleWorkers();
@@ -34,6 +32,8 @@ void WorkerManager::update()
 
 void WorkerManager::updateWorkerStatus() 
 {
+    PROFILE_FUNCTION();
+
 	// for each of our Workers
 	for (auto & worker : workerData.getWorkers())
 	{
@@ -102,7 +102,7 @@ void WorkerManager::handleGasWorkers()
 
 bool WorkerManager::isGasStealRefinery(BWAPI::Unit unit)
 {
-	auto * enemyBaseLocation = BaseLocationManager::Instance().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
+	auto * enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
     if (!enemyBaseLocation)
     {
         return false;

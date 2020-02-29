@@ -1,5 +1,7 @@
+#include "Common.h"
 #include "UABAssert.h"
 #include "Config.h"
+#include "Logger.h"
 
 using namespace UAlbertaBot;
 

@@ -1,15 +1,15 @@
 #pragma once
 
-#include <Common.h>
-#include "WorkerManager.h"
-#include "BuildingPlacer.h"
-#include "InformationManager.h"
-#include "MapTools.h"
+#include "Common.h"
+#include "BuildingData.h"
 
 namespace UAlbertaBot
 {
+
 class BuildingManager
 {
+    friend class Global;
+
     BuildingManager();
 
     std::vector<Building> _buildings;
@@ -34,8 +34,6 @@ class BuildingManager
 
 public:
     
-    static BuildingManager &	Instance();
-
     void                update();
     void                onUnitMorph(BWAPI::Unit unit);
     void                onUnitDestroy(BWAPI::Unit unit);

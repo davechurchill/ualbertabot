@@ -1,18 +1,18 @@
 #pragma once
 
 #include "Common.h"
-
 #include "UnitData.h"
-
-#include "..\..\SparCraft\source\SparCraft.h"
 
 namespace UAlbertaBot
 {
 struct BaseInfo;
+
 typedef std::vector<BaseInfo> BaseInfoVector;
 
 class InformationManager 
 {
+    friend class Global;
+
     InformationManager();
     
     BWAPI::Player       _self;
@@ -26,9 +26,6 @@ class InformationManager
     bool                    isValidUnit(BWAPI::Unit unit);
 
 public:
-
-    // yay for singletons!
-    static InformationManager & Instance();
 
     void                    update();
 

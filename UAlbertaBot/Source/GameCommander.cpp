@@ -2,6 +2,17 @@
 #include "GameCommander.h"
 #include "UnitUtil.h"
 #include "BaseLocationManager.h"
+#include "Global.h"
+#include "BuildingPlacerManager.h"
+#include "BOSSManager.h"
+#include "MapTools.h"
+#include "InformationManager.h"
+#include "WorkerManager.h"
+#include "ProductionManager.h"
+#include "BuildingManager.h"
+#include "ScoutManager.h"
+#include "StrategyManager.h"
+#include "Squad.h"
 
 using namespace UAlbertaBot;
 
@@ -13,6 +24,8 @@ GameCommander::GameCommander()
 
 void GameCommander::update()
 {
+    PROFILE_FUNCTION();
+
 	_timerManager.startTimer(TimerManager::All);
 
 	// populate the unit vectors we will pass into various managers
@@ -20,32 +33,28 @@ void GameCommander::update()
 
 	// utility managers
 	_timerManager.startTimer(TimerManager::InformationManager);
-	InformationManager::Instance().update();
+	Global::Info().update();
 	_timerManager.stopTimer(TimerManager::InformationManager);
 
-	_timerManager.startTimer(TimerManager::MapGrid);
-	MapGrid::Instance().update();
-	_timerManager.stopTimer(TimerManager::MapGrid);
-
 	_timerManager.startTimer(TimerManager::MapTools);
-	MapTools::Instance().onFrame();
+	Global::Map().onFrame();
 	_timerManager.stopTimer(TimerManager::MapTools);
 
 	_timerManager.startTimer(TimerManager::Search);
-	BOSSManager::Instance().update(35 - _timerManager.getTotalElapsed());
+	Global::BOSS().update(35 - _timerManager.getTotalElapsed());
 	_timerManager.stopTimer(TimerManager::Search);
 
 	// economy and base managers
 	_timerManager.startTimer(TimerManager::Worker);
-	WorkerManager::Instance().update();
+	Global::Workers().update();
 	_timerManager.stopTimer(TimerManager::Worker);
 
 	_timerManager.startTimer(TimerManager::Production);
-	ProductionManager::Instance().update();
+	Global::Production().update();
 	_timerManager.stopTimer(TimerManager::Production);
 
 	_timerManager.startTimer(TimerManager::Building);
-	BuildingManager::Instance().update();
+	Global::Buildings().update();
 	_timerManager.stopTimer(TimerManager::Building);
 
 	// combat and scouting managers
@@ -54,26 +63,26 @@ void GameCommander::update()
 	_timerManager.stopTimer(TimerManager::Combat);
 
 	_timerManager.startTimer(TimerManager::Scout);
-    ScoutManager::Instance().update();
+    Global::Scout().update();
 	_timerManager.stopTimer(TimerManager::Scout);
 
 	_timerManager.stopTimer(TimerManager::All);
 
-	BaseLocationManager::Instance().onFrame();
+	Global::Bases().onFrame();
 
 	drawDebugInterface();
 }
 
 void GameCommander::drawDebugInterface()
 {
-	InformationManager::Instance().drawExtendedInterface();
-	InformationManager::Instance().drawUnitInformation(425,30);
-	InformationManager::Instance().drawMapInformation();
-	BuildingManager::Instance().drawBuildingInformation(200,50);
-	BuildingPlacer::Instance().drawReservedTiles();
-	ProductionManager::Instance().drawProductionInformation(30, 50);
-	BOSSManager::Instance().drawSearchInformation(490, 100);
-    BOSSManager::Instance().drawStateInformation(250, 0);
+	Global::Info().drawExtendedInterface();
+	Global::Info().drawUnitInformation(425,30);
+	Global::Info().drawMapInformation();
+	Global::Buildings().drawBuildingInformation(200,50);
+	Global::BuildingPlacer().drawReservedTiles();
+	Global::Production().drawProductionInformation(30, 50);
+	Global::BOSS().drawSearchInformation(490, 100);
+    Global::BOSS().drawStateInformation(250, 0);
     
 	_combatCommander.drawSquadInformation(200, 30);
     _timerManager.displayTimers(490, 225);
@@ -157,7 +166,7 @@ void GameCommander::setScoutUnits()
 			// if we find a worker (which we should) add it to the scout units
 			if (workerScout)
 			{
-                ScoutManager::Instance().setWorkerScout(workerScout);
+                Global::Scout().setWorkerScout(workerScout);
 				assignUnit(workerScout, _scoutUnits);
                 _initialScoutSet = true;
 			}
@@ -208,41 +217,41 @@ BWAPI::Unit GameCommander::getFirstSupplyProvider()
 
 void GameCommander::onUnitShow(BWAPI::Unit unit)			
 { 
-	InformationManager::Instance().onUnitShow(unit); 
-	WorkerManager::Instance().onUnitShow(unit);
+	Global::Info().onUnitShow(unit); 
+	Global::Workers().onUnitShow(unit);
 }
 
 void GameCommander::onUnitHide(BWAPI::Unit unit)			
 { 
-	InformationManager::Instance().onUnitHide(unit); 
+	Global::Info().onUnitHide(unit); 
 }
 
 void GameCommander::onUnitCreate(BWAPI::Unit unit)		
 { 
-	InformationManager::Instance().onUnitCreate(unit); 
+	Global::Info().onUnitCreate(unit); 
 }
 
 void GameCommander::onUnitComplete(BWAPI::Unit unit)
 {
-	InformationManager::Instance().onUnitComplete(unit);
+	Global::Info().onUnitComplete(unit);
 }
 
 void GameCommander::onUnitRenegade(BWAPI::Unit unit)		
 { 
-	InformationManager::Instance().onUnitRenegade(unit); 
+	Global::Info().onUnitRenegade(unit); 
 }
 
 void GameCommander::onUnitDestroy(BWAPI::Unit unit)		
 { 	
-	ProductionManager::Instance().onUnitDestroy(unit);
-	WorkerManager::Instance().onUnitDestroy(unit);
-	InformationManager::Instance().onUnitDestroy(unit); 
+	Global::Production().onUnitDestroy(unit);
+	Global::Workers().onUnitDestroy(unit);
+	Global::Info().onUnitDestroy(unit); 
 }
 
 void GameCommander::onUnitMorph(BWAPI::Unit unit)		
 { 
-	InformationManager::Instance().onUnitMorph(unit);
-	WorkerManager::Instance().onUnitMorph(unit);
+	Global::Info().onUnitMorph(unit);
+	Global::Workers().onUnitMorph(unit);
 }
 
 BWAPI::Unit GameCommander::getClosestUnitToTarget(BWAPI::UnitType type, BWAPI::Position target)
@@ -273,7 +282,7 @@ BWAPI::Unit GameCommander::getClosestWorkerToTarget(BWAPI::Position target)
 
 	for (auto & unit : _validUnits)
 	{
-		if (!isAssigned(unit) && unit->getType().isWorker() && WorkerManager::Instance().isFree(unit))
+		if (!isAssigned(unit) && unit->getType().isWorker() && Global::Workers().isFree(unit))
 		{
 			double dist = unit->getDistance(target);
 			if (!closestUnit || dist < closestDist)

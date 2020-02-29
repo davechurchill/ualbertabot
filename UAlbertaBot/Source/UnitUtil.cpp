@@ -1,3 +1,4 @@
+#include "Common.h"
 #include "UnitUtil.h"
 
 using namespace UAlbertaBot;

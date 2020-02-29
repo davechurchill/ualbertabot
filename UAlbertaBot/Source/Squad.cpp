@@ -1,5 +1,12 @@
 #include "Squad.h"
 #include "UnitUtil.h"
+#include "Global.h"
+#include "WorkerManager.h"
+#include "UnitData.h"
+#include "MapTools.h"
+#include "StrategyManager.h"
+#include "CombatSimulation.h"
+#include "InformationManager.h"
 
 using namespace UAlbertaBot;
 
@@ -215,7 +222,7 @@ bool Squad::needsToRegroup()
 
     // if none of our units are in attack range of any enemy units, don't retreat
     std::vector<UnitInfo> enemyCombatUnits;
-    const auto & enemyUnitInfo = InformationManager::Instance().getUnitInfo(BWAPI::Broodwar->enemy());
+    const auto & enemyUnitInfo = Global::Info().getUnitInfo(BWAPI::Broodwar->enemy());
 
     bool anyInRange = false;
     for (const auto & eui : enemyUnitInfo)
@@ -308,7 +315,7 @@ void Squad::clear()
     {
         if (unit->getType().isWorker())
         {
-            WorkerManager::Instance().finishedWithWorker(unit);
+            Global::Workers().finishedWithWorker(unit);
         }
     }
 
@@ -321,7 +328,7 @@ bool Squad::unitNearEnemy(BWAPI::Unit unit)
 
 	BWAPI::Unitset enemyNear;
 
-	MapGrid::Instance().GetUnits(enemyNear, unit->getPosition(), 400, false, true);
+	Global::Map().getUnits(enemyNear, unit->getPosition(), 400, false, true);
 
 	return enemyNear.size() > 0;
 }
@@ -387,7 +394,7 @@ BWAPI::Unit Squad::unitClosestToEnemy()
 		}
 
 		// the distance to the order position
-		int dist = MapTools::Instance().getGroundDistance(unit->getPosition(), _order.getPosition());
+		int dist = Global::Map().getGroundDistance(unit->getPosition(), _order.getPosition());
 
 		if (dist != -1 && (!closest || dist < closestDist))
 		{

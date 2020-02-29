@@ -15,6 +15,10 @@
 #include "JSONTools.h"
 #include "ParseUtils.h"
 #include "UnitUtil.h"
+#include "Global.h"
+#include "StrategyManager.h"
+#include "../../SparCraft/source/SparCraft.h"
+#include "../../BOSS/source/BOSS.h"
 
 using namespace UAlbertaBot;
 
@@ -60,8 +64,8 @@ void UAlbertaBotModule::onStart()
 	{
         if (Config::Modules::UsingStrategyIO)
         {
-            StrategyManager::Instance().readResults();
-            StrategyManager::Instance().setLearnedStrategy();
+            Global::Strategy().readResults();
+            Global::Strategy().setLearnedStrategy();
         }
 	}
 }
@@ -70,15 +74,15 @@ void UAlbertaBotModule::onEnd(bool isWinner)
 {
 	if (Config::Modules::UsingGameCommander)
 	{
-		StrategyManager::Instance().onEnd(isWinner);
-	}	
+		Global::Strategy().onEnd(isWinner);
+	}
 }
 
 void UAlbertaBotModule::onFrame()
 {
-    char red = '\x08';
-    char green = '\x07';
-    char white = '\x04';
+    const char red = '\x08';
+    const char green = '\x07';
+    const char white = '\x04';
 
     if (!Config::ConfigFile::ConfigFileFound)
     {

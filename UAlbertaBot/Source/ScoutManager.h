@@ -1,13 +1,13 @@
 #pragma once
 
 #include "Common.h"
-#include "MicroManager.h"
-#include "InformationManager.h"
 
 namespace UAlbertaBot
 {
 class ScoutManager 
 {
+    friend class Global;
+
 	BWAPI::Unit		m_workerScout;
     std::string		m_scoutStatus;
     std::string		m_gasStealStatus;
@@ -31,8 +31,6 @@ class ScoutManager
 	ScoutManager();
 
 public:
-
-    static ScoutManager & Instance();
 
 	void update();
 
