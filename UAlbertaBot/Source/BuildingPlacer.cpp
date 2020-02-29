@@ -202,7 +202,7 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b,int 
     t.start();
 
     // get the precomputed vector of tile positions which are sorted closes to this location
-    const std::vector<BWAPI::TilePosition> & closestToBuilding = MapTools::Instance().getClosestTilesTo(BWAPI::Position(b.desiredPosition));
+    const std::vector<BWAPI::TilePosition> & closestToBuilding = MapTools::Instance().getClosestTilesTo(b.desiredPosition);
 
     double ms1 = t.getElapsedTimeInMilliSec();
 
@@ -251,8 +251,8 @@ bool BuildingPlacer::tileOverlapsBaseLocation(BWAPI::TilePosition tile,BWAPI::Un
         // dimensions of the base location
         int bx1 = base->getDepotPosition().x;
 		int by1 = base->getDepotPosition().y;
-        int bx2 = bx1 + BWAPI::Broodwar->self()->getRace().getCenter().tileWidth();
-        int by2 = by1 + BWAPI::Broodwar->self()->getRace().getCenter().tileHeight();
+        int bx2 = bx1 + BWAPI::Broodwar->self()->getRace().getResourceDepot().tileWidth();
+        int by2 = by1 + BWAPI::Broodwar->self()->getRace().getResourceDepot().tileHeight();
 
         // conditions for non-overlap are easy
         bool noOverlap = (tx2 < bx1) || (tx1 > bx2) || (ty2 < by1) || (ty1 > by2);

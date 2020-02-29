@@ -108,6 +108,8 @@ void ParseUtils::ParseConfigFile(const std::string & filename)
         JSONTools::ReadBool("DrawUnitTargetInfo", debug, Config::Debug::DrawUnitTargetInfo);
         JSONTools::ReadBool("DrawReservedBuildingTiles", debug, Config::Debug::DrawReservedBuildingTiles);
         JSONTools::ReadBool("DrawBOSSStateInfo", debug, Config::Debug::DrawBOSSStateInfo); 
+        JSONTools::ReadBool("DrawTileInfo", debug, Config::Debug::DrawTileInfo); 
+        JSONTools::ReadBool("DrawWalkableSectors", debug, Config::Debug::DrawWalkableSectors); 
         JSONTools::ReadBool("PrintModuleTimeout", debug, Config::Debug::PrintModuleTimeout);
     }
 

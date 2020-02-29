@@ -28,7 +28,7 @@ void GameCommander::update()
 	_timerManager.stopTimer(TimerManager::MapGrid);
 
 	_timerManager.startTimer(TimerManager::MapTools);
-	//MapTools::Instance().update();
+	MapTools::Instance().onFrame();
 	_timerManager.stopTimer(TimerManager::MapTools);
 
 	_timerManager.startTimer(TimerManager::Search);

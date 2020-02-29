@@ -8,27 +8,25 @@ namespace UAlbertaBot
 {
 class ScoutManager 
 {
-	BWAPI::Unit	        _workerScout;
-    std::string                     _scoutStatus;
-    std::string                     _gasStealStatus;
-	int				                _numWorkerScouts;
-	bool			                _scoutUnderAttack;
-    bool                            _didGasSteal;
-    bool                            _gasStealFinished;
-    int                             _currentRegionVertexIndex;
-    int                             _previousScoutHP;
-	std::vector<BWAPI::Position>    _enemyRegionVertices;
+	BWAPI::Unit		m_workerScout;
+    std::string		m_scoutStatus;
+    std::string		m_gasStealStatus;
+	int				m_numWorkerScouts;
+	bool			m_scoutUnderAttack;
+    bool			m_didGasSteal;
+    bool			m_gasStealFinished;
+    int				m_previousScoutHP;
 
-	bool                            enemyWorkerInRadius();
-    bool			                immediateThreat();
-    void                            gasSteal();
-    int                             getClosestVertexIndex(BWAPI::Unit unit);
-    BWAPI::Position                 getFleePosition();
-	BWAPI::Unit	        getEnemyGeyser();
-	BWAPI::Unit	        closestEnemyWorker();
-    void                            followPerimeter();
-	void                            moveScouts();
-    void                            drawScoutInformation(int x, int y);
+	bool			enemyWorkerInRadius();
+    bool			immediateThreat();
+    void			gasSteal();
+    int				getClosestVertexIndex(BWAPI::Unit unit);
+    BWAPI::Position	getFleePosition();
+	BWAPI::Unit		getEnemyGeyser();
+	BWAPI::Unit		closestEnemyWorker();
+    void			fleeScout();
+	void			moveScouts();
+    void			drawScoutInformation(int x, int y);
 
 	ScoutManager();
 

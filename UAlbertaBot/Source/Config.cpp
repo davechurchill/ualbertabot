@@ -79,6 +79,8 @@ namespace Config
         bool DrawUnitTargetInfo             = false;
         bool DrawSquadInfo                  = false;
         bool DrawBOSSStateInfo              = false;
+        bool DrawWalkableSectors            = false;
+        bool DrawTileInfo                   = false;
         bool PrintModuleTimeout             = false;	
 
         std::string ErrorLogFilename        = "UAB_ErrorLog.txt";

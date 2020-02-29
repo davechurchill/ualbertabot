@@ -152,8 +152,8 @@
     <ClCompile Include="..\Source\BaseLocationManager.cpp">
       <Filter>util</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\DMap.cpp">
-      <Filter>util</Filter>
+    <ClCompile Include="..\Source\DistanceMap.cpp">
+      <Filter>game\util\map</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -177,9 +177,6 @@
     </ClInclude>
     <ClInclude Include="..\Source\SquadData.h">
       <Filter>game\combat\squad</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\DistanceMap.hpp">
-      <Filter>game\util\map</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Common.h">
       <Filter>common</Filter>
@@ -284,8 +281,11 @@
     <ClInclude Include="..\Source\BaseLocationManager.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\DMap.h">
-      <Filter>util</Filter>
+    <ClInclude Include="..\Source\Grid.hpp">
+      <Filter>game\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DistanceMap.h">
+      <Filter>game\util\map</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

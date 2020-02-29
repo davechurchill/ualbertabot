@@ -1,6 +1,26 @@
 #include "MapTools.h"
+#include "BaseLocationManager.h"
+
+#include <iostream>
+#include <sstream>
+#include <fstream>
+#include <array>
 
 using namespace UAlbertaBot;
+
+const size_t LegalActions = 4;
+const int actionX[LegalActions] ={1, -1, 0, 0};
+const int actionY[LegalActions] ={0, 0, 1, -1};
+
+typedef std::vector<std::vector<bool>> vvb;
+typedef std::vector<std::vector<int>>  vvi;
+typedef std::vector<std::vector<float>>  vvf;
+
+// constructor for MapTools
+MapTools::MapTools()
+{
+    onStart();
+}
 
 MapTools & MapTools::Instance()
 {
@@ -8,258 +28,405 @@ MapTools & MapTools::Instance()
     return instance;
 }
 
-// constructor for MapTools
-MapTools::MapTools()
-    : _rows(BWAPI::Broodwar->mapHeight())
-    , _cols(BWAPI::Broodwar->mapWidth())
+void MapTools::onStart()
 {
-    _map    = std::vector<bool>(_rows*_cols,false);
-    _units  = std::vector<bool>(_rows*_cols,false);
-    _fringe = std::vector<int>(_rows*_cols,0);
+    m_width  = BWAPI::Broodwar->mapWidth();
+    m_height = BWAPI::Broodwar->mapHeight();
 
-    setBWAPIMapData();
-}
+    m_walkable       = Grid<int>(m_width, m_height, 1);
+    m_buildable      = Grid<int>(m_width, m_height, 0);
+    m_depotBuildable = Grid<int>(m_width, m_height, 0);
+    m_lastSeen       = Grid<int>(m_width, m_height, 0);
+    m_sectorNumber   = Grid<int>(m_width, m_height, 0);
 
-// return the index of the 1D array from (row,col)
-inline int MapTools::getIndex(int row,int col)
-{
-    return row * _cols + col;
-}
-
-bool MapTools::isWalkable(const BWAPI::TilePosition & tile)
-{
-	return tile.isValid() ? _map[getIndex(tile.x, tile.y)] : false;
-}
-
-bool MapTools::unexplored(DistanceMap & dmap,const int index) const
-{
-    return (index != -1) && dmap[index] == -1 && _map[index];
-}
-
-// resets the distance and fringe vectors, call before each search
-void MapTools::reset()
-{
-    std::fill(_fringe.begin(),_fringe.end(),0);
-}
-
-// reads in the map data from bwapi and stores it in our map format
-void MapTools::setBWAPIMapData()
-{
-    // for each row and column
-    for (int r(0); r < _rows; ++r)
+    // Set the boolean grid data from the Map
+    for (int x(0); x < m_width; ++x)
     {
-        for (int c(0); c < _cols; ++c)
+        for (int y(0); y < m_height; ++y)
         {
-            bool clear = true;
+            m_buildable.set(x, y, canBuild(x, y));
+            m_depotBuildable.set(x, y, canBuild(x, y));
+            m_walkable.set(x, y, m_buildable.get(x,y) || canWalk(x, y));
+        }
+    }
 
-            // check each walk tile within this TilePosition
-            for (int i=0; i<4; ++i)
+    // set tiles that static resources are on as unbuildable
+    for (auto & resource : BWAPI::Broodwar->getStaticNeutralUnits())
+    {
+        if (!resource->getType().isResourceContainer())
+        {
+            continue;
+        }
+
+        const int tileX = resource->getTilePosition().x;
+        const int tileY = resource->getTilePosition().y;
+
+        for (int x=tileX; x<tileX+resource->getType().tileWidth(); ++x)
+        {
+            for (int y=tileY; y<tileY+resource->getType().tileHeight(); ++y)
             {
-                for (int j=0; j<4; ++j)
-                {
-                    if (!BWAPI::Broodwar->isWalkable(c*4 + i,r*4 + j))
-                    {
-                        clear = false;
-                        break;
-                    }
+                m_buildable.set(x, y, false);
 
-                    if (clear)
+                // depots can't be built within 3 tiles of any resource
+                for (int rx=-3; rx<=3; rx++)
+                {
+                    for (int ry=-3; ry<=3; ry++)
                     {
-                        break;
+                        if (!BWAPI::TilePosition(x+rx, y+ry).isValid())
+                        {
+                            continue;
+                        }
+
+                        m_depotBuildable.set(x+rx, y+ry, 0);
                     }
                 }
             }
-
-            // set the map as binary clear or not
-            _map[getIndex(r,c)] = clear;
         }
     }
+
+    computeConnectivity();
 }
 
-void MapTools::resetFringe()
+void MapTools::onFrame()
 {
-    std::fill(_fringe.begin(),_fringe.end(),0);
-}
-
-int MapTools::getGroundDistance(BWAPI::Position origin,BWAPI::Position destination)
-{
-    // if we have too many maps, reset our stored maps in case we run out of memory
-    if (_allMaps.size() > 20)
+    for (int x=0; x<m_width; ++x)
     {
-        _allMaps.clear();
-
-        BWAPI::Broodwar->printf("Cleared stored distance map cache");
-    }
-
-    // if we haven't yet computed the distance map to the destination
-    if (_allMaps.find(destination) == _allMaps.end())
-    {
-        // if we have computed the opposite direction, we can use that too
-        if (_allMaps.find(origin) != _allMaps.end())
+        for (int y=0; y<m_height; ++y)
         {
-            return _allMaps[origin][destination];
-        }
-
-        // add the map and compute it
-        _allMaps.insert(std::pair<BWAPI::Position,DistanceMap>(destination,DistanceMap()));
-        computeDistance(_allMaps[destination],destination);
-    }
-
-    // get the distance from the map
-    return _allMaps[destination][origin];
-}
-
-// computes walk distance from Position P to all other points on the map
-void MapTools::computeDistance(DistanceMap & dmap,const BWAPI::Position p)
-{
-    search(dmap,p.y / 32,p.x / 32);
-}
-
-// does the dynamic programming search
-void MapTools::search(DistanceMap & dmap,const int sR,const int sC)
-{
-    // reset the internal variables
-    resetFringe();
-
-    // set the starting position for this search
-    dmap.setStartPosition(sR,sC);
-
-    // set the distance of the start cell to zero
-    dmap[getIndex(sR,sC)] = 0;
-
-    // set the fringe variables accordingly
-    int fringeSize(1);
-    int fringeIndex(0);
-    _fringe[0] = getIndex(sR,sC);
-    dmap.addSorted(getTilePosition(_fringe[0]));
-
-    // temporary variables used in search loop
-    int currentIndex,nextIndex;
-    int newDist;
-
-    // the size of the map
-    int size = _rows*_cols;
-
-    // while we still have things left to expand
-    while (fringeIndex < fringeSize)
-    {
-        // grab the current index to expand from the fringe
-        currentIndex = _fringe[fringeIndex++];
-        newDist = dmap[currentIndex] + 1;
-
-        // search up
-        nextIndex = (currentIndex > _cols) ? (currentIndex - _cols) : -1;
-        if (unexplored(dmap,nextIndex))
-        {
-            // set the distance based on distance to current cell
-            dmap.setDistance(nextIndex,newDist);
-            dmap.setMoveTo(nextIndex,'D');
-            dmap.addSorted(getTilePosition(nextIndex));
-
-            // put it in the fringe
-            _fringe[fringeSize++] = nextIndex;
-        }
-
-        // search down
-        nextIndex = (currentIndex + _cols < size) ? (currentIndex + _cols) : -1;
-        if (unexplored(dmap,nextIndex))
-        {
-            // set the distance based on distance to current cell
-            dmap.setDistance(nextIndex,newDist);
-            dmap.setMoveTo(nextIndex,'U');
-            dmap.addSorted(getTilePosition(nextIndex));
-
-            // put it in the fringe
-            _fringe[fringeSize++] = nextIndex;
-        }
-
-        // search left
-        nextIndex = (currentIndex % _cols > 0) ? (currentIndex - 1) : -1;
-        if (unexplored(dmap,nextIndex))
-        {
-            // set the distance based on distance to current cell
-            dmap.setDistance(nextIndex,newDist);
-            dmap.setMoveTo(nextIndex,'R');
-            dmap.addSorted(getTilePosition(nextIndex));
-
-            // put it in the fringe
-            _fringe[fringeSize++] = nextIndex;
-        }
-
-        // search right
-        nextIndex = (currentIndex % _cols < _cols - 1) ? (currentIndex + 1) : -1;
-        if (unexplored(dmap,nextIndex))
-        {
-            // set the distance based on distance to current cell
-            dmap.setDistance(nextIndex,newDist);
-            dmap.setMoveTo(nextIndex,'L');
-            dmap.addSorted(getTilePosition(nextIndex));
-
-            // put it in the fringe
-            _fringe[fringeSize++] = nextIndex;
-        }
-    }
-}
-
-const std::vector<BWAPI::TilePosition> & MapTools::getClosestTilesTo(BWAPI::Position pos)
-{
-    // make sure the distance map is calculated with pos as a destination
-    int a = getGroundDistance(BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation()),pos);
-
-    return _allMaps[pos].getSortedTiles();
-}
-
-BWAPI::TilePosition MapTools::getTilePosition(int index)
-{
-    return BWAPI::TilePosition(index % _cols,index / _cols);
-}
-
-
-
-void MapTools::drawHomeDistanceMap()
-{
-    BWAPI::Position homePosition = BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
-    for (int x = 0; x < BWAPI::Broodwar->mapWidth(); ++x)
-    {
-        for (int y = 0; y < BWAPI::Broodwar->mapHeight(); ++y)
-        {
-            BWAPI::Position pos(x*32, y*32);
-
-            int dist = getGroundDistance(pos, homePosition);
-
-            BWAPI::Broodwar->drawTextMap(pos + BWAPI::Position(16,16), "%d", dist);
-        }
-    }
-}
-
-void MapTools::parseMap()
-{
-    BWAPI::Broodwar->printf("Parsing Map Information");
-    std::ofstream mapFile;
-    std::string file = "c:\\scmaps\\" + BWAPI::Broodwar->mapName() + ".txt";
-    mapFile.open(file.c_str());
-
-    mapFile << BWAPI::Broodwar->mapWidth()*4 << "\n";
-    mapFile << BWAPI::Broodwar->mapHeight()*4 << "\n";
-
-    for (int j=0; j<BWAPI::Broodwar->mapHeight()*4; j++) 
-    {
-        for (int i=0; i<BWAPI::Broodwar->mapWidth()*4; i++) 
-        {
-            if (BWAPI::Broodwar->isWalkable(i,j)) 
+            if (isVisible(x, y))
             {
-                mapFile << "0";
-            }
-            else 
-            {
-                mapFile << "1";
+                m_lastSeen.set(x, y, m_frame);
             }
         }
+    }
+    
+    m_frame++;
+    draw();
+}
 
-        mapFile << "\n";
+void MapTools::computeConnectivity()
+{
+    // the fringe data structe we will use to do our BFS searches
+    std::vector<std::array<int, 2>> fringe;
+    fringe.reserve(m_width*m_height);
+    int sectorNumber = 0;
+
+    // for every tile on the map, do a connected flood fill using BFS
+    for (int x=0; x<m_width; ++x)
+    {
+        for (int y=0; y<m_height; ++y)
+        {
+            // if the sector is not currently 0, or the map isn't walkable here, then we can skip this tile
+            if (getSectorNumber(x, y) != 0 || !isWalkable(x, y))
+            {
+                continue;
+            }
+
+            // increase the sector number, so that walkable tiles have sectors 1-N
+            sectorNumber++;
+
+            // reset the fringe for the search and add the start tile to it
+            fringe.clear();
+            fringe.push_back({x,y});
+            m_sectorNumber.set(x, y, sectorNumber);
+
+            // do the BFS, stopping when we reach the last element of the fringe
+            for (size_t fringeIndex=0; fringeIndex<fringe.size(); ++fringeIndex)
+            {
+                auto & tile = fringe[fringeIndex];
+
+                // check every possible child of this tile
+                for (size_t a=0; a<LegalActions; ++a)
+                {
+                    const int nextX = tile[0] + actionX[a];
+                    const int nextY = tile[1] + actionY[a];
+
+                    // if the new tile is inside the map bounds, is walkable, and has not been assigned a sector, add it to the current sector and the fringe
+                    if (isValidTile(nextX, nextY) && isWalkable(nextX, nextY) && (getSectorNumber(nextX, nextY) == 0))
+                    {
+                        m_sectorNumber.set(nextX, nextY, sectorNumber);
+                        fringe.push_back({nextX, nextY});
+                    }
+                }
+            }
+        }
+    }
+}
+
+bool MapTools::isExplored(const BWAPI::TilePosition & pos) const
+{
+    return isExplored(pos.x, pos.y);
+}
+
+bool MapTools::isExplored(const BWAPI::Position & pos) const
+{
+    return isExplored(BWAPI::TilePosition(pos));
+}
+
+bool MapTools::isExplored(int tileX, int tileY) const
+{
+    if (!isValidTile(tileX, tileY)) { return false; }
+
+    return BWAPI::Broodwar->isExplored(tileX, tileY);
+}
+
+bool MapTools::isVisible(int tileX, int tileY) const
+{
+    if (!isValidTile(tileX, tileY)) { return false; }
+
+    return BWAPI::Broodwar->isVisible(BWAPI::TilePosition(tileX, tileY));
+}
+
+bool MapTools::isPowered(int tileX, int tileY) const
+{
+    return BWAPI::Broodwar->hasPower(BWAPI::TilePosition(tileX, tileY));
+}
+
+int MapTools::getGroundDistance(const BWAPI::Position & src, const BWAPI::Position & dest) const
+{
+    if (m_allMaps.size() > 50)
+    {
+        m_allMaps.clear();
     }
 
-    BWAPI::Broodwar->printf(file.c_str());
+    return getDistanceMap(dest).getDistance(src);
+}
 
-    mapFile.close();
+const DistanceMap & MapTools::getDistanceMap(const BWAPI::Position & pos) const
+{
+    return getDistanceMap(BWAPI::TilePosition(pos));
+}
+
+const DistanceMap & MapTools::getDistanceMap(const BWAPI::TilePosition & tile) const
+{
+    std::pair<int,int> pairTile(tile.x, tile.y);
+
+    if (m_allMaps.find(pairTile) == m_allMaps.end())
+    {
+        m_allMaps[pairTile] = DistanceMap();
+        m_allMaps[pairTile].computeDistanceMap(tile);
+    }
+
+    return m_allMaps[pairTile];
+}
+
+int MapTools::getSectorNumber(int x, int y) const
+{
+    if (!isValidTile(x, y))
+    {
+        return 0;
+    }
+
+    return m_sectorNumber.get(x, y);
+}
+
+bool MapTools::isValidTile(int tileX, int tileY) const
+{
+    return tileX >= 0 && tileY >= 0 && tileX < m_width && tileY < m_height;
+}
+
+bool MapTools::isValidTile(const BWAPI::TilePosition & tile) const
+{
+    return isValidTile(tile.x, tile.y);
+}
+
+bool MapTools::isValidPosition(const BWAPI::Position & pos) const
+{
+    return isValidTile(BWAPI::TilePosition(pos));
+}
+
+bool MapTools::isConnected(int x1, int y1, int x2, int y2) const
+{
+    if (!isValidTile(x1, y1) || !isValidTile(x2, y2))
+    {
+        return false;
+    }
+
+    const int s1 = getSectorNumber(x1, y1);
+    const int s2 = getSectorNumber(x2, y2);
+
+    return s1 != 0 && (s1 == s2);
+}
+
+bool MapTools::isConnected(const BWAPI::TilePosition & p1, const BWAPI::TilePosition & p2) const
+{
+    return isConnected(p1.x, p1.y, p2.x, p2.y);
+}
+
+bool MapTools::isConnected(const BWAPI::Position & p1, const BWAPI::Position & p2) const
+{
+    return isConnected(BWAPI::TilePosition(p1), BWAPI::TilePosition(p2));
+}
+
+bool MapTools::isBuildable(int tileX, int tileY) const
+{
+    if (!isValidTile(tileX, tileY))
+    {
+        return false;
+    }
+
+    return m_buildable.get(tileX, tileY);
+}
+
+bool MapTools::canBuildTypeAtPosition(int tileX, int tileY, const BWAPI::UnitType & type) const
+{
+    return BWAPI::Broodwar->canBuildHere(BWAPI::TilePosition(tileX, tileY), type);
+}
+
+bool MapTools::isBuildable(const BWAPI::TilePosition & tile) const
+{
+    return isBuildable(tile.x, tile.y);
+}
+
+void MapTools::printMap() const
+{
+    std::stringstream ss;
+    for (int y(0); y < m_height; ++y)
+    {
+        for (int x(0); x < m_width; ++x)
+        {
+            ss << isWalkable(x, y);
+        }
+
+        ss << "\n";
+    }
+
+    std::ofstream out("map.txt");
+    out << ss.str();
+    out.close();
+}
+
+bool MapTools::isDepotBuildableTile(int tileX, int tileY) const
+{
+    if (!isValidTile(tileX, tileY))
+    {
+        return false;
+    }
+
+    return m_depotBuildable.get(tileX, tileY);
+}
+
+bool MapTools::isWalkable(int tileX, int tileY) const
+{
+    if (!isValidTile(tileX, tileY))
+    {
+        return false;
+    }
+
+    return m_walkable.get(tileX, tileY);
+}
+
+bool MapTools::isWalkable(const BWAPI::TilePosition & tile) const
+{
+    return isWalkable(tile.x, tile.y);
+}
+
+int MapTools::width() const
+{
+    return m_width;
+}
+
+int MapTools::height() const
+{
+    return m_height;
+}
+
+void MapTools::drawTile(int tileX, int tileY, const BWAPI::Color & color) const
+{
+    const int padding   = 2;
+    const int px        = tileX*32 + padding;
+    const int py        = tileY*32 + padding;
+    const int d         = 32 - 2*padding;
+
+    BWAPI::Broodwar->drawLineMap(px,     py,     px + d, py,     color);
+    BWAPI::Broodwar->drawLineMap(px + d, py,     px + d, py + d, color);
+    BWAPI::Broodwar->drawLineMap(px + d, py + d, px,     py + d, color);
+    BWAPI::Broodwar->drawLineMap(px,     py + d, px,     py,     color);
+}
+
+const std::vector<BWAPI::TilePosition> & MapTools::getClosestTilesTo(const BWAPI::TilePosition & tilePos) const
+{
+    return getDistanceMap(tilePos).getSortedTiles();
+}
+
+const std::vector<BWAPI::TilePosition> & MapTools::getClosestTilesTo(const BWAPI::Position & pos) const
+{
+    return getClosestTilesTo(BWAPI::TilePosition(pos));
+}
+
+BWAPI::TilePosition MapTools::getLeastRecentlySeenTile() const
+{
+    int minSeen = std::numeric_limits<int>::max();
+    BWAPI::TilePosition leastSeen;
+    const BaseLocation * baseLocation = BaseLocationManager::Instance().getPlayerStartingBaseLocation(BWAPI::Broodwar->self());
+    UAB_ASSERT(baseLocation, "Null self baselocation is insanely bad");
+
+    for (auto & tile : baseLocation->getClosestTiles())
+    {
+        UAB_ASSERT(isValidTile(tile), "How is this tile not valid?");
+
+        const int lastSeen = m_lastSeen.get(tile.x, tile.y);
+        if (lastSeen < minSeen)
+        {
+            minSeen = lastSeen;
+            leastSeen = tile;
+        }
+    }
+
+    return leastSeen;
+}
+
+bool MapTools::canWalk(int tileX, int tileY) const
+{
+    for (int i=0; i<4; ++i)
+    {
+        for (int j=0; j<4; ++j)
+        {
+            if (!BWAPI::Broodwar->isWalkable(tileX*4 + i, tileY*4 + j))
+            {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+bool MapTools::canBuild(int tileX, int tileY) const
+{
+    return BWAPI::Broodwar->isBuildable(BWAPI::TilePosition(tileX, tileY));
+}
+
+void MapTools::draw() const
+{
+    const BWAPI::TilePosition screen(BWAPI::Broodwar->getScreenPosition());
+    const int sx = screen.x;
+    const int sy = screen.y;
+    const int ex = sx + 20;
+    const int ey = sy + 15;
+
+    for (int x = sx; x < ex; ++x)
+    {
+        for (int y = sy; y < ey; y++)
+        {
+            const BWAPI::TilePosition tilePos(x,y);
+            if (!tilePos.isValid()) { continue; }
+
+            if (Config::Debug::DrawWalkableSectors)
+            {
+                std::stringstream ss;
+                ss << getSectorNumber(x, y);
+                const BWAPI::Position pos = BWAPI::Position(tilePos) + BWAPI::Position(14,9);
+                BWAPI::Broodwar->drawTextMap(pos, ss.str().c_str());
+            }
+
+            if (Config::Debug::DrawTileInfo)
+            {
+                BWAPI::Color color = isWalkable(x, y) ? BWAPI::Color(0, 255, 0) : BWAPI::Color(255, 0, 0);
+                if (isWalkable(x, y) && !isBuildable(x, y)) { color = BWAPI::Color(255, 255, 0); }
+                if (isBuildable(x, y) && !isDepotBuildableTile(x, y)) { color = BWAPI::Color(127, 255, 255); }
+                drawTile(x, y, color);
+            }
+        }
+    }
 }

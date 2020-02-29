@@ -32,6 +32,7 @@ BWAPI::Position BaseLocationManager::calcCenter(const std::vector<BWAPI::Unit> &
 
 	return BWAPI::Position(cx / units.size(), cy / units.size());
 }
+
 void BaseLocationManager::onStart()
 {
 	m_tileBaseLocations = std::vector<std::vector<BaseLocation *>>(BWAPI::Broodwar->mapWidth(), std::vector<BaseLocation *>(BWAPI::Broodwar->mapHeight(), nullptr));
@@ -56,13 +57,13 @@ void BaseLocationManager::onStart()
         bool foundCluster = false;
         for (auto & cluster : resourceClusters)
         {
-            int dist = mineral->getDistance(calcCenter(cluster));
+            const int dist = mineral->getDistance(calcCenter(cluster));
             
             // quick initial air distance check to eliminate most resources
             if (dist < clusterDistance)
             {
                 // now do a more expensive ground distance check
-                int groundDist = dist; //m_bot.Map().getGroundDistance(mineral.pos, Util::CalcCenter(cluster));
+                const int groundDist = dist; //m_bot.Map().getGroundDistance(mineral.pos, Util::CalcCenter(cluster));
                 if (groundDist >= 0 && groundDist < clusterDistance)
                 {
                     cluster.push_back(mineral);
@@ -90,7 +91,7 @@ void BaseLocationManager::onStart()
         for (auto & cluster : resourceClusters)
         {
             //int groundDist = m_bot.Map().getGroundDistance(geyser.pos, Util::CalcCenter(cluster));
-            int groundDist = geyser->getDistance(calcCenter(cluster));
+            const int groundDist = geyser->getDistance(calcCenter(cluster));
 
             if (groundDist >= 0 && groundDist < clusterDistance)
             {
@@ -221,7 +222,7 @@ void BaseLocationManager::onFrame()
     // 2. we've explored every other start location and haven't seen the enemy yet
     if (m_playerStartingBaseLocations[BWAPI::Broodwar->enemy()] == nullptr)
     {
-        int numStartLocations = (int)getStartingBaseLocations().size();
+        const int numStartLocations = (int)getStartingBaseLocations().size();
         int numExploredLocations = 0;
         BaseLocation * unexplored = nullptr;
 
@@ -266,8 +267,18 @@ void BaseLocationManager::onFrame()
         }
     }
 
-    // draw the debug information for each base location
-    
+    // sanity check: make sure we have as many starting locations as BWAPI says
+    if (getStartingBaseLocations().size() != BWAPI::Broodwar->getStartLocations().size())
+    {
+        std::cout << "\nWARNING: BaseLocationManager start location mismatch\n";
+        std::cout << "         BaseLocationManager found " << getStartingBaseLocations().size() << " starting locations\n";
+        std::cout << "         BWAPI says that there are " << BWAPI::Broodwar->getStartLocations().size() << " starting locations\n\n";
+
+        for (auto tp : BWAPI::Broodwar->getStartLocations())
+        {
+            BWAPI::Broodwar->drawCircleMap(BWAPI::Position(tp), 64, BWAPI::Colors::Red, true);
+        }
+    }
 }
 
 BaseLocation * BaseLocationManager::getBaseLocation(const BWAPI::Position & pos) const
@@ -286,10 +297,10 @@ void BaseLocationManager::drawBaseLocations()
     }
 
     // draw a purple sphere at the next expansion location
-    BWAPI::TilePosition nextExpansionPosition = getNextExpansion(BWAPI::Broodwar->self());
+    //BWAPI::TilePosition nextExpansionPosition = getNextExpansion(BWAPI::Broodwar->self());
 
-    BWAPI::Broodwar->drawCircleMap(BWAPI::Position(nextExpansionPosition), 32, BWAPI::Color(255, 0, 255), true);
-	BWAPI::Broodwar->drawTextMap(BWAPI::Position(nextExpansionPosition), "Next Expansion Location", BWAPI::Color(255, 0, 255));
+    //BWAPI::Broodwar->drawCircleMap(BWAPI::Position(nextExpansionPosition), 32, BWAPI::Color(255, 0, 255), true);
+	//BWAPI::Broodwar->drawTextMap(BWAPI::Position(nextExpansionPosition), "Next Expansion Location", BWAPI::Color(255, 0, 255));
 }
 
 const std::vector<const BaseLocation *> & BaseLocationManager::getBaseLocations() const

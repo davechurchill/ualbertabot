@@ -75,8 +75,10 @@ namespace Config
         extern bool DrawUnitTargetInfo;
         extern bool DrawSquadInfo;
         extern bool DrawBOSSStateInfo;
-        extern bool PrintModuleTimeout;		
-
+        extern bool DrawWalkableSectors;
+        extern bool DrawTileInfo;
+        extern bool PrintModuleTimeout;	
+        
         extern std::string ErrorLogFilename;
         extern bool LogAssertToErrorFile;
 

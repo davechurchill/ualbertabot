@@ -7,17 +7,12 @@ using namespace UAlbertaBot;
 const int NearBaseLocationTileDistance = 20;
 
 BaseLocation::BaseLocation(int baseID, const std::vector<BWAPI::Unit> & resources)
-    : m_baseID				(baseID)
-    , m_isStartLocation		(false)
-    , m_left				(std::numeric_limits<int>::max())
-	, m_right				(std::numeric_limits<int>::lowest())
-	, m_top					(std::numeric_limits<int>::lowest())
-	, m_bottom				(std::numeric_limits<int>::max())
+    : m_baseID(baseID)
 {
-	m_isPlayerStartLocation[BWAPI::Broodwar->self()] = false;
-	m_isPlayerStartLocation[BWAPI::Broodwar->enemy()] = false;
-	m_isPlayerOccupying[BWAPI::Broodwar->self()] = false;
-	m_isPlayerOccupying[BWAPI::Broodwar->enemy()] = false;
+    m_isPlayerStartLocation[BWAPI::Broodwar->self()]  = false;
+    m_isPlayerStartLocation[BWAPI::Broodwar->enemy()] = false;
+    m_isPlayerOccupying[BWAPI::Broodwar->self()]      = false;
+    m_isPlayerOccupying[BWAPI::Broodwar->enemy()]     = false;
 
     int resourceCenterX = 0;
     int resourceCenterY = 0;
@@ -45,8 +40,8 @@ BaseLocation::BaseLocation(int baseID, const std::vector<BWAPI::Unit> & resource
         }
 
         // set the limits of the base location bounding box
-        int resWidth = 32;
-        int resHeight = 32;
+        const int resWidth = 32;
+        const int resHeight = 32;
 
         m_left   = std::min(m_left,   resource->getPosition().x - resWidth);
         m_right  = std::max(m_right,  resource->getPosition().x + resWidth);
@@ -55,55 +50,62 @@ BaseLocation::BaseLocation(int baseID, const std::vector<BWAPI::Unit> & resource
     }
 
     // calculate the center of the resources
-    size_t numResources = m_minerals.size() + m_geysers.size();
+    const size_t numResources = m_minerals.size() + m_geysers.size();
 
     m_centerOfResources = BWAPI::Position(m_left + (m_right-m_left)/2, m_top + (m_bottom-m_top)/2);
 
     // compute this BaseLocation's DistanceMap, which will compute the ground distance
     // from the center of its recourses to every other tile on the map
-    m_distanceMap = DMap();
-	m_distanceMap.computeDistanceMap(BWAPI::TilePosition(m_centerOfResources));
+    m_distanceMap = DistanceMap(); 
+    m_distanceMap.computeDistanceMap(BWAPI::TilePosition(m_centerOfResources));
 
 
+    
+    std::cout << "BaseLocation " << m_baseID << " " << m_depotPosition.x << " " << m_depotPosition.y << "\n";
     // check to see if this is a start location for the map
-    for (auto & pos : BWAPI::Broodwar->getStartLocations())
-    {
-        if (containsPosition(BWAPI::Position(pos)))
+    for (auto & starTilePos : BWAPI::Broodwar->getStartLocations())
+    { 
+        auto groundDistance = getGroundDistance(starTilePos);
+        
+        std::cout << "    StarLocation " << groundDistance << " : " << starTilePos.x << " " << starTilePos.y << "\n";
+
+        if (containsPosition(BWAPI::Position(starTilePos)))
         {
             m_isStartLocation = true;
-            m_depotPosition = BWAPI::TilePosition(pos);
+            m_depotPosition = BWAPI::TilePosition(starTilePos);
+            break;
         }
     }
-    
+
     // if this base location position is near our own resource depot, it's our start location
     for (auto & unit : BWAPI::Broodwar->getAllUnits())
     {
         if (unit->getPlayer() == BWAPI::Broodwar->self() && unit->getType().isResourceDepot())
-		{
-			if (containsPosition(unit->getPosition()))
-			{
-				m_isPlayerStartLocation[BWAPI::Broodwar->self()] = true;
-				m_isStartLocation = true;
-				m_isPlayerOccupying[BWAPI::Broodwar->self()] = true;
-				break;
-			}
+        {
+            if (containsPosition(unit->getPosition()))
+            {
+                m_isPlayerStartLocation[BWAPI::Broodwar->self()] = true;
+                m_isStartLocation = true;
+                m_isPlayerOccupying[BWAPI::Broodwar->self()] = true;
+                break;
+            }
         }
     }
-    
+
     // if it's not a start location, we need to calculate the depot position
     if (!isStartLocation())
     {
-		BWAPI::UnitType depot = BWAPI::Broodwar->self()->getRace().getCenter();
+        const BWAPI::UnitType depot = BWAPI::Broodwar->self()->getRace().getResourceDepot();
 
-        int offsetX = 1;
-        int offsetY = 1;
-        
+        const int offsetX = 1;
+        const int offsetY = 1;
+
         // the position of the depot will be the closest spot we can build one from the resource center
         for (auto & tile : getClosestTiles())
         {
             // the build position will be up-left of where this tile is
             // this means we are positioning the center of the resouce depot
-            BWAPI::TilePosition buildTile(tile.x - offsetX, tile.y - offsetY);
+            const BWAPI::TilePosition buildTile(tile.x - offsetX, tile.y - offsetY);
 
             if (BWAPI::Broodwar->canBuildHere(buildTile, depot))
             {
@@ -133,8 +135,8 @@ void BaseLocation::setPlayerOccupying(BWAPI::Player player, bool occupying)
 
 bool BaseLocation::isInResourceBox(int tileX, int tileY) const
 {
-    int px = tileX * 32;
-	int py = tileY * 32;
+    const int px = tileX * 32;
+    const int py = tileY * 32;
     return px >= m_left && px < m_right && py < m_top && py >= m_bottom;
 }
 
@@ -153,14 +155,19 @@ bool BaseLocation::isPlayerStartLocation(BWAPI::Player player) const
     return m_isPlayerStartLocation.at(player);
 }
 
+bool BaseLocation::isConnected(const BWAPI::Position& pos) const
+{
+    return getGroundDistance(pos) >= 0;
+}
+
 bool BaseLocation::containsPosition(const BWAPI::Position & pos) const
 {
-    if (!pos.isValid() || (pos.x == 0 && pos.y == 0))
+    if (!pos.isValid() || (pos.x == 0 && pos.y == 0) || !isConnected(pos))
     {
         return false;
     }
 
-    return getGroundDistance(pos) < NearBaseLocationTileDistance;
+    return (getGroundDistance(pos) < NearBaseLocationTileDistance);
 }
 
 const std::vector<BWAPI::Unit> & BaseLocation::getGeysers() const
@@ -202,7 +209,7 @@ void BaseLocation::draw()
 {
     int radius = 32;
 
-	BWAPI::Broodwar->drawCircleMap(m_centerOfResources, radius, BWAPI::Color(255, 255, 0));
+    BWAPI::Broodwar->drawCircleMap(m_centerOfResources, radius, BWAPI::Color(255, 255, 0));
 
     std::stringstream ss;
     ss << "BaseLocation: " << m_baseID << "\n";
@@ -211,54 +218,54 @@ void BaseLocation::draw()
     ss << "Geysers:      " << m_geyserPositions.size() << "\n";
     ss << "Occupied By:  ";
 
-	if (isOccupiedByPlayer(BWAPI::Broodwar->self()))
+    if (isOccupiedByPlayer(BWAPI::Broodwar->self()))
     {
         ss << "Self ";
     }
 
-	if (isOccupiedByPlayer(BWAPI::Broodwar->enemy()))
+    if (isOccupiedByPlayer(BWAPI::Broodwar->enemy()))
     {
         ss << "Enemy ";
     }
 
-	
-	BWAPI::Broodwar->drawTextMap(BWAPI::Position(m_left, m_top + 3), ss.str().c_str());
-	BWAPI::Broodwar->drawTextMap(BWAPI::Position(m_left, m_bottom), ss.str().c_str());
+
+    BWAPI::Broodwar->drawTextMap(BWAPI::Position(m_left, m_top + 3), ss.str().c_str());
+    BWAPI::Broodwar->drawTextMap(BWAPI::Position(m_left, m_bottom), ss.str().c_str());
 
     // draw the base bounding box
-	BWAPI::Broodwar->drawLineMap(m_left,  m_top,    m_right, m_top,    BWAPI::Colors::White);
-	BWAPI::Broodwar->drawLineMap(m_right, m_top,    m_right, m_bottom, BWAPI::Colors::White);
-	BWAPI::Broodwar->drawLineMap(m_right, m_bottom, m_left,  m_bottom, BWAPI::Colors::White);
-	BWAPI::Broodwar->drawLineMap(m_left,  m_bottom, m_left,  m_top,    BWAPI::Colors::White);
+    BWAPI::Broodwar->drawLineMap(m_left, m_top, m_right, m_top, BWAPI::Colors::White);
+    BWAPI::Broodwar->drawLineMap(m_right, m_top, m_right, m_bottom, BWAPI::Colors::White);
+    BWAPI::Broodwar->drawLineMap(m_right, m_bottom, m_left, m_bottom, BWAPI::Colors::White);
+    BWAPI::Broodwar->drawLineMap(m_left, m_bottom, m_left, m_top, BWAPI::Colors::White);
 
     for (int x=m_left; x < m_right; x += 32)
     {
-		BWAPI::Broodwar->drawLineMap(x, m_top, x, m_bottom, BWAPI::Color(160, 160, 160));
+        BWAPI::Broodwar->drawLineMap(x, m_top, x, m_bottom, BWAPI::Color(160, 160, 160));
     }
 
     for (int y=m_bottom; y<m_top; y += 32)
     {
-		BWAPI::Broodwar->drawLineMap(m_left, y, m_right, y, BWAPI::Color(160, 160, 160));
+        BWAPI::Broodwar->drawLineMap(m_left, y, m_right, y, BWAPI::Color(160, 160, 160));
     }
 
     for (auto & mineralPos : m_mineralPositions)
     {
-		BWAPI::Broodwar->drawCircleMap(mineralPos, radius, BWAPI::Color(0, 128, 128));
+        BWAPI::Broodwar->drawCircleMap(mineralPos, radius, BWAPI::Color(0, 128, 128));
     }
 
     for (auto & geyserPos : m_geyserPositions)
     {
-		BWAPI::Broodwar->drawCircleMap(geyserPos, radius, BWAPI::Color(0, 255, 0));
+        BWAPI::Broodwar->drawCircleMap(geyserPos, radius, BWAPI::Color(0, 255, 0));
     }
 
     if (m_isStartLocation)
     {
-		BWAPI::Broodwar->drawCircleMap(BWAPI::Position(m_depotPosition), radius, BWAPI::Color(255, 0, 0));
+        BWAPI::Broodwar->drawCircleMap(BWAPI::Position(m_depotPosition), radius, BWAPI::Color(255, 0, 0));
     }
 
-	BWAPI::Broodwar->drawBoxMap(m_depotPosition.x, m_depotPosition.y, m_depotPosition.x+32, m_depotPosition.y+32, BWAPI::Color(0, 0, 255));
+    BWAPI::Broodwar->drawBoxMap(m_depotPosition.x, m_depotPosition.y, m_depotPosition.x+32, m_depotPosition.y+32, BWAPI::Color(0, 0, 255));
 
-    //m_distanceMap.draw(m_bot);
+    //m_distanceMap.draw();
 }
 
 bool BaseLocation::isMineralOnly() const
