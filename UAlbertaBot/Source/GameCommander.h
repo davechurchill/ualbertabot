@@ -13,33 +13,32 @@ class UnitToAssign
 public:
 
 	BWAPI::Unit unit;
-	bool isAssigned;
+	bool isAssigned = false;
 
 	UnitToAssign(BWAPI::Unit u)
+        : unit(u)
 	{
-		unit = u;
-		isAssigned = false;
+		
 	}
 };
 
 class GameCommander 
 {
-	CombatCommander		    _combatCommander;
-	TimerManager		    _timerManager;
+	CombatCommander m_combatCommander;
+	TimerManager    m_timerManager;
 
-	BWAPI::Unitset          _validUnits;
-	BWAPI::Unitset          _combatUnits;
-	BWAPI::Unitset          _scoutUnits;
+	BWAPI::Unitset  m_validUnits;
+	BWAPI::Unitset  m_combatUnits;
+	BWAPI::Unitset  m_scoutUnits;
 
-    bool                    _initialScoutSet;
+    bool            m_initialScoutSet = false;
 
-    void                    assignUnit(BWAPI::Unit unit, BWAPI::Unitset & set);
-	bool                    isAssigned(BWAPI::Unit unit) const;
+    void assignUnit(BWAPI::Unit unit, BWAPI::Unitset & set);
+	bool isAssigned(BWAPI::Unit unit) const;
 
 public:
 
 	GameCommander();
-	~GameCommander() {};
 
 	void update();
 

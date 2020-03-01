@@ -5,16 +5,13 @@
 using namespace UAlbertaBot;
 
 AutoObserver::AutoObserver()
-    : _unitFollowFrames(0)
-    , _cameraLastMoved(0)
-    , _observerFollowingUnit(nullptr)
 {
 
 }
 
 void AutoObserver::onFrame()
 {
-    bool pickUnitToFollow = !_observerFollowingUnit || !_observerFollowingUnit->exists() || (BWAPI::Broodwar->getFrameCount() - _cameraLastMoved > _unitFollowFrames);
+    bool pickUnitToFollow = !m_observerFollowingUnit || !m_observerFollowingUnit->exists() || (BWAPI::Broodwar->getFrameCount() - m_cameraLastMoved > m_unitFollowFrames);
 
     if (pickUnitToFollow)
     {
@@ -22,9 +19,9 @@ void AutoObserver::onFrame()
 	    {
 		    if (unit->isUnderAttack() || unit->isAttacking())
 		    {
-			    _cameraLastMoved = BWAPI::Broodwar->getFrameCount();
-                _unitFollowFrames = 6;
-                _observerFollowingUnit = unit;
+			    m_cameraLastMoved = BWAPI::Broodwar->getFrameCount();
+                m_unitFollowFrames = 6;
+                m_observerFollowingUnit = unit;
                 pickUnitToFollow = false;
                 break;
 		    }
@@ -37,9 +34,9 @@ void AutoObserver::onFrame()
 	    {
 		    if (unit->isBeingConstructed() && (unit->getRemainingBuildTime() < 12))
 		    {
-			    _cameraLastMoved = BWAPI::Broodwar->getFrameCount();
-                _unitFollowFrames = 24;
-                _observerFollowingUnit = unit;
+			    m_cameraLastMoved = BWAPI::Broodwar->getFrameCount();
+                m_unitFollowFrames = 24;
+                m_observerFollowingUnit = unit;
                 pickUnitToFollow = false;
                 break;
 		    }
@@ -52,17 +49,17 @@ void AutoObserver::onFrame()
 	    {
 		    if (Global::Workers().isWorkerScout(unit))
 		    {
-			    _cameraLastMoved = BWAPI::Broodwar->getFrameCount();
-                _unitFollowFrames = 6;
-                _observerFollowingUnit = unit;
+			    m_cameraLastMoved = BWAPI::Broodwar->getFrameCount();
+                m_unitFollowFrames = 6;
+                m_observerFollowingUnit = unit;
                 pickUnitToFollow = false;
                 break;
 		    }
         }
     }
 
-    if (_observerFollowingUnit && _observerFollowingUnit->exists())
+    if (m_observerFollowingUnit && m_observerFollowingUnit->exists())
     {
-        BWAPI::Broodwar->setScreenPosition(_observerFollowingUnit->getPosition() - BWAPI::Position(320, 180));
+        BWAPI::Broodwar->setScreenPosition(m_observerFollowingUnit->getPosition() - BWAPI::Position(320, 180));
     }
 }

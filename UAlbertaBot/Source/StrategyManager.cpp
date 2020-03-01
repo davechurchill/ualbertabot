@@ -11,9 +11,9 @@ using namespace UAlbertaBot;
 
 // constructor
 StrategyManager::StrategyManager() 
-	: _selfRace(BWAPI::Broodwar->self()->getRace())
-	, _enemyRace(BWAPI::Broodwar->enemy()->getRace())
-    , _emptyBuildOrder(BWAPI::Broodwar->self()->getRace())
+	: m_selfRace(BWAPI::Broodwar->self()->getRace())
+	, m_enemyRace(BWAPI::Broodwar->enemy()->getRace())
+    , m_emptyBuildOrder(BWAPI::Broodwar->self()->getRace())
 {
 	
 }
@@ -27,17 +27,17 @@ const int StrategyManager::getScore(BWAPI::Player player) const
 
 const BuildOrder & StrategyManager::getOpeningBookBuildOrder() const
 {
-    auto buildOrderIt = _strategies.find(Config::Strategy::StrategyName);
+    auto buildOrderIt = m_strategies.find(Config::Strategy::StrategyName);
 
     // look for the build order in the build order map
-	if (buildOrderIt != std::end(_strategies))
+	if (buildOrderIt != std::end(m_strategies))
     {
-        return (*buildOrderIt).second._buildOrder;
+        return (*buildOrderIt).second.m_buildOrder;
     }
     else
     {
         UAB_ASSERT_WARNING(false, "Strategy not found: %s, returning empty initial build order", Config::Strategy::StrategyName.c_str());
-        return _emptyBuildOrder;
+        return m_emptyBuildOrder;
     }
 }
 
@@ -86,7 +86,7 @@ const bool StrategyManager::shouldExpandNow() const
 
 void StrategyManager::addStrategy(const std::string & name, Strategy & strategy)
 {
-    _strategies[name] = strategy;
+    m_strategies[name] = strategy;
 }
 
 const MetaPairVector StrategyManager::getBuildOrderGoal()
@@ -346,14 +346,14 @@ void StrategyManager::readResults()
 
             //BWAPI::Broodwar->printf("Results Found: %s %d %d", strategyName.c_str(), wins, losses);
 
-            if (_strategies.find(strategyName) == _strategies.end())
+            if (m_strategies.find(strategyName) == m_strategies.end())
             {
                 //BWAPI::Broodwar->printf("Warning: Results file has unknown Strategy: %s", strategyName.c_str());
             }
             else
             {
-                _strategies[strategyName]._wins = wins;
-                _strategies[strategyName]._losses = losses;
+                m_strategies[strategyName].m_wins = wins;
+                m_strategies[strategyName].m_losses = losses;
             }
         }
 
@@ -379,11 +379,11 @@ void StrategyManager::writeResults()
 
     std::stringstream ss;
 
-    for (auto & kv : _strategies)
+    for (auto & kv : m_strategies)
     {
         const Strategy & strategy = kv.second;
 
-        ss << strategy._name << " " << strategy._wins << " " << strategy._losses << "\n";
+        ss << strategy.m_name << " " << strategy.m_wins << " " << strategy.m_losses << "\n";
     }
 
     Logger::LogOverwriteToFile(enemyResultsFile, ss.str());
@@ -398,11 +398,11 @@ void StrategyManager::onEnd(const bool isWinner)
 
     if (isWinner)
     {
-        _strategies[Config::Strategy::StrategyName]._wins++;
+        m_strategies[Config::Strategy::StrategyName].m_wins++;
     }
     else
     {
-        _strategies[Config::Strategy::StrategyName]._losses++;
+        m_strategies[Config::Strategy::StrategyName].m_losses++;
     }
 
     writeResults();
@@ -419,11 +419,11 @@ void StrategyManager::setLearnedStrategy()
     }
 
     const std::string & strategyName = Config::Strategy::StrategyName;
-    Strategy & currentStrategy = _strategies[strategyName];
+    Strategy & currentStrategy = m_strategies[strategyName];
 
     int totalGamesPlayed = 0;
-    int strategyGamesPlayed = currentStrategy._wins + currentStrategy._losses;
-    double winRate = strategyGamesPlayed > 0 ? currentStrategy._wins / static_cast<double>(strategyGamesPlayed) : 0;
+    int strategyGamesPlayed = currentStrategy.m_wins + currentStrategy.m_losses;
+    double winRate = strategyGamesPlayed > 0 ? currentStrategy.m_wins / static_cast<double>(strategyGamesPlayed) : 0;
 
     // if we are using an enemy specific strategy
     if (Config::Strategy::FoundEnemySpecificStrategy)
@@ -440,12 +440,12 @@ void StrategyManager::setLearnedStrategy()
     }
 
     // get the total number of games played so far with this race
-    for (auto & kv : _strategies)
+    for (auto & kv : m_strategies)
     {
         Strategy & strategy = kv.second;
-        if (strategy._race == BWAPI::Broodwar->self()->getRace())
+        if (strategy.m_race == BWAPI::Broodwar->self()->getRace())
         {
-            totalGamesPlayed += strategy._wins + strategy._losses;
+            totalGamesPlayed += strategy.m_wins + strategy.m_losses;
         }
     }
 
@@ -453,22 +453,22 @@ void StrategyManager::setLearnedStrategy()
     double C = 0.5;
     std::string bestUCBStrategy;
     double bestUCBStrategyVal = std::numeric_limits<double>::lowest();
-    for (auto & kv : _strategies)
+    for (auto & kv : m_strategies)
     {
         Strategy & strategy = kv.second;
-        if (strategy._race != BWAPI::Broodwar->self()->getRace())
+        if (strategy.m_race != BWAPI::Broodwar->self()->getRace())
         {
             continue;
         }
 
-        int sGamesPlayed = strategy._wins + strategy._losses;
-        double sWinRate = sGamesPlayed > 0 ? currentStrategy._wins / static_cast<double>(strategyGamesPlayed) : 0;
+        int sGamesPlayed = strategy.m_wins + strategy.m_losses;
+        double sWinRate = sGamesPlayed > 0 ? currentStrategy.m_wins / static_cast<double>(strategyGamesPlayed) : 0;
         double ucbVal = C * sqrt( log( (double)totalGamesPlayed / sGamesPlayed ) );
         double val = sWinRate + ucbVal;
 
         if (val > bestUCBStrategyVal)
         {
-            bestUCBStrategy = strategy._name;
+            bestUCBStrategy = strategy.m_name;
             bestUCBStrategyVal = val;
         }
     }

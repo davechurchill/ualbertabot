@@ -14,38 +14,34 @@ class BuildingManager
 
     std::vector<Building> _buildings;
 
-    bool            _debugMode;
-    int             _reservedMinerals;				// minerals reserved for planned buildings
-    int             _reservedGas;					// gas reserved for planned buildings
+    bool m_debugMode        = false;
+    int  m_reservedMinerals = 0;        // minerals reserved for planned buildings
+    int  m_reservedGas      = 0;        // gas reserved for planned buildings
 
-    bool            isEvolvedBuilding(BWAPI::UnitType type);
-    bool            isBuildingPositionExplored(const Building & b) const;
-    void            removeBuildings(const std::vector<Building> & toRemove);
+    bool isEvolvedBuilding(BWAPI::UnitType type);
+    bool isBuildingPositionExplored(const Building & b) const;
+    void removeBuildings(const std::vector<Building> & toRemove);
 
-    void            validateWorkersAndBuildings();		    // STEP 1
-    void            assignWorkersToUnassignedBuildings();	// STEP 2
-    void            constructAssignedBuildings();			// STEP 3
-    void            checkForStartedConstruction();			// STEP 4
-    void            checkForDeadTerranBuilders();			// STEP 5
-    void            checkForCompletedBuildings();			// STEP 6
+    void validateWorkersAndBuildings();		    // STEP 1
+    void assignWorkersToUnassignedBuildings();	// STEP 2
+    void constructAssignedBuildings();			// STEP 3
+    void checkForStartedConstruction();			// STEP 4
+    void checkForDeadTerranBuilders();			// STEP 5
+    void checkForCompletedBuildings();			// STEP 6
 
-    char            getBuildingWorkerCode(const Building & b) const;
+    char getBuildingWorkerCode(const Building & b) const;
     
 
 public:
     
     void                update();
-    void                onUnitMorph(BWAPI::Unit unit);
-    void                onUnitDestroy(BWAPI::Unit unit);
     void                addBuildingTask(BWAPI::UnitType type,BWAPI::TilePosition desiredLocation,bool isGasSteal);
     void                drawBuildingInformation(int x,int y);
-    BWAPI::TilePosition getBuildingLocation(const Building & b);
-
     int                 getReservedMinerals();
     int                 getReservedGas();
-
     bool                isBeingBuilt(BWAPI::UnitType type);
 
+    BWAPI::TilePosition getBuildingLocation(const Building & b);
     std::vector<BWAPI::UnitType> buildingsQueued();
 };
 }

@@ -14,46 +14,28 @@ class Building
 {     
 public:
       
-	BWAPI::TilePosition     desiredPosition;
-	BWAPI::TilePosition     finalPosition;
-	BWAPI::Position         position;
-	BWAPI::UnitType         type;
-	BWAPI::Unit             buildingUnit;
-	BWAPI::Unit             builderUnit;
-    size_t                  status;
-	int                     lastOrderFrame;
-    bool                    isGasSteal;
-	bool                    buildCommandGiven;
-	bool                    underConstruction;
+    BWAPI::TilePosition     desiredPosition     = {0, 0};
+	BWAPI::TilePosition     finalPosition       = BWAPI::TilePositions::None;
+    BWAPI::Position         position            = {0, 0};
+	BWAPI::UnitType         type                = BWAPI::UnitTypes::Unknown;
+	BWAPI::Unit             buildingUnit        = nullptr;
+	BWAPI::Unit             builderUnit         = nullptr;
+    size_t                  status              = BuildingStatus::Unassigned;
+	int                     lastOrderFrame      = 0;
+    bool                    isGasSteal          = false;     
+	bool                    buildCommandGiven   = false;
+	bool                    underConstruction   = false;
 
 	Building() 
-		: desiredPosition   (0,0)
-        , finalPosition     (BWAPI::TilePositions::None)
-        , position          (0,0)
-        , type              (BWAPI::UnitTypes::Unknown)
-        , buildingUnit      (nullptr)
-        , builderUnit       (nullptr)
-        , lastOrderFrame    (0)
-        , status            (BuildingStatus::Unassigned)
-        , buildCommandGiven (false)
-        , underConstruction (false) 
-        , isGasSteal        (false)
-    {} 
+    {
+    } 
 
 	// constructor we use most often
 	Building(BWAPI::UnitType t, BWAPI::TilePosition desired)
 		: desiredPosition   (desired)
-        , finalPosition     (0,0)
-        , position          (0,0)
         , type              (t)
-        , buildingUnit      (nullptr)
-        , builderUnit       (nullptr)
-        , lastOrderFrame    (0)
-        , status            (BuildingStatus::Unassigned)
-        , buildCommandGiven (false)
-        , underConstruction (false) 
-        , isGasSteal        (false)
-    {}
+    {
+    }
 
 	// equals operator
 	bool operator==(const Building & b) 
@@ -65,7 +47,7 @@ public:
 
 class BuildingData 
 {
-    std::vector<Building>                   _buildings;
+    std::vector<Building> m_buildings;
 
 public:
 

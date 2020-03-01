@@ -7,44 +7,44 @@
 
 class UnitFrameData
 {
-    BWAPI::UnitType _type;
-    BWAPI::Position _pos;
-    BWAPI::Order    _order;
-    BWAPI::Position _orderPos;
+    BWAPI::UnitType m_type;
+    BWAPI::Position m_pos;
+    BWAPI::Order    m_order;
+    BWAPI::Position m_orderPos;
 
-    int             _id;
-    int             _player;
-    int             _hp;
-    int             _shields;
-    int             _energy;
-    double          _angle;
+    int     m_id     = 0;
+    int     m_player = 0;
+    int     m_hp     = 0;
+    int     m_shields= 0;
+    int     m_energy = 0;
+    double  m_angle  = 0;
 
 public:
 
     UnitFrameData(BWAPI::Unit unit)
-        : _type     (unit->getType())
-        , _pos      (unit->getPosition())
-        , _order    (unit->getOrder())
-        , _orderPos (unit->getOrderTargetPosition())
-        , _id       (unit->getID())
-        , _player   (unit->getPlayer()->getID())
-        , _hp       (unit->getHitPoints())
-        , _shields  (unit->getShields())
-        , _energy   (unit->getEnergy())
-        , _angle    (unit->getAngle())
+        : m_type     (unit->getType())
+        , m_pos      (unit->getPosition())
+        , m_order    (unit->getOrder())
+        , m_orderPos (unit->getOrderTargetPosition())
+        , m_id       (unit->getID())
+        , m_player   (unit->getPlayer()->getID())
+        , m_hp       (unit->getHitPoints())
+        , m_shields  (unit->getShields())
+        , m_energy   (unit->getEnergy())
+        , m_angle    (unit->getAngle())
     {
         
     }
     
     void writeToFile(std::ofstream & fout) const
     {
-        fout << _player << " ";         // 1 byte
-        fout << _type.getID() << " ";   // 1 byte
-        fout << _id << " ";             // 2 byte
-        fout << _hp << " ";             // 2 byte
-        fout << _shields << " ";        // 2 byte
-        fout << _pos.x << " ";          // 2 byte
-        fout << _pos.y << " ";          // 2 byte
+        fout << m_player << " ";         // 1 byte
+        fout << m_type.getID() << " ";   // 1 byte
+        fout << m_id << " ";             // 2 byte
+        fout << m_hp << " ";             // 2 byte
+        fout << m_shields << " ";        // 2 byte
+        fout << m_pos.x << " ";          // 2 byte
+        fout << m_pos.y << " ";          // 2 byte
         //fout << _orderPos.x << " ";     // 2 byte
         //fout << _orderPos.y;            // 2 byte
     }
@@ -52,32 +52,32 @@ public:
 
 class GameFrame
 {
-    int                         _frame;
-	std::vector<UnitFrameData>  _units;
+    int                         m_frame = 0;
+	std::vector<UnitFrameData>  m_units;
 
 public:
 
 	GameFrame()
-        : _frame(BWAPI::Broodwar->getFrameCount())
+        : m_frame(BWAPI::Broodwar->getFrameCount())
     {
         for (const BWAPI::Unit & unit : BWAPI::Broodwar->getAllUnits())
         {
             if (unit->getPlayer()->getID() != -1)
             {
-                _units.push_back(UnitFrameData(unit));
+                m_units.push_back(UnitFrameData(unit));
             }
         }
     }
 
     int getFrame() const
     {
-        return _frame;
+        return m_frame;
     }
 
     void writeToFile(std::ofstream & fout) const
     {
-        fout << "f " << _frame << "\n";
-        for (const auto & unit : _units)
+        fout << "f " << m_frame << "\n";
+        for (const auto & unit : m_units)
         {
             unit.writeToFile(fout);
             fout << "\n";
@@ -87,22 +87,22 @@ public:
 
 class GameMap
 {
-    int                 _width;
-    int                 _height;
-    std::vector<int>    _walkable;
+    int                 m_width  = 0;
+    int                 m_height = 0;
+    std::vector<int>    m_walkable;
     
 public:
 
     GameMap()
-        : _width(BWAPI::Broodwar->mapWidth() * 4)
-        , _height(BWAPI::Broodwar->mapHeight() * 4)
-        , _walkable(BWAPI::Broodwar->mapHeight() * BWAPI::Broodwar->mapWidth() * 16, 0)
+        : m_width(BWAPI::Broodwar->mapWidth() * 4)
+        , m_height(BWAPI::Broodwar->mapHeight() * 4)
+        , m_walkable(BWAPI::Broodwar->mapHeight() * BWAPI::Broodwar->mapWidth() * 16, 0)
     {
-        for (int h(0); h < _height; ++h)
+        for (int h(0); h < m_height; ++h)
         {
-            for (int w(0); w < _width; ++w)
+            for (int w(0); w < m_width; ++w)
             {
-                _walkable[h*w + w] = BWAPI::Broodwar->isWalkable(h, w);
+                m_walkable[h*w + w] = BWAPI::Broodwar->isWalkable(h, w);
             }        
         }
     }

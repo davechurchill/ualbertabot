@@ -8,10 +8,9 @@ namespace UAlbertaBot
 
 class TimerManager
 {
-	std::vector<BOSS::Timer> _timers;
-	std::vector<std::string> _timerNames;
-
-	int _barWidth;
+	std::vector<BOSS::Timer> m_timers;
+	std::vector<std::string> m_timerNames;
+	int                      m_barWidth = 0;
 
 public:
 
@@ -20,12 +19,9 @@ public:
 	TimerManager();
 
 	void startTimer(const TimerManager::Type t);
-
 	void stopTimer(const TimerManager::Type t);
-
-	double getTotalElapsed();
-
 	void displayTimers(int x, int y);
+	double getTotalElapsed();
 };
 
 }

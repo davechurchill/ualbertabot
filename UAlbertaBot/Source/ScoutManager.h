@@ -20,7 +20,6 @@ class ScoutManager
 	bool			enemyWorkerInRadius();
     bool			immediateThreat();
     void			gasSteal();
-    int				getClosestVertexIndex(BWAPI::Unit unit);
     BWAPI::Position	getFleePosition();
 	BWAPI::Unit		getEnemyGeyser();
 	BWAPI::Unit		closestEnemyWorker();
@@ -35,13 +34,5 @@ public:
 	void update();
 
     void setWorkerScout(BWAPI::Unit unit);
-
-	void onSendText(std::string text);
-	void onUnitShow(BWAPI::Unit unit);
-	void onUnitHide(BWAPI::Unit unit);
-	void onUnitCreate(BWAPI::Unit unit);
-	void onUnitRenegade(BWAPI::Unit unit);
-	void onUnitDestroy(BWAPI::Unit unit);
-	void onUnitMorph(BWAPI::Unit unit);
 };
 }

@@ -9,23 +9,16 @@ struct UnitInfo
     // we need to store all of this data because if the unit is not visible, we
     // can't reference it from the unit pointer
 
-    int             unitID;
-    int             lastHealth;
-    int             lastShields;
-    BWAPI::Player   player;
+    int             unitID          = 0;
+    int             lastHealth      = 0;
+    int             lastShields     = 0;
+    BWAPI::Player   player          = nullptr;
     BWAPI::Unit     unit;
-    BWAPI::Position lastPosition;
-    BWAPI::UnitType type;
-    bool            completed;
+    BWAPI::Position lastPosition    = BWAPI::Positions::None;
+    BWAPI::UnitType type            = BWAPI::UnitTypes::None;
+    bool            completed       = false;
 
     UnitInfo()
-        : unitID(0)
-        , lastHealth(0)
-        , player(nullptr)
-        , unit(nullptr)
-        , lastPosition(BWAPI::Positions::None)
-        , type(BWAPI::UnitTypes::None)
-        , completed(false)
     {
 
     }
@@ -53,13 +46,12 @@ class UnitData
 {
     UIMap unitMap;
 
+    std::vector<int> numDeadUnits;
+    std::vector<int> numUnits;
+    int mineralsLost = 0;
+    int gasLost      = 0;
+    
     const bool badUnitInfo(const UnitInfo & ui) const;
-
-    std::vector<int>						numDeadUnits;
-    std::vector<int>						numUnits;
-
-    int										mineralsLost;
-    int										gasLost;
 
 public:
 

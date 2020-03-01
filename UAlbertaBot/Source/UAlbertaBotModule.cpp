@@ -72,6 +72,11 @@ void UAlbertaBotModule::onEnd(bool isWinner)
 
 void UAlbertaBotModule::onFrame()
 {
+    if (BWAPI::Broodwar->getFrameCount() > 100000)
+    {
+        BWAPI::Broodwar->restartGame();
+    }
+
     const char red = '\x08';
     const char green = '\x07';
     const char white = '\x04';
@@ -102,23 +107,23 @@ void UAlbertaBotModule::onFrame()
 
 	if (Config::Modules::UsingGameCommander) 
 	{ 
-		_gameCommander.update(); 
+		m_gameCommander.update(); 
 	}
 
     if (Config::Modules::UsingAutoObserver)
     {
-        _autoObserver.onFrame();
+        m_autoObserver.onFrame();
     }
 }
 
 void UAlbertaBotModule::onUnitDestroy(BWAPI::Unit unit)
 {
-	if (Config::Modules::UsingGameCommander) { _gameCommander.onUnitDestroy(unit); }
+	if (Config::Modules::UsingGameCommander) { m_gameCommander.onUnitDestroy(unit); }
 }
 
 void UAlbertaBotModule::onUnitMorph(BWAPI::Unit unit)
 {
-	if (Config::Modules::UsingGameCommander) { _gameCommander.onUnitMorph(unit); }
+	if (Config::Modules::UsingGameCommander) { m_gameCommander.onUnitMorph(unit); }
 }
 
 void UAlbertaBotModule::onSendText(std::string text) 
@@ -128,25 +133,25 @@ void UAlbertaBotModule::onSendText(std::string text)
 
 void UAlbertaBotModule::onUnitCreate(BWAPI::Unit unit)
 { 
-	if (Config::Modules::UsingGameCommander) { _gameCommander.onUnitCreate(unit); }
+	if (Config::Modules::UsingGameCommander) { m_gameCommander.onUnitCreate(unit); }
 }
 
 void UAlbertaBotModule::onUnitComplete(BWAPI::Unit unit)
 {
-	if (Config::Modules::UsingGameCommander) { _gameCommander.onUnitComplete(unit); }
+	if (Config::Modules::UsingGameCommander) { m_gameCommander.onUnitComplete(unit); }
 }
 
 void UAlbertaBotModule::onUnitShow(BWAPI::Unit unit)
 { 
-	if (Config::Modules::UsingGameCommander) { _gameCommander.onUnitShow(unit); }
+	if (Config::Modules::UsingGameCommander) { m_gameCommander.onUnitShow(unit); }
 }
 
 void UAlbertaBotModule::onUnitHide(BWAPI::Unit unit)
 { 
-	if (Config::Modules::UsingGameCommander) { _gameCommander.onUnitHide(unit); }
+	if (Config::Modules::UsingGameCommander) { m_gameCommander.onUnitHide(unit); }
 }
 
 void UAlbertaBotModule::onUnitRenegade(BWAPI::Unit unit)
 { 
-	if (Config::Modules::UsingGameCommander) { _gameCommander.onUnitRenegade(unit); }
+	if (Config::Modules::UsingGameCommander) { m_gameCommander.onUnitRenegade(unit); }
 }

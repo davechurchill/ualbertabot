@@ -11,9 +11,6 @@
 using namespace UAlbertaBot;
 
 BuildingManager::BuildingManager()
-    : _debugMode(false)
-    , _reservedMinerals(0)
-    , _reservedGas(0)
 {
 
 }
@@ -84,7 +81,7 @@ void BuildingManager::assignWorkersToUnassignedBuildings()
             continue;
         }
 
-        if (_debugMode) { BWAPI::Broodwar->printf("Assigning Worker To: %s",b.type.getName().c_str()); }
+        if (m_debugMode) { BWAPI::Broodwar->printf("Assigning Worker To: %s",b.type.getName().c_str()); }
 
         // grab a worker unit from WorkerManager which is closest to this final position
         BWAPI::Unit workerToAssign = Global::Workers().getBuilder(b);
@@ -193,8 +190,8 @@ void BuildingManager::checkForStartedConstruction()
             if (b.finalPosition == buildingStarted->getTilePosition())
             {
                 // the resources should now be spent, so unreserve them
-                _reservedMinerals -= buildingStarted->getType().mineralPrice();
-                _reservedGas      -= buildingStarted->getType().gasPrice();
+                m_reservedMinerals -= buildingStarted->getType().mineralPrice();
+                m_reservedGas      -= buildingStarted->getType().gasPrice();
 
                 // flag it as started and set the buildingUnit
                 b.underConstruction = true;
@@ -296,8 +293,8 @@ bool BuildingManager::isEvolvedBuilding(BWAPI::UnitType type)
 // add a new building to be constructed
 void BuildingManager::addBuildingTask(BWAPI::UnitType type, BWAPI::TilePosition desiredLocation, bool isGasSteal)
 {
-    _reservedMinerals += type.mineralPrice();
-    _reservedGas	     += type.gasPrice();
+    m_reservedMinerals += type.mineralPrice();
+    m_reservedGas	     += type.gasPrice();
 
     Building b(type, desiredLocation);
     b.isGasSteal = isGasSteal;
@@ -333,12 +330,12 @@ char BuildingManager::getBuildingWorkerCode(const Building & b) const
 
 int BuildingManager::getReservedMinerals() 
 {
-    return _reservedMinerals;
+    return m_reservedMinerals;
 }
 
 int BuildingManager::getReservedGas() 
 {
-    return _reservedGas;
+    return m_reservedGas;
 }
 
 void BuildingManager::drawBuildingInformation(int x,int y)

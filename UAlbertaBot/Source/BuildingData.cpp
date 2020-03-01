@@ -9,27 +9,27 @@ BuildingData::BuildingData()
 
 void BuildingData::removeBuilding(const Building & b)
 {
-    auto & building = std::find(_buildings.begin(), _buildings.end(), b);
+    auto & building = std::find(m_buildings.begin(), m_buildings.end(), b);
 
-    if (building != _buildings.end())
+    if (building != m_buildings.end())
     {
-        _buildings.erase(building);
+        m_buildings.erase(building);
     }
 }
 
 std::vector<Building> & BuildingData::getBuildings()
 {
-    return _buildings;
+    return m_buildings;
 }
 
 void BuildingData::addBuilding(const Building & b)
 {
-    _buildings.push_back(b);
+    m_buildings.push_back(b);
 }
 
 bool BuildingData::isBeingBuilt(BWAPI::UnitType type)
 {
-    for (auto & b : _buildings)
+    for (auto & b : m_buildings)
     {
         if (b.type == type)
         {

@@ -12,12 +12,12 @@ class BuildingPlacerManager
 
     BuildingPlacerManager();
 
-    std::vector< std::vector<bool> > _reserveMap;
+    std::vector< std::vector<bool> > m_reserveMap;
 
-    int _boxTop     = std::numeric_limits<int>::max();
-    int _boxBottom  = std::numeric_limits<int>::lowest();
-    int _boxLeft    = std::numeric_limits<int>::max();
-    int _boxRight   = std::numeric_limits<int>::lowest();
+    int m_boxTop     = std::numeric_limits<int>::max();
+    int m_boxBottom  = std::numeric_limits<int>::lowest();
+    int m_boxLeft    = std::numeric_limits<int>::max();
+    int m_boxRight   = std::numeric_limits<int>::lowest();
 
 public:
 

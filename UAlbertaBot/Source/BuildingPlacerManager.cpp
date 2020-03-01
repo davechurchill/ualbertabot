@@ -10,7 +10,7 @@ using namespace UAlbertaBot;
 
 BuildingPlacerManager::BuildingPlacerManager()
 {
-    _reserveMap = std::vector< std::vector<bool> >(BWAPI::Broodwar->mapWidth(),std::vector<bool>(BWAPI::Broodwar->mapHeight(),false));
+    m_reserveMap = std::vector< std::vector<bool> >(BWAPI::Broodwar->mapWidth(),std::vector<bool>(BWAPI::Broodwar->mapHeight(),false));
 
     computeResourceBox();
 }
@@ -20,7 +20,7 @@ bool BuildingPlacerManager::isInResourceBox(int x, int y) const
     int posX(x * 32);
     int posY(y * 32);
 
-    return (posX >= _boxLeft) && (posX < _boxRight) && (posY >= _boxTop) && (posY < _boxBottom);
+    return (posX >= m_boxLeft) && (posX < m_boxRight) && (posY >= m_boxTop) && (posY < m_boxBottom);
 }
 
 void BuildingPlacerManager::computeResourceBox()
@@ -49,10 +49,10 @@ void BuildingPlacerManager::computeResourceBox()
         int top = y - unit->getType().dimensionUp();
         int bottom = y + unit->getType().dimensionDown() + 1;
 
-        _boxTop     = top < _boxTop       ? top    : _boxTop;
-        _boxBottom  = bottom > _boxBottom ? bottom : _boxBottom;
-        _boxLeft    = left < _boxLeft     ? left   : _boxLeft;
-        _boxRight   = right > _boxRight   ? right  : _boxRight;
+        m_boxTop     = top < m_boxTop       ? top    : m_boxTop;
+        m_boxBottom  = bottom > m_boxBottom ? bottom : m_boxBottom;
+        m_boxLeft    = left < m_boxLeft     ? left   : m_boxLeft;
+        m_boxRight   = right > m_boxRight   ? right  : m_boxRight;
     }
 
     //BWAPI::Broodwar->printf("%d %d %d %d", boxTop, boxBottom, boxLeft, boxRight);
@@ -77,7 +77,7 @@ bool BuildingPlacerManager::canBuildHere(BWAPI::TilePosition position,const Buil
     {
         for (int y = position.y; y < position.y + b.type.tileHeight(); y++)
         {
-            if (_reserveMap[x][y])
+            if (m_reserveMap[x][y])
             {
                 return false;
             }
@@ -177,7 +177,7 @@ bool BuildingPlacerManager::canBuildHereWithSpace(BWAPI::TilePosition position,c
         {
             if (!b.type.isRefinery())
             {
-                if (!buildable(b,x,y) || _reserveMap[x][y] || ((b.type != BWAPI::UnitTypes::Protoss_Photon_Cannon) && isInResourceBox(x,y)))
+                if (!buildable(b,x,y) || m_reserveMap[x][y] || ((b.type != BWAPI::UnitTypes::Protoss_Photon_Cannon) && isInResourceBox(x,y)))
                 {
                     return false;
                 }
@@ -291,13 +291,13 @@ bool BuildingPlacerManager::buildable(const Building & b,int x,int y) const
 
 void BuildingPlacerManager::reserveTiles(BWAPI::TilePosition position,int width,int height)
 {
-    int rwidth = _reserveMap.size();
-    int rheight = _reserveMap[0].size();
+    int rwidth = m_reserveMap.size();
+    int rheight = m_reserveMap[0].size();
     for (int x = position.x; x < position.x + width && x < rwidth; x++)
     {
         for (int y = position.y; y < position.y + height && y < rheight; y++)
         {
-            _reserveMap[x][y] = true;
+            m_reserveMap[x][y] = true;
         }
     }
 }
@@ -311,14 +311,14 @@ void BuildingPlacerManager::drawReservedTiles()
 
     PROFILE_FUNCTION();
 
-    int rwidth = _reserveMap.size();
-    int rheight = _reserveMap[0].size();
+    int rwidth = m_reserveMap.size();
+    int rheight = m_reserveMap[0].size();
 
     for (int x = 0; x < rwidth; ++x)
     {
         for (int y = 0; y < rheight; ++y)
         {
-            if (_reserveMap[x][y] || isInResourceBox(x,y))
+            if (m_reserveMap[x][y] || isInResourceBox(x,y))
             {
                 int x1 = x*32 + 8;
                 int y1 = y*32 + 8;
@@ -333,14 +333,14 @@ void BuildingPlacerManager::drawReservedTiles()
 
 void BuildingPlacerManager::freeTiles(BWAPI::TilePosition position, int width, int height)
 {
-    int rwidth = _reserveMap.size();
-    int rheight = _reserveMap[0].size();
+    int rwidth = m_reserveMap.size();
+    int rheight = m_reserveMap[0].size();
 
     for (int x = position.x; x < position.x + width && x < rwidth; x++)
     {
         for (int y = position.y; y < position.y + height && y < rheight; y++)
         {
-            _reserveMap[x][y] = false;
+            m_reserveMap[x][y] = false;
         }
     }
 }
@@ -389,13 +389,13 @@ BWAPI::TilePosition BuildingPlacerManager::getRefineryPosition()
 
 bool BuildingPlacerManager::isReserved(int x, int y) const
 {
-    int rwidth = _reserveMap.size();
-    int rheight = _reserveMap[0].size();
+    int rwidth = m_reserveMap.size();
+    int rheight = m_reserveMap[0].size();
     if (x < 0 || y < 0 || x >= rwidth || y >= rheight)
     {
         return false;
     }
 
-    return _reserveMap[x][y];
+    return m_reserveMap[x][y];
 }
 

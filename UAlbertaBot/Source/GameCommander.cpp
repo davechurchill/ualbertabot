@@ -17,7 +17,7 @@
 using namespace UAlbertaBot;
 
 GameCommander::GameCommander() 
-    : _initialScoutSet(false)
+    : m_initialScoutSet(false)
 {
 
 }
@@ -26,47 +26,47 @@ void GameCommander::update()
 {
     PROFILE_FUNCTION();
 
-	_timerManager.startTimer(TimerManager::All);
+	m_timerManager.startTimer(TimerManager::All);
 
 	// populate the unit vectors we will pass into various managers
 	handleUnitAssignments();
 
 	// utility managers
-	_timerManager.startTimer(TimerManager::InformationManager);
+	m_timerManager.startTimer(TimerManager::InformationManager);
 	Global::Info().update();
-	_timerManager.stopTimer(TimerManager::InformationManager);
+	m_timerManager.stopTimer(TimerManager::InformationManager);
 
-	_timerManager.startTimer(TimerManager::MapTools);
+	m_timerManager.startTimer(TimerManager::MapTools);
 	Global::Map().onFrame();
-	_timerManager.stopTimer(TimerManager::MapTools);
+	m_timerManager.stopTimer(TimerManager::MapTools);
 
-	_timerManager.startTimer(TimerManager::Search);
-	Global::BOSS().update(35 - _timerManager.getTotalElapsed());
-	_timerManager.stopTimer(TimerManager::Search);
+	m_timerManager.startTimer(TimerManager::Search);
+	Global::BOSS().update(35 - m_timerManager.getTotalElapsed());
+	m_timerManager.stopTimer(TimerManager::Search);
 
 	// economy and base managers
-	_timerManager.startTimer(TimerManager::Worker);
+	m_timerManager.startTimer(TimerManager::Worker);
 	Global::Workers().update();
-	_timerManager.stopTimer(TimerManager::Worker);
+	m_timerManager.stopTimer(TimerManager::Worker);
 
-	_timerManager.startTimer(TimerManager::Production);
+	m_timerManager.startTimer(TimerManager::Production);
 	Global::Production().update();
-	_timerManager.stopTimer(TimerManager::Production);
+	m_timerManager.stopTimer(TimerManager::Production);
 
-	_timerManager.startTimer(TimerManager::Building);
+	m_timerManager.startTimer(TimerManager::Building);
 	Global::Buildings().update();
-	_timerManager.stopTimer(TimerManager::Building);
+	m_timerManager.stopTimer(TimerManager::Building);
 
 	// combat and scouting managers
-	_timerManager.startTimer(TimerManager::Combat);
-	_combatCommander.update(_combatUnits);
-	_timerManager.stopTimer(TimerManager::Combat);
+	m_timerManager.startTimer(TimerManager::Combat);
+	m_combatCommander.update(m_combatUnits);
+	m_timerManager.stopTimer(TimerManager::Combat);
 
-	_timerManager.startTimer(TimerManager::Scout);
+	m_timerManager.startTimer(TimerManager::Scout);
     Global::Scout().update();
-	_timerManager.stopTimer(TimerManager::Scout);
+	m_timerManager.stopTimer(TimerManager::Scout);
 
-	_timerManager.stopTimer(TimerManager::All);
+	m_timerManager.stopTimer(TimerManager::All);
 
 	Global::Bases().onFrame();
 
@@ -84,8 +84,8 @@ void GameCommander::drawDebugInterface()
 	Global::BOSS().drawSearchInformation(490, 100);
     Global::BOSS().drawStateInformation(250, 0);
     
-	_combatCommander.drawSquadInformation(200, 30);
-    _timerManager.displayTimers(490, 225);
+	m_combatCommander.drawSquadInformation(200, 30);
+    m_timerManager.displayTimers(490, 225);
     drawGameInformation(4, 1);
 
 	// draw position of mouse cursor
@@ -121,8 +121,8 @@ void GameCommander::drawGameInformation(int x, int y)
 // assigns units to various managers
 void GameCommander::handleUnitAssignments()
 {
-	_validUnits.clear();
-    _combatUnits.clear();
+	m_validUnits.clear();
+    m_combatUnits.clear();
 
 	// filter our units for those which are valid and usable
 	setValidUnits();
@@ -134,7 +134,7 @@ void GameCommander::handleUnitAssignments()
 
 bool GameCommander::isAssigned(BWAPI::Unit unit) const
 {
-	return _combatUnits.contains(unit) || _scoutUnits.contains(unit);
+	return m_combatUnits.contains(unit) || m_scoutUnits.contains(unit);
 }
 
 // validates units as usable for distribution to various managers
@@ -145,7 +145,7 @@ void GameCommander::setValidUnits()
 	{
 		if (UnitUtil::IsValidUnit(unit))
 		{	
-			_validUnits.insert(unit);
+			m_validUnits.insert(unit);
 		}
 	}
 }
@@ -153,7 +153,7 @@ void GameCommander::setValidUnits()
 void GameCommander::setScoutUnits()
 {
     // if we haven't set a scout unit, do it
-    if (_scoutUnits.empty() && !_initialScoutSet)
+    if (m_scoutUnits.empty() && !m_initialScoutSet)
     {
         BWAPI::Unit supplyProvider = getFirstSupplyProvider();
 
@@ -167,8 +167,8 @@ void GameCommander::setScoutUnits()
 			if (workerScout)
 			{
                 Global::Scout().setWorkerScout(workerScout);
-				assignUnit(workerScout, _scoutUnits);
-                _initialScoutSet = true;
+				assignUnit(workerScout, m_scoutUnits);
+                m_initialScoutSet = true;
 			}
 		}
     }
@@ -177,11 +177,11 @@ void GameCommander::setScoutUnits()
 // sets combat units to be passed to CombatCommander
 void GameCommander::setCombatUnits()
 {
-	for (auto & unit : _validUnits)
+	for (auto & unit : m_validUnits)
 	{
 		if (!isAssigned(unit) && UnitUtil::IsCombatUnit(unit) || unit->getType().isWorker())		
 		{	
-			assignUnit(unit, _combatUnits);
+			assignUnit(unit, m_combatUnits);
 		}
 	}
 }
@@ -259,7 +259,7 @@ BWAPI::Unit GameCommander::getClosestUnitToTarget(BWAPI::UnitType type, BWAPI::P
 	BWAPI::Unit closestUnit = nullptr;
 	double closestDist = 100000;
 
-	for (auto & unit : _validUnits)
+	for (auto & unit : m_validUnits)
 	{
 		if (unit->getType() == type)
 		{
@@ -280,7 +280,7 @@ BWAPI::Unit GameCommander::getClosestWorkerToTarget(BWAPI::Position target)
 	BWAPI::Unit closestUnit = nullptr;
 	double closestDist = 100000;
 
-	for (auto & unit : _validUnits)
+	for (auto & unit : m_validUnits)
 	{
 		if (!isAssigned(unit) && unit->getType().isWorker() && Global::Workers().isFree(unit))
 		{
@@ -298,8 +298,8 @@ BWAPI::Unit GameCommander::getClosestWorkerToTarget(BWAPI::Position target)
 
 void GameCommander::assignUnit(BWAPI::Unit unit, BWAPI::Unitset & set)
 {
-    if (_scoutUnits.contains(unit)) { _scoutUnits.erase(unit); }
-    else if (_combatUnits.contains(unit)) { _combatUnits.erase(unit); }
+    if (m_scoutUnits.contains(unit)) { m_scoutUnits.erase(unit); }
+    else if (m_combatUnits.contains(unit)) { m_combatUnits.erase(unit); }
 
     set.insert(unit);
 }

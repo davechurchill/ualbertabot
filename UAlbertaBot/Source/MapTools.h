@@ -40,7 +40,6 @@ public:
 
     int     width() const;
     int     height() const;
-    float   terrainHeight(float x, float y) const;
 
     bool    isValidTile(int tileX, int tileY) const;
     bool    isValidTile(const BWAPI::TilePosition & tile) const;

@@ -7,9 +7,9 @@ namespace UAlbertaBot
 
 class AutoObserver
 {
-    int         _cameraLastMoved;
-    int         _unitFollowFrames;
-    BWAPI::Unit _observerFollowingUnit;
+    int         m_cameraLastMoved = 0;
+    int         m_unitFollowFrames = 0;
+    BWAPI::Unit m_observerFollowingUnit = nullptr;
 
 public:
 

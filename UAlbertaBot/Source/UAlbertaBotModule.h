@@ -9,8 +9,8 @@ namespace UAlbertaBot
 
 class UAlbertaBotModule
 {
-	GameCommander   _gameCommander;
-    AutoObserver    _autoObserver;
+	GameCommander m_gameCommander;
+    AutoObserver  m_autoObserver;
 
 public:
 
