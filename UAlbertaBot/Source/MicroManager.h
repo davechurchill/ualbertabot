@@ -7,42 +7,42 @@ namespace UAlbertaBot
 {
 struct AirThreat
 {
-	BWAPI::Unit	unit;
-	double			weight;
+    BWAPI::Unit	unit;
+    double      weight;
 };
 
 struct GroundThreat
 {
-	BWAPI::Unit	unit;
-	double			weight;
+    BWAPI::Unit	unit;
+    double      weight;
 };
 
 class MicroManager
 {
-	BWAPI::Unitset  _units;
+    BWAPI::Unitset  m_units;
 
 protected:
-	
-	SquadOrder			order;
 
-	virtual void        executeMicro(const BWAPI::Unitset & targets) = 0;
-	bool                checkPositionWalkable(BWAPI::Position pos);
-	void                drawOrderText();
-	bool                unitNearEnemy(BWAPI::Unit unit);
-	bool                unitNearChokepoint(BWAPI::Unit unit) const;
-	void                trainSubUnits(BWAPI::Unit unit) const;
-    
+    SquadOrder m_order;
+
+    virtual void executeMicro(const BWAPI::Unitset & targets) = 0;
+    bool checkPositionWalkable(BWAPI::Position pos);
+    void drawOrderText();
+    bool unitNearEnemy(BWAPI::Unit unit);
+    bool unitNearChokepoint(BWAPI::Unit unit) const;
+    void trainSubUnits(BWAPI::Unit unit) const;
 
 public:
-						MicroManager();
-    virtual				~MicroManager(){}
 
-	const BWAPI::Unitset & getUnits() const;
-	BWAPI::Position     calcCenter() const;
+    MicroManager();
+    virtual ~MicroManager() {}
 
-	void				setUnits(const BWAPI::Unitset & u);
-	void				execute(const SquadOrder & order);
-	void				regroup(const BWAPI::Position & regroupPosition) const;
+    const BWAPI::Unitset & getUnits() const;
+    BWAPI::Position calcCenter() const;
+
+    void setUnits(const BWAPI::Unitset & u);
+    void execute(const SquadOrder & order);
+    void regroup(const BWAPI::Position & regroupPosition) const;
 
 };
 }

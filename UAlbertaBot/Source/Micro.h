@@ -14,11 +14,7 @@ namespace Micro
     void SmartRepair(BWAPI::Unit unit, BWAPI::Unit target);
     void SmartKiteTarget(BWAPI::Unit rangedUnit, BWAPI::Unit target);
     void MutaDanceTarget(BWAPI::Unit muta, BWAPI::Unit target);
+    
     BWAPI::Position GetKiteVector(BWAPI::Unit unit, BWAPI::Unit target);
-
-    void Rotate(double &x, double &y, double angle);
-    void Normalize(double &x, double &y);
-
-    void drawAPM(int x, int y);
 };
 }

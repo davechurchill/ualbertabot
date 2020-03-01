@@ -4,40 +4,40 @@
 
 using namespace UAlbertaBot;
 
-MeleeManager::MeleeManager() 
-{ 
+MeleeManager::MeleeManager()
+{
 
 }
 
-void MeleeManager::executeMicro(const BWAPI::Unitset & targets) 
+void MeleeManager::executeMicro(const BWAPI::Unitset & targets)
 {
-	assignTargetsOld(targets);
+    assignTargetsOld(targets);
 }
 
 void MeleeManager::assignTargetsOld(const BWAPI::Unitset & targets)
 {
     const BWAPI::Unitset & meleeUnits = getUnits();
 
-	// figure out targets
-	BWAPI::Unitset meleeUnitTargets;
-	for (auto & target : targets) 
-	{
-		// conditions for targeting
-		if (!(target->getType().isFlyer()) && 
-			!(target->isLifted()) &&
-			!(target->getType() == BWAPI::UnitTypes::Zerg_Larva) && 
-			!(target->getType() == BWAPI::UnitTypes::Zerg_Egg) &&
-			target->isVisible()) 
-		{
-			meleeUnitTargets.insert(target);
-		}
-	}
+    // figure out targets
+    BWAPI::Unitset meleeUnitTargets;
+    for (auto & target : targets)
+    {
+        // conditions for targeting
+        if (!(target->getType().isFlyer()) &&
+            !(target->isLifted()) &&
+            !(target->getType() == BWAPI::UnitTypes::Zerg_Larva) &&
+            !(target->getType() == BWAPI::UnitTypes::Zerg_Egg) &&
+            target->isVisible())
+        {
+            meleeUnitTargets.insert(target);
+        }
+    }
 
-	// for each meleeUnit
-	for (auto & meleeUnit : meleeUnits)
-	{
-		// if the order is to attack or defend
-		if (order.getType() == SquadOrderTypes::Attack || order.getType() == SquadOrderTypes::Defend) 
+    // for each meleeUnit
+    for (auto & meleeUnit : meleeUnits)
+    {
+        // if the order is to attack or defend
+        if (m_order.getType() == SquadOrderTypes::Attack || m_order.getType() == SquadOrderTypes::Defend)
         {
             // run away if we meet the retreat critereon
             if (meleeUnitShouldRetreat(meleeUnit, targets))
@@ -46,33 +46,33 @@ void MeleeManager::assignTargetsOld(const BWAPI::Unitset & targets)
 
                 Micro::SmartMove(meleeUnit, fleeTo);
             }
-			// if there are targets
-			else if (!meleeUnitTargets.empty())
-			{
-				// find the best target for this meleeUnit
-				BWAPI::Unit target = getTarget(meleeUnit, meleeUnitTargets);
+            // if there are targets
+            else if (!meleeUnitTargets.empty())
+            {
+                // find the best target for this meleeUnit
+                BWAPI::Unit target = getTarget(meleeUnit, meleeUnitTargets);
 
-				// attack it
-				Micro::SmartAttackUnit(meleeUnit, target);
-			}
-			// if there are no targets
-			else
-			{
-				// if we're not near the order position
-				if (meleeUnit->getDistance(order.getPosition()) > 100)
-				{
-					// move to it
-					Micro::SmartMove(meleeUnit, order.getPosition());
-				}
-			}
-		}
+                // attack it
+                Micro::SmartAttackUnit(meleeUnit, target);
+            }
+            // if there are no targets
+            else
+            {
+                // if we're not near the order position
+                if (meleeUnit->getDistance(m_order.getPosition()) > 100)
+                {
+                    // move to it
+                    Micro::SmartMove(meleeUnit, m_order.getPosition());
+                }
+            }
+        }
 
-		if (Config::Debug::DrawUnitTargetInfo)
-		{
-			BWAPI::Broodwar->drawLineMap(meleeUnit->getPosition().x, meleeUnit->getPosition().y, 
-			meleeUnit->getTargetPosition().x, meleeUnit->getTargetPosition().y, Config::Debug::ColorLineTarget);
-		}
-	}
+        if (Config::Debug::DrawUnitTargetInfo)
+        {
+            BWAPI::Broodwar->drawLineMap(meleeUnit->getPosition().x, meleeUnit->getPosition().y,
+                meleeUnit->getTargetPosition().x, meleeUnit->getTargetPosition().y, Config::Debug::ColorLineTarget);
+        }
+    }
 }
 
 std::pair<BWAPI::Unit, BWAPI::Unit> MeleeManager::findClosestUnitPair(const BWAPI::Unitset & attackers, const BWAPI::Unitset & targets)
@@ -99,106 +99,106 @@ std::pair<BWAPI::Unit, BWAPI::Unit> MeleeManager::findClosestUnitPair(const BWAP
 // get a target for the meleeUnit to attack
 BWAPI::Unit MeleeManager::getTarget(BWAPI::Unit meleeUnit, const BWAPI::Unitset & targets)
 {
-	int highPriority = 0;
-	double closestDist = std::numeric_limits<double>::infinity();
-	BWAPI::Unit closestTarget = nullptr;
+    int highPriority = 0;
+    double closestDist = std::numeric_limits<double>::infinity();
+    BWAPI::Unit closestTarget = nullptr;
 
-	// for each target possiblity
-	for (auto & unit : targets)
-	{
-		int priority = getAttackPriority(meleeUnit, unit);
-		int distance = meleeUnit->getDistance(unit);
+    // for each target possiblity
+    for (auto & unit : targets)
+    {
+        int priority = getAttackPriority(meleeUnit, unit);
+        int distance = meleeUnit->getDistance(unit);
 
-		// if it's a higher priority, or it's closer, set it
-		if (!closestTarget || (priority > highPriority) || (priority == highPriority && distance < closestDist))
-		{
-			closestDist = distance;
-			highPriority = priority;
-			closestTarget = unit;
-		}
-	}
+        // if it's a higher priority, or it's closer, set it
+        if (!closestTarget || (priority > highPriority) || (priority == highPriority && distance < closestDist))
+        {
+            closestDist = distance;
+            highPriority = priority;
+            closestTarget = unit;
+        }
+    }
 
-	return closestTarget;
+    return closestTarget;
 }
 
-	// get the attack priority of a type in relation to a zergling
-int MeleeManager::getAttackPriority(BWAPI::Unit attacker, BWAPI::Unit unit) 
+// get the attack priority of a type in relation to a zergling
+int MeleeManager::getAttackPriority(BWAPI::Unit attacker, BWAPI::Unit unit)
 {
-	BWAPI::UnitType type = unit->getType();
+    BWAPI::UnitType type = unit->getType();
 
-    if (attacker->getType() == BWAPI::UnitTypes::Protoss_Dark_Templar 
+    if (attacker->getType() == BWAPI::UnitTypes::Protoss_Dark_Templar
         && unit->getType() == BWAPI::UnitTypes::Terran_Missile_Turret
         && (BWAPI::Broodwar->self()->deadUnitCount(BWAPI::UnitTypes::Protoss_Dark_Templar) == 0))
     {
         return 13;
     }
 
-	if (attacker->getType() == BWAPI::UnitTypes::Protoss_Dark_Templar && unit->getType().isWorker())
-	{
-		return 12;
-	}
+    if (attacker->getType() == BWAPI::UnitTypes::Protoss_Dark_Templar && unit->getType().isWorker())
+    {
+        return 12;
+    }
 
-	// highest priority is something that can attack us or aid in combat
+    // highest priority is something that can attack us or aid in combat
     if (type ==  BWAPI::UnitTypes::Terran_Bunker)
     {
         return 11;
     }
-    else if (type == BWAPI::UnitTypes::Terran_Medic || 
-		(type.groundWeapon() != BWAPI::WeaponTypes::None && !type.isWorker()) || 
-		type ==  BWAPI::UnitTypes::Terran_Bunker ||
-		type == BWAPI::UnitTypes::Protoss_High_Templar ||
-		type == BWAPI::UnitTypes::Protoss_Reaver ||
-		(type.isWorker() && unitNearChokepoint(unit))) 
-	{
-		return 10;
-	} 
-	// next priority is worker
-	else if (type.isWorker()) 
-	{
-		return 9;
-	}
+    else if (type == BWAPI::UnitTypes::Terran_Medic ||
+        (type.groundWeapon() != BWAPI::WeaponTypes::None && !type.isWorker()) ||
+        type ==  BWAPI::UnitTypes::Terran_Bunker ||
+        type == BWAPI::UnitTypes::Protoss_High_Templar ||
+        type == BWAPI::UnitTypes::Protoss_Reaver ||
+        (type.isWorker() && unitNearChokepoint(unit)))
+    {
+        return 10;
+    }
+    // next priority is worker
+    else if (type.isWorker())
+    {
+        return 9;
+    }
     // next is special buildings
-	else if (type == BWAPI::UnitTypes::Zerg_Spawning_Pool)
-	{
-		return 5;
-	}
-	// next is special buildings
-	else if (type == BWAPI::UnitTypes::Protoss_Pylon)
-	{
-		return 5;
-	}
-	// next is buildings that cost gas
-	else if (type.gasPrice() > 0)
-	{
-		return 4;
-	}
-	else if (type.mineralPrice() > 0)
-	{
-		return 3;
-	}
-	// then everything else
-	else
-	{
-		return 1;
-	}
+    else if (type == BWAPI::UnitTypes::Zerg_Spawning_Pool)
+    {
+        return 5;
+    }
+    // next is special buildings
+    else if (type == BWAPI::UnitTypes::Protoss_Pylon)
+    {
+        return 5;
+    }
+    // next is buildings that cost gas
+    else if (type.gasPrice() > 0)
+    {
+        return 4;
+    }
+    else if (type.mineralPrice() > 0)
+    {
+        return 3;
+    }
+    // then everything else
+    else
+    {
+        return 1;
+    }
 }
 
 BWAPI::Unit MeleeManager::closestMeleeUnit(BWAPI::Unit target, const BWAPI::Unitset & meleeUnitsToAssign)
 {
-	double minDistance = 0;
-	BWAPI::Unit closest = nullptr;
+    double minDistance = 0;
+    BWAPI::Unit closest = nullptr;
 
-	for (auto & meleeUnit : meleeUnitsToAssign)
-	{
-		double distance = meleeUnit->getDistance(target);
-		if (!closest || distance < minDistance)
-		{
-			minDistance = distance;
-			closest = meleeUnit;
-		}
-	}
-	
-	return closest;
+    for (auto & meleeUnit : meleeUnitsToAssign)
+    {
+        double distance = meleeUnit->getDistance(target);
+        if (!closest || distance < minDistance)
+        {
+            minDistance = distance;
+            closest = meleeUnit;
+        }
+    }
+
+    return closest;
 }
 
 bool MeleeManager::meleeUnitShouldRetreat(BWAPI::Unit meleeUnit, const BWAPI::Unitset & targets)
@@ -235,20 +235,20 @@ void MeleeManager::assignTargetsNew(const BWAPI::Unitset & targets)
 {
     const BWAPI::Unitset & meleeUnits = getUnits();
 
-	// figure out targets
-	BWAPI::Unitset meleeUnitTargets;
-	for (auto & target : targets) 
-	{
-		// conditions for targeting
-		if (!(target->getType().isFlyer()) && 
-			!(target->isLifted()) &&
-			!(target->getType() == BWAPI::UnitTypes::Zerg_Larva) && 
-			!(target->getType() == BWAPI::UnitTypes::Zerg_Egg) &&
-			target->isVisible()) 
-		{
-			meleeUnitTargets.insert(target);
-		}
-	}
+    // figure out targets
+    BWAPI::Unitset meleeUnitTargets;
+    for (auto & target : targets)
+    {
+        // conditions for targeting
+        if (!(target->getType().isFlyer()) &&
+            !(target->isLifted()) &&
+            !(target->getType() == BWAPI::UnitTypes::Zerg_Larva) &&
+            !(target->getType() == BWAPI::UnitTypes::Zerg_Egg) &&
+            target->isVisible())
+        {
+            meleeUnitTargets.insert(target);
+        }
+    }
 
     BWAPI::Unitset meleeUnitsToAssign(meleeUnits);
     std::map<BWAPI::Unit, int> attackersAssigned;
@@ -277,7 +277,7 @@ void MeleeManager::assignTargetsNew(const BWAPI::Unitset & targets)
 
         if (!target)
         {
-            Micro::SmartMove(attacker, order.getPosition());
+            Micro::SmartMove(attacker, m_order.getPosition());
             continue;
         }
 
@@ -304,14 +304,14 @@ void MeleeManager::assignTargetsNew(const BWAPI::Unitset & targets)
     // if there's no targets left, attack move to the order destination
     if (meleeUnitTargets.empty())
     {
-        for (auto & unit : meleeUnitsToAssign)    
+        for (auto & unit : meleeUnitsToAssign)
         {
-			if (unit->getDistance(order.getPosition()) > 100)
-			{
-				// move to it
-				Micro::SmartMove(unit, order.getPosition());
-                BWAPI::Broodwar->drawLineMap(unit->getPosition(), order.getPosition(), BWAPI::Colors::Yellow);
-			}
+            if (unit->getDistance(m_order.getPosition()) > 100)
+            {
+                // move to it
+                Micro::SmartMove(unit, m_order.getPosition());
+                BWAPI::Broodwar->drawLineMap(unit->getPosition(), m_order.getPosition(), BWAPI::Colors::Yellow);
+            }
         }
     }
 }

@@ -46,7 +46,7 @@ void GameCommander::update()
 
 	// economy and base managers
 	m_timerManager.startTimer(TimerManager::Worker);
-	Global::Workers().update();
+	Global::Workers().onFrame();
 	m_timerManager.stopTimer(TimerManager::Worker);
 
 	m_timerManager.startTimer(TimerManager::Production);

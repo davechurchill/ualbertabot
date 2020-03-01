@@ -5,22 +5,22 @@
 
 using namespace UAlbertaBot;
 
-SquadData::SquadData() 
+SquadData::SquadData()
 {
-	
+
 }
 
 void SquadData::update()
 {
-	updateAllSquads();
+    updateAllSquads();
     verifySquadUniqueMembership();
 }
 
 void SquadData::clearSquadData()
 {
     // give back workers who were in squads
-    for (auto & kv : _squads)
-	{
+    for (auto & kv : m_squads)
+    {
         Squad & squad = kv.second;
 
         const BWAPI::Unitset & units = squad.getUnits();
@@ -32,17 +32,17 @@ void SquadData::clearSquadData()
                 Global::Workers().finishedWithWorker(unit);
             }
         }
-	}
+    }
 
-	_squads.clear();
+    m_squads.clear();
 }
 
 void SquadData::removeSquad(const std::string & squadName)
 {
-    auto & squadPtr = _squads.find(squadName);
+    auto & squadPtr = m_squads.find(squadName);
 
-    UAB_ASSERT_WARNING(squadPtr != _squads.end(), "Trying to clear a squad that didn't exist: %s", squadName.c_str());
-    if (squadPtr == _squads.end())
+    UAB_ASSERT_WARNING(squadPtr != m_squads.end(), "Trying to clear a squad that didn't exist: %s", squadName.c_str());
+    if (squadPtr == m_squads.end())
     {
         return;
     }
@@ -55,58 +55,58 @@ void SquadData::removeSquad(const std::string & squadName)
         }
     }
 
-    _squads.erase(squadName);
+    m_squads.erase(squadName);
 }
 
 const std::map<std::string, Squad> & SquadData::getSquads() const
 {
-    return _squads;
+    return m_squads;
 }
 
 bool SquadData::squadExists(const std::string & squadName)
 {
-    return _squads.find(squadName) != _squads.end();
+    return m_squads.find(squadName) != m_squads.end();
 }
 
 void SquadData::addSquad(const std::string & squadName, const Squad & squad)
 {
-	_squads[squadName] = squad;
+    m_squads[squadName] = squad;
 }
 
 void SquadData::updateAllSquads()
 {
-	for (auto & kv : _squads)
-	{
-		kv.second.update();
-	}
+    for (auto & kv : m_squads)
+    {
+        kv.second.update();
+    }
 }
 
-void SquadData::drawSquadInformation(int x, int y) 
+void SquadData::drawSquadInformation(int x, int y)
 {
     if (!Config::Debug::DrawSquadInfo)
     {
         return;
     }
 
-	BWAPI::Broodwar->drawTextScreen(x, y, "\x04Squads");
-	BWAPI::Broodwar->drawTextScreen(x, y+20, "\x04NAME");
-	BWAPI::Broodwar->drawTextScreen(x+150, y+20, "\x04SIZE");
-	BWAPI::Broodwar->drawTextScreen(x+200, y+20, "\x04LOCATION");
+    BWAPI::Broodwar->drawTextScreen(x, y, "\x04Squads");
+    BWAPI::Broodwar->drawTextScreen(x, y+20, "\x04NAME");
+    BWAPI::Broodwar->drawTextScreen(x+150, y+20, "\x04SIZE");
+    BWAPI::Broodwar->drawTextScreen(x+200, y+20, "\x04LOCATION");
 
-	int yspace = 0;
+    int yspace = 0;
 
-	for (auto & kv : _squads) 
-	{
+    for (auto & kv : m_squads)
+    {
         const Squad & squad = kv.second;
 
-		const BWAPI::Unitset & units = squad.getUnits();
-		const SquadOrder & order = squad.getSquadOrder();
+        const BWAPI::Unitset & units = squad.getUnits();
+        const SquadOrder & order = squad.getSquadOrder();
 
-		BWAPI::Broodwar->drawTextScreen(x, y+40+((yspace)*10), "\x03%s", squad.getName().c_str());
-		BWAPI::Broodwar->drawTextScreen(x+150, y+40+((yspace)*10), "\x03%d", units.size());
-		BWAPI::Broodwar->drawTextScreen(x+200, y+40+((yspace++)*10), "\x03(%d,%d)", order.getPosition().x, order.getPosition().y);
+        BWAPI::Broodwar->drawTextScreen(x, y+40+((yspace)*10), "\x03%s", squad.getName().c_str());
+        BWAPI::Broodwar->drawTextScreen(x+150, y+40+((yspace)*10), "\x03%d", units.size());
+        BWAPI::Broodwar->drawTextScreen(x+200, y+40+((yspace++)*10), "\x03(%d,%d)", order.getPosition().x, order.getPosition().y);
 
-		BWAPI::Broodwar->drawCircleMap(order.getPosition(), 10, BWAPI::Colors::Green, true);
+        BWAPI::Broodwar->drawCircleMap(order.getPosition(), 10, BWAPI::Colors::Green, true);
         BWAPI::Broodwar->drawCircleMap(order.getPosition(), order.getRadius(), BWAPI::Colors::Red, false);
         BWAPI::Broodwar->drawTextMap(order.getPosition() + BWAPI::Position(0, 12), "%s", squad.getName().c_str());
 
@@ -114,14 +114,14 @@ void SquadData::drawSquadInformation(int x, int y)
         {
             BWAPI::Broodwar->drawTextMap(unit->getPosition() + BWAPI::Position(0, 10), "%s", squad.getName().c_str());
         }
-	}
+    }
 }
 
 void SquadData::verifySquadUniqueMembership()
 {
     BWAPI::Unitset assigned;
 
-    for (const auto & kv : _squads)
+    for (const auto & kv : m_squads)
     {
         for (auto & unit : kv.second.getUnits())
         {
@@ -142,7 +142,7 @@ bool SquadData::unitIsInSquad(BWAPI::Unit unit) const
 
 const Squad * SquadData::getUnitSquad(BWAPI::Unit unit) const
 {
-    for (const auto & kv : _squads)
+    for (const auto & kv : m_squads)
     {
         if (kv.second.getUnits().contains(unit))
         {
@@ -155,7 +155,7 @@ const Squad * SquadData::getUnitSquad(BWAPI::Unit unit) const
 
 Squad * SquadData::getUnitSquad(BWAPI::Unit unit)
 {
-    for (auto & kv : _squads)
+    for (auto & kv : m_squads)
     {
         if (kv.second.getUnits().contains(unit))
         {
@@ -191,10 +191,6 @@ bool SquadData::canAssignUnitToSquad(BWAPI::Unit unit, const Squad & squad) cons
 Squad & SquadData::getSquad(const std::string & squadName)
 {
     UAB_ASSERT_WARNING(squadExists(squadName), "Trying to access squad that doesn't exist: %s", squadName);
-    if (!squadExists(squadName))
-    {
-        int a = 10;
-    }
-
-    return _squads[squadName];
+    
+    return m_squads[squadName];
 }

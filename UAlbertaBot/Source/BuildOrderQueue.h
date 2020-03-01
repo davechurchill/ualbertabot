@@ -7,16 +7,16 @@ namespace UAlbertaBot
 {
 struct BuildOrderItem
 {
-    MetaType			metaType;		// the thing we want to 'build'
-    int					priority;	// the priority at which to place it in the queue
-    bool				blocking;	// whether or not we block further items
-    bool                isGasSteal;
+    MetaType metaType;		// the thing we want to 'build'
+    int      priority   = 0;	// the priority at which to place it in the queue
+    bool     blocking   = false;	// whether or not we block further items
+    bool     isGasSteal = false;
 
-    BuildOrderItem(MetaType m,int p,bool b,bool gasSteal = false)
+    BuildOrderItem(MetaType m, int p, bool b, bool gasSteal = false)
         : metaType(m)
         , priority(p)
         , blocking(b)
-        , isGasSteal(gasSteal) 
+        , isGasSteal(gasSteal)
     {
     }
 
@@ -28,13 +28,12 @@ struct BuildOrderItem
 
 class BuildOrderQueue
 {
-    std::deque< BuildOrderItem >			queue;
+    std::deque<BuildOrderItem> queue;
 
-    int lowestPriority;
-    int highestPriority;
-    int defaultPrioritySpacing;
-
-    int numSkippedItems;
+    int lowestPriority          = 0;
+    int highestPriority         = 0;
+    int defaultPrioritySpacing  = 10;
+    int numSkippedItems         = 0;
 
 public:
 
@@ -42,8 +41,8 @@ public:
 
     void clearAll();											// clears the entire build order queue
     void skipItem();											// increments skippedItems
-    void queueAsHighestPriority(MetaType m,bool blocking,bool gasSteal = false);		// queues something at the highest priority
-    void queueAsLowestPriority(MetaType m,bool blocking);		// queues something at the lowest priority
+    void queueAsHighestPriority(MetaType m, bool blocking, bool gasSteal = false);		// queues something at the highest priority
+    void queueAsLowestPriority(MetaType m, bool blocking);		// queues something at the lowest priority
     void queueItem(BuildOrderItem b);			// queues something with a given priority
     void removeHighestPriorityItem();								// removes the highest priority item
     void removeCurrentHighestPriorityItem();
@@ -62,7 +61,7 @@ public:
     bool canSkipItem();
     bool hasNextHighestPriorityItem();								// returns the highest priority item
 
-    void drawQueueInformation(int x,int y);
+    void drawQueueInformation(int x, int y);
 
     // overload the bracket operator for ease of use
     BuildOrderItem operator [] (int i);

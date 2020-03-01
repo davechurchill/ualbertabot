@@ -33,9 +33,9 @@ public:
         , m_energy   (unit->getEnergy())
         , m_angle    (unit->getAngle())
     {
-        
+
     }
-    
+
     void writeToFile(std::ofstream & fout) const
     {
         fout << m_player << " ";         // 1 byte
@@ -45,19 +45,17 @@ public:
         fout << m_shields << " ";        // 2 byte
         fout << m_pos.x << " ";          // 2 byte
         fout << m_pos.y << " ";          // 2 byte
-        //fout << _orderPos.x << " ";     // 2 byte
-        //fout << _orderPos.y;            // 2 byte
     }
 };
 
 class GameFrame
 {
     int                         m_frame = 0;
-	std::vector<UnitFrameData>  m_units;
+    std::vector<UnitFrameData>  m_units;
 
 public:
 
-	GameFrame()
+    GameFrame()
         : m_frame(BWAPI::Broodwar->getFrameCount())
     {
         for (const BWAPI::Unit & unit : BWAPI::Broodwar->getAllUnits())
@@ -90,7 +88,7 @@ class GameMap
     int                 m_width  = 0;
     int                 m_height = 0;
     std::vector<int>    m_walkable;
-    
+
 public:
 
     GameMap()
@@ -103,39 +101,38 @@ public:
             for (int w(0); w < m_width; ++w)
             {
                 m_walkable[h*w + w] = BWAPI::Broodwar->isWalkable(h, w);
-            }        
+            }
         }
     }
 
     void writeToFile(std::ofstream & fout) const
     {
-        
+
     }
 };
 
 class GameHistory
 {
-    GameMap                 _map;
-    std::vector<GameFrame>  _frames;
-    int                     _frameSkip;
+    GameMap                 m_map;
+    std::vector<GameFrame>  m_frames;
+    int                     m_frameSkip = 0;
 
 public:
 
-	GameHistory()
-        : _frameSkip(0)
+    GameHistory()
     {
     }
 
     void setFrameSkip(int frames)
     {
-        _frameSkip = frames;
+        m_frameSkip = frames;
     }
 
     void onFrame()
     {
-        if (_frames.empty() || (BWAPI::Broodwar->getFrameCount() - _frames.back().getFrame() >= _frameSkip))
+        if (m_frames.empty() || (BWAPI::Broodwar->getFrameCount() - m_frames.back().getFrame() >= m_frameSkip))
         {
-            _frames.push_back(GameFrame());    
+            m_frames.push_back(GameFrame());
         }
     }
 
@@ -143,9 +140,9 @@ public:
     {
         std::ofstream fout(filename);
 
-        for (const auto & frame : _frames)
+        for (const auto & frame : m_frames)
         {
-            frame.writeToFile(fout);    
+            frame.writeToFile(fout);
         }
 
         fout.close();

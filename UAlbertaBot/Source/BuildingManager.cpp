@@ -30,7 +30,7 @@ void BuildingManager::update()
 
 bool BuildingManager::isBeingBuilt(BWAPI::UnitType type)
 {
-    for (auto & b : _buildings)
+    for (auto & b : m_buildings)
     {
         if (b.type == type)
         {
@@ -52,7 +52,7 @@ void BuildingManager::validateWorkersAndBuildings()
     std::vector<Building> toRemove;
     
     // find any buildings which have become obsolete
-    for (auto & b : _buildings)
+    for (auto & b : m_buildings)
     {
         if (b.status != BuildingStatus::UnderConstruction)
         {
@@ -74,7 +74,7 @@ void BuildingManager::assignWorkersToUnassignedBuildings()
     PROFILE_FUNCTION();
 
     // for each building that doesn't have a builder, assign one
-    for (Building & b : _buildings)
+    for (Building & b : m_buildings)
     {
         if (b.status != BuildingStatus::Unassigned)
         {
@@ -117,7 +117,7 @@ void BuildingManager::constructAssignedBuildings()
 {
     PROFILE_FUNCTION();
 
-    for (auto & b : _buildings)
+    for (auto & b : m_buildings)
     {
         if (b.status != BuildingStatus::Assigned)
         {
@@ -179,7 +179,7 @@ void BuildingManager::checkForStartedConstruction()
         }
 
         // check all our building status objects to see if we have a match and if we do, update it
-        for (auto & b : _buildings)
+        for (auto & b : m_buildings)
         {
             if (b.status != BuildingStatus::Assigned)
             {
@@ -243,7 +243,7 @@ void BuildingManager::checkForCompletedBuildings()
     std::vector<Building> toRemove;
 
     // for each of our buildings under construction
-    for (auto & b : _buildings)
+    for (auto & b : m_buildings)
     {
         if (b.status != BuildingStatus::UnderConstruction)
         {
@@ -300,7 +300,7 @@ void BuildingManager::addBuildingTask(BWAPI::UnitType type, BWAPI::TilePosition 
     b.isGasSteal = isGasSteal;
     b.status = BuildingStatus::Unassigned;
 
-    _buildings.push_back(b);
+    m_buildings.push_back(b);
 }
 
 bool BuildingManager::isBuildingPositionExplored(const Building & b) const
@@ -358,7 +358,7 @@ void BuildingManager::drawBuildingInformation(int x,int y)
 
     int yspace = 0;
 
-    for (const auto & b : _buildings)
+    for (const auto & b : m_buildings)
     {
         if (b.status == BuildingStatus::Unassigned)
         {
@@ -390,7 +390,7 @@ std::vector<BWAPI::UnitType> BuildingManager::buildingsQueued()
 {
     std::vector<BWAPI::UnitType> buildingsQueued;
 
-    for (const auto & b : _buildings)
+    for (const auto & b : m_buildings)
     {
         if (b.status == BuildingStatus::Unassigned || b.status == BuildingStatus::Assigned)
         {
@@ -452,11 +452,11 @@ void BuildingManager::removeBuildings(const std::vector<Building> & toRemove)
 {
     for (auto & b : toRemove)
     {
-        auto & it = std::find(_buildings.begin(), _buildings.end(), b);
+        auto & it = std::find(m_buildings.begin(), m_buildings.end(), b);
 
-        if (it != _buildings.end())
+        if (it != m_buildings.end())
         {
-            _buildings.erase(it);
+            m_buildings.erase(it);
         }
     }
 }

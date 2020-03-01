@@ -2,15 +2,11 @@
 
 using namespace UAlbertaBot;
 
-MetaType::MetaType () 
-    : _type(MetaTypes::Default) 
-    , _race(BWAPI::Races::None)
+MetaType::MetaType ()
 {
 }
 
 MetaType::MetaType(const std::string & name)
-    : _type(MetaTypes::Default) 
-    , _race(BWAPI::Races::None)
 {
     std::string inputName(name);
     std::replace(inputName.begin(), inputName.end(), '_', ' ');
@@ -60,126 +56,126 @@ MetaType::MetaType(const std::string & name)
     UAB_ASSERT_WARNING(false, "Could not find MetaType with name: %s", name.c_str());
 }
 
-MetaType::MetaType (BWAPI::UnitType t) 
-    : _unitType(t)
-    , _type(MetaTypes::Unit) 
-    , _race(t.getRace())
+MetaType::MetaType (BWAPI::UnitType t)
+    : m_unitType(t)
+    , m_type(MetaTypes::Unit)
+    , m_race(t.getRace())
 {
 }
 
-MetaType::MetaType (BWAPI::TechType t) 
-    : _techType(t)
-    , _type(MetaTypes::Tech) 
-    , _race(t.getRace())
+MetaType::MetaType (BWAPI::TechType t)
+    : m_techType(t)
+    , m_type(MetaTypes::Tech)
+    , m_race(t.getRace())
 {
 }
 
-MetaType::MetaType (BWAPI::UpgradeType t) 
-    : _upgradeType(t)
-    , _type(MetaTypes::Upgrade) 
-    , _race(t.getRace())
+MetaType::MetaType (BWAPI::UpgradeType t)
+    : m_upgradeType(t)
+    , m_type(MetaTypes::Upgrade)
+    , m_race(t.getRace())
 {
 }
 
 const size_t & MetaType::type() const
 {
-    return _type;
+    return m_type;
 }
 
-bool MetaType::isUnit() const 
+bool MetaType::isUnit() const
 {
-    return _type == MetaTypes::Unit; 
+    return m_type == MetaTypes::Unit;
 }
 
-bool MetaType::isTech() const 
-{ 
-    return _type == MetaTypes::Tech; 
+bool MetaType::isTech() const
+{
+    return m_type == MetaTypes::Tech;
 }
 
-bool MetaType::isUpgrade() const 
-{ 
-    return _type == MetaTypes::Upgrade; 
+bool MetaType::isUpgrade() const
+{
+    return m_type == MetaTypes::Upgrade;
 }
 
-bool MetaType::isCommand() const 
-{ 
-    return _type == MetaTypes::Command; 
+bool MetaType::isCommand() const
+{
+    return m_type == MetaTypes::Command;
 }
 
 const BWAPI::Race & MetaType::getRace() const
 {
-    return _race;
+    return m_race;
 }
 
-bool MetaType::isBuilding()	const 
-{ 
-    return _type == MetaTypes::Unit && _unitType.isBuilding(); 
+bool MetaType::isBuilding()	const
+{
+    return m_type == MetaTypes::Unit && m_unitType.isBuilding();
 }
 
-bool MetaType::isRefinery()	const 
-{ 
-    return isBuilding() && _unitType.isRefinery(); 
+bool MetaType::isRefinery()	const
+{
+    return isBuilding() && m_unitType.isRefinery();
 }
 
 const BWAPI::UnitType & MetaType::getUnitType() const
 {
-    return _unitType;
+    return m_unitType;
 }
 
 const BWAPI::TechType & MetaType::getTechType() const
 {
-    return _techType;
+    return m_techType;
 }
 
 const BWAPI::UpgradeType & MetaType::getUpgradeType() const
 {
-    return _upgradeType;
+    return m_upgradeType;
 }
 
 int MetaType::supplyRequired()
 {
-	if (isUnit())
-	{
-		return _unitType.supplyRequired();
-	}
-	else
-	{
-		return 0;
-	}
+    if (isUnit())
+    {
+        return m_unitType.supplyRequired();
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 int MetaType::mineralPrice() const
 {
-	return isUnit() ? _unitType.mineralPrice() : (isTech() ? _techType.mineralPrice() : _upgradeType.mineralPrice());
+    return isUnit() ? m_unitType.mineralPrice() : (isTech() ? m_techType.mineralPrice() : m_upgradeType.mineralPrice());
 }
 
 int MetaType::gasPrice() const
 {
-	return isUnit() ? _unitType.gasPrice() : (isTech() ? _techType.gasPrice() : _upgradeType.gasPrice());
+    return isUnit() ? m_unitType.gasPrice() : (isTech() ? m_techType.gasPrice() : m_upgradeType.gasPrice());
 }
 
 BWAPI::UnitType MetaType::whatBuilds() const
 {
-	return isUnit() ? _unitType.whatBuilds().first : (isTech() ? _techType.whatResearches() : _upgradeType.whatUpgrades());
+    return isUnit() ? m_unitType.whatBuilds().first : (isTech() ? m_techType.whatResearches() : m_upgradeType.whatUpgrades());
 }
 
 std::string MetaType::getName() const
 {
-	if (isUnit())
-	{
-		return _unitType.getName();
-	}
-	else if (isTech())
-	{
-		return _techType.getName();
-	}
-	else if (isUpgrade())
-	{
-		return _upgradeType.getName();
-	}
-	else
-	{
-		UAB_ASSERT(false, "MetaType not found");
-		return "LOL";	
-	}
+    if (isUnit())
+    {
+        return m_unitType.getName();
+    }
+    else if (isTech())
+    {
+        return m_techType.getName();
+    }
+    else if (isUpgrade())
+    {
+        return m_upgradeType.getName();
+    }
+    else
+    {
+        UAB_ASSERT(false, "MetaType not found");
+        return "LOL";
+    }
 }

@@ -4,34 +4,34 @@
 
 namespace UAlbertaBot
 {
-class ScoutManager 
+class ScoutManager
 {
     friend class Global;
 
-	BWAPI::Unit		m_workerScout;
-    std::string		m_scoutStatus;
-    std::string		m_gasStealStatus;
-	int				m_numWorkerScouts;
-	bool			m_scoutUnderAttack;
-    bool			m_didGasSteal;
-    bool			m_gasStealFinished;
-    int				m_previousScoutHP;
+    BWAPI::Unit		m_workerScout       = nullptr;
+    std::string		m_scoutStatus       = "None";
+    std::string		m_gasStealStatus    = "None";
+    int				m_numWorkerScouts   = 0;
+    int				m_previousScoutHP   = 0;
+    bool			m_scoutUnderAttack  = false;
+    bool			m_didGasSteal       = false;
+    bool			m_gasStealFinished  = false;
 
-	bool			enemyWorkerInRadius();
-    bool			immediateThreat();
-    void			gasSteal();
+    bool enemyWorkerInRadius();
+    bool immediateThreat();
+    void gasSteal();
+    void fleeScout();
+    void moveScouts();
+    void drawScoutInformation(int x, int y);
     BWAPI::Position	getFleePosition();
-	BWAPI::Unit		getEnemyGeyser();
-	BWAPI::Unit		closestEnemyWorker();
-    void			fleeScout();
-	void			moveScouts();
-    void			drawScoutInformation(int x, int y);
+    BWAPI::Unit		getEnemyGeyser();
+    BWAPI::Unit		closestEnemyWorker();
 
-	ScoutManager();
+    ScoutManager();
 
 public:
 
-	void update();
+    void update();
 
     void setWorkerScout(BWAPI::Unit unit);
 };

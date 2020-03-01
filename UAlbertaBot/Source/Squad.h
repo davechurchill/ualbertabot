@@ -11,60 +11,58 @@
 
 namespace UAlbertaBot
 {
-    
+
 class Squad
 {
-    std::string         _name;
-	BWAPI::Unitset      _units;
-	std::string         _regroupStatus;
-    int                 _lastRetreatSwitch;
-    bool                _lastRetreatSwitchVal;
-    size_t              _priority;
-	
-	SquadOrder          _order;
-	MeleeManager        _meleeManager;
-	RangedManager       _rangedManager;
-	DetectorManager     _detectorManager;
-	TransportManager    _transportManager;
-    TankManager         _tankManager;
-    MedicManager        _medicManager;
+    BWAPI::Unitset      m_units;
+    std::string         m_name                  = "Default";
+    std::string         m_regroupStatus         = "Default";
+    int                 m_lastRetreatSwitch     = 0;
+    bool                m_lastRetreatSwitchVal  = false;
+    size_t              m_priority              = 0;
 
-	std::map<BWAPI::Unit, bool>	_nearEnemy;
+    SquadOrder          m_order;
+    MeleeManager        m_meleeManager;
+    RangedManager       m_rangedManager;
+    DetectorManager     m_detectorManager;
+    TransportManager    m_transportManager;
+    TankManager         m_tankManager;
+    MedicManager        m_medicManager;
 
-    
-	BWAPI::Unit getRegroupUnit();
-	BWAPI::Unit unitClosestToEnemy();
-    
-	void updateUnits();
-	void addUnitsToMicroManagers();
-	void setNearEnemyUnits();
-	void setAllUnits();
-	
-	bool unitNearEnemy(BWAPI::Unit unit);
-	bool needsToRegroup();
-	int squadUnitsNear(BWAPI::Position p);
+    std::map<BWAPI::Unit, bool>	m_nearEnemy;
+
+    BWAPI::Unit unitClosestToEnemy();
+
+    void updateUnits();
+    void addUnitsToMicroManagers();
+    void setNearEnemyUnits();
+    void setAllUnits();
+
+    bool unitNearEnemy(BWAPI::Unit unit);
+    bool needsToRegroup();
+    int  squadUnitsNear(BWAPI::Position p);
 
 public:
 
-	Squad(const std::string & name, SquadOrder order, size_t priority);
-	Squad();
+    Squad(const std::string & name, SquadOrder order, size_t priority);
+    Squad();
     ~Squad();
 
-	void update();
-	void setSquadOrder(const SquadOrder & so);
-	void addUnit(BWAPI::Unit u);
-	void removeUnit(BWAPI::Unit u);
+    void update();
+    void setSquadOrder(const SquadOrder & so);
+    void addUnit(BWAPI::Unit u);
+    void removeUnit(BWAPI::Unit u);
     bool containsUnit(BWAPI::Unit u) const;
     bool isEmpty() const;
     void clear();
     size_t getPriority() const;
     void setPriority(const size_t & priority);
     const std::string & getName() const;
-    
-	BWAPI::Position calcCenter();
-	BWAPI::Position calcRegroupPosition();
 
-	const BWAPI::Unitset & getUnits() const;
-	const SquadOrder & getSquadOrder()	const;
+    BWAPI::Position calcCenter();
+    BWAPI::Position calcRegroupPosition();
+
+    const BWAPI::Unitset & getUnits() const;
+    const SquadOrder & getSquadOrder()	const;
 };
 }

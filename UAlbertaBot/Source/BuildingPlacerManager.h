@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Common.h"
+#include "Grid.hpp"
 
 namespace UAlbertaBot
 {
@@ -12,7 +13,7 @@ class BuildingPlacerManager
 
     BuildingPlacerManager();
 
-    std::vector< std::vector<bool> > m_reserveMap;
+    Grid<int> m_reserveMap;
 
     int m_boxTop     = std::numeric_limits<int>::max();
     int m_boxBottom  = std::numeric_limits<int>::lowest();

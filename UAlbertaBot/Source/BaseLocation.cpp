@@ -49,9 +49,9 @@ BaseLocation::BaseLocation(int baseID, const std::vector<BWAPI::Unit> & resource
         const int resWidth = 32;
         const int resHeight = 32;
 
-        m_left   = std::min(m_left,   resource->getPosition().x - resWidth);
-        m_right  = std::max(m_right,  resource->getPosition().x + resWidth);
-        m_top    = std::max(m_top,    resource->getPosition().y + resHeight);
+        m_left   = std::min(m_left, resource->getPosition().x - resWidth);
+        m_right  = std::max(m_right, resource->getPosition().x + resWidth);
+        m_top    = std::max(m_top, resource->getPosition().y + resHeight);
         m_bottom = std::min(m_bottom, resource->getPosition().y - resHeight);
     }
 
@@ -62,14 +62,14 @@ BaseLocation::BaseLocation(int baseID, const std::vector<BWAPI::Unit> & resource
 
     // compute this BaseLocation's DistanceMap, which will compute the ground distance
     // from the center of its recourses to every other tile on the map
-    m_distanceMap = DistanceMap(); 
+    m_distanceMap = DistanceMap();
     m_distanceMap.computeDistanceMap(BWAPI::TilePosition(m_centerOfResources));
-        
+
     // check to see if this is a start location for the map
     for (auto & startTilePos : BWAPI::Broodwar->getStartLocations())
-    { 
+    {
         auto groundDistance = getGroundDistance(startTilePos);
-        
+
         if (containsPosition(BWAPI::Position(startTilePos)))
         {
             m_isStartLocation = true;
@@ -212,7 +212,7 @@ void BaseLocation::draw()
     int radius = 16;
 
     BWAPI::Broodwar->drawCircleMap(m_centerOfResources, 16, BWAPI::Color(255, 255, 0), true);
-    
+
     if (m_startPosition.x != 0)
     {
         BWAPI::Broodwar->drawLineMap(m_centerOfResources, BWAPI::Position(m_startPosition), BWAPI::Colors::Red);
@@ -244,7 +244,7 @@ void BaseLocation::draw()
     BWAPI::Broodwar->drawLineMap(m_right, m_top, m_right, m_bottom, BWAPI::Colors::White);
     BWAPI::Broodwar->drawLineMap(m_right, m_bottom, m_left, m_bottom, BWAPI::Colors::White);
     BWAPI::Broodwar->drawLineMap(m_left, m_bottom, m_left, m_top, BWAPI::Colors::White);
-    
+
     for (auto & mineralPos : m_mineralPositions)
     {
         const BWAPI::TilePosition mineralTile(mineralPos);

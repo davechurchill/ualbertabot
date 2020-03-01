@@ -8,8 +8,8 @@ namespace UAlbertaBot
 
 class BuildOrder
 {
-    BWAPI::Race               _race;
-    std::vector<MetaType>     _buildOrder;
+    BWAPI::Race             m_race = BWAPI::Races::None;
+    std::vector<MetaType>   m_buildOrder;
 
 public:
 

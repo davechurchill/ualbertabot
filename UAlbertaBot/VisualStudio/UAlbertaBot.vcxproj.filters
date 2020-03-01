@@ -7,9 +7,6 @@
     <Filter Include="game\combat">
       <UniqueIdentifier>{8e8c1957-bc1d-4bc8-90b0-95beab19d8a9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="game\combat\micro">
-      <UniqueIdentifier>{e5971e4e-7c6b-4f4e-9fbe-4a5247b3cf51}</UniqueIdentifier>
-    </Filter>
     <Filter Include="common">
       <UniqueIdentifier>{849d54bf-a76a-4425-8399-099fbe0360c4}</UniqueIdentifier>
     </Filter>
@@ -51,21 +48,6 @@
     <ClCompile Include="..\source\WorkerManager.cpp">
       <Filter>game\economy</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\DetectorManager.cpp">
-      <Filter>game\combat\micro</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\MeleeManager.cpp">
-      <Filter>game\combat\micro</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\MicroManager.cpp">
-      <Filter>game\combat\micro</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\RangedManager.cpp">
-      <Filter>game\combat\micro</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\TransportManager.cpp">
-      <Filter>game\combat\micro</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\MetaType.cpp">
       <Filter>game\economy</Filter>
     </ClCompile>
@@ -81,17 +63,8 @@
     <ClCompile Include="..\Source\ParseUtils.cpp">
       <Filter>util</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Micro.cpp">
-      <Filter>game\combat\micro</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\UnitUtil.cpp">
       <Filter>util</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\TankManager.cpp">
-      <Filter>game\combat\micro</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\MedicManager.cpp">
-      <Filter>game\combat\micro</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\Logger.cpp">
       <Filter>util</Filter>
@@ -147,6 +120,30 @@
     <ClCompile Include="..\Source\UnitData.cpp">
       <Filter>util</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\DetectorManager.cpp">
+      <Filter>game\combat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\MedicManager.cpp">
+      <Filter>game\combat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MeleeManager.cpp">
+      <Filter>game\combat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Micro.cpp">
+      <Filter>game\combat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MicroManager.cpp">
+      <Filter>game\combat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\RangedManager.cpp">
+      <Filter>game\combat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\TankManager.cpp">
+      <Filter>game\combat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\TransportManager.cpp">
+      <Filter>game\combat</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\CombatCommander.h">
@@ -176,21 +173,6 @@
     <ClInclude Include="..\source\WorkerManager.h">
       <Filter>game\economy</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\DetectorManager.h">
-      <Filter>game\combat\micro</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\TransportManager.h">
-      <Filter>game\combat\micro</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\MeleeManager.h">
-      <Filter>game\combat\micro</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\MicroManager.h">
-      <Filter>game\combat\micro</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\RangedManager.h">
-      <Filter>game\combat\micro</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\MetaType.h">
       <Filter>game\economy</Filter>
     </ClInclude>
@@ -206,17 +188,8 @@
     <ClInclude Include="..\Source\ParseUtils.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Micro.h">
-      <Filter>game\combat\micro</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\UnitUtil.h">
       <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\TankManager.h">
-      <Filter>game\combat\micro</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\MedicManager.h">
-      <Filter>game\combat\micro</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Logger.h">
       <Filter>util</Filter>
@@ -259,9 +232,6 @@
     <ClInclude Include="..\Source\DistanceMap.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\GameHistory.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\Grid.hpp">
       <Filter>util</Filter>
     </ClInclude>
@@ -282,6 +252,30 @@
     </ClInclude>
     <ClInclude Include="..\Source\UnitData.h">
       <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\DetectorManager.h">
+      <Filter>game\combat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\MedicManager.h">
+      <Filter>game\combat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\MeleeManager.h">
+      <Filter>game\combat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Micro.h">
+      <Filter>game\combat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\MicroManager.h">
+      <Filter>game\combat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\RangedManager.h">
+      <Filter>game\combat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\TankManager.h">
+      <Filter>game\combat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\TransportManager.h">
+      <Filter>game\combat</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

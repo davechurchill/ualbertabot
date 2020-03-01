@@ -10,15 +10,7 @@
 
 using namespace UAlbertaBot;
 
-ScoutManager::ScoutManager() 
-    : m_workerScout(nullptr)
-    , m_numWorkerScouts(0)
-    , m_scoutUnderAttack(false)
-    , m_gasStealStatus("None")
-    , m_scoutStatus("None")
-    , m_didGasSteal(false)
-    , m_gasStealFinished(false)
-    , m_previousScoutHP(0)
+ScoutManager::ScoutManager()
 {
 }
 
@@ -31,7 +23,7 @@ void ScoutManager::update()
         return;
     }
 
-	moveScouts();
+    moveScouts();
     drawScoutInformation(200, 320);
 }
 
@@ -60,17 +52,17 @@ void ScoutManager::drawScoutInformation(int x, int y)
 
 void ScoutManager::moveScouts()
 {
-	if (!m_workerScout || !m_workerScout->exists() || !(m_workerScout->getHitPoints() > 0))
-	{
-		return;
-	}
+    if (!m_workerScout || !m_workerScout->exists() || !(m_workerScout->getHitPoints() > 0))
+    {
+        return;
+    }
 
     const int scoutHP = m_workerScout->getHitPoints() + m_workerScout->getShields();
-    
+
     gasSteal();
 
-	// get the enemy base location, if we have one
-	const BaseLocation * enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
+    // get the enemy base location, if we have one
+    const BaseLocation * enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
 
     const int scoutDistanceThreshold = 30;
 
@@ -90,103 +82,102 @@ void ScoutManager::moveScouts()
     {
         m_gasStealFinished = true;
     }
-    
-	// for each start location in the level
-	if (!enemyBaseLocation)
-	{
+
+    // for each start location in the level
+    if (!enemyBaseLocation)
+    {
         m_scoutStatus = "Enemy base unknown, exploring";
 
-		for (auto startLocation : BWAPI::Broodwar->getStartLocations())
-		{
-			// if we haven't explored it yet, explore it
-			if (!BWAPI::Broodwar->isExplored(startLocation)) 
-			{
-				Micro::SmartMove(m_workerScout, BWAPI::Position(startLocation));	
+        for (auto startLocation : BWAPI::Broodwar->getStartLocations())
+        {
+            // if we haven't explored it yet, explore it
+            if (!BWAPI::Broodwar->isExplored(startLocation))
+            {
+                Micro::SmartMove(m_workerScout, BWAPI::Position(startLocation));
                 BWAPI::Broodwar->drawCircleMap(BWAPI::Position(startLocation), 32, BWAPI::Colors::Purple);
-				return;
-			}
-		}
-	}
-    
-	// if we know where the enemy region is and where our scout is
-	if (enemyBaseLocation)
-	{
+                return;
+            }
+        }
+    }
+
+    // if we know where the enemy region is and where our scout is
+    if (enemyBaseLocation)
+    {
         const int scoutDistanceToEnemy = Global::Map().getGroundDistance(m_workerScout->getPosition(), enemyBaseLocation->getPosition());
         const bool scoutInRangeOfenemy = scoutDistanceToEnemy <= scoutDistanceThreshold;
-        
+
         // we only care if the scout is under attack within the enemy region
         // this ignores if their scout worker attacks it on the way to their base
         if (scoutHP < m_previousScoutHP)
         {
-	        m_scoutUnderAttack = true;
+            m_scoutUnderAttack = true;
         }
 
         if (!m_workerScout->isUnderAttack() && !enemyWorkerInRadius())
         {
-	        m_scoutUnderAttack = false;
+            m_scoutUnderAttack = false;
         }
 
-		// if the scout is in the enemy region
-		if (scoutInRangeOfenemy)
-		{
-			// get the closest enemy worker
-			BWAPI::Unit closestWorker = closestEnemyWorker();
+        // if the scout is in the enemy region
+        if (scoutInRangeOfenemy)
+        {
+            // get the closest enemy worker
+            BWAPI::Unit closestWorker = closestEnemyWorker();
 
-			// if the worker scout is not under attack
-			if (!m_scoutUnderAttack)
-			{
-				// if there is a worker nearby, harass it
-				if (Config::Strategy::ScoutHarassEnemy && (!Config::Strategy::GasStealWithScout || m_gasStealFinished) && closestWorker && (m_workerScout->getDistance(closestWorker) < 800))
-				{
+            // if the worker scout is not under attack
+            if (!m_scoutUnderAttack)
+            {
+                // if there is a worker nearby, harass it
+                if (Config::Strategy::ScoutHarassEnemy && (!Config::Strategy::GasStealWithScout || m_gasStealFinished) && closestWorker && (m_workerScout->getDistance(closestWorker) < 800))
+                {
                     m_scoutStatus = "Harass enemy worker";
-					Micro::SmartAttackUnit(m_workerScout, closestWorker);
-				}
-				// otherwise keep moving to the enemy region
-				else
-				{
-                    m_scoutStatus = "Following perimeter";
-					Micro::SmartMove(m_workerScout, BWAPI::Position(enemyBaseLocation->getPosition()));
+                    Micro::SmartAttackUnit(m_workerScout, closestWorker);
                 }
-				
-			}
-			// if the worker scout is under attack
-			else
-			{
+                // otherwise keep moving to the enemy region
+                else
+                {
+                    m_scoutStatus = "Following perimeter";
+                    Micro::SmartMove(m_workerScout, BWAPI::Position(enemyBaseLocation->getPosition()));
+                }
+
+            }
+            // if the worker scout is under attack
+            else
+            {
                 m_scoutStatus = "Under attack inside, fleeing";
                 fleeScout();
-			}
-		}
-		// if the scout is not in the enemy region
-		else if (m_scoutUnderAttack)
-		{
+            }
+        }
+        // if the scout is not in the enemy region
+        else if (m_scoutUnderAttack)
+        {
             m_scoutStatus = "Under attack inside, fleeing";
 
-			fleeScout();
-		}
-		else
-		{
+            fleeScout();
+        }
+        else
+        {
             m_scoutStatus = "Enemy region known, going there";
 
-			// move to the enemy region
-			Micro::SmartMove(m_workerScout, BWAPI::Position(enemyBaseLocation->getPosition()));
+            // move to the enemy region
+            Micro::SmartMove(m_workerScout, BWAPI::Position(enemyBaseLocation->getPosition()));
         }
-		
-	}
 
+    }
 
     m_previousScoutHP = scoutHP;
 }
 
 void ScoutManager::fleeScout()
 {
-    BWAPI::Position fleeTo = getFleePosition();
+    const BWAPI::Position fleeTo = getFleePosition();
 
     if (Config::Debug::DrawScoutInfo)
     {
         BWAPI::Broodwar->drawCircleMap(fleeTo, 5, BWAPI::Colors::Red, true);
     }
 
-	Micro::SmartMove(m_workerScout, fleeTo);
+    Micro::SmartMove(m_workerScout, fleeTo);
 }
 
 void ScoutManager::gasSteal()
@@ -208,14 +199,14 @@ void ScoutManager::gasSteal()
         return;
     }
 
-	auto enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
+    auto enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
     if (!enemyBaseLocation)
     {
         m_gasStealStatus = "No enemy base location found";
         return;
     }
 
-    BWAPI::Unit enemyGeyser = getEnemyGeyser();
+    const BWAPI::Unit enemyGeyser = getEnemyGeyser();
     if (!enemyGeyser)
     {
         m_gasStealStatus = "No enemy geyser found";
@@ -233,95 +224,93 @@ void ScoutManager::gasSteal()
 
 BWAPI::Unit ScoutManager::closestEnemyWorker()
 {
-	BWAPI::Unit enemyWorker = nullptr;
-	double maxDist = 0;
+    BWAPI::Unit enemyWorker = nullptr;
+    BWAPI::Unit geyser      = getEnemyGeyser();
+    double      maxDist     = 0;
 
-	
-	BWAPI::Unit geyser = getEnemyGeyser();
-	
-	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
-	{
-		if (unit->getType().isWorker() && unit->isConstructing())
-		{
-			return unit;
-		}
-	}
+    for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
+    {
+        if (unit->getType().isWorker() && unit->isConstructing())
+        {
+            return unit;
+        }
+    }
 
-	// for each enemy worker
-	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
-	{
-		if (unit->getType().isWorker())
-		{
-			double dist = unit->getDistance(geyser);
+    // for each enemy worker
+    for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
+    {
+        if (unit->getType().isWorker())
+        {
+            const double dist = unit->getDistance(geyser);
 
-			if (dist < 800 && dist > maxDist)
-			{
-				maxDist = dist;
-				enemyWorker = unit;
-			}
-		}
-	}
+            if (dist < 800 && dist > maxDist)
+            {
+                maxDist = dist;
+                enemyWorker = unit;
+            }
+        }
+    }
 
-	return enemyWorker;
+    return enemyWorker;
 }
 
 BWAPI::Unit ScoutManager::getEnemyGeyser()
 {
-	BWAPI::Unit geyser = nullptr;
-	auto enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
+    BWAPI::Unit geyser = nullptr;
+    const auto enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
 
-	for (auto & unit : enemyBaseLocation->getGeysers())
-	{
-		geyser = unit;
-	}
+    for (auto & unit : enemyBaseLocation->getGeysers())
+    {
+        geyser = unit;
+    }
 
-	return geyser;
+    return geyser;
 }
 
 bool ScoutManager::enemyWorkerInRadius()
 {
-	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
-	{
-		if (unit->getType().isWorker() && (unit->getDistance(m_workerScout) < 300))
-		{
-			return true;
-		}
-	}
+    for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
+    {
+        if (unit->getType().isWorker() && (unit->getDistance(m_workerScout) < 300))
+        {
+            return true;
+        }
+    }
 
-	return false;
+    return false;
 }
 
 bool ScoutManager::immediateThreat()
 {
-	BWAPI::Unitset enemyAttackingWorkers;
-	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
-	{
-		if (unit->getType().isWorker() && unit->isAttacking())
-		{
-			enemyAttackingWorkers.insert(unit);
-		}
-	}
-	
-	if (m_workerScout->isUnderAttack())
-	{
-		return true;
-	}
+    BWAPI::Unitset enemyAttackingWorkers;
+    for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
+    {
+        if (unit->getType().isWorker() && unit->isAttacking())
+        {
+            enemyAttackingWorkers.insert(unit);
+        }
+    }
 
-	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
-	{
-		double dist = unit->getDistance(m_workerScout);
-		double range = unit->getType().groundWeapon().maxRange();
+    if (m_workerScout->isUnderAttack())
+    {
+        return true;
+    }
 
-		if (unit->getType().canAttack() && !unit->getType().isWorker() && (dist <= range + 32))
-		{
-			return true;
-		}
-	}
+    for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
+    {
+        const double dist = unit->getDistance(m_workerScout);
+        const double range = unit->getType().groundWeapon().maxRange();
 
-	return false;
+        if (unit->getType().canAttack() && !unit->getType().isWorker() && (dist <= range + 32))
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 BWAPI::Position ScoutManager::getFleePosition()
 {
-	return BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
+    return BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
 }

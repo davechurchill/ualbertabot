@@ -16,7 +16,7 @@ namespace UAlbertaBot
 struct UnitInfo;
 class CombatSimulation
 {
-	SparCraft::GameState		state;
+	SparCraft::GameState m_state;
 
 public:
 
@@ -24,14 +24,10 @@ public:
 
 	void setCombatUnits(const BWAPI::Position & center, const int radius);
 
-	SparCraft::ScoreType simulateCombat();
-
+	SparCraft::ScoreType            simulateCombat();
 	const SparCraft::Unit			getSparCraftUnit(const UnitInfo & ui) const;
     const SparCraft::Unit			getSparCraftUnit(BWAPI::Unit unit) const;
 	const SparCraft::GameState &	getSparCraftState() const;
-
-	const size_t getSparCraftPlayerID(BWAPI::Player player) const;
-
-	void logState(const SparCraft::GameState & state);
+	const size_t                    getSparCraftPlayerID(BWAPI::Player player) const;
 };
 }

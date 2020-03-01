@@ -5,16 +5,16 @@
 
 using namespace UAlbertaBot;
 
-MedicManager::MedicManager() 
-{ 
+MedicManager::MedicManager()
+{
 }
 
-void MedicManager::executeMicro(const BWAPI::Unitset & targets) 
+void MedicManager::executeMicro(const BWAPI::Unitset & targets)
 {
-	const BWAPI::Unitset & medics = getUnits();
-    
-	// create a set of all medic targets
-	BWAPI::Unitset medicTargets;
+    const BWAPI::Unitset & medics = getUnits();
+
+    // create a set of all medic targets
+    BWAPI::Unitset medicTargets;
     for (auto & unit : BWAPI::Broodwar->self()->getUnits())
     {
         if (unit->getHitPoints() < unit->getInitialHitPoints() && !unit->getType().isMechanical() && !unit->getType().isBuilding())
@@ -22,7 +22,7 @@ void MedicManager::executeMicro(const BWAPI::Unitset & targets)
             medicTargets.insert(unit);
         }
     }
-    
+
     BWAPI::Unitset availableMedics(medics);
 
     // for each target, send the closest medic to heal it
@@ -65,6 +65,6 @@ void MedicManager::executeMicro(const BWAPI::Unitset & targets)
     // the remaining medics should head to the squad order position
     for (auto & medic : availableMedics)
     {
-        Micro::SmartAttackMove(medic, order.getPosition());
+        Micro::SmartAttackMove(medic, m_order.getPosition());
     }
 }

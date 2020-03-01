@@ -12,45 +12,43 @@ namespace SquadOrderTypes
 
 class SquadOrder
 {
-    size_t              _type;
-    int                 _radius;
-    BWAPI::Position     _position;
-    std::string         _status;
+    size_t              m_type       = SquadOrderTypes::None;
+    int                 m_radius     = 0;
+    BWAPI::Position     m_position;
+    std::string         m_status;
 
 public:
 
 	SquadOrder() 
-		: _type(SquadOrderTypes::None)
-        , _radius(0)
 	{
 	}
 
 	SquadOrder(int type, BWAPI::Position position, int radius, std::string status = "Default") 
-		: _type(type)
-		, _position(position)
-		, _radius(radius) 
-		, _status(status)
+		: m_type(type)
+		, m_position(position)
+		, m_radius(radius) 
+		, m_status(status)
 	{
 	}
 
 	const std::string & getStatus() const 
 	{
-		return _status;
+		return m_status;
 	}
 
     const BWAPI::Position & getPosition() const
     {
-        return _position;
+        return m_position;
     }
 
-    const int & getRadius() const
+    const int getRadius() const
     {
-        return _radius;
+        return m_radius;
     }
 
-    const size_t & getType() const
+    const size_t getType() const
     {
-        return _type;
+        return m_type;
     }
 };
 }

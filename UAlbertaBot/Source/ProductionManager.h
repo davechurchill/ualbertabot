@@ -15,45 +15,38 @@ class ProductionManager
     friend class Global;
 
     ProductionManager();
-    
-    BuildOrderQueue     _queue;
-    BWAPI::TilePosition _predictedTilePosition;
-    bool                _enemyCloakedDetected;
-    bool                _assignedWorkerForThisBuilding;
-    bool                _haveLocationForThisBuilding;
-    
-    BWAPI::Unit         getClosestUnitToPosition(const BWAPI::Unitset & units,BWAPI::Position closestTo);
-    BWAPI::Unit         selectUnitOfType(BWAPI::UnitType type,BWAPI::Position closestTo = BWAPI::Position(0,0));
 
-    bool                hasResources(BWAPI::UnitType type);
-    bool                canMake(BWAPI::UnitType type);
-    bool                hasNumCompletedUnitType(BWAPI::UnitType type,int num);
-    bool                meetsReservedResources(MetaType type);
-    void                setBuildOrder(const BuildOrder & buildOrder);
-    void                create(BWAPI::Unit producer,BuildOrderItem & item);
-    void                manageBuildOrderQueue();
-    void                performCommand(BWAPI::UnitCommandType t);
-    bool                canMakeNow(BWAPI::Unit producer,MetaType t);
-    void                predictWorkerMovement(const Building & b);
+    BuildOrderQueue     m_queue;
+    BWAPI::TilePosition m_predictedTilePosition;
+    bool                m_enemyCloakedDetected          = false;
+    bool                m_assignedWorkerForThisBuilding = false;
+    bool                m_haveLocationForThisBuilding   = false;
 
-    bool                detectBuildOrderDeadlock();
+    BWAPI::Unit         getClosestUnitToPosition(const BWAPI::Unitset & units, BWAPI::Position closestTo);
+    BWAPI::Unit         selectUnitOfType(BWAPI::UnitType type, BWAPI::Position closestTo = BWAPI::Position(0, 0));
 
-    int                 getFreeMinerals();
-    int                 getFreeGas();
-    bool                canPlanBuildOrderNow() const;
+    void setBuildOrder(const BuildOrder & buildOrder);
+    void create(BWAPI::Unit producer, BuildOrderItem & item);
+    void manageBuildOrderQueue();
+    void performCommand(BWAPI::UnitCommandType t);
+    void predictWorkerMovement(const Building & b);
+
+    int  getFreeMinerals();
+    int  getFreeGas();
+    bool detectBuildOrderDeadlock();
+    bool canPlanBuildOrderNow() const;
+    bool canMakeNow(BWAPI::Unit producer, MetaType t);
+    bool meetsReservedResources(MetaType type);
 
 public:
 
-    void        drawQueueInformation(std::map<BWAPI::UnitType,int> & numUnits,int x,int y,int index);
-    void        update();
-    void        onUnitMorph(BWAPI::Unit unit);
-    void        onUnitDestroy(BWAPI::Unit unit);
-    void        performBuildOrderSearch();
-    void        drawProductionInformation(int x,int y);
-    void        setSearchGoal(MetaPairVector & goal);
-    void        queueGasSteal();
+    void update();
+    void onUnitDestroy(BWAPI::Unit unit);
+    void performBuildOrderSearch();
+    void drawProductionInformation(int x, int y);
+    void queueGasSteal();
 
-    BWAPI::Unit getProducer(MetaType t,BWAPI::Position closestTo = BWAPI::Positions::None);
+    BWAPI::Unit getProducer(MetaType t, BWAPI::Position closestTo = BWAPI::Positions::None);
 };
 
 
@@ -65,7 +58,7 @@ public:
     CompareWhenStarted() {}
 
     // the sorting operator
-    bool operator() (BWAPI::Unit u1,BWAPI::Unit u2)
+    bool operator() (BWAPI::Unit u1, BWAPI::Unit u2)
     {
         int startedU1 = BWAPI::Broodwar->getFrameCount() - (u1->getType().buildTime() - u1->getRemainingBuildTime());
         int startedU2 = BWAPI::Broodwar->getFrameCount() - (u2->getType().buildTime() - u2->getRemainingBuildTime());

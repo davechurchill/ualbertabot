@@ -6,21 +6,18 @@ namespace UAlbertaBot
 {
 class DetectorManager : public MicroManager
 {
+    std::map<BWAPI::Unit, bool>	m_cloakedUnitMap;
+    BWAPI::Unit unitClosestToEnemy = nullptr;
 
-	std::map<BWAPI::Unit, bool>	cloakedUnitMap;
-
-	bool isAssigned(BWAPI::Unit unit);
-
-	BWAPI::Unit unitClosestToEnemy;
+    bool isAssigned(BWAPI::Unit unit);
 
 public:
 
-	DetectorManager();
-	~DetectorManager() {}
+    DetectorManager();
 
-	void setUnitClosestToEnemy(BWAPI::Unit unit) { unitClosestToEnemy = unit; }
-	void executeMicro(const BWAPI::Unitset & targets);
+    void setUnitClosestToEnemy(BWAPI::Unit unit) { unitClosestToEnemy = unit; }
+    void executeMicro(const BWAPI::Unitset & targets);
 
-	BWAPI::Unit closestCloakedUnit(const BWAPI::Unitset & cloakedUnits, BWAPI::Unit detectorUnit);
+    BWAPI::Unit closestCloakedUnit(const BWAPI::Unitset & cloakedUnits, BWAPI::Unit detectorUnit);
 };
 }

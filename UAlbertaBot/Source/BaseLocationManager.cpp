@@ -10,48 +10,48 @@ using namespace UAlbertaBot;
 
 BaseLocationManager::BaseLocationManager()
 {
-	onStart();
+    onStart();
 }
 
 BWAPI::Position BaseLocationManager::calcCenter(const std::vector<BWAPI::Unit> & units)
 {
-	if (units.empty())
-	{
-		return BWAPI::Position(0, 0);
-	}
+    if (units.empty())
+    {
+        return BWAPI::Position(0, 0);
+    }
 
-	int cx = 0;
-	int cy = 0;
+    int cx = 0;
+    int cy = 0;
 
-	for (auto & unit : units)
-	{
-		cx += unit->getPosition().x;
-		cy += unit->getPosition().y;
-	}
+    for (auto & unit : units)
+    {
+        cx += unit->getPosition().x;
+        cy += unit->getPosition().y;
+    }
 
-	return BWAPI::Position(cx / units.size(), cy / units.size());
+    return BWAPI::Position(cx / units.size(), cy / units.size());
 }
 
 void BaseLocationManager::onStart()
 {
     PROFILE_FUNCTION();
 
-	m_tileBaseLocations = std::vector<std::vector<BaseLocation *>>(BWAPI::Broodwar->mapWidth(), std::vector<BaseLocation *>(BWAPI::Broodwar->mapHeight(), nullptr));
+    m_tileBaseLocations = std::vector<std::vector<BaseLocation *>>(BWAPI::Broodwar->mapWidth(), std::vector<BaseLocation *>(BWAPI::Broodwar->mapHeight(), nullptr));
     m_playerStartingBaseLocations[BWAPI::Broodwar->self()]  = nullptr;
-	m_playerStartingBaseLocations[BWAPI::Broodwar->enemy()] = nullptr;
-    
+    m_playerStartingBaseLocations[BWAPI::Broodwar->enemy()] = nullptr;
+
     // a BaseLocation will be anything where there are minerals to mine
     // so we will first look over all minerals and cluster them based on some distance
     const int clusterDistance = 16*32;
-    
+
     // stores each cluster of resources based on some ground distance
-	std::vector<std::vector<BWAPI::Unit>> resourceClusters;
+    std::vector<std::vector<BWAPI::Unit>> resourceClusters;
     for (auto & mineral : BWAPI::Broodwar->getStaticNeutralUnits())
     {
         // skip minerals that don't have more than 100 starting minerals
         // these are probably stupid map-blocking minerals to confuse us
         if (!mineral->getType().isMineralField()) { continue; }
-		
+
         bool foundCluster = false;
         for (auto & cluster : resourceClusters)
         {
@@ -62,7 +62,7 @@ void BaseLocationManager::onStart()
 
             // get the air travel distance as a first cutoff for the mineral
             const int dist = mineral->getDistance(calcCenter(cluster));
-            
+
             // quick initial air distance check to eliminate most resources
             if (dist < clusterDistance)
             {
@@ -128,7 +128,7 @@ void BaseLocationManager::onStart()
         // if it's our starting location, set the pointer
         if (baseLocation.isPlayerStartLocation(BWAPI::Broodwar->self()))
         {
-			m_playerStartingBaseLocations[BWAPI::Broodwar->self()] = &baseLocation;
+            m_playerStartingBaseLocations[BWAPI::Broodwar->self()] = &baseLocation;
         }
 
         if (baseLocation.isPlayerStartLocation(BWAPI::Broodwar->enemy()))
@@ -140,7 +140,7 @@ void BaseLocationManager::onStart()
     // construct the map of tile positions to base locations
     for (int x=0; x < BWAPI::Broodwar->mapWidth(); ++x)
     {
-		for (int y = 0; y < BWAPI::Broodwar->mapHeight(); ++y)
+        for (int y = 0; y < BWAPI::Broodwar->mapHeight(); ++y)
         {
             for (auto & baseLocation : m_baseLocationData)
             {
@@ -149,7 +149,7 @@ void BaseLocationManager::onStart()
                 if (baseLocation.containsPosition(pos))
                 {
                     m_tileBaseLocations[x][y] = &baseLocation;
-                    
+
                     break;
                 }
             }
@@ -157,12 +157,12 @@ void BaseLocationManager::onStart()
     }
 
     // construct the sets of occupied base locations
-	m_occupiedBaseLocations[BWAPI::Broodwar->self()] = std::set<const BaseLocation *>();
+    m_occupiedBaseLocations[BWAPI::Broodwar->self()] = std::set<const BaseLocation *>();
     m_occupiedBaseLocations[BWAPI::Broodwar->enemy()] = std::set<const BaseLocation *>();
 }
 
 void BaseLocationManager::onFrame()
-{   
+{
     PROFILE_FUNCTION();
 
     drawBaseLocations();
@@ -170,12 +170,12 @@ void BaseLocationManager::onFrame()
     // reset the player occupation information for each location
     for (auto & baseLocation : m_baseLocationData)
     {
-		baseLocation.setPlayerOccupying(BWAPI::Broodwar->self(), false);
-		baseLocation.setPlayerOccupying(BWAPI::Broodwar->self(), false);
+        baseLocation.setPlayerOccupying(BWAPI::Broodwar->self(), false);
+        baseLocation.setPlayerOccupying(BWAPI::Broodwar->self(), false);
     }
 
     // for each unit on the map, update which base location it may be occupying
-	for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+    for (auto & unit : BWAPI::Broodwar->self()->getUnits())
     {
         // we only care about buildings on the ground
         if (!unit->getType().isBuilding() || unit->isFlying())
@@ -211,7 +211,7 @@ void BaseLocationManager::onFrame()
 
     // update the starting locations of the enemy player
     // this will happen one of two ways:
-    
+
     // 1. we've seen the enemy base directly, so the baselocation will know
     if (m_playerStartingBaseLocations[BWAPI::Broodwar->enemy()] == nullptr)
     {
@@ -223,7 +223,7 @@ void BaseLocationManager::onFrame()
             }
         }
     }
-    
+
     // 2. we've explored every other start location and haven't seen the enemy yet
     if (m_playerStartingBaseLocations[BWAPI::Broodwar->enemy()] == nullptr)
     {
@@ -304,7 +304,7 @@ void BaseLocationManager::drawBaseLocations()
     //BWAPI::TilePosition nextExpansionPosition = getNextExpansion(BWAPI::Broodwar->self());
 
     //BWAPI::Broodwar->drawCircleMap(BWAPI::Position(nextExpansionPosition), 32, BWAPI::Color(255, 0, 255), true);
-	//BWAPI::Broodwar->drawTextMap(BWAPI::Position(nextExpansionPosition), "Next Expansion Location", BWAPI::Color(255, 0, 255));
+    //BWAPI::Broodwar->drawTextMap(BWAPI::Position(nextExpansionPosition), "Next Expansion Location", BWAPI::Color(255, 0, 255));
 }
 
 const std::vector<const BaseLocation *> & BaseLocationManager::getBaseLocations() const
@@ -337,7 +337,7 @@ BWAPI::TilePosition BaseLocationManager::getNextExpansion(BWAPI::Player player) 
     int minDistance = std::numeric_limits<int>::max();
 
     BWAPI::TilePosition homeTile(homeBase->getPosition());
-    
+
     for (auto & base : getBaseLocations())
     {
         // skip mineral only and starting locations (TODO: fix this)
@@ -347,8 +347,8 @@ BWAPI::TilePosition BaseLocationManager::getNextExpansion(BWAPI::Player player) 
         }
 
         // get the tile position of the base
-		BWAPI::TilePosition tile = base->getDepotPosition();
-        
+        BWAPI::TilePosition tile = base->getDepotPosition();
+
         bool buildingInTheWay = false; // TODO: check if there are any units on the tile
 
         if (buildingInTheWay)

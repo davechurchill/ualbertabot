@@ -176,7 +176,6 @@
     <ClInclude Include="..\source\DetectorManager.h" />
     <ClInclude Include="..\Source\DistanceMap.h" />
     <ClInclude Include="..\Source\GameCommander.h" />
-    <ClInclude Include="..\Source\GameHistory.hpp" />
     <ClInclude Include="..\Source\Global.h" />
     <ClInclude Include="..\Source\Grid.hpp" />
     <ClInclude Include="..\Source\InformationManager.h" />

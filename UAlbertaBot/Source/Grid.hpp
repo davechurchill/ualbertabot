@@ -26,7 +26,7 @@ public:
     {
 
     }
-    
+
     inline T get(size_t x, size_t y)
     {
         return m_grid[x][y];

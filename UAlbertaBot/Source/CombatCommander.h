@@ -9,43 +9,34 @@ namespace UAlbertaBot
 class Squad;
 class CombatCommander
 {
-	SquadData       _squadData;
-    BWAPI::Unitset  _combatUnits;
-    bool            _initialized;
+    SquadData       m_squadData;
+    BWAPI::Unitset  m_combatUnits;
+    bool            m_initialized = false;
 
-    void            updateScoutDefenseSquad();
-	void            updateDefenseSquads();
-	void            updateAttackSquads();
-    void            updateDropSquads();
-	void            updateIdleSquad();
-	bool            isSquadUpdateFrame();
-	int             getNumType(BWAPI::Unitset & units, BWAPI::UnitType type);
+    void updateScoutDefenseSquad();
+    void updateDefenseSquads();
+    void updateAttackSquads();
+    void updateDropSquads();
+    void updateIdleSquad();
+    void initializeSquads();
+    void updateDefenseSquadUnits(Squad & defenseSquad, const size_t & flyingDefendersNeeded, const size_t & groundDefendersNeeded);
 
-	BWAPI::Unit     findClosestDefender(const Squad & defenseSquad, BWAPI::Position pos, bool flyingDefender);
+    int  defendWithWorkers();
+    int  numZerglingsInOurBase();
+    bool beingBuildingRushed();
+    bool isSquadUpdateFrame();
+
+    BWAPI::Unit     findClosestDefender(const Squad & defenseSquad, BWAPI::Position pos, bool flyingDefender);
     BWAPI::Unit     findClosestWorkerToTarget(BWAPI::Unitset & unitsToAssign, BWAPI::Unit target);
-
-	BWAPI::Position getDefendLocation();
+    BWAPI::Position getDefendLocation();
     BWAPI::Position getMainAttackLocation();
-
-    void            initializeSquads();
-    void            verifySquadUniqueMembership();
-    void            assignFlyingDefender(Squad & squad);
-    void            emptySquad(Squad & squad, BWAPI::Unitset & unitsToAssign);
-    int             getNumGroundDefendersInSquad(Squad & squad);
-    int             getNumAirDefendersInSquad(Squad & squad);
-
-    void            updateDefenseSquadUnits(Squad & defenseSquad, const size_t & flyingDefendersNeeded, const size_t & groundDefendersNeeded);
-    int             defendWithWorkers();
-
-    int             numZerglingsInOurBase();
-    bool            beingBuildingRushed();
 
 public:
 
-	CombatCommander();
+    CombatCommander();
 
-	void update(const BWAPI::Unitset & combatUnits);
-    
-	void drawSquadInformation(int x, int y);
+    void update(const BWAPI::Unitset & combatUnits);
+
+    void drawSquadInformation(int x, int y);
 };
 }

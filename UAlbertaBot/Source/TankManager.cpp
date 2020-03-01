@@ -4,46 +4,46 @@
 
 using namespace UAlbertaBot;
 
-TankManager::TankManager() 
-{ 
+TankManager::TankManager()
+{
 }
 
-void TankManager::executeMicro(const BWAPI::Unitset & targets) 
+void TankManager::executeMicro(const BWAPI::Unitset & targets)
 {
-	const BWAPI::Unitset & tanks = getUnits();
+    const BWAPI::Unitset & tanks = getUnits();
 
-	// figure out targets
-	BWAPI::Unitset tankTargets;
-    std::copy_if(targets.begin(), targets.end(), std::inserter(tankTargets, tankTargets.end()), 
-                 [](BWAPI::Unit u){ return u->isVisible() && !u->isFlying(); });
-    
+    // figure out targets
+    BWAPI::Unitset tankTargets;
+    std::copy_if(targets.begin(), targets.end(), std::inserter(tankTargets, tankTargets.end()),
+        [](BWAPI::Unit u) { return u->isVisible() && !u->isFlying(); });
+
     int siegeTankRange = BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode.groundWeapon().maxRange() - 32;
     bool haveSiege = BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::Tank_Siege_Mode);
 
 
 
-	// for each zealot
-	for (auto & tank : tanks)
-	{
-		// train sub units such as scarabs or interceptors
-		//trainSubUnits(rangedUnit);
+    // for each zealot
+    for (auto & tank : tanks)
+    {
+        // train sub units such as scarabs or interceptors
+        //trainSubUnits(rangedUnit);
 
-        bool tankNearChokepoint = false; 
+        bool tankNearChokepoint = false;
         // TODO: chokepoint
 
-		// if the order is to attack or defend
-		if (order.getType() == SquadOrderTypes::Attack || order.getType() == SquadOrderTypes::Defend) 
+        // if the order is to attack or defend
+        if (m_order.getType() == SquadOrderTypes::Attack || m_order.getType() == SquadOrderTypes::Defend)
         {
-			// if there are targets
-			if (!tankTargets.empty())
-			{
-				// find the best target for this zealot
-				BWAPI::Unit target = getTarget(tank, tankTargets);
+            // if there are targets
+            if (!tankTargets.empty())
+            {
+                // find the best target for this zealot
+                BWAPI::Unit target = getTarget(tank, tankTargets);
 
-                if (target && Config::Debug::DrawUnitTargetInfo) 
-	            {
-		            BWAPI::Broodwar->drawLineMap(tank->getPosition(), tank->getTargetPosition(), BWAPI::Colors::Purple);
-	            }
+                if (target && Config::Debug::DrawUnitTargetInfo)
+                {
+                    BWAPI::Broodwar->drawLineMap(tank->getPosition(), tank->getTargetPosition(), BWAPI::Colors::Purple);
+                }
 
                 // if we are within siege range, siege up
                 if (tank->getDistance(target) < siegeTankRange && tank->canSiege() && !tankNearChokepoint)
@@ -67,42 +67,42 @@ void TankManager::executeMicro(const BWAPI::Unitset & targets)
                 {
                     Micro::SmartKiteTarget(tank, target);
                 }
-			}
-			// if there are no targets
-			else
-			{
-				// if we're not near the order position
-				if (tank->getDistance(order.getPosition()) > 100)
-				{
+            }
+            // if there are no targets
+            else
+            {
+                // if we're not near the order position
+                if (tank->getDistance(m_order.getPosition()) > 100)
+                {
                     if (tank->canUnsiege())
                     {
                         tank->unsiege();
                     }
                     else
                     {
-    					// move to it
-    					Micro::SmartAttackMove(tank, order.getPosition());
+                        // move to it
+                        Micro::SmartAttackMove(tank, m_order.getPosition());
                     }
-				}
-			}
-		}
-	}
+                }
+            }
+        }
+    }
 }
 
 // get a target for the zealot to attack
 BWAPI::Unit TankManager::getTarget(BWAPI::Unit tank, const BWAPI::Unitset & targets)
 {
-	int bestPriorityDistance = 1000000;
+    int bestPriorityDistance = 1000000;
     int bestPriority = 0;
-    
+
     double bestLTD = 0;
 
-	BWAPI::Unit bestTargetThreatInRange = nullptr;
+    BWAPI::Unit bestTargetThreatInRange = nullptr;
     double bestTargetThreatInRangeLTD = 0;
-    
+
     int highPriority = 0;
-	double closestDist = std::numeric_limits<double>::infinity();
-	BWAPI::Unit closestTarget = nullptr;
+    double closestDist = std::numeric_limits<double>::infinity();
+    BWAPI::Unit closestTarget = nullptr;
 
     int siegeTankRange = BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode.groundWeapon().maxRange() - 32;
     BWAPI::Unitset targetsInSiegeRange;
@@ -131,12 +131,12 @@ BWAPI::Unit TankManager::getTarget(BWAPI::Unit tank, const BWAPI::Unitset & targ
         bool targetIsThreat     = LTD > 0;
         BWAPI::Broodwar->drawTextMap(target->getPosition(), "%d", priority);
 
-		if (!closestTarget || (priority > highPriority) || (priority == highPriority && distance < closestDist))
-		{
-			closestDist = distance;
-			highPriority = priority;
-			closestTarget = target;
-		}       
+        if (!closestTarget || (priority > highPriority) || (priority == highPriority && distance < closestDist))
+        {
+            closestDist = distance;
+            highPriority = priority;
+            closestTarget = target;
+        }
     }
 
     if (bestTargetThreatInRange)
@@ -147,13 +147,13 @@ BWAPI::Unit TankManager::getTarget(BWAPI::Unit tank, const BWAPI::Unitset & targ
     return closestTarget;
 }
 
-	// get the attack priority of a type in relation to a zergling
-int TankManager::getAttackPriority(BWAPI::Unit rangedUnit, BWAPI::Unit target) 
+// get the attack priority of a type in relation to a zergling
+int TankManager::getAttackPriority(BWAPI::Unit rangedUnit, BWAPI::Unit target)
 {
-	BWAPI::UnitType rangedType = rangedUnit->getType();
-	BWAPI::UnitType targetType = target->getType();
+    BWAPI::UnitType rangedType = rangedUnit->getType();
+    BWAPI::UnitType targetType = target->getType();
 
-	bool isThreat = rangedType.isFlyer() ? targetType.airWeapon() != BWAPI::WeaponTypes::None : targetType.groundWeapon() != BWAPI::WeaponTypes::None;
+    bool isThreat = rangedType.isFlyer() ? targetType.airWeapon() != BWAPI::WeaponTypes::None : targetType.groundWeapon() != BWAPI::WeaponTypes::None;
 
     if (target->getType().isWorker())
     {
@@ -177,56 +177,56 @@ int TankManager::getAttackPriority(BWAPI::Unit rangedUnit, BWAPI::Unit target)
         return 90;
     }
 
-	// highest priority is something that can attack us or aid in combat
+    // highest priority is something that can attack us or aid in combat
     if (targetType ==  BWAPI::UnitTypes::Terran_Bunker || isThreat)
     {
         return 11;
     }
-	// next priority is worker
-	else if (targetType.isWorker()) 
-	{
-  		return 9;
-	}
+    // next priority is worker
+    else if (targetType.isWorker())
+    {
+        return 9;
+    }
     // next is special buildings
-	else if (targetType == BWAPI::UnitTypes::Zerg_Spawning_Pool)
-	{
-		return 5;
-	}
-	// next is special buildings
-	else if (targetType == BWAPI::UnitTypes::Protoss_Pylon)
-	{
-		return 5;
-	}
-	// next is buildings that cost gas
-	else if (targetType.gasPrice() > 0)
-	{
-		return 4;
-	}
-	else if (targetType.mineralPrice() > 0)
-	{
-		return 3;
-	}
-	// then everything else
-	else
-	{
-		return 1;
-	}
+    else if (targetType == BWAPI::UnitTypes::Zerg_Spawning_Pool)
+    {
+        return 5;
+    }
+    // next is special buildings
+    else if (targetType == BWAPI::UnitTypes::Protoss_Pylon)
+    {
+        return 5;
+    }
+    // next is buildings that cost gas
+    else if (targetType.gasPrice() > 0)
+    {
+        return 4;
+    }
+    else if (targetType.mineralPrice() > 0)
+    {
+        return 3;
+    }
+    // then everything else
+    else
+    {
+        return 1;
+    }
 }
 
 BWAPI::Unit TankManager::closestrangedUnit(BWAPI::Unit target, std::set<BWAPI::Unit> & rangedUnitsToAssign)
 {
-	double minDistance = 0;
-	BWAPI::Unit closest = nullptr;
+    double minDistance = 0;
+    BWAPI::Unit closest = nullptr;
 
-	for (auto & rangedUnit : rangedUnitsToAssign)
-	{
-		double distance = rangedUnit->getDistance(target);
-		if (!closest || distance < minDistance)
-		{
-			minDistance = distance;
-			closest = rangedUnit;
-		}
-	}
-	
-	return closest;
+    for (auto & rangedUnit : rangedUnitsToAssign)
+    {
+        double distance = rangedUnit->getDistance(target);
+        if (!closest || distance < minDistance)
+        {
+            minDistance = distance;
+            closest = rangedUnit;
+        }
+    }
+
+    return closest;
 }

@@ -10,7 +10,7 @@ using namespace UAlbertaBot;
 
 BuildingPlacerManager::BuildingPlacerManager()
 {
-    m_reserveMap = std::vector< std::vector<bool> >(BWAPI::Broodwar->mapWidth(),std::vector<bool>(BWAPI::Broodwar->mapHeight(),false));
+    m_reserveMap = Grid<int>(BWAPI::Broodwar->mapWidth(), BWAPI::Broodwar->mapHeight(), 0);
 
     computeResourceBox();
 }
@@ -59,7 +59,7 @@ void BuildingPlacerManager::computeResourceBox()
 }
 
 // makes final checks to see if a building can be built at a certain location
-bool BuildingPlacerManager::canBuildHere(BWAPI::TilePosition position,const Building & b) const
+bool BuildingPlacerManager::canBuildHere(BWAPI::TilePosition position, const Building & b) const
 {
     /*if (!b.type.isRefinery() && !Global::Info().tileContainsUnit(position))
     {
@@ -67,7 +67,7 @@ bool BuildingPlacerManager::canBuildHere(BWAPI::TilePosition position,const Buil
     }*/
 
     //returns true if we can build this type of unit here. Takes into account reserved tiles.
-    if (!BWAPI::Broodwar->canBuildHere(position,b.type,b.builderUnit))
+    if (!BWAPI::Broodwar->canBuildHere(position, b.type, b.builderUnit))
     {
         return false;
     }
@@ -77,7 +77,7 @@ bool BuildingPlacerManager::canBuildHere(BWAPI::TilePosition position,const Buil
     {
         for (int y = position.y; y < position.y + b.type.tileHeight(); y++)
         {
-            if (m_reserveMap[x][y])
+            if (m_reserveMap.get(x, y) == 1)
             {
                 return false;
             }
@@ -85,7 +85,7 @@ bool BuildingPlacerManager::canBuildHere(BWAPI::TilePosition position,const Buil
     }
 
     // if it overlaps a base location return false
-    if (tileOverlapsBaseLocation(position,b.type))
+    if (tileOverlapsBaseLocation(position, b.type))
     {
         return false;
     }
@@ -98,7 +98,7 @@ bool BuildingPlacerManager::tileBlocksAddon(BWAPI::TilePosition position) const
 
     for (int i=0; i<=2; ++i)
     {
-        for (auto & unit : BWAPI::Broodwar->getUnitsOnTile(position.x - i,position.y))
+        for (auto & unit : BWAPI::Broodwar->getUnitsOnTile(position.x - i, position.y))
         {
             if (unit->getType() == BWAPI::UnitTypes::Terran_Command_Center ||
                 unit->getType() == BWAPI::UnitTypes::Terran_Factory ||
@@ -115,14 +115,14 @@ bool BuildingPlacerManager::tileBlocksAddon(BWAPI::TilePosition position) const
 
 //returns true if we can build this type of unit here with the specified amount of space.
 //space value is stored in this->buildDistance.
-bool BuildingPlacerManager::canBuildHereWithSpace(BWAPI::TilePosition position,const Building & b,int buildDist,bool horizontalOnly) const
+bool BuildingPlacerManager::canBuildHereWithSpace(BWAPI::TilePosition position, const Building & b, int buildDist, bool horizontalOnly) const
 {
     PROFILE_FUNCTION();
 
     BWAPI::UnitType type = b.type;
 
     //if we can't build here, we of course can't build here with space
-    if (!canBuildHere(position,b))
+    if (!canBuildHere(position, b))
     {
         return false;
     }
@@ -150,7 +150,7 @@ bool BuildingPlacerManager::canBuildHereWithSpace(BWAPI::TilePosition position,c
     {
         const BWAPI::UnitType builderType = type.whatBuilds().first;
 
-        BWAPI::TilePosition builderTile(position.x - builderType.tileWidth(),position.y + 2 - builderType.tileHeight());
+        BWAPI::TilePosition builderTile(position.x - builderType.tileWidth(), position.y + 2 - builderType.tileHeight());
 
         startx = builderTile.x - buildDist;
         starty = builderTile.y - buildDist;
@@ -177,7 +177,7 @@ bool BuildingPlacerManager::canBuildHereWithSpace(BWAPI::TilePosition position,c
         {
             if (!b.type.isRefinery())
             {
-                if (!buildable(b,x,y) || m_reserveMap[x][y] || ((b.type != BWAPI::UnitTypes::Protoss_Photon_Cannon) && isInResourceBox(x,y)))
+                if (!buildable(b, x, y) || m_reserveMap.get(x, y) || ((b.type != BWAPI::UnitTypes::Protoss_Photon_Cannon) && isInResourceBox(x, y)))
                 {
                     return false;
                 }
@@ -188,12 +188,12 @@ bool BuildingPlacerManager::canBuildHereWithSpace(BWAPI::TilePosition position,c
     return true;
 }
 
-BWAPI::TilePosition BuildingPlacerManager::GetBuildLocation(const Building & b,int padding) const
+BWAPI::TilePosition BuildingPlacerManager::GetBuildLocation(const Building & b, int padding) const
 {
-    return BWAPI::TilePosition(0,0);
+    return BWAPI::TilePosition(0, 0);
 }
 
-BWAPI::TilePosition BuildingPlacerManager::getBuildLocationNear(const Building & b,int buildDist,bool horizontalOnly) const
+BWAPI::TilePosition BuildingPlacerManager::getBuildLocationNear(const Building & b, int buildDist, bool horizontalOnly) const
 {
     PROFILE_FUNCTION();
 
@@ -210,7 +210,7 @@ BWAPI::TilePosition BuildingPlacerManager::getBuildLocationNear(const Building &
     // iterate through the list until we've found a suitable location
     for (size_t i(0); i < closestToBuilding.size(); ++i)
     {
-        if (canBuildHereWithSpace(closestToBuilding[i],b,buildDist,horizontalOnly))
+        if (canBuildHereWithSpace(closestToBuilding[i], b, buildDist, horizontalOnly))
         {
             //BWAPI::Broodwar->printf("Building Placer Took %d iterations, lasting %lf ms @ %lf iterations/ms, %lf setup ms", i, ms, (i / ms), ms1);
 
@@ -221,7 +221,7 @@ BWAPI::TilePosition BuildingPlacerManager::getBuildLocationNear(const Building &
     return  BWAPI::TilePositions::None;
 }
 
-bool BuildingPlacerManager::tileOverlapsBaseLocation(BWAPI::TilePosition tile,BWAPI::UnitType type) const
+bool BuildingPlacerManager::tileOverlapsBaseLocation(BWAPI::TilePosition tile, BWAPI::UnitType type) const
 {
     // if it's a resource depot we don't care if it overlaps
     if (type.isResourceDepot())
@@ -240,7 +240,7 @@ bool BuildingPlacerManager::tileOverlapsBaseLocation(BWAPI::TilePosition tile,BW
     {
         // dimensions of the base location
         int bx1 = base->getDepotPosition().x;
-		int by1 = base->getDepotPosition().y;
+        int by1 = base->getDepotPosition().y;
         int bx2 = bx1 + BWAPI::Broodwar->self()->getRace().getResourceDepot().tileWidth();
         int by2 = by1 + BWAPI::Broodwar->self()->getRace().getResourceDepot().tileHeight();
 
@@ -258,22 +258,22 @@ bool BuildingPlacerManager::tileOverlapsBaseLocation(BWAPI::TilePosition tile,BW
     return false;
 }
 
-bool BuildingPlacerManager::buildable(const Building & b,int x,int y) const
+bool BuildingPlacerManager::buildable(const Building & b, int x, int y) const
 {
-    BWAPI::TilePosition tp(x,y);
+    BWAPI::TilePosition tp(x, y);
 
     //returns true if this tile is currently buildable, takes into account units on tile
-    if (!BWAPI::Broodwar->isBuildable(x,y))
+    if (!BWAPI::Broodwar->isBuildable(x, y))
     {
         return false;
     }
 
-    if ((BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran) && tileBlocksAddon(BWAPI::TilePosition(x,y)))
+    if ((BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran) && tileBlocksAddon(BWAPI::TilePosition(x, y)))
     {
         return false;
     }
 
-    for (auto & unit : BWAPI::Broodwar->getUnitsOnTile(x,y))
+    for (auto & unit : BWAPI::Broodwar->getUnitsOnTile(x, y))
     {
         if ((b.builderUnit != nullptr) && (unit != b.builderUnit))
         {
@@ -289,15 +289,13 @@ bool BuildingPlacerManager::buildable(const Building & b,int x,int y) const
     return true;
 }
 
-void BuildingPlacerManager::reserveTiles(BWAPI::TilePosition position,int width,int height)
+void BuildingPlacerManager::reserveTiles(BWAPI::TilePosition position, int width, int height)
 {
-    int rwidth = m_reserveMap.size();
-    int rheight = m_reserveMap[0].size();
-    for (int x = position.x; x < position.x + width && x < rwidth; x++)
+    for (int x = position.x; x < position.x + width && x < (int)m_reserveMap.width(); x++)
     {
-        for (int y = position.y; y < position.y + height && y < rheight; y++)
+        for (int y = position.y; y < position.y + height && y < (int)m_reserveMap.height(); y++)
         {
-            m_reserveMap[x][y] = true;
+            m_reserveMap.set(x, y, 1);
         }
     }
 }
@@ -311,21 +309,18 @@ void BuildingPlacerManager::drawReservedTiles()
 
     PROFILE_FUNCTION();
 
-    int rwidth = m_reserveMap.size();
-    int rheight = m_reserveMap[0].size();
-
-    for (int x = 0; x < rwidth; ++x)
+    for (int x = 0; x < (int)m_reserveMap.width(); ++x)
     {
-        for (int y = 0; y < rheight; ++y)
+        for (int y = 0; y < (int)m_reserveMap.height(); ++y)
         {
-            if (m_reserveMap[x][y] || isInResourceBox(x,y))
+            if (m_reserveMap.get(x, y) || isInResourceBox(x, y))
             {
                 int x1 = x*32 + 8;
                 int y1 = y*32 + 8;
                 int x2 = (x+1)*32 - 8;
                 int y2 = (y+1)*32 - 8;
 
-                BWAPI::Broodwar->drawBoxMap(x1,y1,x2,y2,BWAPI::Colors::Yellow,false);
+                BWAPI::Broodwar->drawBoxMap(x1, y1, x2, y2, BWAPI::Colors::Yellow, false);
             }
         }
     }
@@ -333,14 +328,11 @@ void BuildingPlacerManager::drawReservedTiles()
 
 void BuildingPlacerManager::freeTiles(BWAPI::TilePosition position, int width, int height)
 {
-    int rwidth = m_reserveMap.size();
-    int rheight = m_reserveMap[0].size();
-
-    for (int x = position.x; x < position.x + width && x < rwidth; x++)
+    for (int x = position.x; x < position.x + width && x < (int)m_reserveMap.width(); x++)
     {
-        for (int y = position.y; y < position.y + height && y < rheight; y++)
+        for (int y = position.y; y < position.y + height && y < (int)m_reserveMap.height(); y++)
         {
-            m_reserveMap[x][y] = false;
+            m_reserveMap.set(x, y, 0);
         }
     }
 }
@@ -383,19 +375,17 @@ BWAPI::TilePosition BuildingPlacerManager::getRefineryPosition()
             }
         }
     }
-    
+
     return closestGeyser;
 }
 
 bool BuildingPlacerManager::isReserved(int x, int y) const
 {
-    int rwidth = m_reserveMap.size();
-    int rheight = m_reserveMap[0].size();
-    if (x < 0 || y < 0 || x >= rwidth || y >= rheight)
+    if (x < 0 || y < 0 || x >= (int)m_reserveMap.width() || y >= (int)m_reserveMap.height())
     {
         return false;
     }
 
-    return m_reserveMap[x][y];
+    return m_reserveMap.get(x, y);
 }
 
