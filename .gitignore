@@ -16,3 +16,10 @@ BOSS/VisualStudio/BOSS.VC.db
 *.opendb
 *.db-shm
 *.db-wal
+*.json
+*.zip
+*.iobj
+*.ipdb
+*.map
+*.pdb
+*.ilk
