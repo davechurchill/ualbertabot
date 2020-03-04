@@ -17,6 +17,7 @@
 #include "UnitUtil.h"
 #include "Global.h"
 #include "StrategyManager.h"
+#include "MapTools.h"
 
 using namespace UAlbertaBot;
 
@@ -60,6 +61,8 @@ void UAlbertaBotModule::onStart()
             Global::Strategy().setLearnedStrategy();
         }
 	}
+
+    Global::Map().saveMapToFile("map.txt");
 }
 
 void UAlbertaBotModule::onEnd(bool isWinner) 

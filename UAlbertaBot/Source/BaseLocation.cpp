@@ -248,17 +248,19 @@ void BaseLocation::draw()
     for (auto & mineralPos : m_mineralPositions)
     {
         const BWAPI::TilePosition mineralTile(mineralPos);
-        Global::Map().drawTile(mineralTile.x, mineralTile.y, BWAPI::Color(0, 255, 255));
+        Global::Map().drawTile(mineralTile.x,   mineralTile.y, BWAPI::Color(0, 255, 255));
         Global::Map().drawTile(mineralTile.x-1, mineralTile.y, BWAPI::Color(0, 255, 255));
     }
 
     for (auto & geyserPos : m_geyserPositions)
     {
         const BWAPI::TilePosition geyserTile(geyserPos);
-        Global::Map().drawTile(geyserTile.x, geyserTile.y, BWAPI::Color(0, 255, 0));
-        Global::Map().drawTile(geyserTile.x-1, geyserTile.y, BWAPI::Color(0, 255, 0));
-        Global::Map().drawTile(geyserTile.x-2, geyserTile.y, BWAPI::Color(0, 255, 0));
-        Global::Map().drawTile(geyserTile.x, geyserTile.y-1, BWAPI::Color(0, 255, 0));
+        Global::Map().drawTile(geyserTile.x,   geyserTile.y,   BWAPI::Color(0, 255, 0));
+        Global::Map().drawTile(geyserTile.x+1, geyserTile.y,   BWAPI::Color(0, 255, 0));
+        Global::Map().drawTile(geyserTile.x-1, geyserTile.y,   BWAPI::Color(0, 255, 0));
+        Global::Map().drawTile(geyserTile.x-2, geyserTile.y,   BWAPI::Color(0, 255, 0));
+        Global::Map().drawTile(geyserTile.x,   geyserTile.y-1, BWAPI::Color(0, 255, 0));
+        Global::Map().drawTile(geyserTile.x+1, geyserTile.y-1, BWAPI::Color(0, 255, 0));
         Global::Map().drawTile(geyserTile.x-1, geyserTile.y-1, BWAPI::Color(0, 255, 0));
         Global::Map().drawTile(geyserTile.x-2, geyserTile.y-1, BWAPI::Color(0, 255, 0));
 

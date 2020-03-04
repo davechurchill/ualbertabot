@@ -42,7 +42,9 @@
         
         "DrawGameInfo"              : false,   
         "DrawUnitHealthBars"        : true,
-        "DrawProductionInfo"        : true, 
+        "DrawProductionInfo"        : true,
+        "DrawWalkableSectors"       : true,
+        "DrawTileInfo"              : true,       
         "DrawBuildOrderSearchInfo"  : false,
         "DrawScoutInfo"             : false,
         "DrawEnemyUnitInfo"         : false,

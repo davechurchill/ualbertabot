@@ -1,6 +1,7 @@
 #include "MapTools.h"
 #include "BaseLocationManager.h"
 #include "Global.h"
+#include "StarcraftMap.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -466,4 +467,58 @@ void MapTools::getUnits(BWAPI::Unitset & units, BWAPI::Position center, int radi
 			}
 		}
 	}
+}
+
+void MapTools::saveMapToFile(const std::string & path)
+{
+    StarcraftMap map(BWAPI::Broodwar->mapWidth(), BWAPI::Broodwar->mapHeight());
+
+    for (size_t x = 0; x < map.width(); x++)
+    {
+        for (size_t y = 0; y < map.height(); y++)
+        {
+            if      (isDepotBuildableTile(x, y)) { map.set(x, y, TileType::BuildAll);   }
+            else if (isBuildable(x, y))          { map.set(x, y, TileType::NoDepot);    }
+            else if (isWalkable(x, y))           { map.set(x, y, TileType::Walk);       }
+            else                                 { map.set(x, y, TileType::Unwalkable); }
+        }
+    }
+
+    for (auto & mineral : BWAPI::Broodwar->getStaticMinerals())
+    {
+        const BWAPI::TilePosition mineralTile(mineral->getPosition());
+        map.set(mineralTile.x, mineralTile.y, TileType::Mineral);
+        map.set(mineralTile.x-1, mineralTile.y, TileType::Mineral);
+    }
+
+    for (auto & geyser : BWAPI::Broodwar->getStaticGeysers())
+    {
+        const BWAPI::TilePosition geyserTile(geyser->getPosition());
+        map.set(geyserTile.x, geyserTile.y, TileType::Gas);
+        map.set(geyserTile.x+1, geyserTile.y, TileType::Gas);
+        map.set(geyserTile.x-1, geyserTile.y, TileType::Gas);
+        map.set(geyserTile.x-2, geyserTile.y, TileType::Gas);
+        map.set(geyserTile.x, geyserTile.y-1, TileType::Gas);
+        map.set(geyserTile.x+1, geyserTile.y-1, TileType::Gas);
+        map.set(geyserTile.x-1, geyserTile.y-1, TileType::Gas);
+        map.set(geyserTile.x-2, geyserTile.y-1, TileType::Gas);
+    }
+
+    for (auto & tile : BWAPI::Broodwar->getStartLocations())
+    {
+        map.addStartTile(tile.x, tile.y);
+    }
+
+    for (size_t x=0; x<4*map.width(); x++)
+    {
+        for (size_t y=0; y<4*map.height(); y++)
+        {
+            map.setWalk(x, y, BWAPI::Broodwar->isWalkable(x,y));
+        }
+    }
+
+    // replace spaces with underscores
+    std::string mapFile = BWAPI::Broodwar->mapFileName();
+    std::replace( mapFile.begin(), mapFile.end(), ' ', '_'); 
+    map.save(mapFile + ".txt");
 }

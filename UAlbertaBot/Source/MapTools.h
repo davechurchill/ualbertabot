@@ -67,6 +67,8 @@ public:
     
     void    getUnits(BWAPI::Unitset & units, BWAPI::Position center, int radius, bool ourUnits, bool oppUnits);
 
+    void    saveMapToFile(const std::string & path);
+
     BWAPI::TilePosition getLeastRecentlySeenTile() const;
 
     // returns a list of all tiles on the map, sorted by 4-direcitonal walk distance from the given position
