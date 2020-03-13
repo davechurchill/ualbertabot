@@ -62,7 +62,7 @@ void UAlbertaBotModule::onStart()
         }
 	}
 
-    Global::Map().saveMapToFile("map.txt");
+    //Global::Map().saveMapToFile("map.txt");
 }
 
 void UAlbertaBotModule::onEnd(bool isWinner) 
