@@ -230,7 +230,7 @@ void BaseLocationManager::onFrame()
     // sanity check: make sure we have as many starting locations as BWAPI says
     if (getStartingBaseLocations().size() != BWAPI::Broodwar->getStartLocations().size())
     {
-        std::cout << "\nWARNING: BaseLocationManager start location mismatch\n";
+        std::cout << "\nWARNING: BaseLocationManager start location mismatch: " << BWAPI::Broodwar->mapFileName() << "\n";
         std::cout << "         BaseLocationManager found " << getStartingBaseLocations().size() << " starting locations\n";
         std::cout << "         BWAPI says that there are " << BWAPI::Broodwar->getStartLocations().size() << " starting locations\n\n";
 
