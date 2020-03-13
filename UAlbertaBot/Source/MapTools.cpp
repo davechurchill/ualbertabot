@@ -1,7 +1,6 @@
 #include "MapTools.h"
 #include "BaseLocationManager.h"
 #include "Global.h"
-#include "StarcraftMap.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -24,9 +23,8 @@ void MapTools::onStart()
 {
     PROFILE_FUNCTION();
 
-    m_width  = BWAPI::Broodwar->mapWidth();
-    m_height = BWAPI::Broodwar->mapHeight();
-
+    m_width          = BWAPI::Broodwar->mapWidth();
+    m_height         = BWAPI::Broodwar->mapHeight();
     m_walkable       = Grid<int>(m_width, m_height, 1);
     m_buildable      = Grid<int>(m_width, m_height, 0);
     m_depotBuildable = Grid<int>(m_width, m_height, 0);
@@ -78,7 +76,9 @@ void MapTools::onStart()
         }
     }
 
+    // compute the map connectivity
     computeConnectivity();
+    computeMap();
 }
 
 void MapTools::onFrame()
@@ -98,6 +98,57 @@ void MapTools::onFrame()
     
     m_frame++;
     draw();
+}
+
+void MapTools::computeMap()
+{
+    if (m_map.width() > 0) { return; }
+
+    m_map = StarDraftMap(BWAPI::Broodwar->mapWidth(), BWAPI::Broodwar->mapHeight());
+
+    for (size_t x = 0; x < m_map.width(); x++)
+    {
+        for (size_t y = 0; y < m_map.height(); y++)
+        {
+            if      (isDepotBuildableTile(x, y)) { m_map.set(x, y, TileType::BuildAll);   }
+            else if (isBuildable(x, y))          { m_map.set(x, y, TileType::NoDepot);    }
+            else if (isWalkable(x, y))           { m_map.set(x, y, TileType::Walk);       }
+            else                                 { m_map.set(x, y, TileType::Unwalkable); }
+        }
+    }
+
+    for (auto & mineral : BWAPI::Broodwar->getStaticMinerals())
+    {
+        const BWAPI::TilePosition mineralTile(mineral->getPosition());
+        m_map.set(mineralTile.x, mineralTile.y, TileType::Mineral);
+        m_map.set(mineralTile.x-1, mineralTile.y, TileType::Mineral);
+    }
+
+    for (auto & geyser : BWAPI::Broodwar->getStaticGeysers())
+    {
+        const BWAPI::TilePosition geyserTile(geyser->getPosition());
+        m_map.set(geyserTile.x, geyserTile.y, TileType::Gas);
+        m_map.set(geyserTile.x+1, geyserTile.y, TileType::Gas);
+        m_map.set(geyserTile.x-1, geyserTile.y, TileType::Gas);
+        m_map.set(geyserTile.x-2, geyserTile.y, TileType::Gas);
+        m_map.set(geyserTile.x, geyserTile.y-1, TileType::Gas);
+        m_map.set(geyserTile.x+1, geyserTile.y-1, TileType::Gas);
+        m_map.set(geyserTile.x-1, geyserTile.y-1, TileType::Gas);
+        m_map.set(geyserTile.x-2, geyserTile.y-1, TileType::Gas);
+    }
+
+    for (auto & tile : BWAPI::Broodwar->getStartLocations())
+    {
+        m_map.addStartTile(tile.x, tile.y);
+    }
+
+    for (size_t x=0; x<4*m_map.width(); x++)
+    {
+        for (size_t y=0; y<4*m_map.height(); y++)
+        {
+            m_map.setWalk(x, y, BWAPI::Broodwar->isWalkable(x,y));
+        }
+    }
 }
 
 void MapTools::computeConnectivity()
@@ -402,7 +453,7 @@ void MapTools::draw() const
     const int sy = screen.y;
     const int ex = sx + 20;
     const int ey = sy + 15;
-
+    
     for (int x = sx; x < ex; ++x)
     {
         for (int y = sy; y < ey; y++)
@@ -469,56 +520,15 @@ void MapTools::getUnits(BWAPI::Unitset & units, BWAPI::Position center, int radi
 	}
 }
 
-void MapTools::saveMapToFile(const std::string & path)
+const StarDraftMap & MapTools::getStarDraftMap() const
 {
-    StarcraftMap map(BWAPI::Broodwar->mapWidth(), BWAPI::Broodwar->mapHeight());
-
-    for (size_t x = 0; x < map.width(); x++)
-    {
-        for (size_t y = 0; y < map.height(); y++)
-        {
-            if      (isDepotBuildableTile(x, y)) { map.set(x, y, TileType::BuildAll);   }
-            else if (isBuildable(x, y))          { map.set(x, y, TileType::NoDepot);    }
-            else if (isWalkable(x, y))           { map.set(x, y, TileType::Walk);       }
-            else                                 { map.set(x, y, TileType::Unwalkable); }
-        }
-    }
-
-    for (auto & mineral : BWAPI::Broodwar->getStaticMinerals())
-    {
-        const BWAPI::TilePosition mineralTile(mineral->getPosition());
-        map.set(mineralTile.x, mineralTile.y, TileType::Mineral);
-        map.set(mineralTile.x-1, mineralTile.y, TileType::Mineral);
-    }
-
-    for (auto & geyser : BWAPI::Broodwar->getStaticGeysers())
-    {
-        const BWAPI::TilePosition geyserTile(geyser->getPosition());
-        map.set(geyserTile.x, geyserTile.y, TileType::Gas);
-        map.set(geyserTile.x+1, geyserTile.y, TileType::Gas);
-        map.set(geyserTile.x-1, geyserTile.y, TileType::Gas);
-        map.set(geyserTile.x-2, geyserTile.y, TileType::Gas);
-        map.set(geyserTile.x, geyserTile.y-1, TileType::Gas);
-        map.set(geyserTile.x+1, geyserTile.y-1, TileType::Gas);
-        map.set(geyserTile.x-1, geyserTile.y-1, TileType::Gas);
-        map.set(geyserTile.x-2, geyserTile.y-1, TileType::Gas);
-    }
-
-    for (auto & tile : BWAPI::Broodwar->getStartLocations())
-    {
-        map.addStartTile(tile.x, tile.y);
-    }
-
-    for (size_t x=0; x<4*map.width(); x++)
-    {
-        for (size_t y=0; y<4*map.height(); y++)
-        {
-            map.setWalk(x, y, BWAPI::Broodwar->isWalkable(x,y));
-        }
-    }
-
+    return m_map;
+}
+    
+void MapTools::saveMapToFile(const std::string & path) const
+{
     // replace spaces with underscores
     std::string mapFile = BWAPI::Broodwar->mapFileName();
     std::replace( mapFile.begin(), mapFile.end(), ' ', '_'); 
-    map.save(mapFile + ".txt");
+    getStarDraftMap().save(mapFile + ".txt");
 }

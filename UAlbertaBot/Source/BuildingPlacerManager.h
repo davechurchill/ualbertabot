@@ -9,10 +9,6 @@ namespace UAlbertaBot
 class Building;
 class BuildingPlacerManager
 {
-    friend class Global;
-
-    BuildingPlacerManager();
-
     Grid<int> m_reserveMap;
 
     int m_boxTop     = std::numeric_limits<int>::max();
@@ -21,6 +17,8 @@ class BuildingPlacerManager
     int m_boxRight   = std::numeric_limits<int>::lowest();
 
 public:
+    
+    BuildingPlacerManager();
 
     // queries for various BuildingPlacer data
     bool buildable(const Building & b,int x,int y) const;

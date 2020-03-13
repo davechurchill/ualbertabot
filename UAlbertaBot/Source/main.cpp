@@ -46,7 +46,7 @@ void UAlbertaBot_PlayGame()
 				case BWAPI::EventType::SendText:        { bot.onSendText(e.getText());        break; }
 			}
 		}
-
+        
 		BWAPI::BWAPIClient.update();
 		if (!BWAPI::BWAPIClient.isConnected())
 		{

@@ -2,16 +2,14 @@
 
 #include "Common.h"
 #include "BuildingData.h"
+#include "BuildingPlacerManager.h"
 
 namespace UAlbertaBot
 {
 
 class BuildingManager
 {
-    friend class Global;
-
-    BuildingManager();
-
+    BuildingPlacerManager m_buildingPlacer;
     std::vector<Building> m_buildings;
 
     bool m_debugMode        = false;
@@ -34,12 +32,14 @@ class BuildingManager
 
 public:
     
-    void                update();
-    void                addBuildingTask(BWAPI::UnitType type,BWAPI::TilePosition desiredLocation,bool isGasSteal);
-    void                drawBuildingInformation(int x,int y);
-    int                 getReservedMinerals();
-    int                 getReservedGas();
-    bool                isBeingBuilt(BWAPI::UnitType type);
+    BuildingManager();
+
+    void update();
+    void addBuildingTask(BWAPI::UnitType type,BWAPI::TilePosition desiredLocation,bool isGasSteal);
+    void drawBuildingInformation(int x,int y);
+    int  getReservedMinerals();
+    int  getReservedGas();
+    bool isBeingBuilt(BWAPI::UnitType type);
 
     BWAPI::TilePosition getBuildingLocation(const Building & b);
     std::vector<BWAPI::UnitType> buildingsQueued();

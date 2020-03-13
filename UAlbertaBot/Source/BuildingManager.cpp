@@ -26,6 +26,9 @@ void BuildingManager::update()
     checkForStartedConstruction();          // check to see if any buildings have started construction and update data structures    
     checkForDeadTerranBuilders();           // if we are terran and a building is under construction without a worker, assign a new one    
     checkForCompletedBuildings();           // check to see if any buildings have completed and update data structures
+    
+    drawBuildingInformation(200,50);
+    m_buildingPlacer.drawReservedTiles();
 }
 
 bool BuildingManager::isBeingBuilt(BWAPI::UnitType type)
@@ -105,7 +108,7 @@ void BuildingManager::assignWorkersToUnassignedBuildings()
             b.finalPosition = testLocation;
 
             // reserve this building's space
-            Global::BuildingPlacer().reserveTiles(b.finalPosition,b.type.tileWidth(),b.type.tileHeight());
+            m_buildingPlacer.reserveTiles(b.finalPosition,b.type.tileWidth(),b.type.tileHeight());
 
             b.status = BuildingStatus::Assigned;
         }
@@ -141,7 +144,7 @@ void BuildingManager::constructAssignedBuildings()
                 Global::Workers().finishedWithWorker(b.builderUnit);
 
                 // free the previous location in reserved
-                Global::BuildingPlacer().freeTiles(b.finalPosition,b.type.tileWidth(),b.type.tileHeight());
+                m_buildingPlacer.freeTiles(b.finalPosition,b.type.tileWidth(),b.type.tileHeight());
 
                 // nullify its current builder unit
                 b.builderUnit = nullptr;
@@ -223,7 +226,7 @@ void BuildingManager::checkForStartedConstruction()
                 b.status = BuildingStatus::UnderConstruction;
 
                 // free this space
-                Global::BuildingPlacer().freeTiles(b.finalPosition,b.type.tileWidth(),b.type.tileHeight());
+                m_buildingPlacer.freeTiles(b.finalPosition,b.type.tileWidth(),b.type.tileHeight());
 
                 // only one building will match
                 break;
@@ -426,7 +429,7 @@ BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
 
     if (b.type.isRefinery())
     {
-        return Global::BuildingPlacer().getRefineryPosition();
+        return m_buildingPlacer.getRefineryPosition();
     }
 
     if (b.type.isResourceDepot())
@@ -445,7 +448,7 @@ BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
     }
 
     // get a position within our region
-    return Global::BuildingPlacer().getBuildLocationNear(b,distance,false);
+    return m_buildingPlacer.getBuildLocationNear(b,distance,false);
 }
 
 void BuildingManager::removeBuildings(const std::vector<Building> & toRemove)

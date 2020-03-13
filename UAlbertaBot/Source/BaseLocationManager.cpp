@@ -40,78 +40,33 @@ void BaseLocationManager::onStart()
     m_playerStartingBaseLocations[BWAPI::Broodwar->self()]  = nullptr;
     m_playerStartingBaseLocations[BWAPI::Broodwar->enemy()] = nullptr;
 
-    // a BaseLocation will be anything where there are minerals to mine
-    // so we will first look over all minerals and cluster them based on some distance
-    const int clusterDistance = 16*32;
-
-    // stores each cluster of resources based on some ground distance
-    std::vector<std::vector<BWAPI::Unit>> resourceClusters;
-    for (auto & mineral : BWAPI::Broodwar->getStaticNeutralUnits())
+    // Use StarDraft to find the borders of the bases on the map
+    m_baseBorders = BaseBorderFinder(Global::Map().getStarDraftMap());
+    for (size_t baseID = 0; baseID < m_baseBorders.getBaseBorders().size(); baseID++)
     {
-        // skip minerals that don't have more than 100 starting minerals
-        // these are probably stupid map-blocking minerals to confuse us
-        if (!mineral->getType().isMineralField()) { continue; }
+        const auto & border = m_baseBorders.getBaseBorders()[baseID];
 
-        bool foundCluster = false;
-        for (auto & cluster : resourceClusters)
+        // fill a vector with all the resource units in the border
+        std::vector<BWAPI::Unit> resources;
+
+        // for each static unit on the map
+        for (auto unit : BWAPI::Broodwar->getStaticNeutralUnits())
         {
-            const BWAPI::Position clusterCenter = calcCenter(cluster);
-
-            // if the mineral is not connected to this cluster via ground travel, skpip it
-            if (!Global::Map().isConnected(clusterCenter, mineral->getPosition())) { continue; }
-
-            // get the air travel distance as a first cutoff for the mineral
-            const int dist = mineral->getDistance(calcCenter(cluster));
-
-            // quick initial air distance check to eliminate most resources
-            if (dist < clusterDistance)
+            // if it's a resource
+            if (unit->getType().isMineralField() || unit->getType() == BWAPI::UnitTypes::Resource_Vespene_Geyser)
             {
-                // now do a more expensive ground distance check
-                const int groundDist = 32*Global::Map().getGroundDistance(mineral->getPosition(), calcCenter(cluster));
-                //const int groundDist = dist; //m_bot.Map().getGroundDistance(mineral.pos, Util::CalcCenter(cluster));
+                BWAPI::TilePosition tile(unit->getPosition());
 
-                if (groundDist >= 0 && groundDist < clusterDistance)
+                // if it's inside the border, add it to the vector
+                if (border.contains(tile.x, tile.y))
                 {
-                    cluster.push_back(mineral);
-                    foundCluster = true;
-                    break;
+                    resources.push_back(unit);
                 }
             }
         }
 
-        if (!foundCluster)
-        {
-            resourceClusters.push_back(std::vector<BWAPI::Unit>());
-            resourceClusters.back().push_back(mineral);
-        }
-    }
-
-    // add geysers only to existing resource clusters
-    for (auto & geyser : BWAPI::Broodwar->getStaticNeutralUnits())
-    {
-        if (geyser->getType() != BWAPI::UnitTypes::Resource_Vespene_Geyser) { continue; }
-
-        for (auto & cluster : resourceClusters)
-        {
-            const int groundDist = 32*Global::Map().getGroundDistance(geyser->getPosition(), calcCenter(cluster));
-            //const int groundDist = geyser->getDistance(calcCenter(cluster));
-
-            if (groundDist >= 0 && groundDist < clusterDistance)
-            {
-                cluster.push_back(geyser);
-                break;
-            }
-        }
-    }
-
-    // add the base locations if there are more than 4 resouces in the cluster
-    int baseID = 0;
-    for (auto & cluster : resourceClusters)
-    {
-        if (cluster.size() > 4)
-        {
-            m_baseLocationData.push_back(BaseLocation(baseID++, cluster));
-        }
+        // add a baselocation containing these resources
+        m_baseLocationData.push_back(BaseLocation(baseID, resources));
     }
 
     // construct the vectors of base location pointers, this is safe since they will never change

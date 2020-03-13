@@ -196,7 +196,6 @@
     <ClInclude Include="..\Source\Squad.h" />
     <ClInclude Include="..\Source\SquadData.h" />
     <ClInclude Include="..\Source\SquadOrder.h" />
-    <ClInclude Include="..\Source\StarcraftMap.hpp" />
     <ClInclude Include="..\Source\StrategyManager.h" />
     <ClInclude Include="..\Source\TankManager.h" />
     <ClInclude Include="..\source\TimerManager.h" />

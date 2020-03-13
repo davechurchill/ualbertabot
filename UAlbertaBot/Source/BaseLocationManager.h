@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BaseLocation.h"
+#include "stardraft/BaseBorderFinder.hpp"
 
 namespace UAlbertaBot
 {
@@ -8,6 +9,8 @@ namespace UAlbertaBot
 class BaseLocationManager
 {
     friend class Global;
+
+    BaseBorderFinder m_baseBorders;
 
     std::vector<BaseLocation>                               m_baseLocationData;
     std::vector<const BaseLocation *>                       m_baseLocationPtrs;

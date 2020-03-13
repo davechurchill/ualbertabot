@@ -29,8 +29,7 @@ class BaseLocation
 
     std::map<BWAPI::Player, bool> m_isPlayerOccupying;
     std::map<BWAPI::Player, bool> m_isPlayerStartLocation;
-
-
+    
 public:
 
     BaseLocation(int baseID, const std::vector<BWAPI::Unit>& resources);

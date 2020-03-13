@@ -2,6 +2,8 @@
 
 #include <Common.h>
 #include "BuildOrderQueue.h"
+#include "BOSSManager.h"
+#include "BuildingManager.h"
 
 namespace UAlbertaBot
 {
@@ -14,8 +16,8 @@ class ProductionManager
 {
     friend class Global;
 
-    ProductionManager();
-
+    BuildingManager     m_buildingManager;
+    BOSSManager         m_bossManager;
     BuildOrderQueue     m_queue;
     BWAPI::TilePosition m_predictedTilePosition;
     bool                m_enemyCloakedDetected          = false;
@@ -37,6 +39,8 @@ class ProductionManager
     bool canPlanBuildOrderNow() const;
     bool canMakeNow(BWAPI::Unit producer, MetaType t);
     bool meetsReservedResources(MetaType type);
+    
+    ProductionManager();
 
 public:
 
@@ -45,6 +49,7 @@ public:
     void performBuildOrderSearch();
     void drawProductionInformation(int x, int y);
     void queueGasSteal();
+    std::vector<BWAPI::UnitType> buildingsQueued();
 
     BWAPI::Unit getProducer(MetaType t, BWAPI::Position closestTo = BWAPI::Positions::None);
 };

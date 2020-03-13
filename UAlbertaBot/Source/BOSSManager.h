@@ -32,9 +32,9 @@ class BOSSManager
     const BOSS::RaceID                      getRace() const;
     void                                    logBadSearch();
 
-	BOSSManager();
-
 public:
+    
+	BOSSManager();
 
 	void update(double timeLimit);
     void reset();

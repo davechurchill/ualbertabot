@@ -4,19 +4,23 @@
 #include "DistanceMap.h"
 #include "Grid.hpp"
 
+#include "stardraft/StarDraft.h"
+
 namespace UAlbertaBot
 {
 
 class MapTools
 {
     friend class Global;
+    
+    StarDraftMap m_map;
 
     int     m_width = 0;
     int     m_height = 0;
     int     m_frame = 0;
     
     // a cache of already computed distance maps, which is mutable since it only acts as a cache
-    mutable std::map<std::pair<int,int>, DistanceMap>   m_allMaps;   
+    mutable std::map<std::pair<int,int>, DistanceMap> m_allMaps;   
 
     Grid<int> m_walkable;       // whether a tile is buildable (includes static resources)          
     Grid<int> m_buildable;      // whether a tile is buildable (includes static resources)
@@ -24,6 +28,8 @@ class MapTools
     Grid<int> m_lastSeen;       // the last time any of our units has seen this position on the map
     Grid<int> m_sectorNumber;   // connectivity sector number, two tiles are ground connected if they have the same number
     
+    void computeMap();
+
     void computeConnectivity();
     int  getSectorNumber(int x, int y) const;
     void printMap() const;
@@ -67,7 +73,8 @@ public:
     
     void    getUnits(BWAPI::Unitset & units, BWAPI::Position center, int radius, bool ourUnits, bool oppUnits);
 
-    void    saveMapToFile(const std::string & path);
+    const StarDraftMap & getStarDraftMap() const;
+    void saveMapToFile(const std::string & path) const;
 
     BWAPI::TilePosition getLeastRecentlySeenTile() const;
 

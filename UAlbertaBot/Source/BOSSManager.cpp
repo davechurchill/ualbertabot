@@ -2,7 +2,7 @@
 #include "BOSSManager.h"
 #include "UnitUtil.h"
 #include "Global.h"
-#include "BuildingManager.h"
+#include "ProductionManager.h"
 #include "WorkerManager.h"
 #include "StrategyManager.h"
 #include "Logger.h"
@@ -47,7 +47,7 @@ void BOSSManager::startNewSearch(const std::vector<MetaPair> & goalUnits)
     {
         BOSS::BuildOrderSearchGoal goal = GetGoal(goalUnits);
 
-        BOSS::GameState initialState(BWAPI::Broodwar, BWAPI::Broodwar->self(), Global::Buildings().buildingsQueued());
+        BOSS::GameState initialState(BWAPI::Broodwar, BWAPI::Broodwar->self(), Global::Production().buildingsQueued());
 
         m_smartSearch = SearchPtr(new BOSS::DFBB_BuildOrderSmartSearch(initialState.getRace()));
         m_smartSearch->setGoal(GetGoal(goalUnits));
@@ -103,7 +103,7 @@ void BOSSManager::drawStateInformation(int x, int y)
         return;
     }
 
-    BOSS::GameState currentState(BWAPI::Broodwar, BWAPI::Broodwar->self(), Global::Buildings().buildingsQueued());
+    BOSS::GameState currentState(BWAPI::Broodwar, BWAPI::Broodwar->self(), Global::Production().buildingsQueued());
     BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x-100, y+30), "\x04%s", currentState.getBuildingData().toString().c_str());
     BWAPI::Broodwar->drawTextScreen(BWAPI::Position(x+150, y), "\x04%s", currentState.toString().c_str());
     

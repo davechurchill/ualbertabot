@@ -1,11 +1,8 @@
 #pragma once
 
-#include "Grid.hpp"
+#include "Grid2D.hpp"
 #include <fstream>
 #include <iostream>
-
-namespace UAlbertaBot
-{
 
 namespace TileType
 {
@@ -21,14 +18,18 @@ namespace TileType
     };
 }
 
-struct Tile { size_t x = 0, y = 0; };
+struct Tile 
+{ 
+    int x = 0, y = 0; 
+};
 
-class StarcraftMap
+class StarDraftMap
 {
-    Grid<char>          m_buildTiles;
-    Grid<char>          m_walkTiles;
-    std::vector<Tile>   m_minerals;
-    std::vector<Tile>   m_geysers;
+    Grid2D<char>          m_buildTiles;
+    Grid2D<char>          m_walkTiles;
+    std::vector<Tile>   m_mineralTiles;
+    std::vector<Tile>   m_gasTiles;
+    std::vector<Tile>   m_resourceTiles;
     std::vector<Tile>   m_startTiles;
 
     inline bool isWalkable(char tile) const noexcept
@@ -46,39 +47,66 @@ class StarcraftMap
         return tile == TileType::BuildAll;
     }
 
-
 public:
 
-    StarcraftMap() {}
+    StarDraftMap() {}
 
-    StarcraftMap(const std::string & path)
+    StarDraftMap(const std::string & path)
     {
         load(path);
     }
 
-    StarcraftMap(size_t width, size_t height)
+    StarDraftMap(size_t width, size_t height)
         : m_buildTiles(width, height, 0)
         , m_walkTiles(width*4, height*4, false)
     {
         
     }
 
-    inline void set(size_t x, size_t y, char val)
+    inline bool isValid(int x, int y) const
+    {
+        return (x >= 0) && (x < (int)m_buildTiles.width()) && (y >= 0) && (y < (int)m_buildTiles.height());
+    }
+
+    inline void set(int x, int y, char val)
     {
         m_buildTiles.set(x, y, val);
 
-        if (val == TileType::Mineral) { m_minerals.push_back({x, y}); }
-        else if (val == TileType::Gas) { m_geysers.push_back({x, y}); }
+        if (val == TileType::Mineral) 
+        { 
+            m_mineralTiles.push_back({x, y}); 
+            m_resourceTiles.push_back({x, y}); 
+        }
+        else if (val == TileType::Gas) 
+        { 
+            m_gasTiles.push_back({x, y}); 
+            m_resourceTiles.push_back({x, y}); 
+        }
     }
 
-    inline void setWalk(size_t x, size_t y, bool val)
+    inline void setWalk(int x, int y, bool val)
     {
         m_walkTiles.set(x, y, val);
     }
-
-    inline void addStartTile(size_t x, size_t y)
+        
+    inline void addStartTile(int x, int y)
     {
         m_startTiles.push_back({x, y});
+    }
+
+    inline bool isMineral(int x, int y) const
+    {
+        return get(x, y) == 'M';
+    }
+
+    inline bool isGas(int x, int y) const
+    {
+        return get(x, y) == 'G';
+    }
+
+    inline bool isResource(int x, int y) const
+    {
+        return isMineral(x,y) || isGas(x,y);
     }
     
     inline size_t width() const
@@ -91,27 +119,27 @@ public:
         return m_buildTiles.height();
     }
 
-    inline char get(size_t x, size_t y) const
+    inline char get(int x, int y) const
     {
         return m_buildTiles.get(x, y);
     }
 
-    inline char getWalk(size_t x, size_t y) const
+    inline char getWalk(int x, int y) const
     {
         return m_walkTiles.get(x, y);
     }
 
-    inline bool isWalkable(size_t x, size_t y) const
+    inline bool isWalkable(int x, int y) const
     {
         return isWalkable(get(x, y));
     }
 
-    inline bool canBuild(size_t x, size_t y) const
+    inline bool canBuild(int x, int y) const
     {
         return canBuild(get(x,y));
     }
 
-    inline bool canBuildDepot(size_t x, size_t y) const
+    inline bool canBuildDepot(int x, int y) const
     {
         return canBuildDepot(get(x,y));
     }
@@ -121,21 +149,36 @@ public:
         return m_startTiles;
     }
 
+    inline const std::vector<Tile> & mineralTiles() const
+    {
+        return m_mineralTiles;
+    }
+
+    inline const std::vector<Tile> & gasTiles() const
+    {
+        return m_gasTiles;
+    }
+
+    inline const std::vector<Tile> & resourceTiles() const
+    {
+        return m_resourceTiles;
+    }
+
     inline void load(const std::string & path)
     {
         std::ifstream fin(path);
-        size_t w, h, n, sx, sy;
+        int w, h, n, sx, sy;
         char c;
 
         // first line is width height
         fin >> w >> h; 
 
-        m_buildTiles = Grid<char>(w, h, 0);
-        m_walkTiles  = Grid<char>(4*w, 4*h, 0);
+        m_buildTiles = Grid2D<char>(w, h, 0);
+        m_walkTiles  = Grid2D<char>(4*w, 4*h, 0);
 
         // next line is the start tile locations
         fin >> n;
-        for (size_t i=0; i<n; i++)
+        for (int i=0; i<n; i++)
         {
             fin >> sx >> sy;
             m_startTiles.push_back({sx, sy});
@@ -147,7 +190,7 @@ public:
             for (size_t x=0; x < m_buildTiles.width(); x++)
             {
                 fin >> c;
-                m_buildTiles.set(x, y, c);
+                set(x, y, c);
             }   
         }
 
@@ -162,7 +205,7 @@ public:
         }
     }
 
-    inline void save(const std::string & path)
+    inline void save(const std::string & path) const
     {
         std::ofstream fout(path);
 
@@ -195,5 +238,3 @@ public:
         }
     }
 };
-
-}

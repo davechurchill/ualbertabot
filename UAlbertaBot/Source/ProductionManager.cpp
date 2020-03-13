@@ -33,18 +33,18 @@ void ProductionManager::performBuildOrderSearch()
 
     PROFILE_FUNCTION();
 
-    BuildOrder & buildOrder = Global::BOSS().getBuildOrder();
+    BuildOrder & buildOrder = m_bossManager.getBuildOrder();
 
     if (buildOrder.size() > 0)
     {
         setBuildOrder(buildOrder);
-        Global::BOSS().reset();
+        m_bossManager.reset();
     }
     else
     {
-        if (!Global::BOSS().isSearchInProgress())
+        if (!m_bossManager.isSearchInProgress())
         {
-            Global::BOSS().startNewSearch(Global::Strategy().getBuildOrderGoal());
+            m_bossManager.startNewSearch(Global::Strategy().getBuildOrderGoal());
         }
     }
 }
@@ -52,6 +52,11 @@ void ProductionManager::performBuildOrderSearch()
 void ProductionManager::update()
 {
     PROFILE_FUNCTION();
+
+    m_buildingManager.update();
+
+    // 30 ms per search update
+    m_bossManager.update(Config::Macro::BOSSTimePerFrame);
 
     // check the _queue for stuff we can build
     manageBuildOrderQueue();
@@ -114,6 +119,10 @@ void ProductionManager::update()
 
         m_enemyCloakedDetected = true;
     }
+
+    
+	m_bossManager.drawSearchInformation(490, 100);
+    m_bossManager.drawStateInformation(250, 0);
 }
 
 // on unit destroy
@@ -356,7 +365,7 @@ void ProductionManager::create(BWAPI::Unit producer, BuildOrderItem & item)
         && !t.getUnitType().isAddon())
     {
         // send the building task to the building manager
-        Global::Buildings().addBuildingTask(t.getUnitType(), BWAPI::Broodwar->self()->getStartLocation(), item.isGasSteal);
+        m_buildingManager.addBuildingTask(t.getUnitType(), BWAPI::Broodwar->self()->getStartLocation(), item.isGasSteal);
     }
     else if (t.getUnitType().isAddon())
     {
@@ -430,7 +439,7 @@ bool ProductionManager::detectBuildOrderDeadlock()
     }
 
     // are any supply providers being built currently
-    bool supplyInProgress =	Global::Buildings().isBeingBuilt(BWAPI::Broodwar->self()->getRace().getSupplyProvider());
+    bool supplyInProgress =	m_buildingManager.isBeingBuilt(BWAPI::Broodwar->self()->getRace().getSupplyProvider());
 
     for (auto & unit : BWAPI::Broodwar->self()->getUnits())
     {
@@ -453,7 +462,7 @@ bool ProductionManager::detectBuildOrderDeadlock()
     if ((supplyAvailable < supplyCost) && !supplyInProgress)
     {
         // if we're zerg, check to see if a building is planned to be built
-        if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Zerg && Global::Buildings().buildingsQueued().size() > 0)
+        if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Zerg && m_buildingManager.buildingsQueued().size() > 0)
         {
             return false;
         }
@@ -478,7 +487,7 @@ void ProductionManager::predictWorkerMovement(const Building & b)
     // get a possible building location for the building
     if (!m_haveLocationForThisBuilding)
     {
-        m_predictedTilePosition = Global::Buildings().getBuildingLocation(b);
+        m_predictedTilePosition = m_buildingManager.getBuildingLocation(b);
     }
 
     if (m_predictedTilePosition != BWAPI::TilePositions::None)
@@ -549,12 +558,12 @@ void ProductionManager::performCommand(BWAPI::UnitCommandType t)
 
 int ProductionManager::getFreeMinerals()
 {
-    return BWAPI::Broodwar->self()->minerals() - Global::Buildings().getReservedMinerals();
+    return BWAPI::Broodwar->self()->minerals() - m_buildingManager.getReservedMinerals();
 }
 
 int ProductionManager::getFreeGas()
 {
-    return BWAPI::Broodwar->self()->gas() - Global::Buildings().getReservedGas();
+    return BWAPI::Broodwar->self()->gas() - m_buildingManager.getReservedGas();
 }
 
 // return whether or not we meet resources, including building reserves
@@ -701,4 +710,9 @@ bool ProductionManager::canPlanBuildOrderNow() const
     }
 
     return true;
+}
+
+std::vector<BWAPI::UnitType> ProductionManager::buildingsQueued()
+{
+    return m_buildingManager.buildingsQueued();
 }

@@ -40,10 +40,6 @@ void GameCommander::update()
 	Global::Map().onFrame();
 	m_timerManager.stopTimer(TimerManager::MapTools);
 
-	m_timerManager.startTimer(TimerManager::Search);
-	Global::BOSS().update(35 - m_timerManager.getTotalElapsed());
-	m_timerManager.stopTimer(TimerManager::Search);
-
 	// economy and base managers
 	m_timerManager.startTimer(TimerManager::Worker);
 	Global::Workers().onFrame();
@@ -52,10 +48,6 @@ void GameCommander::update()
 	m_timerManager.startTimer(TimerManager::Production);
 	Global::Production().update();
 	m_timerManager.stopTimer(TimerManager::Production);
-
-	m_timerManager.startTimer(TimerManager::Building);
-	Global::Buildings().update();
-	m_timerManager.stopTimer(TimerManager::Building);
 
 	// combat and scouting managers
 	m_timerManager.startTimer(TimerManager::Combat);
@@ -78,11 +70,8 @@ void GameCommander::drawDebugInterface()
 	Global::Info().drawExtendedInterface();
 	Global::Info().drawUnitInformation(425,30);
 	Global::Info().drawMapInformation();
-	Global::Buildings().drawBuildingInformation(200,50);
-	Global::BuildingPlacer().drawReservedTiles();
+	
 	Global::Production().drawProductionInformation(30, 50);
-	Global::BOSS().drawSearchInformation(490, 100);
-    Global::BOSS().drawStateInformation(250, 0);
     
 	m_combatCommander.drawSquadInformation(200, 30);
     m_timerManager.displayTimers(490, 225);

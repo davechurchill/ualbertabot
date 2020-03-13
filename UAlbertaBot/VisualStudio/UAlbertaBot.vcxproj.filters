@@ -267,8 +267,5 @@
     <ClInclude Include="..\Source\BaseLocation.h">
       <Filter>macro</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\StarcraftMap.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

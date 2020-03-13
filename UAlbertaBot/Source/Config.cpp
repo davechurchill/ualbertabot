@@ -113,6 +113,7 @@ namespace Config
     namespace Macro
     {
         int BOSSFrameLimit                  = 160;
+        int BOSSTimePerFrame                = 30;
         int WorkersPerRefinery              = 3;
         int BuildingSpacing                 = 1;
         int PylonSpacing                    = 3;
