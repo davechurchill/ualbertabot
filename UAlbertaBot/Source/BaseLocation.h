@@ -15,7 +15,7 @@ class BaseLocation
     int     m_top               = std::numeric_limits<int>::lowest();
     int     m_bottom            = std::numeric_limits<int>::max();
     bool    m_isStartLocation   = false;
-    BWAPI::TilePosition m_startPosition;
+    BWAPI::TilePosition         m_startPosition;
 
     DistanceMap                 m_distanceMap;
 

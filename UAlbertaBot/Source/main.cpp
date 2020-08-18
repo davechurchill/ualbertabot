@@ -65,6 +65,10 @@ int main(int argc, char * argv[])
 
 	bool exitIfStarcraftShutdown = true;
     
+    std::cout << "UAlbertaBot - David Churchill\n";
+    std::cout << "https://github.com/davechurchill/ualbertabot\n\n";
+    std::cout << "Compiled on " << __DATE__ << " @ " << __TIME__ << "\n\n";
+
     // Initialize SparCraft, the combat simulation package
     SparCraft::init();
 
