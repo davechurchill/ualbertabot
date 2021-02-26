@@ -43,7 +43,7 @@ void StarterBot::onFrame()
     // Let's send all of our starting workers to the closest mineral to them
     // First we need to loop over all of the units that we (BWAPI::Broodwar->self()) own
     const BWAPI::Unitset& myUnits = BWAPI::Broodwar->self()->getUnits();
-    for (auto unit : myUnits)
+    for (auto& unit : myUnits)
     {
         // Check the unit type, if it is an idle worker, then we want to send it somewhere
         if (unit->getType().isWorker() && unit->isIdle())
@@ -58,18 +58,18 @@ void StarterBot::onFrame()
 
     // Keep making workers until we have a desired amount
     const BWAPI::UnitType workerType = BWAPI::Broodwar->self()->getRace().getWorker();
-    int workersWanted = 8;
-    int workersOwned = Tools::CountUnitsOfType(workerType, myUnits);
+    const int workersWanted = 8;
+    const int workersOwned = Tools::CountUnitsOfType(workerType, myUnits);
     if (workersOwned < workersWanted)
     {
-        BWAPI::Unit myDepot = Tools::GetDepot();
+        const BWAPI::Unit myDepot = Tools::GetDepot();
         myDepot->train(workerType);
     }
     else
     {
         const BWAPI::UnitType supplyProviderType = BWAPI::Broodwar->self()->getRace().getSupplyProvider();
-        int desiredSupplyProviders = 3;
-        int ownedSupplyProviders = Tools::CountUnitsOfType(supplyProviderType, myUnits);
+        const int desiredSupplyProviders = 3;
+        const int ownedSupplyProviders = Tools::CountUnitsOfType(supplyProviderType, myUnits);
 
         if (ownedSupplyProviders < desiredSupplyProviders)
         {

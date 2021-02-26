@@ -17,6 +17,7 @@ BWAPI::Unit Tools::GetClosestUnitTo(BWAPI::Position p, const BWAPI::Unitset& uni
 
 BWAPI::Unit Tools::GetClosestUnitTo(BWAPI::Unit unit, const BWAPI::Unitset& units)
 {
+    if (!unit) { return nullptr; }
     return GetClosestUnitTo(unit->getPosition(), units);
 }
 
