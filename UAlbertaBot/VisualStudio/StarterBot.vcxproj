@@ -12,10 +12,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\starterbot\main.cpp" />
+    <ClCompile Include="..\starterbot\MapTools.cpp" />
     <ClCompile Include="..\starterbot\StarterBot.cpp" />
     <ClCompile Include="..\starterbot\Tools.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\starterbot\Grid.hpp" />
+    <ClInclude Include="..\starterbot\MapTools.h" />
     <ClInclude Include="..\starterbot\StarterBot.h" />
     <ClInclude Include="..\starterbot\Tools.h" />
   </ItemGroup>

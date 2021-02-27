@@ -4,9 +4,12 @@
     <ClCompile Include="..\starterbot\main.cpp" />
     <ClCompile Include="..\starterbot\StarterBot.cpp" />
     <ClCompile Include="..\starterbot\Tools.cpp" />
+    <ClCompile Include="..\starterbot\MapTools.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\starterbot\StarterBot.h" />
     <ClInclude Include="..\starterbot\Tools.h" />
+    <ClInclude Include="..\starterbot\MapTools.h" />
+    <ClInclude Include="..\starterbot\Grid.hpp" />
   </ItemGroup>
 </Project>

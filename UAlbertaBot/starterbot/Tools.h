@@ -4,7 +4,6 @@
 
 namespace Tools
 {
-
     BWAPI::Unit GetClosestUnitTo(BWAPI::Position p, const BWAPI::Unitset& units);
     BWAPI::Unit GetClosestUnitTo(BWAPI::Unit unit, const BWAPI::Unitset& units);
 
@@ -13,7 +12,8 @@ namespace Tools
     BWAPI::Unit GetUnitOfType(BWAPI::UnitType type);
     BWAPI::Unit GetDepot();
 
-    void BuildBuilding(BWAPI::UnitType type);
+    bool BuildBuilding(BWAPI::UnitType type);
 
+    void DrawUnitBoundingBoxes();
     void DrawUnitCommands();
 }

@@ -58,7 +58,7 @@ BWAPI::Unit Tools::GetDepot()
 }
 
 // Attempt tp construct a building of a given type 
-void Tools::BuildBuilding(BWAPI::UnitType type)
+bool Tools::BuildBuilding(BWAPI::UnitType type)
 {
     // Get the type of unit that is required to build the desired building
     BWAPI::UnitType builderType = type.whatBuilds().first;
@@ -66,7 +66,7 @@ void Tools::BuildBuilding(BWAPI::UnitType type)
     // Get a unit that we own that is of the given type so it can build
     // If we can't find a valid builder unit, then we have to cancel the building
     BWAPI::Unit builder = Tools::GetUnitOfType(builderType);
-    if (!builder) { return; }
+    if (!builder) { return false; }
 
     // Get a location that we want to build the building next to
     BWAPI::TilePosition desiredPos = BWAPI::Broodwar->self()->getStartLocation();
@@ -75,7 +75,7 @@ void Tools::BuildBuilding(BWAPI::UnitType type)
     int maxBuildRange = 64;
     bool buildingOnCreep = type.requiresCreep();
     BWAPI::TilePosition buildPos = BWAPI::Broodwar->getBuildLocation(type, desiredPos, maxBuildRange, buildingOnCreep);
-    builder->build(type, buildPos);
+    return builder->build(type, buildPos);
 }
 
 void Tools::DrawUnitCommands()
@@ -104,5 +104,15 @@ void Tools::DrawUnitCommands()
         {
             BWAPI::Broodwar->drawLineMap(unit->getPosition(), command.getTarget()->getPosition(), BWAPI::Colors::White);
         }
+    }
+}
+
+void Tools::DrawUnitBoundingBoxes()
+{
+    for (auto& unit : BWAPI::Broodwar->getAllUnits())
+    {
+        BWAPI::Position topLeft(unit->getLeft(), unit->getTop());
+        BWAPI::Position bottomRight(unit->getRight(), unit->getBottom());
+        BWAPI::Broodwar->drawBoxMap(topLeft, bottomRight, BWAPI::Colors::Red);
     }
 }

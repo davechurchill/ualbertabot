@@ -1,5 +1,6 @@
 #include "StarterBot.h"
 #include "Tools.h"
+#include "MapTools.h"
 
 StarterBot::StarterBot()
 {
@@ -10,11 +11,14 @@ StarterBot::StarterBot()
 void StarterBot::onStart()
 {
     // Set our BWAPI options here    
-	BWAPI::Broodwar->setLocalSpeed(20);
+	BWAPI::Broodwar->setLocalSpeed(10);
     BWAPI::Broodwar->setFrameSkip(0);
     
     // Enable the flag that tells BWAPI top let users enter input while bot plays
     BWAPI::Broodwar->enableFlag(BWAPI::Flag::UserInput);
+
+    // Call MapTools OnStart
+    MapTools::Instance().onStart();
 }
 
 // Called whenever the game ends and tells you if you won or not
@@ -26,19 +30,13 @@ void StarterBot::onEnd(bool isWinner)
 // Called on each frame of the game
 void StarterBot::onFrame()
 {
-    // If the game has gone on for too long, restart the game
-    if (BWAPI::Broodwar->getFrameCount() > 100000)
-    {
-        BWAPI::Broodwar->restartGame();
-    }
+    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(10, 10), "Hello, World!\n");
+
+    MapTools::Instance().onFrame();
 
     const char red = '\x08';
     const char green = '\x07';
     const char white = '\x04';
-
-    BWAPI::Broodwar->drawTextScreen(BWAPI::Position(10, 10), "Hello, World!\n");
-
-    Tools::DrawUnitCommands();
 
     // Let's send all of our starting workers to the closest mineral to them
     // First we need to loop over all of the units that we (BWAPI::Broodwar->self()) own
@@ -63,7 +61,7 @@ void StarterBot::onFrame()
     if (workersOwned < workersWanted)
     {
         const BWAPI::Unit myDepot = Tools::GetDepot();
-        myDepot->train(workerType);
+        if (myDepot) { myDepot->train(workerType); }
     }
     else
     {
@@ -73,9 +71,16 @@ void StarterBot::onFrame()
 
         if (ownedSupplyProviders < desiredSupplyProviders)
         {
-            Tools::BuildBuilding(supplyProviderType);
+            bool startedBuilding = Tools::BuildBuilding(supplyProviderType);
+            if (startedBuilding)
+            {
+                BWAPI::Broodwar->printf("Started Building %s", supplyProviderType.getName().c_str());
+            }
         }
     }
+
+    Tools::DrawUnitCommands();
+    Tools::DrawUnitBoundingBoxes();
 }
 
 // Called whenever a unit is destroyed, with a pointer to the unit
@@ -94,7 +99,10 @@ void StarterBot::onUnitMorph(BWAPI::Unit unit)
 // Called whenever a text is sent to the game by a user
 void StarterBot::onSendText(std::string text) 
 { 
-	
+    if (text == "/map")
+    {
+        MapTools::Instance().toggleDraw();
+    }
 }
 
 // Called whenever a unit is created, with a pointer to the destroyed unit
