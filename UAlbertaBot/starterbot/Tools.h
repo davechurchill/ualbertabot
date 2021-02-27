@@ -16,4 +16,6 @@ namespace Tools
 
     void DrawUnitBoundingBoxes();
     void DrawUnitCommands();
+
+    void SmartRightClick(BWAPI::Unit unit, BWAPI::Unit target);
 }

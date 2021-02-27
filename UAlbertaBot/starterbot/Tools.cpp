@@ -113,6 +113,22 @@ void Tools::DrawUnitBoundingBoxes()
     {
         BWAPI::Position topLeft(unit->getLeft(), unit->getTop());
         BWAPI::Position bottomRight(unit->getRight(), unit->getBottom());
-        BWAPI::Broodwar->drawBoxMap(topLeft, bottomRight, BWAPI::Colors::Red);
+        BWAPI::Broodwar->drawBoxMap(topLeft, bottomRight, BWAPI::Colors::White);
     }
+}
+
+void Tools::SmartRightClick(BWAPI::Unit unit, BWAPI::Unit target)
+{
+    // if there's no valid unit, ignore the command
+    if (!unit || !target) { return; }
+
+    // Don't issue a 2nd command to the unit on the same frame
+    if (unit->getLastCommandFrame() >= BWAPI::Broodwar->getFrameCount()) { return; }
+
+    // If we are issuing the same type of command with the same arguments, we can ignore it
+    // Issuing multiple identical commands on successive frames can lead to bugs
+    if (unit->getLastCommand().getTarget() == target) { return; }
+    
+    // If there's nothing left to stop us, right click!
+    unit->rightClick(target);
 }
