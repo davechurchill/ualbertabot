@@ -16,17 +16,15 @@ class MapTools
     int         m_frame = 0;
     bool        m_drawMap = false;
 
-    int  getSectorNumber(int x, int y) const;
     bool canBuild(int tileX, int tileY) const;
     bool canWalk(int tileX, int tileY) const;
     void printMap() const;
 
-    MapTools();
 
 public:
 
-    static MapTools& Instance();
-    
+    MapTools();
+
     void    onStart();
     void    onFrame();
     void    draw() const;

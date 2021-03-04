@@ -8,13 +8,7 @@
 // constructor for MapTools
 MapTools::MapTools()
 {
-    onStart();
-}
-
-MapTools& MapTools::Instance()
-{
-    static MapTools instance;
-    return instance;
+    
 }
 
 void MapTools::onStart()
