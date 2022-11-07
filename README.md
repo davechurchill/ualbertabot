@@ -13,7 +13,10 @@
 
 Please check out the [Wiki](https://github.com/davechurchill/ualbertabot/wiki) for full instructions and documentation!
 
-A series of Chinese articles analyze the code of UAlbertaBot.  
+NOTE: If you're looking for a StarCraft II bot please check out [CommandCenter](https://github.com/davechurchill/commandcenter/)
+
+**Update: Nov, 2022**  
+A series of Chinese articles analyze the source code of UAlbertaBot for study .  
 中文版源码解析   
 1、[architecture and rules](https://zhuanlan.zhihu.com/p/573691820)  
 2、[build sequence search](https://zhuanlan.zhihu.com/p/573886134)  
@@ -23,8 +26,3 @@ A series of Chinese articles analyze the code of UAlbertaBot.
 6、[code of building](https://zhuanlan.zhihu.com/p/579130009)  
 7、[code of combat](https://zhuanlan.zhihu.com/p/579815541)  
 8、[code of maptool](https://zhuanlan.zhihu.com/p/580213176)  
-
-
-
-
-NOTE: If you're looking for a StarCraft II bot please check out [CommandCenter](https://github.com/davechurchill/commandcenter/)
