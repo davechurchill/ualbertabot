@@ -13,7 +13,7 @@
 
 Please check out the [Wiki](https://github.com/davechurchill/ualbertabot/wiki) for full instructions and documentation!
 
-A series of Chinese articles analyze the code of UAlbertaBot.  
+A series of Chinese articles analyze the code of UAlbertaBot.中文版源码解析。
 1、[architecture and rules](https://zhuanlan.zhihu.com/p/573691820)  
 2、[build sequence search](https://zhuanlan.zhihu.com/p/573886134)  
 3、[combat simulation evaluation](https://zhuanlan.zhihu.com/p/574884264)  
