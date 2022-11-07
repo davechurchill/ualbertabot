@@ -12,15 +12,15 @@
 - You can download StarCraft 1.16.1 here: http://ftp.blizzard.com/pub/broodwar/patches/PC/BW-1161.exe
 
 **code analysis** 
-A series of Chinese articles analyze the code of UAlbertaBot.
-1、[architecture and rules](https://zhuanlan.zhihu.com/p/573691820)
-2、[build sequence search](https://zhuanlan.zhihu.com/p/573886134)
-3、[combat simulation evaluation](https://zhuanlan.zhihu.com/p/574884264)
-4、[code of starterbot](https://zhuanlan.zhihu.com/p/575995995)
-5、[code of strategy](https://zhuanlan.zhihu.com/p/577220250)
-6、[code of building](https://zhuanlan.zhihu.com/p/579130009)
-7、[code of combat](https://zhuanlan.zhihu.com/p/579815541)
-8、[code of maptool](https://zhuanlan.zhihu.com/p/580213176)
+A series of Chinese articles analyze the code of UAlbertaBot.  
+1、[architecture and rules](https://zhuanlan.zhihu.com/p/573691820)  
+2、[build sequence search](https://zhuanlan.zhihu.com/p/573886134)  
+3、[combat simulation evaluation](https://zhuanlan.zhihu.com/p/574884264)  
+4、[code of starterbot](https://zhuanlan.zhihu.com/p/575995995)  
+5、[code of strategy](https://zhuanlan.zhihu.com/p/577220250)  
+6、[code of building](https://zhuanlan.zhihu.com/p/579130009)  
+7、[code of combat](https://zhuanlan.zhihu.com/p/579815541)  
+8、[code of maptool](https://zhuanlan.zhihu.com/p/580213176)  
 
 
 Please check out the [Wiki](https://github.com/davechurchill/ualbertabot/wiki) for full instructions and documentation!
