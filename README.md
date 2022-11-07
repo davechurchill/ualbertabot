@@ -11,7 +11,8 @@
 - The bot will only work for the first game played after the .exe is run, so AUTO_RESTART won't work well. I'll fix this later
 - You can download StarCraft 1.16.1 here: http://ftp.blizzard.com/pub/broodwar/patches/PC/BW-1161.exe
 
-**code analysis** 
+Please check out the [Wiki](https://github.com/davechurchill/ualbertabot/wiki) for full instructions and documentation!
+
 A series of Chinese articles analyze the code of UAlbertaBot.  
 1、[architecture and rules](https://zhuanlan.zhihu.com/p/573691820)  
 2、[build sequence search](https://zhuanlan.zhihu.com/p/573886134)  
@@ -23,6 +24,6 @@ A series of Chinese articles analyze the code of UAlbertaBot.
 8、[code of maptool](https://zhuanlan.zhihu.com/p/580213176)  
 
 
-Please check out the [Wiki](https://github.com/davechurchill/ualbertabot/wiki) for full instructions and documentation!
+
 
 NOTE: If you're looking for a StarCraft II bot please check out [CommandCenter](https://github.com/davechurchill/commandcenter/)
