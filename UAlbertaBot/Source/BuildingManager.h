@@ -19,6 +19,7 @@ class BuildingManager
     bool isEvolvedBuilding(BWAPI::UnitType type);
     bool isBuildingPositionExplored(const Building & b) const;
     void removeBuildings(const std::vector<Building> & toRemove);
+    void rushDefence();
 
     void validateWorkersAndBuildings();		    // STEP 1
     void assignWorkersToUnassignedBuildings();	// STEP 2

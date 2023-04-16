@@ -212,7 +212,7 @@ void BOSSManager::update(double timeLimit)
 
 					return;
 				}
-                // and if that search doesn't work then we're out of luck, no build orders forus
+                // and if that search doesn't work then we're out of luck, no build orders for us
 				catch (const BOSS::BOSSException & exception)
                 {
                     UAB_ASSERT_WARNING(false, "BOSS Timeout Naive Search Exception: %s", exception.what());

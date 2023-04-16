@@ -62,7 +62,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../BOSS/source;../SparCraft/source;../source;$(BWTA_DIR)/include;$(BWAPI_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../BOSS/source;../SparCraft/source;../source;$(BWTA_DIR)/include;$(BWAPI_DIR)/include;D:\Skola\FIIT\BP\ualbertabot\BWEM 1.4.1\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;EXAMPLEAIMODULE_EXPORTS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -80,13 +80,14 @@
       <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
       <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>D:\Skola\FIIT\BP\ualbertabot\BWEM 1.4.1\src;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <Optimization>Full</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>../BOSS/source;../SparCraft/source;../source;$(BWAPI_DIR)/include;$(BWTA_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../BOSS/source;../SparCraft/source;../source;$(BWAPI_DIR)/include;$(BWTA_DIR)/include;D:\Skola\FIIT\BP\ualbertabot\BWEM 1.4.1\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;EXAMPLEAIMODULE_EXPORTS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -116,6 +117,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\BWEM 1.4.1\EasyBMP_1.06\EasyBMP.cpp" />
+    <ClCompile Include="..\..\BWEM 1.4.1\src\area.cpp" />
+    <ClCompile Include="..\..\BWEM 1.4.1\src\base.cpp" />
+    <ClCompile Include="..\..\BWEM 1.4.1\src\bwapiExt.cpp" />
+    <ClCompile Include="..\..\BWEM 1.4.1\src\bwem.cpp" />
+    <ClCompile Include="..\..\BWEM 1.4.1\src\cp.cpp" />
+    <ClCompile Include="..\..\BWEM 1.4.1\src\examples.cpp" />
+    <ClCompile Include="..\..\BWEM 1.4.1\src\exampleWall.cpp" />
+    <ClCompile Include="..\..\BWEM 1.4.1\src\graph.cpp" />
+    <ClCompile Include="..\..\BWEM 1.4.1\src\gridMap.cpp" />
+    <ClCompile Include="..\..\BWEM 1.4.1\src\map.cpp" />
+    <ClCompile Include="..\..\BWEM 1.4.1\src\mapDrawer.cpp" />
+    <ClCompile Include="..\..\BWEM 1.4.1\src\mapImpl.cpp" />
+    <ClCompile Include="..\..\BWEM 1.4.1\src\mapPrinter.cpp" />
+    <ClCompile Include="..\..\BWEM 1.4.1\src\neutral.cpp" />
+    <ClCompile Include="..\..\BWEM 1.4.1\src\tiles.cpp" />
+    <ClCompile Include="..\..\BWEM 1.4.1\src\utils.cpp" />
+    <ClCompile Include="..\..\BWEM 1.4.1\src\winutils.cpp" />
     <ClCompile Include="..\Source\AutoObserver.cpp" />
     <ClCompile Include="..\Source\BaseLocation.cpp" />
     <ClCompile Include="..\Source\BaseLocationManager.cpp" />
@@ -161,6 +180,28 @@
     <ClCompile Include="..\source\WorkerManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\BWEM 1.4.1\EasyBMP_1.06\EasyBMP.h" />
+    <ClInclude Include="..\..\BWEM 1.4.1\EasyBMP_1.06\EasyBMP_BMP.h" />
+    <ClInclude Include="..\..\BWEM 1.4.1\EasyBMP_1.06\EasyBMP_DataStructures.h" />
+    <ClInclude Include="..\..\BWEM 1.4.1\EasyBMP_1.06\EasyBMP_VariousBMPutilities.h" />
+    <ClInclude Include="..\..\BWEM 1.4.1\src\area.h" />
+    <ClInclude Include="..\..\BWEM 1.4.1\src\base.h" />
+    <ClInclude Include="..\..\BWEM 1.4.1\src\bwapiExt.h" />
+    <ClInclude Include="..\..\BWEM 1.4.1\src\bwem.h" />
+    <ClInclude Include="..\..\BWEM 1.4.1\src\cp.h" />
+    <ClInclude Include="..\..\BWEM 1.4.1\src\defs.h" />
+    <ClInclude Include="..\..\BWEM 1.4.1\src\examples.h" />
+    <ClInclude Include="..\..\BWEM 1.4.1\src\exampleWall.h" />
+    <ClInclude Include="..\..\BWEM 1.4.1\src\graph.h" />
+    <ClInclude Include="..\..\BWEM 1.4.1\src\gridMap.h" />
+    <ClInclude Include="..\..\BWEM 1.4.1\src\map.h" />
+    <ClInclude Include="..\..\BWEM 1.4.1\src\mapDrawer.h" />
+    <ClInclude Include="..\..\BWEM 1.4.1\src\mapImpl.h" />
+    <ClInclude Include="..\..\BWEM 1.4.1\src\mapPrinter.h" />
+    <ClInclude Include="..\..\BWEM 1.4.1\src\neutral.h" />
+    <ClInclude Include="..\..\BWEM 1.4.1\src\tiles.h" />
+    <ClInclude Include="..\..\BWEM 1.4.1\src\utils.h" />
+    <ClInclude Include="..\..\BWEM 1.4.1\src\winutils.h" />
     <ClInclude Include="..\Source\AutoObserver.h" />
     <ClInclude Include="..\Source\BaseLocation.h" />
     <ClInclude Include="..\Source\BaseLocationManager.h" />

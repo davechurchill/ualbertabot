@@ -7,6 +7,7 @@
 #include "Micro.h"
 #include "WorkerManager.h"
 #include "MapTools.h"
+#include "bwem.h"
 
 using namespace UAlbertaBot;
 
@@ -18,13 +19,14 @@ void ScoutManager::update()
 {
     PROFILE_FUNCTION();
 
-    if (!Config::Modules::UsingScoutManager)
-    {
-        return;
-    }
+if (!Config::Modules::UsingScoutManager)
+{
+    return;
+}
 
-    moveScouts();
-    drawScoutInformation(200, 320);
+//rushWarning();
+moveScouts();
+drawScoutInformation(200, 320);
 }
 
 void ScoutManager::setWorkerScout(BWAPI::Unit unit)
@@ -47,11 +49,13 @@ void ScoutManager::drawScoutInformation(int x, int y)
     }
 
     BWAPI::Broodwar->drawTextScreen(x, y, "ScoutInfo: %s", m_scoutStatus.c_str());
-    BWAPI::Broodwar->drawTextScreen(x, y+10, "GasSteal: %s", m_gasStealStatus.c_str());
+    BWAPI::Broodwar->drawTextScreen(x, y + 10, "GasSteal: %s", m_gasStealStatus.c_str());
 }
 
 void ScoutManager::moveScouts()
 {
+    const BWEM::Map& mapa = BWEM::Map::Instance();
+
     if (!m_workerScout || !m_workerScout->exists() || !(m_workerScout->getHitPoints() > 0))
     {
         return;
@@ -62,8 +66,7 @@ void ScoutManager::moveScouts()
     gasSteal();
 
     // get the enemy base location, if we have one
-    const BaseLocation * enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
-
+    const BaseLocation* enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
     const int scoutDistanceThreshold = 30;
 
     if (m_workerScout->isCarryingGas())
@@ -88,8 +91,12 @@ void ScoutManager::moveScouts()
     {
         m_scoutStatus = "Enemy base unknown, exploring";
 
-        for (auto startLocation : BWAPI::Broodwar->getStartLocations())
+        for (const BWAPI::TilePosition startLocation : BWAPI::Broodwar->getStartLocations())
         {
+            if (scoutHP < m_previousScoutHP)
+            {
+                Global::Info().setRushInfo(true);
+            }
             // if we haven't explored it yet, explore it
             if (!BWAPI::Broodwar->isExplored(startLocation))
             {
@@ -110,6 +117,10 @@ void ScoutManager::moveScouts()
         // this ignores if their scout worker attacks it on the way to their base
         if (scoutHP < m_previousScoutHP)
         {
+            if (m_workerScout->getClosestUnit()->getType() == BWAPI::UnitTypes::Zerg_Zergling)
+            {
+                Global::Info().setRushInfo(true);
+            }
             m_scoutUnderAttack = true;
         }
 
@@ -136,8 +147,10 @@ void ScoutManager::moveScouts()
                 // otherwise keep moving to the enemy region
                 else
                 {
-                    m_scoutStatus = "Following perimeter";
-                    Micro::SmartMove(m_workerScout, BWAPI::Position(enemyBaseLocation->getPosition()));
+                    if (m_scoutStatus == "Enemy base unknown, exploring" || m_scoutStatus == "Enemy region known, going there")
+                        m_scoutStatus = "Enemy Base";
+                    followPerimeter(enemyBaseLocation);
+                    //Micro::SmartMove(m_workerScout, BWAPI::Position(enemyBaseLocation->getPosition()));
                 }
 
             }
@@ -313,4 +326,72 @@ bool ScoutManager::immediateThreat()
 BWAPI::Position ScoutManager::getFleePosition()
 {
     return BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
+}
+
+void ScoutManager::followPerimeter(const BaseLocation * enemyBaseLocation)
+{
+    // Get the BWEM map instance
+    const BWEM::Map& mapa = BWEM::Map::Instance();
+
+    // Find the closest choke point to the enemy starting location
+    const BWEM::ChokePoint* closestChokepoint = nullptr;
+    int closestChokeDist = INT_MAX;
+
+    for (const auto& choke : (mapa.GetArea(enemyBaseLocation->getDepotPosition()))->ChokePoints())
+    {
+        const int dist = enemyBaseLocation->getGroundDistance(BWAPI::TilePosition(choke->Center()));
+        if (dist < closestChokeDist)
+        {
+            closestChokeDist = dist;
+            closestChokepoint = choke;
+        }
+    }
+
+    if (closestChokepoint)
+    {
+        // Move the scout betweeb enemy base and enemy choke point
+        const BWAPI::Position scoutPos = m_workerScout->getPosition();
+        const BWAPI::Position chokePos = BWAPI::Position(closestChokepoint->Center());
+        const BWAPI::Position enemyBasePos = enemyBaseLocation->getPosition();
+
+        if (m_scoutStatus == "Enemy Base" && scoutPos.getDistance(enemyBasePos) < 75)
+        {
+            rushWarning();
+            m_scoutStatus = "Enemy choke";
+        }
+        else if (m_scoutStatus == "Enemy choke" && scoutPos.getDistance(chokePos) < 75)
+        {
+            m_scoutStatus = "Enemy Base";
+        }
+
+        if (m_scoutStatus == "Enemy Base")
+        {
+            Micro::SmartMove(m_workerScout, enemyBasePos);
+        }
+        else if (m_scoutStatus == "Enemy choke")
+        {
+            Micro::SmartMove(m_workerScout, chokePos);
+        }
+    }
+
+}
+
+void ScoutManager::rushWarning()
+{
+    int numOfBuildings = 0;
+
+    for (auto ui : BWAPI::Broodwar->enemy()->getUnits())
+    {
+        if (ui->getType().isBuilding())
+            numOfBuildings++;
+
+        if (ui->getType() == BWAPI::UnitTypes::Zerg_Spawning_Pool)
+        {
+            Global::Info().setRushInfo(true);
+        }
+    }
+    if (numOfBuildings > 2)
+    {
+        Global::Info().setRushInfo(false);
+    }
 }

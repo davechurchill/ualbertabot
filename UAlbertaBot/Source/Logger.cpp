@@ -35,10 +35,15 @@ void Logger::LogAppendToFile(const std::string & logFile, const char *fmt, ...)
 
 void Logger::LogOverwriteToFile(const std::string & logFile, const std::string & msg)
 {
-    std::ofstream logStream(logFile.c_str());
-    logStream << msg;
-    logStream.flush();
-    logStream.close();
+    //std::cout << logFile << logFile.c_str() << std::endl;
+    //std::ofstream logStream(logFile.c_str());
+    //std::ofstream ano("C:\\Users\\Marti\\Desktop\\ano.txt");
+    //logStream << msg;
+    //ano << msg;
+    //logStream.flush();
+    //ano.flush();
+    //logStream.close();
+    //ano.close();
 }
 
 

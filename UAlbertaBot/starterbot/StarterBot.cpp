@@ -24,6 +24,7 @@ void StarterBot::onStart()
 // Called whenever the game ends and tells you if you won or not
 void StarterBot::onEnd(bool isWinner) 
 {
+   
     std::cout << "We " << (isWinner ? "won!" : "lost!") << "\n";
 }
 
@@ -140,13 +141,13 @@ void StarterBot::onSendText(std::string text)
 // so this will trigger when you issue the build command for most units
 void StarterBot::onUnitCreate(BWAPI::Unit unit)
 { 
-	
+    
 }
 
 // Called whenever a unit finished construction, with a pointer to the unit
 void StarterBot::onUnitComplete(BWAPI::Unit unit)
 {
-	
+    
 }
 
 // Called whenever a unit appears, with a pointer to the destroyed unit

@@ -13,6 +13,9 @@
     <Filter Include="common">
       <UniqueIdentifier>{849d54bf-a76a-4425-8399-099fbe0360c4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="BWEM">
+      <UniqueIdentifier>{d8a9b945-0692-45f8-8fc6-e00f157a8fa1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\CombatCommander.cpp">
@@ -136,6 +139,58 @@
     <ClCompile Include="..\Source\BaseLocationManager.cpp">
       <Filter>macro</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\BWEM 1.4.1\src\area.cpp">
+      <Filter>BWEM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\BWEM 1.4.1\src\base.cpp">
+      <Filter>BWEM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\BWEM 1.4.1\src\bwapiExt.cpp">
+      <Filter>BWEM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\BWEM 1.4.1\src\bwem.cpp">
+      <Filter>BWEM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\BWEM 1.4.1\src\cp.cpp">
+      <Filter>BWEM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\BWEM 1.4.1\src\examples.cpp">
+      <Filter>BWEM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\BWEM 1.4.1\src\exampleWall.cpp">
+      <Filter>BWEM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\BWEM 1.4.1\src\graph.cpp">
+      <Filter>BWEM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\BWEM 1.4.1\src\gridMap.cpp">
+      <Filter>BWEM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\BWEM 1.4.1\src\map.cpp">
+      <Filter>BWEM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\BWEM 1.4.1\src\mapDrawer.cpp">
+      <Filter>BWEM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\BWEM 1.4.1\src\mapImpl.cpp">
+      <Filter>BWEM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\BWEM 1.4.1\src\mapPrinter.cpp">
+      <Filter>BWEM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\BWEM 1.4.1\src\neutral.cpp">
+      <Filter>BWEM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\BWEM 1.4.1\src\tiles.cpp">
+      <Filter>BWEM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\BWEM 1.4.1\src\utils.cpp">
+      <Filter>BWEM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\BWEM 1.4.1\src\winutils.cpp">
+      <Filter>BWEM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\BWEM 1.4.1\EasyBMP_1.06\EasyBMP.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\CombatCommander.h">
@@ -267,5 +322,63 @@
     <ClInclude Include="..\Source\BaseLocation.h">
       <Filter>macro</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\BWEM 1.4.1\src\area.h">
+      <Filter>BWEM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\BWEM 1.4.1\src\base.h">
+      <Filter>BWEM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\BWEM 1.4.1\src\bwapiExt.h">
+      <Filter>BWEM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\BWEM 1.4.1\src\bwem.h">
+      <Filter>BWEM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\BWEM 1.4.1\src\cp.h">
+      <Filter>BWEM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\BWEM 1.4.1\src\defs.h">
+      <Filter>BWEM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\BWEM 1.4.1\src\examples.h">
+      <Filter>BWEM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\BWEM 1.4.1\src\exampleWall.h">
+      <Filter>BWEM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\BWEM 1.4.1\src\graph.h">
+      <Filter>BWEM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\BWEM 1.4.1\src\gridMap.h">
+      <Filter>BWEM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\BWEM 1.4.1\src\map.h">
+      <Filter>BWEM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\BWEM 1.4.1\src\mapDrawer.h">
+      <Filter>BWEM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\BWEM 1.4.1\src\mapImpl.h">
+      <Filter>BWEM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\BWEM 1.4.1\src\mapPrinter.h">
+      <Filter>BWEM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\BWEM 1.4.1\src\neutral.h">
+      <Filter>BWEM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\BWEM 1.4.1\src\tiles.h">
+      <Filter>BWEM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\BWEM 1.4.1\src\utils.h">
+      <Filter>BWEM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\BWEM 1.4.1\src\winutils.h">
+      <Filter>BWEM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\BWEM 1.4.1\EasyBMP_1.06\EasyBMP.h" />
+    <ClInclude Include="..\..\BWEM 1.4.1\EasyBMP_1.06\EasyBMP_BMP.h" />
+    <ClInclude Include="..\..\BWEM 1.4.1\EasyBMP_1.06\EasyBMP_DataStructures.h" />
+    <ClInclude Include="..\..\BWEM 1.4.1\EasyBMP_1.06\EasyBMP_VariousBMPutilities.h" />
   </ItemGroup>
 </Project>

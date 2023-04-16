@@ -126,7 +126,7 @@ void BaseLocationManager::onFrame()
     for (auto & baseLocation : m_baseLocationData)
     {
         baseLocation.setPlayerOccupying(BWAPI::Broodwar->self(), false);
-        baseLocation.setPlayerOccupying(BWAPI::Broodwar->self(), false);
+        baseLocation.setPlayerOccupying(BWAPI::Broodwar->enemy(), false);
     }
 
     // for each unit on the map, update which base location it may be occupying
@@ -255,11 +255,11 @@ void BaseLocationManager::drawBaseLocations()
         baseLocation.draw();
     }
 
-    // draw a purple sphere at the next expansion location
-    //BWAPI::TilePosition nextExpansionPosition = getNextExpansion(BWAPI::Broodwar->self());
+     //draw a purple sphere at the next expansion location
+    BWAPI::TilePosition nextExpansionPosition = getNextExpansion(BWAPI::Broodwar->self());
 
-    //BWAPI::Broodwar->drawCircleMap(BWAPI::Position(nextExpansionPosition), 32, BWAPI::Color(255, 0, 255), true);
-    //BWAPI::Broodwar->drawTextMap(BWAPI::Position(nextExpansionPosition), "Next Expansion Location", BWAPI::Color(255, 0, 255));
+    BWAPI::Broodwar->drawCircleMap(BWAPI::Position(nextExpansionPosition), 32, BWAPI::Color(255, 0, 255), true);
+    BWAPI::Broodwar->drawTextMap(BWAPI::Position(nextExpansionPosition), "Next Expansion Location", BWAPI::Color(255, 0, 255));
 }
 
 const std::vector<const BaseLocation *> & BaseLocationManager::getBaseLocations() const
@@ -296,7 +296,9 @@ BWAPI::TilePosition BaseLocationManager::getNextExpansion(BWAPI::Player player) 
     for (auto & base : getBaseLocations())
     {
         // skip mineral only and starting locations (TODO: fix this)
-        if (base->isMineralOnly() || base->isStartLocation())
+        if (base->isMineralOnly() || base->isStartLocation() ||
+            base->isOccupiedByPlayer(BWAPI::Broodwar->self()) ||
+            base->isOccupiedByPlayer(BWAPI::Broodwar->enemy()))
         {
             continue;
         }

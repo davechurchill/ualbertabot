@@ -53,7 +53,9 @@ bool BuildOrderQueue::canSkipItem()
         return false;
     }
 
+
     // is the current highest priority item not blocking a skip
+    auto x = queue[queue.size() - 1 - numSkippedItems];
     bool highestNotBlocking = !queue[queue.size() - 1 - numSkippedItems].blocking;
 
     // this tells us if we can skip
@@ -192,4 +194,14 @@ void BuildOrderQueue::drawQueueInformation(int x, int y)
 
         BWAPI::Broodwar->drawTextScreen(x, y+(i*10), " %s%s", prefix.c_str(), type.getName().c_str());
     }
+}
+
+bool UAlbertaBot::BuildOrderQueue::isInQueue(MetaType m)
+{
+    for (auto it : queue)
+    {
+        if (m.getUnitType() == it.metaType.getUnitType())
+            return true;
+    }
+    return false;
 }

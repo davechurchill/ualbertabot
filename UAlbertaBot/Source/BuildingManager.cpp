@@ -7,6 +7,7 @@
 #include "BuildingData.h"
 #include "WorkerManager.h"
 #include "BuildingPlacerManager.h"
+#include "InformationManager.h"
 
 using namespace UAlbertaBot;
 
@@ -27,8 +28,24 @@ void BuildingManager::update()
     checkForDeadTerranBuilders();           // if we are terran and a building is under construction without a worker, assign a new one    
     checkForCompletedBuildings();           // check to see if any buildings have completed and update data structures
     
-    drawBuildingInformation(200,50);
+    rushDefence();
+
+
+    drawBuildingInformation(200, 50);
     m_buildingPlacer.drawReservedTiles();
+    //if (BWAPI::Broodwar->getFrameCount() % 96 == 0)
+    //{
+    //    if (m_buildings.size())
+    //        
+    //        << "------------------------------------" << std::endl;
+    //    for (auto& b : m_buildings)
+    //    {
+    //        if (b.builderUnit != nullptr)
+    //            std::cout << "Worker_ID: " << b.builderUnit->getID() << "\tBuilding_name: " << b.type.getName() << std::endl;
+    //        else
+    //            std::cout << "Worker_ID: " << "nullprt" << "\tBuilding_name: " << b.type.getName() << std::endl;
+    //    }
+    //}
 }
 
 bool BuildingManager::isBeingBuilt(BWAPI::UnitType type)
@@ -53,18 +70,30 @@ void BuildingManager::validateWorkersAndBuildings()
     //       is under construction, place unit back into buildingsNeedingBuilders
 
     std::vector<Building> toRemove;
-    
-    // find any buildings which have become obsolete
+
     for (auto & b : m_buildings)
     {
         if (b.status != BuildingStatus::UnderConstruction)
         {
             continue;
         }
-
-        if (b.buildingUnit == nullptr || !b.buildingUnit->getType().isBuilding() || b.buildingUnit->getHitPoints() <= 0)
+        if (b.buildingUnit == nullptr || !b.buildingUnit->getType().isBuilding() || b.buildingUnit->getHitPoints() <= 0 || !b.buildingUnit->exists())
         {
             toRemove.push_back(b);
+
+            /// change worker status from building (@WorkerJob 2) to idle (@WorkerJob 4)
+            if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran && b.builderUnit->exists())
+            {
+                if (b.isGasSteal)
+                {
+                    Global::Scout().setWorkerScout(b.builderUnit);
+                }
+                // otherwise tell the worker manager we're finished with this unit
+                else
+                {
+                    Global::Workers().finishedWithWorker(b.builderUnit);
+                }
+            }
         }
     }
 
@@ -99,6 +128,15 @@ void BuildingManager::assignWorkersToUnassignedBuildings()
 
             b.builderUnit = workerToAssign;
 
+            // if building has been started but its not finished and worker is killed 
+            // assigne another worker by right click on it
+            if (b.buildingUnit)
+            {
+                Micro::SmartRightClick(b.builderUnit, b.buildingUnit);
+                b.status = BuildingStatus::UnderConstruction;
+                continue;
+            }
+
             BWAPI::TilePosition testLocation = getBuildingLocation(b);
             if (!testLocation.isValid())
             {
@@ -106,11 +144,11 @@ void BuildingManager::assignWorkersToUnassignedBuildings()
             }
 
             b.finalPosition = testLocation;
-
+            
             // reserve this building's space
             m_buildingPlacer.reserveTiles(b.finalPosition,b.type.tileWidth(),b.type.tileHeight());
-
             b.status = BuildingStatus::Assigned;
+            
         }
     }
 }
@@ -236,7 +274,20 @@ void BuildingManager::checkForStartedConstruction()
 }
 
 // STEP 5: IF WE ARE TERRAN, THIS MATTERS, SO: LOL
-void BuildingManager::checkForDeadTerranBuilders() {}
+// CHCEK IF ASSIGNED WORKER IS STILL ALIVE
+void BuildingManager::checkForDeadTerranBuilders() 
+{
+    for (auto & b : m_buildings)
+    {
+        // for each building under construction chcek status assigned worker
+        if (b.status == BuildingStatus::UnderConstruction && !b.builderUnit->exists())
+        {
+            // constructig worker was killed, setting back to status @Unassigned
+            b.status = BuildingStatus::Unassigned;
+        }
+    }
+
+}
 
 // STEP 6: CHECK FOR COMPLETED BUILDINGS
 void BuildingManager::checkForCompletedBuildings()
@@ -259,15 +310,7 @@ void BuildingManager::checkForCompletedBuildings()
             // if we are terran, give the worker back to worker manager
             if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran)
             {
-                if (b.isGasSteal)
-                {
-                    Global::Scout().setWorkerScout(b.builderUnit);
-                }
-                // otherwise tell the worker manager we're finished with this unit
-                else
-                {
-                    Global::Workers().finishedWithWorker(b.builderUnit);
-                }
+                Global::Workers().finishedWithWorker(b.builderUnit);
             }
 
             // remove this unit from the under construction vector
@@ -296,7 +339,7 @@ bool BuildingManager::isEvolvedBuilding(BWAPI::UnitType type)
 // add a new building to be constructed
 void BuildingManager::addBuildingTask(BWAPI::UnitType type, BWAPI::TilePosition desiredLocation, bool isGasSteal)
 {
-    m_reservedMinerals += type.mineralPrice();
+    m_reservedMinerals   += type.mineralPrice();
     m_reservedGas	     += type.gasPrice();
 
     Building b(type, desiredLocation);
@@ -461,5 +504,16 @@ void BuildingManager::removeBuildings(const std::vector<Building> & toRemove)
         {
             m_buildings.erase(it);
         }
+    }
+}
+
+
+
+
+void BuildingManager::rushDefence()
+{
+    if (Global::Info().getRushInfo())
+    {
+
     }
 }

@@ -1,0 +1,289 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+<head>
+<meta name="DESCRIPTION" content="FAQ"/>
+<meta name="KEYWORDS" content="BWEM,C++,library,BWAPI,Brood War,Starcraft,map,map analyser,"/>
+<title>BWEM library : FAQ</title>
+<link rel="stylesheet" type="text/css" href="style.css"/>
+</head>
+<body>
+<center>
+<a href="index.html">home</a>
+|
+<a href="features.html">features</a>
+|
+<a href="start.html">getting started</a>
+|
+<a href="faq.html">FAQ</a>
+|
+<a href="Stone.html">Stone</a>
+|
+<a href="Iron.html">Iron</a>
+|
+<a href="interactiveIron.html">Control the Iron!</a>
+|
+<a href="download.html">download</a>
+|
+<a href="help.html">help</a>
+|
+<a href="about.html">about</a>
+</center>
+<center>
+<h1>FAQ</h1>
+</center>
+<P/>
+<HR/>
+<ul>
+<li><a href="#where-is-the-doc">Where is the API documentation?</a>
+<li><a href="#how-mature">How mature is the library?</a>
+<li><a href="#how-fast">How fast is it?</a>
+<li><a href="#how-robust">How robust is it?</a>
+<li><a href="#easy-to-use">Is it easy to use?</a>
+<li><a href="#how-work">How does it work?</a>
+<li><a href="#altitudes">What are altitudes?</a>
+<li><a href="#code-simple">Is the code simple?</a>
+<li><a href="#not-satisfied">What if I'm not satisfied with the results of the analysis?</a>
+<li><a href="#modify-the-code">So may I modify the code to fit my needs?</a>
+<li><a href="#is-it-extensible">Is the library extensible?</a>
+<li><a href="#paths-optimal">Are the paths optimal?</a>
+<li><a href="#mix-libraries">Can I use the library together with other libraries?</a>
+</ul>
+<P/>
+<HR/>
+<P/>
+
+<h2 id="where-is-the-doc">Where is the API documentation?</h2>
+The whole documentation of the BWEM library is located in its headers source files.
+<br/>
+A good place to start with is <b>src/bwem.h</b>
+<br/>
+Every single function and type is documented in details.
+<P/>
+You don't need to read the whole API documentation though.
+The library provides concret and expected abstractions such as areas and choke points.
+You may want to read first the files <b>src/examples.h</b> and <b>src/examples.cpp</b>, which provide runable examples of how you can use the library and access the features.
+
+<h2 id="how-mature">How mature is the library?</h2>
+I consider it quite mature, in terms of both functionality and robustness.
+<ul>
+<li/>The API is stable now.
+<li/>The functionality should not evolve much, since the library provides all you need to access the Areas, ChokePoints, Bases, Tiles and MiniTiles in an easy and efficient way.
+<li/>The library has been tested on most of the official maps of StarCraft and BroodWar, with satisfying results.
+<li/><a href="Stone.html">Stone</a>, the first bot based on the library, demonstrated both its functionality and its robustness.
+<li/><a href="Iron.html">Iron</a>, currently under development, is based on the library too.
+</ul>
+
+
+<h2 id="how-fast">How fast is it?</h2>
+<u>The analysis:</u>
+<P/>
+On my computer, which runs at 2.5 GHz, the whole analysis takes 100 ms for typical maps used in StarCraft AI competitions.
+<br/>
+It takes 500 ms to analyse one of the biggest map: Frozen Sea.scx.
+<P/>
+As a consequence, you should be able to run in debug mode in a decent way.
+<P/>
+<u>The services:</u>
+<P/>
+Most of the functionality is provided with a time complexity of O(1). This includes path and ground distance requests.
+
+
+<h2 id="how-robust">How robust is it?</h2>
+The library has been tested on many maps, including special ones like Crystallis.scm.
+<br/>
+If you do encounter some maps yielding unacceptable results, or even a crash, please let me know!
+
+
+<h2 id="easy-to-use">Is it easy to use?</h2>
+I think so, but that's obviously subjective.
+Here is a snippet, taken from the file <b>examples.cpp</b> that comes with the library:
+<P>
+<pre style="background-color:rgb(253, 244, 225)">
+{
+    <span class="comment">// ...</span>
+  
+    for (const Area &amp; area : theMap.Areas())
+        for (const Base &amp; base : area.Bases())
+        {
+            if (MapDrawer::showBases)
+                Broodwar->drawBoxMap(Position(base.Location()),
+                                     Position(base.Location() + UnitType(Terran_Command_Center).tileSize()),
+                                     MapDrawer::Color::bases);
+
+            if (MapDrawer::showAssignedRessources)
+            {
+                vector&lt;Ressource *> AssignedRessources(base.Minerals().begin(), base.Minerals().end());
+                AssignedRessources.insert(AssignedRessources.end(), base.Geysers().begin(), base.Geysers().end());
+
+                for (const Ressource * r : AssignedRessources)
+                    Broodwar->drawLineMap(base.Center(), r->Pos(), MapDrawer::Color::assignedRessources);
+            }
+        }
+
+    <span class="comment">// ...</span>
+}
+</pre>
+<P/>
+The extract shows how to iterate through the Areas, the Bases, and their assigned Ressources.
+<br/>
+Do not hesitate to read more of <b>examples.cpp</b>!
+<P/>
+<i>MapDrawer</i> is a helper class that is provided together with the library. It can be used to print information about the map onto the game screen.
+<br/>
+Another helper class, <i>MapPrinter</i>, can be used to print information about the map into a file.
+<br/>
+Both are highly customizable and proved to be useful for debug purposes.
+<br/>
+By the way, they have been used to produce the <a href="index.html">screenshots</a> in this site.
+<P/>
+Safety is another aspect of the ease of use.
+BWEM provides safety through its use of modern C++ style.
+<br/>
+An exemple is type safety. Programming an AI for Starcraft requires dealing with three kinds of positions.
+In my experience, this is the source of a huge number of bugs.
+In order to avoid the possibility of errors, BWEM's API uses the template <i>TPosition</i> and its specializations
+ (<i>Position</i>, <i>WalkPosition</i>, <i>TilePosition</i>)
+provided by the <a target="_blank" href="http://bwapi.github.io/index.html">BWAPI library</a>, whenever possible.
+<P/>
+Also, make sure to read the <a href="start.html">getting started</a> page.
+
+
+<h2 id="how-work">How does it work?</h2>
+The analysis follows the steps:
+<ol>
+  <li/><a href="#altitudes">Altitudes</a> are computed for each MiniTile.
+  <P/>
+  <li/>The Areas are computed by considering the miniTiles successively in descending order of their altitude.
+  <br/>
+  Each of them either:
+  <br/>  - involves the creation of a new Area.
+  <br/>  - is added to some existing neighbouring Area.
+  <br/>  - makes two neighbouring Areas merge together.
+  <br/>
+  <P/>
+  <li/>The ChokePoints are deduced.
+  <P/>
+  <li/>Some statistics and measures like paths and ground distances are calculated.
+  <P/>
+  <li/>The Bases are created at relevant locations.
+</ol>
+The library also provides automatic recalculation of paths and ground distances (in the case blocking Minerals being destroyed for example).
+<br/>When this occurs, only a small part of the analysis is processed again.
+
+
+<h2 id="altitudes">What are altitudes?</h2>
+The altitude is the distance from the nearest non walkable MiniTile, except those which are part of small enough zones (lakes).
+<P/>
+Altitudes play an important role in the <a href="#how-work">analysis process</a>.
+<P/>
+Besides that, altitudes can be very useful in implementing various algorithms.
+<P/>
+Suppose, for example, you have your air unit somewhere in some area, being attacked by ground units.
+You want it to reach the nearest non walkable zone, to escape from the pursuers.
+<br/>Knowing the altitude for each MiniTile, you can use this very simple greedy algorithm: among the 8 directions,
+always choose the one for which the altitude of the neighbouring MiniTile is the lowest. This way you get the shortest path in O(1).
+<P/>
+Conversely it is just as easy to reach highest altitudes, though there may be local optima.
+
+
+<h2 id="code-simple">Is the code simple?</h2>
+Clearly, it is not trivial!
+<br/>The algorithms used are, however, quite simples. Most of them are derived from dijkstra and breadth-first search algorithms.
+<br/>Moreover the whole analysis is divided into sequential and well separated processes so that it is easy to reason about.
+
+
+<h2 id="not-satisfied">What if I'm not satisfied with the results of the analysis?</h2>
+Areas, ChokePoints, Base placement are automatically computed by the BWEM library.
+<br/>You may not agree with all the results, for all the maps.
+<P/>
+Fortunatly, most of the algorithms used by the analysis are parametrised and it is fairly easy to modify these parameters.
+<br/>More information about that in <b>bwem.h</b>.
+<P/>
+As discussed in <a href="#code-simple">Is the code simple?</a>, the algorithms themselves are not that complex.
+You might want to modify them so that they fit your needs.
+
+
+<h2 id="modify-the-code">So may I modify the code to fit my needs?</h2>
+Usually, when you use a library, you don't want to modify it, as it may be hard work and error prone.
+Moreover, this removes the possibility of using next versions of the library easily.
+<P/>
+The case of the BWEM library is particular, however:
+<br/>- it doesn't aim at evolving much, as it is quite mature and stable now.
+<br/>- some users are not involved in a long-term project, especially those willing to compete in StarCraft AI competitions for one year only.
+<br/>So if you really need to change some of the code to fit your particular needs, feel free!
+
+
+<h2 id="is-it-extensible">Is the library extensible?</h2>
+Appart from willing to <a href="#modify-the-code">modify some part of the code</a>, you may want to add your own, related features.
+<br/>For simple cases, you will simply write functions that work on Areas, ChokePoints or Bases.
+<br/>But what if you want, saying, Areas to contain more information?
+<P/>
+As you don't want to modify the library, you will have to define some AreaExtension class.
+<br/>Then, you usually will want to be able to:
+<ul>
+  <li/>access the Area from its corresponding AreaExtension &rarr;  you can use either <i>Area::Id()</i> or Areas addresses.
+  <li/>access the AreaExtension from its corresponding Area &rarr;  you can use <i>Area::Ext()</i> and <i>Area::SetExt()</i>.
+</ul>
+More generally, BWEM's main classes inherit from UserData, which provides the <i>Ext()</i> / <i>SetExt()</i> methods.
+You can use them to extend theses classes.
+It is neither an easy nor a safe way, but it is fearly feasible.
+<P/>
+By the way, <a href="Stone.html">Stone</a> demonstrates this technique. It uses 4 extension types: <i>VArea</i>, <i>VChokePoint</i>, <i>VBase</i> and <i>VMap</i>.
+<br/>You can look at the source code for more details.
+<P/>
+
+
+<h2 id="paths-optimal">Are the paths optimal?</h2>
+The BWEM library provides paths made of ChokePoints. They are intented to be shortest, ground, paths.
+<P/>
+The suggested paths, if not optimal, are still very good paths.
+<P/>
+Looking at the first screenshot in the home page you may notice that the printed path connects the middle of the ChokePoints.
+<br/>Of course, in the general case the shortest path do NOT go through the exact middle of the ChokePoints.
+<br/>That the printed path connects middles is just a visual choice. It doesn't mean you should do the same. In a real case where you
+have to move a unit frame by frame, you would order it to move to the middle of next ChokePoint that is far enough (saying 10 tiles).
+This way, the unit will go through the ChokePoints of the path in a smart way.
+<br/><a href="Stone.html">Stone</a> demonstrates this technique. If you are interested, download its source code and look at the file <b>walking.cpp</b>.
+
+
+<h2 id="mix-libraries">Can I use the library together with other libraries?</h2>
+Of course you can.
+<br/>The BWEM library is a light-weight library with namespaces and minimal dependancies. It is not likely to interfere with other libraries.
+<P/>
+For example, you can include the BWEM library even if you already uses the <a target="_blank" href="https://bitbucket.org/auriarte/bwta2">BWTA2 library</a>.
+This way wou can access to specific features from each library. 
+<P/>
+
+
+
+
+<hr/>
+<P/>
+
+<center>
+<a href="index.html">home</a>
+|
+<a href="features.html">features</a>
+|
+<a href="start.html">getting started</a>
+|
+<a href="faq.html">FAQ</a>
+|
+<a href="Stone.html">Stone</a>
+|
+<a href="Iron.html">Iron</a>
+|
+<a href="interactiveIron.html">Control the Iron!</a>
+|
+<a href="download.html">download</a>
+|
+<a href="help.html">help</a>
+|
+<a href="about.html">about</a>
+</center>
+
+
+
+
+</body>
+</html>

@@ -38,7 +38,7 @@ class StrategyManager
 
     BWAPI::Race					    m_selfRace;
     BWAPI::Race					    m_enemyRace;
-    std::map<std::string, Strategy> m_strategies;
+    //std::map<std::string, Strategy> m_strategies;
     int                             m_totalGamesPlayed = 0;
     BuildOrder                      m_emptyBuildOrder;
 
@@ -50,7 +50,7 @@ class StrategyManager
     const	MetaPairVector  getZergBuildOrderGoal() const;
 
 public:
-
+    std::map<std::string, Strategy> m_strategies;
     void                    onEnd(const bool isWinner);
     void                    addStrategy(const std::string & name, Strategy & strategy);
     void                    setLearnedStrategy();

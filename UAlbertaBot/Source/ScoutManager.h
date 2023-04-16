@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Common.h"
+#include <BaseLocation.h>
+#include "bwem.h"
 
 namespace UAlbertaBot
 {
@@ -23,6 +25,8 @@ class ScoutManager
     void fleeScout();
     void moveScouts();
     void drawScoutInformation(int x, int y);
+    void followPerimeter(const BaseLocation* enemyBaseLocation);
+    void rushWarning();
     BWAPI::Position	getFleePosition();
     BWAPI::Unit		getEnemyGeyser();
     BWAPI::Unit		closestEnemyWorker();

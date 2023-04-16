@@ -1,0 +1,152 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+<head>
+<meta name="DESCRIPTION" content="This is the homepage of BWEM library"/>
+<meta name="KEYWORDS" content="BWEM,C++,library,BWAPI,Brood War,Starcraft,map,map analyser,"/>
+<title>BWEM library Homepage</title>
+<link rel="stylesheet" type="text/css" href="style.css"/>
+</head>
+<body>
+<center>
+<a href="index.html">home</a>
+|
+<a href="features.html">features</a>
+|
+<a href="start.html">getting started</a>
+|
+<a href="faq.html">FAQ</a>
+|
+<a href="Stone.html">Stone</a>
+|
+<a href="Iron.html">Iron</a>
+|
+<a href="interactiveIron.html">Control the Iron!</a>
+|
+<a href="download.html">download</a>
+|
+<a href="help.html">help</a>
+|
+<a href="about.html">about</a>
+</center>
+<center>
+<h1>Welcome to the BWEM library homepage</h1>
+</center>
+<center><a target="_blank" href="http://BWEM.sourceforge.net">[online version of this page]</a></center>
+<p/>
+Brood War Easy Map is a C++ library that analyses Brood War's maps and
+provides relevant information such as areas, choke points and base locations.
+<br/>
+It is built on top of the <a target="_blank" href="http://bwapi.github.io/index.html">BWAPI library</a>.
+<br/>
+It first aims at simplifying the development of bots for Brood War, but can be used
+for any task requiring high level map information.
+It can be used as a replacement for the <a target="_blank" href="https://bitbucket.org/auriarte/bwta2">BWTA2 add-on</a>,
+as it performs faster and shows better robustness while providing similar information.
+<p/>
+The current version is <B>1.4.1</B>
+<P/>
+It has been tested with Microsoft Visual Studio Express 2013 for Windows Desktop, 32-bit
+<P/>
+If you encounter any bug, error or warning message, do not hesitate to report it on
+<a target="_blank" href="http://sourceforge.net/p/bwem/discussion/general">http://sourceforge.net/p/bwem/discussion/general</a>
+or <a href="about.html">contact me</a>.
+<HR/>
+<h2>Screenshots:</h2>
+<P/>
+<IMG SRC="Andromeda.png"/>
+<BR/>
+<I>Andromeda.scx</I>
+<P/>
+<IMG SRC="Ride of Valkyries.png"/>
+<BR/>
+<I>Ride of Valkyries.scx</I>
+<P/>
+<IMG SRC="Heartbreak Ridge.png"/>
+<BR/>
+<I>Heartbreak Ridge.scx</I>
+<P/>
+<IMG SRC="Great Barrier Reef.png"/>
+<BR/>
+<I>Great Barrier Reef.scx</I>
+<P/>
+<IMG SRC="Baby Steps.png"/>
+<BR/>
+<I>Baby Steps.scm</I>
+<P/>
+<HR/>
+<h2><a href="download.html">Download link</a></h2>
+<HR/>
+<h2>License: MIT/X11</h2>
+<HR/>
+<h2>Requirements:</h2>
+<UL>
+<LI><a target="_blank" href="http://bwapi.github.io/index.html">BWAPI 4.1.2</a></LI>
+<LI>C++11 compiler (e.g. Visual Studio 2013)</LI>
+</UL>
+<HR/>
+<h2>Limitations:</h2>
+<UL>
+<LI>BWEM doesn't provide any geometric description (polygon) of the computed areas. If you need this, check the <a target="_blank" href="https://bitbucket.org/auriarte/bwta2">BWTA2 library</a></LI>
+<LI>BWEM is not compatible with older versions of BWAPI (prior to 4.0). If you need such compatibility, check the <a target="_blank" href="https://code.google.com/p/bwta/">BWTA library</a></LI>
+</UL>
+<P/>
+<HR/>
+<h2>History:</h2>
+<h3>July, 2017 : 1.4</h3>
+<UL>
+<LI>fix: A bug in Area::BoundingBoxSize</LI>
+<LI>fix: A bug with BWAPIClient and Map reinitialization (thanks to Florian Klemme for report and good hint)</LI>
+<LI>fix: A bug with Electric Circuit (thanks to Florian Klemme @Kruecke for report)</LI>
+<LI>fix: UserData::(Set)Ext was wrongly equivalent to UserData::(Set)Ptr (thanks to Florian Klemme for report and fix)</LI>
+<LI>fix: Compiling under vs 2017 (thanks to Joseph Huang for report and fix)</LI>
+<LI>new feature: ExampleWall</LI>
+<LI>new feature: BWEM_ext::disjoint</LI>
+</UL>
+<h3>September, 2016 : 1.3</h3>
+<UL>
+<LI>fix: A bug in Map::Crop</LI>
+<LI>fix: The length calculation in Map::GetPath has been improved in the case of a path through one ChokePoint exactly.</LI>
+<LI>new feature: Area::LowGroundPercentage, Area::HighGroundPercentage, Area::VeryHighGroundPercentage</LI>
+<LI>new feature: Tile::Doodad</LI>
+<LI>new feature: Ressource::Amount</LI>
+<LI>new feature: inBoundingBox</LI>
+<LI>new feature: Map::Initialized()</LI>
+<LI>new feature: GridMap</LI>
+<LI>new feature: Added the macros BWEM_USE_WINUTILS and BWEM_USE_MAP_PRINTER</LI>
+<LI>break: Tile::HigherGround was somewhat useless and has been replaced with Tile::GroundHeight (see the screenshot Ride of Valkyries.scx. See also this <a target="_blank" href="https://github.com/bwapi/bwapi/issues/675">related issue in BWAPI</a>).</LI>
+<LI>break: The type utils::check_t is now a class enum. If you used the 'check' and 'no_check' values explicitly, you will have to replace them with 'check_t::check' and 'check_t::no_check' respectively.</LI>
+</UL>
+<h3>November, 2015 : 1.2</h3>
+<UL>
+<LI>fix: MapPrinter could crash when writing the file, due to some invalid path. Now errors are handled in the constructor in a safer way.</LI>
+<LI>fix: The semantics of MapPrinter::showAreas and MapPrinter::showContinents have been made clearer. </LI>
+<LI>fix: An empty Log.txt was created and could crash, due to some invalid path. This file creation has been removed. </LI>
+<LI>fix: Tile::Data and Tile::SetData are no longer used by the internals. This removes the possibility that the automatic path recalculation overwrites user data.</LI>
+<LI>fix: BWAPI_ext::makeBoundingBoxIncludePoint is now more robust.</LI>
+<LI>feature: Area, ChokePoint, Base and Tile classes now inherit from the UserData class, thus providing them with the same free-to-use data.</LI>
+</UL>
+<h3>September, 2015 : first release 1.0 beta</h3>
+<P/>
+<center>
+<a href="index.html">home</a>
+|
+<a href="features.html">features</a>
+|
+<a href="start.html">getting started</a>
+|
+<a href="faq.html">FAQ</a>
+|
+<a href="Stone.html">Stone</a>
+|
+<a href="Iron.html">Iron</a>
+|
+<a href="interactiveIron.html">Control the Iron!</a>
+|
+<a href="download.html">download</a>
+|
+<a href="help.html">help</a>
+|
+<a href="about.html">about</a>
+</center>
+</body>
+</html>

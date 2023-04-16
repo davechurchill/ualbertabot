@@ -24,8 +24,8 @@ void DFBB_BuildOrderSmartSearch::doSearch()
     else
     {
         calculateSearchSettings();
-        _params.goal = _goal;
-        _params.initialState = _initialState;
+        _params.goal                        = _goal;
+        _params.initialState                = _initialState;
         _params.useRepetitions 				= true;
         _params.useIncreasingRepetitions 	= true;
         _params.useAlwaysMakeWorkers 		= true;

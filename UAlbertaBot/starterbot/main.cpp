@@ -10,7 +10,7 @@ void PlayGame();
 int main(int argc, char * argv[])
 {
     size_t gameCount = 0;
-
+    
     // if we are not currently connected to BWAPI, try to reconnect
     while (!BWAPI::BWAPIClient.connect())
     {

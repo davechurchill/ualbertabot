@@ -351,6 +351,16 @@ void InformationManager::getNearbyForce(std::vector<UnitInfo> & unitInfo, BWAPI:
 	}
 }
 
+bool UAlbertaBot::InformationManager::getRushInfo()
+{
+    return m_rushIncoming;
+}
+
+void UAlbertaBot::InformationManager::setRushInfo(bool rush)
+{
+    m_rushIncoming = rush;
+}
+
 int InformationManager::getNumUnits(BWAPI::UnitType t, BWAPI::Player player)
 {
 	return getUnitData(player).getNumUnits(t);
@@ -361,14 +371,70 @@ const UnitData & InformationManager::getUnitData(BWAPI::Player player) const
     return m_unitData.find(player)->second;
 }
 
+void InformationManager::removeOldScans()
+{
+    for (std::pair<int, BWAPI::Position> &scan : m_scans)
+    {
+        if (scan.first + 288 <= BWAPI::Broodwar->getFrameCount())
+        {
+            auto& toRemove = std::find(m_scans.begin(), m_scans.end(), scan);
+
+            if (toRemove != m_scans.end())
+            {
+                m_scans.erase(toRemove);
+            }
+        }
+    }
+}
+
+bool InformationManager::shouldScan(BWAPI::Position castPosition)
+{
+    for (auto &scan : m_scans)
+    {
+        if (castPosition.getDistance(scan.second) <= 320.0)
+        {
+            return false;
+        }
+    }
+    
+    return true;
+}
+
 bool InformationManager::enemyHasCloakedUnits()
 {
     for (const auto & kv : getUnitData(BWAPI::Broodwar->enemy()).getUnits())
 	{
 		const UnitInfo & ui(kv.second);
 
-        if (ui.type.isCloakable())
+        if (ui.type.isCloakable() || ui.type == BWAPI::UnitTypes::Zerg_Lurker)
         {
+            const BWAPI::Order scannerOrder = BWAPI::Orders::Scanner;
+
+            // Find an eligible unit to cast the Scan ability
+            BWAPI::Unit scanCaster = nullptr;
+            for (auto& unit : BWAPI::Broodwar->self()->getUnits())
+            {
+                if (unit->getType() == BWAPI::UnitTypes::Terran_Comsat_Station &&
+                    unit->getEnergy() >= BWAPI::TechTypes::Scanner_Sweep.energyCost())
+                {
+                    scanCaster = unit;
+                    break;
+                }
+            }
+
+            removeOldScans();
+
+            // If a valid caster is found, issue the Scan order
+            if (scanCaster != nullptr && (ui.unit->isCloaked() || ui.unit->isBurrowed()) && !ui.unit->isDetected())
+            {
+                BWAPI::Position scanPosition = ui.unit->getPosition(); // Position to scan
+
+                if (shouldScan(scanPosition))
+                {
+                    scanCaster->useTech(BWAPI::TechTypes::Scanner_Sweep, scanPosition);
+                    m_scans.push_back(std::pair<int, BWAPI::Position>(BWAPI::Broodwar->getFrameCount(), scanPosition));
+                }
+            }
             return true;
         }
 

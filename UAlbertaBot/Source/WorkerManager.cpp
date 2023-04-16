@@ -51,18 +51,30 @@ void WorkerManager::updateWorkerStatus()
             m_workerData.setWorkerJob(worker, WorkerData::Idle, nullptr);
         }
 
+        if (BWAPI::Broodwar->getFrameCount() % 96 == 0)
+        {
+            if (m_workerData.getWorkerJob(worker) == WorkerData::Build || m_workerData.getWorkerJob(worker) == WorkerData::Idle)
+            {
+                //std::cout << "ID: " << worker->getID() << "\tStatus: " << m_workerData.getWorkerJob(worker) << std::endl;
+                
+                //setMineralWorker(worker);
+            }
+        }
+
         // if its job is gas
         if (m_workerData.getWorkerJob(worker) == WorkerData::Gas)
         {
             const BWAPI::Unit refinery = m_workerData.getWorkerResource(worker);
 
             // if the refinery doesn't exist anymore
-            if (!refinery || !refinery->exists() ||	refinery->getHitPoints() <= 0)
+            if (!refinery || !refinery->exists() ||	refinery->getHitPoints() <= 0 || m_workerData.getNumMineralWorkers() <= 0)
             {
                 setMineralWorker(worker);
             }
         }
+        //std::cout << "ID: " << worker->getID() << "\tStatus: " << m_workerData.getWorkerJob(worker) << std::endl;
     }
+    //std::cout << "------------------------------------" << std::endl;
 }
 
 void WorkerManager::setRepairWorker(BWAPI::Unit worker, BWAPI::Unit unitToRepair)
@@ -84,10 +96,28 @@ void WorkerManager::handleGasWorkers()
         if (unit->getType().isRefinery() && unit->isCompleted() && !isGasStealRefinery(unit))
         {
             // get the number of workers currently assigned to it
-            const int numAssigned = m_workerData.getNumAssignedWorkers(unit);
+            int numAssigned = m_workerData.getNumAssignedWorkers(unit);
+            const int niu = m_workerData.getNumMineralWorkers();
+            
+            //if (niu - 3 <= 0)
+            //{
+            //    numAssigned += 3 - niu;
+            //}
+
+            int gasWor = (3 - niu) * (-1);
+            if (gasWor < 0)
+            {
+                gasWor = 0;
+            }
+            else if (gasWor > 3)
+            {
+                gasWor = 3;
+            }
+
 
             // if it's less than we want it to be, fill 'er up
-            for (int i=0; i<(Config::Macro::WorkersPerRefinery-numAssigned); ++i)
+            //for (int i=0; i<(Config::Macro::WorkersPerRefinery-numAssigned); ++i)
+            for (int i = 0; i < (gasWor - numAssigned); ++i)
             {
                 BWAPI::Unit gasWorker = getGasWorker(unit);
                 if (gasWorker)
@@ -149,7 +179,7 @@ void WorkerManager::handleRepairWorkers()
 
     for (auto & unit : BWAPI::Broodwar->self()->getUnits())
     {
-        if (unit->getType().isBuilding() && (unit->getHitPoints() < unit->getType().maxHitPoints()))
+        if (unit->getType().isBuilding() && (unit->getHitPoints() < unit->getType().maxHitPoints()) && unit->getRemainingBuildTime() == 0)
         {
             const BWAPI::Unit repairWorker = getClosestMineralWorkerTo(unit);
             setRepairWorker(repairWorker, unit);

@@ -49,6 +49,31 @@ void ProductionManager::performBuildOrderSearch()
     }
 }
 
+bool tmp()
+{
+    for (auto& unit : BWAPI::Broodwar->self()->getUnits())
+    {
+        if (unit->getType() != BWAPI::UnitTypes::Terran_Command_Center)
+        {
+            continue;
+        }
+
+        if (unit->getAddon() != nullptr)
+        {
+            continue;
+        }
+
+        // if we just told this unit to build an addon, then it will not be building another one
+        // this deals with the frame-delay of telling a unit to build an addon and it actually starting to build
+        if (unit->getLastCommand().getType() == BWAPI::UnitCommandTypes::Build_Addon
+            && (BWAPI::Broodwar->getFrameCount() - unit->getLastCommandFrame() < 10))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 void ProductionManager::update()
 {
     PROFILE_FUNCTION();
@@ -61,6 +86,32 @@ void ProductionManager::update()
     // check the _queue for stuff we can build
     manageBuildOrderQueue();
 
+    if (Global::Info().getRushInfo())
+    {
+        if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran)
+        {
+            if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Barracks) < 1)
+            {
+                m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Bunker), true);
+            }
+
+            if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Marine) < 2)
+            {
+                m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Marine), true);
+                m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Marine), true);
+                m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Marine), true);
+                m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Marine), true);
+                m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Marine), true);
+                m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Marine), true);
+            }
+
+            if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Barracks) == 0)
+            {
+                m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Barracks), true);
+            }
+            Global::Info().setRushInfo(false);
+        }
+    }
     // if nothing is currently building, get a new goal from the strategy manager
     if ((m_queue.size() == 0) && (BWAPI::Broodwar->getFrameCount() > 10))
     {
@@ -83,7 +134,9 @@ void ProductionManager::update()
     }
 
     // if they have cloaked units get a new goal asap
-    if (!m_enemyCloakedDetected && Global::Info().enemyHasCloakedUnits())
+    //if (!m_enemyCloakedDetected && Global::Info().enemyHasCloakedUnits())
+    // condition up is always false becouse the m_enemyCloakedDetected changes only in this method
+    if (Global::Info().enemyHasCloakedUnits())
     {
         if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Protoss)
         {
@@ -100,7 +153,7 @@ void ProductionManager::update()
         }
         else if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran)
         {
-            if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Missile_Turret) < 2)
+           /* if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Missile_Turret) < 2)
             {
                 m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Missile_Turret), true);
                 m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Missile_Turret), true);
@@ -109,6 +162,58 @@ void ProductionManager::update()
             if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Engineering_Bay) == 0)
             {
                 m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Engineering_Bay), true);
+            }*/
+
+           /* bool isComsatUnderConstruction = false;
+            for (auto& unit : BWAPI::Broodwar->self()->getUnits())
+            {
+                if (unit->getType() == BWAPI::UnitTypes::Terran_Comsat_Station && unit->isBeingConstructed())
+                {
+                    isComsatUnderConstruction = true;
+                    break;
+                }
+            }*/
+
+            const BWAPI::UnitType comsatStationType = BWAPI::UnitTypes::Terran_Comsat_Station;
+
+            // Check if there is a Comsat Station already in the build queue
+            //bool comsatStationQueued = false;
+            bool comsatStationQueued = m_queue.isInQueue(MetaType(BWAPI::UnitTypes::Terran_Comsat_Station));
+            bool academyQueued = m_queue.isInQueue(MetaType(BWAPI::UnitTypes::Terran_Academy));
+
+            //bool isComsatQueued = false;
+            //for (const auto& unit : BWAPI::Broodwar->self()->getUnits())
+            //{
+            //    if (unit->getType() == BWAPI::UnitTypes::Terran_Command_Center)
+            //    {
+            //        for (const auto& order : unit->getTrainingQueue())
+            //        {
+            //            if (order == BWAPI::UnitTypes::Terran_Comsat_Station)
+            //            {
+            //                isComsatQueued = true;
+            //                break;
+            //            }
+            //        }
+            //    }
+
+            //    if (isComsatQueued) break;
+            //}
+
+            int acC = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Academy);
+            bool acBB = m_buildingManager.isBeingBuilt(BWAPI::UnitTypes::Terran_Academy);
+            bool csBB = m_buildingManager.isBeingBuilt(BWAPI::UnitTypes::Terran_Comsat_Station);
+
+            if (acC != 0 && !acBB && !comsatStationQueued && !csBB && tmp() && m_comsatStationCount < BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Command_Center))
+            {
+                m_comsatStationCount++;
+                m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Comsat_Station), true);
+            }
+            
+            if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Academy) == 0  && 
+                !m_buildingManager.isBeingBuilt(BWAPI::UnitTypes::Terran_Academy) &&
+                !academyQueued)
+            {
+                m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Academy), true);
             }
         }
 
@@ -137,7 +242,8 @@ void ProductionManager::onUnitDestroy(BWAPI::Unit unit)
     if (Config::Modules::UsingBuildOrderSearch)
     {
         // if it's a worker or a building, we need to re-search for the current goal
-        if ((unit->getType().isWorker() && !Global::Workers().isWorkerScout(unit)) || unit->getType().isBuilding())
+        //if ((unit->getType().isWorker() && !Global::Workers().isWorkerScout(unit)) || unit->getType().isBuilding())
+        if (unit->getType().isBuilding())
         {
             if (unit->getType() != BWAPI::UnitTypes::Zerg_Drone)
             {
@@ -159,6 +265,7 @@ void ProductionManager::manageBuildOrderQueue()
 
     // the current item to be used
     BuildOrderItem & currentItem = m_queue.getHighestPriorityItem();
+    int x = currentItem.metaType.getUnitType();
 
     // while there is still something left in the _queue
     while (!m_queue.isEmpty())
@@ -293,6 +400,7 @@ BWAPI::Unit ProductionManager::getProducer(MetaType t, BWAPI::Position closestTo
             }
         }
 
+        bool isCapableToProduce = true;
         // if the type requires an addon and the producer doesn't have one
         typedef std::pair<BWAPI::UnitType, int> ReqPair;
         for (const ReqPair & pair : t.getUnitType().requiredUnits())
@@ -302,13 +410,14 @@ BWAPI::Unit ProductionManager::getProducer(MetaType t, BWAPI::Position closestTo
             {
                 if (!unit->getAddon() || (unit->getAddon()->getType() != requiredType))
                 {
-                    continue;
+                    isCapableToProduce = false;
                 }
             }
         }
 
         // if we haven't cut it, add it to the set of candidates
-        candidateProducers.insert(unit);
+        if (isCapableToProduce)
+            candidateProducers.insert(unit);
     }
 
     return getClosestUnitToPosition(candidateProducers, closestTo);
@@ -459,7 +568,7 @@ bool ProductionManager::detectBuildOrderDeadlock()
     int supplyAvailable		= std::max(0, BWAPI::Broodwar->self()->supplyTotal() - BWAPI::Broodwar->self()->supplyUsed());
 
     // if we don't have enough supply and none is being built, there's a deadlock
-    if ((supplyAvailable < supplyCost) && !supplyInProgress)
+    if ((supplyAvailable - 2 < supplyCost) && !supplyInProgress )
     {
         // if we're zerg, check to see if a building is planned to be built
         if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Zerg && m_buildingManager.buildingsQueued().size() > 0)
@@ -468,7 +577,10 @@ bool ProductionManager::detectBuildOrderDeadlock()
         }
         else
         {
-            return true;
+            if (m_queue.getHighestPriorityItem().metaType.getUnitType() != BWAPI::Broodwar->self()->getRace().getSupplyProvider())
+                return true;
+            else
+                return false;
         }
     }
 
@@ -716,3 +828,5 @@ std::vector<BWAPI::UnitType> ProductionManager::buildingsQueued()
 {
     return m_buildingManager.buildingsQueued();
 }
+
+

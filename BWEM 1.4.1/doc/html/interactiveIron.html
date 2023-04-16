@@ -1,0 +1,139 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+<head>
+<meta name="DESCRIPTION" content="about page"/>
+<meta name="KEYWORDS" content="BWEM,C++,library,BWAPI,Brood War,Starcraft,map,map analyser,"/>
+<title>BWEM library : Interactive Iron</title>
+<link rel="stylesheet" type="text/css" href="style.css"/>
+</head>
+<body>
+<center>
+<a href="index.html">home</a>
+|
+<a href="features.html">features</a>
+|
+<a href="start.html">getting started</a>
+|
+<a href="faq.html">FAQ</a>
+|
+<a href="Stone.html">Stone</a>
+|
+<a href="Iron.html">Iron</a>
+|
+<a href="interactiveIron.html">Control the Iron!</a>
+|
+<a href="download.html">download</a>
+|
+<a href="help.html">help</a>
+|
+<a href="about.html">about</a>
+</center>
+<center>
+<h1>Control the Iron!</h1>
+</center>
+<P/>
+You can now <a href="download.html">download</a> a special version of Iron called Interactive Iron.
+<P/>
+This version allow you to control many aspects of Iron play, in real time.
+<P/>
+As a bot developper, you can use it to make your bot much more robust against any potential threat from Iron.
+With Interactive Iron, you can make Iron stronger, and test you bot against it.
+You can also make Iron weaker of course.
+<P/>
+As a human player, using Interactive Iron will allow you to play more different games.
+<P/>
+<HR/>
+<P/>
+
+<center>
+<h2>game play commands</h2>
+</center>
+For most of these commands, type the same command twice to undo.
+<h3><i>integer</i></h3>
+Specify the delay between each frame in ms.
+<h3>scvs</h3>
+Make more SCVs. When the bases are saturated, excess SCVs are send to fight.
+<h3>marines</h3>
+Make more marines.
+<h3>vultures</h3>
+Make more vultures.
+<h3>tanks</h3>
+Make more tanks.
+<h3>goliaths</h3>
+Make more goliaths.
+<h3>wraiths</h3>
+Make more wraiths.
+<h3>expand</h3>
+Favor fast expansion.
+<h3>berserker</h3>
+Enter berserker mode. When in berserker mode, conservative behavior is less important.
+<h3>target <i>integer</i> <i>integer</i></h3>
+Specify a tile position as the default target for the combat units.
+<br/>This doesn't mean all the combat units will always go and stay their, though: Iron's units have their own decisions...
+<P/>
+Make sure the tile specified is a walkable tile that all the ground units can reach.
+<P/>
+Also, you may find the command <b>/grid</b> useful to see the each tile position.
+<h3>target</h3>
+Back to Iron's default target.
+<center>
+<P/>
+<HR/>
+<P/>
+<h2>BWEM display commands</h2>
+</center>
+Even if you don't use the BWEM library, Interactive Iron allows you to test some of its features on any map.
+<h3>seas</h3>
+<h3>lakes</h3>
+<h3>unbuildable</h3>
+<h3>gh</h3>
+<h3>minerals</h3>
+<h3>geysers</h3>
+<h3>static buildings</h3>
+<h3>bases</h3>
+<h3>assigned ressources</h3>
+<h3>frontier</h3>
+<h3>cp</h3>
+<h3>all</h3>
+All these commands can be combined together.
+<br/>Type the same command twice to undo.
+<br/>You can also type <b>show minerals</b> or <b>show minerals</b>.
+<P/>
+See <I>BWEM::utils::MapDrawer</I> for more information.
+<center>
+<P/>
+<HR/>
+<P/>
+<h2>BWEM print tool</h2>
+</center>
+When the game is finished, Interactive Iron automatically prints the map into the file <b>&lt;StarCraftFolder>bwapi-data/map.bmp</b>.
+<br/>See <I>BWEM::utils::MapPrinter</I> for more information.
+<P/>
+<HR/>
+<P/>
+
+<P/>
+<center>
+<a href="index.html">home</a>
+|
+<a href="features.html">features</a>
+|
+<a href="start.html">getting started</a>
+|
+<a href="faq.html">FAQ</a>
+|
+<a href="Stone.html">Stone</a>
+|
+<a href="Iron.html">Iron</a>
+|
+<a href="interactiveIron.html">Control the Iron!</a>
+|
+<a href="download.html">download</a>
+|
+<a href="help.html">help</a>
+|
+<a href="about.html">about</a>
+</center>
+
+</body>
+</html>

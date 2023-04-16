@@ -1,0 +1,315 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+<head>
+<meta name="DESCRIPTION" content="Getting started"/>
+<meta name="KEYWORDS" content="BWEM,C++,library,BWAPI,Brood War,Starcraft,map,map analyser,"/>
+<title>BWEM library : getting started</title>
+<link rel="stylesheet" type="text/css" href="style.css"/>
+</head>
+<body>
+<center>
+<a href="index.html">home</a>
+|
+<a href="features.html">features</a>
+|
+<a href="start.html">getting started</a>
+|
+<a href="faq.html">FAQ</a>
+|
+<a href="Stone.html">Stone</a>
+|
+<a href="Iron.html">Iron</a>
+|
+<a href="interactiveIron.html">Control the Iron!</a>
+|
+<a href="download.html">download</a>
+|
+<a href="help.html">help</a>
+|
+<a href="about.html">about</a>
+</center>
+<center>
+<h1>Getting started</h1>
+</center>
+<P/>
+
+<HR/>
+<UL>
+<LI><a href="#install-the-lib">How to install the library</a></LI>
+<LI><a href="#use-the-lib">How to use the library</a></LI>
+</UL>
+<P/>
+  
+<HR/>
+<h2 id="install-the-lib">How to install the library</h2>
+The library should be structured as follows:
+<UL>
+<LI><b>BWEM</b></LI>
+	<UL>
+	<LI><b>src</b></LI>
+		Contains the source files of the BWEM library.
+	<LI><b>EasyBMP_1.06</b></LI>
+    Contains additionnal source files required by the <I>BWEM::utils::printMap()</I> facility.
+  <LI><b>doc</b></LI>
+    Contains an offline copy of this documentation.
+  </UL>
+</UL>
+<u>First note</u>: the BWEM library includes the <a target="_blank" href="http://easybmp.sourceforge.net">EasyBMP library</a> (BSD-revised),
+whose source files are all contained in the <b>EasyBMP_1.06</b> folder.
+If you don't use the BWEM::utils::printMap() utility though, you don't need this third party library either and
+you can freely remove the whole folder. In this case, just make sure you also remove <b>src/mapPrinter.h</b> and <b>src/mapPrinter.cpp</b> plus
+any reference to these files. Before you do that though, note this simple and flexible utility may prove to be very useful
+while debugging for example. Alternatively, you can just set <i>BWEM_USE_MAP_PRINTER</i> to 0 in <b>src/defs.s</b>: this will disable the compilation of the related files.
+<BR/>
+Note that the EasyBMP library includes some Windows headers, so if you are on Linux, you have to set <i>BWEM_USE_MAP_PRINTER</i> to 0.
+<P/>
+<u>Second note</u>: if you are in Linux, you also have to set <i>BWEM_USE_WINUTILS</i> to 0 in <b>src/defs.s</b>.
+This will disable the compilation of the optional utils provided in <b>winutils.h</b>.
+<P/>
+The BWEM library consists in C++ source files only.
+You could create a library project to get a library file (.lib or .dll) from them.
+In the following though, only the direct approach will be discussed, i.e. adding these files into your C++ project.
+<P/>
+First, you should have a starting or an existing project that makes use of the <a target="_blank" href="http://bwapi.github.io/index.html">BWAPI library</a>.
+In the following, I will assume you are using the ExampleAIModule that comes with the BWAPI release. Also, make sure to use the latest version (at least 4.1.2).
+<P/>
+Copy the <b>BWEM</b> folder into your project (wherever appropriate). For example, in <b>ExampleAIModule\Source</b>.
+<BR/>
+Now you have to add the files into your C++ project, just as you would for any other C++ source file.
+<BR/>
+If you are using Visual Studio, this can be achieved using the solution explorer.
+<BR/>
+Right-click on your project, then add a new filter "BWEM".
+<BR/>
+Right-click on that filter, then add an existing item : actually you will browse and select all the files in <b>ExampleAIModule\Source\BWEM\src</b>.
+<BR/>
+Right-click on the filter once again, then browse and add the files <b> EasyBMP.h</b> and <b> EasyBMP.cpp</b> located in <b>ExampleAIModule\Source\BWEM\src\EasyBMP_1.06</b>.
+<BR/>
+That's all!
+
+<HR/>
+<h2 id="use-the-lib">How to use the library</h2>
+<P/>
+Again, I will assume you are working on the ExampleAIModule.
+To use the library, we will only modify <b>ExampleAIModule.cpp</b>.
+<P/>
+First, modify the first lines so that it shows as:
+<P/>
+<pre style="background-color:rgb(253, 244, 225)">
+<span class="existingCode">#include "ExampleAIModule.h"</span>
+#include "BWEM/src/bwem.h"      <span class="comment">// update the path if necessary</span><span class="existingCode">
+#include &lt;iostream>
+
+using namespace BWAPI;
+using namespace Filter;</span>
+//using namespace BWEM;
+//using namespace BWEM::BWAPI_ext;
+//using namespace BWEM::utils;
+
+namespace { auto &amp; theMap = BWEM::Map::Instance(); }</span>
+</pre>
+The <I>class BWEM::Map</I> is the entry point for almost every thing in BWEM.
+<BR/>
+The unique instance can be accessed using <I>BWEM::Map::Instance()</I>.
+For convenience, we define an alias for it : <I>theMap</I>, local to this file.
+We could as well use a reference or a pointer member of the class <I>ExampleAIModule</I> but, because the instance of <I>Map</I> is a global variable, this matters little.
+<P/>
+You may want to uncomment some or all of the 3 using directives.
+The namespace <I>BWEM</I> introduces very few names so bringing them all is probably not a big deal.
+<BR/>
+The two other namespaces are not direcly related to BWEM functionnality, but you might still want to use some of their stuff.
+<BR/>
+<I>BWEM::BWAPI_ext</I> contains several helper functions, built on top of the BWAPI library, that prove to be useful while implementing the BWEM library.
+<BR/>
+<I>BWEM::utils</I> also contains helper functions, but they are more general and do not depend on the BWAPI library.
+
+<P/>
+Before we can use theMap, we need to initialize it.
+The right place to do this is in ExampleAIModule::onStart().
+But first, let's inclose the whole code inside a standard and basic: try-catch handler:
+
+<pre style="background-color:rgb(253, 244, 225)">
+<span class="existingCode">void ExampleAIModule::onStart()
+{</span>
+  try
+  {<span class="existingCode">
+    // Hello World!
+
+    // ...</span>
+  }
+  catch (const std::exception &amp; e)
+  {
+    Broodwar &lt;&lt; "EXCEPTION: " &lt;&lt; e.what() &lt;&lt; std::endl;
+  }<span class="existingCode">
+}</span>
+</pre>
+
+This will catch any standard exception, as well as any exception from BWEM.
+We will do that in the other methods too.
+<P/>
+Now, we add the initialization code:
+
+<pre style="background-color:rgb(253, 244, 225)">
+<span class="existingCode">    // ...
+      
+    else // if this is not a replay
+    {
+      // Retrieve you and your enemy's races. enemy() will just return the first enemy.
+      // If you wish to deal with multiple enemies then you must use enemies().
+      if ( Broodwar->enemy() ) // First make sure there is an enemy
+        Broodwar &lt;&lt; "The matchup is " &lt;&lt; Broodwar->self()->getRace() &lt;&lt; " vs " &lt;&lt; Broodwar->enemy()->getRace() &lt;&lt; std::endl;</span>
+      
+      Broodwar &lt;&lt; "Map initialization..." &lt;&lt; std::endl;
+
+      theMap.Initialize();
+      theMap.EnableAutomaticPathAnalysis();
+      bool startingLocationsOK = theMap.FindBasesForStartingLocations();
+      assert(startingLocationsOK);
+
+      BWEM::utils::MapPrinter::Initialize(&amp;theMap);
+      BWEM::utils::printMap(theMap);      <span class="comment">// will print the map into the file &lt;StarCraftFolder>bwapi-data/map.bmp</span>
+      BWEM::utils::pathExample(theMap);   <span class="comment">// add to the printed map a path between two starting locations</span>
+       
+      Broodwar &lt;&lt; "gg" &lt;&lt; std::endl;<span class="existingCode">
+    }
+  }
+  catch (const std::exception &amp; e)</span>
+</pre>
+
+We have correctly initialized BWEM, and we have started using it (see the code in <I>printMap</I> and <I>pathExample</I>, which are good examples).
+<BR/>
+But to get the best out of it we need to inform it of two events, so we add the following:
+
+<pre style="background-color:rgb(253, 244, 225)">
+<span class="existingCode">void ExampleAIModule::onUnitDestroy(BWAPI::Unit unit)
+{</span>
+  try
+  {
+    if      (unit->getType().isMineralField())    theMap.OnMineralDestroyed(unit);
+    else if (unit->getType().isSpecialBuilding()) theMap.OnStaticBuildingDestroyed(unit);
+  }
+  catch (const std::exception &amp; e)
+  {
+    Broodwar &lt;&lt; "EXCEPTION: " &lt;&lt; e.what() &lt;&lt; std::endl;
+  }<span class="existingCode">
+}</span>
+</pre>
+
+As an example, let's use <I>BWEM::utils::drawMap</I>, which provides similar functionality to <I>BWEM::utils::printMap</I>.
+<BR/>
+Instead of printing the map into a file, it draws it directly on the game screen, using BWAPI primitives.
+<BR/>
+Don't forget to look at the code of <I>drawMap</I>. To use it, we just insert the following in <I>ExampleAIModule::onFrame()</I>:
+
+<pre style="background-color:rgb(253, 244, 225)">
+<span class="existingCode">void ExampleAIModule::onFrame()
+{
+  // Called once every game frame</span>
+  try
+  {
+    BWEM::utils::gridMapExample(theMap);
+    BWEM::utils::drawMap(theMap);
+
+    <span class="existingCode">// Display the game frame rate as text in the upper left area of the screen
+    Broodwar->drawTextScreen(200, 0,  "FPS: %d", Broodwar->getFPS() );
+    Broodwar->drawTextScreen(200, 20, "Average FPS: %f", Broodwar->getAverageFPS() );
+
+    // ...</span>
+  }
+  catch (const std::exception &amp; e)
+  {
+    Broodwar &lt;&lt; "EXCEPTION: " &lt;&lt; e.what() &lt;&lt; std::endl;
+  }<span class="existingCode">
+}</span>
+</pre>
+
+(We also called <I>BWEM::utils::gridMapExample</I>, which demonstrates the use of the new class utils::GridMap.)
+<BR/>
+Finally, the class <I>BWEM::utils::MapDrawer</I> comes in handy for controling the information displayed on the screen.
+To see that, let's modify <I>ExampleAIModule::onSendText</I>:
+
+<pre style="background-color:rgb(253, 244, 225)">
+<span class="existingCode">void ExampleAIModule::onSendText(std::string text)
+{</span>
+  BWEM::utils::MapDrawer::ProcessCommand(text);<span class="existingCode">
+
+  // Send the text to the game if it is not being processed.
+  Broodwar->sendText("%s", text.c_str());
+
+  // Make sure to use %s and pass the text as a parameter,
+  // otherwise you may run into problems when you use the %(percent) character!
+}</span>
+</pre>
+  
+Run your bot. You should now be able select which information you want to show.
+<BR/>
+Press &lt;enter>, then type: minerals
+<BR/>
+Do it again.
+<BR/>
+In <I>MapDrawer::ProcessCommand</I> you will find all the available items you can control.
+  
+<P/>
+<center>
+<a href="index.html">home</a>
+|
+<a href="features.html">features</a>
+|
+<a href="start.html">getting started</a>
+|
+<a href="faq.html">FAQ</a>
+|
+<a href="Stone.html">Stone</a>
+|
+<a href="Iron.html">Iron</a>
+|
+<a href="interactiveIron.html">Control the Iron!</a>
+|
+<a href="download.html">download</a>
+|
+<a href="help.html">help</a>
+|
+<a href="about.html">about</a>
+</center>
+</body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</html>

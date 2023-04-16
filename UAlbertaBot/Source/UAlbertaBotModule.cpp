@@ -18,8 +18,11 @@
 #include "Global.h"
 #include "StrategyManager.h"
 #include "MapTools.h"
+#include <fstream>
+#include <bwem.h>
 
 using namespace UAlbertaBot;
+namespace { auto& theMap = BWEM::Map::Instance(); }
 
 UAlbertaBotModule::UAlbertaBotModule()
 {
@@ -29,6 +32,12 @@ UAlbertaBotModule::UAlbertaBotModule()
 // This gets called when the bot starts!
 void UAlbertaBotModule::onStart()
 {
+
+    theMap.Initialize();
+    theMap.EnableAutomaticPathAnalysis();
+    bool startingLocationsOK = theMap.FindBasesForStartingLocations();
+    UAB_ASSERT(startingLocationsOK, "Starting locations not OK");
+
     // Parse the bot's configuration file if it has one, change this file path to where your config file is
     // Any relative path name will be relative to Starcraft installation folder
     ParseUtils::ParseConfigFile(Config::ConfigFile::ConfigFileLocation);
@@ -67,7 +76,14 @@ void UAlbertaBotModule::onStart()
 
 void UAlbertaBotModule::onEnd(bool isWinner) 
 {
-	if (Config::Modules::UsingGameCommander)
+    std::ofstream outfile;
+
+    outfile.open("D:\\Skola\\FIIT\\BP\\vsZerg.txt", std::ios_base::app); // append instead of overwrite
+    outfile << BWAPI::Broodwar->elapsedTime() << ";" << (isWinner ? "Winner;" : "Loser;") << BWAPI::Broodwar->enemy()->getName()<< ";" << BWAPI::Broodwar->mapName() << "\n";
+    outfile.close();
+    //std::cout << BWAPI::Broodwar->elapsedTime() << "\t" << "Result: " << (isWinner ? "Winner" : "loser")  << std::endl;
+	
+    if (Config::Modules::UsingGameCommander)
 	{
 		Global::Strategy().onEnd(isWinner);
 	}
@@ -79,6 +95,15 @@ void UAlbertaBotModule::onFrame()
     {
         BWAPI::Broodwar->restartGame();
     }
+
+    //if (BWAPI::Broodwar->getFrameCount() % 960 == 0 && BWAPI::Broodwar->getFrameCount() != 0)
+    //{
+    //    std::ofstream outfile;
+    //    outfile.open("D:\\Skola\\FIIT\\BP\\test.txt", std::ios_base::app); // append instead of overwrite
+    //    outfile << BWAPI::Broodwar->getFrameCount() / 960 << ";" << BWAPI::Broodwar->getAPM() << std::endl;
+    //    outfile.close();
+    //    std::cout << BWAPI::Broodwar->getFrameCount() / 960 << "\t\t" << BWAPI::Broodwar->getAPM() << std::endl;
+    //}
 
     const char red = '\x08';
     const char green = '\x07';

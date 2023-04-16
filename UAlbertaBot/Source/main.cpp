@@ -11,6 +11,7 @@
 using namespace BWAPI;
 using namespace UAlbertaBot;
 
+
 void UAlbertaBot_BWAPIReconnect()
 {
 	while (!BWAPIClient.connect())
@@ -103,8 +104,11 @@ int main(int argc, char * argv[])
 			// If we are successfully in a game, call the module to play the game
 			if (BWAPI::Broodwar->isInGame())
 			{
-				std::cout << "Playing game " << gameCount++ << " on map " << BWAPI::Broodwar->mapFileName() << "\n";
-
+				// std::cout << "Playing game " << gameCount++ << " on map " << BWAPI::Broodwar->mapFileName() << "\nMinutes:\tAPM:\n";
+				if (gameCount == 999)
+				{
+					return 0;
+				}
 				UAlbertaBot_PlayGame();
 			}
 		}

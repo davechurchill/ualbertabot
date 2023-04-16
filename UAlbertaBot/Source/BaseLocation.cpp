@@ -210,8 +210,8 @@ const std::vector<BWAPI::TilePosition> & BaseLocation::getClosestTiles() const
 void BaseLocation::draw()
 {
     int radius = 16;
-
     BWAPI::Broodwar->drawCircleMap(m_centerOfResources, 16, BWAPI::Color(255, 255, 0), true);
+    
 
     if (m_startPosition.x != 0)
     {
