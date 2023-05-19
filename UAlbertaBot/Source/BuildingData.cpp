@@ -40,6 +40,11 @@ bool BuildingData::isBeingBuilt(BWAPI::UnitType type)
     return false;
 }
 
+void UAlbertaBot::BuildingData::changeDesiredPosition(Building b, BWAPI::TilePosition pos)
+{
+    b.desiredPosition = pos;
+}
+
 void BuildingData::removeBuildings(const std::vector<Building> & buildings)
 {
     for (const auto & b : buildings)

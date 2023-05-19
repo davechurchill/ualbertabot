@@ -92,7 +92,6 @@ std::pair<BWAPI::Unit, BWAPI::Unit> MeleeManager::findClosestUnitPair(const BWAP
             closestDistance = dist;
         }
     }
-
     return closestPair;
 }
 
@@ -136,6 +135,11 @@ int MeleeManager::getAttackPriority(BWAPI::Unit attacker, BWAPI::Unit unit)
     if (attacker->getType() == BWAPI::UnitTypes::Protoss_Dark_Templar && unit->getType().isWorker())
     {
         return 12;
+    }
+
+    if (unit->getType() == BWAPI::UnitTypes::Protoss_Dark_Templar && unit->isDetected())
+    {
+        return 15;
     }
 
     // highest priority is something that can attack us or aid in combat

@@ -18,6 +18,7 @@ class ScoutManager
     bool			m_scoutUnderAttack  = false;
     bool			m_didGasSteal       = false;
     bool			m_gasStealFinished  = false;
+    bool            m_rushFalse         = true;
 
     bool enemyWorkerInRadius();
     bool immediateThreat();
@@ -27,6 +28,7 @@ class ScoutManager
     void drawScoutInformation(int x, int y);
     void followPerimeter(const BaseLocation* enemyBaseLocation);
     void rushWarning();
+    //void gettingRushed();
     BWAPI::Position	getFleePosition();
     BWAPI::Unit		getEnemyGeyser();
     BWAPI::Unit		closestEnemyWorker();
@@ -36,6 +38,7 @@ class ScoutManager
 public:
 
     void update();
+    int lap = 0;
 
     void setWorkerScout(BWAPI::Unit unit);
 };

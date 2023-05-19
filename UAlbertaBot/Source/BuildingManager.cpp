@@ -33,19 +33,6 @@ void BuildingManager::update()
 
     drawBuildingInformation(200, 50);
     m_buildingPlacer.drawReservedTiles();
-    //if (BWAPI::Broodwar->getFrameCount() % 96 == 0)
-    //{
-    //    if (m_buildings.size())
-    //        
-    //        << "------------------------------------" << std::endl;
-    //    for (auto& b : m_buildings)
-    //    {
-    //        if (b.builderUnit != nullptr)
-    //            std::cout << "Worker_ID: " << b.builderUnit->getID() << "\tBuilding_name: " << b.type.getName() << std::endl;
-    //        else
-    //            std::cout << "Worker_ID: " << "nullprt" << "\tBuilding_name: " << b.type.getName() << std::endl;
-    //    }
-    //}
 }
 
 bool BuildingManager::isBeingBuilt(BWAPI::UnitType type)
@@ -71,6 +58,7 @@ void BuildingManager::validateWorkersAndBuildings()
 
     std::vector<Building> toRemove;
 
+    // find any buildings which have become obsolete
     for (auto & b : m_buildings)
     {
         if (b.status != BuildingStatus::UnderConstruction)
@@ -78,10 +66,11 @@ void BuildingManager::validateWorkersAndBuildings()
             continue;
         }
         if (b.buildingUnit == nullptr || !b.buildingUnit->getType().isBuilding() || b.buildingUnit->getHitPoints() <= 0 || !b.buildingUnit->exists())
+        //if (b.buildingUnit == nullptr || !b.buildingUnit->getType().isBuilding() || b.buildingUnit->getHitPoints() <= 0)
         {
             toRemove.push_back(b);
 
-            /// change worker status from building (@WorkerJob 2) to idle (@WorkerJob 4)
+            // change worker status if exists from building (@WorkerJob 2) to idle (@WorkerJob 4)
             if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran && b.builderUnit->exists())
             {
                 if (b.isGasSteal)
@@ -242,8 +231,8 @@ void BuildingManager::checkForStartedConstruction()
                 if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Zerg)
                 {
                     b.builderUnit = nullptr;
-                    // if we are protoss, give the worker back to worker manager
                 }
+                // if we are protoss, give the worker back to worker manager
                 else if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Protoss)
                 {
                     // if this was the gas steal unit then it's the scout worker so give it back to the scout manager
@@ -277,6 +266,8 @@ void BuildingManager::checkForStartedConstruction()
 // CHCEK IF ASSIGNED WORKER IS STILL ALIVE
 void BuildingManager::checkForDeadTerranBuilders() 
 {
+    if (BWAPI::Broodwar->self()->getRace() != BWAPI::Races::Terran)
+        return;
     for (auto & b : m_buildings)
     {
         // for each building under construction chcek status assigned worker
@@ -310,7 +301,15 @@ void BuildingManager::checkForCompletedBuildings()
             // if we are terran, give the worker back to worker manager
             if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran)
             {
-                Global::Workers().finishedWithWorker(b.builderUnit);
+                if (b.isGasSteal)
+                {
+                    Global::Scout().setWorkerScout(b.builderUnit);
+                }
+                // otherwise tell the worker manager we're finished with this unit
+                else
+                {
+                    Global::Workers().finishedWithWorker(b.builderUnit);
+                }
             }
 
             // remove this unit from the under construction vector
@@ -448,7 +447,7 @@ std::vector<BWAPI::UnitType> BuildingManager::buildingsQueued()
 }
 
 
-BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
+BWAPI::TilePosition BuildingManager::getBuildingLocation(Building & b)
 {
     int numPylons = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Pylon);
 
@@ -490,6 +489,11 @@ BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
         distance = Config::Macro::PylonSpacing;
     }
 
+    if (b.type == BWAPI::UnitTypes::Terran_Missile_Turret || b.type == BWAPI::UnitTypes::Terran_Bunker)
+    {
+        b.desiredPosition = rushDefence();
+    }
+
     // get a position within our region
     return m_buildingPlacer.getBuildLocationNear(b,distance,false);
 }
@@ -510,10 +514,62 @@ void BuildingManager::removeBuildings(const std::vector<Building> & toRemove)
 
 
 
-void BuildingManager::rushDefence()
+BWAPI::TilePosition BuildingManager::rushDefence()
 {
-    if (Global::Info().getRushInfo())
-    {
 
+    //if (Global::Info().getDtRushInfo())
+    //{
+    const BWEM::Map& mapa = BWEM::Map::Instance();
+    const BaseLocation* selfBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->self());
+    const BWEM::ChokePoint* closestChokepoint = nullptr;
+    int closestChokeDist = INT_MAX;
+
+    for (const auto& choke : (mapa.GetArea(selfBaseLocation->getDepotPosition()))->ChokePoints())
+    {
+        const int dist = selfBaseLocation->getGroundDistance(BWAPI::TilePosition(choke->Center()));
+        if (dist < closestChokeDist)
+        {
+            closestChokeDist = dist;
+            closestChokepoint = choke;
+        }
     }
+    int a = int(0.8 * (BWAPI::Position(closestChokepoint->Center()).x - selfBaseLocation->getPosition().x));
+    int b = int(0.8 * (BWAPI::Position(closestChokepoint->Center()).y - selfBaseLocation->getPosition().y));
+    int x = selfBaseLocation->getPosition().x + a;
+    int y = selfBaseLocation->getPosition().y + b;
+    BWAPI::Position xa = BWAPI::Position(x, y);
+    //Get the tile position of the choke point
+
+    // Check if there is already a missile turret within 5 tiles of the choke point
+    bool hasMissileTurretNearby = false;
+    for (auto unit : BWAPI::Broodwar->getUnitsInRadius(xa, 5 * 32))
+    {
+        if (unit->getType() == BWAPI::UnitTypes::Terran_Missile_Turret || unit->getType() == BWAPI::UnitTypes::Terran_Bunker)
+        {
+            hasMissileTurretNearby = true;
+            break;
+        }
+    }
+
+    // If there is no missile turret nearby, build one with a worker
+    if (!hasMissileTurretNearby)
+    {
+        // Find a worker near the choke point
+        //BWAPI::Unit workerToAssign = Global::Workers().getBuilder(b);
+        //BWAPI::Unit worker = nullptr;
+        //for (auto unit : BWAPI::Broodwar->self()->getUnits())
+        //{
+        //    if (unit->getType().isWorker() )
+        //    {
+        //        worker = unit;
+        //        break;
+        //    }
+        //}
+
+        // If we found a worker, order it to build a missile turret near the choke point
+
+        return  BWAPI::TilePosition(xa); // Build the turret 2 tiles to the right and 2 tiles down from the choke point
+    }
+    return  BWAPI::TilePosition(xa);
+    //}
 }

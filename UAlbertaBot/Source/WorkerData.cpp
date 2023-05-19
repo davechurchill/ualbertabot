@@ -1,5 +1,6 @@
 #include "WorkerData.h"
 #include "Micro.h"
+#include "bwem.h"
 
 using namespace UAlbertaBot;
 
@@ -143,6 +144,33 @@ void WorkerData::setWorkerJob(BWAPI::Unit unit, enum WorkerJob job, BWAPI::Unit 
     {
         BWAPI::Broodwar->printf("Setting worker job to build");
     }
+    else if (job == Unblock)
+    {
+        //if (BWAPI::Broodwar->getFrameCount() % 60 != 0) { return; }
+        //const BWEM::Map& mapa = BWEM::Map::Instance();
+        //BWAPI::Unit closestSCV = nullptr;
+        //int closestDistance = INT_MAX;
+        /*for (const auto& mineral : mapa.Minerals())
+        {
+            if (mineral->Blocking())
+            {*/
+                //// Do something with the blocking mineral
+                //// For example, print its position
+                //for (const auto& unit : BWAPI::Broodwar->self()->getUnits()) {
+                //    if (unit->getType() == BWAPI::UnitTypes::Terran_SCV) {
+                //        int distance = unit->getDistance(BWAPI::Position(mineral->TopLeft()));
+                //        if (distance < closestDistance) {
+                //            closestDistance = distance;
+                //            closestSCV = unit;
+                //        }
+                //    }
+                //}
+        //Micro::SmartMove(unit, jobUnit->getPosition());
+        Micro::SmartRightClick(unit, jobUnit);
+                //BWAPI::Broodwar << "Blocking mineral at " << mineral->TopLeft() << std::endl;
+        /*    }
+        }*/
+    }
 }
 
 void WorkerData::setWorkerJob(BWAPI::Unit unit, enum WorkerJob job, BWAPI::UnitType jobUnitType)
@@ -207,6 +235,10 @@ void WorkerData::clearPreviousJob(BWAPI::Unit unit)
     else if (previousJob == Repair)
     {
         m_workerRepairMap.erase(unit);
+    }
+    else if (previousJob == Move)
+    {
+        m_workerMoveMap.erase(unit);
     }
     else if (previousJob == Move)
     {
@@ -542,6 +574,7 @@ char WorkerData::getJobCode(BWAPI::Unit unit)
     if (j == WorkerData::Repair) return 'R';
     if (j == WorkerData::Move) return 'O';
     if (j == WorkerData::Scout) return 'S';
+    if (j == WorkerData::Unblock) return 'U';
     return 'X';
 }
 

@@ -361,6 +361,55 @@ void UAlbertaBot::InformationManager::setRushInfo(bool rush)
     m_rushIncoming = rush;
 }
 
+bool UAlbertaBot::InformationManager::getExpandInfo()
+{
+    return m_enemyExpanding;
+}
+
+void UAlbertaBot::InformationManager::setExpandInfo(bool expand)
+{
+    m_enemyExpanding = expand;
+}
+
+bool UAlbertaBot::InformationManager::getDtRushInfo()
+{
+    return m_dtRush;
+}
+
+void UAlbertaBot::InformationManager::setDtRushInfo(bool rush)
+{
+    m_dtRush = rush;
+}
+
+void UAlbertaBot::InformationManager::turtleMode(bool mod)
+{
+    m_turtleWhen = BWAPI::Broodwar->getFrameCount();
+    m_turtle = mod;
+}
+
+
+
+bool UAlbertaBot::InformationManager::getMode()
+{
+    return m_turtle;
+}
+
+void UAlbertaBot::InformationManager::setEnemyInsideInfo(bool check)
+{
+    m_enemyInBase = check;
+}
+
+bool UAlbertaBot::InformationManager::getEnemyInsideInfo()
+{
+    return m_enemyInBase;
+}
+
+
+int UAlbertaBot::InformationManager::getModeWhen()
+{
+    return m_turtleWhen;
+}
+
 int InformationManager::getNumUnits(BWAPI::UnitType t, BWAPI::Player player)
 {
 	return getUnitData(player).getNumUnits(t);
@@ -400,13 +449,33 @@ bool InformationManager::shouldScan(BWAPI::Position castPosition)
     return true;
 }
 
+bool at_least_3_combat_units_near_unit(BWAPI::Unit enemy_unit)
+{
+    int num_combat_units_near_enemy = 0;
+    int max_distance = 64;
+
+    for (auto unit : BWAPI::Broodwar->self()->getUnits())
+    {
+        if (unit->getType().isBuilding() || !unit->isCompleted())
+        {
+            // Skip non-combat units
+            continue;
+        }
+        int currentDistance = unit->getDistance(enemy_unit);
+        if (currentDistance <= max_distance)
+        {
+            num_combat_units_near_enemy++;
+        }
+    }
+
+    return num_combat_units_near_enemy >= 3;
+}
+
 bool InformationManager::enemyHasCloakedUnits()
 {
-    for (const auto & kv : getUnitData(BWAPI::Broodwar->enemy()).getUnits())
+    for (auto kv : BWAPI::Broodwar->enemy()->getUnits())
 	{
-		const UnitInfo & ui(kv.second);
-
-        if (ui.type.isCloakable() || ui.type == BWAPI::UnitTypes::Zerg_Lurker)
+        if (kv->isCloaked() || kv->getType() == BWAPI::UnitTypes::Zerg_Lurker)
         {
             const BWAPI::Order scannerOrder = BWAPI::Orders::Scanner;
 
@@ -425,9 +494,18 @@ bool InformationManager::enemyHasCloakedUnits()
             removeOldScans();
 
             // If a valid caster is found, issue the Scan order
-            if (scanCaster != nullptr && (ui.unit->isCloaked() || ui.unit->isBurrowed()) && !ui.unit->isDetected())
+            if (scanCaster != nullptr && (kv->isCloaked() || kv->isBurrowed()) && !kv->isDetected())
             {
-                BWAPI::Position scanPosition = ui.unit->getPosition(); // Position to scan
+                if (kv->getType() == BWAPI::UnitTypes::Protoss_Observer && BWAPI::Broodwar->getFrameCount() <= 40000)
+                {
+                    return false;
+                }
+                BWAPI::Position scanPosition = kv->getPosition(); // Position to scan
+
+                if (!at_least_3_combat_units_near_unit(kv))
+                {
+                    return false;
+                }
 
                 if (shouldScan(scanPosition))
                 {
@@ -435,16 +513,17 @@ bool InformationManager::enemyHasCloakedUnits()
                     m_scans.push_back(std::pair<int, BWAPI::Position>(BWAPI::Broodwar->getFrameCount(), scanPosition));
                 }
             }
+
             return true;
         }
 
         // assume they're going dts
-        if (ui.type == BWAPI::UnitTypes::Protoss_Citadel_of_Adun)
+        if (kv->getType() == BWAPI::UnitTypes::Protoss_Citadel_of_Adun || kv->getType() == BWAPI::UnitTypes::Protoss_Cybernetics_Core)
         {
             return true;
         }
 
-        if (ui.type == BWAPI::UnitTypes::Protoss_Observatory)
+        if (kv->getType() == BWAPI::UnitTypes::Protoss_Observatory)
         {
             return true;
         }

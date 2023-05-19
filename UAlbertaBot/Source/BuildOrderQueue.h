@@ -41,6 +41,7 @@ public:
 
     void clearAll();											// clears the entire build order queue
     void skipItem();											// increments skippedItems
+    int numOfSkips();
     void queueAsHighestPriority(MetaType m, bool blocking, bool gasSteal = false);		// queues something at the highest priority
     void queueAsLowestPriority(MetaType m, bool blocking);		// queues something at the lowest priority
     void queueItem(BuildOrderItem b);			                // queues something with a given priority

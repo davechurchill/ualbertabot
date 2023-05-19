@@ -42,6 +42,7 @@ public:
     bool isMineralOnly() const;
     bool containsPosition(const BWAPI::Position& pos) const;
     const BWAPI::TilePosition& getDepotPosition() const;
+    const BWAPI::TilePosition& getStartingPosition() const;
     const BWAPI::Position& getPosition() const;
     const std::vector<BWAPI::Unit>& getGeysers() const;
     const std::vector<BWAPI::Unit>& getMinerals() const;

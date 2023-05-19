@@ -37,6 +37,7 @@ public:
     void updateWorkerStatus();
     void drawWorkerInformation(int x, int y);
 
+    int  getNumOfWorkers();
     int  getNumMineralWorkers();
     int  getNumGasWorkers();
     int  getNumIdleWorkers();
@@ -62,5 +63,6 @@ public:
 
     bool willHaveResources(int mineralsRequired, int gasRequired, double distance);
     void rebalanceWorkers();
+    void findBlockingMinerals();
 };
 }

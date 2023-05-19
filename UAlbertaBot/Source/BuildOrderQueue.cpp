@@ -43,21 +43,89 @@ void BuildOrderQueue::skipItem()
     numSkippedItems++;
 }
 
+int BuildOrderQueue::numOfSkips()
+{
+    return numSkippedItems;
+}
+
 bool BuildOrderQueue::canSkipItem()
 {
     // does the queue have more elements
     bool bigEnough = queue.size() > (size_t)(1 + numSkippedItems);
 
+    auto x = queue[queue.size() - 1 - numSkippedItems];
+    auto y = x.metaType;
+
+    bool highestNotBlocking = !queue[queue.size() - 1 - numSkippedItems].blocking;
+
+
+    if (y.getUnitType().isAddon())
+    {
+        auto whoNeedThisAddon = y.whatBuilds();
+        for (auto& unit : BWAPI::Broodwar->self()->getUnits())
+        {
+            if (unit->getType() != whoNeedThisAddon) { continue; }
+            // Check if build already have an Addon
+            if (unit->getAddon() != nullptr) { continue; }
+            bool isBlocked = false;
+
+            // if the unit doesn't have space to build an addon, it can't make one
+            BWAPI::TilePosition addonPosition(unit->getTilePosition().x + unit->getType().tileWidth(), unit->getTilePosition().y + unit->getType().tileHeight() - y.getUnitType().tileHeight());
+
+            // Fixing addon position
+            for (int i = 0; i < y.getUnitType().tileWidth(); ++i)
+            {
+                for (int j = 0; j < y.getUnitType().tileHeight(); ++j)
+                {
+                    BWAPI::TilePosition tilePos(addonPosition.x + i, addonPosition.y + j);
+
+                    // if the map won't let you build here, we can't build it
+                    if (!BWAPI::Broodwar->isBuildable(tilePos))
+                    {
+                        isBlocked = true;
+                    }
+
+                    for (auto& u : BWAPI::Broodwar->getUnitsOnTile(tilePos.x, tilePos.y))
+                    {
+                        //std::cout << u->getType().getName() << std::endl;
+                        if (u->getType().isBuilding())
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            // We found atleast 1 building without Addon
+            return false;
+        }
+        
+
+
+        
+        return true;
+    }
+    if (y.isTech() && BWAPI::Broodwar->self()->hasResearched(y.getTechType()) || BWAPI::Broodwar->self()->isResearching(y.getTechType()))
+    {
+        return true;
+    }
+    if (y.isUpgrade() && BWAPI::Broodwar->self()->getUpgradeLevel(y.getUpgradeType()) > 0 || BWAPI::Broodwar->self()->isUpgrading(y.getUpgradeType()))
+    {
+        return true;
+    }
+
     if (!bigEnough)
     {
         return false;
     }
-
-
-    // is the current highest priority item not blocking a skip
-    auto x = queue[queue.size() - 1 - numSkippedItems];
-    bool highestNotBlocking = !queue[queue.size() - 1 - numSkippedItems].blocking;
-
+    /*if (x.metaType.getUnitType().isAddon() && 
+        BWAPI::Broodwar->self()->allUnitCount(x.metaType.whatBuilds()) == BWAPI::Broodwar->self()->allUnitCount(x.metaType.getUnitType()))
+    {
+        auto a = BWAPI::Broodwar->self()->allUnitCount(x.metaType.whatBuilds());
+        auto b = BWAPI::Broodwar->self()->allUnitCount(x.metaType.getUnitType());
+        std::cout << "number of builinds:" << a << "number of Addons: " << b << "building ID: " << x.metaType.whatBuilds() <<
+            "Addon ID:" << x.metaType.getUnitType() << std::endl;
+        return true;
+    }*/
     // this tells us if we can skip
     return highestNotBlocking;
 }

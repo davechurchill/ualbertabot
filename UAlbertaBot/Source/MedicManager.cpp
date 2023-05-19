@@ -17,7 +17,16 @@ void MedicManager::executeMicro(const BWAPI::Unitset & targets)
     BWAPI::Unitset medicTargets;
     for (auto & unit : BWAPI::Broodwar->self()->getUnits())
     {
-        if (unit->getHitPoints() < unit->getInitialHitPoints() && !unit->getType().isMechanical() && !unit->getType().isBuilding())
+        int a = unit->getHitPoints();
+        int d = unit->getType().maxHitPoints();
+        int b = unit->getInitialHitPoints();
+        auto c = unit->getType().getName();
+        // getInitialHitPoints() gives 0 if the unit is not a netural at 
+        // the beginning of the game so we need to use unit->getType().maxHitPoints()
+        if (unit->getHitPoints() < unit->getType().maxHitPoints() && 
+            unit->getRemainingBuildTime() <= 0 && 
+            !unit->getType().isMechanical() && 
+            !unit->getType().isBuilding())
         {
             medicTargets.insert(unit);
         }

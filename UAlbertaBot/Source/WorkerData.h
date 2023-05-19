@@ -28,15 +28,16 @@ class WorkerData
 
 public:
 
-    enum WorkerJob { 
-        Minerals, 
+    enum WorkerJob {
+        Minerals,
         Gas,
-        Build, 
-        Combat, 
-        Idle, 
-        Repair, 
-        Move, 
-        Scout, 
+        Build,
+        Combat,
+        Idle,
+        Repair,
+        Move,
+        Scout,
+        Unblock,
         Default
     };
 

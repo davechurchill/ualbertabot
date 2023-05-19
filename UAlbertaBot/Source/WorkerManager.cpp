@@ -4,6 +4,7 @@
 #include "BaseLocationManager.h"
 #include "Global.h"
 #include "BuildingData.h"
+#include "bwem.h"
 
 using namespace UAlbertaBot;
 
@@ -16,11 +17,13 @@ void WorkerManager::onFrame()
 {
     PROFILE_FUNCTION();
 
+    //findBlockingMinerals();
     updateWorkerStatus();
     handleGasWorkers();
     handleIdleWorkers();
     handleMoveWorkers();
     handleCombatWorkers();
+
 
     drawResourceDebugInfo();
     drawWorkerInformation(450, 20);
@@ -46,7 +49,8 @@ void WorkerManager::updateWorkerStatus()
         if (worker->isIdle() &&
             (m_workerData.getWorkerJob(worker) != WorkerData::Build) &&
             (m_workerData.getWorkerJob(worker) != WorkerData::Move) &&
-            (m_workerData.getWorkerJob(worker) != WorkerData::Scout))
+            (m_workerData.getWorkerJob(worker) != WorkerData::Scout) &&
+            (m_workerData.getWorkerJob(worker) != WorkerData::Unblock))
         {
             m_workerData.setWorkerJob(worker, WorkerData::Idle, nullptr);
         }
@@ -97,14 +101,9 @@ void WorkerManager::handleGasWorkers()
         {
             // get the number of workers currently assigned to it
             int numAssigned = m_workerData.getNumAssignedWorkers(unit);
-            const int niu = m_workerData.getNumMineralWorkers();
-            
-            //if (niu - 3 <= 0)
-            //{
-            //    numAssigned += 3 - niu;
-            //}
+            const int numMineralWoker = m_workerData.getNumMineralWorkers();
 
-            int gasWor = (3 - niu) * (-1);
+            int gasWor = (3 - numMineralWoker) * (-1);
             if (gasWor < 0)
             {
                 gasWor = 0;
@@ -335,7 +334,14 @@ void WorkerManager::setMineralWorker(BWAPI::Unit unit)
     }
     else
     {
-        // BWAPI::Broodwar->printf("No valid depot for mineral worker");
+        // Order workers carrying a resource to return them to the center,
+        // otherwise find a mineral patch to harvest.
+        if (unit->isCarryingGas() || unit->isCarryingMinerals())
+        {
+            unit->returnCargo();
+            
+        }
+        unit->gather(unit->getClosestUnit(BWAPI::Filter::IsMineralField));
     }
 }
 
@@ -739,6 +745,11 @@ bool WorkerManager::isBuilder(BWAPI::Unit worker)
     return (m_workerData.getWorkerJob(worker) == WorkerData::Build);
 }
 
+int UAlbertaBot::WorkerManager::getNumOfWorkers()
+{
+    return m_workerData.getNumWorkers();
+}
+
 int WorkerManager::getNumMineralWorkers()
 {
     return m_workerData.getNumMineralWorkers();
@@ -752,4 +763,45 @@ int WorkerManager::getNumIdleWorkers()
 int WorkerManager::getNumGasWorkers()
 {
     return m_workerData.getNumGasWorkers();
+}
+
+
+
+
+void WorkerManager::findBlockingMinerals()
+{
+    // Initialize BWEM map
+    if (BWAPI::Broodwar->getFrameCount() % 60 != 0) { return; }
+    const BWEM::Map& mapa = BWEM::Map::Instance();
+    BWAPI::Unit closestSCV = nullptr;
+    int closestDistance = INT_MAX;
+    // Get blocking minerals
+    for (const auto& mineral : mapa.Minerals())
+    {
+        if (mineral->Blocking())
+        {
+            // Do something with the blocking mineral
+            // For example, print its position
+            for (const auto& unit : BWAPI::Broodwar->self()->getUnits()) {
+                if (unit->getType().isWorker()) {
+                    if (m_workerData.getWorkerJob(unit) == WorkerData::Unblock)
+                    {
+                        closestSCV = nullptr;
+                        break;
+                    }
+                    int distance = unit->getDistance(BWAPI::Position(mineral->TopLeft()));
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestSCV = unit;
+                    }
+                }
+            }
+            //Micro::SmartMove(closestSCV, BWAPI::Position(mineral->TopLeft()));
+            //Micro::SmartRightClick(closestSCV, mineral->Unit());
+            if (closestSCV != nullptr)
+                m_workerData.setWorkerJob(closestSCV, WorkerData::Unblock, mineral->Unit());
+            BWAPI::Broodwar << "Blocking mineral at " << mineral->TopLeft() << std::endl;
+        }
+    }
+    
 }

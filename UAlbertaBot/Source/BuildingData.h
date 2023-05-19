@@ -37,6 +37,11 @@ public:
     {
     }
 
+	void		changeDesiredPosition(BWAPI::TilePosition pos)
+	{
+		desiredPosition = pos;
+	}
+
 	// equals operator
 	bool operator==(const Building & b) 
     {
@@ -59,5 +64,6 @@ public:
 	void        removeBuilding(const Building & b);
     void        removeBuildings(const std::vector<Building> & buildings);
 	bool        isBeingBuilt(BWAPI::UnitType type);
+	void		changeDesiredPosition(Building b, BWAPI::TilePosition pos);
 };
 }

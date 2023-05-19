@@ -295,18 +295,38 @@ BWAPI::TilePosition BaseLocationManager::getNextExpansion(BWAPI::Player player) 
 
     for (auto & base : getBaseLocations())
     {
-        // skip mineral only and starting locations (TODO: fix this)
+        // skip mineral only and starting locations skop also bases that are already occupied
         if (base->isMineralOnly() || base->isStartLocation() ||
-            base->isOccupiedByPlayer(BWAPI::Broodwar->self()) ||
             base->isOccupiedByPlayer(BWAPI::Broodwar->enemy()))
         {
             continue;
         }
 
-        // get the tile position of the base
-        BWAPI::TilePosition tile = base->getDepotPosition();
+        bool buildingInTheWay = false;
 
-        bool buildingInTheWay = false; // TODO: check if there are any units on the tile
+        // get the tile position of the base 4 and 3 are 
+        BWAPI::TilePosition tile = base->getDepotPosition();
+        for (size_t i = 0; i < CC_width; ++i)
+        {
+            for (size_t j = 0; j < CC_height; ++j)
+            {
+                //BWAPI::Broodwar->drawBoxMap(tile.x * 32, tile.y * 32, tile.x * 32 + 32*4, tile.y * 32 + 32*3, BWAPI::Colors::Green);
+
+                BWAPI::TilePosition const tilePos(tile.x + i, tile.y + j);
+
+                for (auto& u : BWAPI::Broodwar->getUnitsOnTile(tilePos.x, tilePos.y))
+                {
+                    //std::cout << u->getType().getName() << std::endl;
+                    if (u->getType().isBuilding())
+                    {
+                        //BWAPI::Broodwar->drawBoxMap(tile.x * 32, tile.y * 32, tile.x * 32 + 32 * 4, tile.y * 32 + 32 * 3, BWAPI::Colors::Red);
+
+                        buildingInTheWay = true;
+                    }
+                }
+
+            }
+        }
 
         if (buildingInTheWay)
         {

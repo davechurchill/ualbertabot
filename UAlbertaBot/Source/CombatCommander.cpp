@@ -9,6 +9,7 @@
 #include "StrategyManager.h"
 #include "Squad.h"
 #include "SquadData.h"
+#include "bwem.h"
 
 using namespace UAlbertaBot;
 
@@ -266,8 +267,8 @@ void CombatCommander::updateDefenseSquads()
         std::vector<BWAPI::Unit> enemyUnitsInRegion;
         for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
         {
-            // if it's an overlord, don't worry about it for defense, we don't care what they see
-            if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord)
+            // if it's an overlord or observer, don't worry about it for defense, we don't care what they see
+            if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord || unit->getType() == BWAPI::UnitTypes::Protoss_Observer)
             {
                 continue;
             }
@@ -466,6 +467,47 @@ BWAPI::Unit CombatCommander::findClosestDefender(const Squad & defenseSquad, BWA
 
 BWAPI::Position CombatCommander::getDefendLocation()
 {
+    //const BaseLocation* selfBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->self());
+    //// Get the BWEM map instance
+    //const BWEM::Map& mapa = BWEM::Map::Instance();
+    //if (selfBaseLocation != nullptr &&
+    //    BWAPI::Broodwar->self()->supplyUsed() <= 120 &&
+    //    BWAPI::Broodwar->getFrameCount() < 12000 &&
+    //    !Global::Info().getExpandInfo() &&
+    //    //!Global::Info().getDtRushInfo() &&
+    //    BWAPI::Broodwar->enemy()->getRace() == BWAPI::Races::Protoss)
+    //{
+    //    //BWAPI::TilePosition startingTilePosition = BWAPI::Broodwar->self()->getStartLocation();
+    //        //BWEM::Area const* startingArea = mapa.GetArea(startingTilePosition);
+
+    //        // Find the closest choke point to the enemy starting location
+    //    const BWEM::ChokePoint* closestChokepoint = nullptr;
+    //    int closestChokeDist = INT_MAX;
+
+    //   
+    // 
+    //    {
+    //        const int dist = selfBaseLocation->getGroundDistance(BWAPI::TilePosition(choke->Center()));
+    //        if (dist < closestChokeDist)
+    //        {
+    //            closestChokeDist = dist;
+    //            closestChokepoint = choke;
+    //        }
+    //    }
+    //    const auto chokePosition = BWAPI::Position(closestChokepoint->Center());
+    //    const auto basePosition = BWAPI::Position(selfBaseLocation->getDepotPosition());
+    //    int a = int(0.5 * (chokePosition.x - basePosition.x));
+    //    int b = int(0.5 * (chokePosition.y - basePosition.y));
+    //    int x = basePosition.x + a;
+    //    int y = basePosition.y + b;
+    //    BWAPI::Position xa = BWAPI::Position(closestChokepoint->Center());
+    //    BWAPI::Broodwar->drawCircleMap(BWAPI::Position(x, y), 16, BWAPI::Colors::Red, false);
+    //    //BWAPI::Broodwar->drawCircleMap(xa, 16, BWAPI::Colors::Red, false);
+    //    Config::Micro::UseSparcraftSimulation = false;
+    //    Config::Micro::KiteWithRangedUnits = false;
+    //    return BWAPI::Position(x, y);
+
+    //}
     return BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation());
 }
 
@@ -477,7 +519,56 @@ void CombatCommander::drawSquadInformation(int x, int y)
 BWAPI::Position CombatCommander::getMainAttackLocation()
 {
     const BaseLocation * enemyBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->enemy());
+    const BaseLocation* selfBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->self());
+    // Get the BWEM map instance
+    const BWEM::Map& mapa = BWEM::Map::Instance();
 
+    if (selfBaseLocation != nullptr && 
+        BWAPI::Broodwar->self()->supplyUsed() <= 120 && 
+        BWAPI::Broodwar->getFrameCount() < 11000 &&
+        !Global::Info().getExpandInfo() &&
+        !Global::Info().getEnemyInsideInfo() &&
+        BWAPI::Broodwar->enemy()->getRace() == BWAPI::Races::Protoss)
+    {
+
+        //BWAPI::TilePosition startingTilePosition = BWAPI::Broodwar->self()->getStartLocation();
+            //BWEM::Area const* startingArea = mapa.GetArea(startingTilePosition);
+
+            // Find the closest choke point to the enemy starting location
+        const BWEM::ChokePoint* closestChokepoint = nullptr;
+        int closestChokeDist = INT_MAX;
+
+        BWAPI::Broodwar->drawCircleMap(BWAPI::Position(selfBaseLocation->getStartingPosition()), 16, BWAPI::Colors::Orange, false);
+        BWAPI::Broodwar->drawCircleMap(BWAPI::Position(selfBaseLocation->getDepotPosition()), 8, BWAPI::Colors::Orange, false);
+        for (const auto& choke : (mapa.GetArea(selfBaseLocation->getStartingPosition()))->ChokePoints())
+        {
+            const int dist = selfBaseLocation->getGroundDistance(BWAPI::TilePosition(choke->Center()));
+            if (dist < closestChokeDist)
+            {
+                closestChokeDist = dist;
+                closestChokepoint = choke;
+            }
+        }
+        const auto chokePosition = BWAPI::Position(closestChokepoint->Center());
+        const auto basePosition = BWAPI::Position(selfBaseLocation->getDepotPosition());
+        int a = int(0.6 * (chokePosition.x - basePosition.x));
+        int b = int(0.6 * (chokePosition.y - basePosition.y));
+        int x = basePosition.x + a;
+        int y = basePosition.y + b;
+        BWAPI::Position xa = BWAPI::Position(closestChokepoint->Center());
+        BWAPI::Broodwar->drawCircleMap(BWAPI::Position(x, y), 16, BWAPI::Colors::Red, false);
+        //BWAPI::Broodwar->drawCircleMap(xa, 16, BWAPI::Colors::Red, false);
+        Config::Micro::UseSparcraftSimulation = false;
+        Config::Micro::KiteWithRangedUnits = false;
+        return BWAPI::Position(x, y);
+        
+    }
+    else
+        if (!Global::Info().getEnemyInsideInfo())
+        {
+            Config::Micro::UseSparcraftSimulation = true;
+        }
+    
     // First choice: Attack an enemy region if we can see units inside it
     if (enemyBaseLocation)
     {
@@ -490,7 +581,7 @@ BWAPI::Position CombatCommander::getMainAttackLocation()
         bool onlyOverlords = true;
         for (auto & unit : enemyUnitsInArea)
         {
-            if (unit->getType() != BWAPI::UnitTypes::Zerg_Overlord)
+            if (unit->getType() != BWAPI::UnitTypes::Zerg_Overlord || unit->getType() == BWAPI::UnitTypes::Protoss_Observer)
             {
                 onlyOverlords = false;
             }
@@ -516,10 +607,10 @@ BWAPI::Position CombatCommander::getMainAttackLocation()
         }
     }
 
-    // Third choice: Attack visible enemy units that aren't overlords
+    // Third choice: Attack visible enemy units that aren't overlords or observer
     for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
     {
-        if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord)
+        if (unit->getType() == BWAPI::UnitTypes::Zerg_Overlord || unit->getType() == BWAPI::UnitTypes::Protoss_Observer)
         {
             continue;
         }

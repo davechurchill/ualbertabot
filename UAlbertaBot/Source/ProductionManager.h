@@ -32,7 +32,7 @@ class ProductionManager
     void create(BWAPI::Unit producer, BuildOrderItem & item);
     void manageBuildOrderQueue();
     void performCommand(BWAPI::UnitCommandType t);
-    void predictWorkerMovement(const Building & b);
+    void predictWorkerMovement(Building & b);
 
     int  getFreeMinerals();
     int  getFreeGas();
@@ -51,6 +51,8 @@ public:
     void drawProductionInformation(int x, int y);
     void queueGasSteal();
     std::vector<BWAPI::UnitType> buildingsQueued();
+
+    void gettingRushed();
 
     BWAPI::Unit getProducer(MetaType t, BWAPI::Position closestTo = BWAPI::Positions::None);
 };

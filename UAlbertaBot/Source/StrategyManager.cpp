@@ -205,6 +205,7 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
     int numWorkers = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_SCV);
     int numCC = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Command_Center);
     int numMarines = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Marine);
+    int numFirebat = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Firebat);
     int numMedics = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Medic);
     int numWraith = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Wraith);
     int numVultures = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Vulture);
@@ -212,6 +213,13 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
     int numTanks = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode)
         + UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Siege_Tank_Siege_Mode);
     int numBay = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Engineering_Bay);
+    
+    int balance = 5;
+
+    if (BWAPI::Broodwar->enemy()->getRace() == BWAPI::Races::Protoss)
+    {
+        balance = 7;
+    }
 
     if (Config::Strategy::StrategyName == "Terran_MarineRush")
     {
@@ -220,6 +228,15 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
         if (numMarines > 5)
         {
             goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Engineering_Bay, 1));
+            goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Academy, 1));
+            goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Medic, numMedics+ 4));
+        }
+        if (numMarines > 10)
+        {
+            goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Firebat, numFirebat + 4));
+            goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Infantry_Armor, 1));
+            goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::U_238_Shells, 1));
+            goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Missile_Turret, 1));
         }
     }
     else if (Config::Strategy::StrategyName == "Terran_4RaxMarines")
@@ -228,22 +245,85 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
     }
     else if (Config::Strategy::StrategyName == "Terran_VultureRush")
     {
-        goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Vulture, numVultures + 6));
-        //goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Marine, 4));
-
-        if (numVultures > 6)
+        if (BWAPI::Broodwar->enemy()->getRace() == BWAPI::Races::Protoss)
         {
-            Config::Micro::KiteWithRangedUnits = false;
-            goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Armory, 1));
-            /*goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons, 2));*/
-            goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Tank_Siege_Mode, 1));
-            goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode, 3));
-            goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Goliath, 2));
-            //goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Marine, 4));
+            goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Vulture, numVultures + 5));
+            if (UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Academy) == 0)
+            {
+                goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Academy, 1));
+            }
+            else
+            {
+                if (UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Engineering_Bay) != 0)
+                {
+                    goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Infantry_Armor, 1));
+                    goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::U_238_Shells, 1));
+                }
+
+                goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Marine, numMarines + 4));
+                //goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Marine, numMarines + 2));
+            }
+            goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Vulture, numVultures + 5));
+
+            if (numMarines > 8)
+            {
+                //goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Ion_Thrusters, 1));
+                goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Goliath, numGoliath + 2));
+            }
+            if (numGoliath > 5)
+            {
+                if (!BWAPI::Broodwar->self()->isUpgrading(BWAPI::UpgradeTypes::Terran_Vehicle_Plating))
+                    goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons, 1));
+                goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Infantry_Weapons, 1));
+                goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Charon_Boosters, 1));
+            }
+
+            if (numVultures > 5)
+            {
+                Config::Micro::KiteWithRangedUnits = false;
+                goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Armory, 1));
+                goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Tank_Siege_Mode, 1));
+                goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode, 2));
+                if (BWAPI::Broodwar->enemy()->getRace() == BWAPI::Races::Protoss &&
+                    !BWAPI::Broodwar->self()->isUpgrading(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons))
+                {
+                    goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Plating, 1));
+                }
+            }
+            else
+            {
+                Config::Micro::KiteWithRangedUnits = true;
+            }
         }
         else
-        {
-            Config::Micro::KiteWithRangedUnits = true;
+        
+        { 
+            goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Vulture, numVultures + 4));
+            goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Goliath, numGoliath + 2));
+
+            if (numGoliath > 5)
+            {
+                goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons, 1));
+                goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Charon_Boosters, 1));
+            }
+
+            if (numVultures > 5)
+            {
+                Config::Micro::KiteWithRangedUnits = false;
+                goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Armory, 1));
+                goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Machine_Shop, 2));
+                goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Tank_Siege_Mode, 1));
+                goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode, 4));
+                if (BWAPI::Broodwar->enemy()->getRace() == BWAPI::Races::Protoss)
+                {
+                    goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Plating, 1));
+                }
+
+            }
+            else
+            {
+                Config::Micro::KiteWithRangedUnits = true;
+            }
         }
     }
     else if (Config::Strategy::StrategyName == "Terran_TankPush")
@@ -251,13 +331,14 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
         goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode, 6));
         goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Goliath, numGoliath + 6));
         goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Tank_Siege_Mode, 1));
+        goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons, 2));
     }
     else
     {
         BWAPI::Broodwar->printf("Warning: No build order goal for Terran Strategy: %s", Config::Strategy::StrategyName.c_str());
     }
 
-    // add Comsat station to the goal if the enemy has cloaked units
+     //add Comsat station to the goal if the enemy has cloaked units
     //if (Global::Info().enemyHasCloakedUnits())
     //{
     //    if (BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Terran_Academy) == 0 &&
@@ -276,7 +357,7 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
     if (shouldExpandNow())
     {
         goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Command_Center, numCC + 1));
-        if (Global::Workers().getNumIdleWorkers() <= 7)
+        if (Global::Workers().getNumOfWorkers() <= 30)
         {
             goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_SCV, numWorkers + 10));
         }

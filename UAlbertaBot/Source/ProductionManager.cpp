@@ -6,6 +6,7 @@
 #include "BOSSManager.h"
 #include "InformationManager.h"
 #include "WorkerManager.h"
+#include "bwem.h"
 
 using namespace UAlbertaBot;
 
@@ -74,11 +75,78 @@ bool tmp()
     return true;
 }
 
+bool isInside(BWAPI::TilePosition enemyPosition, const BWEM::Area* myBaseArea)
+{
+    auto Bt = myBaseArea->TopLeft();
+    auto Bb = myBaseArea->BottomRight();
+    BWAPI::Broodwar->drawBoxMap(BWAPI::Position(myBaseArea->TopLeft()), BWAPI::Position(myBaseArea->BottomRight()), BWAPI::Colors::Orange);
+    if (enemyPosition.x >= myBaseArea->TopLeft().x && enemyPosition.x <= myBaseArea->BottomRight().x &&
+        enemyPosition.y >= myBaseArea->TopLeft().y && enemyPosition.y <= myBaseArea->BottomRight().y)
+    {
+        Global::Info().setEnemyInsideInfo(true);
+        return true;
+    }
+
+    return false;
+}
+
+
+
 void ProductionManager::update()
 {
     PROFILE_FUNCTION();
 
     m_buildingManager.update();
+
+    //std::cout << BWAPI::Broodwar->self()->supplyUsed() << std::endl;
+    if (BWAPI::Broodwar->getFrameCount() >= 11000)
+    {
+        if (BWAPI::Broodwar->self()->supplyUsed() >= 250)
+        {
+            Config::Micro::UseSparcraftSimulation = false;
+        }
+        else
+        {
+            Config::Micro::UseSparcraftSimulation = true;
+        }
+    }
+    //else
+    //{
+    //    if (!Global::Info().getMode() && !Config::Micro::UseSparcraftSimulation && !Global::Info().getExpandInfo())
+    //    {
+    //        Config::Micro::UseSparcraftSimulation = true;
+    //    }
+    //}
+
+    //if (BWAPI::Broodwar->getFrameCount() <= 10000)
+    //{
+    //    gettingRushed();
+    //}
+    if (!Global::Info().getMode())
+        gettingRushed();
+    else
+    {
+        // Get your starting location tile position
+        BWAPI::TilePosition myStartLocation = BWAPI::Broodwar->self()->getStartLocation();
+
+        // Get the BWEM Map instance
+        const BWEM::Map& map = BWEM::Map::Instance();
+
+        // Get the Area your starting location is in
+        const BWEM::Area* myStartLocationArea = map.GetArea(myStartLocation);
+        BWAPI::Broodwar->drawBoxMap(BWAPI::Position(myStartLocationArea->TopLeft()), BWAPI::Position(myStartLocationArea->BottomRight()), BWAPI::Colors::Orange);
+        // Loop through all enemy units to find those within your base area
+        for (const auto& enemy : BWAPI::Broodwar->enemy()->getUnits())
+        {
+            // Check if enemy unit is within your base area
+            if (isInside(enemy->getTilePosition(), myStartLocationArea))
+            {
+                Global::Info().setEnemyInsideInfo(true);
+            }
+        }
+    }
+    //if (Global::Info().getMode() && BWAPI::Broodwar->getFrameCount() - Global::Info().getModeWhen() >= 1500)
+    //    Global::Info().turtleMode(false);
 
     // 30 ms per search update
     m_bossManager.update(Config::Macro::BOSSTimePerFrame);
@@ -86,32 +154,127 @@ void ProductionManager::update()
     // check the _queue for stuff we can build
     manageBuildOrderQueue();
 
-    if (Global::Info().getRushInfo())
+    if (Global::Info().getRushInfo() && !Global::Info().getMode())
     {
         if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran)
         {
-            if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Barracks) < 1)
+            if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Marine) < 50)
             {
-                m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Bunker), true);
-            }
+                size_t cap = 12;
+                auto enemyRace = BWAPI::Broodwar->enemy()->getRace();
+                if (enemyRace == BWAPI::Races::Zerg)
+                {
+                    for (size_t i = 0; i < cap; i++)
+                    {
+                        m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Marine), true);
+                    }
+                }
+                else {
+                    if (enemyRace == BWAPI::Races::Protoss)
+                    {
+                        auto barNum = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Terran_Barracks);
+                        auto acNum = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Academy);
+                      
+                        if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Engineering_Bay) == 0)
+                        {
+                            m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Engineering_Bay), true);
+                        }
+                        if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Factory) == 0)
+                        {
+                            m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Factory), true);
+                        }
+                        for (size_t i = 0; i < 4; i++)
+                        {
+                            m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Medic), true);
+                        }
+                        m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Marine), true);
+                        m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Marine), true);
+                        for (size_t i = 0; i < 3; i++)
+                        {
+                            m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Firebat), true);
+                            m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Firebat), true);
+                        }
+                        m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Supply_Depot), true);
+                        
+                        if (acNum == 0)
+                        {
+                            m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Academy), true);
+                        }
+                        if (BWAPI::Broodwar->self()->visibleUnitCount(BWAPI::UnitTypes::Terran_Barracks) < 2)
+                        {
+                            m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Barracks), true);
+                        }
+                        
+                        if (BWAPI::Broodwar->self()->visibleUnitCount(BWAPI::UnitTypes::Terran_Refinery) == 0)
+                        {
+                            m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Refinery), true);
+                        }
+                        if (BWAPI::Broodwar->self()->visibleUnitCount(BWAPI::UnitTypes::Terran_Bunker) == 0)
+                        {
+                            m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Bunker), true);
+                            m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Bunker), true);
+                        }
+                    }
+                    else {
+                        if (enemyRace == BWAPI::Races::Terran)
+                        {
 
-            if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Marine) < 2)
-            {
-                m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Marine), true);
-                m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Marine), true);
-                m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Marine), true);
-                m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Marine), true);
-                m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Marine), true);
-                m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Marine), true);
+                        }
+                        else
+                        {
+                            std::cout << "\n\n\nSOM TU!!!!!\n\n\n";
+                        }
+                    }
+                }
+                Config::Micro::UseSparcraftSimulation = false;
             }
 
             if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Barracks) == 0)
             {
+
                 m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Barracks), true);
             }
             Global::Info().setRushInfo(false);
+            Global::Info().turtleMode(true);
         }
     }
+    else
+    {
+        if (Global::Info().getExpandInfo() && !Global::Info().getMode())
+        {
+            if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran)
+            {
+                for (size_t i = 0; i < 3; i++)
+                {
+                    m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Marine), true);
+                    m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Marine), true);
+
+                    //m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Marine), true);
+                }
+                if (BWAPI::Broodwar->self()->visibleUnitCount(BWAPI::UnitTypes::Terran_Barracks) < 2)
+                {
+                    m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Barracks), true);
+                }
+            }
+            Global::Info().turtleMode(true);
+            Config::Micro::UseSparcraftSimulation = true;
+        }
+    }
+    if (Global::Info().getMode())
+    {
+        for (auto& unit : BWAPI::Broodwar->self()->getUnits()) {
+            if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran) {
+                if (unit->getType() == BWAPI::UnitTypes::Terran_Bunker) {
+                    for (auto& unit_1 : BWAPI::Broodwar->self()->getUnits()) {
+                        if (unit_1->getType() == BWAPI::UnitTypes::Terran_Firebat || unit_1->getType() == BWAPI::UnitTypes::Terran_Marine)
+                            unit->load(unit_1);
+                        else continue;
+                    }
+                }
+            }
+        }
+    }
+
     // if nothing is currently building, get a new goal from the strategy manager
     if ((m_queue.size() == 0) && (BWAPI::Broodwar->getFrameCount() > 10))
     {
@@ -124,7 +287,7 @@ void ProductionManager::update()
     }
 
     // detect if there's a build order deadlock once per second
-    if ((BWAPI::Broodwar->getFrameCount() % 24 == 0) && detectBuildOrderDeadlock())
+    if ((BWAPI::Broodwar->getFrameCount() % 240 == 0) && detectBuildOrderDeadlock())
     {
         if (Config::Debug::DrawBuildOrderSearchInfo)
         {
@@ -153,51 +316,27 @@ void ProductionManager::update()
         }
         else if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran)
         {
-           /* if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Missile_Turret) < 2)
+            if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Missile_Turret) < 2 &&
+                !m_buildingManager.isBeingBuilt(BWAPI::UnitTypes::Terran_Missile_Turret) &&
+                !m_queue.isInQueue(MetaType(BWAPI::UnitTypes::Terran_Missile_Turret)))
             {
                 m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Missile_Turret), true);
                 m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Missile_Turret), true);
             }
 
-            if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Engineering_Bay) == 0)
+            if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Engineering_Bay) == 0 &&
+                !m_buildingManager.isBeingBuilt(BWAPI::UnitTypes::Terran_Engineering_Bay) &&
+                !m_queue.isInQueue(MetaType(BWAPI::UnitTypes::Terran_Engineering_Bay)))
             {
                 m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Engineering_Bay), true);
-            }*/
-
-           /* bool isComsatUnderConstruction = false;
-            for (auto& unit : BWAPI::Broodwar->self()->getUnits())
-            {
-                if (unit->getType() == BWAPI::UnitTypes::Terran_Comsat_Station && unit->isBeingConstructed())
-                {
-                    isComsatUnderConstruction = true;
-                    break;
-                }
-            }*/
-
+            }
+            
             const BWAPI::UnitType comsatStationType = BWAPI::UnitTypes::Terran_Comsat_Station;
 
             // Check if there is a Comsat Station already in the build queue
-            //bool comsatStationQueued = false;
             bool comsatStationQueued = m_queue.isInQueue(MetaType(BWAPI::UnitTypes::Terran_Comsat_Station));
             bool academyQueued = m_queue.isInQueue(MetaType(BWAPI::UnitTypes::Terran_Academy));
-
-            //bool isComsatQueued = false;
-            //for (const auto& unit : BWAPI::Broodwar->self()->getUnits())
-            //{
-            //    if (unit->getType() == BWAPI::UnitTypes::Terran_Command_Center)
-            //    {
-            //        for (const auto& order : unit->getTrainingQueue())
-            //        {
-            //            if (order == BWAPI::UnitTypes::Terran_Comsat_Station)
-            //            {
-            //                isComsatQueued = true;
-            //                break;
-            //            }
-            //        }
-            //    }
-
-            //    if (isComsatQueued) break;
-            //}
+            
 
             int acC = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Academy);
             bool acBB = m_buildingManager.isBeingBuilt(BWAPI::UnitTypes::Terran_Academy);
@@ -215,6 +354,23 @@ void ProductionManager::update()
             {
                 m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Academy), true);
             }
+
+          /*  if (BWAPI::Broodwar->enemy()->getRace() == BWAPI::Races::Protoss)
+            {
+                if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Missile_Turret) < 2 && 
+                    !m_queue.isInQueue(MetaType(BWAPI::UnitTypes::Terran_Missile_Turret)) &&
+                    m_queue.isInQueue(MetaType(BWAPI::UnitTypes::Terran_Engineering_Bay)))
+                {
+                    m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Missile_Turret), false);
+                    m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Missile_Turret), false);
+                }
+
+                if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Engineering_Bay) == 0 &&
+                    !m_queue.isInQueue(MetaType(BWAPI::UnitTypes::Terran_Engineering_Bay)))
+                {
+                    m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Engineering_Bay), false);
+                }
+            }*/
         }
 
         if (Config::Debug::DrawBuildOrderSearchInfo)
@@ -265,6 +421,10 @@ void ProductionManager::manageBuildOrderQueue()
 
     // the current item to be used
     BuildOrderItem & currentItem = m_queue.getHighestPriorityItem();
+    //if (currentItem.metaType.getName() == "Terran_Engineering_Bay")
+    //{
+    //    std::cout<< "ebay"<<std::endl;
+    //}
     int x = currentItem.metaType.getUnitType();
 
     // while there is still something left in the _queue
@@ -316,9 +476,23 @@ void ProductionManager::manageBuildOrderQueue()
         {
             // skip it
             m_queue.skipItem();
-
-            // and get the next one
-            currentItem = m_queue.getNextHighestPriorityItem();
+            int x = m_queue.size();
+            int y = m_queue.numOfSkips();
+            if (x - 1 - y < 0)
+            {
+                performBuildOrderSearch();
+                break;
+            }
+            if (m_queue.size() - 1 - m_queue.numOfSkips() < 0)
+            {
+                
+                //m_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Marine), true);
+            }
+            else
+            {
+                // and get the next one
+                currentItem = m_queue.getNextHighestPriorityItem();
+            }     
         }
         else
         {
@@ -344,13 +518,21 @@ BWAPI::Unit ProductionManager::getProducer(MetaType t, BWAPI::Position closestTo
         // reasons a unit can not train the desired type
         if (unit->getType() != producerType) { continue; }
         if (!unit->isCompleted()) { continue; }
-        if (unit->isTraining()) { continue; }
+        if (t.getUnitType().isAddon())
+        {
+            if (unit->isTraining()) { continue; }
+        }
+        else
+        {
+            if (unit->getTrainingQueue().size() >= 2) { continue; }
+        }
         if (unit->isLifted()) { continue; }
         if (!unit->isPowered()) { continue; }
 
         // if the type is an addon, some special cases
         if (t.getUnitType().isAddon())
         {
+
             // if the unit already has an addon, it can't make one
             if (unit->getAddon() != nullptr)
             {
@@ -367,15 +549,31 @@ BWAPI::Unit ProductionManager::getProducer(MetaType t, BWAPI::Position closestTo
 
             bool isBlocked = false;
 
+            BWAPI::Broodwar->drawCircleMap(BWAPI::Position(unit->getTilePosition()), 2, (255,255,255), true);
+ 
+
             // if the unit doesn't have space to build an addon, it can't make one
             BWAPI::TilePosition addonPosition(unit->getTilePosition().x + unit->getType().tileWidth(), unit->getTilePosition().y + unit->getType().tileHeight() - t.getUnitType().tileHeight());
+            BWAPI::Broodwar->drawCircleMap(BWAPI::Position(addonPosition), 2, (255, 255, 255), true);
             BWAPI::Broodwar->drawBoxMap(addonPosition.x*32, addonPosition.y*32, addonPosition.x*32 + 64, addonPosition.y*32 + 64, BWAPI::Colors::Red);
 
-            for (int i=0; i<unit->getType().tileWidth() + t.getUnitType().tileWidth(); ++i)
+            // Fixing addon position
+            //for (int i=0; i<unit->getType().tileWidth() + t.getUnitType().tileWidth(); ++i)
+            //{
+            //    for (int j=0; j<unit->getType().tileHeight(); ++j)
+            //    {
+            for (int i = 0; i < t.getUnitType().tileWidth(); ++i)
             {
-                for (int j=0; j<unit->getType().tileHeight(); ++j)
+                for (int j = 0; j < t.getUnitType().tileHeight(); ++j)
                 {
-                    BWAPI::TilePosition tilePos(unit->getTilePosition().x + i, unit->getTilePosition().y + j);
+            //for (int i = 0; i < t.getUnitType().tileWidth(); ++i)
+            //{
+            //    for (int j = 0; j < t.getUnitType().tileHeight(); ++j)
+            //    {
+                    BWAPI::TilePosition tilePos(addonPosition.x + i, addonPosition.y + j);
+                    //BWAPI::TilePosition tilePos(unit->getTilePosition().x + i, unit->getTilePosition().y + j);
+                    BWAPI::Broodwar->drawCircleMap(BWAPI::Position(tilePos), 2, (0, 255, 255), true);
+                    BWAPI::Broodwar->drawBoxMap(tilePos.x *32, tilePos.y*32, tilePos.x*32 + 32, tilePos.y*32 + 32, BWAPI::Colors::Green);
 
                     // if the map won't let you build here, we can't build it
                     if (!BWAPI::Broodwar->isBuildable(tilePos))
@@ -442,12 +640,29 @@ BWAPI::Unit ProductionManager::getClosestUnitToPosition(const BWAPI::Unitset & u
     for (auto & unit : units)
     {
         UAB_ASSERT(unit != nullptr, "Unit was null");
+        
+        if (unit->isTraining()) { continue; }
 
         double distance = unit->getDistance(closestTo);
         if (!closestUnit || distance < minDist)
         {
             closestUnit = unit;
             minDist = distance;
+        }
+    }
+    
+    if (minDist == 1000000)
+    {
+        for (auto& unit : units)
+        {
+            UAB_ASSERT(unit != nullptr, "Unit was null");
+
+            double distance = unit->getDistance(closestTo);
+            if (!closestUnit || distance < minDist)
+            {
+                closestUnit = unit;
+                minDist = distance;
+            }
         }
     }
 
@@ -548,6 +763,7 @@ bool ProductionManager::detectBuildOrderDeadlock()
     }
 
     // are any supply providers being built currently
+    auto currentItem = m_queue.getNextHighestPriorityItem();
     bool supplyInProgress =	m_buildingManager.isBeingBuilt(BWAPI::Broodwar->self()->getRace().getSupplyProvider());
 
     for (auto & unit : BWAPI::Broodwar->self()->getUnits())
@@ -563,12 +779,11 @@ bool ProductionManager::detectBuildOrderDeadlock()
     }
 
     // does the current item being built require more supply
-
     int supplyCost			= m_queue.getHighestPriorityItem().metaType.supplyRequired();
     int supplyAvailable		= std::max(0, BWAPI::Broodwar->self()->supplyTotal() - BWAPI::Broodwar->self()->supplyUsed());
 
     // if we don't have enough supply and none is being built, there's a deadlock
-    if ((supplyAvailable - 2 < supplyCost) && !supplyInProgress )
+    if ((supplyAvailable - 2 < supplyCost) && !supplyInProgress  && currentItem.metaType.getUnitType() != BWAPI::Broodwar->self()->getRace().getSupplyProvider())
     {
         // if we're zerg, check to see if a building is planned to be built
         if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Zerg && m_buildingManager.buildingsQueued().size() > 0)
@@ -589,7 +804,7 @@ bool ProductionManager::detectBuildOrderDeadlock()
 
 // When the next item in the _queue is a building, this checks to see if we should move to it
 // This function is here as it needs to access prodction manager's reserved resources info
-void ProductionManager::predictWorkerMovement(const Building & b)
+void ProductionManager::predictWorkerMovement(Building & b)
 {
     if (b.isGasSteal)
     {
@@ -827,6 +1042,29 @@ bool ProductionManager::canPlanBuildOrderNow() const
 std::vector<BWAPI::UnitType> ProductionManager::buildingsQueued()
 {
     return m_buildingManager.buildingsQueued();
+}
+
+
+void ProductionManager::gettingRushed()
+{
+    // Get your starting location tile position
+    BWAPI::TilePosition myStartLocation = BWAPI::Broodwar->self()->getStartLocation();
+
+    // Get the BWEM Map instance
+    const BWEM::Map& map = BWEM::Map::Instance();
+
+    // Get the Area your starting location is in
+    const BWEM::Area* myStartLocationArea = map.GetArea(myStartLocation);
+    BWAPI::Broodwar->drawBoxMap(BWAPI::Position(myStartLocationArea->TopLeft()), BWAPI::Position(myStartLocationArea->BottomRight()), BWAPI::Colors::Orange);
+    // Loop through all enemy units to find those within your base area
+    for (const auto& enemy : BWAPI::Broodwar->enemy()->getUnits())
+    {
+        // Check if enemy unit is within your base area
+        if (isInside(enemy->getTilePosition(), myStartLocationArea))
+        {
+            Global::Info().setRushInfo(true);
+        }
+    }
 }
 
 

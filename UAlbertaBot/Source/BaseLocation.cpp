@@ -124,6 +124,11 @@ const BWAPI::TilePosition & BaseLocation::getDepotPosition() const
     return m_depotPosition;
 }
 
+const BWAPI::TilePosition& UAlbertaBot::BaseLocation::getStartingPosition() const
+{
+    return m_startPosition;
+}
+
 void BaseLocation::setPlayerOccupying(BWAPI::Player player, bool occupying)
 {
     m_isPlayerOccupying[player] = occupying;

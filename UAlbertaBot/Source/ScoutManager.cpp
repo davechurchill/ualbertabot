@@ -19,14 +19,14 @@ void ScoutManager::update()
 {
     PROFILE_FUNCTION();
 
-if (!Config::Modules::UsingScoutManager)
-{
-    return;
-}
+    if (!Config::Modules::UsingScoutManager)
+    {
+        return; 
+    }
 
-//rushWarning();
-moveScouts();
-drawScoutInformation(200, 320);
+    //rushWarning();
+    moveScouts();
+    drawScoutInformation(200, 320);
 }
 
 void ScoutManager::setWorkerScout(BWAPI::Unit unit)
@@ -336,7 +336,12 @@ void ScoutManager::followPerimeter(const BaseLocation * enemyBaseLocation)
     // Find the closest choke point to the enemy starting location
     const BWEM::ChokePoint* closestChokepoint = nullptr;
     int closestChokeDist = INT_MAX;
+    
+    const auto enemyArea = mapa.GetArea(enemyBaseLocation->getDepotPosition());
 
+    BWAPI::Position cen = BWAPI::Position(int((BWAPI::Position(enemyArea->TopLeft()).x + BWAPI::Position(enemyArea->BottomRight()).x) / 2),
+        int((BWAPI::Position(enemyArea->TopLeft()).y + BWAPI::Position(enemyArea->BottomRight()).y) / 2));
+    BWAPI::Position but = BWAPI::Position(cen.x, cen.y - 1000);
     for (const auto& choke : (mapa.GetArea(enemyBaseLocation->getDepotPosition()))->ChokePoints())
     {
         const int dist = enemyBaseLocation->getGroundDistance(BWAPI::TilePosition(choke->Center()));
@@ -347,51 +352,101 @@ void ScoutManager::followPerimeter(const BaseLocation * enemyBaseLocation)
         }
     }
 
-    if (closestChokepoint)
+    const int dist = int(BWAPI::Position(enemyArea->TopLeft()).getDistance(BWAPI::Position(enemyArea->BottomRight())));
+
+    const BWAPI::Position pointTL = BWAPI::Position(cen.x - int(dist / 6), cen.y - int(dist / 6));
+    const BWAPI::Position pointTR = BWAPI::Position(cen.x + int(dist / 6), cen.y - int(dist / 6));
+    const BWAPI::Position pointBL = BWAPI::Position(cen.x - int(dist / 6), cen.y + int(dist / 6));
+    const BWAPI::Position pointBR = BWAPI::Position(cen.x + int(dist / 6), cen.y + int(dist / 6));
+ 
+    BWAPI::Broodwar->drawBoxMap(pointTL, pointBR, BWAPI::Colors::Green);
+
+
+    const BWAPI::Position scoutPos = m_workerScout->getPosition();
+    const BWAPI::Position enemyBasePos = enemyBaseLocation->getPosition();
+
+    if (m_scoutStatus == "Enemy Base" && scoutPos.getDistance(enemyBasePos) < 75)
     {
-        // Move the scout betweeb enemy base and enemy choke point
-        const BWAPI::Position scoutPos = m_workerScout->getPosition();
-        const BWAPI::Position chokePos = BWAPI::Position(closestChokepoint->Center());
-        const BWAPI::Position enemyBasePos = enemyBaseLocation->getPosition();
-
-        if (m_scoutStatus == "Enemy Base" && scoutPos.getDistance(enemyBasePos) < 75)
-        {
-            rushWarning();
-            m_scoutStatus = "Enemy choke";
-        }
-        else if (m_scoutStatus == "Enemy choke" && scoutPos.getDistance(chokePos) < 75)
-        {
-            m_scoutStatus = "Enemy Base";
-        }
-
-        if (m_scoutStatus == "Enemy Base")
-        {
-            Micro::SmartMove(m_workerScout, enemyBasePos);
-        }
-        else if (m_scoutStatus == "Enemy choke")
-        {
-            Micro::SmartMove(m_workerScout, chokePos);
-        }
+        rushWarning();
+        auto en = BWAPI::Broodwar->enemy()->getRace();
+        m_scoutStatus = "Enemy TL";
+    }
+    else if (m_scoutStatus == "Enemy TL" && scoutPos.getDistance(pointTL) < 100)
+    {
+        rushWarning();
+        m_scoutStatus = "Enemy TR";
+    }
+    else if (m_scoutStatus == "Enemy TR" && scoutPos.getDistance(pointTR) < 100)
+    {
+        rushWarning();
+        m_scoutStatus = "Enemy BR";
+    }
+    else if (m_scoutStatus == "Enemy BR" && scoutPos.getDistance(pointBR) < 100)
+    {
+        rushWarning();
+        m_scoutStatus = "Enemy BL";
+    }
+    else if (m_scoutStatus == "Enemy BL" && scoutPos.getDistance(pointBL) < 100)
+    {
+        rushWarning();
+        m_scoutStatus = "Enemy TL";
     }
 
+    if (m_scoutStatus == "Enemy Base")
+    {
+        Micro::SmartMove(m_workerScout, enemyBasePos);
+    }
+    else if (m_scoutStatus == "Enemy TL")
+    {
+        Micro::SmartMove(m_workerScout, pointTL);
+    }
+    else if (m_scoutStatus == "Enemy TR")
+    {
+        Micro::SmartMove(m_workerScout, pointTR);
+    }
+    else if (m_scoutStatus == "Enemy BR")
+    {
+        Micro::SmartMove(m_workerScout, pointBR);
+    }
+    else if (m_scoutStatus == "Enemy BL")
+    {
+        lap++;
+        Micro::SmartMove(m_workerScout, pointBL);
+    }
 }
 
 void ScoutManager::rushWarning()
 {
     int numOfBuildings = 0;
+    int expo = 0;
+    int gate = 0;
 
     for (auto ui : BWAPI::Broodwar->enemy()->getUnits())
     {
         if (ui->getType().isBuilding())
+        {
             numOfBuildings++;
+            if (ui->getType() == BWAPI::UnitTypes::Protoss_Cybernetics_Core)
+                Global::Info().setDtRushInfo(true);
+            if (ui->getType() == BWAPI::UnitTypes::Protoss_Gateway)
+                gate++;
+            if (ui->getType() == BWAPI::UnitTypes::Protoss_Forge || ui->getType() == BWAPI::UnitTypes::Protoss_Photon_Cannon)
+                expo++;
+        }
 
-        if (ui->getType() == BWAPI::UnitTypes::Zerg_Spawning_Pool)
+        if (m_rushFalse && (ui->getType() == BWAPI::UnitTypes::Zerg_Spawning_Pool || ui->getType() == BWAPI::UnitTypes::Protoss_Gateway))
         {
             Global::Info().setRushInfo(true);
         }
     }
-    if (numOfBuildings > 2)
+    if (BWAPI::Broodwar->enemy()->getRace() == BWAPI::Races::Zerg && numOfBuildings > 2)
     {
+        m_rushFalse = false;
         Global::Info().setRushInfo(false);
+    }
+    if (BWAPI::Broodwar->enemy()->getRace() == BWAPI::Races::Protoss && (expo > 1 && gate < 1 || lap != 0 && gate == 0 && !Global::Info().getRushInfo()))
+    {
+        Config::Micro::UseSparcraftSimulation = false;
+        Global::Info().setExpandInfo(true);
     }
 }

@@ -40,5 +40,10 @@ public:
 
     BWAPI::TilePosition getStartPosition(BWAPI::Player player) const;
 
+    // Resources depot width
+    const size_t CC_width = 4;
+
+    // Resources depot heitgh
+    const size_t CC_height = 3;
 };
 }

@@ -19,7 +19,7 @@ class BuildingManager
     bool isEvolvedBuilding(BWAPI::UnitType type);
     bool isBuildingPositionExplored(const Building & b) const;
     void removeBuildings(const std::vector<Building> & toRemove);
-    void rushDefence();
+    BWAPI::TilePosition rushDefence();
 
     void validateWorkersAndBuildings();		    // STEP 1
     void assignWorkersToUnassignedBuildings();	// STEP 2
@@ -42,7 +42,7 @@ public:
     int  getReservedGas();
     bool isBeingBuilt(BWAPI::UnitType type);
 
-    BWAPI::TilePosition getBuildingLocation(const Building & b);
+    BWAPI::TilePosition getBuildingLocation(Building & b);
     std::vector<BWAPI::UnitType> buildingsQueued();
 };
 }

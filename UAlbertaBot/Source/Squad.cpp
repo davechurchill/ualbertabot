@@ -7,6 +7,8 @@
 #include "StrategyManager.h"
 #include "CombatSimulation.h"
 #include "InformationManager.h"
+#include "bwem.h"
+#include "BaseLocationManager.h"
 
 using namespace UAlbertaBot;
 
@@ -55,6 +57,7 @@ void Squad::update()
             BWAPI::Broodwar->drawTextScreen(200, 150, "REGROUP");
         }
 
+       
         BWAPI::Broodwar->drawCircleMap(regroupPosition.x, regroupPosition.y, 30, BWAPI::Colors::Purple, true);
 
         m_meleeManager.regroup(regroupPosition);
@@ -353,6 +356,47 @@ BWAPI::Position Squad::calcRegroupPosition()
     BWAPI::Position regroup(0, 0);
 
     int minDist = 100000;
+
+    //const BaseLocation* selfBaseLocation = Global::Bases().getPlayerStartingBaseLocation(BWAPI::Broodwar->self());
+    //// Get the BWEM map instance
+    //const BWEM::Map& mapa = BWEM::Map::Instance();
+    //if (selfBaseLocation != nullptr &&
+    //    BWAPI::Broodwar->self()->supplyUsed() <= 120 &&
+    //    BWAPI::Broodwar->getFrameCount() <= 15000 &&
+    //    !Global::Info().getExpandInfo() &&
+    //    //!Global::Info().getDtRushInfo() &&
+    //    BWAPI::Broodwar->enemy()->getRace() == BWAPI::Races::Protoss)
+    //{
+    //    //BWAPI::TilePosition startingTilePosition = BWAPI::Broodwar->self()->getStartLocation();
+    //        //BWEM::Area const* startingArea = mapa.GetArea(startingTilePosition);
+
+    //        // Find the closest choke point to the enemy starting location
+    //    const BWEM::ChokePoint* closestChokepoint = nullptr;
+    //    int closestChokeDist = INT_MAX;
+
+    //    for (const auto& choke : (mapa.GetArea(selfBaseLocation->getDepotPosition()))->ChokePoints())
+    //    {
+    //        const int dist = selfBaseLocation->getGroundDistance(BWAPI::TilePosition(choke->Center()));
+    //        if (dist < closestChokeDist)
+    //        {
+    //            closestChokeDist = dist;
+    //            closestChokepoint = choke;
+    //        }
+    //    }
+    //    const auto chokePosition = BWAPI::Position(closestChokepoint->Center());
+    //    const auto basePosition = BWAPI::Position(selfBaseLocation->getDepotPosition());
+    //    int a = int(0.8 * (chokePosition.x - basePosition.x));
+    //    int b = int(0.8 * (chokePosition.y - basePosition.y));
+    //    int x = basePosition.x + a;
+    //    int y = basePosition.y + b;
+    //    BWAPI::Position xa = BWAPI::Position(closestChokepoint->Center());
+    //    //BWAPI::Broodwar->drawCircleMap(BWAPI::Position(x, y), 16, BWAPI::Colors::Red, false);
+    //    BWAPI::Broodwar->drawCircleMap(xa, 16, BWAPI::Colors::Red, false);
+    //    Config::Micro::UseSparcraftSimulation = false;
+    //    Config::Micro::KiteWithRangedUnits = false;
+    //    return xa;
+
+    //}
 
     for (auto & unit : m_units)
     {
